@@ -9,20 +9,20 @@
 <script type="text/javascript" charset="utf-8">
 <!--
 
-\$(document).ready(function(){
+$(document).ready(function(){
     // initialise combos for dirty page refreshes
-    \$('#showsort').val('original');
-    \$('#showsortdirection').val('asc');
+    $('#showsort').val('original');
+    $('#showsortdirection').val('asc');
 
-    var \$container = [\$('#container')];
-    jQuery.each(\$container, function (j) {
+    var $container = [$('#container')];
+    jQuery.each($container, function (j) {
         this.isotope({
             itemSelector: '.trakt_show',
             sortBy: 'original-order',
             layoutMode: 'fitRows',
             getSortData: {
                 name: function( itemElem ) {
-                    var name = \$( itemElem ).attr('data-name') || '';
+                    var name = $( itemElem ).attr('data-name') || '';
 #if not $sickbeard.SORT_ARTICLE:
                     name = name.replace(/^(The|A|An)\s/i, '');
 #end if
@@ -34,7 +34,7 @@
         });
     });
 
-    \$('#showsort').on( 'change', function() {
+    $('#showsort').on( 'change', function() {
         var sortCriteria;
         switch (this.value) {
             case 'original':
@@ -44,7 +44,7 @@
                 /* randomise, else the rating_votes can already
                  * have sorted leaving this with nothing to do.
                  */
-                \$('#container').isotope({sortBy: 'random'});
+                $('#container').isotope({sortBy: 'random'});
                 sortCriteria = 'rating';
                 break;
             case 'rating_votes':
@@ -57,11 +57,11 @@
                 sortCriteria = 'name'
                 break;
         }
-        \$('#container').isotope({sortBy: sortCriteria});
+        $('#container').isotope({sortBy: sortCriteria});
     });
 
-    \$('#showsortdirection').on( 'change', function() {
-        \$('#container').isotope({sortAscending: ('asc' == this.value)});
+    $('#showsortdirection').on( 'change', function() {
+        $('#container').isotope({sortAscending: ('asc' == this.value)});
     });
 });
 

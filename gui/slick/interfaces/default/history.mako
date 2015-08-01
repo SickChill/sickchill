@@ -25,7 +25,7 @@
 <script type="text/javascript">
 <!--
 
-\$.tablesorter.addParser({
+$.tablesorter.addParser({
     id: 'cDate',
     is: function(s) {
         return false;
@@ -36,20 +36,20 @@
     type: 'numeric'
 });
 
-\$(document).ready(function()
+$(document).ready(function()
 {
-    \$("#historyTable:has(tbody tr)").tablesorter({
+    $("#historyTable:has(tbody tr)").tablesorter({
         widgets: ['zebra', 'filter'],
         sortList: [[0,1]],
       textExtraction: {
         % if ( layout == 'detailed'):
-            0: function(node) { return \$(node).find("span").text().toLowerCase(); },
-            4: function(node) { return \$(node).find("span").text().toLowerCase(); }
+            0: function(node) { return $(node).find("span").text().toLowerCase(); },
+            4: function(node) { return $(node).find("span").text().toLowerCase(); }
         % else
-            0: function(node) { return \$(node).find("span").text().toLowerCase(); },
-            1: function(node) { return \$(node).find("span").text().toLowerCase(); },
-            2: function(node) { return \$(node).attr("provider").toLowerCase(); },
-            5: function(node) { return \$(node).attr("quality").toLowerCase(); }
+            0: function(node) { return $(node).find("span").text().toLowerCase(); },
+            1: function(node) { return $(node).find("span").text().toLowerCase(); },
+            2: function(node) { return $(node).attr("provider").toLowerCase(); },
+            5: function(node) { return $(node).attr("quality").toLowerCase(); }
         % endif
       },
         headers: {
@@ -64,8 +64,8 @@
       }
 
     });
-    \$('#limit').change(function(){
-        url = '$sbRoot/history/?limit='+\$(this).val()
+    $('#limit').change(function(){
+        url = '$sbRoot/history/?limit='+$(this).val()
         window.location.href = url
     });
 

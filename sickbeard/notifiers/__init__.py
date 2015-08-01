@@ -20,6 +20,7 @@ import sickbeard
 
 import kodi
 import plex
+import emby
 import nmj
 import nmjv2
 import synoindex
@@ -46,6 +47,7 @@ from sickbeard.common import *
 # home theater / nas
 kodi_notifier = kodi.KODINotifier()
 plex_notifier = plex.PLEXNotifier()
+emby_notifier = emby.EMBYNotifier()
 nmj_notifier = nmj.NMJNotifier()
 nmjv2_notifier = nmjv2.NMJv2Notifier()
 synoindex_notifier = synoindex.synoIndexNotifier()

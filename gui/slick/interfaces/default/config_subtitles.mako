@@ -15,8 +15,8 @@
 <script type="text/javascript" src="${sbRoot}/js/lib/jquery.tokeninput.js"></script>
 
 <script type="text/javascript">
-      \$(document).ready(function() {
-        \$("#subtitles_languages").tokenInput(
+      $(document).ready(function() {
+        $("#subtitles_languages").tokenInput(
                 [
                     <%=",\r\n".join("{id: \"" + lang.opensubtitles + "\", name: \"" + lang.name + "\"}" for lang in subtitles.subtitleLanguageFilter())%>
                 ],

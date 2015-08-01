@@ -33,13 +33,13 @@
 %>
 
 <script type="text/javascript">
-    \$(document).ready(function() {
-        \$("#schedulerStatusTable").tablesorter({
+    $(document).ready(function() {
+        $("#schedulerStatusTable").tablesorter({
             widgets: ['saveSort', 'zebra']
         });
     });
-    \$(document).ready(function() {
-        \$("#queueStatusTable").tablesorter({
+    $(document).ready(function() {
+        $("#queueStatusTable").tablesorter({
             widgets: ['saveSort', 'zebra'],
             sortList: [[3,0], [4,0], [2,1]]
         });

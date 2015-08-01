@@ -557,7 +557,7 @@ class TVShow(object):
         except sickbeard.indexer_error:
             logger.log(u"" + sickbeard.indexerApi(
                 self.indexer).name + " timed out, unable to update episodes from " + sickbeard.indexerApi(
-                self.indexer).name, logger.ERROR)
+                self.indexer).name, logger.WARNING)
             return None
 
         logger.log(
