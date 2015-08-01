@@ -1,10 +1,11 @@
 <%!
+    import sickbeard
     from sickbeard.helpers import anon_url
 %>
-<%include file="/inc_top.mako"/>
 <%
     sort = sickbeard.COMING_EPS_SORT
 %>
+<%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 <h1 class="header">${header}</h1>
 <style type="text/css">

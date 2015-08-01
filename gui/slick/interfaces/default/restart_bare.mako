@@ -1,33 +1,30 @@
 <%
     try:
-        curSBHost = $sbHost
-        curSBHttpPort = $sbHttpPort
-        curSBHttpsEnabled = $sbHttpsEnabled
-        curSBHandleReverseProxy = $sbHandleReverseProxy
-        themeSpinner = $sbThemeName
+        curSBHost = sbHost
+        curSBHttpPort = sbHttpPort
+        curSBHttpsEnabled = sbHttpsEnabled
+        curSBHandleReverseProxy = sbHandleReverseProxy
+        themeSpinner = sbThemeName
     except NameMapper.NotFound:
         curSBHost = "localhost"
-        curSBHttpPort = $sickbeard.WEB_PORT
+        curSBHttpPort = sickbeard.WEB_PORT
         curSBHttpsEnabled = "False"
         curSBHandleReverseProxy = "False"
-        themeSpinner = $sickbeard.THEME_NAME
-    endtry
+        themeSpinner = sickbeard.THEME_NAME
 %>
 <script type="text/javascript" charset="utf-8">
-<!--
-sbRoot = "$sbRoot";
-sbHttpPort = "$curSBHttpPort";
-sbHttpsEnabled = "$curSBHttpsEnabled";
-sbHandleReverseProxy = "$curSBHandleReverseProxy";
-sbHost = "$curSBHost";
-sbDefaultPage = "$sbDefaultPage";
-//-->
+sbRoot = "${sbRoot}";
+sbHttpPort = "${curSBHttpPort}";
+sbHttpsEnabled = "${curSBHttpsEnabled}";
+sbHandleReverseProxy = "${curSBHandleReverseProxy}";
+sbHost = "${curSBHost}";
+sbDefaultPage = "${sbDefaultPage}";
 </script>
 
 <script type="text/javascript" src="${sbRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/restart.js?${sbPID}&${sbDefaultPage}"></script>
 
-% themeSpinner = '-dark' if 'dark' == themeSpinner else ''
+<% themeSpinner = ('', '-dark')['dark' == themeSpinner] %>
 <h2>Performing Restart</h2>
 <br />
 <div id="shut_down_message">

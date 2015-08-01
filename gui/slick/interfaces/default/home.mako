@@ -1,4 +1,4 @@
-<%
+<%!
     import sickbeard
     import calendar
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
@@ -6,7 +6,7 @@
     from sickbeard import db, sbdatetime, network_timezones
     import datetime
     import re
-%>	
+%>
 <%include file="/inc_top.mako"/>
 <%
     myDB = db.DBConnection()

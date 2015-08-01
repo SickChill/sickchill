@@ -1,5 +1,5 @@
 <%include file="/inc_top.mako"/>
-<%
+<%!
     import sickbeard
     from sickbeard import classes
     from sickbeard.logger import reverseNames

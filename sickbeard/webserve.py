@@ -98,6 +98,7 @@ class _setupLookup():
             mako_lookup = TemplateLookup(directories=[mako_path], module_directory=mako_cache, format_exceptions=True)
 
 class PageTemplate(MakoTemplate):
+    arguments = {}
     def __init__(self, rh, file, *args, **kwargs):
         _setupLookup()
         kwargs['filename'] = os.path.join(mako_path, file)
@@ -106,8 +107,6 @@ class PageTemplate(MakoTemplate):
         kwargs['format_exceptions'] = True
 
         super(PageTemplate, self).__init__(*args, **kwargs)
-
-        self.arguments = {}
 
         self.arguments['sbRoot'] = sickbeard.WEB_ROOT
         self.arguments['sbHttpPort'] = sickbeard.WEB_PORT
@@ -752,7 +751,7 @@ class Home(WebRoot):
         else:
             showlists = [["Shows", sickbeard.showList]]
 
-        return t.render(title="Home", header="Home", topmenu="home", showlists=showlists, submenu=self.HomeMenu())
+        return t.render(title="Home", header="Show List", topmenu="home", showlists=showlists, submenu=self.HomeMenu())
 
     def is_alive(self, *args, **kwargs):
         if 'callback' in kwargs and '_' in kwargs:
@@ -1142,7 +1141,7 @@ class Home(WebRoot):
         # restart
         sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
-        return t.render(submenu=self.HomeMenu())
+        return t.render(title="Home", header="Restarting SickRage", topmenu="home", submenu=self.HomeMenu())
 
     def updateCheck(self, pid=None):
         if str(pid) != str(sickbeard.PID):
@@ -1910,7 +1909,7 @@ class Home(WebRoot):
             ep_obj_rename_list.reverse()
 
         t = PageTemplate(rh=self, file="testRename.mako")
-        t.submenu = [{'title': 'Edit', 'path': 'home/editShow?show=%d' % showObj.indexerid}]
+        submenu = [{'title': 'Edit', 'path': 'home/editShow?show=%d' % showObj.indexerid}]
 
         return t.render(submenu=submenu, ep_obj_list=ep_obj_rename_list, show=showObj)
 
@@ -2463,9 +2462,8 @@ class HomeAddShows(Home):
 
     def getRecommendedShows(self):
         t = PageTemplate(rh=self, file="trendingShows.mako")
-        t.submenu = self.HomeMenu()
 
-        t.trending_shows = []
+        trending_shows = []
         
         trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
@@ -2490,22 +2488,22 @@ class HomeAddShows(Home):
                         if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
                             if not_liked_show:
                                 if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):	
-                                    t.trending_shows += [show]
+                                    trending_shows += [show]
                             else:
-                                t.trending_shows += [show]
+                                trending_shows += [show]
 
                 except exceptions.MultipleShowObjectsException:
                     continue
 
             if sickbeard.TRAKT_BLACKLIST_NAME != '':
-                t.blacklist = True
+                blacklist = True
             else:
-                t.blacklist = False
+                blacklist = False
 
         except traktException as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
-        return t.render()
+        return t.render(trending_shows=trending_shows, blacklist=blacklist, submenu=self.HomeMenu())
 
     def trendingShows(self):
         """
@@ -2513,10 +2511,7 @@ class HomeAddShows(Home):
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, file="home_trendingShows.mako")
-        t.submenu = self.HomeMenu()
-        t.enable_anime_options = False
-
-        return t.render()
+        return t.render(submenu=self.HomeMenu(), enable_anime_options=False)
 
     def getTrendingShows(self):
         """
@@ -2524,9 +2519,8 @@ class HomeAddShows(Home):
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, file="trendingShows.mako")
-        t.submenu = self.HomeMenu()
 
-        t.trending_shows = []
+        trending_shows = []
 
         trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
@@ -2550,22 +2544,22 @@ class HomeAddShows(Home):
                         if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
                             if not_liked_show:
                                 if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
-                                    t.trending_shows += [show]
+                                    trending_shows += [show]
                             else:
-                                t.trending_shows += [show]
+                                trending_shows += [show]
 
                 except exceptions.MultipleShowObjectsException:
                     continue
 
             if sickbeard.TRAKT_BLACKLIST_NAME != '':
-                t.blacklist = True
+                blacklist = True
             else:
-                t.blacklist = False
+                blacklist = False
 
         except traktException as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
-        return t.render()
+        return t.render(submenu = self.HomeMenu(), blacklist=blacklist, trending_shows=trending_shows)
 
     def addShowToBlacklist(self, indexer_id):
 
@@ -2591,10 +2585,7 @@ class HomeAddShows(Home):
         Prints out the page to add existing shows from a root dir
         """
         t = PageTemplate(rh=self, file="home_addExistingShow.mako")
-        t.submenu = self.HomeMenu()
-        t.enable_anime_options = False
-        
-        return t.render()
+        return t.render(submenu=self.HomeMenu(), enable_anime_options=False)
 
     def addTraktShow(self, indexer_id, showName):
         if helpers.findCertainShow(sickbeard.showList, int(indexer_id)):
@@ -2857,8 +2848,7 @@ class Manage(Home, WebRoot):
 
     def index(self):
         t = PageTemplate(rh=self, file="manage.mako")
-        t.submenu = self.ManageMenu()
-        return t.render()
+        return t.render(submenu=self.ManageMenu())
 
 
     def showEpisodeStatuses(self, indexer_id, whichStatus):
@@ -2886,20 +2876,18 @@ class Manage(Home, WebRoot):
 
     def episodeStatuses(self, whichStatus=None):
         if whichStatus:
-            whichStatus = int(whichStatus)
-            status_list = [whichStatus]
+            status_list = [int(whichStatus)]
             if status_list[0] == SNATCHED:
-                status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER
+                status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
         else:
             status_list = []
 
         t = PageTemplate(rh=self, file="manage_episodeStatuses.mako")
-        t.submenu = self.ManageMenu()
-        t.whichStatus = whichStatus
 
         # if we have no status then this is as far as we need to go
         if not status_list:
-            return t.render()
+            return t.render(title="Episode Overview",  header="Episode Overview",
+                    topmenu="manage", submenu=self.ManageMenu(), whichStatus=whichStatus)
 
         myDB = db.DBConnection()
         status_results = myDB.select(
@@ -2922,10 +2910,9 @@ class Manage(Home, WebRoot):
             if cur_indexer_id not in sorted_show_ids:
                 sorted_show_ids.append(cur_indexer_id)
 
-        t.show_names = show_names
-        t.ep_counts = ep_counts
-        t.sorted_show_ids = sorted_show_ids
-        return t.render()
+        return t.render(title="Episode Overview",  header="Episode Overview",
+                    topmenu="manage", submenu=self.ManageMenu(), whichStatus=whichStatus,
+                    show_names=show_names, ep_counts=ep_counts, sorted_show_ids=sorted_show_ids)
 
 
     def changeEpisodeStatuses(self, oldStatus, newStatus, *args, **kwargs):
@@ -2999,11 +2986,9 @@ class Manage(Home, WebRoot):
     def subtitleMissed(self, whichSubs=None):
 
         t = PageTemplate(rh=self, file="manage_subtitleMissed.mako")
-        t.submenu = self.ManageMenu()
-        t.whichSubs = whichSubs
 
         if not whichSubs:
-            return t.render()
+            return t.render(submenu=self.ManageMenu(), whichSubs=whichSubs)
 
         myDB = db.DBConnection()
         status_results = myDB.select(
@@ -3032,10 +3017,7 @@ class Manage(Home, WebRoot):
             if cur_indexer_id not in sorted_show_ids:
                 sorted_show_ids.append(cur_indexer_id)
 
-        t.show_names = show_names
-        t.ep_counts = ep_counts
-        t.sorted_show_ids = sorted_show_ids
-        return t.render()
+        return t.render(submenu=self.ManageMenu(), whichSubs=whichSub, show_names=show_names, ep_counts=ep_counts, sorted_show_ids=sorted_show_ids)
 
 
     def downloadSubtitleMissed(self, *args, **kwargs):
@@ -3086,7 +3068,6 @@ class Manage(Home, WebRoot):
     def backlogOverview(self):
 
         t = PageTemplate(rh=self, file="manage_backlogOverview.mako")
-        t.submenu = self.ManageMenu()
 
         showCounts = {}
         showCats = {}
@@ -3118,11 +3099,7 @@ class Manage(Home, WebRoot):
             showCats[curShow.indexerid] = epCats
             showSQLResults[curShow.indexerid] = sqlResults
 
-        t.showCounts = showCounts
-        t.showCats = showCats
-        t.showSQLResults = showSQLResults
-
-        return t.render()
+        return t.render(submenu=self.ManageMenu(), showCounts=showCounts, showCats=showCats, showSQLResults=showSQLResults)
 
 
     def massEdit(self, toEdit=None):
