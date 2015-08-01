@@ -3,7 +3,6 @@
 #from sickbeard import exceptions
 #set global $title="Test Rename"
 #set global $header = '<a href="' + $sbRoot + '/home/displayShow?show=%d">%s</a>' % ($show.indexerid, $show.name)
-#set global $sbPath=".."
 
 #set global $topmenu="home"#
 #import os.path

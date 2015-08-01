@@ -1,9 +1,3 @@
-#import sickbeard
-#from sickbeard.common import *
-
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-
-$data
-
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+<%include file="/inc_top.mako"/>
+${data}
+<%include file="/inc_bottom.mako"/>

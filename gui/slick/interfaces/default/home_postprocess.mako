@@ -1,18 +1,18 @@
-#import sickbeard
-#set global $header="Post Processing"
-#set global $title="Post Processing"
+<%!
+    global header="Post Processing"
+    global title="Post Processing"
 
-#set global $sbPath="../.."
 
-#set global $topmenu="home"#
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    global topmenu="home"
+%>
+<%!import os.path%>
+<%!include file="/inc_top.mako"/>
 <div id="content800">
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else:
+    <h1 class="title">${title}</h1>
+% endif
 
 <div id="postProcess">
     <form name="processForm" method="post" action="processEpisode" style="line-height: 40px;">
@@ -32,15 +32,15 @@
             </td>
             <td>
                 <select name="process_method" id="process_method" class="form-control form-control-inline input-sm" >
-                #set $process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"}
-                #for $curAction in ('copy', 'move', 'hardlink', 'symlink'):
-                #if $sickbeard.PROCESS_METHOD == $curAction:
-                    #set $process_method = "selected=\"selected\""
-                #else
-                    #set $process_method = ""
-                #end if
-                <option value="$curAction" $process_method>$process_method_text[$curAction]</option>
-                #end for
+                <% process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"} %>
+                % for curAction in ('copy', 'move', 'hardlink', 'symlink'):
+                    % if sickbeard.PROCESS_METHOD == curAction:
+                        % process_method = "selected=\"selected\""
+                    % else:
+                        <% process_method = "" %>
+                    % endif
+                    <option value="${curAction}" ${process_method}>${process_method_text[curAction]}</option>
+                % endfor
                 </select>
             </td>
         </tr>
@@ -70,7 +70,7 @@
                 <span style="line-height: 0; font-size: 12px;"><i>&nbsp;(Check it to delete files and folders like auto processing)</i></span>
             </td>
         </tr>
-        #if $sickbeard.USE_FAILED_DOWNLOADS:
+        % if sickbeard.USE_FAILED_DOWNLOADS:
         <tr>
             <td>
                 <b>Mark download as failed:</b>
@@ -79,7 +79,7 @@
                 <input id="failed" name="failed" type="checkbox">
             </td>
         </tr>
-        #end if
+        % endif
     </table>
         <input id="submit" class="btn" type="submit" value="Process" />
     </form>
@@ -91,4 +91,4 @@
 </script>
 </div>
 
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+<%!include file="/inc_bottom.mako"/>

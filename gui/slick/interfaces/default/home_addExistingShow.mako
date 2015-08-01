@@ -1,25 +1,26 @@
-#import os.path
-#import sickbeard
-#from sickbeard.common import *
-#set global $title="Existing Show"
-#set global $header="Existing Show"
+<%!
+    import os.path
+    import sickbeard
+    from sickbeard.common import *
+    global title="Existing Show"
+    global header="Existing Show"
 
-#set global $sbPath="../.."
 
-#set global $statpath="../.."#
-#set global $topmenu="home"#
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    global statpath="../.."
+    global topmenu="home"
+    import os.path
+    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+%>
 
-<script type="text/javascript" src="$sbRoot/js/qualityChooser.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/addExistingShow.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/addShowOptions.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/addExistingShow.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/addShowOptions.js?${sbPID}"></script>
 
 <script type="text/javascript" charset="utf-8">
 <!--
-\$(document).ready(function(){
-    \$( "#tabs" ).tabs({
+$(document).ready(function(){
+    $( "#tabs" ).tabs({
         collapsible: true,
         selected: #if $sickbeard.ROOT_DIRS then '-1' else '0'#
     });
@@ -27,11 +28,11 @@
 //-->
 </script>
 
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% endif
 
 <div id="newShowPortal">
     <div id="config-components">
@@ -41,7 +42,7 @@
 
     <div id="core-component-group1" class="tab-pane active component-group">
 
-    <form id="addShowForm" method="post" action="$sbRoot/home/addShows/addNewShow" accept-charset="utf-8">
+    <form id="addShowForm" method="post" action="${sbRoot}/home/addShows/addNewShow" accept-charset="utf-8">
 
     <div id="tabs">
         <ul>
@@ -49,10 +50,10 @@
             <li><a href="#tabs-2">Customize Options</a></li>
         </ul>
         <div id="tabs-1" class="existingtabs">
-            #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
+            % include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.mako")
         </div>
         <div id="tabs-2" class="existingtabs">
-            #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_addShowOptions.tmpl")
+            % include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_addShowOptions.mako")
         </div>
     </div>
     <br />
@@ -80,4 +81,4 @@
     </div>
 </div>
 
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
