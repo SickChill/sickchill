@@ -69,13 +69,13 @@ function(){
     % if not sickbeard.DEBUG and (level == 'DEBUG' or level == 'DB'):
        <% continue %>
     % endif
-<option value="${reverseNames[level]}" ${(' selected="selected"', '')[minLevel == reverseNames[level]]}>${level.title()}</option>
+<option value="${reverseNames[level]}" ${("", "selected=\"selected\"")[minLevel == reverseNames[level]]}>${level.title()}</option>
 % endfor
 </select>
 
 Filter log by: <select name="logFilter" id="logFilter" class="form-control form-control-inline input-sm">
 % for logNameFilter in sorted(logNameFilters):
-<option value="${logNameFilter}" #if $logFilter == $logNameFilter then "selected=\"selected\"" else ""#>${logNameFilters[logNameFilter]}</option>
+    <option value="${logNameFilter}" ${("", "selected=\"selected\"")[logFilter == logNameFilter]}>${logNameFilters[logNameFilter]}</option>
 % endfor
 </select>
 Search log by:
