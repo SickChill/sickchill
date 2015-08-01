@@ -8,7 +8,6 @@
     import re
 %>	
 <%include file="/inc_top.mako"/>
-
 <%
     myDB = db.DBConnection()
     today = str(datetime.date.today().toordinal())
@@ -43,7 +42,6 @@
 %>
 
 <script type="text/javascript" charset="utf-8">
-<!--
 
 $.tablesorter.addParser({
     id: 'loadingNames',
@@ -97,7 +95,7 @@ $.tablesorter.addParser({
         if (nums[0] === 0)
           return nums[1];
 
-        var finalNum = parseInt($max_download_count*nums[0]/nums[1]);
+        var finalNum = parseInt(${max_download_count}*nums[0]/nums[1]);
         var pct = Math.round((nums[0]/nums[1])*100) / 1000
         if (finalNum > 0)
           finalNum += nums[0];
@@ -308,12 +306,12 @@ $(document).ready(function(){
     <% fuzzydate = 'airdate' %>
     % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
-        dtInline : ${('true', 'false')[sickbeard.layout == 'poster']},
+        dtInline : ${('true', 'false')[sickbeard.layout in 'poster']},
         containerClass : '.${fuzzydate}',
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('false', 'true')[sickbeard.TRIM_ZERO == True]}
+        trimZero : ${('false', 'true')[sickbeard.TRIM_ZERO]}
     });
     % endif
 
@@ -377,13 +375,11 @@ $(document).ready(function(){
           // call this function to copy the column selection code into the popover
           $.tablesorter.columnSelector.attachTo( $('#showListTableShows'), '#popover-target');
           % if sickbeard.ANIME_SPLIT_HOME:
-            $.tablesorter.columnSelector.attachTo( $('#showListTableAnime'), '#popover-target');
+          $.tablesorter.columnSelector.attachTo( $('#showListTableAnime'), '#popover-target');
           % endif
         });
 
 });
-
-//-->
 </script>
 
 % if not header is UNDEFINED:
@@ -523,11 +519,10 @@ $(document).ready(function(){
 
         <div id="progressbar${curShow.indexerid}"></div>
             <script type="text/javascript">
-            <!--
                 $(function() {
-                    $("\#progressbar${curShow.indexerid}").progressbar({
-                    value: $progressbar_percent });
-                    classvalue = $progressbar_percent
+                    $("#progressbar${curShow.indexerid}").progressbar({
+                    value: ${progressbar_percent} });
+                    classvalue = ${progressbar_percent}
                     if (classvalue<20) {
                         classtoadd = "progress-20"
                     }
@@ -543,9 +538,8 @@ $(document).ready(function(){
                     if (classvalue==100) {
                         classtoadd = "progress-100"
                     }
-                    $("\#progressbar$curShow.indexerid > .ui-progressbar-value").addClass(classtoadd);
+                    $("#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
                 });
-            //-->
             </script>
 
         <div class="show-title">
@@ -758,7 +752,7 @@ $(document).ready(function(){
         <td class="tvShow">
             <div class="imgsmallposter ${layout}">
                 <a href="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=${layout}" rel="dialog" title="${curShow.name}">
-                    <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="$layout" alt="${curShow.indexerid}"/>
+                    <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="${layout}" alt="${curShow.indexerid}"/>
                 </a>
                 <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
             </div>
@@ -797,12 +791,11 @@ $(document).ready(function(){
 
         <td align="center"><span style="display: none;">${download_stat}</span><div id="progressbar${curShow.indexerid}" style="position:relative;"></div>
             <script type="text/javascript">
-            <!--
                 $(function() {
-                    $("\#progressbar$curShow.indexerid").progressbar({
-                    value: $progressbar_percent });
-                    $("\#progressbar$curShow.indexerid").append( "<div class='progressbarText' title='${download_stat_tip}'>${download_stat}</div>" )
-                    classvalue = $progressbar_percent
+                    $("#progressbar${curShow.indexerid}").progressbar({
+                    value: ${progressbar_percent} });
+                    $("#progressbar${curShow.indexerid}").append( "<div class='progressbarText' title='${download_stat_tip}'>${download_stat}</div>" )
+                    classvalue = ${progressbar_percent}
                     if (classvalue<20) {
                         classtoadd = "progress-20"
                     }
@@ -818,9 +811,8 @@ $(document).ready(function(){
                     if (classvalue==100) {
                         classtoadd = "progress-100"
                     }
-                    $("\#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
+                    $("#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
                 });
-            //-->
             </script>
         </td>
 

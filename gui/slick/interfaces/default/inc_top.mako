@@ -81,19 +81,16 @@
         <script type="text/javascript" src="${sbRoot}/js/fuzzyMoment.js?${sbPID}"></script>
         % endif
         <script type="text/javascript" charset="utf-8">
-        <!--
             sbRoot = '${sbRoot}'; // needed for browser.js & ajaxNotifications.js
-            ##//HTML for scrolltopcontrol, which is auto wrapped in DIV w/ ID="topcontrol"
+            //HTML for scrolltopcontrol, which is auto wrapped in DIV w/ ID="topcontrol"
             top_image_html = '<img src="${sbRoot}/images/top.gif" width="31" height="11" alt="Jump to top" />';
             themeSpinner = '${('', '-dark')[sickbeard.THEME_NAME == 'dark']}';
             anonURL = '${sickbeard.ANON_REDIRECT}'
-        //-->
         </script>
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery.scrolltopcontrol-1.1.js"></script>
         <script type="text/javascript" src="${sbRoot}/js/browser.js"></script>
         <script type="text/javascript" src="${sbRoot}/js/ajaxNotifications.js"></script>
         <script type="text/javascript">
-        <!--
             function initActions() {
                 $("#SubMenu a[href*='/home/restart/']").addClass('btn restart').html('<span class="submenu-icon-restart pull-left"></span> Restart');
                 $("#SubMenu a[href*='/home/shutdown/']").addClass('btn shutdown').html('<span class="submenu-icon-shutdown pull-left"></span> Shutdown');
@@ -144,7 +141,6 @@
                 $('.dropdown-toggle').dropdownHover();
 
             });
-        //-->
         </script>
     <script type="text/javascript" src="${sbRoot}/js/confirmations.js?${sbPID}"></script>
     % endif
@@ -267,7 +263,7 @@
                           first = False
                           inner_first = True
                       %>
-                      % for cur_link in menuItem.path:
+                      % for cur_link in menuItem['path']:
                           ${("", "&middot; ")[inner_first]}#<a class="inner" href="${sbRoot}/${menuItem['path'][cur_link]}">${cur_link}</a>
                           <% inner_first = False %>
                       % endfor

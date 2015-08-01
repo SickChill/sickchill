@@ -82,9 +82,9 @@ $(document).ready(function(){
         })
         // bootstrap popover event triggered when the popover opens
         .on('shown.bs.popover', function () {
-                % if show.is_anime:
+            % if show.is_anime:
             $.tablesorter.columnSelector.attachTo( $('#animeTable'), '#popover-target');
-                % else:
+            % else:
             $.tablesorter.columnSelector.attachTo( $('#showTable'), '#popover-target');
                 % endif
         });
