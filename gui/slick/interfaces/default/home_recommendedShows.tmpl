@@ -5,16 +5,16 @@
 #from sickbeard import sbdatetime
 #from sickbeard.helpers import anon_url
 
-#set global $title='Trending Shows'
-#set global $header='Trending Shows'
+#set global $title="Recommended Shows"
+#set global $header="Recommended Shows"
 
 #set global $sbPath='..'
 
 #set global $topmenu='home'
 #import os.path
-#include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
-<script type="text/javascript" src="$sbRoot/js/addTrendingShow.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/recommendedShows.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
 
@@ -84,6 +84,7 @@
 
 //-->
 </script>
+
 
 #if $varExists('header')
     <h1 class="header">$header</h1>
