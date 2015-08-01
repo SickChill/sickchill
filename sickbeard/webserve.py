@@ -3667,15 +3667,12 @@ class History(WebRoot):
                 history['actions'].sort(key=lambda x: x['time'], reverse=True)
 
         t = PageTemplate(rh=self, file="history.mako")
-        t.historyResults = sqlResults
-        t.compactResults = compact
-        t.limit = limit
-        t.submenu = [
+        submenu = [
             {'title': 'Clear History', 'path': 'history/clearHistory'},
             {'title': 'Trim History', 'path': 'history/trimHistory'},
         ]
 
-        return t.render()
+        return t.render(historyResults=sqlResults, compactResults=compact, limit=limit, submenu=submenu)
 
 
     def clearHistory(self):
