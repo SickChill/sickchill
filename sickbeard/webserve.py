@@ -150,7 +150,10 @@ class PageTemplate(MakoTemplate):
         self.arguments['topmenu'] = "FixME"
 
     def render(self, *args, **kwargs):
-        kwargs.update(self.arguments)
+        for key in self.arguments:
+            if key not in kwargs:
+                kwargs[key] = self.arguments[key]
+
         return super(PageTemplate, self).render(*args, **kwargs)
 
 class BaseHandler(RequestHandler):
