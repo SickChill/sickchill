@@ -8,20 +8,16 @@
         <meta name="robots" content="noindex">
 
         <script type="text/javascript" charset="utf-8">
-        <!--
             sbRoot = '${sbRoot}';
-        //-->
         </script>
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/apibuilder.js?${sbPID}"></script>
 
         <style type="text/css">
-        <!--
             #apibuilder select { padding: 2px 2px 2px 6px; display: block; float: left; margin: auto 8px 4px auto; }
             #apibuilder select option { padding: 1px 6px; line-height: 1.2em; }
             #apibuilder .disabled { color: #ccc; }
             #apibuilder .action { background-color: #efefef; }
-        -->
         </style>
 
 <script type="text/javascript">
@@ -276,7 +272,7 @@ addList("episode.setstatus", "${curShow.name}", "&indexerid=${curShow.indexerid}
 
 // build out each show's season+episode list for episode.setstatus cmd
 % for curShow in episodeSQLResults:
-    % curSeason = -1
+    <% curSeason = -1 %>
     % for curShowSeason in episodeSQLResults[curShow]:
         % if curShowSeason['season'] != curSeason and curShowSeason['season'] != 0:
             // insert just the season as the ep number is now optional
