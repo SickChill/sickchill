@@ -341,6 +341,10 @@ USE_PLEX_CLIENT = False
 PLEX_CLIENT_USERNAME = None
 PLEX_CLIENT_PASSWORD = None
 
+USE_EMBY = False
+EMBY_HOST = None
+EMBY_APIKEY = None
+
 USE_GROWL = False
 GROWL_NOTIFY_ONSNATCH = False
 GROWL_NOTIFY_ONDOWNLOAD = False
@@ -559,6 +563,7 @@ def initialize(consoleLogging=True):
             USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, TRAKT_SYNC_WATCHLIST, TRAKT_REMOVE_SHOW_FROM_SICKRAGE, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, traktRollingScheduler, TRAKT_USE_RECOMMENDED, TRAKT_SYNC, TRAKT_SYNC_REMOVE, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_TIMEOUT, TRAKT_BLACKLIST_NAME, TRAKT_USE_ROLLING_DOWNLOAD, TRAKT_ROLLING_NUM_EP, TRAKT_ROLLING_ADD_PAUSED, TRAKT_ROLLING_FREQUENCY, \
             USE_PLEX, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
             PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, DEFAULT_BACKLOG_FREQUENCY, MIN_BACKLOG_FREQUENCY, BACKLOG_STARTUP, SKIP_REMOVED_FILES, \
+            USE_EMBY, EMBY_HOST, EMBY_APIKEY, \
             showUpdateScheduler, __INITIALIZED__, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, UPDATE_SHOWS_ON_START, UPDATE_SHOWS_ON_SNATCH, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, showList, loadingShowList, \
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, DAILYSEARCH_STARTUP, \
@@ -603,6 +608,7 @@ def initialize(consoleLogging=True):
         CheckSection(CFG, 'NZBget')
         CheckSection(CFG, 'KODI')
         CheckSection(CFG, 'PLEX')
+        CheckSection(CFG, 'Emby')
         CheckSection(CFG, 'Growl')
         CheckSection(CFG, 'Prowl')
         CheckSection(CFG, 'Twitter')
@@ -949,7 +955,11 @@ def initialize(consoleLogging=True):
         USE_PLEX_CLIENT = bool(check_setting_int(CFG, 'Plex', 'use_plex_client', 0))
         PLEX_CLIENT_USERNAME = check_setting_str(CFG, 'Plex', 'plex_client_username', '', censor_log=True)
         PLEX_CLIENT_PASSWORD = check_setting_str(CFG, 'Plex', 'plex_client_password', '', censor_log=True)
-       
+
+        USE_EMBY = bool(check_setting_int(CFG, 'Emby', 'use_emby', 0))
+        EMBY_HOST = check_setting_str(CFG, 'Emby', 'emby_host', '')
+        EMBY_APIKEY = check_setting_str(CFG, 'Emby', 'emby_apikey', '')
+
         USE_GROWL = bool(check_setting_int(CFG, 'Growl', 'use_growl', 0))
         GROWL_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Growl', 'growl_notify_onsnatch', 0))
         GROWL_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Growl', 'growl_notify_ondownload', 0))
@@ -1915,6 +1925,11 @@ def save_config():
     new_config['Plex']['plex_host'] = PLEX_HOST
     new_config['Plex']['plex_username'] = PLEX_USERNAME
     new_config['Plex']['plex_password'] = helpers.encrypt(PLEX_PASSWORD, ENCRYPTION_VERSION)
+
+    new_config['Emby'] = {}
+    new_config['Emby']['use_emby'] = int(USE_EMBY)
+    new_config['Emby']['emby_host'] = EMBY_HOST
+    new_config['Emby']['emby_apikey'] = EMBY_APIKEY
 
     new_config['Growl'] = {}
     new_config['Growl']['use_growl'] = int(USE_GROWL)

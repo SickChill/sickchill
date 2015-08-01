@@ -718,6 +718,7 @@ class Home(WebRoot):
             {'title': 'Manual Post-Processing', 'path': 'home/postprocess/'},
             {'title': 'Update KODI', 'path': 'home/updateKODI/', 'requires': self.haveKODI},
             {'title': 'Update Plex', 'path': 'home/updatePLEX/', 'requires': self.havePLEX},
+            {'title': 'Update Emby', 'path': 'home/updateEMBY/', 'requires': self.haveEMBY},
             {'title': 'Manage Torrents', 'path': 'manage/manageTorrents/', 'requires': self.haveTORRENT},
         ]
 
@@ -792,6 +793,9 @@ class Home(WebRoot):
 
     def havePLEX(self):
         return sickbeard.USE_PLEX and sickbeard.PLEX_UPDATE_LIBRARY
+
+    def haveEMBY(self):
+        return sickbeard.USE_EMBY
 
     def haveTORRENT(self):
         if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' \
@@ -981,6 +985,17 @@ class Home(WebRoot):
             return "Tried sending desktop notification via libnotify"
         else:
             return notifiers.libnotify.diagnose()
+
+
+    def testEMBY(self, host=None, emby_apikey=None):
+        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+
+        host = config.clean_host(host)
+        result = notifiers.emby_notifier.test_notify(urllib.unquote_plus(host), emby_apikey)
+        if result:
+            return "Test notice sent successfully to " + urllib.unquote_plus(host)
+        else:
+            return "Test notice failed to " + urllib.unquote_plus(host)
 
 
     def testNMJ(self, host=None, database=None, mount=None):
@@ -1270,6 +1285,8 @@ class Home(WebRoot):
                     {'title': 'Force Full Update', 'path': 'home/updateShow?show=%d&amp;force=1' % showObj.indexerid})
                 t.submenu.append({'title': 'Update show in KODI',
                                   'path': 'home/updateKODI?show=%d' % showObj.indexerid, 'requires': self.haveKODI})
+                t.submenu.append({'title': 'Update show in Emby',
+                                  'path': 'home/updateEMBY?show=%d' % showObj.indexerid, 'requires': self.haveEMBY})
                 t.submenu.append({'title': 'Preview Rename', 'path': 'home/testRename?show=%d' % showObj.indexerid})
                 if sickbeard.USE_SUBTITLES and not sickbeard.showQueueScheduler.action.isBeingSubtitled(
                         showObj) and showObj.subtitles:
@@ -1706,6 +1723,24 @@ class Home(WebRoot):
         else:
             ui.notifications.error("Unable to contact Plex Media Server host: " + sickbeard.PLEX_SERVER_HOST)
         return self.redirect('/home/')
+
+    def updateEMBY(self, show=None):
+        showName=None
+        showObj=None
+
+        if show:
+            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+
+        if notifiers.emby_notifier.update_library(showObj):
+            ui.notifications.message(
+                "Library update command sent to Emby host: " + sickbeard.EMBY_HOST)
+        else:
+            ui.notifications.error("Unable to contact Emby host: " + sickbeard.EMBY_HOST)
+
+        if showObj:
+            return self.redirect('/home/displayShow?show=' + str(showObj.indexerid))
+        else:
+            return self.redirect('/home/')
 
     def setStatus(self, show=None, eps=None, status=None, direct=False):
 
@@ -4741,6 +4776,7 @@ class ConfigNotifications(Config):
                           plex_notify_onsubtitledownload=None, plex_update_library=None,
                           plex_server_host=None, plex_server_token=None, plex_host=None, plex_username=None, plex_password=None,
                           use_plex_client=None, plex_client_username=None, plex_client_password=None,
+                          use_emby=None, emby_host=None, emby_apikey=None,
                           use_growl=None, growl_notify_onsnatch=None, growl_notify_ondownload=None,
                           growl_notify_onsubtitledownload=None, growl_host=None, growl_password=None,
                           use_freemobile=None, freemobile_notify_onsnatch=None, freemobile_notify_ondownload=None,
@@ -4808,7 +4844,11 @@ class ConfigNotifications(Config):
         sickbeard.USE_PLEX_CLIENT = config.checkbox_to_value(use_plex)
         sickbeard.PLEX_CLIENT_USERNAME = plex_username
         sickbeard.PLEX_CLIENT_PASSWORD = plex_password
-        
+
+        sickbeard.USE_EMBY = config.checkbox_to_value(use_emby)
+        sickbeard.EMBY_HOST = config.clean_host(emby_host)
+        sickbeard.EMBY_APIKEY = emby_apikey
+
         sickbeard.USE_GROWL = config.checkbox_to_value(use_growl)
         sickbeard.GROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(growl_notify_onsnatch)
         sickbeard.GROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(growl_notify_ondownload)
