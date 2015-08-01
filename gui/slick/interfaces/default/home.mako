@@ -45,7 +45,7 @@
 <script type="text/javascript" charset="utf-8">
 <!--
 
-\$.tablesorter.addParser({
+$.tablesorter.addParser({
     id: 'loadingNames',
     is: function(s) {
         return false;
@@ -63,7 +63,7 @@
     type: 'text'
 });
 
-\$.tablesorter.addParser({
+$.tablesorter.addParser({
     id: 'quality',
     is: function(s) {
         return false;
@@ -74,7 +74,7 @@
     type: 'numeric'
 });
 
-\$.tablesorter.addParser({
+$.tablesorter.addParser({
     id: 'eps',
     is: function(s) {
         return false;
@@ -108,22 +108,22 @@
 });
 
 
-\$(document).ready(function(){
+$(document).ready(function(){
 
-    \$("img#network").on('error', function(){
-        \$(this).parent().text(\$(this).attr('alt'));
-        \$(this).remove();
+    $("img#network").on('error', function(){
+        $(this).parent().text($(this).attr('alt'));
+        $(this).remove();
     });
 
-    \$("#showListTableShows:has(tbody tr)").tablesorter({
+    $("#showListTableShows:has(tbody tr)").tablesorter({
         sortList: [[6,1],[2,0]],
         textExtraction: {
-            0: function(node) { return \$(node).find("span").text().toLowerCase(); },
-            1: function(node) { return \$(node).find("span").text().toLowerCase(); },
-            3: function(node) { return \$(node).find("span").prop("title").toLowerCase(); },
-            4: function(node) { return \$(node).find("span").text().toLowerCase(); },
-            5: function(node) { return \$(node).find("span").text(); },
-            6: function(node) { return \$(node).find("img").attr("alt"); }
+            0: function(node) { return $(node).find("span").text().toLowerCase(); },
+            1: function(node) { return $(node).find("span").text().toLowerCase(); },
+            3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
+            4: function(node) { return $(node).find("span").text().toLowerCase(); },
+            5: function(node) { return $(node).find("span").text(); },
+            6: function(node) { return $(node).find("img").attr("alt"); }
         },
         widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
         headers: {
@@ -206,15 +206,15 @@
         sortAppend: [[2,0]]
     });
 
-    \$("#showListTableAnime:has(tbody tr)").tablesorter({
+    $("#showListTableAnime:has(tbody tr)").tablesorter({
         sortList: [[6,1],[2,0]],
         textExtraction: {
-            0: function(node) { return \$(node).find("span").text().toLowerCase(); },
-            1: function(node) { return \$(node).find("span").text().toLowerCase(); },
-            3: function(node) { return \$(node).find("span").prop("title").toLowerCase(); },
-            4: function(node) { return \$(node).find("span").text().toLowerCase(); },
-            5: function(node) { return \$(node).find("span").text(); },
-            6: function(node) { return \$(node).find("img").attr("alt"); }
+            0: function(node) { return $(node).find("span").text().toLowerCase(); },
+            1: function(node) { return $(node).find("span").text().toLowerCase(); },
+            3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
+            4: function(node) { return $(node).find("span").text().toLowerCase(); },
+            5: function(node) { return $(node).find("span").text(); },
+            6: function(node) { return $(node).find("img").attr("alt"); }
         },
         widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
         headers: {
@@ -297,12 +297,12 @@
         sortAppend: [[2,0]]
     });
 
-    if (\$("#showListTableShows").find("tbody").find("tr").size() > 0)
-        \$.tablesorter.filter.bindSearch( "#showListTableShows", \$('.search') );
+    if ($("#showListTableShows").find("tbody").find("tr").size() > 0)
+        $.tablesorter.filter.bindSearch( "#showListTableShows", $('.search') );
 
     % if sickbeard.ANIME_SPLIT_HOME:
-        if (\$("#showListTableAnime").find("tbody").find("tr").size() > 0)
-            \$.tablesorter.filter.bindSearch( "#showListTableAnime", \$('.search') );
+        if ($("#showListTableAnime").find("tbody").find("tr").size() > 0)
+            $.tablesorter.filter.bindSearch( "#showListTableAnime", $('.search') );
     % endif
 
     <% fuzzydate = 'airdate' %>
@@ -317,9 +317,9 @@
     });
     % endif
 
-    var \$container = [\$('#container'), \$('#container-anime')];
+    var $container = [$('#container'), $('#container-anime')];
 
-    jQuery.each(\$container, function (j) {
+    jQuery.each($container, function (j) {
         this.isotope({
             itemSelector: '.show',
             sortBy : '${sickbeard.POSTER_SORTBY}',
@@ -331,7 +331,7 @@
             },
             getSortData: {
                 name: function( itemElem ) {
-                    var name = \$( itemElem ).attr('data-name');
+                    var name = $( itemElem ).attr('data-name');
                     % if not sickbeard.SORT_ARTICLE:
                         return (name || '').replace(/^(The|A|An)\s/i,'');
                     % else:
@@ -340,33 +340,33 @@
                 },
                 network: '[data-network]',
                 date: function( itemElem ) {
-                    var date = \$( itemElem ).attr('data-date');
+                    var date = $( itemElem ).attr('data-date');
                     return date.length && parseInt( date, 10 ) || Number.POSITIVE_INFINITY;
                 },
                 progress: function( itemElem ) {
-                    var progress = \$( itemElem ).attr('data-progress');
+                    var progress = $( itemElem ).attr('data-progress');
                     return progress.length && parseInt( progress, 10 ) || Number.NEGATIVE_INFINITY;
                 }
             }
         });
     });
 
-    \$('#postersort').on( 'change', function() {
+    $('#postersort').on( 'change', function() {
         var sortValue = this.value;
-        \$('#container').isotope({ sortBy: sortValue });
-        \$('#container-anime').isotope({ sortBy: sortValue });
-        \$.get(this.options[this.selectedIndex].getAttribute('data-sort'));
+        $('#container').isotope({ sortBy: sortValue });
+        $('#container-anime').isotope({ sortBy: sortValue });
+        $.get(this.options[this.selectedIndex].getAttribute('data-sort'));
     });
 
-    \$('#postersortdirection').on( 'change', function() {
+    $('#postersortdirection').on( 'change', function() {
         var sortDirection = this.value;
         sortDirection = sortDirection == 'true';
-        \$('#container').isotope({ sortAscending: sortDirection });
-        \$('#container-anime').isotope({ sortAscending: sortDirection });
-        \$.get(this.options[this.selectedIndex].getAttribute('data-sort'));
+        $('#container').isotope({ sortAscending: sortDirection });
+        $('#container-anime').isotope({ sortAscending: sortDirection });
+        $.get(this.options[this.selectedIndex].getAttribute('data-sort'));
     });
 
-    \$('#popover')
+    $('#popover')
         .popover({
           placement: 'bottom',
           html: true, // required if content has HTML
@@ -375,9 +375,9 @@
         // bootstrap popover event triggered when the popover opens
         .on('shown.bs.popover', function () {
           // call this function to copy the column selection code into the popover
-          \$.tablesorter.columnSelector.attachTo( \$('#showListTableShows'), '#popover-target');
+          $.tablesorter.columnSelector.attachTo( $('#showListTableShows'), '#popover-target');
           % if sickbeard.ANIME_SPLIT_HOME:
-            \$.tablesorter.columnSelector.attachTo( \$('#showListTableAnime'), '#popover-target');
+            $.tablesorter.columnSelector.attachTo( $('#showListTableAnime'), '#popover-target');
           % endif
         });
 
@@ -524,8 +524,8 @@
         <div id="progressbar${curShow.indexerid}"></div>
             <script type="text/javascript">
             <!--
-                \$(function() {
-                    \$("\#progressbar${curShow.indexerid}").progressbar({
+                $(function() {
+                    $("\#progressbar${curShow.indexerid}").progressbar({
                     value: $progressbar_percent });
                     classvalue = $progressbar_percent
                     if (classvalue<20) {
@@ -543,7 +543,7 @@
                     if (classvalue==100) {
                         classtoadd = "progress-100"
                     }
-                    \$("\#progressbar$curShow.indexerid > .ui-progressbar-value").addClass(classtoadd);
+                    $("\#progressbar$curShow.indexerid > .ui-progressbar-value").addClass(classtoadd);
                 });
             //-->
             </script>
@@ -798,10 +798,10 @@
         <td align="center"><span style="display: none;">${download_stat}</span><div id="progressbar${curShow.indexerid}" style="position:relative;"></div>
             <script type="text/javascript">
             <!--
-                \$(function() {
-                    \$("\#progressbar$curShow.indexerid").progressbar({
+                $(function() {
+                    $("\#progressbar$curShow.indexerid").progressbar({
                     value: $progressbar_percent });
-                    \$("\#progressbar$curShow.indexerid").append( "<div class='progressbarText' title='${download_stat_tip}'>${download_stat}</div>" )
+                    $("\#progressbar$curShow.indexerid").append( "<div class='progressbarText' title='${download_stat_tip}'>${download_stat}</div>" )
                     classvalue = $progressbar_percent
                     if (classvalue<20) {
                         classtoadd = "progress-20"
@@ -818,7 +818,7 @@
                     if (classvalue==100) {
                         classtoadd = "progress-100"
                     }
-                    \$("\#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
+                    $("\#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
                 });
             //-->
             </script>

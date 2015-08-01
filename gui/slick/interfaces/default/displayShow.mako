@@ -35,7 +35,7 @@
 <script type="text/javascript" charset="utf-8">
 
 <!--
-\$(document).ready(function(){
+$(document).ready(function(){
     <% fuzzydate = 'airdate' %>
     % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
@@ -47,23 +47,23 @@
     });
     % endif
     $('.addQTip').each(function () {
-        \$(this).css({'cursor':'help', 'text-shadow':'0px 0px 0.5px #666'});
-        \$(this).qtip({
+        $(this).css({'cursor':'help', 'text-shadow':'0px 0px 0.5px #666'});
+        $(this).qtip({
             show: {solo:true},
-            position: {viewport:\$(window), my:'left center', adjust:{ y: -10, x: 2 }},
+            position: {viewport:$(window), my:'left center', adjust:{ y: -10, x: 2 }},
             style: {tip:{corner:true, method:'polygon'}, classes:'qtip-rounded qtip-shadow ui-tooltip-sb'}
         });
     });
-    \$.fn.generateStars = function() {
-        return this.each(function(i,e){\$(e).html(\$('<span/>').width(\$(e).text()*12));});
+    $.fn.generateStars = function() {
+        return this.each(function(i,e){$(e).html($('<span/>').width($(e).text()*12));});
     };
 
-    \$('.imdbstars').generateStars();
+    $('.imdbstars').generateStars();
 
     % if show.is_anime:
-    \$("#animeTable").tablesorter({
+    $("#animeTable").tablesorter({
     % else:
-    \$("#showTable").tablesorter({
+    $("#showTable").tablesorter({
     % endif
         widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
         widgetOptions : {
@@ -74,7 +74,7 @@
             },
         });
 
-    \$('#popover')
+    $('#popover')
         .popover({
           placement: 'bottom',
           html: true, // required if content has HTML
@@ -83,9 +83,9 @@
         // bootstrap popover event triggered when the popover opens
         .on('shown.bs.popover', function () {
                 % if show.is_anime:
-            \$.tablesorter.columnSelector.attachTo( \$('#animeTable'), '#popover-target');
+            $.tablesorter.columnSelector.attachTo( $('#animeTable'), '#popover-target');
                 % else:
-            \$.tablesorter.columnSelector.attachTo( \$('#showTable'), '#popover-target');
+            $.tablesorter.columnSelector.attachTo( $('#showTable'), '#popover-target');
                 % endif
         });
 });
@@ -407,12 +407,12 @@
                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
                     <script type="text/javascript">
                     <!--
-                        \$(function() {
-                            \$('#collapseSeason-${epResult['season']}').on('hide.bs.collapse', function () {
-                                \$('#showseason-${epResult['season']}').text('Show Episodes');
+                        $(function() {
+                            $('#collapseSeason-${epResult['season']}').on('hide.bs.collapse', function () {
+                                $('#showseason-${epResult['season']}').text('Show Episodes');
                             })
-                            \$('#collapseSeason-${epResult['season']}').on('show.bs.collapse', function () {
-                                \$('#showseason-${epResult['season']}').text('Hide Episodes');
+                            $('#collapseSeason-${epResult['season']}').on('show.bs.collapse', function () {
+                                $('#showseason-${epResult['season']}').text('Hide Episodes');
                             })
                         });
                     //-->
@@ -422,7 +422,7 @@
         </tr>
     </tbody>
     <tbody class="tablesorter-no-sort">
-        <tr id="season-$epResult["season"]-cols" class="seasoncols">
+        <tr id="season-${epResult["season"]}-cols" class="seasoncols">
             <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${epResult["season"]}" /></th>
             <th class="col-metadata">NFO</th>
             <th class="col-metadata">TBN</th>
@@ -449,12 +449,12 @@
                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
                     <script type="text/javascript">
                     <!--
-                        \$(function() {
-                            \$('#collapseSeason-${epResult['season']}').on('hide.bs.collapse', function () {
-                                \$('#showseason-${epResult['season']}').text('Show Episodes');
+                        $(function() {
+                            $('#collapseSeason-${epResult['season']}').on('hide.bs.collapse', function () {
+                                $('#showseason-${epResult['season']}').text('Show Episodes');
                             })
-                            \$('#collapseSeason-${epResult['season']}').on('show.bs.collapse', function () {
-                                \$('#showseason-${epResult['season']}').text('Hide Episodes');
+                            $('#collapseSeason-${epResult['season']}').on('show.bs.collapse', function () {
+                                $('#showseason-${epResult['season']}').text('Hide Episodes');
                             })
                         });
                     //-->
@@ -538,7 +538,8 @@
             </td>
             <td class="col-name">
             % if epResult["description"] != "" and epResult["description"] != None:
-                <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_$show.indexerid${"_" + str(epResult["season"]) + "_" + str(epResult["episode"])}" />
+                <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfo" alt="" 
+id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["episode"])}" />
             % else:
                 <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfoNone" alt="" />
             % endif
