@@ -1,9 +1,11 @@
-<%
+<%!
     import sickbeard
     import datetime
-    from sickbeard import db, sbdatetime
+    from sickbeard import db
     from sickbeard.common import Quality, SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST
     import re
+%>
+<%
     sbRoot = sickbeard.WEB_ROOT
 %>
     </div> <!-- /content -->

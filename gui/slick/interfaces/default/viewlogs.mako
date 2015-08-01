@@ -1,11 +1,10 @@
 <%include file="/inc_top.mako"/>
-<%
+<%!
     import sickbeard
     from sickbeard import classes
     from sickbeard.logger import reverseNames
 %>
 <script type="text/javascript" charset="utf-8">
-<!--
 $(document).ready(
 
 function(){
@@ -53,7 +52,6 @@ function(){
         }
     });
 });
-//-->
 </script>
 
 % if not header is UNDEFINED:
@@ -88,9 +86,7 @@ ${logLines}
 </div>
 <br />
 <script type="text/javascript" charset="utf-8">
-<!--
 window.setInterval( "location.reload(true)", 600000); // Refresh every 10 minutes
-//-->
 </script>
 
 <%include file="/inc_bottom.mako"/>
