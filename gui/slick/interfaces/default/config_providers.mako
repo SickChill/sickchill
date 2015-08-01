@@ -22,10 +22,10 @@
 % if sickbeard.USE_NZBS
 <script type="text/javascript" charset="utf-8">
 <!--
-\$(document).ready(function(){
+$(document).ready(function(){
 var show_nzb_providers = % if sickbeard.USE_NZBS then "true" else "false"#;
 % for curNewznabProvider in sickbeard.newznabProviderList:
-\$(this).addProvider('$curNewznabProvider.getID()', '$curNewznabProvider.name', '$curNewznabProvider.url', '$curNewznabProvider.key', '$curNewznabProvider.catIDs', $int($curNewznabProvider.default), show_nzb_providers);
+$(this).addProvider('$curNewznabProvider.getID()', '$curNewznabProvider.name', '$curNewznabProvider.url', '$curNewznabProvider.key', '$curNewznabProvider.catIDs', $int($curNewznabProvider.default), show_nzb_providers);
 % endfor
 });
 //-->
@@ -35,9 +35,9 @@ var show_nzb_providers = % if sickbeard.USE_NZBS then "true" else "false"#;
 % if sickbeard.USE_TORRENTS
 <script type="text/javascript" charset="utf-8">
 <!--
-\$(document).ready(function(){
+$(document).ready(function(){
 % for curTorrentRssProvider in sickbeard.torrentRssProviderList:
-    \$(this).addTorrentRssProvider('$curTorrentRssProvider.getID()', '$curTorrentRssProvider.name', '$curTorrentRssProvider.url', '$curTorrentRssProvider.cookies', '$curTorrentRssProvider.titleTAG');
+    $(this).addTorrentRssProvider('$curTorrentRssProvider.getID()', '$curTorrentRssProvider.name', '$curTorrentRssProvider.url', '$curTorrentRssProvider.cookies', '$curTorrentRssProvider.titleTAG');
 % endfor
 });
 //-->

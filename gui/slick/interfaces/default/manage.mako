@@ -13,7 +13,7 @@
 <script type="text/javascript" src="${sbRoot}/js/lib/bootbox.min.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
 <!--
-\$.tablesorter.addParser({
+$.tablesorter.addParser({
     id: 'showNames',
     is: function(s) {
         return false;
@@ -27,7 +27,7 @@
     },
     type: 'text'
 });
-\$.tablesorter.addParser({
+$.tablesorter.addParser({
     id: 'quality',
     is: function(s) {
         return false;
@@ -38,18 +38,18 @@
     type: 'numeric'
 });
 
-\$(document).ready(function()
+$(document).ready(function()
 {
-    \$("#massUpdateTable:has(tbody tr)").tablesorter({
+    $("#massUpdateTable:has(tbody tr)").tablesorter({
         sortList: [[1,0]],
         textExtraction: {
-            2: function(node) { return \$(node).find("span").text().toLowerCase(); },
-            3: function(node) { return \$(node).find("img").attr("alt"); },
-            4: function(node) { return \$(node).find("img").attr("alt"); },
-            5: function(node) { return \$(node).find("img").attr("alt"); },
-            6: function(node) { return \$(node).find("img").attr("alt"); },
-            7: function(node) { return \$(node).find("img").attr("alt"); },
-            8: function(node) { return \$(node).find("img").attr("alt"); },
+            2: function(node) { return $(node).find("span").text().toLowerCase(); },
+            3: function(node) { return $(node).find("img").attr("alt"); },
+            4: function(node) { return $(node).find("img").attr("alt"); },
+            5: function(node) { return $(node).find("img").attr("alt"); },
+            6: function(node) { return $(node).find("img").attr("alt"); },
+            7: function(node) { return $(node).find("img").attr("alt"); },
+            8: function(node) { return $(node).find("img").attr("alt"); },
         },
         widgets: ['zebra'],
         headers: {

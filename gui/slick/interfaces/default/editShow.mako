@@ -148,60 +148,60 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 
     jQuery('#location').fileBrowser({ title: 'Select Show Location' });
 
-    \$('#submit').click(function(){
+    $('#submit').click(function(){
         all_exceptions = []
 
-        \$("#exceptions_list option").each  ( function() {
-            all_exceptions.push( \$(this).val() );
+        $("#exceptions_list option").each  ( function() {
+            all_exceptions.push( $(this).val() );
         });
 
-        \$("#exceptions_list").val(all_exceptions);
+        $("#exceptions_list").val(all_exceptions);
 
         % if show.is_anime:
             generate_bwlist()
         % endif
         });
-    \$('#addSceneName').click(function() {
-        var scene_ex = \$('#SceneName').val()
-        var option = \$("<option>")
+    $('#addSceneName').click(function() {
+        var scene_ex = $('#SceneName').val()
+        var option = $("<option>")
         all_exceptions = []
 
-        \$("#exceptions_list option").each  ( function() {
-           all_exceptions.push( \$(this).val() )
+        $("#exceptions_list option").each  ( function() {
+           all_exceptions.push( $(this).val() )
         });
 
-        \$('#SceneName').val('')
+        $('#SceneName').val('')
 
         if (jQuery.inArray(scene_ex, all_exceptions) > -1 || (scene_ex == ''))
             return
 
-        \$("#SceneException").show()
+        $("#SceneException").show()
 
         option.attr("value",scene_ex)
         option.html(scene_ex)
         return option.appendTo('#exceptions_list');
     });
 
-    \$('#removeSceneName').click(function() {
-        \$('#exceptions_list option:selected').remove();
+    $('#removeSceneName').click(function() {
+        $('#exceptions_list option:selected').remove();
 
-        \$(this).toggle_SceneException()
+        $(this).toggle_SceneException()
     });
 
    $.fn.toggle_SceneException = function() {
         all_exceptions = []
 
-        \$("#exceptions_list option").each  ( function() {
-            all_exceptions.push( \$(this).val() );
+        $("#exceptions_list option").each  ( function() {
+            all_exceptions.push( $(this).val() );
         });
 
         if (all_exceptions == '')
-            \$("#SceneException").hide();
+            $("#SceneException").hide();
         else
-            \$("#SceneException").show();
+            $("#SceneException").show();
     }
 
-    \$(this).toggle_SceneException();
+    $(this).toggle_SceneException();
 
 //-->
 </script>

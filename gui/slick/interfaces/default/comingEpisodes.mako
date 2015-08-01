@@ -60,7 +60,7 @@
 <script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
 <!--
-\$.tablesorter.addParser({
+$.tablesorter.addParser({
     id: 'loadingNames',
     is: function(s) {
         return false
@@ -76,7 +76,7 @@
     },
     type: 'text'
 });
-\$.tablesorter.addParser({
+$.tablesorter.addParser({
     id: 'quality',
     is: function(s) {
         return false
@@ -86,7 +86,7 @@
     },
     type: 'numeric'
 });
-\$.tablesorter.addParser({
+$.tablesorter.addParser({
     id: 'cDate',
     is: function(s) {
         return false
@@ -97,7 +97,7 @@
     type: 'numeric'
 });
 
-\$(document).ready(function(){
+$(document).ready(function(){
 <% sort_codes = {'date': 0, 'show': 1, 'network': 4} %>
 % if sort not in sort_codes:
     <% sort = 'date' %>
@@ -105,12 +105,12 @@
 
     sortList = [[${sort_codes[sort]}, 0]];
 
-    \$('#showListTable:has(tbody tr)').tablesorter({
+    $('#showListTable:has(tbody tr)').tablesorter({
         widgets: ['stickyHeaders'],
         sortList: sortList,
         textExtraction: {
-            0: function(node) { return \$(node).find('span').text().toLowerCase() },
-            5: function(node) { return \$(node).find('span').text().toLowerCase() }
+            0: function(node) { return $(node).find('span').text().toLowerCase() },
+            5: function(node) { return $(node).find('span').text().toLowerCase() }
         },
         headers: {
             0: { sorter: 'cDate' },
@@ -125,7 +125,7 @@
         }
     });
 
-    \$('#sbRoot').ajaxEpSearch();
+    $('#sbRoot').ajaxEpSearch();
 
     <% fuzzydate = 'airdate' %>
     % if sickbeard.FUZZY_DATING:
@@ -255,13 +255,13 @@
 <!-- start non list view //-->
 <script type="text/javascript" charset="utf-8">
 <!--
-\$(document).ready(function(){
-    \$('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
-    \$('.ep_summary').hide();
-    \$('.ep_summaryTrigger').click(function() {
-        \$(this).next('.ep_summary').slideToggle('normal', function() {
-            \$(this).prev('.ep_summaryTrigger').attr('src', function(i, src) {
-                return \$(this).next('.ep_summary').is(':visible') ? src.replace('plus','minus') : src.replace('minus','plus')
+$(document).ready(function(){
+    $('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
+    $('.ep_summary').hide();
+    $('.ep_summaryTrigger').click(function() {
+        $(this).next('.ep_summary').slideToggle('normal', function() {
+            $(this).prev('.ep_summaryTrigger').attr('src', function(i, src) {
+                return $(this).next('.ep_summary').is(':visible') ? src.replace('plus','minus') : src.replace('minus','plus')
             });
         });
     });

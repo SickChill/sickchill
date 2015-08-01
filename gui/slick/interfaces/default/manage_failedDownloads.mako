@@ -15,15 +15,15 @@
 %>
 <script type="text/javascript">
 <!--
-\$(document).ready(function()
+$(document).ready(function()
 {
-    \$("#failedTable:has(tbody tr)").tablesorter({
+    $("#failedTable:has(tbody tr)").tablesorter({
         widgets: ['zebra'],
         sortList: [[0,0]],
         headers: { 3: { sorter: false } }
     });
-    \$('#limit').change(function(){
-        url = '$sbRoot/manage/failedDownloads/?limit='+\$(this).val()
+    $('#limit').change(function(){
+        url = '$sbRoot/manage/failedDownloads/?limit='+$(this).val()
         window.location.href = url
     });
 });

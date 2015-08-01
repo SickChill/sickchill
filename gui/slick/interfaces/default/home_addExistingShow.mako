@@ -19,8 +19,8 @@
 
 <script type="text/javascript" charset="utf-8">
 <!--
-\$(document).ready(function(){
-    \$( "#tabs" ).tabs({
+$(document).ready(function(){
+    $( "#tabs" ).tabs({
         collapsible: true,
         selected: #if $sickbeard.ROOT_DIRS then '-1' else '0'#
     });
