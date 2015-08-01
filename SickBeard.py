@@ -42,14 +42,9 @@ if sys.version_info < (2, 6):
     sys.exit(1)
 
 try:
-    import Cheetah
-    if Cheetah.Version[0] != '2':
-        raise ValueError
-except ValueError:
-    print "Sorry, requires Python module Cheetah 2.1.0 or newer."
-    sys.exit(1)
+    import mako
 except:
-    print "The Python module Cheetah is required"
+    print "Sorry, Python module mako is required."
     sys.exit(1)
 
 # We only need this for compiling an EXE and I will just always do that on 2.6+
