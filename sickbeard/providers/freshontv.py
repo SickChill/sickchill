@@ -122,7 +122,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                         }
                         return True
                 except:
-                    logger.log(u'Unable to obtain cookie for FreshOnTV', logger.ERROR)
+                    logger.log(u'Unable to obtain cookie for FreshOnTV', logger.WARNING)
                     return False
 
             else:
