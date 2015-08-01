@@ -122,7 +122,7 @@ class TorrentDayProvider(generic.TorrentProvider):
             except:
                 pass
 
-            logger.log(u'Unable to obtain cookie for TorrentDay', logger.ERROR)
+            logger.log(u'Unable to obtain cookie for TorrentDay', logger.WARNING)
             return False
 
 
