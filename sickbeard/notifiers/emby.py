@@ -88,34 +88,34 @@ class EMBYNotifier:
                 logger.log(u'EMBY: No host specified, check your settings', logger.DEBUG)
                 return False
 
-        if show:
-            if show.indexer == 1:
-                provider = 'tvdb'
-            elif show.indexer == 2:
-                provider = 'tvrage'
+            if show:
+                if show.indexer == 1:
+                    provider = 'tvdb'
+                elif show.indexer == 2:
+                    provider = 'tvrage'
+                else:
+                    logger.log(u'EMBY: Provider unknown', logger.WARNING)
+                    return False
+                query = '?%sid=%s' % (provider, show.indexerid)
             else:
-                logger.log(u'EMBY: Provider unknown', logger.WARNING)
+                query = ''
+
+            url = 'http://%s/emby/Library/Series/Updated%s' % (sickbeard.EMBY_HOST, query)
+            values = {}
+            data = urllib.urlencode(values)
+            try:
+                req = urllib2.Request(url, data)
+                req.add_header('X-MediaBrowser-Token', sickbeard.EMBY_APIKEY)
+
+                response = urllib2.urlopen(req)
+                result = response.read()
+                response.close()
+
+                logger.log(u'EMBY: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
+                return True
+
+            except (urllib2.URLError, IOError), e:
+                logger.log(u'EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
                 return False
-	    query = '?%sid=%s' % (provider, show.indexerid)
-        else:
-            query = ''
-
-        url = 'http://%s/emby/Library/Series/Updated%s' % (sickbeard.EMBY_HOST, query)
-        values = {}
-        data = urllib.urlencode(values)
-        try:
-            req = urllib2.Request(url, data)
-            req.add_header('X-MediaBrowser-Token', sickbeard.EMBY_APIKEY)
-
-            response = urllib2.urlopen(req)
-            result = response.read()
-            response.close()
-
-            logger.log(u'EMBY: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
-            return True
-
-        except (urllib2.URLError, IOError), e:
-            logger.log(u'EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
-            return False
 
 notifier = EMBYNotifier
