@@ -4,16 +4,16 @@
     import sickbeard
     from sickbeard import common
     import os.path
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
+<%include file="/inc_top.mako"/>
 <div id="content960">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 % if whichSubs:
-% subsLanguage = subtitles.fromietf(whichSubs).name if not whichSubs == 'all' else 'All'
+<% subsLanguage = subtitles.fromietf(whichSubs).name if not whichSubs == 'all' else 'All' %>
 % endif
 % if not $whichSubs or ($whichSubs and not $ep_counts):
 
@@ -59,4 +59,4 @@ Download missed subtitles for selected episodes <input class="btn btn-inline" ty
 
 % endif
 </div>
-% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>
