@@ -3,11 +3,6 @@
     import datetime
     import sickbeard
     from sickbeard import common
-    global title="Episode Overview"
-    global header="Episode Overview"
-
-
-    global topmenu="manage"#
     import os.path
     include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
