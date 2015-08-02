@@ -13,9 +13,9 @@
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
-<script type="text/javascript" src="$sbRoot/js/addTrendingShow.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/addTrendingShow.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
 
 <script type="text/javascript" charset="utf-8">
 <!--

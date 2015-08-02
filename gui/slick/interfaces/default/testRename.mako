@@ -2,7 +2,7 @@
 #from sickbeard import common
 #from sickbeard import exceptions
 #set global $title="Test Rename"
-#set global $header = '<a href="' + $sbRoot + '/home/displayShow?show=%d">%s</a>' % ($show.indexerid, $show.name)
+#set global $header = '<a href="' + ${sbRoot} + '/home/displayShow?show=%d">%s</a>' % ($show.indexerid, $show.name)
 
 #set global $topmenu="home"#
 #import os.path
@@ -16,7 +16,7 @@
 
 <input type="hidden" id="showID" value="$show.indexerid" />
 
-<script type="text/javascript" src="$sbRoot/js/testRename.js"></script>
+<script type="text/javascript" src="${sbRoot}/js/testRename.js"></script>
 
 <h3>Preview of the proposed name changes</h3>
 <blockquote>

@@ -6,11 +6,11 @@
 
 <%include file="/inc_top.mako"/>
 
-<script type="text/javascript" src="$sbRoot/js/formwizard.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/qualityChooser.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/newShow.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/addShowOptions.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/lib/bootstrap-formhelpers.min-2.3.0.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/formwizard.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/newShow.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/addShowOptions.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
