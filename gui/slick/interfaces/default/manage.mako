@@ -1,15 +1,9 @@
 <%!
     import sickbeard
-    from sickbeard.common import *
-    global title="Mass Update"
-    global header="Mass Update"
-
-
-    global topmenu="manage"
-    import os.path
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
 %>
-
+<%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/lib/bootbox.min.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
 <!--
@@ -79,7 +73,7 @@ $(document).ready(function()
 <script type="text/javascript" src="${sbRoot}/js/massUpdate.js?${sbPID}"></script>
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 <form name="massUpdateForm" method="post" action="massUpdate">
@@ -118,55 +112,53 @@ $(document).ready(function()
     </tfoot>
 
     <tbody>
-        <%
-        myShowList = sickbeard.showList
-        myShowList.sort(lambda x, y: cmp(x.name, y.name))
+        <% myShowList = sickbeard.showList %>
+        <% myShowList.sort(lambda x, y: cmp(x.name, y.name)) %>
 
-        for curShow in myShowList:
-            curEp = curShow.nextaired
-            curUpdate_disabled = ""
-            curRefresh_disabled = ""
-            curRename_disabled = ""
-            curSubtitle_disabled = ""
-            curDelete_disabled = ""
-            curRemove_disabled = ""
+        % for curShow in myShowList:
+        <% curEp = curShow.nextaired %>
+        <% curUpdate_disabled = "" %>
+        <% curRefresh_disabled = "" %>
+        <% curRename_disabled = "" %>
+        <% curSubtitle_disabled = "" %>
+        <% curDelete_disabled = "" %>
+        <% curRemove_disabled = "" %>
 
-        if sickbeard.showQueueScheduler.action.isBeingUpdated(curShow) or sickbeard.showQueueScheduler.action.isInUpdateQueue(curShow):
-            curUpdate_disabled = "disabled=\"disabled\" "
-        endif
-
-        curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-"+str(curShow.indexerid)+"\" "+curUpdate_disabled+"/>"
-
-        % if sickbeard.showQueueScheduler.action.isBeingRefreshed($curShow) or $sickbeard.showQueueScheduler.action.isInRefreshQueue($curShow):
-            curRefresh_disabled = "disabled=\"disabled\" "
+        % if sickbeard.showQueueScheduler.action.isBeingUpdated(curShow) or sickbeard.showQueueScheduler.action.isInUpdateQueue(curShow):
+            <% curUpdate_disabled = "disabled=\"disabled\" " %>
         % endif
 
-        curRefresh = "<input type=\"checkbox\" class=\"refreshCheck\" id=\"refresh-"+str(curShow.indexerid)+"\" "+curRefresh_disabled+"/>"
+        <% curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-"+str(curShow.indexerid)+"\" "+curUpdate_disabled+"/>" %>
 
-        % if sickbeard.showQueueScheduler.action.isBeingRenamed($curShow) or $sickbeard.showQueueScheduler.action.isInRenameQueue($curShow):
-            curRename = "disabled=\"disabled\" "
+        % if sickbeard.showQueueScheduler.action.isBeingRefreshed(curShow) or sickbeard.showQueueScheduler.action.isInRefreshQueue(curShow):
+            <% curRefresh_disabled = "disabled=\"disabled\" " %>
         % endif
 
-        curRename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-"+str(curShow.indexerid)+"\" "+curRename_disabled+"/>"
+        <% curRefresh = "<input type=\"checkbox\" class=\"refreshCheck\" id=\"refresh-"+str(curShow.indexerid)+"\" "+curRefresh_disabled+"/>" %>
+
+        % if sickbeard.showQueueScheduler.action.isBeingRenamed(curShow) or sickbeard.showQueueScheduler.action.isInRenameQueue(curShow):
+            <% curRename = "disabled=\"disabled\" " %>
+        % endif
+
+        <% curRename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-"+str(curShow.indexerid)+"\" "+curRename_disabled+"/>" %>
 
         % if not curShow.subtitles or sickbeard.showQueueScheduler.action.isBeingSubtitled(curShow) or sickbeard.showQueueScheduler.action.isInSubtitleQueue(curShow):
-            curSubtitle_disabled = "disabled=\"disabled\" "
+            curSubtitle_disabled = "disabled=\"disabled\" " %>
         % endif
 
-        curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-"+str(curShow.indexerid)+"\" "+curSubtitle_disabled+"/>"
+        <% curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-"+str(curShow.indexerid)+"\" "+curSubtitle_disabled+"/>" %>
 
         % if sickbeard.showQueueScheduler.action.isBeingRenamed(curShow) or sickbeard.showQueueScheduler.action.isInRenameQueue(curShow) or sickbeard.showQueueScheduler.action.isInRefreshQueue(curShow):
-            curDelete = "disabled=\"disabled\" "
+            curDelete = "disabled=\"disabled\" " %>
         % endif
 
-        curDelete = "<input type=\"checkbox\" class=\"deleteCheck\" id=\"delete-"+str(curShow.indexerid)+"\" "+curDelete_disabled+"/>"
+        <% curDelete = "<input type=\"checkbox\" class=\"deleteCheck\" id=\"delete-"+str(curShow.indexerid)+"\" "+curDelete_disabled+"/>" %>
 
         % if sickbeard.showQueueScheduler.action.isBeingRenamed(curShow) or sickbeard.showQueueScheduler.action.isInRenameQueue(curShow) or sickbeard.showQueueScheduler.action.isInRefreshQueue(curShow):
-            curRemove = "disabled=\"disabled\" "
-        endif
+            <% curRemove = "disabled=\"disabled\" " %>
+        % endif
 
-        curRemove = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-"+str(curShow.indexerid)+"\" "+curRemove_disabled+"/>"
-        %>
+        <% curRemove = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-"+str(curShow.indexerid)+"\" "+curRemove_disabled+"/>" %>
         <tr>
             <td align="center"><input type="checkbox" class="editCheck" id="edit-${curShow.indexerid}" /></td>
             <td class="tvShow"><a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
@@ -175,12 +167,12 @@ $(document).ready(function()
         % else:
             <td align="center"><span class="quality Custom">Custom</span></td>
         % endif
-            <td align="center"><img src="${sbRoot}/images/#if int($curShow.is_sports) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/#if int($curShow.is_scene) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/#if int($curShow.is_anime) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/#if int($curShow.flatten_folders) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/#if int($curShow.paused) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/#if int($curShow.subtitles) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/#if int(curShow.is_sports) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/#if int(curShow.is_scene) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/#if int(curShow.is_anime) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/#if int(curShow.flatten_folders) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/#if int(curShow.paused) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/#if int(curShow.subtitles) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
             <td align="center">${statusStrings[curShow.default_ep_status]}</td>
             <td align="center">${curShow.status}</td>
             <td align="center">${curUpdate}</td>
@@ -201,4 +193,4 @@ $(document).ready(function()
 
 </form>
 
-% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>
