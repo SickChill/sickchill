@@ -1,25 +1,20 @@
 <%
     import os.path
     import sickbeard
-    from sickbeard.common import *
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets, multiEpStrings
     from sickbeard import config
     from sickbeard import metadata
     from sickbeard.metadata.generic import GenericMetadata
     from sickbeard import naming
-
-    global title  = "Config - Post Processing"
-    global header = "Post Processing"
-    global topmenu="config"#
-
-    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
-
-<script type="text/javascript" src="$sbRoot/js/configPostProcessing.js?${sbPID}"></script>
-<script type="text/javascript" src="$sbRoot/js/config.js?${sbPID}"></script>
+<%include file="/inc_top.mako"/>
+<script type="text/javascript" src="${sbRoot}/js/configPostProcessing.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
 <div id="content960">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 <div id="config">
@@ -70,7 +65,7 @@
                                 <span class="component-title">Process Episode Method:</span>
                                 <span class="component-desc">
                                     <select name="process_method" id="process_method" class="form-control input-sm">
-                                        % process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"}
+                                        <% process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"} %>
                                         % for curAction in ('copy', 'move', 'hardlink', 'symlink'):
                                         <option value="${curAction}" ${(' selected="selected"', '')[sickbeard.PROCESS_METHOD == curAction]}>${process_method_text[curAction]}</option>
                                         % endfor
@@ -103,7 +98,7 @@
                         <div class="field-pair">
                             <label class="nocheck">
                                 <span class="component-title">Extra Scripts</span>
-                                <input type="text" name="extra_scripts" value="<%='|'.join(sickbeard.EXTRA_SCRIPTS)%>" class="form-control input-sm input350" />
+                                <input type="text" name="extra_scripts" value="<%'|'.join(sickbeard.EXTRA_SCRIPTS)%>" class="form-control input-sm input350" />
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
@@ -210,7 +205,7 @@
                         <div class="field-pair">
                             <label class="nocheck">
                                 <span class="component-title">Auto Post-Processing Frequency</span>
-                                <input type="text" name="autopostprocesser_frequency" id="autopostprocesser_frequency" value="$sickbeard.AUTOPOSTPROCESSER_FREQUENCY" class="form-control input-sm input75" />
+                                <input type="text" name="autopostprocesser_frequency" id="autopostprocesser_frequency" value="${sickbeard.AUTOPOSTPROCESSER_FREQUENCY}" class="form-control input-sm input75" />
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
@@ -219,7 +214,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input id="unpack" type="checkbox" name="unpack" #if $sickbeard.UNPACK == True then "checked=\"checked\"" else ""# />
+                            <input id="unpack" type="checkbox" name="unpack" ${('', 'checked="checked"')[sickbeard.UNPACK == True]} />
                             <label for="unpack">
                                 <span class="component-title">Unpack</span>
                                 <span class="component-desc">Unpack any TV releases in your <i>TV Download Dir</i>?</span>
@@ -275,15 +270,15 @@
                                 <span class="component-title">Name Pattern:</span>
                                 <span class="component-desc">
                                     <select id="name_presets" class="form-control input-sm">
-                                        % is_custom = True
+                                        <% is_custom = True %>
                                         % for cur_preset in naming.name_presets:
-                                            % tmp = naming.test_name(cur_preset, anime_type=3)
+                                            <% tmp = naming.test_name(cur_preset, anime_type=3) %>
                                             % if cur_preset == sickbeard.NAMING_PATTERN:
-                                                %  is_custom = False
+                                                <% is_custom = False %>
                                             % endif
-                                            <option id="${cur_preset}" #if $cur_preset == $sickbeard.NAMING_PATTERN then "selected=\"selected\"" else ""#>$os.path.join($tmp['dir'], $tmp['name'])</option>
+                                            <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
-                                        <option id="${sickbeard.NAMING_PATTERN}" #if $is_custom then "selected=\"selected\"" else ""#>Custom...</option>
+                                        <option id="${sickbeard.NAMING_PATTERN}" ${('', 'selected="selected"')[is_custom == True]}>Custom...</option>
                                     </select>
                                 </span>
                             </label>
@@ -433,7 +428,7 @@
                                 <span class="component-desc">
                                     <select id="naming_multi_ep" name="naming_multi_ep" class="form-control input-sm">
                                     % for cur_multi_ep in sorted(multiEpStrings.items(), key=lambda x: x[1]):
-                                        <option value="${cur_multi_ep[0]}" #if $cur_multi_ep[0] == $sickbeard.NAMING_MULTI_EP then "selected=\"selected\" class=\"selected\"" else ""#>$cur_multi_ep[1]</option>
+                                        <option value="${cur_multi_ep[0]}" ${('', ' selected="selected"')[cur_multi_ep[0] == sickbeard.NAMING_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                     % endfor
                                     </select>
                                 </span>
@@ -482,15 +477,15 @@
                                     <span class="component-title">Name Pattern:</span>
                                     <span class="component-desc">
                                         <select id="name_abd_presets" class="form-control input-sm">
-                                            % is_abd_custom = True
+                                            <% is_abd_custom = True %>
                                             % for cur_preset in naming.name_abd_presets:
-                                                % tmp = $naming.test_name(cur_preset)
+                                                <% tmp = naming.test_name(cur_preset) %>
                                                 % if cur_preset == sickbeard.NAMING_ABD_PATTERN:
-                                                    % is_abd_custom = False
+                                                    <% is_abd_custom = False %>
                                                 % endif
-                                                <option id="${cur_preset}" #if $cur_preset == $sickbeard.NAMING_ABD_PATTERN then "selected=\"selected\"" else ""#>$os.path.join($tmp['dir'], $tmp['name'])</option>
+                                                <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_ABD_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                             % endfor
-                                            <option id="${sickbeard.NAMING_ABD_PATTERN}" #if $is_abd_custom then "selected=\"selected\"" else ""#>Custom...</option>
+                                            <option id="${sickbeard.NAMING_ABD_PATTERN}" ${('', 'selected="selected"')[is_abd_custom == True]}>Custom...</option>
                                         </select>
                                     </span>
                                 </label>
@@ -504,7 +499,7 @@
                                         </span>
                                         <span class="component-desc">
                                             <input type="text" name="naming_abd_pattern" id="naming_abd_pattern" value="${sickbeard.NAMING_ABD_PATTERN}" class="form-control input-sm input350" />
-                                            <img src="$sbRoot/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_abd_key" title="Toggle ABD Naming Legend" class="legend" />
+                                            <img src="${sbRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_abd_key" title="Toggle ABD Naming Legend" class="legend" />
                                         </span>
                                     </label>
                                 </div>
@@ -659,15 +654,15 @@
                                     <span class="component-title">Name Pattern:</span>
                                     <span class="component-desc">
                                         <select id="name_sports_presets" class="form-control input-sm">
-                                            % is_sports_custom = True
+                                            <% is_sports_custom = True %>
                                             % for cur_preset in naming.name_sports_presets:
-                                                % tmp = naming.test_name(cur_preset)
+                                                <% tmp = naming.test_name(cur_preset) %>
                                                 % if cur_preset == sickbeard.NAMING_SPORTS_PATTERN:
-                                                    % is_sports_custom = False
+                                                    <% is_sports_custom = False %>
                                                 % endif
-                                                <option id="${cur_preset}" #if $cur_preset == $sickbeard.NAMING_SPORTS_PATTERN then "selected=\"selected\"" else ""#>$os.path.join($tmp['dir'], $tmp['name'])</option>
+                                                <option id="${cur_preset}" ${('', 'selected="selected"')[NAMING_SPORTS_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                             % endfor
-                                            <option id="${sickbeard.NAMING_SPORTS_PATTERN}" #if $is_sports_custom then "selected=\"selected\"" else ""#>Custom...</option>
+                                            <option id="${sickbeard.NAMING_SPORTS_PATTERN}" ${('', 'selected="selected"')[is_sports_custom == True]}>Custom...</option>
                                         </select>
                                     </span>
                                 </label>
@@ -837,14 +832,14 @@
                                     <span class="component-title">Name Pattern:</span>
                                     <span class="component-desc">
                                         <select id="name_anime_presets" class="form-control input-sm">
-                                            % is_anime_custom = True
+                                            <% is_anime_custom = True %>
                                             % for cur_preset in naming.name_anime_presets:
-                                                % tmp = naming.test_name(cur_preset)
+                                                <% tmp = naming.test_name(cur_preset) %>
                                                 % if cur_preset == sickbeard.NAMING_ANIME_PATTERN:
-                                                    % is_anime_custom = False
+                                                    <% is_anime_custom = False %>
                                                 % endif
                                                 <option id="${cur_preset}" #if $cur_preset == $sickbeard.NAMING_ANIME_PATTERN then "selected=\"selected\"" else ""#>${os.path.join(tmp['dir'], tmp['name'])}</option>
-                                            #end for
+                                            % endfor
                                             <option id="${sickbeard.NAMING_ANIME_PATTERN}" #if $is_anime_custom then "selected=\"selected\"" else ""#>Custom...</option>
                                         </select>
                                     </span>
@@ -1070,7 +1065,7 @@
                             <label>
                                 <span class="component-title">Metadata Type:</span>
                                 <span class="component-desc">
-                                    % m_dict = metadata.get_metadata_generator_dict()
+                                    <% m_dict = metadata.get_metadata_generator_dict() %>
                                     <select id="metadataType" class="form-control input-sm">
                                     % for (cur_name, cur_generator) in sorted(m_dict.items()):
                                         <option value="${cur_generator.get_id()}">${cur_name}</option>
@@ -1082,8 +1077,8 @@
                         </div>
 
                         % for (cur_name, cur_generator) in m_dict.items():
-                        % cur_metadata_inst = sickbeard.metadata_provider_dict[cur_generator.name]
-                        % cur_id = cur_generator.get_id()
+                        <% cur_metadata_inst = sickbeard.metadata_provider_dict[cur_generator.name] %>
+                        <% cur_id = cur_generator.get_id() %>
                         <div class="metadataDiv" id="$cur_id">
                             <div class="metadata_options_wrapper">
                                 <h4>Create:</h4>
@@ -1103,21 +1098,21 @@
                             <div class="metadata_example_wrapper">
                                 <h4>Results:</h4>
                                 <div class="metadata_example">
-                                    <label for="${cur_id}_show_metadata"><span id="${cur_id}_eg_show_metadata">$cur_metadata_inst.eg_show_metadata</span></label>
-                                    <label for="${cur_id}_episode_metadata"><span id="${cur_id}_eg_episode_metadata">$cur_metadata_inst.eg_episode_metadata</span></label>
-                                    <label for="${cur_id}_fanart"><span id="${cur_id}_eg_fanart">$cur_metadata_inst.eg_fanart</span></label>
-                                    <label for="${cur_id}_poster"><span id="${cur_id}_eg_poster">$cur_metadata_inst.eg_poster</span></label>
-                                    <label for="${cur_id}_banner"><span id="${cur_id}_eg_banner">$cur_metadata_inst.eg_banner</span></label>
-                                    <label for="${cur_id}_episode_thumbnails"><span id="${cur_id}_eg_episode_thumbnails">$cur_metadata_inst.eg_episode_thumbnails</span></label>
-                                    <label for="${cur_id}_season_posters"><span id="${cur_id}_eg_season_posters">$cur_metadata_inst.eg_season_posters</span></label>
-                                    <label for="${cur_id}_season_banners"><span id="${cur_id}_eg_season_banners">$cur_metadata_inst.eg_season_banners</span></label>
-                                    <label for="${cur_id}_season_all_poster"><span id="${cur_id}_eg_season_all_poster">$cur_metadata_inst.eg_season_all_poster</span></label>
-                                    <label for="${cur_id}_season_all_banner"><span id="${cur_id}_eg_season_all_banner">$cur_metadata_inst.eg_season_all_banner</span></label>
+                                    <label for="${cur_id}_show_metadata"><span id="${cur_id}_eg_show_metadata">${cur_metadata_inst.eg_show_metadata}</span></label>
+                                    <label for="${cur_id}_episode_metadata"><span id="${cur_id}_eg_episode_metadata">${cur_metadata_inst.eg_episode_metadata}</span></label>
+                                    <label for="${cur_id}_fanart"><span id="${cur_id}_eg_fanart">${cur_metadata_inst.eg_fanart}</span></label>
+                                    <label for="${cur_id}_poster"><span id="${cur_id}_eg_poster">${cur_metadata_inst.eg_poster}</span></label>
+                                    <label for="${cur_id}_banner"><span id="${cur_id}_eg_banner">${cur_metadata_inst.eg_banner}</span></label>
+                                    <label for="${cur_id}_episode_thumbnails"><span id="${cur_id}_eg_episode_thumbnails">${cur_metadata_inst.eg_episode_thumbnails}</span></label>
+                                    <label for="${cur_id}_season_posters"><span id="${cur_id}_eg_season_posters">${cur_metadata_inst.eg_season_posters}</span></label>
+                                    <label for="${cur_id}_season_banners"><span id="${cur_id}_eg_season_banners">${cur_metadata_inst.eg_season_banners}</span></label>
+                                    <label for="${cur_id}_season_all_poster"><span id="${cur_id}_eg_season_all_poster">${cur_metadata_inst.eg_season_all_poster}</span></label>
+                                    <label for="${cur_id}_season_all_banner"><span id="${cur_id}_eg_season_all_banner">${cur_metadata_inst.eg_season_all_banner}</span></label>
                                 </div>
                             </div>
                             <input type="hidden" name="${cur_id}_data" id="${cur_id}_data" value="${cur_metadata_inst.get_config()}" />
                         </div>
-                        #end for
+                        % endfor
 
                         <div class="clearfix"></div><br/>
 
@@ -1136,9 +1131,8 @@
 <div class="clearfix"></div>
 
 <script type="text/javascript" charset="utf-8">
-<!--
     jQuery('#config-components').tabs();
     jQuery('#tv_download_dir').fileBrowser({ title: 'Select TV Download Directory' });
-//-->
 </script>
-% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+
+<%include file="/inc_bottom.mako"/>
