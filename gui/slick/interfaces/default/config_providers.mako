@@ -4,43 +4,33 @@
     from sickbeard.providers import thepiratebay
     from sickbeard.helpers import anon_url
 
-    global title="Config - Providers"
-    global header="Search Providers"
-
-
-    global topmenu="config"
-    import os.path
-    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
+<%include file="/inc_top.mako"/>
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 <script type="text/javascript" src="${sbRoot}/js/configProviders.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
-% if sickbeard.USE_NZBS
+% if sickbeard.USE_NZBS:
 <script type="text/javascript" charset="utf-8">
-<!--
 $(document).ready(function(){
-var show_nzb_providers = % if sickbeard.USE_NZBS then "true" else "false"#;
-% for curNewznabProvider in sickbeard.newznabProviderList:
-$(this).addProvider('$curNewznabProvider.getID()', '$curNewznabProvider.name', '$curNewznabProvider.url', '$curNewznabProvider.key', '$curNewznabProvider.catIDs', $int($curNewznabProvider.default), show_nzb_providers);
-% endfor
+    var show_nzb_providers = % if sickbeard.USE_NZBS then "true" else "false"#;
+    % for curNewznabProvider in sickbeard.newznabProviderList:
+    $(this).addProvider('$curNewznabProvider.getID()', '$curNewznabProvider.name', '$curNewznabProvider.url', '$curNewznabProvider.key', '$curNewznabProvider.catIDs', $int($curNewznabProvider.default), show_nzb_providers);
+    % endfor
 });
-//-->
 </script>
 % endif
 
-% if sickbeard.USE_TORRENTS
+% if sickbeard.USE_TORRENTS:
 <script type="text/javascript" charset="utf-8">
-<!--
 $(document).ready(function(){
 % for curTorrentRssProvider in sickbeard.torrentRssProviderList:
     $(this).addTorrentRssProvider('$curTorrentRssProvider.getID()', '$curTorrentRssProvider.name', '$curTorrentRssProvider.url', '$curTorrentRssProvider.cookies', '$curTorrentRssProvider.titleTAG');
 % endfor
 });
-//-->
 </script>
 % endif
 
@@ -53,10 +43,10 @@ $(document).ready(function(){
                 <ul>
                     <li><a href="#core-component-group1">Provider Priorities</a></li>
                     <li><a href="#core-component-group2">Provider Options</a></li>
-                  % if sickbeard.USE_NZBS
+                  % if sickbeard.USE_NZBS:
                     <li><a href="#core-component-group3">Configure Custom Newznab Providers</a></li>
                   % endif
-                  % if sickbeard.USE_TORRENTS
+                  % if sickbeard.USE_TORRENTS:
                     <li><a href="#core-component-group4">Configure Custom Torrent Providers</a></li>
                   % endif
                 </ul>
@@ -85,22 +75,22 @@ $(document).ready(function(){
                         <ul id="provider_order_list">
                         % for curProvider in sickbeard.providers.sortedProviderList():
                             % if curProvider.providerType == GenericProvider.NZB and not sickbeard.USE_NZBS:
-                                % continue
+                                <% continue %>
                             % elif curProvider.providerType == GenericProvider.TORRENT and not sickbeard.USE_TORRENTS:
-                                % continue
+                                <% continue %>
                             % endif
-                            % curName = curProvider.getID()
-                          <li class="ui-state-default" id="$curName">
-                            <input type="checkbox" id="enable_$curName" class="provider_enabler" % if curProvider.isEnabled() then "checked=\"checked\"" else ""#/>
-                            <a href="<%= anon_url(curProvider.url) %>" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="$sbRoot/images/providers/$curProvider.imageName()" alt="$curProvider.name" title="$curProvider.name" width="16" height="16" style="vertical-align:middle;"/></a>
-                            <span style="vertical-align:middle;">$curProvider.name</span>
-                            % if not curProvider.supportsBacklog then "*" else ""
-                            % if $curProvider.name == "EZRSS" then "**" else ""
+                            <% curName = curProvider.getID() %>
+                          <li class="ui-state-default" id="${curName}">
+                            <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.isEnabled() == True]}/>
+                            <a href="${anon_url(curProvider.url)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${sbRoot}/images/providers/${curProvider.imageName()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
+                            <span style="vertical-align:middle;">${curProvider.name}</span>
+                            ${('', '*')[curProvider.supportsBacklog]}
+                            ${('', '**')[curProvider.name == 'EZRSS']}
                             <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
                           </li>
-                        #end for
+                        % endfor
                         </ul>
-                        <input type="hidden" name="provider_order" id="provider_order" value="<%=" ".join([x.getID()+':'+str(int(x.isEnabled())) for x in sickbeard.providers.sortedProviderList()])%>"/>
+                        <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.getID()+':'+str(int(x.isEnabled())) for x in sickbeard.providers.sortedProviderList()])}"/>
                         <br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
                     </fieldset>
                 </div><!-- /component-group1 //-->
@@ -146,7 +136,7 @@ $(document).ready(function(){
                     <!-- start div for editing providers //-->
                     % for curNewznabProvider in [curProvider for curProvider in sickbeard.newznabProviderList]:
                     <div class="providerDiv" id="${curNewznabProvider.getID()}Div">
-                        % if curNewznabProvider.default and curNewznabProvider.needs_auth
+                        % if curNewznabProvider.default and curNewznabProvider.needs_auth:
                         <div class="field-pair">
                             <label for="${curNewznabProvider.getID()}_url">
                                 <span class="component-title">URL:</span>
@@ -201,7 +191,7 @@ $(document).ready(function(){
                         </div>
                         % endif
 
-                        % if $hasattr(curNewznabProvider, 'search_mode'):
+                        % if hasattr(curNewznabProvider, 'search_mode'):
                         <div class="field-pair">
                             <label>
                                 <span class="component-title">Season search mode</span>
@@ -596,7 +586,7 @@ $(document).ready(function(){
                     </fieldset>
                 </div><!-- /component-group2 //-->
 
-                % if sickbeard.USE_NZBS
+                % if sickbeard.USE_NZBS:
                 <div id="core-component-group3" class="component-group">
 
                     <div class="component-group-desc">
@@ -746,8 +736,6 @@ $(document).ready(function(){
 </div>
 
 <script type="text/javascript" charset="utf-8">
-<!--
     jQuery('#config-components').tabs();
-//-->
 </script>
-% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>

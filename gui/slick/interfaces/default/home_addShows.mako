@@ -2,24 +2,15 @@
     import os.path
     import urllib
     import sickbeard
-    global title="Add Show"
-    global header="Add Show"
-
-
-    global statpath="../.."
-    global topmenu="home"
-    import os.path
-
-    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
+<%include file="/inc_top.mako"/>
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 
 <div id="addShowPortal">
-
     <a href="${sbRoot}/home/addShows/newShow/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addnewshow"></div></div>
         <div class="buttontext">
@@ -61,4 +52,4 @@
 </div>
 
 
-% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>

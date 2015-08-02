@@ -15,9 +15,9 @@
                 <div class="blackwhitelist white">
                     <span><h4>Whitelist</h4></span>
                     <select id="white" multiple="multiple" size="12">
-                        #for $keyword in $whitelist:
-                            <option value="$keyword">$keyword</option>
-                        #end for
+                        % for keyword in whitelist:
+                            <option value="${keyword}">${keyword}</option>
+                        % endfor
                     </select>
                     <br/>
                     <input class="btn" id="removeW" value="Remove" type="button"/>
@@ -25,11 +25,11 @@
                 <div class="blackwhitelist pool">
                     <span><h4>Available Groups</h4></span>
                     <select id="pool" multiple="multiple" size="12">
-                    #for $group in $groups
-                        #if $group not in $whitelist and $group['name'] not in $blacklist:
-                            <option value="$group['name']">$group['name'] | $group['rating'] | $group['range']</option>
-                        #end if
-                    #end for
+                    % for group in groups:
+                        % if group not in whitelist and group['name'] not in blacklist:
+                            <option value="${group['name']}">${group['name']} | ${group['rating']} | ${group['range']}</option>
+                        % endif
+                    % endfor
                     </select>
                     <br/>
                     <input class="btn" id="addW" value="Add to Whitelist" type="button"/>
@@ -38,9 +38,9 @@
                 <div class="blackwhitelist black">
                     <span><h4>Blacklist</h4></span>
                     <select id="black" multiple="multiple" size="12">
-                        #for $keyword in $blacklist:
-                            <option value="$keyword">$keyword</option>
-                        #end for
+                        % for keyword in blacklist:
+                            <option value="${keyword}">${keyword}</option>
+                        % endfor
                     </select>
                     <br/>
                     <input class="btn" id="removeB" value="Remove" type="button"/>

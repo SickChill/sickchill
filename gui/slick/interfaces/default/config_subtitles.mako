@@ -2,14 +2,8 @@
     from sickbeard import subtitles
     import sickbeard
     from sickbeard.helpers import anon_url
-
-    global title="Config - Subtitles"
-    global header="Subtitles"
-    global topmenu="config"
-
-    import os.path
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
+<%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/configSubtitles.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js"></script>
 <script type="text/javascript" src="${sbRoot}/js/lib/jquery.tokeninput.js"></script>
@@ -18,7 +12,7 @@
       $(document).ready(function() {
         $("#subtitles_languages").tokenInput(
                 [
-                    <%=",\r\n".join("{id: \"" + lang.opensubtitles + "\", name: \"" + lang.name + "\"}" for lang in subtitles.subtitleLanguageFilter())%>
+                    ${",\r\n".join("{id: \"" + lang.opensubtitles + "\", name: \"" + lang.name + "\"}" for lang in subtitles.subtitleLanguageFilter())}
                 ],
                 {
                     method: "POST",
@@ -27,7 +21,7 @@
                     prePopulate:
 
                             [
-                                <%=
+                                <%
                                         ",\r\n".join("{id: \"" + subtitles.fromietf(lang).opensubtitles + "\", name: \"" + subtitles.fromietf(lang).name + "\"}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''
                                 %>
                             ]
@@ -38,7 +32,7 @@
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 
@@ -79,7 +73,7 @@
                                 <div class="field-pair">
                                     <label>
                                         <span class="component-title">Subtitle Directory</span>
-                                        <input type="text" value="$sickbeard.SUBTITLES_DIR" id="subtitles_dir" name="subtitles_dir" class="form-control input-sm input350">
+                                        <input type="text" value="${sickbeard.SUBTITLES_DIR}" id="subtitles_dir" name="subtitles_dir" class="form-control input-sm input350">
                                     </label>
                                     <label>
                                             <span class="component-title">&nbsp;</span>
@@ -93,7 +87,7 @@
                                 <div class="field-pair">
                                     <label>
                                         <span class="component-title">Subtitle Find Frequency</span>
-                                        <input type="number" name="subtitles_finder_frequency" value="$sickbeard.SUBTITLES_FINDER_FREQUENCY" hours="1" class="form-control input-sm input75" />
+                                        <input type="number" name="subtitles_finder_frequency" value="${sickbeard.SUBTITLES_FINDER_FREQUENCY}" hours="1" class="form-control input-sm input75" />
                                         <span class="component-desc">time in hours between scans (default: 1)</span>
                                     </label>
                                 </div>
@@ -101,7 +95,7 @@
                                     <label class="clearfix" for="subtitles_history">
                                         <span class="component-title">Subtitles History</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="subtitles_history" id="subtitles_history" #if $sickbeard.SUBTITLES_HISTORY then " checked=\"checked\"" else ""#/>
+                                            <input type="checkbox" name="subtitles_history" id="subtitles_history" ${('', 'checked="checked"')[sickbeard.SUBTITLES_HISTORY == True]}/>
                                             <p>Log downloaded Subtitle on History page?</p>
                                         </span>
                                     </label>
@@ -110,7 +104,7 @@
                                     <label class="clearfix" for="subtitles_multi">
                                         <span class="component-title">Subtitles Multi-Language</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="subtitles_multi" id="subtitles_multi" #if $sickbeard.SUBTITLES_MULTI then " checked=\"checked\"" else ""#/>
+                                            <input type="checkbox" name="subtitles_multi" id="subtitles_multi" ${('', 'checked="checked"')[sickbeard.SUBTITLES_MULTI == True]}/>
                                             <p>Append language codes to subtitle filenames?</p>
                                         </span>
                                     </label>
@@ -119,7 +113,7 @@
                                     <label class="clearfix" for="embedded_subtitles_all">
                                         <span class="component-title">Embedded Subtitles</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="embedded_subtitles_all" id="embedded_subtitles_all" #if $sickbeard.EMBEDDED_SUBTITLES_ALL then " checked=\"checked\"" else ""#/>
+                                            <input type="checkbox" name="embedded_subtitles_all" id="embedded_subtitles_all" ${('', 'checked="checked"')[sickbeard.EMBEDDED_SUBTITLES_ALL == True]}/>
                                             <p>Ignore subtitles embedded inside video file?</p>
                                             <p><b>Warning: </b>this will ignore <u>all</u> embedded subtitles for every video file!</p>
                                         </span>
@@ -128,7 +122,7 @@
                                 <div class="field-pair">
                                     <label class="nocheck">
                                         <span class="component-title">Extra Scripts</span>
-                                           <input type="text" name="subtitles_extra_scripts" value="<%='|'.join(sickbeard.SUBTITLES_EXTRA_SCRIPTS)%>" class="form-control input-sm input350" />
+                                           <input type="text" name="subtitles_extra_scripts" value="<%'|'.join(sickbeard.SUBTITLES_EXTRA_SCRIPTS)%>" class="form-control input-sm input350" />
                                     </label>
                                     <label class="nocheck">
                                         <span class="component-title">&nbsp;</span>
@@ -169,16 +163,16 @@
                         <ul id="service_order_list">
                         % for curService in sickbeard.subtitles.sortedServiceList():
                             <li class="ui-state-default" id="$curService['name']">
-                                <input type="checkbox" id="enable_$curService['name']" class="service_enabler" #if $curService['enabled'] then "checked=\"checked\"" else ""#/>
-                                <a href="<%= anon_url(curService['url']) %>" class="imgLink" target="_new">
-                                    <img src="$sbRoot/images/subtitles/$curService.image" alt="$curService['url']" title="$curService['url']" width="16" height="16" style="vertical-align:middle;"/>
+                                <input type="checkbox" id="enable_$curService['name']" class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] == True]}/>
+                                <a href="${anon_url(curService['url'])}" class="imgLink" target="_new">
+                                    <img src="${sbRoot}/images/subtitles/${curService['image']}" alt="${curService['url']}" title="${curService['url']}" width="16" height="16" style="vertical-align:middle;"/>
                                 </a>
-                            <span style="vertical-align:middle;">$curService['name'].capitalize()</span>
+                            <span style="vertical-align:middle;">${curService['name'].capitalize()}</span>
                             <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
                           </li>
                         % endfor
                         </ul>
-                        <input type="hidden" name="service_order" id="service_order" value="<%=" ".join(['%s:%d' % (x['name'], x['enabled']) for x in sickbeard.subtitles.sortedServiceList()])%>"/>
+                        <input type="hidden" name="service_order" id="service_order" value="<%" ".join(['%s:%d' % (x['name'], x['enabled']) for x in sickbeard.subtitles.sortedServiceList()])%>"/>
 
                         <br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
                     </fieldset>
@@ -194,9 +188,7 @@
 
 <div class="clearfix"></div>
 <script type="text/javascript" charset="utf-8">
-<!--
     jQuery('#config-components').tabs();
     jQuery('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' });
-//-->
 </script>
-% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>

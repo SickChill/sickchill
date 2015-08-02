@@ -1,21 +1,15 @@
-<%!
+<%
     import sickbeard
     from sickbeard import clients
-    global title = 'Config - Episode Search'
-    global header = 'Search Settings'
-
-
-    global topmenu = 'config'
-    import os.path
-    include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 %>
+<%include file="/inc_top.mako"/>
 
 <script type="text/javascript" src="${sbRoot}/js/configSearch.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 
@@ -64,7 +58,7 @@
                                     <span class="component-title">Check propers every:</span>
                                     <span class="component-desc">
                                         <select id="check_propers_interval" name="check_propers_interval" class="form-control input-sm">
-% check_propers_interval_text = {'daily': "24 hours", '4h': "4 hours", '90m': "90 mins", '45m': "45 mins", '15m': "15 mins"}
+<% check_propers_interval_text = {'daily': "24 hours", '4h': "4 hours", '90m': "90 mins", '45m': "45 mins", '15m': "15 mins"} %>
 % for curInterval in ('daily', '4h', '90m', '45m', '15m'):
                                             <option value="${curInterval}" ${(' selected="selected"', '')[sickbeard.CHECK_PROPERS_INTERVAL == curInterval]}>${check_propers_interval_text[curInterval]}</option>
 % endfor
@@ -213,7 +207,7 @@
                                 <span class="component-title">Send .nzb files to:</span>
                                 <span class="component-desc">
                                     <select name="nzb_method" id="nzb_method" class="form-control input-sm">
-% nzb_method_text = {'blackhole': "Black hole", 'sabnzbd': "SABnzbd", 'nzbget': "NZBget"}
+<% nzb_method_text = {'blackhole': "Black hole", 'sabnzbd': "SABnzbd", 'nzbget': "NZBget"} %>
 % for curAction in ('sabnzbd', 'blackhole', 'nzbget'):
                                     <option value="${curAction}" ${(' selected="selected"', '')[sickbeard.NZB_METHOD == curAction]}>${nzb_method_text[curAction]}</option>
 % endfor
@@ -422,10 +416,9 @@
                                 <span class="component-title">Send .torrent files to:</span>
                                 <span class="component-desc">
                                 <select name="torrent_method" id="torrent_method" class="form-control input-sm">
-% $torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent"}
-% for $curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'download_station', 'rtorrent', 'qbittorrent'):
-    % $selected = $html_selected if $sickbeard.TORRENT_METHOD == $curAction else ''
-                                <option value="${curAction}" ${selected}>${torrent_method_text[curAction]}</option>
+<% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent"} %>
+% for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'download_station', 'rtorrent', 'qbittorrent'):
+                                <option value="${curAction}" ${('', ' selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
 % endfor
                                 </select>
                             </label>
@@ -476,7 +469,7 @@
                                     <span class="component-title">Http Authentication</span>
                                     <span class="component-desc">
                                         <select name="torrent_auth_type" id="torrent_auth_type" class="form-control input-sm">
-                                        % http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"}
+                                        <% http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"} %>
                                         % for authvalue, authname in http_authtype.items():
                                             <option id="torrent_auth_type_value" value="${authvalue}" ${(' selected="selected"', '')[sickbeard.TORRENT_AUTH_TYPE == authvalue]}>${authname}</option>
                                         % endfor
@@ -602,13 +595,11 @@
 <div></div>
 
 <script type="text/javascript" charset="utf-8">
-<!--
     jQuery('#config-components').tabs();
     jQuery('#nzb_dir').fileBrowser({ title: 'Select .nzb black hole/watch location' });
     jQuery('#torrent_dir').fileBrowser({ title: 'Select .torrent black hole/watch location' });
     jQuery('#torrent_path').fileBrowser({ title: 'Select .torrent download location' });
     jQuery('#tv_download_dir').fileBrowser({ title: 'Select TV download location' });
-//-->
 </script>
 
-% include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+<%include file="/inc_bottom.mako"/>

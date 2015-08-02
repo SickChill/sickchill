@@ -3,29 +3,25 @@
     import datetime
     import locale
     import sickbeard
-    from sickbeard.common import *
-    from sickbeard.sbdatetime import *
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets
+    from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
     from sickbeard import config
     from sickbeard import metadata
     from sickbeard.metadata.generic import GenericMetadata
-    global title  = "Config - Backup/Restore"
-    global header = "Backup/Restore"
-
-
-    global topmenu="config"#
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
+<%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/configBackupRestore.js?${sbPID}"></script>
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 
-% indexer = 0
-% if sickbeard.INDEXER_DEFAULT
-    % indexer = sickbeard.INDEXER_DEFAULT
+<% indexer = 0 %>
+% if sickbeard.INDEXER_DEFAULT:
+    <% indexer = sickbeard.INDEXER_DEFAULT %>
 % endif
 
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
@@ -92,11 +88,9 @@
 <div class="clearfix"></div>
 
 <script type="text/javascript" charset="utf-8">
-<!--
     jQuery('#backupDir').fileBrowser({ title: 'Select backup folder to save to', key: 'backupPath' });
     jQuery('#backupFile').fileBrowser({ title: 'Select backup files to restore', key: 'backupFile', includeFiles: 1 });
     jQuery('#config-components').tabs();
-//-->
 </script>
 
-% include file=os.path.join(sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>

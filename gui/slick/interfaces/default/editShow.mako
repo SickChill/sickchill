@@ -6,14 +6,13 @@
     from sickbeard import exceptions
     from sickbeard import scene_exceptions
     from sickbeard.blackandwhitelist import *
+%>
+<%
     global title="Edit " + $show.name
     global header="Edit " + $show.name
-
-
     global topmenu="home"
-    import os.path
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
+<%include file="/inc_top.mako"/>
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -74,49 +73,49 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
 
 <b>Info Language:</b><br />
 (this will only affect the language of the retrieved metadata file contents and episode filenames)<br />
-<select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="#echo $show.lang#" data-available="#echo ','.join($sickbeard.indexerApi().config['valid_languages'])#"></select><br />
+<select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="${show.lang}" data-available="${','.join($sickbeard.indexerApi().config['valid_languages'])}"></select><br />
 <br />
 
-<b>Flatten files (no folders): </b> <input type="checkbox" name="flatten_folders" #if $show.flatten_folders == 1 and not $sickbeard.NAMING_FORCE_FOLDERS then "checked=\"checked\"" else ""# #if $sickbeard.NAMING_FORCE_FOLDERS then "disabled=\"disabled\"" else ""#/><br />
+<b>Flatten files (no folders): </b> <input type="checkbox" name="flatten_folders" ${if $show.flatten_folders == 1 and not $sickbeard.NAMING_FORCE_FOLDERS then "checked=\"checked\"" else ""} ${if $sickbeard.NAMING_FORCE_FOLDERS then "disabled=\"disabled\"" else ""}/><br />
 (Disabled: episodes folder-grouped by season. Enabled: no season folders)<br/>
 <br />
 
-<b>Paused: </b> <input type="checkbox" name="paused" #if $show.paused == 1 then "checked=\"checked\"" else ""# /><br />
+<b>Paused: </b> <input type="checkbox" name="paused" ${if $show.paused == 1 then "checked=\"checked\"" else ""} /><br />
 (check this if you wish to pause this show. Will not download anything until unpause)<br/>
 <br />
 
-<b>Subtitles: </b> <input type="checkbox" name="subtitles"#if $show.subtitles == 1 and $sickbeard.USE_SUBTITLES then " checked=\"checked\"" else ""##if not $sickbeard.USE_SUBTITLES then " disabled=\"disabled\"" else ""#/><br />
+<b>Subtitles: </b> <input type="checkbox" name="subtitles" ${if $show.subtitles == 1 and $sickbeard.USE_SUBTITLES then " checked=\"checked\"" else ""} ${if not $sickbeard.USE_SUBTITLES then " disabled=\"disabled\"" else ""}/><br />
 (check this if you wish to search for subtitles in this show)<br/>
 <br />
 
 <b>Scene Numbering: </b>
-<input type="checkbox" name="scene" #if $show.scene == 1 then "checked=\"checked\"" else ""# /><br/>
+<input type="checkbox" name="scene" ${if $show.scene == 1 then "checked=\"checked\"" else ""} /><br/>
 (check this if you wish to search by scene numbering, uncheck to search by indexer numbering)<br/>
 <br/>
 
 <b>Air by date: </b>
-<input type="checkbox" name="air_by_date" #if $show.air_by_date == 1 then "checked=\"checked\"" else ""# /><br />
+<input type="checkbox" name="air_by_date" ${if $show.air_by_date == 1 then "checked=\"checked\"" else ""} /><br />
 (check this if the show is released as Show.03.02.2010 rather than Show.S02E03. <span style="color:red">In case air date conflict between regular and special episodes, the later will be ignored.</span>)<br />
 <br />
 
 <b>Sports: </b>
-<input type="checkbox" name="sports" #if $show.sports == 1 then "checked=\"checked\"" else ""# /><br />
+<input type="checkbox" name="sports" ${if $show.sports == 1 then "checked=\"checked\"" else ""#}/><br />
 (check this if the show is a sporting or MMA event and released as Show.03.02.2010 rather than Show.S02E03. <span style="color:red">In case air date conflict between regular and special episodes, the later will be ignored.</span>)<br />
 <br />
 
 <b>Anime: </b>
-<input type="checkbox" name="anime" #if $show.is_anime then "CHECKED" else ""#><br />
+<input type="checkbox" name="anime"${if $show.is_anime then "CHECKED" else ""}><br />
 (check this if the show is released as Show.265 rather than Show.S02E03, this show is an anime)<br />
 <br />
 
 <b>DVD Order: </b>
-<input type="checkbox" name="dvdorder" #if $show.dvdorder == 1 then "checked=\"checked\"" else ""# /><br/>
+<input type="checkbox" name="dvdorder" ${if $show.dvdorder == 1 then "checked=\"checked\"" else ""} /><br/>
 (check this if you wish to use the DVD order instead of the Airing order. A "Force Full Update" is necessary, and if you have existing episodes you need to move them)
 <br/><br/>
 
 % if anyQualities + bestQualities
 <b>Archive on first match:</b>
-<input type="checkbox" name="archive_firstmatch" #if $show.archive_firstmatch == 1 then "checked=\"checked\"" else ""# /><br>
+<input type="checkbox" name="archive_firstmatch" ${if $show.archive_firstmatch == 1 then "checked=\"checked\"" else ""} /><br>
 (check this to have the episode archived after the first best match is found from your archive quality list)</br>
 <br />
 % endif
