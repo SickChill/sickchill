@@ -9,14 +9,8 @@
     from sickbeard import metadata
     from sickbeard.metadata.generic import GenericMetadata
     from sickbeard.helpers import anon_url
-
-    title  = 'Config - General'
-    header = 'General Configuration'
-
-
-    global topmenu = 'config'
-    include file=os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.mako')
 %>
+<%include file="/inc_top.mako"/>
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else
@@ -651,13 +645,13 @@
                             <label for="ep_default_deleted_status">
                                 <span class="component-title">Default deleted episode status:</span>
                                     <span class="component-desc">
-% if not sickbeard.SKIP_REMOVED_FILES or (sickbeard.USE_TRAKT and sickbeard.TRAKT_USE_ROLLING_DOWNLOAD)
+% if not sickbeard.SKIP_REMOVED_FILES or (sickbeard.USE_TRAKT and sickbeard.TRAKT_USE_ROLLING_DOWNLOAD):
                                         <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm">
                                         % for defStatus in [$ARCHIVED, $IGNORED]:
                                             <option value="${defStatus}" <% if defStatus == $sickbeard.EP_DEFAULT_DELETED_STATUS then 'selected="selected"' else '' %>>${statusStrings[defStatus]}</option>
                                         % endfor
                                         </select>
-% else
+% else:
                                         <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm" disabled="disabled">
                                         % for defStatus in [$ARCHIVED, $IGNORED]:
                                             <option value="${defStatus}" <% if defStatus == $sickbeard.EP_DEFAULT_DELETED_STATUS then 'selected="selected"' else '' %>>${statusStrings[defStatus]}</option>
@@ -687,7 +681,7 @@
                                 <span class="component-title">Branch version:</span>
                                 <span class="component-desc">
                                     <select id="branchVersion" class="form-control form-control-inline input-sm pull-left">
-                                    % gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches()
+                                    <% gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches() %>
                                     % if gh_branch:
                                         % for cur_branch in gh_branch:
                                             % if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEVELOPER == 1
@@ -794,10 +788,8 @@
 <div></div>
 
 <script type="text/javascript" charset="utf-8">
-<!--
     jQuery('#log_dir').fileBrowser({ title: 'Select log file folder location' });
     jQuery('#config-components').tabs();
-//-->
 </script>
 
-% include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.mako')
+<%include file="/inc_bottom.mako"/>
