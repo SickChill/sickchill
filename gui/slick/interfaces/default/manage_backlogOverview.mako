@@ -1,4 +1,4 @@
-<%!
+<%
     import sickbeard
     import datetime
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
@@ -53,7 +53,7 @@ $(document).ready(function(){
 <div class="float-left">
 Jump to Show
     <select id="pickShow" class="form-control form-control-inline input-sm">
-    % for curShow in sorted(sickbeard.showList, key = operator.attrgetter('name')):
+    % for curShow in sorted(sickbeard.showList, key = lambda x, y: cmp(x.name, y.name)):
         % if showCounts[curShow.indexerid][Overview.QUAL] + showCounts[curShow.indexerid][Overview.WANTED] != 0:
         <option value="${curShow.indexerid}">${curShow.name}</option>
         % endif
@@ -63,9 +63,9 @@ Jump to Show
 
 <table class="sickbeardTable" cellspacing="0" border="0" cellpadding="0">
 
-% for curShow in sorted(sickbeard.showList, key = operator.attrgetter('name')):
+% for curShow in sorted(sickbeard.showList, key = lambda x, y: cmp(x.name, y.name)):
 
-% if showCounts[curShow.indexerid][Overview.QUAL] + showCounts[curShow.indexerid][Overview.WANTED] == 0:
+% if showCounts[curShow.indexerid][Overview.QUAL] + showCounts[curShow.indexerid][OvSickerview.WANTED] == 0:
     <% continue %>
 % endif
 
