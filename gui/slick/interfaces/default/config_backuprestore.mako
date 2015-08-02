@@ -8,13 +8,8 @@
     from sickbeard import config
     from sickbeard import metadata
     from sickbeard.metadata.generic import GenericMetadata
-    global title  = "Config - Backup/Restore"
-    global header = "Backup/Restore"
-
-
-    global topmenu="config"#
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
+<%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/configBackupRestore.js?${sbPID}"></script>
 
 % if not header is UNDEFINED:
@@ -23,9 +18,9 @@
     <h1 class="title">${title}</h1>
 % endif
 
-% indexer = 0
-% if sickbeard.INDEXER_DEFAULT
-    % indexer = sickbeard.INDEXER_DEFAULT
+<% indexer = 0 %>
+% if sickbeard.INDEXER_DEFAULT:
+    <% indexer = sickbeard.INDEXER_DEFAULT %>
 % endif
 
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
@@ -99,4 +94,4 @@
 //-->
 </script>
 
-% include file=os.path.join(sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>
