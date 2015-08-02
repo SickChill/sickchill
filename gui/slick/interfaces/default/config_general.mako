@@ -3,8 +3,9 @@
     import datetime
     import locale
     import sickbeard
-    from sickbeard.common import *
-    from sickbeard.sbdatetime import *
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, cpu_presets
+    from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
     from sickbeard import config
     from sickbeard import metadata
     from sickbeard.metadata.generic import GenericMetadata
@@ -13,13 +14,13 @@
 <%include file="/inc_top.mako"/>
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 
-% indexer = 0
-% if sickbeard.INDEXER_DEFAULT
-    % indexer = sickbeard.INDEXER_DEFAULT
+<% indexer = 0 %>
+% if sickbeard.INDEXER_DEFAULT:
+    <% indexer = sickbeard.INDEXER_DEFAULT %>
 % endif
 
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
@@ -182,7 +183,7 @@
                                 <span class="component-desc">
                                     <select id="indexer_default" name="indexer_default" class="form-control input-sm">
                                         <option value="0" ${('', ' selected="selected"')[indexer == 0]}>All Indexers</option>
-                                        % for indexer in $sickbeard.indexerApi().indexers
+                                        % for indexer in sickbeard.indexerApi().indexers:
                                         <option value="${indexer}" ${('', ' selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
                                         % endfor
                                     </select>
@@ -206,7 +207,7 @@
                                 <span class="component-title">Show root directories</span>
                                 <span class="component-desc">
                                     <p>where the files of shows are located</p>
-                                    % include file=os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_rootDirs.mako')
+                                    <%include file="/inc_rootDirs.mako"/>
                                 </span>
                             </label>
                         </div>
@@ -357,14 +358,13 @@
                                 <span class="component-desc">
                                     <select class="form-control input-sm ${(' metadataDiv', '')[sickbeard.FUZZY_DATING == False]}" id="date_presets${(' _na', '')[sickbeard.FUZZY_DATING == False]}" name="date_preset${(' _na', '')[sickbeard.FUZZY_DATING == False]}">
                                         % for cur_preset in date_presets:
-                                            <option value="${cur_preset}" #if $cur_preset == $sickbeard.DATE_PRESET or ("%x" == $sickbeard.DATE_PRESET and "$cur_preset" == '%a, %b %d, %Y') then 'selected="selected"' else ''#>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
+                                            <option value="${cur_preset}" ${(' selected="selected", ''')[sickbeard.DATE_PRESET == cur_preset or ("%x" == sickbeard.DATE_PRESET and cur_preset == '%a, %b %d, %Y')]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
                                         % endfor
                                     </select>
-
-                                    <select class="form-control input-sm #if True != $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#" id="date_presets#if True != $sickbeard.FUZZY_DATING then '' else '_na'#" name="date_preset#if True != $sickbeard.FUZZY_DATING then '' else '_na'#">
-                                        <option value="%x" #if "%x" == $sickbeard.DATE_PRESET then 'selected="selected"' else ''#>Use System Default</option>
+                                    <select class="form-control input-sm ${(' metadataDiv', '')[sickbeard.FUZZY_DATING == False]}" id="date_presets${(' metadataDiv', '')[sickbeard.FUZZY_DATING == False]}" name="date_preset${(' _na', '')[sickbeard.FUZZY_DATING == True]}">
+                                        <option value="%x" ${(' selected="selected"', '')[sickbeard.DATE_PRESET == '%x']}>Use System Default</option>
                                         % for cur_preset in date_presets:
-                                            <option value="$cur_preset" #if $cur_preset == $sickbeard.DATE_PRESET then 'selected="selected"' else ''#>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
+                                            <option value="$cur_preset" ${('', ' selected="selected"')[sickbeard.DATE_PRESET == cur_preset]}>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
                                         % endfor
                                     </select>
                                 </span>
@@ -377,7 +377,7 @@
                                 <span class="component-desc">
                                     <select id="time_presets" name="time_preset" class="form-control input-sm">
                                          % for cur_preset in time_presets:
-                                            <option value="${cur_preset}" <% if $cur_preset == $sickbeard.TIME_PRESET_W_SECONDS then 'selected="selected"' else '' %>>$sbdatetime.now().sbftime(show_seconds=True,t_preset=$cur_preset)</option>
+                                            <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.TIME_PRESET_W_SECONDS == cur_preset]}>${sbdatetime.now().sbftime(show_seconds=True, t_preset=cur_preset)}</option>
                                          % endfor
                                     </select>
                                     <span><b>note:</b> seconds are only shown on the History page</span>
@@ -441,7 +441,7 @@
                             <label for="web_log">
                                 <span class="component-title">HTTP logs</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="web_log" id="web_log" <% if $sickbeard.WEB_LOG then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="web_log" id="web_log" ${('', 'checked="checked"')[sickbeard.WEB_LOG == True]}/>
                                     <p>enable logs from the internal Tornado web server</p>
                                 </span>
                             </label>
@@ -480,7 +480,7 @@
                             <label for="web_ipv6">
                                 <span class="component-title">Listen on IPv6</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="web_ipv6" id="web_ipv6" <% if $sickbeard.WEB_IPV6 then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="web_ipv6" id="web_ipv6" ${('', 'checked="checked"')[sickbeard.WEB_IPV6 == True]}/>
                                     <p>attempt binding to any available IPv6 address</p>
                                 </span>
                             </label>
@@ -490,7 +490,7 @@
                             <label for="enable_https">
                                 <span class="component-title">Enable HTTPS</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="enable_https" class="enabler" id="enable_https" <% if $sickbeard.ENABLE_HTTPS then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="enable_https" class="enabler" id="enable_https" ${('', 'checked="checked"')[sickbeard.ENABLE_HTTPS == True]}/>
                                     <p>enable access to the web interface using a HTTPS address</p>
                                 </span>
                             </label>
@@ -520,7 +520,7 @@
                             <label for="handle_reverse_proxy">
                                 <span class="component-title">Reverse proxy headers</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" <% if $sickbeard.HANDLE_REVERSE_PROXY then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" ${('', 'checked="checked"')[sickbeard.HANDLE_REVERSE_PROXY == True]}/>
                                     <p>accept the following reverse proxy headers (advanced)...<br />(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)</p>
                                 </span>
                             </label>
@@ -550,7 +550,7 @@
                                 <span class="component-desc">
                                     <select id="cpu_presets" name="cpu_preset" class="form-control input-sm">
                                     % for cur_preset in cpu_presets:
-                                        <option value="$cur_preset" <% if $cur_preset == $sickbeard.CPU_PRESET then 'selected="selected"' else '' %>>${cur_preset.capitalize()}</option>
+                                        <option value="$cur_preset" ${('', 'selected="selected"')[sickbeard.CPU_PRESET == cur_preset]}>${cur_preset.capitalize()}</option>
                                     % endfor
                                     </select>
                                     <span>Normal (default). High is lower and Low is higher CPU use</span>
@@ -572,7 +572,7 @@
                             <label for="debug">
                                 <span class="component-title">Enable debug</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="debug" id="debug" <% if $sickbeard.DEBUG then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="debug" id="debug" ${('', 'checked="checked"')[sickbeard.DEBUG == cur_preset]}/>
                                     <p>Enable debug logs<p>
                                 </span>
                             </label>
@@ -582,7 +582,7 @@
                             <label for="ssl_verify">
                                 <span class="component-title">Verify SSL Certs</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="ssl_verify" id="ssl_verify" <% if $sickbeard.SSL_VERIFY then 'checked="checked"' else '' %>/>
+                                        <input type="checkbox" name="ssl_verify" id="ssl_verify" ${('', 'checked="checked"')[sickbeard.SSL_VERIFY]}/>
                                         <p>Verify SSL Certificates (Disable this for broken SSL installs (Like QNAP)<p>
                                     </span>
                             </label>
@@ -592,7 +592,7 @@
                             <label for="no_restart">
                                 <span class="component-title">No Restart</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="no_restart" id="no_restart" <% if $sickbeard.NO_RESTART then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="no_restart" id="no_restart" ${('', 'checked="checked"')[sickbeard.NO_RESTART]}/>
                                     <p>Only shutdown when restarting SR.
                                     Only select this when you have external software restarting SR automatically when it stops (like FireDaemon)</p>
                                 </span>
@@ -604,9 +604,9 @@
                             <label for="encryption_version">
                                 <span class="component-title">Encrypt passwords</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="encryption_version" id="encryption_version" <% if $sickbeard.ENCRYPTION_VERSION then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="encryption_version" id="encryption_version" ${('', 'checked="checked"')[sickbeard.ENCRYPTION_VERSION]}/>
                                     <p>in the <code>config.ini</code> file.
-                                    <b>Warning:</b> Passwords must only contain <a target="_blank" href="<%= anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters') %>">ASCII characters</a></p>
+                                    <b>Warning:</b> Passwords must only contain <a target="_blank" href="${anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters')}">ASCII characters</a></p>
                                 </span>
                             </label>
                         </div>
@@ -615,7 +615,7 @@
                             <label for="calendar_unprotected">
                                 <span class="component-title">Unprotected calendar</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" <% if $sickbeard.CALENDAR_UNPROTECTED then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" ${('', 'checked="checked"')[sickbeard.CALENDAR_UNPROTECTED]}/>
                                     <p>allow subscribing to the calendar without user and password.
                                     Some services like Google Calendar only work this way</p>
                                 </span>
@@ -636,7 +636,7 @@
                             <label for="proxy_indexers">
                                 <span class="component-title">Use proxy for indexers</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="proxy_indexers" id="proxy_indexers" <% if True == $sickbeard.PROXY_INDEXERS then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="proxy_indexers" id="proxy_indexers" ${('', 'checked="checked"')[sickbeard.PROXY_INDEXERS == True]}/>
                                     <p>use proxy host for connecting to indexers (thetvdb, tvrage)</p>
                                 </span>
                             </label>
@@ -647,14 +647,14 @@
                                     <span class="component-desc">
 % if not sickbeard.SKIP_REMOVED_FILES or (sickbeard.USE_TRAKT and sickbeard.TRAKT_USE_ROLLING_DOWNLOAD):
                                         <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm">
-                                        % for defStatus in [$ARCHIVED, $IGNORED]:
-                                            <option value="${defStatus}" <% if defStatus == $sickbeard.EP_DEFAULT_DELETED_STATUS then 'selected="selected"' else '' %>>${statusStrings[defStatus]}</option>
+                                        % for defStatus in [ARCHIVED, IGNORED]:
+                                            <option value="${defStatus}" ${('', 'selected="selected"')[sickbeard.EP_DEFAULT_DELETED_STATUS == defStatus]}>${statusStrings[defStatus]}</option>
                                         % endfor
                                         </select>
 % else:
                                         <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm" disabled="disabled">
-                                        % for defStatus in [$ARCHIVED, $IGNORED]:
-                                            <option value="${defStatus}" <% if defStatus == $sickbeard.EP_DEFAULT_DELETED_STATUS then 'selected="selected"' else '' %>>${statusStrings[defStatus]}</option>
+                                        % for defStatus in [ARCHIVED, IGNORED]:
+                                            <option value="${defStatus}" ${('', 'selected="selected"')[sickbeard.EP_DEFAULT_DELETED_STATUS == defStatus]}>${statusStrings[defStatus]}</option>
                                         % endfor
                                         </select>
                                         <input type="hidden" name="ep_default_deleted_status" value="${sickbeard.EP_DEFAULT_DELETED_STATUS}" />
@@ -684,24 +684,24 @@
                                     <% gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches() %>
                                     % if gh_branch:
                                         % for cur_branch in gh_branch:
-                                            % if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEVELOPER == 1
-                                                <option value="${cur_branch}" <% if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else '' %>>${cur_branch}</option>
-                                            % elseif sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and cur_branch in ['master', 'develop']
-                                                <option value="${cur_branch}" <% if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else '' %>>${cur_branch}</option>
-                                            % elseif cur_branch == 'master'
-                                                <option value="${cur_branch}" <% if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else '' %>>${cur_branch}</option>
+                                            % if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEVELOPER == 1:
+                                                <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
+                                            % elif sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and cur_branch in ['master', 'develop']:
+                                                <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
+                                            % elif cur_branch == 'master':
+                                                <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
                                             % endif
                                         % endfor
                                     % endif
                                     </select>
-                                    % if not gh_branch
+                                    % if not gh_branch:
                                        <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch" disabled>
-                                    % else
+                                    % else:
                                        <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
                                     % endif
-                                    % if not gh_branch
+                                    % if not gh_branch:
                                        <div class="clear-left" style="color:#FF0000"><p>Error: No branches found.</p></div>
-                                    % else
+                                    % else:
                                        <div class="clear-left"><p>select branch to use (restart required)</p></div>
                                     % endif
                                 </span>
@@ -752,7 +752,7 @@
                             <label for="git_reset">
                                 <span class="component-title">Git reset</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="git_reset" id="git_reset" <% if True == $sickbeard.GIT_RESET then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="git_reset" id="git_reset" ${('', 'checked="checked"')[sickbeard.GIT_RESET == True]}/>
                                     <p>removes untracked files and performs a hard reset on git branch automatically to help resolve update issues</p>
                                 </span>
                             </label>
@@ -762,7 +762,7 @@
                             <label for="git_autoissues">
                                 <span class="component-title">Git auto-issues submit</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="git_autoissues" id="git_autoissues" <% if True == $sickbeard.GIT_AUTOISSUES then 'checked="checked"' else '' %> disable/>
+                                    <input type="checkbox" name="git_autoissues" id="git_autoissues" ${('', 'checked="checked"')[sickbeard.GIT_AUTOISSUES == True]} disable/>
                                     <p>automatically submit bug/issue reports to our issue tracker when errors are logged</p>
                                 </span>
                             </label>
