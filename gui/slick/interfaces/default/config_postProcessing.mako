@@ -131,7 +131,7 @@
                         <div class="field-pair">
                             <label class="nocheck">
                                 <span class="component-title">Sync File Extensions</span>
-                                <input type="text" name="sync_files" id="sync_files" value="$sickbeard.SYNC_FILES" class="form-control input-sm input350" />
+                                <input type="text" name="sync_files" id="sync_files" value="${sickbeard.SYNC_FILES}" class="form-control input-sm input350" />
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
