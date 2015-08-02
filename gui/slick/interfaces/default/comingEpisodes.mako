@@ -9,8 +9,8 @@
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 <h1 class="header">${header}</h1>
 <style type="text/css">
-#SubMenu {display:none}
-#contentWrapper {padding-top:30px}
+#SubMenu {display:none;}
+#contentWrapper {padding-top:30px;}
 </style>
 
 <div class="h2footer pull-right">
