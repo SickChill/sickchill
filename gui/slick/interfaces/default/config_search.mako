@@ -1,4 +1,4 @@
-<%!
+<%
     import sickbeard
     from sickbeard import clients
 %>
@@ -418,7 +418,7 @@
                                 <select name="torrent_method" id="torrent_method" class="form-control input-sm">
 <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent"} %>
 % for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'download_station', 'rtorrent', 'qbittorrent'):
-                                <option value="${curAction}" ${('', ' selected="selected"')[sickrage.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
+                                <option value="${curAction}" ${('', ' selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
 % endfor
                                 </select>
                             </label>
