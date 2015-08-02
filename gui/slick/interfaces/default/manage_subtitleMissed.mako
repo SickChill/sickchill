@@ -15,7 +15,7 @@
 % if whichSubs:
 <% subsLanguage = subtitles.fromietf(whichSubs).name if not whichSubs == 'all' else 'All' %>
 % endif
-% if not $whichSubs or ($whichSubs and not $ep_counts):
+% if not whichSubs or (whichSubs and not ep_counts):
 
 % if whichSubs:
 <h2>All of your episodes have ${subsLanguage} subtitles.</h2>
