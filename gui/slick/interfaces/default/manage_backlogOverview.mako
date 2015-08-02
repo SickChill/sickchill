@@ -1,20 +1,13 @@
 <%!
     import sickbeard
     import datetime
-    from sickbeard.common import *
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
     from sickbeard import sbdatetime, network_timezones
-    global title = 'Backlog Overview'
-    global header = 'Backlog Overview'
-
-
-    global topmenu = 'manage'#
-    import os.path
-    include file=os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.mako')
 %>
+<%include file="/inc_top.mako"/>
 <script type="text/javascript">
-<!--
-$(document).ready(function()
-{
+$(document).ready(function(){
     $('#pickShow').change(function(){
         var id = $(this).val();
         if (id) {
@@ -22,37 +15,35 @@ $(document).ready(function()
         }
     });
 
-    % fuzzydate = 'airdate'
+    <% fuzzydate = 'airdate' %>
     % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
         containerClass : '.${fuzzydate}',
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : #if $sickbeard.TRIM_ZERO then "true" else "false"#
+        trimZero : #if sickbeard.TRIM_ZERO then "true" else "false"#
     });
     % endif
 
 });
-//-->
 </script>
 
 <div id="content960">
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
-<%
-    totalWanted = 0
-    totalQual = 0
 
-    for curShow in sickbeard.showList:
-        totalWanted = totalWanted + showCounts[curShow.indexerid][Overview.WANTED]
-        totalQual = totalQual + showCounts[curShow.indexerid][Overview.QUAL]
-    endfor
-%>
+<% totalWanted = 0 %>
+<% totalQual = 0 %>
+
+% for curShow in sickbeard.showList:
+    <% totalWanted = totalWanted + showCounts[curShow.indexerid][Overview.WANTED] %>
+    <% totalQual = totalQual + showCounts[curShow.indexerid][Overview.QUAL] %>
+% endfor
 
 <div class="h2footer pull-right">
     <span class="listing-key wanted">Wanted: <b>${totalWanted}</b></span>
@@ -63,10 +54,10 @@ $(document).ready(function()
 Jump to Show
     <select id="pickShow" class="form-control form-control-inline input-sm">
     % for curShow in sorted(sickbeard.showList, key = operator.attrgetter('name')):
-    % if showCounts[curShow.indexerid][Overview.QUAL] + showCounts[curShow.indexerid][Overview.WANTED] != 0:
-    <option value="${curShow.indexerid}">${curShow.name}</option>
-    % end if
-    % end for
+        % if showCounts[curShow.indexerid][Overview.QUAL] + showCounts[curShow.indexerid][Overview.WANTED] != 0:
+        <option value="${curShow.indexerid}">${curShow.name}</option>
+        % endif
+    % endfor
 </select>
 </div>
 
@@ -75,7 +66,7 @@ Jump to Show
 % for curShow in sorted(sickbeard.showList, key = operator.attrgetter('name')):
 
 % if showCounts[curShow.indexerid][Overview.QUAL] + showCounts[curShow.indexerid][Overview.WANTED] == 0:
-    % continue
+    <% continue %>
 % endif
 
     <tr class="seasonheader" id="show-${curShow.indexerid}">
@@ -92,21 +83,21 @@ Jump to Show
     <tr class="seasoncols"><th>Episode</th><th>Name</th><th class="nowrap">Airdate</th></tr>
 
 % for curResult in showSQLResults[curShow.indexerid]:
-    % whichStr = str(curResult['season']) + 'x' + str(curResult['episode'])
+    <% whichStr = str(curResult['season']) + 'x' + str(curResult['episode']) %>
     % try:
-        % overview = showCats[curShow.indexerid][whichStr]
-    % except Exception
-        % continue
+        <% overview = showCats[curShow.indexerid][whichStr] %>
+    % except Exception:
+        <% continue %>
     % endtry
 
     % if overview not in (Overview.QUAL, Overview.WANTED):
-        % continue
+        <% continue %>
     % endif
 
     <tr class="seasonstyle ${Overview.overviewStrings[showCats[curShow.indexerid][whichStr]]}">
         <td class="tableleft" align="center">${whichStr}</td>
-        <td>${curResult["name"]}</td>
-        <td class="tableright" align="center" class="nowrap"><div class="${fuzzydate}">#if int($curResult['airdate']) == 1 then 'never' else $sbdatetime.sbdatetime.sbfdate($sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($curResult['airdate'],$curShow.airs,$curShow.network)))#</div></td>
+        <td>
+        <td class="tableright" align="center" class="nowrap"><div class="${fuzzydate}">${curResult["name"]}</td>${(sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network))), 'never')[int(curResult['airdate']) == 1]}</div></td>
     </tr>
 % endfor
 
@@ -114,5 +105,4 @@ Jump to Show
 
 </table>
 </div>
-
-#include $os.path.join($sickbeard.PROG_DIR,'gui/slick/interfaces/default/inc_bottom.tmpl')
+<%include file="/inc_bottom.mako"/>

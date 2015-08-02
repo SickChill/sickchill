@@ -6,7 +6,6 @@
 <%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/lib/bootbox.min.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
-<!--
 $.tablesorter.addParser({
     id: 'showNames',
     is: function(s) {
@@ -68,7 +67,6 @@ $(document).ready(function()
         }
     });
 });
-//-->
 </script>
 <script type="text/javascript" src="${sbRoot}/js/massUpdate.js?${sbPID}"></script>
 % if not header is UNDEFINED:
