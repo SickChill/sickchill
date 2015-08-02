@@ -1,7 +1,7 @@
-<%!
+<%
     import sickbeard
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
+    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings
     from sickbeard import subtitles
 %>
         % if sickbeard.USE_SUBTITLES:
@@ -73,8 +73,8 @@
         </div>
 
         <% qualities = Quality.splitQuality(sickbeard.QUALITY_DEFAULT) %>
-        <% global anyQualities = qualities[0] %>
-        <% global bestQualities = qualities[1] %>
+        <% anyQualities = qualities[0] %>
+        <% bestQualities = qualities[1] %>
         <%include file="/inc_qualityChooser.mako"/>
 
         <br>
