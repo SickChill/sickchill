@@ -5,6 +5,7 @@
 <%
     sort = sickbeard.COMING_EPS_SORT
 %>
+<%page cached="False"/>
 <%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 <h1 class="header">${header}</h1>
@@ -343,48 +344,48 @@ $(document).ready(function(){
                 % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
                     % if cur_ep_airdate == today.date():
                         <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
-                    % today_header = True
+                        <% today_header = True %>
                     % else:
                         <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
                     % endif
                 % endif
             % endif
-                % cur_segment = cur_ep_airdate
+                <% cur_segment = cur_ep_airdate %>
         % endif
 
         % if cur_ep_airdate == today.date() and not today_header:
             <div class="comingepheader">
             <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
-            % today_header = True
+            <% today_header = True %>
         % endif
         % if runtime:
             % if cur_ep_enddate < today:
-                % show_div = 'ep_listing listing-overdue'
+                <% show_div = 'ep_listing listing-overdue' %>
             % elif cur_ep_airdate >= next_week.date():
-                % show_div = 'ep_listing listing-toofar'
+                <% show_div = 'ep_listing listing-toofar' %>
             % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
                 % if cur_ep_airdate == today.date():
-                    % show_div = 'ep_listing listing-current'
+                    <% show_div = 'ep_listing listing-current' %>
                 % else:
-                    % show_div = 'ep_listing listing-default'
+                    <% show_div = 'ep_listing listing-default'%>
                 % endif
             % endif
         % endif
 
         % elif 'show' == sort:
-            % cur_ep_airdate = cur_result['localtime'].date()
+            <% cur_ep_airdate = cur_result['localtime'].date() %>
 
             % if runtime:
-                % cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime)
+                <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime) %>
                 % if cur_ep_enddate < today:
-                    % show_div = 'ep_listing listing-overdue listingradius'
+                    <% show_div = 'ep_listing listing-overdue listingradius' %>
                 % elif cur_ep_airdate >= next_week.date():
-                    % show_div = 'ep_listing listing-toofar listingradius'
+                    <% show_div = 'ep_listing listing-toofar listingradius' %>
                 % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
                     % if cur_ep_airdate == today.date():
-                        % show_div = 'ep_listing listing-current listingradius'
+                        <% show_div = 'ep_listing listing-current listingradius' %>
                     % else:
-                        % show_div = 'ep_listing listing-default listingradius'
+                        <% show_div = 'ep_listing listing-default listingradius' %>
                     % endif
                 % endif
             % endif
@@ -413,24 +414,24 @@ $(document).ready(function(){
 
                     <span class="tvshowTitleIcons">
 % if cur_result['imdb_id']:
-                        <a href="<%= anon_url('http://www.imdb.com/title/', cur_result['imdb_id']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" />
+                        <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" />
 % endif
-                        <a href="<%= anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_name']}"><img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" /></a>
+                        <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_name']}"><img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" /></a>
                         <span><a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}" class="epSearch forceUpdate"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a></span>
                     </span>
                 </div>
 
-                <span class="title">Next Episode:</span> <span><%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - ${cur_result['name']}</span>
+                <span class="title">Next Episode:</span> <span>${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}</span>
 
                 <div class="clearfix">
 
-                    <span class="title">Airs: </span><span class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING)}</span><%= ('', '<span> on %s</span>' % str(cur_result['network']))[None is not cur_result['network']] %>
+                    <span class="title">Airs: </span><span class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING)}</span>${('', '<span> on %s</span>' % str(cur_result['network']))[None is not cur_result['network']]}
                 </div>
 
                 <div class="clearfix">
                     <span class="title">Quality:</span>
                     % if int(cur_result['quality']) in qualityPresets:
-                        <span class="quality ${qualityPresetStrings[int(cur_result['quality'])}]">${qualityPresetStrings[int(cur_result['quality'])]}</span>
+                        <span class="quality ${qualityPresetStrings[int(cur_result['quality'])]}">${qualityPresetStrings[int(cur_result['quality'])]}</span>
                     % else:
                         <span class="quality Custom">Custom</span>
                     % endif
@@ -462,37 +463,37 @@ $(document).ready(function(){
 
 % if 'calendar' == layout:
 
-% today = datetime.date.today()
-% dates = [today + datetime.timedelta(days = i) for i in range(7)]
-% tbl_day = 0
+<% today = datetime.date.today() %>
+<% dates = [today + datetime.timedelta(days = i) for i in range(7)] %>
+<% tbl_day = 0 %>
 <br>
 <br>
 <div class="calendarWrapper">
 <input type="hidden" id="sbRoot" value="${sbRoot}" />
-    % for day in dates
-    % tbl_day += 1
-        <table class="sickbeardTable tablesorter calendarTable <%= 'cal-%s' % (('even', 'odd')[1 == tbl_day % 2]) %>" cellspacing="0" border="0" cellpadding="0">
+    % for day in dates:
+    <% tbl_day += 1 %>
+        <table class="sickbeardTable tablesorter calendarTable ${'cal-%s' % (('even', 'odd')[1 == tbl_day % 2])}" cellspacing="0" border="0" cellpadding="0">
         <thead><tr><th>${day.strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</th></tr></thead>
         <tbody>
-        % day_has_show = False
+        <% day_has_show = False %>
         % for cur_result in sql_results:
             % if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
-                % continue
+                <% continue %>
             % endif
 
-            % cur_indexer = int(cur_result['indexer'])
-            % runtime = cur_result['runtime']
-            % airday = cur_result['localtime'].date()
+            <% cur_indexer = int(cur_result['indexer']) %>
+            <% runtime = cur_result['runtime'] %>
+            <% airday = cur_result['localtime'].date() %>
 
             % if airday == day:
-                % try
-                    % day_has_show = True
-                    % airtime = sbdatetime.sbdatetime.fromtimestamp(time.mktime(cur_result['localtime'].timetuple())).sbftime().decode(sickbeard.SYS_ENCODING)
+                % try:
+                    <% day_has_show = True %>
+                    <% airtime = sbdatetime.sbdatetime.fromtimestamp(time.mktime(cur_result['localtime'].timetuple())).sbftime().decode(sickbeard.SYS_ENCODING) %>
                     % if sickbeard.TRIM_ZERO:
-                    % airtime = re.sub(r'0(\d:\d\d)', r'\1', airtime, 0, re.IGNORECASE | re.MULTILINE)
+                        <% airtime = re.sub(r'0(\d:\d\d)', r'\1', airtime, 0, re.IGNORECASE | re.MULTILINE) %>
                     % endif
-                % except OverflowError
-                    % airtime = "Invalid"
+                % except OverflowError:
+                    <% airtime = "Invalid" %>
                 % endtry
 
                 <tr>
@@ -505,7 +506,7 @@ $(document).ready(function(){
                                 ${airtime} on ${cur_result["network"]}
                             </span>
                             <span class="episode-title" title="${cur_result['name']}">
-                                <%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - ${cur_result['name']}
+                                ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}
                             </span>
                         </div>
                     </td> <!-- end $cur_result['show_name'] -->
