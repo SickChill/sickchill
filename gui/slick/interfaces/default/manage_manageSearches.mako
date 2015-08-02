@@ -39,7 +39,7 @@
 <br />
 
 <h3>Find Propers Search:</h3>
-<a class="#if not $sickbeard.DOWNLOAD_PROPERS then 'btn disabled' else 'btn' #" href="$sbRoot/manage/manageSearches/forceFindPropers"><i class="icon-exclamation-sign"></i> Force</a>
+<a class="#if not $sickbeard.DOWNLOAD_PROPERS then 'btn disabled' else 'btn' #" href="${sbRoot}/manage/manageSearches/forceFindPropers"><i class="icon-exclamation-sign"></i> Force</a>
 % if not findPropersStatus:
     Not in progress<br />
 % else:
