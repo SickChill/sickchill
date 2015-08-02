@@ -5,7 +5,6 @@
 <%
     sort = sickbeard.COMING_EPS_SORT
 %>
-<%page cached="False"/>
 <%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 <h1 class="header">${header}</h1>
@@ -168,15 +167,15 @@ $(document).ready(function(){
 % for cur_result in sql_results:
 <%
     cur_indexer = int(cur_result['indexer'])
-    runtime = cur_result['runtime']
+    this_cant_be_runtime_mako_uses_it = cur_result['runtime']
 
     if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
         continue
 
     cur_ep_airdate = cur_result['localtime'].date()
 
-    if runtime:
-        cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime)
+    if this_cant_be_runtime_mako_uses_it:
+        cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = this_cant_be_runtime_mako_uses_it)
         if cur_ep_enddate < today:
             show_div = 'listing-overdue'
         elif cur_ep_airdate >= next_week.date():
@@ -294,7 +293,7 @@ $(document).ready(function(){
 %>
 % if 'show' == sort:
     <br /><br />
-%  endif
+% endif
 
 % for cur_result in sql_results:
 <%
@@ -303,7 +302,7 @@ $(document).ready(function(){
     if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
         continue
 
-    runtime = cur_result['runtime']
+    this_cant_be_runtime_mako_uses_it = cur_result['runtime']
 %>
     % if 'network' == sort:
         <% show_network = ('no network', cur_result['network'])[cur_result['network']] %>
@@ -315,8 +314,8 @@ $(document).ready(function(){
         % endif
         <% cur_ep_airdate = cur_result['localtime'].date() %>
 
-        % if runtime:
-            <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime) %>
+        % if this_cant_be_runtime_mako_uses_it:
+            <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = this_cant_be_runtime_mako_uses_it) %>
             % if cur_ep_enddate < today:
                 <% show_div = 'ep_listing listing-overdue' %>
             % elif cur_ep_airdate >= next_week.date():
@@ -333,8 +332,8 @@ $(document).ready(function(){
         <% cur_ep_airdate = cur_result['localtime'].date() %>
 
         % if cur_segment != cur_ep_airdate:
-            %if runtime:
-                <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime) %>
+            %if this_cant_be_runtime_mako_uses_it:
+                <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = this_cant_be_runtime_mako_uses_it) %>
                 % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
                         <br /><h2 class="day">Missed</h2>
                 <% missed_header = True %>
@@ -358,7 +357,7 @@ $(document).ready(function(){
             <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
             <% today_header = True %>
         % endif
-        % if runtime:
+        % if this_cant_be_runtime_mako_uses_it:
             % if cur_ep_enddate < today:
                 <% show_div = 'ep_listing listing-overdue' %>
             % elif cur_ep_airdate >= next_week.date():
@@ -375,8 +374,8 @@ $(document).ready(function(){
         % elif 'show' == sort:
             <% cur_ep_airdate = cur_result['localtime'].date() %>
 
-            % if runtime:
-                <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime) %>
+            % if this_cant_be_runtime_mako_uses_it:
+                <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = this_cant_be_runtime_mako_uses_it) %>
                 % if cur_ep_enddate < today:
                     <% show_div = 'ep_listing listing-overdue listingradius' %>
                 % elif cur_ep_airdate >= next_week.date():
@@ -482,7 +481,7 @@ $(document).ready(function(){
             % endif
 
             <% cur_indexer = int(cur_result['indexer']) %>
-            <% runtime = cur_result['runtime'] %>
+            <% this_cant_be_runtime_mako_uses_it = cur_result['runtime'] %>
             <% airday = cur_result['localtime'].date() %>
 
             % if airday == day:
