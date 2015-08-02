@@ -306,7 +306,7 @@ $(document).ready(function(){
     <% fuzzydate = 'airdate' %>
     % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
-        dtInline : ${('true', 'false')[sickbeard.layout in 'poster']},
+        dtInline : ${('true', 'false')['poster' in sickbeard.layout]},
         containerClass : '.${fuzzydate}',
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
