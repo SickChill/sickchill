@@ -68,7 +68,7 @@
                <td style="background-color:red">${service.isAlive()}</td>
                % endif
                % if scheduler == 'backlogSearchScheduler':
-                   <% searchQueue = getattr($sickbeard, 'searchQueueScheduler') %>
+                   <% searchQueue = getattr(sickbeard, 'searchQueueScheduler') %>
                    <% BLSpaused = searchQueue.action.is_backlog_paused() %>
                    <% del searchQueue %>
                    % if BLSpaused:
@@ -81,40 +81,40 @@
                % endif
                % if scheduler == 'backlogSearchScheduler':
                    <% searchQueue = getattr(sickbeard, 'searchQueueScheduler') %>
-                   <% BLSinProgress = $searchQueue.action.is_backlog_in_progress() %>
+                   <% BLSinProgress = searchQueue.action.is_backlog_in_progress() %>
                    <% del searchQueue %>
                    % if BLSinProgress:
                <td>True</td>
                    % else:
                        % try:
                        <% amActive = service.action.amActive %>
-               <td>$amActive</td>
-                       #except Exception
+               <td>${amActive}</td>
+                       % except Exception:
                <td>N/A</td>
-                       #end try
-                   #end if
-               #else
-                   #try
-                   #set amActive = $service.action.amActive
-               <td>$amActive</td>
-                   #except Exception
+                       % endtry
+                   % endif
+               % else:
+                   % try:
+                   <% amActive = service.action.amActive %>
+               <td>${amActive}</td>
+                   % except Exception:
                <td>N/A</td>
-                   #end try
-               #end if
-               <td align="right">$service.start_time</td>
-               #set $cycleTime = ($service.cycleTime.microseconds + ($service.cycleTime.seconds + $service.cycleTime.days * 24 * 3600) * 10**6) / 10**6
-               <td align="right">$helpers.pretty_time_delta($cycleTime)</td>
-               #if $service.enable
-                   #set $timeLeft = ($service.timeLeft().microseconds + ($service.timeLeft().seconds + $service.timeLeft().days * 24 * 3600) * 10**6) / 10**6
-               <td align="right">$helpers.pretty_time_delta($timeLeft)</td>
-               #else
+                   % endtry
+               % endif
+               <td align="right">${service.start_time}</td>
+               <% cycleTime = (service.cycleTime.microseconds + (service.cycleTime.seconds + service.cycleTime.days * 24 * 3600) * 10**6) / 10**6 %>
+               <td align="right">${helpers.pretty_time_delta(cycleTime)}</td>
+               % if service.enable:
+                   <% timeLeft = (service.timeLeft().microseconds + (service.timeLeft().seconds + service.timeLeft().days * 24 * 3600) * 10**6) / 10**6 %>
+               <td align="right">${helpers.pretty_time_delta(timeLeft)}</td>
+               % else:
                <td></td>
-               #end if
-               <td>$service.lastRun.strftime("%Y-%m-%d %H:%M:%S")</td>
-               <td>$service.silent</td>
+               % endif
+               <td>${service.lastRun.strftime("%Y-%m-%d %H:%M:%S")}</td>
+               <td>${service.silent}</td>
            </tr>
-           #del service
-           #end for
+           <% del service %>
+           % endfor
        </tbody>
     </table>
     <h2 class="header">Show Queue</h2>
@@ -130,64 +130,64 @@
             </tr>
         </thead>
         <tbody>
-            % if sickbeard.showQueueScheduler.action.currentItem is not None
+            % if sickbeard.showQueueScheduler.action.currentItem is not None:
                 <tr>
-                    % try
-                        % showindexerid = sickbeard.showQueueScheduler.action.currentItem.show.indexerid
+                    % try:
+                        <% showindexerid = sickbeard.showQueueScheduler.action.currentItem.show.indexerid %>
                         <td>${showindexerid}</td>
-                    % except Exception
+                    % except Exception:
                         <td></td>
-                    % end try
-                    % try
-                        #set showname = sickbeard.showQueueScheduler.action.currentItem.show.name
+                    % endtry
+                    % try:
+                        <% showname = sickbeard.showQueueScheduler.action.currentItem.show.name %>
                         <td>${showname}</td>
-                    % except Exception
-                        % if sickbeard.showQueueScheduler.action.currentItem.action_id == ShowQueueActions.ADD
+                    % except Exception:
+                        % if sickbeard.showQueueScheduler.action.currentItem.action_id == ShowQueueActions.ADD:
                             <td>${sickbeard.showQueueScheduler.action.currentItem.showDir}</td>
-                        % else
+                        % else:
                             <td></td>
                         % endif
                     % endtry
                     <td>${sickbeard.showQueueScheduler.action.currentItem.inProgress}</td>
-                    % if sickbeard.showQueueScheduler.action.currentItem.priority == 10
+                    % if sickbeard.showQueueScheduler.action.currentItem.priority == 10:
                         <td>LOW</td>
-                    % elif sickbeard.showQueueScheduler.action.currentItem.priority == 20
+                    % elif sickbeard.showQueueScheduler.action.currentItem.priority == 20:
                         <td>NORMAL</td>
-                    % elif sickbeard.showQueueScheduler.action.currentItem.priority == 30
+                    % elif sickbeard.showQueueScheduler.action.currentItem.priority == 30:
                         <td>HIGH</td>
-                    % else
+                    % else:
                         <td>sickbeard.showQueueScheduler.action.currentItem.priority</td>
                     % endif
                     <td>${sickbeard.showQueueScheduler.action.currentItem.added.strftime("%Y-%m-%d %H:%M:%S")}</td>
                     <td>${ShowQueueActions.names[sickbeard.showQueueScheduler.action.currentItem.action_id]}</td>
                 </tr>
             % endif
-            % for item in sickbeard.showQueueScheduler.action.queue
+            % for item in sickbeard.showQueueScheduler.action.queue:
                 <tr>
-                    % try
-                        % showindexerid = item.show.indexerid
+                    % try:
+                        <% showindexerid = item.show.indexerid %>
                         <td>${showindexerid}</td>
-                    % except Exception
+                    % except Exception:
                         <td></td>
                     % endtry
-                    % try
-                        % showname = item.show.name
+                    % try:
+                        <% showname = item.show.name %>
                         <td>${showname}</td>
-                    % except Exception
-                        % if item.action_id == ShowQueueActions.ADD
+                    % except Exception:
+                        % if item.action_id == ShowQueueActions.ADD:
                             <td>${item.showDir}</td>
-                        % else
+                        % else:
                             <td></td>
                         % endif
                     % endtry
                     <td>${item.inProgress}</td>
-                    % if item.priority == 10
+                    % if item.priority == 10:
                         <td>LOW</td>
-                    % elif item.priority == 20
+                    % elif item.priority == 20:
                         <td>NORMAL</td>
-                    % elif item.priority == 30
+                    % elif item.priority == 30:
                         <td>HIGH</td>
-                    % else
+                    % else:
                         <td>${item.priority}</td>
                     % endif
                     <td>${item.added.strftime("%Y-%m-%d %H:%M:%S")}</td>
