@@ -53,7 +53,7 @@
                     <option value="0" ${('', 'selected="selected"')[provided_indexer == 0]}>All Indexers</option>
                     % for indexer in indexers:
                         <option value="${indexer}" ${('', 'selected="selected"')[provided_indexer == indexer]}>
-                            ${indexers[indexer], ''.join((indexers[indexer], ' **'))[indexers[indexer] == 'TVRage']}
+                            ${(indexers[indexer], ''.join((indexers[indexer], ' **')))[indexers[indexer] == 'TVRage']}
                         </option>
                     % endfor
                 </select>
