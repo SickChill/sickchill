@@ -3703,8 +3703,7 @@ class ConfigGeneral(Config):
 
     def index(self):
         t = PageTemplate(rh=self, file="config_general.mako")
-        t.submenu = self.ConfigMenu()
-        return t.render()
+        return t.render(title='Config - General', header='General Configuration', topmenu='config', submenu=self.ConfigMenu())
 
 
     def generateApiKey(self):

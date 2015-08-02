@@ -4,7 +4,7 @@
     import locale
     import sickbeard
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, cpu_presets
+    from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
     from sickbeard import config
     from sickbeard import metadata
@@ -74,7 +74,7 @@
                             <label for="indexerDefaultLang">
                                 <span class="component-title">Default Indexer Language</span>
                                 <span class="component-desc">
-                                    <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="#echo ','.join(${sickbeard.indexerApi().config['valid_languages']})#"></select>
+                                    <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select>
                                     <span>for adding shows and metadata providers</span>
                                 </span>
                             </label>
@@ -364,7 +364,7 @@
                                     <select class="form-control input-sm ${(' metadataDiv', '')[sickbeard.FUZZY_DATING == False]}" id="date_presets${(' metadataDiv', '')[sickbeard.FUZZY_DATING == False]}" name="date_preset${(' _na', '')[sickbeard.FUZZY_DATING == True]}">
                                         <option value="%x" ${(' selected="selected"', '')[sickbeard.DATE_PRESET == '%x']}>Use System Default</option>
                                         % for cur_preset in date_presets:
-                                            <option value="$cur_preset" ${('', ' selected="selected"')[sickbeard.DATE_PRESET == cur_preset]}>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
+                                            <option value="$cur_preset" ${('', ' selected="selected"')[sickbeard.DATE_PRESET == cur_preset]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
                                         % endfor
                                     </select>
                                 </span>

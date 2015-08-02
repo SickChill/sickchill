@@ -4,31 +4,23 @@
     from sickbeard.providers import thepiratebay
     from sickbeard.helpers import anon_url
 
-    global title="Config - Providers"
-    global header="Search Providers"
-
-
-    global topmenu="config"
-    import os.path
-    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
+<%include file="/inc_top.mako"/>
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 <script type="text/javascript" src="${sbRoot}/js/configProviders.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
-% if sickbeard.USE_NZBS
+% if sickbeard.USE_NZBS:
 <script type="text/javascript" charset="utf-8">
-<!--
 $(document).ready(function(){
-var show_nzb_providers = % if sickbeard.USE_NZBS then "true" else "false"#;
-% for curNewznabProvider in sickbeard.newznabProviderList:
-$(this).addProvider('$curNewznabProvider.getID()', '$curNewznabProvider.name', '$curNewznabProvider.url', '$curNewznabProvider.key', '$curNewznabProvider.catIDs', $int($curNewznabProvider.default), show_nzb_providers);
-% endfor
+    var show_nzb_providers = % if sickbeard.USE_NZBS then "true" else "false"#;
+    % for curNewznabProvider in sickbeard.newznabProviderList:
+    $(this).addProvider('$curNewznabProvider.getID()', '$curNewznabProvider.name', '$curNewznabProvider.url', '$curNewznabProvider.key', '$curNewznabProvider.catIDs', $int($curNewznabProvider.default), show_nzb_providers);
+    % endfor
 });
-//-->
 </script>
 % endif
 
