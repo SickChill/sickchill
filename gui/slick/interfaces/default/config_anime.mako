@@ -1,11 +1,6 @@
 <%!
     import sickbeard
     from sickbeard.helpers import anon_url
-
-    global title="Config - Anime"
-    global header="Anime"
-
-    global topmenu="config"
 %>
 
 <%include file="/inc_top.mako"/>
@@ -35,7 +30,7 @@
 
                     <fieldset class="component-group-list">
                         <div class="field-pair">
-                            <input type="checkbox" class="enabler" name="use_anidb" id="use_anidb" ${('', 'checked="checked"')[sickbeard.USE_ANIDB == True]}> />
+                            <input type="checkbox" class="enabler" name="use_anidb" id="use_anidb" ${('', 'checked="checked"')[sickbeard.USE_ANIDB == True]} />
                             <label for="use_notifo">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">Should Sick Beard use data from AniDB?</span>

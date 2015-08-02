@@ -1,22 +1,17 @@
-<%!
+<%
     import sickbeard
+    import re
     from sickbeard.helpers import anon_url
-    from sickbeard.common import *
-
-    global title="Config - Notifications"
-    global header="Notifications"
-
-
-    global topmenu="config"#
-    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets, multiEpStrings
 %>
-
+<%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/configNotifications.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 
@@ -35,7 +30,7 @@
 
                     <div class="component-group-desc">
                         <img class="notifier-icon" src="${sbRoot}/images/notifiers/kodi.png" alt="" title="KODI" />
-                        <h3><a href="<%= anon_url('http://kodi.tv/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">KODI</a></h3>
+                        <h3><a href="${anon_url('http://kodi.tv/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">KODI</a></h3>
                         <p>A free and open source cross-platform media center and home entertainment system software with a 10-foot user interface designed for the living-room TV.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -160,7 +155,7 @@
                 <div class="component-group">
                     <div class="component-group-desc">
                         <img class="notifier-icon" src="${sbRoot}/images/notifiers/plex.png" alt="" title="Plex Media Server" />
-                        <h3><a href="<%= anon_url('http://www.plexapp.com/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Media Server</a></h3>
+                        <h3><a href="${anon_url('http://www.plexapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Media Server</a></h3>
                         <p>Experience your media on a visually stunning, easy to use interface on your Mac connected to your TV. Your media library has never looked this good!</p>
                         <p class="plexinfo hide">For sending notifications to Plex Home Theater (PHT) clients, use the KODI notifier with port <b>3005</b>.</p>
                     </div>
@@ -187,7 +182,7 @@
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">(<a href="<%= anon_url('https://support.plex.tv/hc/en-us/articles/204059436-Finding-your-account-token-X-Plex-Token') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><u>Finding your account token</u></a>)</span>
+                                    <span class="component-desc">(<a href="${anon_url('https://support.plex.tv/hc/en-us/articles/204059436-Finding-your-account-token-X-Plex-Token')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><u>Finding your account token</u></a>)</span>
                                 </label>
                             </div>
                             <div class="component-group" style="padding: 0; min-height: 130px">
@@ -204,7 +199,7 @@
                                     <label for="plex_password">
                                         <span class="component-title">Server/client password</span>
                                         <span class="component-desc">
-                                            <input type="password" name="plex_password" id="plex_password" value="#echo '*' * len($sickbeard.PLEX_PASSWORD)#" class="form-control input-sm input250" />
+                                            <input type="password" name="plex_password" id="plex_password" value="${'*' * len(sickbeard.PLEX_PASSWORD)}" class="form-control input-sm input250" />
                                             <p>blank = no authentication</p>
                                         </span>
                                     </label>
@@ -226,7 +221,7 @@
                                         <label for="plex_server_host">
                                             <span class="component-title">Plex Media Server IP:Port</span>
                                             <span class="component-desc">
-                                                <input type="text" name="plex_server_host" id="plex_server_host" value="<%= re.sub(r'\b,\b', ', ', sickbeard.PLEX_SERVER_HOST) %>" class="form-control input-sm input350" />
+                                                <input type="text" name="plex_server_host" id="plex_server_host" value="${re.sub(r'\b,\b', ', ', sickbeard.PLEX_SERVER_HOST)}" class="form-control input-sm input350" />
                                                 <div class="clear-left">
                                                     <p>one or more hosts running Plex Media Server<br />(eg. 192.168.1.1:32400, 192.168.1.2:32400)</p>
                                                 </div>
@@ -249,7 +244,7 @@
                 <div class="component-group">
                     <div class="component-group-desc">
                         <img class="notifier-icon" src="${sbRoot}/images/notifiers/plex.png" alt="" title="Plex Media Client" />
-                        <h3><a href="<%= anon_url('http://www.plexapp.com/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Media Client</a></h3>
+                        <h3><a href="${anon_url('http://www.plexapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Media Client</a></h3>
                     </div>
                     <fieldset class="component-group-list">
                         <div class="field-pair">
@@ -315,7 +310,7 @@
                                     <label for="plex_client_password">
                                         <span class="component-title">Client Password</span>
                                         <span class="component-desc">
-                                            <input type="password" name="plex_client_password" id="plex_client_password" value="#echo '*' * len($sickbeard.PLEX_CLIENT_PASSWORD)#" class="form-control input-sm input250" />
+                                            <input type="password" name="plex_client_password" id="plex_client_password" value="${'*' * len(sickbeard.PLEX_CLIENT_PASSWORD)}" class="form-control input-sm input250" />
                                             <p>blank = no authentication</p>
                                         </span>
                                     </label>
@@ -335,7 +330,7 @@
 
                  <div class="component-group">
                      <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/emby.png" alt="" title="Emby" />
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/emby.png" alt="" title="Emby" />
                         <h3><a href="${anon_url('http://emby.media/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Emby</a></h3>
                         <p>A home media server built using other popular open source technologies.</p>
                     </div>
@@ -378,7 +373,7 @@
                 <div class="component-group">
                     <div class="component-group-desc">
                         <img class="notifier-icon" src="${sbRoot}/images/notifiers/nmj.png" alt="" title="Networked Media Jukebox" />
-                        <h3><a href="<%= anon_url('http://www.popcornhour.com/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">NMJ</a></h3>
+                        <h3><a href="${anon_url('http://www.popcornhour.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">NMJ</a></h3>
                         <p>The Networked Media Jukebox, or NMJ, is the official media jukebox interface made available for the Popcorn Hour 200-series.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -444,7 +439,7 @@
                 <div class="component-group">
                     <div class="component-group-desc">
                         <img class="notifier-icon" src="${sbRoot}/images/notifiers/nmj.png" alt="" title="Networked Media Jukebox v2"/>
-                        <h3><a href="<%= anon_url('http://www.popcornhour.com/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">NMJv2</a></h3>
+                        <h3><a href="${anon_url('http://www.popcornhour.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">NMJv2</a></h3>
                         <p>The Networked Media Jukebox, or NMJv2, is the official media jukebox interface made available for the Popcorn Hour 300 & 400-series.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -462,7 +457,7 @@
                             <div class="field-pair">
                                 <label for="nmjv2_host">
                                     <span class="component-title">Popcorn IP address</span>
-                                    <input type="text" name="nmjv2_host" id="nmjv2_host" value="${sickbeard}.NMJv2_HOST" class="form-control input-sm input250" />
+                                    <input type="text" name="nmjv2_host" id="nmjv2_host" value="${sickbeard.NMJv2_HOST}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -532,7 +527,7 @@
                 <div class="component-group">
                     <div class="component-group-desc">
                         <img class="notifier-icon" src="${sbRoot}/images/notifiers/synoindex.png" alt="" title="Synology" />
-                        <h3><a href="<%= anon_url('http://synology.com/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology</a></h3>
+                        <h3><a href="${anon_url('http://synology.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology</a></h3>
                         <p>The Synology DiskStation NAS.</p>
                         <p>Synology Indexer is the daemon running on the Synology NAS to build its media database.</p>
                     </div>
@@ -562,8 +557,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/synologynotifier.png" alt="" title="Synology Indexer" />
-                        <h3><a href="<%= anon_url('http://synology.com/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology Notifier</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/synologynotifier.png" alt="" title="Synology Indexer" />
+                        <h3><a href="${anon_url('http://synology.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology Notifier</a></h3>
                         <p>Synology Notifier is the notification system of Synology DSM</p>
                     </div>
 
@@ -617,8 +612,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/pytivo.png" alt="" title="pyTivo" />
-                        <h3><a href="<%= anon_url('http://pytivo.sourceforge.net/wiki/index.php/PyTivo') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">pyTivo</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/pytivo.png" alt="" title="pyTivo" />
+                        <h3><a href="${anon_url('http://pytivo.sourceforge.net/wiki/index.php/PyTivo')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">pyTivo</a></h3>
                         <p>pyTivo is both an HMO and GoBack server. This notifier will load the completed downloads to your Tivo.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -680,7 +675,7 @@
                 <div class="component-group">
                     <div class="component-group-desc">
                         <img class="notifier-icon" src="${sbRoot}/images/notifiers/growl.png" alt="" title="Growl" />
-                        <h3><a href="<%= anon_url('http://growl.info/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Growl</a></h3>
+                        <h3><a href="${anon_url('http://growl.info/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Growl</a></h3>
                         <p>A cross-platform unobtrusive global notification system.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -725,7 +720,7 @@
                             <div class="field-pair">
                                 <label for="growl_host">
                                     <span class="component-title">Growl IP:Port</span>
-                                    <input type="text" name="growl_host" id="growl_host" value="$sickbeard.GROWL_HOST" class="form-control input-sm input250" />
+                                    <input type="text" name="growl_host" id="growl_host" value="${sickbeard.GROWL_HOST}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -735,7 +730,7 @@
                             <div class="field-pair">
                                 <label for="growl_password">
                                     <span class="component-title">Growl password</span>
-                                    <input type="password" name="growl_password" id="growl_password" value="$sickbeard.GROWL_PASSWORD" class="form-control input-sm input250" />
+                                    <input type="password" name="growl_password" id="growl_password" value="${sickbeard.GROWL_PASSWORD}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -757,8 +752,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/prowl.png" alt="Prowl" title="Prowl" />
-                        <h3><a href="<%= anon_url('http://www.prowlapp.com/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Prowl</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/prowl.png" alt="Prowl" title="Prowl" />
+                        <h3><a href="${anon_url('http://www.prowlapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Prowl</a></h3>
                         <p>A Growl client for iOS.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -766,7 +761,7 @@
                             <label for="use_prowl">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_prowl" id="use_prowl" #if $sickbeard.USE_PROWL then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_prowl" id="use_prowl" ${('', ' checked="checked"')[sickbeard.USE_PROWL == True]}/>
                                     <p>should SickRage send Prowl notifications ?</p>
                                 </span>
                             </label>
@@ -803,11 +798,11 @@
                             <div class="field-pair">
                                 <label for="prowl_api">
                                     <span class="component-title">Prowl API key:</span>
-                                    <input type="text" name="prowl_api" id="prowl_api" value="$sickbeard.PROWL_API" class="form-control input-sm input250" />
+                                    <input type="text" name="prowl_api" id="prowl_api" value="${sickbeard.PROWL_API}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">get your key at: <a href="<%= anon_url('https://www.prowlapp.com/api_settings.php') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://www.prowlapp.com/api_settings.php</a></span>
+                                    <span class="component-desc">get your key at: <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://www.prowlapp.com/api_settings.php</a></span>
                                 </label>
                             </div>
                             <div class="field-pair">
@@ -837,8 +832,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/libnotify.png" alt="" title="Libnotify" />
-                        <h3><a href="<%= anon_url('http://library.gnome.org/devel/libnotify/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Libnotify</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/libnotify.png" alt="" title="Libnotify" />
+                        <h3><a href="${anon_url('http://library.gnome.org/devel/libnotify/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Libnotify</a></h3>
                         <p>The standard desktop notification API for Linux/*nix systems.  This notifier will only function if the pynotify module is installed (Ubuntu/Debian package <a href="apt:python-notify">python-notify</a>).</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -891,8 +886,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/pushover.png" alt="" title="Pushover" />
-                        <h3><a href="<%= anon_url('https://pushover.net/apps/clone/sickrage') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushover</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/pushover.png" alt="" title="Pushover" />
+                        <h3><a href="${anon_url('https://pushover.net/apps/clone/sickrage')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushover</a></h3>
                         <p>Pushover makes it easy to send real-time notifications to your Android and iOS devices.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -951,7 +946,7 @@
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc"><a href="<%= anon_url('https://pushover.net/apps/clone/sickrage') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>Click here</b></a> to create a Pushover API key</span>
+                                    <span class="component-desc"><a href="${anon_url('https://pushover.net/apps/clone/sickrage')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>Click here</b></a> to create a Pushover API key</span>
                                 </label>
                             </div>
                             <div class="field-pair">
@@ -974,8 +969,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/boxcar.png" alt="" title="Boxcar" />
-                        <h3><a href="<%= anon_url('http://boxcar.io/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Boxcar</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/boxcar.png" alt="" title="Boxcar" />
+                        <h3><a href="${anon_url('http://boxcar.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Boxcar</a></h3>
                         <p>Universal push notification for iOS. Read your messages where and when you want them! A subscription will be sent if needed.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -1037,8 +1032,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/boxcar2.png" alt="" title="Boxcar2"/>
-                        <h3><a href="<%= anon_url('https://new.boxcar.io/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Boxcar2</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/boxcar2.png" alt="" title="Boxcar2"/>
+                        <h3><a href="${anon_url('https://new.boxcar.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Boxcar2</a></h3>
                         <p>Read your messages where and when you want them!</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -1100,8 +1095,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/nma.png" alt="" title="NMA"/>
-                        <h3><a href="<%= anon_url('http://nma.usk.bz') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Notify My Android</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/nma.png" alt="" title="NMA"/>
+                        <h3><a href="${anon_url('http://nma.usk.bz')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Notify My Android</a></h3>
                         <p>Notify My Android is a Prowl-like Android App and API that offers an easy way to send notifications from your application directly to your Android device.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -1179,8 +1174,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/pushalot.png" alt="" title="Pushalot" />
-                        <h3><a href="<%= anon_url('https://pushalot.com') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushalot</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/pushalot.png" alt="" title="Pushalot" />
+                        <h3><a href="${anon_url('https://pushalot.com')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushalot</a></h3>
                         <p>Pushalot is a platform for receiving custom push notifications to connected devices running Windows Phone or Windows 8.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -1242,8 +1237,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/pushbullet.png" alt="" title="Pushbullet" />
-                        <h3><a href="<%= anon_url('https://www.pushbullet.com') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushbullet</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/pushbullet.png" alt="" title="Pushbullet" />
+                        <h3><a href="${anon_url('https://www.pushbullet.com')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushbullet</a></h3>
                         <p>Pushbullet is a platform for receiving custom push notifications to connected devices running Android and desktop Chrome browsers.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -1316,8 +1311,8 @@
                 </div><!-- /pushbullet component-group //-->
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/freemobile.png" alt="" title="Free Mobile" />
-                        <h3><a href="<%= anon_url('http://mobile.free.fr/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Free Mobile</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/freemobile.png" alt="" title="Free Mobile" />
+                        <h3><a href="${anon_url('http://mobile.free.fr/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Free Mobile</a></h3>
                         <p>Free Mobile is a famous French cellular network provider.<br> It provides to their customer a free SMS API.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -1392,8 +1387,8 @@
             <div id="tabs-3">
                 <div class="component-group">
                        <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/twitter.png" alt="" title="Twitter"/>
-                        <h3><a href="<%= anon_url('http://www.twitter.com/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Twitter</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/twitter.png" alt="" title="Twitter"/>
+                        <h3><a href="${anon_url('http://www.twitter.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Twitter</a></h3>
                         <p>A social networking and microblogging service, enabling its users to send and read other users' messages called tweets.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -1476,8 +1471,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/trakt.png" alt="" title="Trakt"/>
-                        <h3><a href="<%= anon_url('http://trakt.tv/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Trakt</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/trakt.png" alt="" title="Trakt"/>
+                        <h3><a href="${anon_url('http://trakt.tv/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Trakt</a></h3>
                         <p>trakt helps keep a record of what TV shows and movies you are watching. Based on your favorites, trakt recommends additional shows and movies you'll enjoy!</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -1686,8 +1681,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/email.png" alt="" title="Email" />
-                        <h3><a href="<%= anon_url('http://en.wikipedia.org/wiki/Comparison_of_webmail_providers') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Email</a></h3>
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/email.png" alt="" title="Email" />
+                        <h3><a href="${anon_url('http://en.wikipedia.org/wiki/Comparison_of_webmail_providers')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Email</a></h3>
                         <p>Allows configuration of email notifications on a per show basis.</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -1836,8 +1831,6 @@
 
 <div class="clearfix"></div>
 <script type="text/javascript" charset="utf-8">
-<!--
     jQuery('#config-components').tabs();
-//-->
 </script>
-% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>

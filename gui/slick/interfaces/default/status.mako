@@ -2,17 +2,12 @@
     import sickbeard
     from sickbeard import helpers
     from sickbeard.show_queue import ShowQueueActions
-
-    global title="Status"
-    global header="Status"
-
-    global topmenu="config"#
-    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 %>
+<%include file="/inc_top.mako"/>
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 
@@ -63,64 +58,64 @@
             </tr>
         </thead>
         <tbody>
-            % for schedulerName, scheduler in schedulerList.iteritems()
-                % service = getattr(sickbeard, scheduler)
-                <tr>
-                    <td>${schedulerName}</td>
-                    % if service.isAlive()
-                        <td style="background-color:green">${service.isAlive()}</td>
-                        % else
-                        <td style="background-color:red">${service.isAlive()}</td>
-                        % endif
-                        % if scheduler == 'backlogSearchScheduler'
-                            % searchQueue = getattr(sickbeard, 'searchQueueScheduler')
-                            % BLSpaused = $searchQueue.action.is_backlog_paused()
-                            % del searchQueue
-                            % BLSpaused
-                            <td>Paused</td>
-                        % else
-                            <td>$service.enable</td>
-                        % endif
-                    % else
-                        <td>${service.enable}</td>
-                    % endif
-                    % if scheduler == 'backlogSearchScheduler'
-                        % searchQueue = getattr(sickbeard, 'searchQueueScheduler')
-                        % BLSinProgress = searchQueue.action.is_backlog_in_progress()
-                        % del searchQueue
-                        % if $BLSinProgress
-                            <td>True</td>
-                        % else
-                            % try
-                                % amActive = service.action.amActive
-                                <td>${amActive}</td>
-                            % except Exception
-                                <td>N/A</td>
-                            % endtry
-                        % endif
-                    % else
-                        % try
-                            % amActive = service.action.amActive
-                            <td>${amActive}</td>
-                        % except Exception
-                            <td>N/A</td>
-                        % endtry
-                    % endif
-                    <td align="right">${service.start_time}</td>
-                    % cycleTime = (service.cycleTime.microseconds + (service.cycleTime.seconds + service.cycleTime.days * 24 * 3600) * 10**6) / 10**6
-                    <td align="right">${helpers.pretty_time_delta(cycleTime)}</td>
-                    % if service.enable
-                        % timeLeft = (service.timeLeft().microseconds + (service.timeLeft().seconds + service.timeLeft().days * 24 * 3600) * 10**6) / 10**6
-                        <td align="right">${helpers.pretty_time_delta(timeLeft)}</td>
-                    % else
-                        <td></td>
-                    % endif
-                    <td>${service.lastRun.strftime("%Y-%m-%d %H:%M:%S")}</td>
-                    <td>${service.silent}</td>
-                </tr>
-                % del service
-            % endfor
-        </tbody>
+            % for schedulerName, scheduler in schedulerList.iteritems():
+               <% service = getattr(sickbeard, scheduler) %>
+           <tr>
+               <td>${schedulerName}</td>
+               % if service.isAlive():
+               <td style="background-color:green">${service.isAlive()}</td>
+               % else:
+               <td style="background-color:red">${service.isAlive()}</td>
+               % endif
+               % if scheduler == 'backlogSearchScheduler':
+                   <% searchQueue = getattr($sickbeard, 'searchQueueScheduler') %>
+                   <% BLSpaused = searchQueue.action.is_backlog_paused() %>
+                   <% del searchQueue %>
+                   % if BLSpaused:
+               <td>Paused</td>
+                   % else:
+               <td>${service.enable}</td>
+                   % endif
+               % else:
+               <td>${service.enable}</td>
+               % endif
+               % if scheduler == 'backlogSearchScheduler':
+                   <% searchQueue = getattr(sickbeard, 'searchQueueScheduler') %>
+                   <% BLSinProgress = $searchQueue.action.is_backlog_in_progress() %>
+                   <% del searchQueue %>
+                   % if BLSinProgress:
+               <td>True</td>
+                   % else:
+                       % try:
+                       <% amActive = service.action.amActive %>
+               <td>$amActive</td>
+                       #except Exception
+               <td>N/A</td>
+                       #end try
+                   #end if
+               #else
+                   #try
+                   #set amActive = $service.action.amActive
+               <td>$amActive</td>
+                   #except Exception
+               <td>N/A</td>
+                   #end try
+               #end if
+               <td align="right">$service.start_time</td>
+               #set $cycleTime = ($service.cycleTime.microseconds + ($service.cycleTime.seconds + $service.cycleTime.days * 24 * 3600) * 10**6) / 10**6
+               <td align="right">$helpers.pretty_time_delta($cycleTime)</td>
+               #if $service.enable
+                   #set $timeLeft = ($service.timeLeft().microseconds + ($service.timeLeft().seconds + $service.timeLeft().days * 24 * 3600) * 10**6) / 10**6
+               <td align="right">$helpers.pretty_time_delta($timeLeft)</td>
+               #else
+               <td></td>
+               #end if
+               <td>$service.lastRun.strftime("%Y-%m-%d %H:%M:%S")</td>
+               <td>$service.silent</td>
+           </tr>
+           #del service
+           #end for
+       </tbody>
     </table>
     <h2 class="header">Show Queue</h2>
     <table id="queueStatusTable" class="tablesorter" width="100%">
