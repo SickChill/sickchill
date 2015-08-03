@@ -641,11 +641,9 @@ $(document).ready(function(){
     <tbody class="tablesorter-infoOnly">
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
 
-  <%
-      if curLoadingShow.show != None and curLoadingShow.show in sickbeard.showList:
-          continue
-  %>
-
+    % if curLoadingShow.show != None and curLoadingShow.show in sickbeard.showList:
+         <% continue %>
+    % endif
   <tr>
     <td align="center">(loading)</td>
     <td></td>
