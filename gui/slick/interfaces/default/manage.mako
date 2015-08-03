@@ -1,7 +1,7 @@
 <%!
     import sickbeard
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
+    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings
 %>
 <%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/lib/bootbox.min.js?${sbPID}"></script>
@@ -141,7 +141,7 @@ $(document).ready(function()
         <% curRename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-"+str(curShow.indexerid)+"\" "+curRename_disabled+"/>" %>
 
         % if not curShow.subtitles or sickbeard.showQueueScheduler.action.isBeingSubtitled(curShow) or sickbeard.showQueueScheduler.action.isInSubtitleQueue(curShow):
-            curSubtitle_disabled = "disabled=\"disabled\" " %>
+            <% curSubtitle_disabled = "disabled=\"disabled\" " %>
         % endif
 
         <% curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-"+str(curShow.indexerid)+"\" "+curSubtitle_disabled+"/>" %>
@@ -165,12 +165,12 @@ $(document).ready(function()
         % else:
             <td align="center"><span class="quality Custom">Custom</span></td>
         % endif
-            <td align="center"><img src="${sbRoot}/images/#if int(curShow.is_sports) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/#if int(curShow.is_scene) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/#if int(curShow.is_anime) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/#if int(curShow.flatten_folders) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/#if int(curShow.paused) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/#if int(curShow.subtitles) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_sports) == 1]} width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_scene) == 1]} width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_anime) == 1]} width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.flatten_folders) == 1]} width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.paused) == 1]} width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.subtitles) == 1]} width="16" height="16" /></td>
             <td align="center">${statusStrings[curShow.default_ep_status]}</td>
             <td align="center">${curShow.status}</td>
             <td align="center">${curUpdate}</td>
