@@ -18,7 +18,8 @@
 
 from __future__ import with_statement
 
-import urllib2
+import requests
+
 import xml.etree.cElementTree as etree
 import xml.etree
 import re
@@ -104,7 +105,7 @@ def stripNS(element, ns):
 
 
 def splitResult(result):
-    urlData = helpers.getURL(result.url)
+    urlData = helpers.getURL(result.url, session=requests.Session())
     if urlData is None:
         logger.log(u"Unable to load url " + result.url + ", can't download season NZB", logger.ERROR)
         return False
