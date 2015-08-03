@@ -3,8 +3,6 @@
     import datetime
     import urllib
     import ntpath
-%>
-<%
     import sickbeard
     from sickbeard import subtitles, sbdatetime, network_timezones
     import sickbeard.helpers
@@ -13,11 +11,6 @@
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings, Overview
 
     from sickbeard.helpers import anon_url
-
-    title=show.name
-    header = '<a></a>'
-    topmenu="manageShows"
-    exceptions_string = " | ".join(show.exceptions)
 %>
 
 <%include file="/inc_top.mako"/>
@@ -33,8 +26,6 @@
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSubtitles.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/lib/jquery.collapser.min.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
-
-<!--
 $(document).ready(function(){
     <% fuzzydate = 'airdate' %>
     % if sickbeard.FUZZY_DATING:
@@ -60,36 +51,26 @@ $(document).ready(function(){
 
     $('.imdbstars').generateStars();
 
-    % if show.is_anime:
-    $("#animeTable").tablesorter({
-    % else:
-    $("#showTable").tablesorter({
-    % endif
+    $("${('#showTable', '#animeTable')[show.is_anime == True]}").tablesorter({
         widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
         widgetOptions : {
             columnSelector_saveColumns: true,
             columnSelector_layout : '<br/><label><input type="checkbox">{name}</label>',
             columnSelector_mediaquery: false,
             columnSelector_cssChecked : 'checked'
-            },
-        });
+        },
+    });
 
-    $('#popover')
-        .popover({
-          placement: 'bottom',
-          html: true, // required if content has HTML
-          content: '<div id="popover-target"></div>'
-        })
-        // bootstrap popover event triggered when the popover opens
-        .on('shown.bs.popover', function () {
-            % if show.is_anime:
-            $.tablesorter.columnSelector.attachTo( $('#animeTable'), '#popover-target');
-            % else:
-            $.tablesorter.columnSelector.attachTo( $('#showTable'), '#popover-target');
-                % endif
-        });
+    $('#popover').popover({
+        placement: 'bottom',
+        html: true, // required if content has HTML
+        content: '<div id="popover-target"></div>'
+    })
+    // bootstrap popover event triggered when the popover opens
+    .on('shown.bs.popover', function () {
+        $.tablesorter.columnSelector.attachTo( $("${('#showTable', '#animeTable')[show.is_anime == True]}"), '#popover-target');
+    });
 });
-//-->
 </script>
     <div class="pull-left form-inline">
         Change Show:
@@ -120,24 +101,19 @@ $(document).ready(function(){
     </div>
 
     % if seasonResults:
-        <%
-            ##There is a special/season_0?##
-            if int(seasonResults[-1]["season"]) == 0:
-                season_special = 1
-            else:
-                season_special = 0
-
-            if not sickbeard.DISPLAY_SHOW_SPECIALS and season_special:
-                lastSeason = seasonResults.pop(-1)
-        %>
+        ##There is a special/season_0?##
+        % if int(seasonResults[-1]["season"]) == 0:
+            <% season_special = 1 %>
+        % else:
+            <% season_special = 0 %>
+        % endif
+        % if not sickbeard.DISPLAY_SHOW_SPECIALS and season_special:
+            <% lastSeason = seasonResults.pop(-1) %>
+        % endif
         <span class="h2footer displayspecials pull-right">
             % if season_special:
             Display Specials:
-                % if sickbeard.DISPLAY_SHOW_SPECIALS:
-                    <a class="inner" href="${sbRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">Hide</a>
-                % else:
-                    <a class="inner" href="${sbRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">Show</a>
-                % endif
+                <a class="inner" href="${sbRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">${('Show', 'Hide')[sickbeard.DISPLAY_SHOW_SPECIALS == True]}</a>
             % endif
         </span>
 
@@ -232,7 +208,7 @@ $(document).ready(function(){
                     <span class="quality ${qualityPresetStrings[show.quality]}">${qualityPresetStrings[show.quality]}</span>
                 % else:
                 % if anyQualities:
-                    <i>Initial:</i> ${", ".join([Quality.qualityStrings[x] for x in sorted(anyQualities)])}${("", "</br>")[bestQualities]}
+                    <i>Initial:</i> ${", ".join([Quality.qualityStrings[x] for x in sorted(anyQualities)])}${("", "</br>")[len(bestQualities) > 0]}
                 % endif
                 % if bestQualities:
                     <i>Replace with:</i> ${", ".join([Quality.qualityStrings[x] for x in sorted(bestQualities)])}
@@ -253,7 +229,7 @@ $(document).ready(function(){
                 % else:
                     <tr><td class="showLegend"><span style="color: red;">Location: </span></td><td><span style="color: red;">${showLoc[0]}</span> (Missing)</td></tr>
                 % endif
-                    <tr><td class="showLegend">Scene Name:</td><td>${(show.name, exceptions_string)[show.exceptions != 0]}</td></tr>
+                    <tr><td class="showLegend">Scene Name:</td><td>${(show.name, " | ".join(show.exceptions))[show.exceptions != 0]}</td></tr>
 
                 % if show.rls_require_words:
                     <tr><td class="showLegend">Required Words: </td><td>${show.rls_require_words}</td></tr>
@@ -361,7 +337,7 @@ $(document).ready(function(){
 
         if epResult["absolute_number"] in xem_absolute_numbering:
             dfltAbsolute = xem_absolute_numbering[epResult["absolute_number"]]
- 
+
         if epResult["absolute_number"] in scene_absolute_numbering:
             scAbsolute = scene_absolute_numbering[epResult["absolute_number"]]
             dfltAbsNumbering = False
@@ -448,7 +424,6 @@ $(document).ready(function(){
                 % if sickbeard.DISPLAY_ALL_SEASONS == False:
                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
                     <script type="text/javascript">
-                    <!--
                         $(function() {
                             $('#collapseSeason-${epResult['season']}').on('hide.bs.collapse', function () {
                                 $('#showseason-${epResult['season']}').text('Show Episodes');
@@ -457,7 +432,6 @@ $(document).ready(function(){
                                 $('#showseason-${epResult['season']}').text('Hide Episodes');
                             })
                         });
-                    //-->
                     </script>
                 % endif
             </th>
@@ -485,7 +459,7 @@ $(document).ready(function(){
     </tbody>
         % if sickbeard.DISPLAY_ALL_SEASONS == False:
         <tbody class="collapse${("", " in")[curSeason == -1]}" id="collapseSeason-${epResult['season']}">
-        #else
+        % else:
         <tbody>
         % endif
         <% curSeason = int(epResult["season"]) %>
@@ -538,8 +512,7 @@ $(document).ready(function(){
             </td>
             <td class="col-name">
             % if epResult["description"] != "" and epResult["description"] != None:
-                <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfo" alt="" 
-id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["episode"])}" />
+                <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["episode"])}" />
             % else:
                 <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfoNone" alt="" />
             % endif
@@ -547,7 +520,7 @@ id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["
             </td>
             <td class="col-name]">
                 % if epResult['location']:
-                    <% 
+                    <%
                     filename = epResult['location']
                     for rootDir in sickbeard.ROOT_DIRS.split('|'):
                         if not rootDir.startswith('/'):
@@ -587,7 +560,7 @@ id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["
             </td>
                 <% curStatus, curQuality = Quality.splitCompositeStatus(int(epResult["status"])) %>
                 % if curQuality != Quality.NONE:
-                    <td class="col-status">${statusStrings[curStatus]}<span class="quality ${Quality.qualityStrings[curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")}">${Quality.qualityStrings[curQuality]}</span></td>
+                    <td class="col-status">${statusStrings[curStatus]} <span class="quality ${Quality.qualityStrings[curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")}">${Quality.qualityStrings[curQuality]}</span></td>
                 % else:
                     <td class="col-status">${statusStrings[curStatus]}</td>
                 % endif

@@ -1,18 +1,18 @@
-#import sickbeard
-#from sickbeard import common
-#from sickbeard import exceptions
-#set global $title="Test Rename"
-#set global $header = '<a href="' + ${sbRoot} + '/home/displayShow?show=%d">%s</a>' % ($show.indexerid, $show.name)
-
-#set global $topmenu="home"#
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+<%!
+    import sickbeard
+    import calendar
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
+    from sickbeard import db, sbdatetime, network_timezones
+    import datetime
+    import re
+%>
+<%include file="/inc_top.mako"/>
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else:
+    <h1 class="title">${title}</h1>
+% endif
 
 <input type="hidden" id="showID" value="$show.indexerid" />
 
@@ -20,18 +20,17 @@
 
 <h3>Preview of the proposed name changes</h3>
 <blockquote>
-#if int($show.air_by_date) == 1 and $sickbeard.NAMING_CUSTOM_ABD:
-    $sickbeard.NAMING_ABD_PATTERN
-#elif int($show.sports) == 1 and $sickbeard.NAMING_CUSTOM_SPORTS:
-    $sickbeard.NAMING_SPORTS_PATTERN
-#else
-    $sickbeard.NAMING_PATTERN
-#end if
+% if int(show.air_by_date) == 1 and sickbeard.NAMING_CUSTOM_ABD:
+    <% sickbeard.NAMING_ABD_PATTERN %>
+% elif int(show.sports) == 1 and sickbeard.NAMING_CUSTOM_SPORTS:
+    <% sickbeard.NAMING_SPORTS_PATTERN %>
+% else
+    <% sickbeard.NAMING_PATTERN %>
+% endif
 </blockquote>
 
-#set $curSeason = -1
-#set $odd = False
-
+<% curSeason = -1 %>
+<% odd = False%>
 
 <table id="SelectAllTable" class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
     <thead>
@@ -49,58 +48,52 @@
 </table>
 
 <br/>
-<input type="submit" value="Rename Selected" class="btn btn-success"> <a href="/home/displayShow?show=$show.indexerid" class="btn btn-danger">Cancel Rename</a>
+<input type="submit" value="Rename Selected" class="btn btn-success"> <a href="/home/displayShow?show=${show.indexerid}" class="btn btn-danger">Cancel Rename</a>
 
 <table id="testRenameTable" class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
 
-#for $cur_ep_obj in $ep_obj_list:
-#set $curLoc = $cur_ep_obj.location[len($cur_ep_obj.show.location)+1:]
-#set $curExt = $curLoc.split('.')[-1]
-#set $newLoc = $cur_ep_obj.proper_path() + '.' + $curExt
+% for cur_ep_obj in ep_obj_list:
+<% curLoc = cur_ep_obj.location[len(cur_ep_obj.show.location)+1:] %>
+<% curExt = curLoc.split('.')[-1] %>
+<% newLoc = cur_ep_obj.proper_path() + '.' + curExt %>
 
-#if int($cur_ep_obj.season) != $curSeason:
+% if int(cur_ep_obj.season) != curSeason:
     <thead>
-        <tr class="seasonheader" id="season-$cur_ep_obj.season">
+        <tr class="seasonheader" id="season-${cur_ep_obj.season}">
             <td colspan="4">
                  <br/>
-                <h2>#if int($cur_ep_obj.season) == 0 then "Specials" else "Season "+str($cur_ep_obj.season)#</h2>
+                <h2>${('Season '+str(cur_ep_obj.season), 'Specials')[int(cur_ep_obj.season) == 0]}</h2>
             </td>
         </tr>
-        <tr class="seasoncols" id="season-$cur_ep_obj.season-cols">
-            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="$cur_ep_obj.season" /></th>
+        <tr class="seasoncols" id="season-${cur_ep_obj.season-cols}">
+            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${cur_ep_obj.season}" /></th>
             <th class="nowrap">Episode</th>
             <th class="col-name">Old Location</th>
             <th class="col-name">New Location</th>
         </tr>
     </thead>
-#set $curSeason = int($cur_ep_obj.season)
-#end if
+<% curSeason = int(cur_ep_obj.season) %>
+% endif
     <tbody>
-#set $odd = not $odd
-#set $epStr = str($cur_ep_obj.season) + "x" + str($cur_ep_obj.episode)
-#set $epList = sorted([cur_ep_obj.episode] + [x.episode for x in cur_ep_obj.relatedEps])
-#if len($epList) > 1:
-    #set $epList = [$min($epList), $max($epList)]
-#end if
-        <tr class="season-$curSeason
-            #if $curLoc == $newLoc:
-                good
-            #else
-                wanted
-            #end if
-        seasonstyle">
+<% odd = not odd %>
+<% epStr = str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode) %>
+<% epList = sorted([cur_ep_obj.episode] + [x.episode for x in cur_ep_obj.relatedEps]) %>
+% if len(epList) > 1:
+    <% epList = [min(epList), max(epList)] %>
+% endif
+        <tr class="season-${curSeason} ${('wanted', 'good')[curLoc == newLoc]} seasonstyle">
             <td class="col-checkbox">
-            #if $curLoc != $newLoc:
-                <input type="checkbox" class="epCheck" id="<%=str(cur_ep_obj.season) + 'x' + str(cur_ep_obj.episode)%>" name="<%=str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode) %>" />
-            #end if
+            % if curLoc != newLoc:
+                <input type="checkbox" class="epCheck" id="${str(cur_ep_obj.season) + 'x' + str(cur_ep_obj.episode)}" name="${str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode)}" />
+            % endif
             </td>
-            <td align="center" valign="top" class="nowrap"><%= "-".join(map(str, epList)) %></td>
-            <td width="50%" class="col-name">$curLoc</td>
-            <td width="50%" class="col-name">$newLoc</td>
+            <td align="center" valign="top" class="nowrap">${"-".join(map(str, epList))}</td>
+            <td width="50%" class="col-name">${curLoc}</td>
+            <td width="50%" class="col-name">${newLoc}</td>
         </tr>
     </tbody>
 
-#end for
+% endfor
 </table><br />
-<input type="submit" value="Rename Selected" class="btn btn-success"> <a href="/home/displayShow?show=$show.indexerid" class="btn btn-danger">Cancel Rename</a>
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.tmpl")
+<input type="submit" value="Rename Selected" class="btn btn-success"> <a href="/home/displayShow?show=${show.indexerid}" class="btn btn-danger">Cancel Rename</a>
+<%include file="/inc_bottom.mako"/>

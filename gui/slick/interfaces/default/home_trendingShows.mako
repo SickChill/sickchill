@@ -1,29 +1,23 @@
-#import sickbeard
-#import datetime
-#import re
-#from sickbeard.common import *
-#from sickbeard import sbdatetime
-#from sickbeard.helpers import anon_url
-
-#set global $title='Trending Shows'
-#set global $header='Trending Shows'
-
-
-#set global $topmenu='home'
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+<%!
+    import sickbeard
+    import datetime
+    import re
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
+    from sickbeard import sbdatetime
+    from sickbeard.helpers import anon_url
+%>
+<%include file="/inc_top.mako"/>
 
 <script type="text/javascript" src="${sbRoot}/js/addTrendingShow.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
 
 <script type="text/javascript" charset="utf-8">
-<!--
-
 $(document).ready(function(){
     $( "#tabs" ).tabs({
         collapsible: true,
-        selected: #if $sickbeard.ROOT_DIRS then '-1' else '0'#
+        selected: ${('0', '-1')[sickbeard.ROOT_DIRS == True]}
     });
 
     // initialise combos for dirty page refreshes
@@ -39,9 +33,9 @@ $(document).ready(function(){
             getSortData: {
                 name: function( itemElem ) {
                     var name = $( itemElem ).attr('data-name') || '';
-#if not $sickbeard.SORT_ARTICLE:
+% if not sickbeard.SORT_ARTICLE:
                     name = name.replace(/^(The|A|An)\s/i, '');
-#end if
+% endif
                     return name.toLowerCase();
                 },
                 rating: '[data-rating] parseInt',
@@ -80,15 +74,13 @@ $(document).ready(function(){
         $('#container').isotope({sortAscending: ('asc' == this.value)});
     });
 });
-
-//-->
 </script>
 
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else:
+    <h1 class="title">${title}</h1>
+% endif
 
 <div id="tabs">
     <ul>
@@ -96,10 +88,10 @@ $(document).ready(function(){
         <li><a href="#tabs-2">Customize Options</a></li>
     </ul>
     <div id="tabs-1" class="existingtabs">
-        #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
+        <%include file="/inc_rootDirs.mako"/>
     </div>
     <div id="tabs-2" class="existingtabs">
-        #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_addShowOptions.tmpl")
+        <%include file="/inc_addShowOptions.mako"/>
     </div>
     <br>
 
@@ -124,9 +116,6 @@ $(document).ready(function(){
 <br />
 
 <script type="text/javascript" charset="utf-8">
-<!--
 window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
-//-->
 </script>
-
-#include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+<%include file="/inc_bottom.mako"/>

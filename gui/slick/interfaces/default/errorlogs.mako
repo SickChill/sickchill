@@ -15,9 +15,7 @@
 </div>
 
 <script type="text/javascript" charset="utf-8">
-<!--
 window.setInterval( "location.reload(true)", 600000); // Refresh every 10 minutes
-//-->
 </script>
 
 <%include file="/inc_bottom.mako"/>

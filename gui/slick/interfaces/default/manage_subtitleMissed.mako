@@ -3,24 +3,19 @@
     import datetime
     import sickbeard
     from sickbeard import common
-    global title="Episode Overview"
-    global header="Episode Overview"
-
-
-    global topmenu="manage"#
     import os.path
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
+<%include file="/inc_top.mako"/>
 <div id="content960">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 % if whichSubs:
-% subsLanguage = subtitles.fromietf(whichSubs).name if not whichSubs == 'all' else 'All'
+<% subsLanguage = subtitles.fromietf(whichSubs).name if not whichSubs == 'all' else 'All' %>
 % endif
-% if not $whichSubs or ($whichSubs and not $ep_counts):
+% if not whichSubs or (whichSubs and not ep_counts):
 
 % if whichSubs:
 <h2>All of your episodes have ${subsLanguage} subtitles.</h2>
@@ -30,7 +25,8 @@
 <form action="${sbRoot}/manage/subtitleMissed" method="get">
 Manage episodes without <select name="whichSubs" class="form-control form-control-inline input-sm">
 <option value="all">All</option>
-% for sub_lang in [subtitles.fromietf(x) for x in subtitles.wantedLanguages]:
+<% sub_langs = [subtitles.fromietf(x) for x in subtitles.wantedLanguages] %>
+% for sub_lang in sub_langs:
 <option value="${sub_lang.opensubtitles}">${sub_lang.name}</option>
 % endfor
 </select>
@@ -38,7 +34,7 @@ subtitles
 <input class="btn" type="submit" value="Manage" />
 </form>
 
-% else
+% else:
 
 <script type="text/javascript" src="${sbRoot}/js/manageSubtitleMissed.js?${sbPID}"></script>
 <input type="hidden" id="selectSubLang" name="selectSubLang" value="${whichSubs}" />
@@ -64,4 +60,4 @@ Download missed subtitles for selected episodes <input class="btn btn-inline" ty
 
 % endif
 </div>
-% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>
