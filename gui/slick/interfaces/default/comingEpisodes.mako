@@ -392,7 +392,7 @@ $(document).ready(function(){
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <tr>
             <th ${('class="nobg"', 'rowspan="2"')[banner == layout]} valign="top">
-                <a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}"><img alt="" class="${('posterThumb', 'bannerThumb')[banner == layout]}" src="${sbRoot}/showPoster/?show=${cur_result['showid']}&amp;which=${(layout, 'poster_thumb')['poster' == layout]}" /></a>
+                <a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}"><img alt="" class="${('bannerThumb', 'posterThumb')[banner == layout]}" src="${sbRoot}/showPoster/?show=${cur_result['showid']}&amp;which=${(layout, 'poster_thumb')['poster' == layout]}" /></a>
             </th>
 % if 'banner' == layout:
         </tr>
