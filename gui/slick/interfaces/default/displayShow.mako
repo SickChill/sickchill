@@ -229,7 +229,7 @@ $(document).ready(function(){
                 % else:
                     <tr><td class="showLegend"><span style="color: red;">Location: </span></td><td><span style="color: red;">${showLoc[0]}</span> (Missing)</td></tr>
                 % endif
-                    <tr><td class="showLegend">Scene Name:</td><td>${(show.name, exceptions_string)[show.exceptions != 0]}</td></tr>
+                    <tr><td class="showLegend">Scene Name:</td><td>${(show.name, " | ".join(show.exceptions))[show.exceptions != 0]}</td></tr>
 
                 % if show.rls_require_words:
                     <tr><td class="showLegend">Required Words: </td><td>${show.rls_require_words}</td></tr>
@@ -424,7 +424,6 @@ $(document).ready(function(){
                 % if sickbeard.DISPLAY_ALL_SEASONS == False:
                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
                     <script type="text/javascript">
-                    <!--
                         $(function() {
                             $('#collapseSeason-${epResult['season']}').on('hide.bs.collapse', function () {
                                 $('#showseason-${epResult['season']}').text('Show Episodes');
@@ -433,7 +432,6 @@ $(document).ready(function(){
                                 $('#showseason-${epResult['season']}').text('Hide Episodes');
                             })
                         });
-                    //-->
                     </script>
                 % endif
             </th>
@@ -461,7 +459,7 @@ $(document).ready(function(){
     </tbody>
         % if sickbeard.DISPLAY_ALL_SEASONS == False:
         <tbody class="collapse${("", " in")[curSeason == -1]}" id="collapseSeason-${epResult['season']}">
-        #else
+        % else:
         <tbody>
         % endif
         <% curSeason = int(epResult["season"]) %>
@@ -514,8 +512,7 @@ $(document).ready(function(){
             </td>
             <td class="col-name">
             % if epResult["description"] != "" and epResult["description"] != None:
-                <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfo" alt=""
-id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["episode"])}" />
+                <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["episode"])}" />
             % else:
                 <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfoNone" alt="" />
             % endif
@@ -563,7 +560,7 @@ id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["
             </td>
                 <% curStatus, curQuality = Quality.splitCompositeStatus(int(epResult["status"])) %>
                 % if curQuality != Quality.NONE:
-                    <td class="col-status">${statusStrings[curStatus]}<span class="quality ${Quality.qualityStrings[curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")}">${Quality.qualityStrings[curQuality]}</span></td>
+                    <td class="col-status">${statusStrings[curStatus]} <span class="quality ${Quality.qualityStrings[curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")}">${Quality.qualityStrings[curQuality]}</span></td>
                 % else:
                     <td class="col-status">${statusStrings[curStatus]}</td>
                 % endif
