@@ -2,7 +2,7 @@
     import sickbeard
     import datetime
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
+    from sickbeard.common import Overview, Quality, qualityPresets, qualityPresetStrings
     from sickbeard import sbdatetime, network_timezones
 %>
 <%include file="/inc_top.mako"/>
@@ -53,7 +53,7 @@ $(document).ready(function(){
 <div class="float-left">
 Jump to Show
     <select id="pickShow" class="form-control form-control-inline input-sm">
-    % for curShow in sorted(sickbeard.showList, key = lambda x, y: cmp(x.name, y.name)):
+    % for curShow in sorted(sickbeard.showList, key=lambda x: x.name):
         % if showCounts[curShow.indexerid][Overview.QUAL] + showCounts[curShow.indexerid][Overview.WANTED] != 0:
         <option value="${curShow.indexerid}">${curShow.name}</option>
         % endif
@@ -63,9 +63,9 @@ Jump to Show
 
 <table class="sickbeardTable" cellspacing="0" border="0" cellpadding="0">
 
-% for curShow in sorted(sickbeard.showList, key = lambda x, y: cmp(x.name, y.name)):
+% for curShow in sorted(sickbeard.showList, key=lambda x: x.name):
 
-% if showCounts[curShow.indexerid][Overview.QUAL] + showCounts[curShow.indexerid][OvSickerview.WANTED] == 0:
+% if showCounts[curShow.indexerid][Overview.QUAL] + showCounts[curShow.indexerid][Overview.WANTED] == 0:
     <% continue %>
 % endif
 
@@ -74,7 +74,7 @@ Jump to Show
             <br/><h2><a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></h2>
             <div class="pull-right">
                 <span class="listing-key wanted">Wanted: <b>${showCounts[curShow.indexerid][Overview.WANTED]}</b></span>
-                <span class="listing-key qual">Low Quality: <b>$showCounts[curShow.indexerid][Overview.QUAL]</b></span>
+                <span class="listing-key qual">Low Quality: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>
                 <a class="btn btn-inline forceBacklog" href="${sbRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> Force Backlog</a>
             </div>
         </td>
