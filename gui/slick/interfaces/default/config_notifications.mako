@@ -703,7 +703,7 @@
                                 <label for="growl_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="growl_notify_ondownload" id="growl_notify_ondownload" #if $sickbeard.GROWL_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="growl_notify_ondownload" id="growl_notify_ondownload" ${('', 'checked="checked"')[sickbeard.GROWL_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -712,7 +712,7 @@
                                 <label for="growl_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="growl_notify_onsubtitledownload" id="growl_notify_onsubtitledownload" #if $sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="growl_notify_onsubtitledownload" id="growl_notify_onsubtitledownload" ${('', 'checked="checked"')[sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -772,7 +772,7 @@
                                 <label for="prowl_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="prowl_notify_onsnatch" id="prowl_notify_onsnatch" #if $sickbeard.PROWL_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="prowl_notify_onsnatch" id="prowl_notify_onsnatch" ${('', 'checked="checked"')[sickbeard.PROWL_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -781,7 +781,7 @@
                                 <label for="prowl_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="prowl_notify_ondownload" id="prowl_notify_ondownload" #if $sickbeard.PROWL_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="prowl_notify_ondownload" id="prowl_notify_ondownload" ${('', 'checked="checked"')[sickbeard.PROWL_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -790,7 +790,7 @@
                                 <label for="prowl_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="prowl_notify_onsubtitledownload" id="prowl_notify_onsubtitledownload" #if $sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="prowl_notify_onsubtitledownload" id="prowl_notify_onsubtitledownload" ${('', 'checked="checked"')[sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -809,11 +809,11 @@
                                 <label for="prowl_priority">
                                     <span class="component-title">Prowl priority:</span>
                                     <select id="prowl_priority" name="prowl_priority" class="form-control input-sm">
-                                        <option value="-2" #if $sickbeard.PROWL_PRIORITY == "-2" then 'selected="selected"' else ""#>Very Low</option>
-                                        <option value="-1" #if $sickbeard.PROWL_PRIORITY == "-1" then 'selected="selected"' else ""#>Moderate</option>
-                                        <option value="0" #if $sickbeard.PROWL_PRIORITY == "0" then 'selected="selected"' else ""#>Normal</option>
-                                        <option value="1" #if $sickbeard.PROWL_PRIORITY == "1" then 'selected="selected"' else ""#>High</option>
-                                        <option value="2" #if $sickbeard.PROWL_PRIORITY == "2" then 'selected="selected"' else ""#>Emergency</option>
+                                        <option value="-2" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '-2']}>Very Low</option>
+                                        <option value="-1" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '-1']}>Moderate</option>
+                                        <option value="0" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '0']}>Normal</option>
+                                        <option value="1" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '1']}>High</option>
+                                        <option value="2" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '2']}>Emergency</option>
                                     </select>
                                 </label>
                                 <label>
@@ -841,7 +841,7 @@
                             <label for="use_libnotify">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_libnotify" id="use_libnotify" #if $sickbeard.USE_LIBNOTIFY then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_libnotify" id="use_libnotify" ${('', 'checked="checked"')[sickbeard.USE_LIBNOTIFY == True]}/>
                                     <p>should SickRage send Libnotify notifications ?</p>
                                 </span>
                             </label>
@@ -852,7 +852,7 @@
                                 <label for="libnotify_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="libnotify_notify_onsnatch" id="libnotify_notify_onsnatch" #if $sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="libnotify_notify_onsnatch" id="libnotify_notify_onsnatch" ${('', 'checked="checked"')[sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -861,7 +861,7 @@
                                 <label for="libnotify_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="libnotify_notify_ondownload" id="libnotify_notify_ondownload" #if $sickbeard.LIBNOTIFY_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="libnotify_notify_ondownload" id="libnotify_notify_ondownload" ${('', 'checked="checked"')[sickbeard.LIBNOTIFY_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -870,7 +870,7 @@
                                 <label for="libnotify_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="libnotify_notify_onsubtitledownload" id="libnotify_notify_onsubtitledownload" #if $sickbeard.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="libnotify_notify_onsubtitledownload" id="libnotify_notify_onsubtitledownload" ${('', 'checked="checked"')[sickbeard.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -895,7 +895,7 @@
                             <label for="use_pushover">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_pushover" id="use_pushover" #if $sickbeard.USE_PUSHOVER then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_pushover" id="use_pushover" ${('', 'checked="checked"')[sickbeard.USE_PUSHOVER == True]}/>
                                     <p>should SickRage send Pushover notifications ?</p>
                                 </span>
                             </label>
@@ -906,7 +906,7 @@
                                 <label for="pushover_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="pushover_notify_onsnatch" id="pushover_notify_onsnatch" #if $sickbeard.PUSHOVER_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="pushover_notify_onsnatch" id="pushover_notify_onsnatch" ${('', 'checked="checked"')[sickbeard.PUSHOVER_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -915,7 +915,7 @@
                                 <label for="pushover_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="pushover_notify_ondownload" id="pushover_notify_ondownload" #if $sickbeard.PUSHOVER_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="pushover_notify_ondownload" id="pushover_notify_ondownload" ${('', 'checked="checked"')[sickbeard.PUSHOVER_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -924,7 +924,7 @@
                                 <label for="pushover_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="pushover_notify_onsubtitledownload" id="pushover_notify_onsubtitledownload" #if $sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="pushover_notify_onsubtitledownload" id="pushover_notify_onsubtitledownload" ${('', 'checked="checked"')[sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -932,7 +932,7 @@
                             <div class="field-pair">
                                 <label for="pushover_userkey">
                                     <span class="component-title">Pushover key</span>
-                                    <input type="text" name="pushover_userkey" id="pushover_userkey" value="$sickbeard.PUSHOVER_USERKEY" class="form-control input-sm input250" />
+                                    <input type="text" name="pushover_userkey" id="pushover_userkey" value="${sickbeard.PUSHOVER_USERKEY}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -942,7 +942,7 @@
                             <div class="field-pair">
                                 <label for="pushover_apikey">
                                     <span class="component-title">Pushover API key</span>
-                                    <input type="text" name="pushover_apikey" id="pushover_apikey" value="$sickbeard.PUSHOVER_APIKEY" class="form-control input-sm input250" />
+                                    <input type="text" name="pushover_apikey" id="pushover_apikey" value="${sickbeard.PUSHOVER_APIKEY}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -952,7 +952,7 @@
                             <div class="field-pair">
                                 <label for="pushover_device">
                                     <span class="component-title">Pushover devices</span>
-                                    <input type="text" name="pushover_device" id="pushover_device" value="$sickbeard.PUSHOVER_DEVICE" class="form-control input-sm input250" />
+                                    <input type="text" name="pushover_device" id="pushover_device" value="${sickbeard.PUSHOVER_DEVICE}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -978,7 +978,7 @@
                             <label for="use_boxcar">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_boxcar" id="use_boxcar" #if $sickbeard.USE_BOXCAR then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_boxcar" id="use_boxcar" ${('', 'checked="checked"')[sickbeard.USE_BOXCAR == True]}/>
                                     <p>should SickRage send Boxcar notifications ?</p>
                                 </span>
                             </label>
@@ -989,7 +989,7 @@
                                 <label for="boxcar_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="boxcar_notify_onsnatch" id="boxcar_notify_onsnatch" #if $sickbeard.BOXCAR_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="boxcar_notify_onsnatch" id="boxcar_notify_onsnatch" ${('', 'checked="checked"')[sickbeard.BOXCAR_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -998,7 +998,7 @@
                                 <label for="boxcar_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="boxcar_notify_ondownload" id="boxcar_notify_ondownload" #if $sickbeard.BOXCAR_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="boxcar_notify_ondownload" id="boxcar_notify_ondownload" ${('', 'checked="checked"')[sickbeard.BOXCAR_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -1007,7 +1007,7 @@
                                 <label for="boxcar_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="boxcar_notify_onsubtitledownload" id="boxcar_notify_onsubtitledownload" #if $sickbeard.BOXCAR_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="boxcar_notify_onsubtitledownload" id="boxcar_notify_onsubtitledownload" ${('', 'checked="checked"')[sickbeard.BOXCAR_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -1015,7 +1015,7 @@
                             <div class="field-pair">
                                 <label for="boxcar_username">
                                     <span class="component-title">Boxcar username</span>
-                                    <input type="text" name="boxcar_username" id="boxcar_username" value="$sickbeard.BOXCAR_USERNAME" class="form-control input-sm input250" />
+                                    <input type="text" name="boxcar_username" id="boxcar_username" value="${sickbeard.BOXCAR_USERNAME}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1041,7 +1041,7 @@
                             <label for="use_boxcar2">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_boxcar2" id="use_boxcar2" #if $sickbeard.USE_BOXCAR2 then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_boxcar2" id="use_boxcar2" ${('', 'checked="checked"')[sickbeard.USE_BOXCAR2 == True]}/>
                                     <p>should SickRage send Boxcar2 notifications ?</p>
                                 </span>
                             </label>
@@ -1052,7 +1052,7 @@
                                 <label for="boxcar2_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="boxcar2_notify_onsnatch" id="boxcar2_notify_onsnatch" #if $sickbeard.BOXCAR2_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="boxcar2_notify_onsnatch" id="boxcar2_notify_onsnatch" ${('', 'checked="checked"')[sickbeard.BOXCAR2_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -1061,7 +1061,7 @@
                                 <label for="boxcar2_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="boxcar2_notify_ondownload" id="boxcar2_notify_ondownload" #if $sickbeard.BOXCAR2_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="boxcar2_notify_ondownload" id="boxcar2_notify_ondownload" ${('', 'checked="checked"')[sickbeard.BOXCAR2_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -1070,7 +1070,7 @@
                                 <label for="boxcar2_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="boxcar2_notify_onsubtitledownload" id="boxcar2_notify_onsubtitledownload" #if $sickbeard.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="boxcar2_notify_onsubtitledownload" id="boxcar2_notify_onsubtitledownload" ${('', 'checked="checked"')[sickbeard.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -1078,7 +1078,7 @@
                             <div class="field-pair">
                                 <label for="boxcar2_accesstoken">
                                     <span class="component-title">Boxcar2 access token</span>
-                                    <input type="text" name="boxcar2_accesstoken" id="boxcar2_accesstoken" value="$sickbeard.BOXCAR2_ACCESSTOKEN" class="form-control input-sm input250" />
+                                    <input type="text" name="boxcar2_accesstoken" id="boxcar2_accesstoken" value="${sickbeard.BOXCAR2_ACCESSTOKEN}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1104,7 +1104,7 @@
                             <label for="use_nma">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_nma" id="use_nma" #if $sickbeard.USE_NMA then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_nma" id="use_nma" ${('', 'checked="checked"')[sickbeard.USE_NMA == True]}/>
                                     <p>should SickRage send NMA notifications ?</p>
                                 </span>
                             </label>
@@ -1115,7 +1115,7 @@
                                 <label for="nma_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="nma_notify_onsnatch" id="nma_notify_onsnatch" #if $sickbeard.NMA_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="nma_notify_onsnatch" id="nma_notify_onsnatch" ${('', 'checked="checked"')[sickbeard.NMA_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -1124,7 +1124,7 @@
                                 <label for="nma_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="nma_notify_ondownload" id="nma_notify_ondownload" #if $sickbeard.NMA_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="nma_notify_ondownload" id="nma_notify_ondownload" ${('', 'checked="checked"')[sickbeard.NMA_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -1133,7 +1133,7 @@
                                 <label for="nma_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="nma_notify_onsubtitledownload" id="nma_notify_onsubtitledownload" #if $sickbeard.NMA_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="nma_notify_onsubtitledownload" id="nma_notify_onsubtitledownload" ${('', 'checked="checked"')[sickbeard.NMA_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -1141,7 +1141,7 @@
                             <div class="field-pair">
                                 <label for="nma_api">
                                        <span class="component-title">NMA API key:</span>
-                                    <input type="text" name="nma_api" id="nma_api" value="$sickbeard.NMA_API" class="form-control input-sm input350" />
+                                    <input type="text" name="nma_api" id="nma_api" value="${sickbeard.NMA_API}" class="form-control input-sm input350" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1152,11 +1152,11 @@
                                 <label for="nma_priority">
                                     <span class="component-title">NMA priority:</span>
                                        <select id="nma_priority" name="nma_priority" class="form-control input-sm">
-                                        <option value="-2" #if $sickbeard.NMA_PRIORITY == "-2" then 'selected="selected"' else ""#>Very Low</option>
-                                        <option value="-1" #if $sickbeard.NMA_PRIORITY == "-1" then 'selected="selected"' else ""#>Moderate</option>
-                                        <option value="0" #if $sickbeard.NMA_PRIORITY == "0" then 'selected="selected"' else ""#>Normal</option>
-                                        <option value="1" #if $sickbeard.NMA_PRIORITY == "1" then 'selected="selected"' else ""#>High</option>
-                                        <option value="2" #if $sickbeard.NMA_PRIORITY == "2" then 'selected="selected"' else ""#>Emergency</option>
+                                        <option value="-2" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '-2']}>Very Low</option>
+                                        <option value="-1" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '-1']}>Moderate</option>
+                                        <option value="0" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '0']}>Normal</option>
+                                        <option value="1" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '1']}>High</option>
+                                        <option value="2" #if ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '2']}>Emergency</option>
                                     </select>
                                 </label>
                                 <label>
@@ -1183,7 +1183,7 @@
                             <label for="use_pushalot">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_pushalot" id="use_pushalot" #if $sickbeard.USE_PUSHALOT then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_pushalot" id="use_pushalot" ${('', 'checked="checked"')[sickbeard.USE_PUSHALOT == True]}/>
                                     <p>should SickRage send Pushalot notifications ?
                                 </span>
                             </label>
@@ -1194,7 +1194,7 @@
                                 <label for="pushalot_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="pushalot_notify_onsnatch" id="pushalot_notify_onsnatch" #if $sickbeard.PUSHALOT_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="pushalot_notify_onsnatch" id="pushalot_notify_onsnatch" ${('', 'checked="checked"')[sickbeard.PUSHALOT_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -1203,7 +1203,7 @@
                                 <label for="pushalot_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="pushalot_notify_ondownload" id="pushalot_notify_ondownload" #if $sickbeard.PUSHALOT_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="pushalot_notify_ondownload" id="pushalot_notify_ondownload" ${('', 'checked="checked"')[sickbeard.PUSHALOT_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -1212,7 +1212,7 @@
                                 <label for="pushalot_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="pushalot_notify_onsubtitledownload" id="pushalot_notify_onsubtitledownload" #if $sickbeard.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="pushalot_notify_onsubtitledownload" id="pushalot_notify_onsubtitledownload" ${('', 'checked="checked"')[sickbeard.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -1220,7 +1220,7 @@
                             <div class="field-pair">
                                 <label for="pushalot_authorizationtoken">
                                     <span class="component-title">Pushalot authorization token</span>
-                                    <input type="text" name="pushalot_authorizationtoken" id="pushalot_authorizationtoken" value="$sickbeard.PUSHALOT_AUTHORIZATIONTOKEN" class="form-control input-sm input350" />
+                                    <input type="text" name="pushalot_authorizationtoken" id="pushalot_authorizationtoken" value="${sickbeard.PUSHALOT_AUTHORIZATIONTOKEN}" class="form-control input-sm input350" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1246,7 +1246,7 @@
                             <label for="use_pushbullet">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_pushbullet" id="use_pushbullet" #if $sickbeard.USE_PUSHBULLET then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_pushbullet" id="use_pushbullet" ${('', 'checked="checked"')[sickbeard.USE_PUSHBULLET == True]}/>
                                     <p>should SickRage send Pushbullet notifications ?</p>
                                 </span>
                             </label>
@@ -1257,7 +1257,7 @@
                                 <label for="pushbullet_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="pushbullet_notify_onsnatch" id="pushbullet_notify_onsnatch" #if $sickbeard.PUSHBULLET_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="pushbullet_notify_onsnatch" id="pushbullet_notify_onsnatch" ${('', 'checked="checked"')[sickbeard.PUSHBULLET_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -1266,7 +1266,7 @@
                                 <label for="pushbullet_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="pushbullet_notify_ondownload" id="pushbullet_notify_ondownload" #if $sickbeard.PUSHBULLET_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="pushbullet_notify_ondownload" id="pushbullet_notify_ondownload" ${('', 'checked="checked"')[sickbeard.PUSHBULLET_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -1275,7 +1275,7 @@
                                 <label for="pushbullet_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="pushbullet_notify_onsubtitledownload" id="pushbullet_notify_onsubtitledownload" #if $sickbeard.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="pushbullet_notify_onsubtitledownload" id="pushbullet_notify_onsubtitledownload" ${('', 'checked="checked"')[sickbeard.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -1283,7 +1283,7 @@
                             <div class="field-pair">
                                 <label for="pushbullet_api">
                                     <span class="component-title">Pushbullet API key</span>
-                                    <input type="text" name="pushbullet_api" id="pushbullet_api" value="$sickbeard.PUSHBULLET_API" class="form-control input-sm input350" />
+                                    <input type="text" name="pushbullet_api" id="pushbullet_api" value="${sickbeard.PUSHBULLET_API}" class="form-control input-sm input350" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1294,7 +1294,7 @@
                                 <label for="pushbullet_device_list">
                                     <span class="component-title">Pushbullet devices</span>
                                     <select name="pushbullet_device_list" id="pushbullet_device_list" class="form-control input-sm"></select>
-                                    <input type="hidden" id="pushbullet_device" value="$sickbeard.PUSHBULLET_DEVICE">
+                                    <input type="hidden" id="pushbullet_device" value="${sickbeard.PUSHBULLET_DEVICE}">
                                     <input type="button" class="btn btn-inline" value="Update device list" id="getPushbulletDevices" />
                                 </label>
                                 <label>
@@ -1320,7 +1320,7 @@
                             <label for="use_freemobile">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_freemobile" id="use_freemobile" #if $sickbeard.USE_FREEMOBILE then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_freemobile" id="use_freemobile" ${('', 'checked="checked"')[sickbeard.USE_FREEMOBILE == True]}/>
                                     <p>should SickRage send SMS notifications ?</p>
                                 </span>
                             </label>
@@ -1331,7 +1331,7 @@
                                 <label for="freemobile_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" #if $sickbeard.FREEMOBILE_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" ${('', 'checked="checked"')[sickbeard.FREEMOBILE_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a SMS when a download starts ?</p>
                                     </span>
                                 </label>
@@ -1340,7 +1340,7 @@
                                 <label for="freemobile_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="freemobile_notify_ondownload" id="freemobile_notify_ondownload" #if $sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="freemobile_notify_ondownload" id="freemobile_notify_ondownload" ${('', 'checked="checked"')[sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a SMS when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -1349,7 +1349,7 @@
                                 <label for="freemobile_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="freemobile_notify_onsubtitledownload" id="freemobile_notify_onsubtitledownload" #if $sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="freemobile_notify_onsubtitledownload" id="freemobile_notify_onsubtitledownload" ${('', 'checked="checked"')[sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a SMS when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -1357,7 +1357,7 @@
                             <div class="field-pair">
                                 <label for="freemobile_id">
                                     <span class="component-title">Free Mobile customer ID</span>
-                                    <input type="text" name="freemobile_id" id="freemobile_id" value="$sickbeard.FREEMOBILE_ID" class="form-control input-sm input250" />
+                                    <input type="text" name="freemobile_id" id="freemobile_id" value="${sickbeard.FREEMOBILE_ID}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1367,7 +1367,7 @@
                             <div class="field-pair">
                                 <label for="freemobile_password">
                                     <span class="component-title">Free Mobile API Key</span>
-                                    <input type="text" name="freemobile_apikey" id="freemobile_apikey" value="$sickbeard.FREEMOBILE_APIKEY" class="form-control input-sm input250" />
+                                    <input type="text" name="freemobile_apikey" id="freemobile_apikey" value="${sickbeard.FREEMOBILE_APIKEY}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1396,7 +1396,7 @@
                             <label for="use_twitter">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_twitter" id="use_twitter" #if $sickbeard.USE_TWITTER then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_twitter" id="use_twitter" ${('', 'checked="checked"')[sickbeard.USE_TWITTER == True]}/>
                                     <p>should SickRage post tweets on Twitter ?</p>
                                 </span>
                             </label>
@@ -1411,7 +1411,7 @@
                                 <label for="twitter_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="twitter_notify_onsnatch" id="twitter_notify_onsnatch" #if $sickbeard.TWITTER_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="twitter_notify_onsnatch" id="twitter_notify_onsnatch" ${('', 'checked="checked"')[sickbeard.TWITTER_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -1420,7 +1420,7 @@
                                 <label for="twitter_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="twitter_notify_ondownload" id="twitter_notify_ondownload" #if $sickbeard.TWITTER_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="twitter_notify_ondownload" id="twitter_notify_ondownload" ${('', 'checked="checked"')[sickbeard.TWITTER_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -1429,7 +1429,7 @@
                                 <label for="twitter_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="twitter_notify_onsubtitledownload" id="twitter_notify_onsubtitledownload" #if $sickbeard.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="twitter_notify_onsubtitledownload" id="twitter_notify_onsubtitledownload" ${('', 'checked="checked"')[sickbeard.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -1480,7 +1480,7 @@
                             <label for="use_trakt">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_trakt" id="use_trakt" #if $sickbeard.USE_TRAKT then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_trakt" id="use_trakt" ${('', 'checked="checked"')[sickbeard.USE_TRAKT == True]}/>
                                     <p>should SickRage send Trakt.tv notifications ?</p>
                                 </span>
                             </label>
@@ -1490,14 +1490,14 @@
                             <div class="field-pair">
                                 <label for="trakt_username">
                                     <span class="component-title">Trakt username</span>
-                                    <input type="text" name="trakt_username" id="trakt_username" value="$sickbeard.TRAKT_USERNAME" class="form-control input-sm input250" />
+                                    <input type="text" name="trakt_username" id="trakt_username" value="${sickbeard.TRAKT_USERNAME}" class="form-control input-sm input250" />
                                 </label>
                                 <p>
                                     <span class="component-desc">username of your Trakt account.</span>
                                 </p>
                             </div>
-                            <input type="hidden" id="trakt_pin_url" value="$sickbeard.TRAKT_PIN_URL">
-                            <input type="button"#if $sickbeard.TRAKT_ACCESS_TOKEN then "class=\"btn hide\"" else "class=\"btn\""# value="Get Trakt PIN" id="TraktGetPin" />
+                            <input type="hidden" id="trakt_pin_url" value="${sickbeard.TRAKT_PIN_URL}">
+                            <input type="button" class="btn ${('', 'hide')[sickbeard.TRAKT_ACCESS_TOKEN == True]}" value="Get Trakt PIN" id="TraktGetPin" />
                             <div class="field-pair">
                                 <label for="trakt_pin">
                                     <span class="component-title">Trakt PIN</span>
@@ -1511,7 +1511,7 @@
                             <div class="field-pair">
                                 <label for="trakt_timeout">
                                     <span class="component-title">API Timeout</span>
-                                    <input type="text" name="trakt_timeout" id="trakt_timeout" value="$sickbeard.TRAKT_TIMEOUT" class="form-control input-sm input75" />
+                                    <input type="text" name="trakt_timeout" id="trakt_timeout" value="${sickbeard.TRAKT_TIMEOUT}" class="form-control input-sm input75" />
                                 </label>
                                 <p>
                                     <span class="component-desc">
@@ -1524,9 +1524,9 @@
                                     <span class="component-title">Default indexer</span>
                                     <span class="component-desc">
                                         <select id="trakt_default_indexer" name="trakt_default_indexer" class="form-control input-sm">
-                                            #for $indexer in $sickbeard.indexerApi().indexers
-                                            <option value="$indexer" #if $indexer == $sickbeard.TRAKT_DEFAULT_INDEXER then "selected=\"selected\"" else ""#>$sickbeard.indexerApi().indexers[$indexer]</option>
-                                            #end for
+                                            % for indexer in sickbeard.indexerApi().indexers:
+                                            <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.TRAKT_DEFAULT_INDEXER == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
+                                            % endfor
                                         </select>
                                     </span>
                                 </label>
@@ -1535,7 +1535,7 @@
                                 <label for="trakt_sync">
                                     <span class="component-title">Sync libraries</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" #if $sickbeard.TRAKT_SYNC then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" ${('', 'checked="checked"')[sickbeard.TRAKT_SYNC == True]}/>
                                         <p>sync your SickRage show library with your trakt show library.</p>
                                     </span>
                                 </label>
@@ -1545,7 +1545,7 @@
                                     <label for="trakt_sync_remove">
                                         <span class="component-title">Remove Episodes From Collection</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="trakt_sync_remove" id="trakt_sync_remove" #if $sickbeard.TRAKT_SYNC_REMOVE then "checked=\"checked\"" else ""# />
+                                            <input type="checkbox" name="trakt_sync_remove" id="trakt_sync_remove" ${('', 'checked="checked"')[sickbeard.TRAKT_SYNC_REMOVE == True]}/>
                                             <p>Remove an Episode from your Trakt Collection if it is not in your SickRage Library.</p>
                                         </span>
                                     </label>
@@ -1555,7 +1555,7 @@
                                 <label for="trakt_sync_watchlist">
                                     <span class="component-title">Sync watchlist</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" class="enabler" name="trakt_sync_watchlist" id="trakt_sync_watchlist" #if $sickbeard.TRAKT_SYNC_WATCHLIST then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" class="enabler" name="trakt_sync_watchlist" id="trakt_sync_watchlist" ${('', 'checked="checked"')[sickbeard.TRAKT_SYNC_WATCHLIST == True]}/>
                                         <p>sync your SickRage show watchlist with your trakt show watchlist (either Show and Episode).</p>
                                         <p>Episode will be added on watch list when wanted or snatched and will be removed when downloaded </p>
                                     </span>
@@ -1566,9 +1566,9 @@
                                     <label for="trakt_method_add">
                                         <span class="component-title">Watchlist add method</span>
                                            <select id="trakt_method_add" name="trakt_method_add" class="form-control input-sm">
-                                            <option value="0" #if $sickbeard.TRAKT_METHOD_ADD == 0 then "selected=\"selected\"" else ""#>Skip All</option>
-                                            <option value="1" #if $sickbeard.TRAKT_METHOD_ADD == 1 then "selected=\"selected\"" else ""#>Download Pilot Only</option>
-                                            <option value="2" #if $sickbeard.TRAKT_METHOD_ADD == 2 then "selected=\"selected\"" else ""#>Get whole show</option>
+                                            <option value="0" ${('', 'selected="selected"')[sickbeard.TRAKT_METHOD_ADD == 0]}>Skip All</option>
+                                            <option value="1" ${('', 'selected="selected"')[sickbeard.TRAKT_METHOD_ADD == 1]}>Download Pilot Only</option>
+                                            <option value="2" ${('', 'selected="selected"')[sickbeard.TRAKT_METHOD_ADD == 2]}>Get whole show</option>
                                         </select>
                                     </label>
                                     <label>
@@ -1580,7 +1580,7 @@
                                     <label for="trakt_remove_watchlist">
                                         <span class="component-title">Remove episode</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="trakt_remove_watchlist" id="trakt_remove_watchlist" #if $sickbeard.TRAKT_REMOVE_WATCHLIST then "checked=\"checked\"" else ""# />
+                                            <input type="checkbox" name="trakt_remove_watchlist" id="trakt_remove_watchlist" ${('', 'checked="checked"')[sickbeard.TRAKT_REMOVE_WATCHLIST == True]}/>
                                             <p>remove an episode from your watchlist after it is downloaded.</p>
                                         </span>
                                     </label>
@@ -1589,7 +1589,7 @@
                                     <label for="trakt_remove_serieslist">
                                         <span class="component-title">Remove series</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="trakt_remove_serieslist" id="trakt_remove_serieslist" #if $sickbeard.TRAKT_REMOVE_SERIESLIST then "checked=\"checked\"" else ""# />
+                                            <input type="checkbox" name="trakt_remove_serieslist" id="trakt_remove_serieslist" ${('', 'checked="checked"')[sickbeard.TRAKT_REMOVE_SERIESLIST == True]}/>
                                             <p>remove the whole series from your watchlist after any download.</p>
                                         </span>
                                     </label>
@@ -1598,7 +1598,7 @@
                                     <label for="trakt_remove_show_from_sickrage">
                                         <span class="component-title">Remove watched show:</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="trakt_remove_show_from_sickrage" id="trakt_remove_show_from_sickrage" #if $sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKRAGE then "checked=\"checked\"" else ""# />
+                                            <input type="checkbox" name="trakt_remove_show_from_sickrage" id="trakt_remove_show_from_sickrage" ${('', 'checked="checked"')[sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKRAGE == True]}/>
                                             <p>remove the show from sickrage if it's ended and completely watched</p>
                                         </span>
                                     </label>
@@ -1606,24 +1606,24 @@
                                 <div class="field-pair">
                                     <label for="trakt_start_paused">
                                         <span class="component-title">Start paused</span>
-#if not $sickbeard.TRAKT_USE_ROLLING_DOWNLOAD
+% if not sickbeard.TRAKT_USE_ROLLING_DOWNLOAD:
                                         <span class="component-desc">
-                                            <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" #if $sickbeard.TRAKT_START_PAUSED then "checked=\"checked\"" else ""# />
+                                            <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" ${('', 'checked="checked"')[sickbeard.TRAKT_START_PAUSED == True]}/>
                                             <p>show's grabbed from your trakt watchlist start paused.</p>
                                         </span>
-#else
+% else:
                                         <span class="component-desc">
-                                            <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" #if $sickbeard.TRAKT_START_PAUSED then "checked=\"checked\"" else ""# disabled="disable"/>
+                                            <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" #${('', 'checked="checked"')[sickbeard.TRAKT_START_PAUSED == True]} disabled="disable"/>
                                             <p>show's grabbed from your trakt watchlist start paused.</p>
                                         </span>
-#end if
+% endif
                                     </label>
                                 </div>
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_blacklist_name">
                                     <span class="component-title">Trakt blackList name</span>
-                                    <input type="text" name="trakt_blacklist_name" id="trakt_blacklist_name" value="$sickbeard.TRAKT_BLACKLIST_NAME" class="form-control input-sm input150" />
+                                    <input type="text" name="trakt_blacklist_name" id="trakt_blacklist_name" value="${sickbeard.TRAKT_BLACKLIST_NAME}" class="form-control input-sm input150" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1634,7 +1634,7 @@
                                 <label for="trakt_use_rolling_download">
                                     <span class="component-title">Use rolling download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" class="enabler" name="trakt_use_rolling_download" id="trakt_use_rolling_download" #if $sickbeard.TRAKT_USE_ROLLING_DOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" class="enabler" name="trakt_use_rolling_download" id="trakt_use_rolling_download" ${('', 'checked="checked"')[sickbeard.TRAKT_USE_ROLLING_DOWNLOAD == True]}/>
                                         <p>Collect defined number of episodes after last watched one</p>
                                     </span>
                                 </label>
@@ -1644,7 +1644,7 @@
                                     <label for="trakt_rolling_num_ep">
                                         <span class="component-title">Number of episodes</span>
                                         <span class="component-desc">
-                                        <input type="number" name="trakt_rolling_num_ep" id="trakt_rolling_num_ep" value="$sickbeard.TRAKT_ROLLING_NUM_EP" class="form-control input-sm input75"/>
+                                        <input type="number" name="trakt_rolling_num_ep" id="trakt_rolling_num_ep" value="${sickbeard.TRAKT_ROLLING_NUM_EP}" class="form-control input-sm input75"/>
                                     </label>
                                     <label>
                                         <span class="component-title">&nbsp;</span>
@@ -1654,7 +1654,7 @@
                                 <div class="field-pair">
                                     <label for="trakt_rolling_frequency">
                                         <span class="component-title">Rolling frequency check</span>
-                                        <input type="text" name="trakt_rolling_frequency" id="trakt_rolling_frequency" value="$sickbeard.TRAKT_ROLLING_FREQUENCY" class="form-control input-sm input250" />
+                                        <input type="text" name="trakt_rolling_frequency" id="trakt_rolling_frequency" value="${sickbeard.TRAKT_ROLLING_FREQUENCY}" class="form-control input-sm input250" />
                                     </label>
                                     <p>
                                         <span class="component-desc">Hours between check. (Cannot be lower than 4 hours)</span>
@@ -1664,7 +1664,7 @@
                                     <label for="trakt_rolling_add_paused">
                                         <span class="component-title">Add new show as paused</span>
                                         <span class="component-desc">
-                                        <input type="checkbox" name="trakt_rolling_add_paused" id="trakt_rolling_add_paused" #if $sickbeard.TRAKT_ROLLING_ADD_PAUSED then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="trakt_rolling_add_paused" id="trakt_rolling_add_paused" ${('', 'checked="checked"')[sickbeard.TRAKT_ROLLING_ADD_PAUSED == True]}/>
                                     </label>
                                     <label>
                                         <span class="component-title">&nbsp;</span>
@@ -1690,7 +1690,7 @@
                             <label for="use_email">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_email" id="use_email" #if $sickbeard.USE_EMAIL then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_email" id="use_email" ${('', 'checked="checked"')[sickbeard.USE_EMAIL == True]}/>
                                     <p>should SickRage send email notifications ?</p>
                                 </span>
                             </label>
@@ -1701,7 +1701,7 @@
                                 <label for="email_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="email_notify_onsnatch" id="email_notify_onsnatch" #if $sickbeard.EMAIL_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="email_notify_onsnatch" id="email_notify_onsnatch" ${('', 'checked="checked"')[sickbeard.EMAIL_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -1710,7 +1710,7 @@
                                 <label for="email_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="email_notify_ondownload" id="email_notify_ondownload" #if $sickbeard.EMAIL_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="email_notify_ondownload" id="email_notify_ondownload" ${('', 'checked="checked"')[sickbeard.EMAIL_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -1719,7 +1719,7 @@
                                 <label for="email_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="email_notify_onsubtitledownload" id="email_notify_onsubtitledownload" #if $sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="email_notify_onsubtitledownload" id="email_notify_onsubtitledownload" ${('', 'checked="checked"')[sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -1727,7 +1727,7 @@
                             <div class="field-pair">
                                 <label for="email_host">
                                     <span class="component-title">SMTP host</span>
-                                    <input type="text" name="email_host" id="email_host" value="$sickbeard.EMAIL_HOST" class="form-control input-sm input250" />
+                                    <input type="text" name="email_host" id="email_host" value="${sickbeard.EMAIL_HOST}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1737,7 +1737,7 @@
                             <div class="field-pair">
                                 <label for="email_port">
                                     <span class="component-title">SMTP port</span>
-                                    <input type="text" name="email_port" id="email_port" value="$sickbeard.EMAIL_PORT" class="form-control input-sm input75" />
+                                    <input type="text" name="email_port" id="email_port" value="${sickbeard.EMAIL_PORT}" class="form-control input-sm input75" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1747,7 +1747,7 @@
                             <div class="field-pair">
                                 <label for="email_from">
                                     <span class="component-title">SMTP from</span>
-                                    <input type="text" name="email_from" id="email_from" value="$sickbeard.EMAIL_FROM" class="form-control input-sm input250" />
+                                    <input type="text" name="email_from" id="email_from" value="${sickbeard.EMAIL_FROM}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1758,7 +1758,7 @@
                                 <label for="email_tls">
                                     <span class="component-title">Use TLS</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="email_tls" id="email_tls" #if $sickbeard.EMAIL_TLS then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="email_tls" id="email_tls" ${('', 'checked="checked"')[sickbeard.EMAIL_TLS == True]}/>
                                         <p>check to use TLS encryption.</p>
                                     </span>
                                 </label>
@@ -1766,7 +1766,7 @@
                             <div class="field-pair">
                                 <label for="email_user">
                                     <span class="component-title">SMTP user</span>
-                                    <input type="text" name="email_user" id="email_user" value="$sickbeard.EMAIL_USER" class="form-control input-sm input250" />
+                                    <input type="text" name="email_user" id="email_user" value="${sickbeard.EMAIL_USER}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1776,7 +1776,7 @@
                             <div class="field-pair">
                                 <label for="email_password">
                                     <span class="component-title">SMTP password</span>
-                                    <input type="password" name="email_password" id="email_password" value="$sickbeard.EMAIL_PASSWORD" class="form-control input-sm input250" />
+                                    <input type="password" name="email_password" id="email_password" value="${sickbeard.EMAIL_PASSWORD}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1786,7 +1786,7 @@
                             <div class="field-pair">
                                 <label for="email_list">
                                     <span class="component-title">Global email list</span>
-                                    <input type="text" name="email_list" id="email_list" value="$sickbeard.EMAIL_LIST" class="form-control input-sm input350" />
+                                    <input type="text" name="email_list" id="email_list" value="${sickbeard.EMAIL_LIST}" class="form-control input-sm input350" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
