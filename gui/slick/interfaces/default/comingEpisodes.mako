@@ -1,6 +1,8 @@
 <%!
     import sickbeard
     from sickbeard.helpers import anon_url
+    from sickbeard import sbdatetime
+    from sickbeard.common import qualityPresets, qualityPresetStrings
     import datetime
 %>
 <%
@@ -337,10 +339,10 @@ $(document).ready(function(){
                 <% too_late_header = True %>
                 % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
                     % if cur_ep_airdate == today.date():
-                        <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
+                        <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}<span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
                         <% today_header = True %>
                     % else:
-                        <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
+                        <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
                     % endif
                 % endif
             % endif
@@ -410,7 +412,7 @@ $(document).ready(function(){
 % if cur_result['imdb_id']:
                         <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" />
 % endif
-                        <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_name']}"><img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" /></a>
+                        <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_url']}"><img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" /></a>
                         <span><a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}" class="epSearch forceUpdate"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a></span>
                     </span>
                 </div>
@@ -457,7 +459,7 @@ $(document).ready(function(){
 
 % if 'calendar' == layout:
 
-<% today = datetime.date.today() %>
+##<%today = datetime.date.today()%>
 <% dates = [today + datetime.timedelta(days = i) for i in range(7)] %>
 <% tbl_day = 0 %>
 <br>
