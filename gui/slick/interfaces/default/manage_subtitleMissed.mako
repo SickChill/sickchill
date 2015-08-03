@@ -25,7 +25,7 @@
 <form action="${sbRoot}/manage/subtitleMissed" method="get">
 Manage episodes without <select name="whichSubs" class="form-control form-control-inline input-sm">
 <option value="all">All</option>
-<% sub_langs = [subtitles.fromietf(x) for x in subtitles.wantedLanguages] %>
+<% sub_langs = [subtitles.fromietf(x) for x in subtitles.wantedLanguages()] %>
 % for sub_lang in sub_langs:
 <option value="${sub_lang.opensubtitles}">${sub_lang.name}</option>
 % endfor
