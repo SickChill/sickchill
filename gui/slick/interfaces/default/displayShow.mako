@@ -208,7 +208,7 @@ $(document).ready(function(){
                     <span class="quality ${qualityPresetStrings[show.quality]}">${qualityPresetStrings[show.quality]}</span>
                 % else:
                 % if anyQualities:
-                    <i>Initial:</i> ${", ".join([Quality.qualityStrings[x] for x in sorted(anyQualities)])}${("", "</br>")[bestQualities]}
+                    <i>Initial:</i> ${", ".join([Quality.qualityStrings[x] for x in sorted(anyQualities)])}${("", "</br>")[len(bestQualities) > 0]}
                 % endif
                 % if bestQualities:
                     <i>Replace with:</i> ${", ".join([Quality.qualityStrings[x] for x in sorted(bestQualities)])}
