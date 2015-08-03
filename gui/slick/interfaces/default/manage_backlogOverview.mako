@@ -22,7 +22,7 @@ $(document).ready(function(){
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : #if sickbeard.TRIM_ZERO then "true" else "false"#
+        trimZero : ${('False', 'True')[sickbeard.TRIM_ZERO == True]}
     });
     % endif
 
@@ -58,7 +58,7 @@ Jump to Show
         <option value="${curShow.indexerid}">${curShow.name}</option>
         % endif
     % endfor
-</select>
+    </select>
 </div>
 
 <table class="sickbeardTable" cellspacing="0" border="0" cellpadding="0">
