@@ -3019,7 +3019,7 @@ class Manage(Home, WebRoot):
             if cur_indexer_id not in sorted_show_ids:
                 sorted_show_ids.append(cur_indexer_id)
 
-        return t.render(submenu=self.ManageMenu(), whichSubs=whichSub, show_names=show_names, ep_counts=ep_counts, sorted_show_ids=sorted_show_ids,
+        return t.render(submenu=self.ManageMenu(), whichSubs=whichSubs, show_names=show_names, ep_counts=ep_counts, sorted_show_ids=sorted_show_ids,
                         title='Episode Overview', header='Episode Overview')
 
 
