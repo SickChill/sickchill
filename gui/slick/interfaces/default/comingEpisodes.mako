@@ -1,6 +1,7 @@
 <%!
     import sickbeard
     from sickbeard.helpers import anon_url
+    import datetime
 %>
 <%
     sort = sickbeard.COMING_EPS_SORT
@@ -60,7 +61,6 @@
 
 <script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
-<!--
 $.tablesorter.addParser({
     id: 'loadingNames',
     is: function(s) {
@@ -140,7 +140,6 @@ $(document).ready(function(){
     % endif
 
 });
-//-->
 </script>
 
 <% show_div = 'listing-default' %>
@@ -167,15 +166,15 @@ $(document).ready(function(){
 % for cur_result in sql_results:
 <%
     cur_indexer = int(cur_result['indexer'])
-    this_cant_be_runtime_mako_uses_it = cur_result['runtime']
+    run_time = cur_result['runtime']
 
     if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
         continue
 
     cur_ep_airdate = cur_result['localtime'].date()
 
-    if this_cant_be_runtime_mako_uses_it:
-        cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = this_cant_be_runtime_mako_uses_it)
+    if run_time:
+        cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = run_time)
         if cur_ep_enddate < today:
             show_div = 'listing-overdue'
         elif cur_ep_airdate >= next_week.date():
@@ -187,7 +186,7 @@ $(document).ready(function(){
                 show_div = 'listing-default'
 %>
 
-        <!-- start $cur_result['show_name'] //-->
+        <!-- start ${cur_result['show_name']} //-->
         <tr class="${show_div}">
             ## forced to use a div to wrap airdate, the column sort went crazy with a span
             <td align="center" nowrap="nowrap">
@@ -251,11 +250,8 @@ $(document).ready(function(){
 
 
 % elif layout in ['banner', 'poster']:
-
-
 <!-- start non list view //-->
 <script type="text/javascript" charset="utf-8">
-<!--
 $(document).ready(function(){
     $('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
     $('.ep_summary').hide();
@@ -281,7 +277,6 @@ $(document).ready(function(){
     % endif
 
 });
-//-->
 </script>
 
 <%
@@ -302,7 +297,7 @@ $(document).ready(function(){
     if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
         continue
 
-    this_cant_be_runtime_mako_uses_it = cur_result['runtime']
+    run_time = cur_result['runtime']
 %>
     % if 'network' == sort:
         <% show_network = ('no network', cur_result['network'])[cur_result['network']] %>
@@ -314,8 +309,8 @@ $(document).ready(function(){
         % endif
         <% cur_ep_airdate = cur_result['localtime'].date() %>
 
-        % if this_cant_be_runtime_mako_uses_it:
-            <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = this_cant_be_runtime_mako_uses_it) %>
+        % if run_time:
+            <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = run_time) %>
             % if cur_ep_enddate < today:
                 <% show_div = 'ep_listing listing-overdue' %>
             % elif cur_ep_airdate >= next_week.date():
@@ -332,8 +327,8 @@ $(document).ready(function(){
         <% cur_ep_airdate = cur_result['localtime'].date() %>
 
         % if cur_segment != cur_ep_airdate:
-            %if this_cant_be_runtime_mako_uses_it:
-                <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = this_cant_be_runtime_mako_uses_it) %>
+            %if run_time:
+                <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = run_time) %>
                 % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
                         <br /><h2 class="day">Missed</h2>
                 <% missed_header = True %>
@@ -357,7 +352,7 @@ $(document).ready(function(){
             <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
             <% today_header = True %>
         % endif
-        % if this_cant_be_runtime_mako_uses_it:
+        % if run_time:
             % if cur_ep_enddate < today:
                 <% show_div = 'ep_listing listing-overdue' %>
             % elif cur_ep_airdate >= next_week.date():
@@ -374,8 +369,8 @@ $(document).ready(function(){
         % elif 'show' == sort:
             <% cur_ep_airdate = cur_result['localtime'].date() %>
 
-            % if this_cant_be_runtime_mako_uses_it:
-                <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = this_cant_be_runtime_mako_uses_it) %>
+            % if run_time:
+                <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = run_time) %>
                 % if cur_ep_enddate < today:
                     <% show_div = 'ep_listing listing-overdue listingradius' %>
                 % elif cur_ep_airdate >= next_week.date():
@@ -481,7 +476,7 @@ $(document).ready(function(){
             % endif
 
             <% cur_indexer = int(cur_result['indexer']) %>
-            <% this_cant_be_runtime_mako_uses_it = cur_result['runtime'] %>
+            <% run_time = cur_result['runtime'] %>
             <% airday = cur_result['localtime'].date() %>
 
             % if airday == day:
