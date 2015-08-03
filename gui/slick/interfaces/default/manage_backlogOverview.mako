@@ -62,13 +62,11 @@ Jump to Show
 </div>
 
 <table class="sickbeardTable" cellspacing="0" border="0" cellpadding="0">
-
-% for curShow in sorted(sickbeard.showList, key=lambda x: x.name):
+% for curShow in sorted(sickbeard.showList, key=lambda x= x.name):
 
 % if showCounts[curShow.indexerid][Overview.QUAL] + showCounts[curShow.indexerid][Overview.WANTED] == 0:
     <% continue %>
 % endif
-
     <tr class="seasonheader" id="show-${curShow.indexerid}">
         <td colspan="3" class="align-left">
             <br/><h2><a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></h2>
