@@ -62,11 +62,11 @@ Jump to Show
 </div>
 
 <table class="sickbeardTable" cellspacing="0" border="0" cellpadding="0">
-% for curShow in sorted(sickbeard.showList, key=lambda x= x.name):
+% for curShow in sorted(sickbeard.showList, key=lambda x: x.name):
 
-% if showCounts[curShow.indexerid][Overview.QUAL] + showCounts[curShow.indexerid][Overview.WANTED] == 0:
-    <% continue %>
-% endif
+    % if showCounts[curShow.indexerid][Overview.QUAL] + showCounts[curShow.indexerid][Overview.WANTED] == 0:
+        <% continue %>
+    % endif
     <tr class="seasonheader" id="show-${curShow.indexerid}">
         <td colspan="3" class="align-left">
             <br/><h2><a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></h2>
@@ -80,25 +80,26 @@ Jump to Show
 
     <tr class="seasoncols"><th>Episode</th><th>Name</th><th class="nowrap">Airdate</th></tr>
 
-% for curResult in showSQLResults[curShow.indexerid]:
-    <% whichStr = str(curResult['season']) + 'x' + str(curResult['episode']) %>
-    % try:
-        <% overview = showCats[curShow.indexerid][whichStr] %>
-    % except Exception:
-        <% continue %>
-    % endtry
+    % for curResult in showSQLResults[curShow.indexerid]:
+        <% whichStr = str(curResult['season']) + 'x' + str(curResult['episode']) %>
+        % try:
+            <% overview = showCats[curShow.indexerid][whichStr] %>
+        % except Exception:
+            <% continue %>
+        % endtry
 
-    % if overview not in (Overview.QUAL, Overview.WANTED):
-        <% continue %>
-    % endif
+        % if overview not in (Overview.QUAL, Overview.WANTED):
+            <% continue %>
+        % endif
 
-    <tr class="seasonstyle ${Overview.overviewStrings[showCats[curShow.indexerid][whichStr]]}">
-        <td class="tableleft" align="center">${whichStr}</td>
-        <td>
-        <td class="tableright" align="center" class="nowrap"><div class="${fuzzydate}">${curResult["name"]}</td>${(sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network))), 'never')[int(curResult['airdate']) == 1]}</div></td>
-    </tr>
-% endfor
-
+        <tr class="seasonstyle ${Overview.overviewStrings[showCats[curShow.indexerid][whichStr]]}">
+            <td class="tableleft" align="center">${whichStr}</td>
+            <td class="tableright" align="center" class="nowrap">
+                <div class="${fuzzydate}">${curResult["name"]}</div>
+            </td>
+            <td><div>${(sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network))), 'never')[int(curResult['airdate']) == 1]}</div></td>
+        </tr>
+    % endfor
 % endfor
 
 </table>
