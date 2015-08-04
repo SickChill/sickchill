@@ -4,6 +4,7 @@
     from sickbeard import sbdatetime
     from sickbeard.common import qualityPresets, qualityPresetStrings
     import datetime
+    import time
 %>
 <%
     sort = sickbeard.COMING_EPS_SORT
@@ -302,7 +303,7 @@ $(document).ready(function(){
     run_time = cur_result['runtime']
 %>
     % if 'network' == sort:
-        <% show_network = ('no network', cur_result['network'])[cur_result['network']] %>
+        <% show_network = ('no network', cur_result['network'])[len(cur_result['network']) > 0] %>
         % if cur_segment != show_network:
             <div class="comingepheader">
                <br><h2 class="network">${show_network}</h2>
@@ -392,7 +393,7 @@ $(document).ready(function(){
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <tr>
             <th ${('class="nobg"', 'rowspan="2"')[banner == layout]} valign="top">
-                <a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}"><img alt="" class="${('posterThumb', 'bannerThumb')[banner == layout]}" src="${sbRoot}/showPoster/?show=${cur_result['showid']}&amp;which=${(layout, 'poster_thumb')['poster' == layout]}" /></a>
+                <a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}"><img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}" src="${sbRoot}/showPoster/?show=${cur_result['showid']}&amp;which=${(layout, 'poster_thumb')[layout == 'poster']}" /></a>
             </th>
 % if 'banner' == layout:
         </tr>

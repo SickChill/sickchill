@@ -16,7 +16,7 @@
 <div id="summary2" class="align-left">
 <h3>Backlog Search:</h3>
 <a class="btn" href="${sbRoot}/manage/manageSearches/forceBacklog"><i class="icon-exclamation-sign"></i> Force</a>
-<a class="btn" href="${sbRoot}/manage/manageSearches/pauseBacklog?paused=#if $backlogPaused then "0" else "1"#"><i class="#if $backlogPaused then "icon-play" else "icon-pause"#"></i> #if $backlogPaused then "Unpause" else "Pause"#</a>
+<a class="btn" href="${sbRoot}/manage/manageSearches/pauseBacklog?paused=${('1', '0')[backlogPaused == True]}"><i class="icon-${('paused', 'play')[backlogPaused == True]}"></i> ${('pause', 'Unpause')[backlogPaused == True]}</a>
 % if not backlogRunning:
     Not in progress<br />
 % else:

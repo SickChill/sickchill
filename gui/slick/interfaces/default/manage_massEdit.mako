@@ -1,22 +1,17 @@
 <%!
     import sickbeard
     from sickbeard import common
-    from sickbeard.common import *
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings
     from sickbeard import exceptions
-
-    global $title="Mass Edit"
-    global $header="Mass Edit"
-    global $topmenu="manage"#
-
-    import os.path
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
-    if quality_value != None:
-        initial_quality = int(quality_value)
-    else:
-        initial_quality = common.SD
-    endif
-    anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
 %>
+% if quality_value != None:
+    <% initial_quality = int(quality_value) %>
+% else:
+    <% initial_quality = common.SD %>
+% endif
+<% anyQualities, bestQualities = common.Quality.splitQuality(initial_quality) %>
+<%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/massEdit.js?${sbPID}"></script>
 
@@ -26,7 +21,7 @@
 <div class="optionWrapper">
     <span class="selectTitle">Root Directories <span class="separator">*</span></span><br />
     % for cur_dir in root_dir_list:
-        % cur_index = root_dir_list.index(cur_dir)
+        <% cur_index = root_dir_list.index(cur_dir) %>
         <div>
             <input class="btn edit_root_dir" type="button" class="edit_root_dir" id="edit_root_dir_${cur_index}" value="Edit" />
             <input class="btn delete_root_dir" type="button" class="delete_root_dir" id="delete_root_dir_${cur_index}" value="Delete" />
@@ -42,10 +37,10 @@
     <div class="selectChoices">
         <select id="qualityPreset" name="quality_preset" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            % selected = None
-            <option value="0"  #if $quality_value != None and $quality_value not in $common.qualityPresets then "selected=\"selected\"" else ""#>Custom</option>
+            <% selected = None %>
+            <option value="0" ${('', 'selected="selected"')[quality_value != None and quality_value not in common.qualityPresets]}>Custom</option>
             % for curPreset in sorted(common.qualityPresets):
-            <option value="${curPreset}" #if $quality_value == $curPreset then "selected=\"selected\"" else ""#>${common.qualityPresetStrings[curPreset]}</option>
+            <option value="${curPreset}" ${('', 'selected="selected"')[quality_value == curPreset]}>${common.qualityPresetStrings[curPreset]}</option>
             % endfor
         </select>
     </div><br />
@@ -53,19 +48,19 @@
     <div id="customQuality">
         <div class="manageCustom pull-left">
         <h4>Inital</h4>
-            % anyQualityList = filter(lambda x: x > common.Quality.NONE, common.Quality.qualityStrings)
+            <% anyQualityList = filter(lambda x: x > common.Quality.NONE, common.Quality.qualityStrings) %>
             <select id="anyQualities" name="anyQualities" multiple="multiple" size="len($anyQualityList)">
             % for curQuality in sorted(anyQualityList):
-            <option value="${curQuality}" #if $curQuality in $anyQualities then "selected=\"selected\"" else ""#>${common.Quality.qualityStrings[curQuality]}</option>
+            <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in anyQualities]}>${common.Quality.qualityStrings[curQuality]}</option>
             % endfor
             </select>
         </div>
         <div class="manageCustom pull-left">
         <h4>Archive</h4>
-            % bestQualityList = filter(lambda x: x >= common.Quality.SDTV, common.Quality.qualityStrings)
+            <% bestQualityList = filter(lambda x: x >= common.Quality.SDTV, common.Quality.qualityStrings) %>
             <select id="bestQualities" name="bestQualities" multiple="multiple" size="len(${bestQualityList})">
             % for curQuality in sorted(bestQualityList):
-            <option value="${curQuality}" #if $curQuality in $bestQualities then "selected=\"selected\"" else ""#>${common.Quality.qualityStrings[curQuality]}</option>
+            <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in bestQualities]}>${common.Quality.qualityStrings[curQuality]}</option>
             % endfor
             </select>
         </div>
@@ -74,16 +69,14 @@
 </div>
 
 % if anyQualities + bestQualities:
-<%
-    isSelected = ' selected="selected"'
-    isEnabled = isSelected
-    isDisabled = isSelected
-    if archive_firstmatch_value:
-        isDisabled = ''
-    else
-        isEnabled = ''
-    endif
-%>
+<% isSelected = ' selected="selected"' %>
+<% isEnabled = isSelected %>
+<% isDisabled = isSelected %>
+% if archive_firstmatch_value:
+    <% isDisabled = '' %>
+% else:
+    <% isEnabled = '' %>
+% endif
 <div class="optionWrapper clearfix">
 <span class="selectTitle">Archive on first match</span>
     <div class="selectChoices">
@@ -101,8 +94,8 @@
     <div class="selectChoices">
         <select id="edit_flatten_folders" name="flatten_folders" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" #if $flatten_folders_value then "selected=\"selected\"" else ""#>enable</option>
-            <option value="disable" #if $flatten_folders_value == False then "selected=\"selected\"" else ""#>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[flatten_folders_value == True]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[flatten_folders_value == False]}>disable</option>
         </select>
     </div>
 </div>
@@ -112,8 +105,8 @@
     <div class="selectChoices">
         <select id="edit_paused" name="paused" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" #if $paused_value then "selected=\"selected\"" else ""#>enable</option>
-            <option value="disable" #if $paused_value == False then "selected=\"selected\"" else ""#>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[paused_value == True]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[paused_value == False]}>disable</option>
         </select>
     </div><br />
 </div>
@@ -124,7 +117,7 @@
       <select id="edit_default_ep_status" name="default_ep_status" class="form-control form-control-inline input-sm">
           <option value="keep">&lt; keep &gt;</option>
           % for curStatus in [WANTED, SKIPPED, ARCHIVED, IGNORED]:
-          <option value="${curStatus}" #if $curStatus == $default_ep_status_value then 'selected="selected"' else ''#>${statusStrings[curStatus]}</option>
+          <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == default_ep_status_value]}>${statusStrings[curStatus]}</option>
           % endfor
       </select>
     </div><br />
@@ -135,8 +128,8 @@
     <div class="selectChoices">
         <select id="edit_scene" name="scene" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" #if $scene_value then "selected=\"selected\"" else ""#>enable</option>
-            <option value="disable" #if $scene_value == False then "selected=\"selected\"" else ""#>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[scene_value == True]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[scene_value == False]}>disable</option>
         </select>
     </div><br />
 </div>
@@ -146,8 +139,8 @@
     <div class="selectChoices">
         <select id="edit_anime" name="anime" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" #if $anime_value then "selected=\"selected\"" else ""#>enable</option>
-            <option value="disable" #if $anime_value == False then "selected=\"selected\"" else ""#>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[anime_value == True]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[anime_value == False]}>disable</option>
         </select>
     </div><br />
 </div>
@@ -157,8 +150,8 @@
     <div class="selectChoices">
         <select id="edit_sports" name="sports" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" #if $sports_value then "selected=\"selected\"" else ""#>enable</option>
-            <option value="disable" #if $sports_value == False then "selected=\"selected\"" else ""#>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[sports_value == True]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[sports_value == False]}>disable</option>
         </select>
     </div><br />
 </div>
@@ -168,8 +161,8 @@
     <div class="selectChoices">
         <select id="edit_air_by_date" name="air_by_date" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" #if $air_by_date_value then "selected=\"selected\"" else ""#>enable</option>
-            <option value="disable" #if $air_by_date_value == False then "selected=\"selected\"" else ""#>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[air_by_date_value == True]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[air_by_date_value == False]}>disable</option>
         </select>
     </div><br />
 </div>
@@ -179,8 +172,8 @@
     <div class="selectChoices">
         <select id="edit_subtitles" name="subtitles" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" #if $subtitles_value then "selected=\"selected\"" else ""#>enable</option>
-            <option value="disable" #if $subtitles_value == False then "selected=\"selected\"" else ""#>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[subtitles_value == True]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[subtitles_value == False]}>disable</option>
         </select>
     </div><br />
 </div>
@@ -198,9 +191,6 @@
 <br />
 
 <script type="text/javascript" charset="utf-8">
-<!--
     jQuery('#location').fileBrowser({ title: 'Select Show Location' });
-//-->
 </script>
-
-% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>
