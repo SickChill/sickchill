@@ -220,7 +220,7 @@ $(document).ready(function(){
                     % for action in sorted(hItem["actions"]):
                         <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
                         % if curStatus == SUBTITLED:
-                            <img src="${sbRoot}/images/subtitles/${action['provider']}.png" width="16" height="16" style="vertical-align:middle;" alt="${action["provider"]}" title="${action["provider"].capitalize()}: ${os.path.basename(action["resource"])}"/>
+                            <img src="${sbRoot}/images/${action['provider']}.png" width="16" height="16" style="vertical-align:middle;" alt="${action["provider"]}" title="${action["provider"].capitalize()}: ${os.path.basename(action["resource"])}"/>
                             <span style="vertical-align:middle;"> / </span>
                             <img width="16" height="11" style="vertical-align:middle;" src="${sbRoot}/images/subtitles/flags/${action['resource']}.png" onError="this.onerror=null;this.src='${sbRoot}/images/flags/unknown.png';" style="vertical-align: middle !important;">
                             &nbsp;
