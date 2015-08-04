@@ -59,7 +59,7 @@
                             <label for="use_subtitles" class="clearfix">
                                 <span class="component-title">Search Subtitles</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" #if $sickbeard.USE_SUBTITLES then " checked=\"checked\"" else ""# id="use_subtitles" name="use_subtitles">
+                                    <input type="checkbox" class="enabler" ${("", " checked=\"checked\"")[bool(sickbeard.USE_SUBTITLES)]} id="use_subtitles" name="use_subtitles">
                                 </span>
                             </label>
                         </div>
@@ -162,8 +162,8 @@
                     <fieldset class="component-group-list" style="margin-left: 50px; margin-top:36px">
                         <ul id="service_order_list">
                         % for curService in sickbeard.subtitles.sortedServiceList():
-                            <li class="ui-state-default" id="$curService['name']">
-                                <input type="checkbox" id="enable_$curService['name']" class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] == True]}/>
+                            <li class="ui-state-default" id="${curService['name']}">
+                                <input type="checkbox" id="enable_${curService['name']}" class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] == True]}/>
                                 <a href="${anon_url(curService['url'])}" class="imgLink" target="_new">
                                     <img src="${sbRoot}/images/subtitles/${curService['image']}" alt="${curService['url']}" title="${curService['url']}" width="16" height="16" style="vertical-align:middle;"/>
                                 </a>

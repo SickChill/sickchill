@@ -311,7 +311,7 @@ $(document).ready(function(){
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('false', 'true')[sickbeard.TRIM_ZERO]}
+        trimZero : ${('false', 'true')[bool(sickbeard.TRIM_ZERO)]}
     });
     % endif
 

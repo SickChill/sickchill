@@ -1,5 +1,4 @@
 <%!
-    import os.path
     import datetime
     import locale
     import sickbeard

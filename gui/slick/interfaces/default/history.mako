@@ -74,7 +74,7 @@ $(document).ready(function(){
         dateHasTime : true,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET_W_SECONDS}',
-        trimZero : ${('false', 'true')[sickbeard.TRIM_ZERO]},
+        trimZero : ${('false', 'true')[bool(sickbeard.TRIM_ZERO)]},
         dtGlue : ', ',
     });
     % endif

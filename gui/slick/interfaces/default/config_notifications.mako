@@ -1156,7 +1156,7 @@
                                         <option value="-1" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '-1']}>Moderate</option>
                                         <option value="0" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '0']}>Normal</option>
                                         <option value="1" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '1']}>High</option>
-                                        <option value="2" #if ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '2']}>Emergency</option>
+                                        <option value="2" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '2']}>Emergency</option>
                                     </select>
                                 </label>
                                 <label>
@@ -1497,7 +1497,7 @@
                                 </p>
                             </div>
                             <input type="hidden" id="trakt_pin_url" value="${sickbeard.TRAKT_PIN_URL}">
-                            <input type="button" class="btn ${('', 'hide')[sickbeard.TRAKT_ACCESS_TOKEN == True]}" value="Get Trakt PIN" id="TraktGetPin" />
+                            <input type="button" class="btn ${('', 'hide')[bool(sickbeard.TRAKT_ACCESS_TOKEN)]}" value="Get Trakt PIN" id="TraktGetPin" />
                             <div class="field-pair">
                                 <label for="trakt_pin">
                                     <span class="component-title">Trakt PIN</span>

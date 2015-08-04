@@ -34,7 +34,7 @@
                 <span class="component-desc">
                     <select name="defaultStatusAfter" id="statusSelectAfter" class="form-control form-control-inline input-sm">
                     % for curStatus in [SKIPPED, WANTED, ARCHIVED, IGNORED]:
-                        <option value="$curStatus" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT_AFTER == curStatus]}>${statusStrings[curStatus]}</option>
+                        <option value="${curStatus}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT_AFTER == curStatus]}>${statusStrings[curStatus]}</option>
                     % endfor
                     </select>
                 </span>

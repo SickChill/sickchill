@@ -49,7 +49,7 @@
         <div class="manageCustom pull-left">
         <h4>Inital</h4>
             <% anyQualityList = filter(lambda x: x > common.Quality.NONE, common.Quality.qualityStrings) %>
-            <select id="anyQualities" name="anyQualities" multiple="multiple" size="len($anyQualityList)">
+            <select id="anyQualities" name="anyQualities" multiple="multiple" size="${len(anyQualityList)}">
             % for curQuality in sorted(anyQualityList):
             <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in anyQualities]}>${common.Quality.qualityStrings[curQuality]}</option>
             % endfor

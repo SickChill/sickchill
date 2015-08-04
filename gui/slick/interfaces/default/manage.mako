@@ -105,7 +105,7 @@ $(document).ready(function()
     <tfoot>
         <tr>
             <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left" type="button" value="Edit Selected" id="submitMassEdit" /></td>
-            <td rowspan="1" colspan="% if sickbeard.USE_SUBTITLES then 15 else 14#" class="align-right alt"><input class="btn pull-right" type="button" value="Submit" id="submitMassUpdate" /></td>
+            <td rowspan="1" colspan="${(14, 15)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right" type="button" value="Submit" id="submitMassUpdate" /></td>
         </tr>
     </tfoot>
 
