@@ -505,7 +505,7 @@ class GenericMetadata():
 
         thumb_data = metadata_helpers.getShowImage(thumb_url)
 
-        result = self._write_image(thumb_data, file_path)
+        result = self._write_image(thumb_data, file_path, ep_obj)
 
         if not result:
             return False
@@ -532,7 +532,7 @@ class GenericMetadata():
             logger.log(u"No fanart image was retrieved, unable to write fanart", logger.DEBUG)
             return False
 
-        return self._write_image(fanart_data, fanart_path)
+        return self._write_image(fanart_data, fanart_path, show_obj)
 
     def save_poster(self, show_obj, which=None):
         """
@@ -551,7 +551,7 @@ class GenericMetadata():
             logger.log(u"No show poster image was retrieved, unable to write poster", logger.DEBUG)
             return False
 
-        return self._write_image(poster_data, poster_path)
+        return self._write_image(poster_data, poster_path, show_obj)
 
     def save_banner(self, show_obj, which=None):
         """
@@ -570,7 +570,7 @@ class GenericMetadata():
             logger.log(u"No show banner image was retrieved, unable to write banner", logger.DEBUG)
             return False
 
-        return self._write_image(banner_data, banner_path)
+        return self._write_image(banner_data, banner_path, show_obj)
 
     def save_season_posters(self, show_obj, season):
         """
@@ -612,7 +612,7 @@ class GenericMetadata():
                 logger.log(u"No season poster data available, skipping this season", logger.DEBUG)
                 continue
 
-            result = result + [self._write_image(seasonData, season_poster_file_path)]
+            result = result + [self._write_image(seasonData, season_poster_file_path, show_obj)]
 
         if result:
             return all(result)
@@ -661,7 +661,7 @@ class GenericMetadata():
                 logger.log(u"No season banner data available, skipping this season", logger.DEBUG)
                 continue
 
-            result = result + [self._write_image(seasonData, season_banner_file_path)]
+            result = result + [self._write_image(seasonData, season_banner_file_path, show_obj)]
 
         if result:
             return all(result)
@@ -680,7 +680,7 @@ class GenericMetadata():
             logger.log(u"No show poster image was retrieved, unable to write season all poster", logger.DEBUG)
             return False
 
-        return self._write_image(poster_data, poster_path)
+        return self._write_image(poster_data, poster_path, show_obj)
 
     def save_season_all_banner(self, show_obj, which=None):
         # use the default season all banner name
@@ -692,9 +692,9 @@ class GenericMetadata():
             logger.log(u"No show banner image was retrieved, unable to write season all banner", logger.DEBUG)
             return False
 
-        return self._write_image(banner_data, banner_path)
+        return self._write_image(banner_data, banner_path, show_obj)
 
-    def _write_image(self, image_data, image_path):
+    def _write_image(self, image_data, image_path, obj = None):
         """
         Saves the data in image_data to the location image_path. Returns True/False
         to represent success or failure.
@@ -711,7 +711,7 @@ class GenericMetadata():
         image_dir = ek.ek(os.path.dirname, image_path)
         
         if not image_data:
-            logger.log(u"Unable to retrieve image to save in %s, skipping" % ek.ss(image_dir), logger.WARNING)
+            logger.log(u"Unable to retrieve image to %s to save in %s, skipping" % ( ek.ss(obj.prettyName()), ek.ss(image_dir) ), logger.WARNING)
             return False
 
         try:
