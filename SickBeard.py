@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python2.7
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -37,27 +37,19 @@ import shutil_custom
 
 shutil.copyfile = shutil_custom.copyfile_custom
 
-if sys.version_info < (2, 6):
-    print "Sorry, requires Python 2.6 or 2.7."
+if sys.version_info < (2, 7):
+    print "Sorry, requires Python 2.7.x"
     sys.exit(1)
 
-try:
-    import mako
-except:
-    print "Sorry, Python module mako is required."
-    sys.exit(1)
-
-# We only need this for compiling an EXE and I will just always do that on 2.6+
+# We only need this for compiling an EXE and I will just always do that on 2.7+
 if sys.hexversion >= 0x020600F0:
     from multiprocessing import freeze_support  # @UnresolvedImport
-
 
 import certifi
 for env_cert_var in ['REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE']:
     ca_cert_loc = os.environ.get(env_cert_var)
     if (not isinstance(ca_cert_loc, basestring)) or (not os.path.isfile(ca_cert_loc)):
         os.environ[env_cert_var] = certifi.where()
-
 
 if sys.version_info >= (2, 7, 9):
     import ssl
