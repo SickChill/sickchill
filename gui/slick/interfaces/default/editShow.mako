@@ -7,16 +7,10 @@
     from sickbeard import scene_exceptions
     from sickbeard.blackandwhitelist import *
 %>
-<%
-    global title="Edit " + $show.name
-    global header="Edit " + $show.name
-    global topmenu="home"
-%>
 <%include file="/inc_top.mako"/>
-
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 
@@ -54,86 +48,83 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
 <br />
 
 <b>Quality:</b><br />
-<%
-    qualities = common.Quality.splitQuality(int(show.quality))
-    global anyQualities = qualities[0]
-    global bestQualities = qualities[1]
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_qualityChooser.mako")
-%>
+<% qualities = common.Quality.splitQuality(int(show.quality)) %>
+<% anyQualities = qualities[0] %>
+<% bestQualities = qualities[1] %>
+<%include file="/inc_qualityChooser.mako"/>
 <br />
 
 <b>Default Episode Status:</b><br />
 (this will set the status for future episodes)<br />
 <select name="defaultEpStatus" id="defaultEpStatusSelect" class="form-control form-control-inline input-sm">
     % for curStatus in [WANTED, SKIPPED, ARCHIVED, IGNORED]:
-    <option value="${curStatus}" #if $curStatus == $show.default_ep_status then 'selected="selected"' else ''#>${statusStrings[curStatus]}</option>
+    <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == show.default_ep_status]}>${statusStrings[curStatus]}</option>
     % endfor
 </select><br />
 <br />
 
 <b>Info Language:</b><br />
 (this will only affect the language of the retrieved metadata file contents and episode filenames)<br />
-<select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="${show.lang}" data-available="${','.join($sickbeard.indexerApi().config['valid_languages'])}"></select><br />
+<select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="${show.lang}" data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select><br />
 <br />
-
-<b>Flatten files (no folders): </b> <input type="checkbox" name="flatten_folders" ${if $show.flatten_folders == 1 and not $sickbeard.NAMING_FORCE_FOLDERS then "checked=\"checked\"" else ""} ${if $sickbeard.NAMING_FORCE_FOLDERS then "disabled=\"disabled\"" else ""}/><br />
+<b>Flatten files (no folders): </b> <input type="checkbox" name="flatten_folders" ${('', 'checked="checked"')[show.flatten_folders == 1 and not sickbeard.NAMING_FORCE_FOLDERS]} ${('', 'disabled="disabled"')[sickbeard.NAMING_FORCE_FOLDERS == False]}/><br />
 (Disabled: episodes folder-grouped by season. Enabled: no season folders)<br/>
 <br />
 
-<b>Paused: </b> <input type="checkbox" name="paused" ${if $show.paused == 1 then "checked=\"checked\"" else ""} /><br />
+<b>Paused: </b> <input type="checkbox" name="paused" ${('', 'checked="checked"')[show.paused == 1]} /><br />
 (check this if you wish to pause this show. Will not download anything until unpause)<br/>
 <br />
 
-<b>Subtitles: </b> <input type="checkbox" name="subtitles" ${if $show.subtitles == 1 and $sickbeard.USE_SUBTITLES then " checked=\"checked\"" else ""} ${if not $sickbeard.USE_SUBTITLES then " disabled=\"disabled\"" else ""}/><br />
+<b>Subtitles: </b> <input type="checkbox" name="subtitles" ${('', 'checked="checked"')[show.subtitles == 1 and sickbeard.USE_SUBTITLES == True]} ${('', 'disabled="disabled"')[sickbeard.USE_SUBTITLES == True]}/><br />
 (check this if you wish to search for subtitles in this show)<br/>
 <br />
 
 <b>Scene Numbering: </b>
-<input type="checkbox" name="scene" ${if $show.scene == 1 then "checked=\"checked\"" else ""} /><br/>
+<input type="checkbox" name="scene" ${('', 'checked="checked"')[show.scene == 1]} /><br/>
 (check this if you wish to search by scene numbering, uncheck to search by indexer numbering)<br/>
 <br/>
 
 <b>Air by date: </b>
-<input type="checkbox" name="air_by_date" ${if $show.air_by_date == 1 then "checked=\"checked\"" else ""} /><br />
+<input type="checkbox" name="air_by_date" ${('', 'checked="checked"')[show.air_by_date == 1]} /><br />
 (check this if the show is released as Show.03.02.2010 rather than Show.S02E03. <span style="color:red">In case air date conflict between regular and special episodes, the later will be ignored.</span>)<br />
 <br />
 
 <b>Sports: </b>
-<input type="checkbox" name="sports" ${if $show.sports == 1 then "checked=\"checked\"" else ""#}/><br />
+<input type="checkbox" name="sports" ${('', 'checked="checked"')[show.sports == 1]}/><br />
 (check this if the show is a sporting or MMA event and released as Show.03.02.2010 rather than Show.S02E03. <span style="color:red">In case air date conflict between regular and special episodes, the later will be ignored.</span>)<br />
 <br />
 
 <b>Anime: </b>
-<input type="checkbox" name="anime"${if $show.is_anime then "CHECKED" else ""}><br />
+<input type="checkbox" name="anime" ${('', 'checked="checked"')[show.is_anime == 1]}><br />
 (check this if the show is released as Show.265 rather than Show.S02E03, this show is an anime)<br />
 <br />
 
 <b>DVD Order: </b>
-<input type="checkbox" name="dvdorder" ${if $show.dvdorder == 1 then "checked=\"checked\"" else ""} /><br/>
+<input type="checkbox" name="dvdorder" ${('', 'checked="checked"')[show.dvdorder == 1]} /><br/>
 (check this if you wish to use the DVD order instead of the Airing order. A "Force Full Update" is necessary, and if you have existing episodes you need to move them)
 <br/><br/>
 
-% if anyQualities + bestQualities
+% if anyQualities + bestQualities:
 <b>Archive on first match:</b>
-<input type="checkbox" name="archive_firstmatch" ${if $show.archive_firstmatch == 1 then "checked=\"checked\"" else ""} /><br>
+<input type="checkbox" name="archive_firstmatch" ${('', 'checked="checked"')[show.archive_firstmatch == 1]} /><br>
 (check this to have the episode archived after the first best match is found from your archive quality list)</br>
 <br />
 % endif
 
 <b>Ignored Words:</b></br>
-<input type="text" name="rls_ignore_words" id="rls_ignore_words" value="$show.rls_ignore_words" class="form-control form-control-inline input-sm input350" /><br />
+<input type="text" name="rls_ignore_words" id="rls_ignore_words" value="${show.rls_ignore_words}" class="form-control form-control-inline input-sm input350" /><br />
 Results with one or more word from this list will be ignored<br />
 Separate words with a comma, e.g. "word1,word2,word3"<br />
 <br />
 
 <b>Required Words:</b></br>
-<input type="text" name="rls_require_words" id="rls_require_words" value="$show.rls_require_words" class="form-control form-control-inline input-sm input350" /><br />
+<input type="text" name="rls_require_words" id="rls_require_words" value="${show.rls_require_words}" class="form-control form-control-inline input-sm input350" /><br />
 Results with no word from this list will be ignored<br />
 Separate words with a comma, e.g. "word1,word2,word3"<br />
 <br />
 
 % if show.is_anime:
-    % from sickbeard.blackandwhitelist import *
+    <% from sickbeard.blackandwhitelist import * %>
     % include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_blackwhitelist.mako")
     <script type="text/javascript" src="${sbRoot}/js/blackwhite.js?${sbPID}"></script>
 % endif
@@ -142,7 +133,6 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 </form>
 
 <script type="text/javascript" charset="utf-8">
-<!--
     var all_exceptions = new Array;
 
     jQuery('#location').fileBrowser({ title: 'Select Show Location' });
@@ -201,8 +191,6 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
     }
 
     $(this).toggle_SceneException();
-
-//-->
 </script>
 </div>
-% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>

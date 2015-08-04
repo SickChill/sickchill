@@ -38,7 +38,7 @@
                             <label class="clearfix" for="use_kodi">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_kodi" id="use_kodi" ${(' checked="checked"', '')[sickbeard.USE_KODI == True]}/>
+                                    <input type="checkbox" class="enabler" name="use_kodi" id="use_kodi" ${('', ' checked="checked"')[sickbeard.USE_KODI == True]}/>
                                     <p>should SickRage send KODI commands ?<p>
                                 </span>
                             </label>
@@ -49,7 +49,7 @@
                                 <label for="kodi_always_on">
                                     <span class="component-title">Always on</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="kodi_always_on" id="kodi_always_on" ${(' checked="checked"', '')[sickbeard.KODI_ALWAYS_ON == True]}/>
+                                        <input type="checkbox" name="kodi_always_on" id="kodi_always_on" ${('', ' checked="checked"')[sickbeard.KODI_ALWAYS_ON == True]}/>
                                         <p>log errors when unreachable ?</p>
                                     </span>
                                 </label>
@@ -58,7 +58,7 @@
                                 <label for="kodi_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="kodi_notify_onsnatch" id="kodi_notify_onsnatch" ${(' checked="checked"', '')[sickbeard.KODI_NOTIFY_ONSNATCH == True]}/>
+                                        <input type="checkbox" name="kodi_notify_onsnatch" id="kodi_notify_onsnatch" ${('', ' checked="checked"')[sickbeard.KODI_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -67,7 +67,7 @@
                                 <label for="kodi_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="kodi_notify_ondownload" id="kodi_notify_ondownload" ${(' checked="checked"', '')[sickbeard.KODI_NOTIFY_ONDOWNLOAD == True]}/>
+                                        <input type="checkbox" name="kodi_notify_ondownload" id="kodi_notify_ondownload" ${('', ' checked="checked"')[sickbeard.KODI_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -76,7 +76,7 @@
                                 <label for="kodi_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="kodi_notify_onsubtitledownload" id="kodi_notify_onsubtitledownload" ${(' checked="checked"', '')[sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
+                                        <input type="checkbox" name="kodi_notify_onsubtitledownload" id="kodi_notify_onsubtitledownload" ${('', ' checked="checked"')[sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -85,7 +85,7 @@
                                 <label for="kodi_update_library">
                                     <span class="component-title">Update library</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="kodi_update_library" id="kodi_update_library" ${(' checked="checked"', '')[sickbeard.KODI_UPDATE_LIBRARY == True]}/>
+                                        <input type="checkbox" name="kodi_update_library" id="kodi_update_library" ${('', ' checked="checked"')[sickbeard.KODI_UPDATE_LIBRARY == True]}/>
                                         <p>update KODI library when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -94,7 +94,7 @@
                                 <label for="kodi_update_full">
                                     <span class="component-title">Full library update</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="kodi_update_full" id="kodi_update_full" ${(' checked="checked"', '')[sickbeard.KODI_UPDATE_FULL == True]}/>
+                                        <input type="checkbox" name="kodi_update_full" id="kodi_update_full" ${('', ' checked="checked"')[sickbeard.KODI_UPDATE_FULL == True]}/>
                                         <p>perform a full library update if update per-show fails ?</p>
                                     </span>
                                 </label>
@@ -103,7 +103,7 @@
                                 <label for="kodi_update_onlyfirst">
                                     <span class="component-title">Only update first host</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="kodi_update_onlyfirst" id="kodi_update_onlyfirst" ${(' checked="checked"', '')[sickbeard.KODI_UPDATE_ONLYFIRST == True]}/>
+                                        <input type="checkbox" name="kodi_update_onlyfirst" id="kodi_update_onlyfirst" ${('', ' checked="checked"')[sickbeard.KODI_UPDATE_ONLYFIRST == True]}/>
                                         <p>only send library updates to the first active host ?</p>
                                     </span>
                                 </label>
@@ -164,7 +164,7 @@
                             <label for="use_plex">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_plex" id="use_plex" ${(' checked="checked"', '')[sickbeard.USE_PLEX == True]}/>
+                                    <input type="checkbox" class="enabler" name="use_plex" id="use_plex" ${('', ' checked="checked"')[sickbeard.USE_PLEX == True]}/>
                                     <p>should SickRage send Plex commands ?</p>
                                 </span>
                             </label>
@@ -211,7 +211,7 @@
                                     <label for="plex_update_library">
                                         <span class="component-title">Update server library</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" class="enabler" name="plex_update_library" id="plex_update_library" ${(' checked="checked"', '')[sickbeard.PLEX_UPDATE_LIBRARY == True]}/>
+                                            <input type="checkbox" class="enabler" name="plex_update_library" id="plex_update_library" ${('', ' checked="checked"')[sickbeard.PLEX_UPDATE_LIBRARY == True]}/>
                                             <p>update Plex Media Server library when a download finishes</p>
                                         </span>
                                     </label>
@@ -251,7 +251,7 @@
                             <label for="use_plex_client">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_plex" id="use_plex_client" ${(' checked="checked"', '')[sickbeard.USE_PLEX_CLIENT == True]}/>
+                                    <input type="checkbox" class="enabler" name="use_plex" id="use_plex_client" ${('', ' checked="checked"')[sickbeard.USE_PLEX_CLIENT == True]}/>
                                     <p>should SickRage send Plex commands ?</p>
                                 </span>
                             </label>
@@ -262,7 +262,7 @@
                                 <label for="plex_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="plex_notify_onsnatch" id="plex_notify_onsnatch" ${(' checked="checked"', '')[sickbeard.PLEX_NOTIFY_ONSNATCH == True]}/>
+                                        <input type="checkbox" name="plex_notify_onsnatch" id="plex_notify_onsnatch" ${('', ' checked="checked"')[sickbeard.PLEX_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -271,7 +271,7 @@
                                 <label for="plex_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="plex_notify_ondownload" id="plex_notify_ondownload" ${(' checked="checked"', '')[sickbeard.PLEX_NOTIFY_ONDOWNLOAD == True]}/>
+                                        <input type="checkbox" name="plex_notify_ondownload" id="plex_notify_ondownload" ${('', ' checked="checked"')[sickbeard.PLEX_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -280,7 +280,7 @@
                                 <label for="plex_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="plex_notify_onsubtitledownload" id="plex_notify_onsubtitledownload" ${(' checked="checked"', '')[sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
+                                        <input type="checkbox" name="plex_notify_onsubtitledownload" id="plex_notify_onsubtitledownload" ${('', ' checked="checked"')[sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -381,7 +381,7 @@
                             <label for="use_nmj">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_nmj" id="use_nmj" ${(' checked="checked"', '')[sickbeard.USE_NMJ == True]}/>
+                                    <input type="checkbox" class="enabler" name="use_nmj" id="use_nmj" ${('', ' checked="checked"')[sickbeard.USE_NMJ == True]}/>
                                     <p>should SickRage send update commands to NMJ ?</p>
                                 </span>
                             </label>
@@ -447,7 +447,7 @@
                             <label for="use_nmjv2">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_nmjv2" id="use_nmjv2" ${(' checked="checked"', '')[sickbeard.USE_NMJv2 == True]}/>
+                                    <input type="checkbox" class="enabler" name="use_nmjv2" id="use_nmjv2" ${('', ' checked="checked"')[sickbeard.USE_NMJv2 == True]}/>
                                     <p>should SickRage send update commands to NMJv2 ?</p>
                                 </span>
                             </label>
@@ -468,10 +468,10 @@
                                 <span class="component-title">Database location</span>
                                 <span class="component-desc">
                                     <label for="NMJV2_DBLOC_A" class="space-right">
-                                        <input type="radio" NAME="nmjv2_dbloc" VALUE="local" id="NMJV2_DBLOC_A" ${(' checked="checked"', '')[sickbeard.NMJv2_DBLOC == 'local']}/>PCH Local Media
+                                        <input type="radio" NAME="nmjv2_dbloc" VALUE="local" id="NMJV2_DBLOC_A" ${('', ' checked="checked"')[sickbeard.NMJv2_DBLOC == 'local']}/>PCH Local Media
                                     </label>
                                     <label for="NMJV2_DBLOC_B">
-                                        <input type="radio" NAME="nmjv2_dbloc" VALUE="network" id="NMJV2_DBLOC_B" ${(' checked="checked"', '')[sickbeard.NMJv2_DBLOC == 'network']}/>PCH Network Media
+                                        <input type="radio" NAME="nmjv2_dbloc" VALUE="network" id="NMJV2_DBLOC_B" ${('', ' checked="checked"')[sickbeard.NMJv2_DBLOC == 'network']}/>PCH Network Media
                                     </label>
                                 </span>
                             </div>
@@ -537,7 +537,7 @@
                             <label for="use_synoindex">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_synoindex" id="use_synoindex" ${(' checked="checked"', '')[sickbeard.USE_SYNOINDEX == True]}/>
+                                    <input type="checkbox" class="enabler" name="use_synoindex" id="use_synoindex" ${('', ' checked="checked"')[sickbeard.USE_SYNOINDEX == True]}/>
                                     <p>should SickRage send Synology notifications ?</p>
                                 </span>
                             </label>
@@ -567,7 +567,7 @@
                             <label for="use_synologynotifier">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_synologynotifier" id="use_synologynotifier" ${(' checked="checked"', '')[sickbeard.USE_SYNOLOGYNOTIFIER == True]}/>
+                                    <input type="checkbox" class="enabler" name="use_synologynotifier" id="use_synologynotifier" ${('', ' checked="checked"')[sickbeard.USE_SYNOLOGYNOTIFIER == True]}/>
                                     <p>should SickRage send notifications to the Synology Notifier ?</p>
                                 </span>
                             </label>
@@ -581,7 +581,7 @@
                                 <label for="synologynotifier_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="synologynotifier_notify_onsnatch" id="synologynotifier_notify_onsnatch" ${(' checked="checked"', '')[sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH == True]}/>
+                                        <input type="checkbox" name="synologynotifier_notify_onsnatch" id="synologynotifier_notify_onsnatch" ${('', ' checked="checked"')[sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -590,7 +590,7 @@
                                 <label for="synologynotifier_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="synologynotifier_notify_ondownload" id="synologynotifier_notify_ondownload" ${(' checked="checked"', '')[sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD == True]}/>
+                                        <input type="checkbox" name="synologynotifier_notify_ondownload" id="synologynotifier_notify_ondownload" ${('', ' checked="checked"')[sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -599,7 +599,7 @@
                                 <label for="synologynotifier_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="synologynotifier_notify_onsubtitledownload" id="synologynotifier_notify_onsubtitledownload" ${(' checked="checked"', '')[sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
+                                        <input type="checkbox" name="synologynotifier_notify_onsubtitledownload" id="synologynotifier_notify_onsubtitledownload" ${('', ' checked="checked"')[sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -621,7 +621,7 @@
                             <label for="use_pytivo">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_pytivo" id="use_pytivo" ${(' checked="checked"', '')[sickbeard.USE_PYTIVO == True]}/>
+                                    <input type="checkbox" class="enabler" name="use_pytivo" id="use_pytivo" ${('', ' checked="checked"')[sickbeard.USE_PYTIVO == True]}/>
                                     <p>should SickRage send notifications to pyTivo ?</p>
                                 </span>
                             </label>
@@ -683,7 +683,7 @@
                             <label for="use_growl">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_growl" id="use_growl" ${(' checked="checked"', '')[sickbeard.USE_GROWL == True]}/>
+                                    <input type="checkbox" class="enabler" name="use_growl" id="use_growl" ${('', ' checked="checked"')[sickbeard.USE_GROWL == True]}/>
                                     <p>should SickRage send Growl notifications ?</p>
                                 </span>
                             </label>
@@ -694,7 +694,7 @@
                                 <label for="growl_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" ${(' checked="checked"', '')[sickbeard.GROWL_NOTIFY_ONSNATCH == True]}/>
+                                        <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" ${('', ' checked="checked"')[sickbeard.GROWL_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
