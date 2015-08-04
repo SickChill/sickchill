@@ -14,7 +14,7 @@
     <h1 class="title">${title}</h1>
 % endif
 
-<input type="hidden" id="showID" value="$show.indexerid" />
+<input type="hidden" id="showID" value="${show.indexerid}" />
 
 <script type="text/javascript" src="${sbRoot}/js/testRename.js"></script>
 

@@ -704,10 +704,10 @@ class Home(WebRoot):
         menu = [
             {'title': 'Add Shows', 'path': 'home/addShows/', },
             {'title': 'Manual Post-Processing', 'path': 'home/postprocess/'},
-            {'title': 'Update KODI', 'path': 'home/updateKODI/', 'requires': self.haveKODI},
-            {'title': 'Update Plex', 'path': 'home/updatePLEX/', 'requires': self.havePLEX},
-            {'title': 'Update Emby', 'path': 'home/updateEMBY/', 'requires': self.haveEMBY},
-            {'title': 'Manage Torrents', 'path': 'manage/manageTorrents/', 'requires': self.haveTORRENT},
+            {'title': 'Update KODI', 'path': 'home/updateKODI/', 'requires': self.haveKODI()},
+            {'title': 'Update Plex', 'path': 'home/updatePLEX/', 'requires': self.havePLEX()},
+            {'title': 'Update Emby', 'path': 'home/updateEMBY/', 'requires': self.haveEMBY()},
+            {'title': 'Manage Torrents', 'path': 'manage/manageTorrents/', 'requires': self.haveTORRENT()},
         ]
 
         return menu
@@ -1265,10 +1265,10 @@ class Home(WebRoot):
                 submenu.append(
                     {'title': 'Force Full Update', 'path': 'home/updateShow?show=%d&amp;force=1' % showObj.indexerid})
                 submenu.append({'title': 'Update show in KODI',
-                                  'path': 'home/updateKODI?show=%d' % showObj.indexerid, 'requires': self.haveKODI})
+                                  'path': 'home/updateKODI?show=%d' % showObj.indexerid, 'requires': self.haveKODI()})
 
                 submenu.append({'title': 'Update show in Emby',
-                                  'path': 'home/updateEMBY?show=%d' % showObj.indexerid, 'requires': self.haveEMBY})
+                                  'path': 'home/updateEMBY?show=%d' % showObj.indexerid, 'requires': self.haveEMBY()})
 
                 submenu.append({'title': 'Preview Rename', 'path': 'home/testRename?show=%d' % showObj.indexerid})
 
@@ -5013,7 +5013,7 @@ class ErrorLogs(WebRoot):
     def ErrorLogsMenu(self):
         menu = [
             {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/'},
-            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors, 'confirm': True},
+            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors(), 'confirm': True},
         ]
 
         return menu

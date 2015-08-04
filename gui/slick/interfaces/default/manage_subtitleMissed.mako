@@ -3,7 +3,6 @@
     import datetime
     import sickbeard
     from sickbeard import common
-    import os.path
 %>
 <%include file="/inc_top.mako"/>
 <div id="content960">

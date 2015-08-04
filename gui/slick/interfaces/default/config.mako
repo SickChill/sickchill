@@ -17,17 +17,17 @@
     <h1 class="title">${title}</h1>
 % endif
 
-##set cpu_usage = $psutil.cpu_percent()
-##set ram = $psutil.phymem_usage()
-##set ram_total = $ram.total / 2**20
-##set ram_used = $ram.used / 2**20
-##set ram_free = $ram.free / 2**20
-##set ram_percent_used = $ram.percent
-##set disk = $psutil.disk_usage('/')
-##set disk_total = $disk.total / 2**30
-##set disk_used = $disk.used / 2**30
-##set disk_free = $disk.free / 2**30
-##set disk_percent_used = $disk.percent
+##cpu_usage = ${psutil.cpu_percent()}
+##ram = ${psutil.phymem_usage()}
+##ram_total = ${ram.total / 2**20}
+##ram_used = ${ram.used / 2**20}
+##ram_free = ${ram.free / 2**20}
+##ram_percent_used = ${ram.percent}
+##disk = ${psutil.disk_usage('/')}
+##disk_total = ${disk.total / 2**30}
+##disk_used = ${disk.used / 2**30}
+##disk_free = ${disk.free / 2**30}
+##disk_percent_used = ${disk.percent}
 <div id="config-content">
 <table class="infoTable" cellspacing="1" border="0" cellpadding="0" width="100%">
     <tr><td class="infoTableHeader">SR Version: </td><td class="infoTableCell">

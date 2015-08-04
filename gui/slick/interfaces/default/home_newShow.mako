@@ -1,5 +1,4 @@
 <%!
-    import os.path
     import sickbeard
     from sickbeard.helpers import anon_url
 %>
@@ -92,7 +91,7 @@
     </fieldset>
 
     % for curNextDir in other_shows:
-    <input type="hidden" name="other_shows" value="$curNextDir" />
+    <input type="hidden" name="other_shows" value="${curNextDir}" />
     % endfor
     <input type="hidden" name="skipShow" id="skipShow" value="" />
     </form>

@@ -22,7 +22,7 @@ $(document).ready(function(){
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('False', 'True')[sickbeard.TRIM_ZERO == True]}
+        trimZero : ${('False', 'True')[bool(sickbeard.TRIM_ZERO)]}
     });
     % endif
 

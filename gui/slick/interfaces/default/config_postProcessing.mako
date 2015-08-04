@@ -78,14 +78,14 @@
                             </label>
                         </div>
                         <div class="field-pair">
-                            <input type="checkbox" name="del_rar_contents" id="del_rar_contents" #if $sickbeard.DELRARCONTENTS == True then "checked=\"checked\"" else ""# />
+                            <input type="checkbox" name="del_rar_contents" id="del_rar_contents" ${("", "checked=\"checked\"")[bool(sickbeard.DELRARCONTENTS)]/>
                             <label for="del_rar_contents">
                                 <span class="component-title">Delete RAR contents</span>
                                 <span class="component-desc">Delete content of RAR files, even if Process Method not set to move?</span>
                             </label>
                         </div>
                         <div class="field-pair">
-                            <input type="checkbox" name="skip_removed_files" id="skip_removed_files" #if $sickbeard.SKIP_REMOVED_FILES == True then "checked=\"checked\"" else ""# />
+                            <input type="checkbox" name="skip_removed_files" id="skip_removed_files" ${("", "checked=\"checked\"")[bool(sickbeard.SKIP_REMOVED_FILES)]/>
                             <label for="skip_removed_files">
                                 <span class="component-title">Skip Remove Detection</span>
                                 <span class="component-desc">Skip detection of removed files, so they don't get set to ignored/archived?</span>
@@ -122,7 +122,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" name="move_associated_files" id="move_associated_files" #if $sickbeard.MOVE_ASSOCIATED_FILES == True then "checked=\"checked\"" else ""# />
+                            <input type="checkbox" name="move_associated_files" id="move_associated_files" ${("", "checked=\"checked\"")[bool(sickbeard.MOVE_ASSOCIATED_FILES)]/>
                             <label for="move_associated_files">
                                 <span class="component-title">Move Associated Files</span>
                                 <span class="component-desc">Move srr/srt/sfv/etc files with the episode when processed?</span>
@@ -139,7 +139,7 @@
                             </label>
                         </div>
                         <div class="field-pair">
-                            <input type="checkbox" name="postpone_if_sync_files" id="postpone_if_sync_files" #if $sickbeard.POSTPONE_IF_SYNC_FILES == True then "checked=\"checked\"" else ""# />
+                            <input type="checkbox" name="postpone_if_sync_files" id="postpone_if_sync_files" ${("", "checked=\"checked\"")[bool(sickbeard.POSTPONE_IF_SYNC_FILES)]/>
                             <label for="postpone_if_sync_files">
                                 <span class="component-title">Postpone post processing</span>
                                 <span class="component-desc">if sync files are present in the TV download dir</span>
@@ -147,7 +147,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" name="nfo_rename" id="nfo_rename" #if $sickbeard.NFO_RENAME == True then "checked=\"checked\"" else ""# />
+                            <input type="checkbox" name="nfo_rename" id="nfo_rename" ${("", "checked=\"checked\"")[bool(sickbeard.NFO_RENAME)]/>
                             <label for="nfo_rename">
                                 <span class="component-title">Rename .nfo file</span>
                                 <span class="component-desc">Rename the original .nfo file to .nfo-orig to avoid conflicts?</span>
@@ -155,7 +155,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" name="rename_episodes" id="rename_episodes" #if $sickbeard.RENAME_EPISODES == True then "checked=\"checked\"" else ""# />
+                            <input type="checkbox" name="rename_episodes" id="rename_episodes" ${("", "checked=\"checked\"")[bool(sickbeard.RENAME_EPISODES)]/>
                             <label for="rename_episodes">
                                 <span class="component-title">Rename Episodes</span>
                                 <span class="component-desc">Rename episode using the Episode Naming settings?</span>
@@ -163,7 +163,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" name="airdate_episodes" id="airdate_episodes" #if $sickbeard.AIRDATE_EPISODES == True then "checked=\"checked\"" else ""# />
+                            <input type="checkbox" name="airdate_episodes" id="airdate_episodes" ${("", "checked=\"checked\"")[bool(sickbeard.AIRDATE_EPISODES)]/>
                             <label for="airdate_episodes">
                                 <span class="component-title">Change File Date</span>
                                 <span class="component-desc">Set last modified filedate to the date that the episode aired?</span>
@@ -175,7 +175,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" name="process_automatically" id="process_automatically" #if $sickbeard.PROCESS_AUTOMATICALLY == True then "checked=\"checked\"" else ""# />
+                            <input type="checkbox" name="process_automatically" id="process_automatically" ${("", "checked=\"checked\"")[bool(sickbeard.PROCESS_AUTOMATICALLY)]/>
                             <label for="process_automatically">
                                 <span class="component-title">Scan and Process</span>
                                 <span class="component-desc">Scan and post-process any files in your <i>TV Download Dir</i>?</span>
@@ -191,7 +191,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" name="no_delete" id="no_delete" #if $sickbeard.NO_DELETE == True then "checked=\"checked\"" else ""# />
+                            <input type="checkbox" name="no_delete" id="no_delete" ${("", "checked=\"checked\"")[bool(sickbeard.NO_DELETE)]/>
                             <label for="no_delete">
                                 <span class="component-title">Don't delete empty folders</span>
                                 <span class="component-desc">Leave empty folders when Post Processing?</span>
@@ -226,7 +226,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input id="use_failed_downloads" type="checkbox" class="enabler" name="use_failed_downloads" #if $sickbeard.USE_FAILED_DOWNLOADS == True then "checked=\"checked\"" else ""# />
+                            <input id="use_failed_downloads" type="checkbox" class="enabler" name="use_failed_downloads" ${("", "checked=\"checked\"")[bool(sickbeard.USE_FAILED_DOWNLOADS)]/>
                             <label for="use_failed_downloads">
                                 <span class="component-title">Use Failed Downloads</span>
                                 <span class="component-desc">Use Failed Download Handling?</span>
@@ -238,7 +238,7 @@
 
                         <div id="content_use_failed_downloads">
                             <div class="field-pair">
-                                <input id="delete_failed" type="checkbox" name="delete_failed" #if $sickbeard.DELETE_FAILED == True then "checked=\"checked\"" else ""# />
+                                <input id="delete_failed" type="checkbox" name="delete_failed" ${("", "checked=\"checked\"")[bool(sickbeard.DELETE_FAILED)]/>
                                 <label for="delete_failed">
                                     <span class="component-title">Delete Failed</span>
                                     <span class="component-desc">Delete files left over from a failed download?</span>
@@ -452,7 +452,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" id="naming_strip_year"  name="naming_strip_year" #if $sickbeard.NAMING_STRIP_YEAR then "checked=\"checked\"" else ""#/>
+                            <input type="checkbox" id="naming_strip_year"  name="naming_strip_year" ${("", "checked=\"checked\"")[bool(sickbeard.NAMING_STRIP_YEAR)]}/>
                             <label for="naming_strip_year">
                                 <span class="component-title">Strip Show Year</span>
                                 <span class="component-desc">Remove the TV show's year when renaming the file?</span>
@@ -464,7 +464,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" class="enabler" id="naming_custom_abd" name="naming_custom_abd" #if $sickbeard.NAMING_CUSTOM_ABD then "checked=\"checked\"" else ""#/>
+                            <input type="checkbox" class="enabler" id="naming_custom_abd" name="naming_custom_abd" ${("", "checked=\"checked\"")[bool(sickbeard.NAMING_CUSTOM_ABD)]}/>
                             <label for="naming_custom_abd">
                                 <span class="component-title">Custom Air-By-Date</span>
                                 <span class="component-desc">Name Air-By-Date shows differently than regular shows?</span>
@@ -641,7 +641,7 @@
                         </div><!-- /naming_abd_different -->
 
                         <div class="field-pair">
-                            <input type="checkbox" class="enabler" id="naming_custom_sports" name="naming_custom_sports" #if $sickbeard.NAMING_CUSTOM_SPORTS then "checked=\"checked\"" else ""#/>
+                            <input type="checkbox" class="enabler" id="naming_custom_sports" name="naming_custom_sports" ${("", "checked=\"checked\"")[bool(sickbeard.NAMING_CUSTOM_SPORTS)]}/>
                             <label for="naming_custom_sports">
                                 <span class="component-title">Custom Sports</span>
                                 <span class="component-desc">Name Sports shows differently than regular shows?</span>
@@ -819,7 +819,7 @@
 
                         <!-- naming_anime_custom -->
                         <div class="field-pair">
-                            <input type="checkbox" class="enabler" id="naming_custom_anime" name="naming_custom_anime" #if $sickbeard.NAMING_CUSTOM_ANIME then "checked=\"checked\"" else ""#/>
+                            <input type="checkbox" class="enabler" id="naming_custom_anime" name="naming_custom_anime" ${("", "checked=\"checked\"")[bool(sickbeard.NAMING_CUSTOM_ANIME)]}/>
                             <label for="naming_custom_anime">
                                 <span class="component-title">Custom Anime</span>
                                 <span class="component-desc">Name Anime shows differently than regular shows?</span>
@@ -838,9 +838,9 @@
                                                 % if cur_preset == sickbeard.NAMING_ANIME_PATTERN:
                                                     <% is_anime_custom = False %>
                                                 % endif
-                                                <option id="${cur_preset}" #if $cur_preset == $sickbeard.NAMING_ANIME_PATTERN then "selected=\"selected\"" else ""#>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                                <option id="${cur_preset}" ${("", "selected=\"selected\"")[cur_preset == sickbeard.NAMING_ANIME_PATTERN]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                             % endfor
-                                            <option id="${sickbeard.NAMING_ANIME_PATTERN}" #if $is_anime_custom then "selected=\"selected\"" else ""#>Custom...</option>
+                                            <option id="${sickbeard.NAMING_ANIME_PATTERN}" ${("", "selected=\"selected\"")[bool(is_anime_custom)]}>Custom...</option>
                                         </select>
                                     </span>
                                 </label>
@@ -986,7 +986,7 @@
                                     <span class="component-desc">
                                         <select id="naming_anime_multi_ep" name="naming_anime_multi_ep" class="form-control input-sm">
                                         % for cur_multi_ep in sorted(multiEpStrings.items(), key=lambda x: x[1]):
-                                            <option value="${cur_multi_ep[0]}" #if $cur_multi_ep[0] == $sickbeard.NAMING_ANIME_MULTI_EP then "selected=\"selected\" class=\"selected\"" else ""#>${cur_multi_ep[1]}</option>
+                                            <option value="${cur_multi_ep[0]}" ${("", '"selected=\"selected\" class=\"selected\""')[cur_multi_ep[0] == sickbeard.NAMING_ANIME_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                         % endfor
                                         </select>
                                     </span>
@@ -1010,7 +1010,7 @@
                             </div>
 
                             <div class="field-pair">
-                                <input type="radio" name="naming_anime" id="naming_anime" value="1" #if $sickbeard.NAMING_ANIME == 1 then "checked=\"checked\"" else ""#/>
+                                <input type="radio" name="naming_anime" id="naming_anime" value="1" ${("", "checked=\"checked\"")[sickbeard.NAMING_ANIME == 1]/>
                                 <label for="naming_anime">
                                     <span class="component-title">Add Absolute Number</span>
                                     <span class="component-desc">Add the absolute number to the season/episode format?</span>
@@ -1022,7 +1022,7 @@
                             </div>
 
                             <div class="field-pair">
-                                <input type="radio" name="naming_anime" id="naming_anime_only" value="2" #if $sickbeard.NAMING_ANIME == 2 then "checked=\"checked\"" else ""#/>
+                                <input type="radio" name="naming_anime" id="naming_anime_only" value="2" ${("", "checked=\"checked\"")[sickbeard.NAMING_ANIME == 2]/>
                                 <label for="naming_anime_only">
                                     <span class="component-title">Only Absolute Number</span>
                                     <span class="component-desc">Replace season/episode format with absolute number</span>
@@ -1034,7 +1034,7 @@
                             </div>
 
                             <div class="field-pair">
-                                <input type="radio" name="naming_anime" id="naming_anime_none" value="3" #if $sickbeard.NAMING_ANIME == 3 then "checked=\"checked\"" else ""#/>
+                                <input type="radio" name="naming_anime" id="naming_anime_none" value="3" ${("", "checked=\"checked\"")[sickbeard.NAMING_ANIME == 3]/>
                                 <label for="naming_anime_none">
                                     <span class="component-title">No Absolute Number</span>
                                     <span class="component-desc">Dont include the absolute number</span>
@@ -1079,20 +1079,20 @@
                         % for (cur_name, cur_generator) in m_dict.items():
                         <% cur_metadata_inst = sickbeard.metadata_provider_dict[cur_generator.name] %>
                         <% cur_id = cur_generator.get_id() %>
-                        <div class="metadataDiv" id="$cur_id">
+                        <div class="metadataDiv" id="${cur_id}">
                             <div class="metadata_options_wrapper">
                                 <h4>Create:</h4>
                                 <div class="metadata_options">
-                                    <label for="${cur_id}_show_metadata"><input type="checkbox" class="metadata_checkbox" id="${cur_id}_show_metadata" #if $cur_metadata_inst.show_metadata then "checked=\"checked\"" else ""#/>&nbsp;Show Metadata</label>
-                                    <label for="${cur_id}_episode_metadata"><input type="checkbox" class="metadata_checkbox" id="${cur_id}_episode_metadata" #if $cur_metadata_inst.episode_metadata then "checked=\"checked\"" else ""#/>&nbsp;Episode Metadata</label>
-                                    <label for="${cur_id}_fanart"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_fanart" #if $cur_metadata_inst.fanart then "checked=\"checked\"" else ""#/>&nbsp;Show Fanart</label>
-                                    <label for="${cur_id}_poster"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_poster" #if $cur_metadata_inst.poster then "checked=\"checked\"" else ""#/>&nbsp;Show Poster</label>
-                                    <label for="${cur_id}_banner"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_banner" #if $cur_metadata_inst.banner then "checked=\"checked\"" else ""#/>&nbsp;Show Banner</label>
-                                    <label for="${cur_id}_episode_thumbnails"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_episode_thumbnails" #if $cur_metadata_inst.episode_thumbnails then "checked=\"checked\"" else ""#/>&nbsp;Episode Thumbnails</label>
-                                    <label for="${cur_id}_season_posters"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_posters" #if $cur_metadata_inst.season_posters then "checked=\"checked\"" else ""#/>&nbsp;Season Posters</label>
-                                    <label for="${cur_id}_season_banners"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_banners" #if $cur_metadata_inst.season_banners then "checked=\"checked\"" else ""#/>&nbsp;Season Banners</label>
-                                    <label for="${cur_id}_season_all_poster"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_all_poster" #if $cur_metadata_inst.season_all_poster then "checked=\"checked\"" else ""#/>&nbsp;Season All Poster</label>
-                                    <label for="${cur_id}_season_all_banner"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_all_banner" #if $cur_metadata_inst.season_all_banner then "checked=\"checked\"" else ""#/>&nbsp;Season All Banner</label>
+                                    <label for="${cur_id}_show_metadata"><input type="checkbox" class="metadata_checkbox" id="${cur_id}_show_metadata" ${("", "checked=\"checked\"")[bool(cur_metadata_inst.show_metadata)]}/>&nbsp;Show Metadata</label>
+                                    <label for="${cur_id}_episode_metadata"><input type="checkbox" class="metadata_checkbox" id="${cur_id}_episode_metadata" ${("", "checked=\"checked\"")[bool(cur_metadata_inst.episode_metadata)]}/>&nbsp;Episode Metadata</label>
+                                    <label for="${cur_id}_fanart"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_fanart" ${("", "checked=\"checked\"")[bool(cur_metadata_inst.fanart)]}/>&nbsp;Show Fanart</label>
+                                    <label for="${cur_id}_poster"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_poster" ${("", "checked=\"checked\"")[bool(cur_metadata_inst.poster)]}/>&nbsp;Show Poster</label>
+                                    <label for="${cur_id}_banner"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_banner" ${("", "checked=\"checked\"")[bool(cur_metadata_inst.banner)]}/>&nbsp;Show Banner</label>
+                                    <label for="${cur_id}_episode_thumbnails"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_episode_thumbnails" ${("", "checked=\"checked\"")[bool(cur_metadata_inst.episode_thumbnails)]}/>&nbsp;Episode Thumbnails</label>
+                                    <label for="${cur_id}_season_posters"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_posters" ${("", "checked=\"checked\"")[bool(cur_metadata_inst.season_posters)]}/>&nbsp;Season Posters</label>
+                                    <label for="${cur_id}_season_banners"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_banners" ${("", "checked=\"checked\"")[bool(cur_metadata_inst.season_banners)]}/>&nbsp;Season Banners</label>
+                                    <label for="${cur_id}_season_all_poster"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_all_poster" ${("", "checked=\"checked\"")[bool(cur_metadata_inst.season_all_poster)]}/>&nbsp;Season All Poster</label>
+                                    <label for="${cur_id}_season_all_banner"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_all_banner" ${("", "checked=\"checked\"")[bool(cur_metadata_inst.season_all_banner)]}/>&nbsp;Season All Banner</label>
                                 </div>
                             </div>
                             <div class="metadata_example_wrapper">

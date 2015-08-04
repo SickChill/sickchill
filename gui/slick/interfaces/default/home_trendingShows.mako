@@ -17,7 +17,7 @@
 $(document).ready(function(){
     $( "#tabs" ).tabs({
         collapsible: true,
-        selected: ${('0', '-1')[sickbeard.ROOT_DIRS == True]}
+        selected: ${('0', '-1')[bool(sickbeard.ROOT_DIRS)]}
     });
 
     // initialise combos for dirty page refreshes

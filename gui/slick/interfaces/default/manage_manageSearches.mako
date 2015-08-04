@@ -16,11 +16,11 @@
 <div id="summary2" class="align-left">
 <h3>Backlog Search:</h3>
 <a class="btn" href="${sbRoot}/manage/manageSearches/forceBacklog"><i class="icon-exclamation-sign"></i> Force</a>
-<a class="btn" href="${sbRoot}/manage/manageSearches/pauseBacklog?paused=${('1', '0')[backlogPaused == True]}"><i class="icon-${('paused', 'play')[backlogPaused == True]}"></i> ${('pause', 'Unpause')[backlogPaused == True]}</a>
+<a class="btn" href="${sbRoot}/manage/manageSearches/pauseBacklog?paused=${('1', '0')[bool(backlogPaused)]}"><i class="icon-${('paused', 'play')[bool(backlogPaused)]}"></i> ${('pause', 'Unpause')[bool(backlogPaused)]}</a>
 % if not backlogRunning:
     Not in progress<br />
 % else:
-    ${('', 'Paused:')[backlogPaused == True]}
+    ${('', 'Paused:')[bool(backlogPaused)]}
     Currently running<br />
 % endif
 <br />
@@ -35,7 +35,7 @@
 <br />
 
 <h3>Find Propers Search:</h3>
-<a class="btn ${('', 'disabled')[sickbeard.DOWNLOAD_PROPERS == True]}" href="${sbRoot}/manage/manageSearches/forceFindPropers"><i class="icon-exclamation-sign"></i> Force</a>
+<a class="btn ${('disabled', '')[bool(sickbeard.DOWNLOAD_PROPERS)]}" href="${sbRoot}/manage/manageSearches/forceFindPropers"><i class="icon-exclamation-sign"></i> Force</a>
 % if not findPropersStatus:
     Not in progress<br />
 % else:

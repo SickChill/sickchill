@@ -328,7 +328,7 @@ addOption("history-limit", "Show Only Snatched", "&type=snatched");
 
 addOption("exceptions", "Optional Param", "", 1);
 % for curShow in sortedShowList:
-addOption("exceptions", "${curShow.name}", "&indexerid=8$curShow.indexerid}");
+addOption("exceptions", "${curShow.name}", "&indexerid=${curShow.indexerid}");
 % endfor
 
 addOption("sb.pausebacklog", "Optional Param", "", 1);

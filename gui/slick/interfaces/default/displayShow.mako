@@ -1,5 +1,4 @@
 <%!
-    import os.path, os
     import datetime
     import urllib
     import ntpath
@@ -34,7 +33,7 @@ $(document).ready(function(){
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${("false", "true")[sickbeard.TRIM_ZERO]}
+        trimZero : ${("false", "true")[bool(sickbeard.TRIM_ZERO)]}
     });
     % endif
     $('.addQTip').each(function () {
@@ -51,7 +50,7 @@ $(document).ready(function(){
 
     $('.imdbstars').generateStars();
 
-    $("${('#showTable', '#animeTable')[show.is_anime == True]}").tablesorter({
+    $("${('#showTable', '#animeTable')[bool(show.is_anime)]}").tablesorter({
         widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
         widgetOptions : {
             columnSelector_saveColumns: true,
@@ -68,7 +67,7 @@ $(document).ready(function(){
     })
     // bootstrap popover event triggered when the popover opens
     .on('shown.bs.popover', function () {
-        $.tablesorter.columnSelector.attachTo( $("${('#showTable', '#animeTable')[show.is_anime == True]}"), '#popover-target');
+        $.tablesorter.columnSelector.attachTo( $("${('#showTable', '#animeTable')[bool(show.is_anime)]}"), '#popover-target');
     });
 });
 </script>
@@ -113,7 +112,7 @@ $(document).ready(function(){
         <span class="h2footer displayspecials pull-right">
             % if season_special:
             Display Specials:
-                <a class="inner" href="${sbRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">${('Show', 'Hide')[sickbeard.DISPLAY_SHOW_SPECIALS == True]}</a>
+                <a class="inner" href="${sbRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">${('Show', 'Hide')[bool(sickbeard.DISPLAY_SHOW_SPECIALS)]}</a>
             % endif
         </span>
 
@@ -208,7 +207,7 @@ $(document).ready(function(){
                     <span class="quality ${qualityPresetStrings[show.quality]}">${qualityPresetStrings[show.quality]}</span>
                 % else:
                 % if anyQualities:
-                    <i>Initial:</i> ${", ".join([Quality.qualityStrings[x] for x in sorted(anyQualities)])}${("", "</br>")[len(bestQualities) > 0]}
+                    <i>Initial:</i> ${", ".join([Quality.qualityStrings[x] for x in sorted(anyQualities)])}${("", "</br>")[bool(bestQualities)]}
                 % endif
                 % if bestQualities:
                     <i>Replace with:</i> ${", ".join([Quality.qualityStrings[x] for x in sorted(bestQualities)])}
@@ -258,17 +257,17 @@ $(document).ready(function(){
                     <% info_flag = subtitles.fromietf(show.lang).opensubtitles if show.lang else '' %>
                     <tr><td class="showLegend">Info Language:</td><td><img src="${sbRoot}/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${sbRoot}/images/flags/unknown.png';"/></td></tr>
                     % if sickbeard.USE_SUBTITLES:
-                    <tr><td class="showLegend">Subtitles: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[show.subtitles]}" alt="${("N", "Y")[show.subtitles]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Subtitles: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td></tr>
                     % endif
-                    <tr><td class="showLegend">Flat Folders: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS]}" alt=="${("N", "Y")[show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Paused: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[show.paused]}" alt="${("N", "Y")[show.paused]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Air-by-Date: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[show.air_by_date]}" alt="${("N", "Y")[show.air_by_date]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Sports: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[show.is_sports]}" alt="${("N", "Y")[show.is_sports]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Anime: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[show.is_anime]}" alt="${("N", "Y")[show.is_anime]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">DVD Order: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[show.dvdorder]}" alt="${("N", "Y")[show.dvdorder]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Scene Numbering: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[show.scene]}" alt="${("N", "Y")[show.scene]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Flat Folders: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Paused: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.paused)]}" alt="${("N", "Y")[bool(show.paused)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Air-by-Date: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.air_by_date)]}" alt="${("N", "Y")[bool(show.air_by_date)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Sports: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.is_sports)]}" alt="${("N", "Y")[bool(show.is_sports)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Anime: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.is_anime)]}" alt="${("N", "Y")[bool(show.is_anime)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">DVD Order: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.dvdorder)]}" alt="${("N", "Y")[bool(show.dvdorder)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Scene Numbering: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.scene)]}" alt="${("N", "Y")[bool(show.scene)]}" width="16" height="16" /></td></tr>
                     % if anyQualities and bestQualities:
-                    <tr><td class="showLegend">Archive First Match: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[show.archive_firstmatch]}" alt="${("N", "Y")[show.archive_firstmatch]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Archive First Match: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.archive_firstmatch)]}" alt="${("N", "Y")[bool(show.archive_firstmatch)]}" width="16" height="16" /></td></tr>
                     % endif
                 </table>
             </div>
@@ -312,7 +311,7 @@ $(document).ready(function(){
 <br />
 <br />
 
-<table id="${("showTable", "animeTable")[show.is_anime]}" class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
+<table id="${("showTable", "animeTable")[bool(show.is_anime)]}" class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
     <% curSeason = -1 %>
     <% odd = 0 %>
     % for epResult in sqlResults:
@@ -362,15 +361,15 @@ $(document).ready(function(){
                 <th data-sorter="false" class="col-metadata">NFO</th>
                 <th data-sorter="false" class="col-metadata">TBN</th>
                 <th data-sorter="false" class="col-ep">Episode</th>
-                <th data-sorter="false" % if not $show.is_anime then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Absolute</th>
-                <th data-sorter="false" % if not $scene then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Scene</th>
-                <th data-sorter="false" % if not $scene_anime then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Scene Absolute</th>
+                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(show.is_anime)]}>Absolute</th>
+                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(scene)]}>Scene</th>
+                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(scene_anime)]}>Scene Absolute</th>
                 <th data-sorter="false" class="col-name">Name</th>
                 <th data-sorter="false" class="col-name columnSelector-false">File Name</th>
                 <th data-sorter="false" class="col-ep columnSelector-false">Size</th>
                 <th data-sorter="false" class="col-airdate">Airdate</th>
-                <th data-sorter="false" % if not $sickbeard.DOWNLOAD_URL then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Download</th>
-                <th data-sorter="false" % if not $sickbeard.USE_SUBTITLES then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Subtitles</th>
+                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.DOWNLOAD_URL)]}>Download</th>
+                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.USE_SUBTITLES)]}>Subtitles</th>
                 <th data-sorter="false" class="col-status">Status</th>
                 <th data-sorter="false" class="col-search">Search</th>
         </tr>
@@ -420,7 +419,7 @@ $(document).ready(function(){
     <tbody class="tablesorter-no-sort">
         <tr style="height: 60px;">
             <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
-                <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${("Specials", "Season " + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
+                <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${("Specials", "Season " + str(epResult["season"]))[bool(int(epResult["season"]))]}</h3>
                 % if sickbeard.DISPLAY_ALL_SEASONS == False:
                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
                     <script type="text/javascript">
@@ -488,7 +487,7 @@ $(document).ready(function(){
             <td align="center">${epResult["absolute_number"]}</td>
             <td align="center">
                 <input type="text" placeholder="${str(dfltSeas) + 'x' + str(dfltEpis)}" size="6" maxlength="8"
-                    class="sceneSeasonXEpisode form-control input-scene" data-for-season="$epResult["season"]" data-for-episode="$epResult["episode"]"
+                    class="sceneSeasonXEpisode form-control input-scene" data-for-season="${epResult["season"]}" data-for-episode="${epResult["episode"]}"
                     id="sceneSeasonXEpisode_${show.indexerid}_${str(epResult["season"])}_${str(epResult["episode"])}"
                     title="Change the value here if scene numbering differs from the indexer episode numbering"
                     % if dfltEpNumbering:
@@ -500,8 +499,8 @@ $(document).ready(function(){
             </td>
             <td align="center">
                 <input type="text" placeholder="${str(dfltAbsolute)}" size="6" maxlength="8"
-                    class="sceneAbsolute form-control input-scene" data-for-absolute="$epResult["absolute_number"]"
-                    id="sceneAbsolute_$show.indexerid${"_"+str(epResult["absolute_number"])}"
+                    class="sceneAbsolute form-control input-scene" data-for-absolute="${epResult["absolute_number"]}"
+                    id="sceneAbsolute_${show.indexerid}${"_"+str(epResult["absolute_number"])}"
                     title="Change the value here if scene absolute numbering differs from the indexer absolute numbering"
                     % if dfltAbsNumbering:
                         value=""

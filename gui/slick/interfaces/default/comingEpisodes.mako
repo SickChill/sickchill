@@ -138,7 +138,7 @@ $(document).ready(function(){
         dateHasTime : true,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('false', 'true')[sickbeard.TRIM_ZERO]}
+        trimZero : ${('false', 'true')[bool(sickbeard.TRIM_ZERO)]}
     });
     % endif
 
@@ -231,7 +231,7 @@ $(document).ready(function(){
 % if cur_result['imdb_id']:
                 <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" />
 % endif
-                <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result['showid']}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" /></a>
+                <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result['showid']}"><img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" /></a>
             </td>
 
             <td align="center">
@@ -275,7 +275,7 @@ $(document).ready(function(){
         dateHasTime : true,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('false', 'true')[sickbeard.TRIM_ZERO]}
+        trimZero : ${('false', 'true')[bool(sickbeard.TRIM_ZERO)]}
     });
     % endif
 
@@ -303,7 +303,7 @@ $(document).ready(function(){
     run_time = cur_result['runtime']
 %>
     % if 'network' == sort:
-        <% show_network = ('no network', cur_result['network'])[len(cur_result['network']) > 0] %>
+        <% show_network = ('no network', cur_result['network'])[bool(cur_result['network'])] %>
         % if cur_segment != show_network:
             <div class="comingepheader">
                <br><h2 class="network">${show_network}</h2>
@@ -422,7 +422,7 @@ $(document).ready(function(){
 
                 <div class="clearfix">
 
-                    <span class="title">Airs: </span><span class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING)}</span>${('', '<span> on %s</span>' % str(cur_result['network']))[None is not cur_result['network']]}
+                    <span class="title">Airs: </span><span class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING)}</span>${('', '<span> on %s</span>' % str(cur_result['network']))[bool(cur_result['network'])]}
                 </div>
 
                 <div class="clearfix">
@@ -469,7 +469,7 @@ $(document).ready(function(){
 <input type="hidden" id="sbRoot" value="${sbRoot}" />
     % for day in dates:
     <% tbl_day += 1 %>
-        <table class="sickbeardTable tablesorter calendarTable ${'cal-%s' % (('even', 'odd')[1 == tbl_day % 2])}" cellspacing="0" border="0" cellpadding="0">
+        <table class="sickbeardTable tablesorter calendarTable ${'cal-%s' % (('even', 'odd')[bool(tbl_day % 2)])}" cellspacing="0" border="0" cellpadding="0">
         <thead><tr><th>${day.strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</th></tr></thead>
         <tbody>
         <% day_has_show = False %>
@@ -506,7 +506,7 @@ $(document).ready(function(){
                                 ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}
                             </span>
                         </div>
-                    </td> <!-- end $cur_result['show_name'] -->
+                    </td> <!-- end ${cur_result['show_name']} -->
                 </tr>
             % endif
 

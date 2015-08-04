@@ -38,7 +38,7 @@
                             <label for="randomize_providers">
                                 <span class="component-title">Randomize Providers</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="randomize_providers" id="randomize_providers" class="enabler" ${(' checked="checked"', '')[sickbeard.RANDOMIZE_PROVIDERS == True]}/>
+                                    <input type="checkbox" name="randomize_providers" id="randomize_providers" class="enabler" ${('', 'checked="checked"')[bool(sickbeard.RANDOMIZE_PROVIDERS)]}/>
                                     <p>randomize the provider search order instead of going in order of placement</p>
                                 </span>
                             </label>
@@ -47,7 +47,7 @@
                             <label for="download_propers">
                                 <span class="component-title">Download propers</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="download_propers" id="download_propers" class="enabler" ${(' checked="checked"', '')[sickbeard.DOWNLOAD_PROPERS == True]}/>
+                                    <input type="checkbox" name="download_propers" id="download_propers" class="enabler" ${('', 'checked="checked"')[bool(sickbeard.DOWNLOAD_PROPERS)]}/>
                                     <p>replace original download with "Proper" or "Repack" if nuked</p>
                                 </span>
                             </label>
@@ -60,7 +60,7 @@
                                         <select id="check_propers_interval" name="check_propers_interval" class="form-control input-sm">
 <% check_propers_interval_text = {'daily': "24 hours", '4h': "4 hours", '90m': "90 mins", '45m': "45 mins", '15m': "15 mins"} %>
 % for curInterval in ('daily', '4h', '90m', '45m', '15m'):
-                                            <option value="${curInterval}" ${(' selected="selected"', '')[sickbeard.CHECK_PROPERS_INTERVAL == curInterval]}>${check_propers_interval_text[curInterval]}</option>
+                                            <option value="${curInterval}" ${('', 'selected="selected"')[sickbeard.CHECK_PROPERS_INTERVAL == curInterval]}>${check_propers_interval_text[curInterval]}</option>
 % endfor
                                         </select>
                                     </span>
@@ -126,7 +126,7 @@
                             <label for="allow_high_priority">
                                 <span class="component-title">Allow high priority</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="allow_high_priority" id="allow_high_priority" ${(' checked="checked"', '')[sickbeard.ALLOW_HIGH_PRIORITY == True]}/>
+                                    <input type="checkbox" name="allow_high_priority" id="allow_high_priority" ${('', 'checked="checked"')[bool(sickbeard.ALLOW_HIGH_PRIORITY)]}/>
                                     <p>set downloads of recently aired episodes to high priority</p>
                                 </span>
                             </label>
@@ -136,7 +136,7 @@
                             <label for="dailysearch_startup">
                                 <span class="component-title">Daily search on startup</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="dailysearch_startup" id="dailysearch_startup" ${(' checked="checked"', '')[sickbeard.DAILYSEARCH_STARTUP == True]}/>
+                                    <input type="checkbox" name="dailysearch_startup" id="dailysearch_startup" ${('', 'checked="checked"')[bool(sickbeard.DAILYSEARCH_STARTUP)]}/>
                                     <p>start daily search on startup of SickRage</p>
                                 </span>
                             </label>
@@ -146,14 +146,14 @@
                             <label for="backlog_startup">
                                 <span class="component-title">Run backlog on startup</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="backlog_startup" id="backlog_startup" ${(' checked="checked"', '')[sickbeard.BACKLOG_STARTUP == True]}/>
+                                    <input type="checkbox" name="backlog_startup" id="backlog_startup" ${('', 'checked="checked"')[bool(sickbeard.BACKLOG_STARTUP)]}/>
                                     <p>start processing backlogged episodes on startup of SickRage</p>
                                 </span>
                             </label>
                         </div>
 
                          <div class="field-pair">
-                             <input id="use_failed_downloads" type="checkbox" class="enabler" name="use_failed_downloads" ${(' checked="checked"', '')[sickbeard.USE_FAILED_DOWNLOADS == True]} />
+                             <input id="use_failed_downloads" type="checkbox" class="enabler" name="use_failed_downloads" ${('', 'checked="checked"')[bool(sickbeard.USE_FAILED_DOWNLOADS)]} />
                              <label for="use_failed_downloads">
                                  <span class="component-title">Use Failed Downloads</span>
                                  <span class="component-desc">Use Failed Download Handling?</span>
@@ -166,7 +166,7 @@
 
                         <div id="content_use_failed_downloads">
                             <div class="field-pair">
-                                <input id="delete_failed" type="checkbox" name="delete_failed" ${(' checked="checked"', '')[sickbeard.DELETE_FAILED == True]}/>
+                                <input id="delete_failed" type="checkbox" name="delete_failed" ${('', 'checked="checked"')[bool(sickbeard.DELETE_FAILED)]}/>
                                 <label for="delete_failed">
                                     <span class="component-title">Delete Failed</span>
                                     <span class="component-desc">Delete files left over from a failed download?</span>
@@ -196,7 +196,7 @@
                             <label for="use_nzbs">
                                 <span class="component-title">Search NZBs</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="use_nzbs" class="enabler" id="use_nzbs" ${(' checked="checked"', '')[sickbeard.USE_NZBS == True]}/>
+                                    <input type="checkbox" name="use_nzbs" class="enabler" id="use_nzbs" ${('', 'checked="checked"')[bool(sickbeard.USE_NZBS)]}/>
                                     <p>enable NZB search providers</p></span>
                             </label>
                         </div>
@@ -209,7 +209,7 @@
                                     <select name="nzb_method" id="nzb_method" class="form-control input-sm">
 <% nzb_method_text = {'blackhole': "Black hole", 'sabnzbd': "SABnzbd", 'nzbget': "NZBget"} %>
 % for curAction in ('sabnzbd', 'blackhole', 'nzbget'):
-                                    <option value="${curAction}" ${(' selected="selected"', '')[sickbeard.NZB_METHOD == curAction]}>${nzb_method_text[curAction]}</option>
+                                    <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.NZB_METHOD == curAction]}>${nzb_method_text[curAction]}</option>
 % endfor
                                     </select>
                                 </span>
@@ -288,16 +288,16 @@
                                     </span>
                                 </label>
                             </div>
-                            #if sickbeard.ALLOW_HIGH_PRIORITY == True
+                            % if sickbeard.ALLOW_HIGH_PRIORITY == True:
                             <div class="field-pair">
                                 <label for="sab_forced">
                                     <span class="component-title">Use forced priority</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="sab_forced" class="enabler" id="sab_forced" ${(' selected="selected"', '')[sickbeard.SAB_FORCED == True]}/>
+                                        <input type="checkbox" name="sab_forced" class="enabler" id="sab_forced" ${('', 'selected="selected"')[bool(sickbeard.SAB_FORCED)]}/>
                                         <p>enable to change priority from HIGH to FORCED</p></span>
                                 </label>
                             </div>
-                            #end if
+                            % endif
                         </div>
 
                         <div id="nzbget_settings">
@@ -305,7 +305,7 @@
                                 <label for="nzbget_use_https">
                                     <span class="component-title">Connect using HTTPS</span>
                                     <span class="component-desc">
-                                        <input id="nzbget_use_https" type="checkbox" class="enabler" name="nzbget_use_https" ${(' selected="selected"', '')[sickbeard.NZBGET_USE_HTTPS == True]}/>
+                                        <input id="nzbget_use_https" type="checkbox" class="enabler" name="nzbget_use_https" ${('', 'selected="selected"')[bool(sickbeard.NZBGET_USE_HTTPS)]}/>
                                         <p><b>note:</b> enable Secure control in NZBGet and set the correct Secure Port here</p>
                                     </span>
                                 </label>
@@ -368,12 +368,12 @@
                                     <span class="component-title">NZBget priority</span>
                                     <span class="component-desc">
                                         <select name="nzbget_priority" id="nzbget_priority" class="form-control input-sm">
-                                            <option value="-100" ${(' selected="selected"', '')[sickbeard.NZBGET_PRIORITY == -100]}>Very low</option>
-                                            <option value="-50" ${(' selected="selected"', '')[sickbeard.NZBGET_PRIORITY == -50]}>Low</option>
-                                            <option value="0" ${(' selected="selected"', '')[sickbeard.NZBGET_PRIORITY == 0]}>Normal</option>
-                                            <option value="50" ${(' selected="selected"', '')[sickbeard.NZBGET_PRIORITY == 50]}>High</option>
-                                            <option value="100" ${(' selected="selected"', '')[sickbeard.NZBGET_PRIORITY == 100]}>Very high</option>
-                                            <option value="900" ${(' selected="selected"', '')[sickbeard.NZBGET_PRIORITY == 900]}>Force</option>
+                                            <option value="-100" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == -100]}>Very low</option>
+                                            <option value="-50" ${(' selected="selected"')[sickbeard.NZBGET_PRIORITY == -50]}>Low</option>
+                                            <option value="0" ${('', ' selected="selected"')[sickbeard.NZBGET_PRIORITY == 0]}>Normal</option>
+                                            <option value="50" ${('', ' selected="selected"')[sickbeard.NZBGET_PRIORITY == 50]}>High</option>
+                                            <option value="100" ${('', ' selected="selected"')[sickbeard.NZBGET_PRIORITY == 100]}>Very high</option>
+                                            <option value="900" ${('', ' selected="selected"')[sickbeard.NZBGET_PRIORITY == 900]}>Force</option>
                                         </select>
                                         <span>priority for daily snatches (no backlog)</span>
                                     </span>
@@ -404,7 +404,7 @@
                             <label for="use_torrents">
                                 <span class="component-title">Search torrents</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="use_torrents" class="enabler" id="use_torrents" ${(' checked="checked"', '')[sickbeard.USE_TORRENTS == True]}/>
+                                    <input type="checkbox" name="use_torrents" class="enabler" id="use_torrents" ${('', 'checked="checked"')[bool(sickbeard.USE_TORRENTS)]}/>
                                     <p>enable torrent search providers</p>
                                 </span>
                             </label>
@@ -471,7 +471,7 @@
                                         <select name="torrent_auth_type" id="torrent_auth_type" class="form-control input-sm">
                                         <% http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"} %>
                                         % for authvalue, authname in http_authtype.items():
-                                            <option id="torrent_auth_type_value" value="${authvalue}" ${(' selected="selected"', '')[sickbeard.TORRENT_AUTH_TYPE == authvalue]}>${authname}</option>
+                                            <option id="torrent_auth_type_value" value="${authvalue}" ${('', 'selected="selected"')[sickbeard.TORRENT_AUTH_TYPE == authvalue]}>${authname}</option>
                                         % endfor
                                         </select>
                                         <p></p>
@@ -483,7 +483,7 @@
                                 <label for="torrent_verify_cert">
                                     <span class="component-title">Verify certificate</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="torrent_verify_cert" class="enabler" id="torrent_verify_cert" ${(' checked="checked"', '')[sickbeard.TORRENT_VERIFY_CERT == True]}/>
+                                        <input type="checkbox" name="torrent_verify_cert" class="enabler" id="torrent_verify_cert" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_VERIFY_CERT)]}/>
                                         <p id="torrent_verify_deluge">disable if you get "Deluge: Authentication Error" in your log</p>
                                         <p id="torrent_verify_rtorrent">Verify SSL certificates for HTTPS requests</p>
                                     </span>
@@ -558,7 +558,7 @@
                                 <label>
                                     <span class="component-title">Start torrent paused</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="torrent_paused" class="enabler" id="torrent_paused" ${(' checked="checked"', '')[sickbeard.TORRENT_PAUSED == True]}/>
+                                        <input type="checkbox" name="torrent_paused" class="enabler" id="torrent_paused" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_PAUSED)]}/>
                                         <p>add .torrent to client but do <b style="font-weight:900">not</b> start downloading</p>
                                     </span>
                                 </label>
@@ -568,7 +568,7 @@
                                 <label>
                                     <span class="component-title">Allow high bandwidth</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="torrent_high_bandwidth" class="enabler" id="torrent_high_bandwidth" ${(' checked="checked"', '')[sickbeard.TORRENT_HIGH_BANDWIDTH == True]}/>
+                                        <input type="checkbox" name="torrent_high_bandwidth" class="enabler" id="torrent_high_bandwidth" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_HIGH_BANDWIDTH)]}/>
                                         <p>use high bandwidth allocation if priority is high</p>
                                     </span>
                                 </label>

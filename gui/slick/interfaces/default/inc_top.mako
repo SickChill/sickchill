@@ -256,13 +256,13 @@
         % for menuItem in submenu:
             % if 'requires' not in menuItem or menuItem['requires']:
                   % if type(menuItem['path']) == dict:
-                      ${("</span><span>", "")[first]}</span><span>"}#<b>${menuItem['title']}</b>
+                      ${("</span><span>", "")[bool(first)]}<b>${menuItem['title']}</b>
                       <%
                           first = False
                           inner_first = True
                       %>
                       % for cur_link in menuItem['path']:
-                          ${("", "&middot; ")[inner_first]}#<a class="inner" href="${sbRoot}/${menuItem['path'][cur_link]}">${cur_link}</a>
+                          ${("&middot; ", "")[bool(inner_first)]}<a class="inner" href="${sbRoot}/${menuItem['path'][cur_link]}">${cur_link}</a>
                           <% inner_first = False %>
                       % endfor
                   % else:

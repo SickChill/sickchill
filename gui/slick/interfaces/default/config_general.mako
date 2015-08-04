@@ -1,5 +1,4 @@
 <%!
-    import os.path
     import datetime
     import locale
     import sickbeard
@@ -342,7 +341,7 @@
                                 </span>
                             </label>
                         </div>
-                        <div class="field-pair show_if_fuzzy_dating ${(' metadataDiv', '')[sickbeard.FUZZY_DATING == False]}">
+                        <div class="field-pair show_if_fuzzy_dating ${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}">
                             <label for="trim_zero">
                                 <span class="component-title">Trim zero padding</span>
                                 <span class="component-desc">
@@ -356,15 +355,15 @@
                             <label for="date_presets">
                                 <span class="component-title">Date style:</span>
                                 <span class="component-desc">
-                                    <select class="form-control input-sm ${(' metadataDiv', '')[sickbeard.FUZZY_DATING == False]}" id="date_presets${('_na', '')[sickbeard.FUZZY_DATING == False]}" name="date_preset${('_na', '')[sickbeard.FUZZY_DATING == False]}">
+                                    <select class="form-control input-sm ${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" id="date_presets${('_na', '')[not bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[not bool(sickbeard.FUZZY_DATING)]}">
                                         % for cur_preset in date_presets:
                                             <option value="${cur_preset}" ${(' selected="selected", ''')[sickbeard.DATE_PRESET == cur_preset or ("%x" == sickbeard.DATE_PRESET and cur_preset == '%a, %b %d, %Y')]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
                                         % endfor
                                     </select>
-                                    <select class="form-control input-sm ${(' metadataDiv', '')[sickbeard.FUZZY_DATING == False]}" id="date_presets${(' metadataDiv', '')[sickbeard.FUZZY_DATING == False]}" name="date_preset${('_na', '')[sickbeard.FUZZY_DATING == True]}">
+                                    <select class="form-control input-sm ${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" id="date_presets${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[bool(sickbeard.FUZZY_DATING)]}">
                                         <option value="%x" ${(' selected="selected"', '')[sickbeard.DATE_PRESET == '%x']}>Use System Default</option>
                                         % for cur_preset in date_presets:
-                                            <option value="$cur_preset" ${('', ' selected="selected"')[sickbeard.DATE_PRESET == cur_preset]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
+                                            <option value="${cur_preset}" ${('', ' selected="selected"')[sickbeard.DATE_PRESET == cur_preset]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
                                         % endfor
                                     </select>
                                 </span>
@@ -389,10 +388,10 @@
                             <span class="component-title">Timezone:</span>
                             <span class="component-desc">
                                 <label for="local" class="space-right">
-                                    <input type="radio" name="timezone_display" id="local" value="local" #if "local" == $sickbeard.TIMEZONE_DISPLAY then 'checked="checked"' else ''# />Local
+                                    <input type="radio" name="timezone_display" id="local" value="local" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "local"]} />Local
                                 </label>
                                 <label for="network">
-                                    <input type="radio" name="timezone_display" id="network" value="network" #if "network" == $sickbeard.TIMEZONE_DISPLAY then 'checked="checked"' else ''# />Network
+                                    <input type="radio" name="timezone_display" id="network" value="network" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "network"]} />Network
                                 </label>
                                 <div class="clear-left"><p>display dates and times in either your timezone or the shows network timezone</p></div>
                             </span>
@@ -550,7 +549,7 @@
                                 <span class="component-desc">
                                     <select id="cpu_presets" name="cpu_preset" class="form-control input-sm">
                                     % for cur_preset in cpu_presets:
-                                        <option value="$cur_preset" ${('', 'selected="selected"')[sickbeard.CPU_PRESET == cur_preset]}>${cur_preset.capitalize()}</option>
+                                        <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.CPU_PRESET == cur_preset]}>${cur_preset.capitalize()}</option>
                                     % endfor
                                     </select>
                                     <span>Normal (default). High is lower and Low is higher CPU use</span>
