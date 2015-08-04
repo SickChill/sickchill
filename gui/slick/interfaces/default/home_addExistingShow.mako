@@ -2,35 +2,25 @@
     import os.path
     import sickbeard
     from sickbeard.common import *
-    global title="Existing Show"
-    global header="Existing Show"
-
-
-    global statpath="../.."
-    global topmenu="home"
-    import os.path
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
-
+<%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/addExistingShow.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/addShowOptions.js?${sbPID}"></script>
 
 <script type="text/javascript" charset="utf-8">
-<!--
 $(document).ready(function(){
     $( "#tabs" ).tabs({
         collapsible: true,
         selected: #if $sickbeard.ROOT_DIRS then '-1' else '0'#
     });
 });
-//-->
 </script>
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 
@@ -50,10 +40,10 @@ $(document).ready(function(){
             <li><a href="#tabs-2">Customize Options</a></li>
         </ul>
         <div id="tabs-1" class="existingtabs">
-            % include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.mako")
+            <%include file="/inc_rootDirs.mako"/>
         </div>
         <div id="tabs-2" class="existingtabs">
-            % include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_addShowOptions.mako")
+            <%include file="/inc_addShowOptions.mako"/>
         </div>
     </div>
     <br />
@@ -80,5 +70,4 @@ $(document).ready(function(){
     </div>
     </div>
 </div>
-
-% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>
