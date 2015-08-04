@@ -12,19 +12,15 @@
 
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings, Overview
-
-    title="History"
-    header="History"
-
-    topmenu="history"
-
+%>
+<%
     layout = sickbeard.HISTORY_LAYOUT
     history_limit = sickbeard.HISTORY_LIMIT
 %>
 <%include file="/inc_top.mako"/>
 
 <style type="text/css">
-.sort_data {display:none}
+.sort_data {display:none;}
 </style>
 
 <script type="text/javascript">
@@ -39,8 +35,7 @@ $.tablesorter.addParser({
     type: 'numeric'
 });
 
-$(document).ready(function()
-{
+$(document).ready(function(){
     $("#historyTable:has(tbody tr)").tablesorter({
         widgets: ['zebra', 'filter'],
         sortList: [[0,1]],
@@ -193,7 +188,7 @@ $(document).ready(function()
                 <% curdatetime = datetime.datetime.strptime(str(hItem["actions"][0]["time"]), history.dateFormat) %>
                 <td align="center"><div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(curdatetime, show_seconds=True)}</div><span class="sort_data">${time.mktime(curdatetime.timetuple())}</span></td>
                 <td class="tvShow" width="25%">
-                    <span><a href="${sbRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])}}${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}</a></span>
+                    <span><a href="${sbRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])}${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}</a></span>
                 </td>
                 <td align="center" provider="${str(sorted(hItem["actions"])[0]["provider"])}">
                     % for action in sorted(hItem["actions"]):
