@@ -132,6 +132,8 @@ class NewznabProvider(generic.NZBProvider):
 
         to_return = []
         cur_params = {}
+        if not ep_obj:
+            return to_return
 
         cur_params['maxage'] = (datetime.datetime.now() - datetime.datetime.combine(ep_obj.airdate, datetime.datetime.min.time())).days + 1
 
@@ -149,7 +151,6 @@ class NewznabProvider(generic.NZBProvider):
             cur_params['rid'] = rid
             params['attrs'] = "rageid"
             to_return.append(dict(cur_params))
-            #return to_return
 
         if 'rid' in cur_params:
             cur_params.pop('rid')
@@ -173,7 +174,7 @@ class NewznabProvider(generic.NZBProvider):
         params = {}
 
         if not ep_obj:
-            return params
+            return to_return
 
         params['maxage'] = (datetime.datetime.now() - datetime.datetime.combine(ep_obj.airdate, datetime.datetime.min.time())).days + 1
 
@@ -191,7 +192,6 @@ class NewznabProvider(generic.NZBProvider):
             params['rid'] = rid
             params['attrs'] = "rageid"
             to_return.append(dict(params))
-            #return to_return
 
         if 'rid' in params:
             params.pop('rid')
