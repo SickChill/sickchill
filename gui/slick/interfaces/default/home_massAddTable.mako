@@ -35,7 +35,7 @@
         % endif
         <td align="center">
             <select name="indexer">
-                % for curIndexer in sickbeard.indexerApi().indexers.items():
+                % for curIndexer in sickbeard.indexerApi().indexers.iteritems():
                     <option value="${curIndexer[0]}" ${("", "selected=\"selected\"")[curIndexer[0] == indexer]}>${curIndexer[1]}</option>
                 % endfor
             </select>

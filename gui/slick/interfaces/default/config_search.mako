@@ -470,7 +470,7 @@
                                     <span class="component-desc">
                                         <select name="torrent_auth_type" id="torrent_auth_type" class="form-control input-sm">
                                         <% http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"} %>
-                                        % for authvalue, authname in http_authtype.items():
+                                        % for authvalue, authname in http_authtype.iteritems():
                                             <option id="torrent_auth_type_value" value="${authvalue}" ${('', 'selected="selected"')[sickbeard.TORRENT_AUTH_TYPE == authvalue]}>${authname}</option>
                                         % endfor
                                         </select>

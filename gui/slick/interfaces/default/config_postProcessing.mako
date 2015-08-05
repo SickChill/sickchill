@@ -427,7 +427,7 @@
                                 <span class="component-title">Multi-Episode Style:</span>
                                 <span class="component-desc">
                                     <select id="naming_multi_ep" name="naming_multi_ep" class="form-control input-sm">
-                                    % for cur_multi_ep in sorted(multiEpStrings.items(), key=lambda x: x[1]):
+                                    % for cur_multi_ep in sorted(multiEpStrings.iteritems(), key=lambda x: x[1]):
                                         <option value="${cur_multi_ep[0]}" ${('', ' selected="selected"')[cur_multi_ep[0] == sickbeard.NAMING_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                     % endfor
                                     </select>
@@ -985,7 +985,7 @@
                                     <span class="component-title">Multi-Episode Style:</span>
                                     <span class="component-desc">
                                         <select id="naming_anime_multi_ep" name="naming_anime_multi_ep" class="form-control input-sm">
-                                        % for cur_multi_ep in sorted(multiEpStrings.items(), key=lambda x: x[1]):
+                                        % for cur_multi_ep in sorted(multiEpStrings.iteritems(), key=lambda x: x[1]):
                                             <option value="${cur_multi_ep[0]}" ${("", '"selected=\"selected\" class=\"selected\""')[cur_multi_ep[0] == sickbeard.NAMING_ANIME_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                         % endfor
                                         </select>
@@ -1067,7 +1067,7 @@
                                 <span class="component-desc">
                                     <% m_dict = metadata.get_metadata_generator_dict() %>
                                     <select id="metadataType" class="form-control input-sm">
-                                    % for (cur_name, cur_generator) in sorted(m_dict.items()):
+                                    % for (cur_name, cur_generator) in sorted(m_dict.iteritems()):
                                         <option value="${cur_generator.get_id()}">${cur_name}</option>
                                     % endfor
                                     </select>
@@ -1076,7 +1076,7 @@
                             <span>Toggle the metadata options that you wish to be created. <b>Multiple targets may be used.</b></span>
                         </div>
 
-                        % for (cur_name, cur_generator) in m_dict.items():
+                        % for (cur_name, cur_generator) in m_dict.iteritems():
                         <% cur_metadata_inst = sickbeard.metadata_provider_dict[cur_generator.name] %>
                         <% cur_id = cur_generator.get_id() %>
                         <div class="metadataDiv" id="${cur_id}">
