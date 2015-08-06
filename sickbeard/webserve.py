@@ -2587,7 +2587,7 @@ class HomeAddShows(Home):
         Prints out the page to add existing shows from a root dir
         """
         t = PageTemplate(rh=self, file="home_addExistingShow.mako")
-        return t.render(submenu=self.HomeMenu(), enable_anime_options=False, title='Existing Show', header='Existing Show')
+        return t.render(submenu=self.HomeMenu(), enable_anime_options=False, title='Existing Show', header='Existing Show', topmenu="home")
 
     def addTraktShow(self, indexer_id, showName):
         if helpers.findCertainShow(sickbeard.showList, int(indexer_id)):
@@ -3691,7 +3691,7 @@ class Config(WebRoot):
     def index(self):
         t = PageTemplate(rh=self, file="config.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='Configuration', header='Configuration')
+        return t.render(submenu=self.ConfigMenu(), title='Configuration', header='Configuration', topmenu="config")
 
 
 @route('/config/general(/?.*)')
