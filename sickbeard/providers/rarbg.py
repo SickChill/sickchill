@@ -65,10 +65,10 @@ class RarbgProvider(generic.TorrentProvider):
 
         self.urls = {'url': u'https://rarbg.com',
                      'token': u'http://torrentapi.org/pubapi_v2.php?get_token=get_token&format=json&app_id=sickrage',
-                     'listing': u'https://torrentapi.org/pubapi_v2.php?mode=list&app_id=sickrage',
-                     'search': u'https://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_string={search_string}',
-                     'search_tvdb': u'https://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_tvdb={tvdb}&search_string={search_string}',
-                     'search_tvrage': u'https://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_tvrage={tvrage}&search_string={search_string}',
+                     'listing': u'http://torrentapi.org/pubapi_v2.php?mode=list&app_id=sickrage',
+                     'search': u'http://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_string={search_string}',
+                     'search_tvdb': u'http://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_tvdb={tvdb}&search_string={search_string}',
+                     'search_tvrage': u'http://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_tvrage={tvrage}&search_string={search_string}',
                      'api_spec': u'https://rarbg.com/pubapi/apidocs.txt',
                      }
 
