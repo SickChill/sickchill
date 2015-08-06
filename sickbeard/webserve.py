@@ -1606,7 +1606,7 @@ class Home(WebRoot):
 
         ui.notifications.message('%s has been %s %s' %
                                  (showObj.name,
-                                  ('deleted', 'trashed')[sickbeard.TRASH_REMOVE_SHOW],
+                                  ('deleted', 'trashed')[bool(sickbeard.TRASH_REMOVE_SHOW)],
                                   ('(media untouched)', '(with all related media)')[bool(full)]))
         #Dont redirect to default page so user can confirm show was deleted
         return self.redirect('/home/')

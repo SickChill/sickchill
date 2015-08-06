@@ -9,7 +9,7 @@
             <label for="subtitles" class="clearfix">
                 <span class="component-title">Subtitles</span>
                 <span class="component-desc">
-                     <input type="checkbox" name="subtitles" id="subtitles" ${('', 'checked="checked"')[sickbeard.SUBTITLES_DEFAULT]} />
+                     <input type="checkbox" name="subtitles" id="subtitles" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_DEFAULT)]} />
                     <p>Download subtitles for this show?</p>
                 </span>
             </label>
@@ -44,7 +44,7 @@
             <label for="flatten_folders" class="clearfix">
                 <span class="component-title">Flatten Folders</span>
                 <span class="component-desc">
-                    <input class="cb" type="checkbox" name="flatten_folders" id="flatten_folders" ${('', 'checked="checked"')[sickbeard.FLATTEN_FOLDERS_DEFAULT]}/>
+                    <input class="cb" type="checkbox" name="flatten_folders" id="flatten_folders" ${('', 'checked="checked"')[bool(sickbeard.FLATTEN_FOLDERS_DEFAULT)]}/>
                     <p>Disregard sub-folders?</p>
                 </span>
             </label>
@@ -55,7 +55,7 @@
             <label for="anime" class="clearfix">
                 <span class="component-title">Anime</span>
                 <span class="component-desc">
-                    <input type="checkbox" name="anime" id="anime" ${('', 'checked="checked"')[sickbeard.ANIME_DEFAULT]} />
+                    <input type="checkbox" name="anime" id="anime" ${('', 'checked="checked"')[bool(sickbeard.ANIME_DEFAULT)]} />
                     <p>Is this show an Anime?<p>
                 </span>
             </label>
@@ -66,7 +66,7 @@
             <label for="scene" class="clearfix">
                 <span class="component-title">Scene Numbering</span>
                 <span class="component-desc">
-                    <input type="checkbox" name="scene" id="scene" ${('', 'checked="checked"')[sickbeard.SCENE_DEFAULT]} />
+                    <input type="checkbox" name="scene" id="scene" ${('', 'checked="checked"')[bool(sickbeard.SCENE_DEFAULT)]} />
                     <p>Is this show scene numbered?</p>
                 </span>
             </label>

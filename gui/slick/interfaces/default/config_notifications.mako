@@ -339,7 +339,7 @@
                             <label for="use_emby">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_emby" id="use_emby" ${("", "checked=\"checked\"")[sickbeard.USE_EMBY]} />
+                                    <input type="checkbox" class="enabler" name="use_emby" id="use_emby" ${("", "checked=\"checked\"")[bool(sickbeard.USE_EMBY)]} />
                                     <p>should SickRage send update commands to Emby?<p>
                                 </span>
                             </label>
