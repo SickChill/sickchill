@@ -581,7 +581,7 @@
                             <label for="ssl_verify">
                                 <span class="component-title">Verify SSL Certs</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="ssl_verify" id="ssl_verify" ${('', 'checked="checked"')[sickbeard.SSL_VERIFY]}/>
+                                        <input type="checkbox" name="ssl_verify" id="ssl_verify" ${('', 'checked="checked"')[bool(sickbeard.SSL_VERIFY)]}/>
                                         <p>Verify SSL Certificates (Disable this for broken SSL installs (Like QNAP)<p>
                                     </span>
                             </label>
@@ -591,7 +591,7 @@
                             <label for="no_restart">
                                 <span class="component-title">No Restart</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="no_restart" id="no_restart" ${('', 'checked="checked"')[sickbeard.NO_RESTART]}/>
+                                    <input type="checkbox" name="no_restart" id="no_restart" ${('', 'checked="checked"')[bool(sickbeard.NO_RESTART)]}/>
                                     <p>Only shutdown when restarting SR.
                                     Only select this when you have external software restarting SR automatically when it stops (like FireDaemon)</p>
                                 </span>
@@ -603,7 +603,7 @@
                             <label for="encryption_version">
                                 <span class="component-title">Encrypt passwords</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="encryption_version" id="encryption_version" ${('', 'checked="checked"')[sickbeard.ENCRYPTION_VERSION]}/>
+                                    <input type="checkbox" name="encryption_version" id="encryption_version" ${('', 'checked="checked"')[bool(sickbeard.ENCRYPTION_VERSION)]}/>
                                     <p>in the <code>config.ini</code> file.
                                     <b>Warning:</b> Passwords must only contain <a target="_blank" href="${anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters')}">ASCII characters</a></p>
                                 </span>
@@ -614,7 +614,7 @@
                             <label for="calendar_unprotected">
                                 <span class="component-title">Unprotected calendar</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" ${('', 'checked="checked"')[sickbeard.CALENDAR_UNPROTECTED]}/>
+                                    <input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" ${('', 'checked="checked"')[bool(sickbeard.CALENDAR_UNPROTECTED)]}/>
                                     <p>allow subscribing to the calendar without user and password.
                                     Some services like Google Calendar only work this way</p>
                                 </span>
