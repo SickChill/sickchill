@@ -3,12 +3,6 @@
     from sickbeard import db
     from sickbeard.helpers import anon_url
     import sys, os
-
-    title="Configuration"
-    header="Configuration"
-
-
-    topmenu="config"
 %>
 <%include file="/inc_top.mako"/>
 % if not header is UNDEFINED:
