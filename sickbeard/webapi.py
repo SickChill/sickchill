@@ -1302,7 +1302,7 @@ class CMD_Backlog(ApiCall):
             showEps = []
 
             sqlResults = myDB.select(
-                "SELECT * FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
+                "SELECT tv_episodes.*, tv_shows.paused FROM tv_episodes INNER JOIN tv_shows ON tv_episodes.showid = tv_shows.indexer_id WHERE showid = ? and paused = 0 ORDER BY season DESC, episode DESC",
                 [curShow.indexerid])
 
             for curResult in sqlResults:
