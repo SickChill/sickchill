@@ -253,10 +253,10 @@ class GenericProvider:
     def getQuality(self, item, anime=False):
         """
         Figures out the quality of the given RSS item node
-        
+
         item: An elementtree.ElementTree element representing the <item> tag of the RSS feed
-        
-        Returns a Quality value obtained from the node's data 
+
+        Returns a Quality value obtained from the node's data
         """
         (title, url) = self._get_title_and_url(item)
         quality = Quality.sceneQuality(title, anime)
@@ -333,14 +333,29 @@ class GenericProvider:
             # mark season searched for season pack searches so we can skip later on
             searched_scene_season = epObj.scene_season
 
+            search_strings = []
             if len(episodes) > 1 and search_mode == 'sponly':
                 # get season search results
-                for curString in self._get_season_search_strings(epObj):
-                    itemList += self._doSearch(curString, search_mode, len(episodes), epObj=epObj)
+                search_strings = self._get_season_search_strings(epObj)
             elif search_mode == 'eponly':
                 # get single episode search results
-                for curString in self._get_episode_search_strings(epObj):
-                    itemList += self._doSearch(curString, 'eponly', len(episodes), epObj=epObj)
+                search_strings = self._get_episode_search_strings(epObj)
+
+            if search_strings:
+                logger.log(u'search_strings = %s' % repr(search_strings), logger.DEBUG)
+            first = search_strings and isinstance(search_strings[0], dict) and 'rid' in search_strings[0]
+            if first:
+                logger.log(u'First search_string has rid', logger.DEBUG)
+
+            for curString in search_strings:
+                itemList += self._doSearch(curString, search_mode, len(episodes), epObj=epObj)
+                if first:
+                    first = False
+                    if itemList:
+                        logger.log(u'First search_string had rid, and returned results, skipping query by string', logger.DEBUG)
+                        break
+                    else:
+                        logger.log(u'First search_string had rid, but returned no results, searching with string query', logger.DEBUG)
 
         # if we found what we needed already from cache then return results and exit
         if len(results) == len(episodes):
@@ -386,7 +401,7 @@ class GenericProvider:
 
             addCacheEntry = False
             if not (showObj.air_by_date or showObj.sports):
-                if search_mode == 'sponly': 
+                if search_mode == 'sponly':
                     if len(parse_result.episode_numbers):
                         logger.log(
                             u"This is supposed to be a season pack search but the result " + title + " is not a valid season pack, skipping it",
