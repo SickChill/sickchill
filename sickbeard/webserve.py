@@ -3109,7 +3109,6 @@ class Manage(Home, WebRoot):
     def massEdit(self, toEdit=None):
 
         t = PageTemplate(rh=self, file="manage_massEdit.mako")
-        t.submenu = self.ManageMenu()
 
         if not toEdit:
             return self.redirect("/manage/")
