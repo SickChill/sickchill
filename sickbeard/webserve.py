@@ -714,7 +714,7 @@ class Home(WebRoot):
 
     def _genericMessage(self, subject, message):
         t = PageTemplate(rh=self, file="genericMessage.mako")
-        return t.render(message=message, subject=subject, submenu=self.HomeMenu())
+        return t.render(message=message, subject=subject, submenu=self.HomeMenu(), topmenu="home", title="")
 
     def _getEpisode(self, show, season=None, episode=None, absolute=None):
         if show is None:
