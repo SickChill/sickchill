@@ -149,7 +149,7 @@ class NewznabProvider(generic.NZBProvider):
         rid = helpers.mapIndexersToShow(ep_obj.show)[2]
         if rid:
             cur_params['rid'] = rid
-            params['attrs'] = "rageid"
+            cur_params['attrs'] = "rageid"
             to_return.append(dict(cur_params))
 
         if 'rid' in cur_params:
