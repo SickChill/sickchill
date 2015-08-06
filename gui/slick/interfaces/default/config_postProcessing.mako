@@ -67,7 +67,7 @@
                                     <select name="process_method" id="process_method" class="form-control input-sm">
                                         <% process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"} %>
                                         % for curAction in ('copy', 'move', 'hardlink', 'symlink'):
-                                        <option value="${curAction}" ${(' selected="selected"', '')[sickbeard.PROCESS_METHOD == curAction]}>${process_method_text[curAction]}</option>
+                                        <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.PROCESS_METHOD == curAction]}>${process_method_text[curAction]}</option>
                                         % endfor
                                     </select>
                                 </span>
@@ -78,14 +78,14 @@
                             </label>
                         </div>
                         <div class="field-pair">
-                            <input type="checkbox" name="del_rar_contents" id="del_rar_contents" ${("", "checked=\"checked\"")[bool(sickbeard.DELRARCONTENTS)]/>
+                            <input type="checkbox" name="del_rar_contents" id="del_rar_contents" ${("", "checked=\"checked\"")[bool(sickbeard.DELRARCONTENTS)]}/>
                             <label for="del_rar_contents">
                                 <span class="component-title">Delete RAR contents</span>
                                 <span class="component-desc">Delete content of RAR files, even if Process Method not set to move?</span>
                             </label>
                         </div>
                         <div class="field-pair">
-                            <input type="checkbox" name="skip_removed_files" id="skip_removed_files" ${("", "checked=\"checked\"")[bool(sickbeard.SKIP_REMOVED_FILES)]/>
+                            <input type="checkbox" name="skip_removed_files" id="skip_removed_files" ${("", "checked=\"checked\"")[bool(sickbeard.SKIP_REMOVED_FILES)]}/>
                             <label for="skip_removed_files">
                                 <span class="component-title">Skip Remove Detection</span>
                                 <span class="component-desc">Skip detection of removed files, so they don't get set to ignored/archived?</span>
@@ -98,7 +98,7 @@
                         <div class="field-pair">
                             <label class="nocheck">
                                 <span class="component-title">Extra Scripts</span>
-                                <input type="text" name="extra_scripts" value="<%'|'.join(sickbeard.EXTRA_SCRIPTS)%>" class="form-control input-sm input350" />
+                                <input type="text" name="extra_scripts" value="${'|'.join(sickbeard.EXTRA_SCRIPTS)}" class="form-control input-sm input350" />
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
@@ -122,7 +122,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" name="move_associated_files" id="move_associated_files" ${("", "checked=\"checked\"")[bool(sickbeard.MOVE_ASSOCIATED_FILES)]/>
+                            <input type="checkbox" name="move_associated_files" id="move_associated_files" ${("", "checked=\"checked\"")[bool(sickbeard.MOVE_ASSOCIATED_FILES)]}/>
                             <label for="move_associated_files">
                                 <span class="component-title">Move Associated Files</span>
                                 <span class="component-desc">Move srr/srt/sfv/etc files with the episode when processed?</span>
@@ -139,7 +139,7 @@
                             </label>
                         </div>
                         <div class="field-pair">
-                            <input type="checkbox" name="postpone_if_sync_files" id="postpone_if_sync_files" ${("", "checked=\"checked\"")[bool(sickbeard.POSTPONE_IF_SYNC_FILES)]/>
+                            <input type="checkbox" name="postpone_if_sync_files" id="postpone_if_sync_files" ${("", "checked=\"checked\"")[bool(sickbeard.POSTPONE_IF_SYNC_FILES)]}/>
                             <label for="postpone_if_sync_files">
                                 <span class="component-title">Postpone post processing</span>
                                 <span class="component-desc">if sync files are present in the TV download dir</span>
@@ -147,7 +147,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" name="nfo_rename" id="nfo_rename" ${("", "checked=\"checked\"")[bool(sickbeard.NFO_RENAME)]/>
+                            <input type="checkbox" name="nfo_rename" id="nfo_rename" ${("", "checked=\"checked\"")[bool(sickbeard.NFO_RENAME)]}/>
                             <label for="nfo_rename">
                                 <span class="component-title">Rename .nfo file</span>
                                 <span class="component-desc">Rename the original .nfo file to .nfo-orig to avoid conflicts?</span>
@@ -155,7 +155,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" name="rename_episodes" id="rename_episodes" ${("", "checked=\"checked\"")[bool(sickbeard.RENAME_EPISODES)]/>
+                            <input type="checkbox" name="rename_episodes" id="rename_episodes" ${("", "checked=\"checked\"")[bool(sickbeard.RENAME_EPISODES)]}/>
                             <label for="rename_episodes">
                                 <span class="component-title">Rename Episodes</span>
                                 <span class="component-desc">Rename episode using the Episode Naming settings?</span>
@@ -163,7 +163,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" name="airdate_episodes" id="airdate_episodes" ${("", "checked=\"checked\"")[bool(sickbeard.AIRDATE_EPISODES)]/>
+                            <input type="checkbox" name="airdate_episodes" id="airdate_episodes" ${("", "checked=\"checked\"")[bool(sickbeard.AIRDATE_EPISODES)]}/>
                             <label for="airdate_episodes">
                                 <span class="component-title">Change File Date</span>
                                 <span class="component-desc">Set last modified filedate to the date that the episode aired?</span>
@@ -175,7 +175,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" name="process_automatically" id="process_automatically" ${("", "checked=\"checked\"")[bool(sickbeard.PROCESS_AUTOMATICALLY)]/>
+                            <input type="checkbox" name="process_automatically" id="process_automatically" ${("", "checked=\"checked\"")[bool(sickbeard.PROCESS_AUTOMATICALLY)]}/>
                             <label for="process_automatically">
                                 <span class="component-title">Scan and Process</span>
                                 <span class="component-desc">Scan and post-process any files in your <i>TV Download Dir</i>?</span>
@@ -191,7 +191,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input type="checkbox" name="no_delete" id="no_delete" ${("", "checked=\"checked\"")[bool(sickbeard.NO_DELETE)]/>
+                            <input type="checkbox" name="no_delete" id="no_delete" ${("", "checked=\"checked\"")[bool(sickbeard.NO_DELETE)]}/>
                             <label for="no_delete">
                                 <span class="component-title">Don't delete empty folders</span>
                                 <span class="component-desc">Leave empty folders when Post Processing?</span>
@@ -226,7 +226,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <input id="use_failed_downloads" type="checkbox" class="enabler" name="use_failed_downloads" ${("", "checked=\"checked\"")[bool(sickbeard.USE_FAILED_DOWNLOADS)]/>
+                            <input id="use_failed_downloads" type="checkbox" class="enabler" name="use_failed_downloads" ${("", "checked=\"checked\"")[bool(sickbeard.USE_FAILED_DOWNLOADS)]}/>
                             <label for="use_failed_downloads">
                                 <span class="component-title">Use Failed Downloads</span>
                                 <span class="component-desc">Use Failed Download Handling?</span>
@@ -238,7 +238,7 @@
 
                         <div id="content_use_failed_downloads">
                             <div class="field-pair">
-                                <input id="delete_failed" type="checkbox" name="delete_failed" ${("", "checked=\"checked\"")[bool(sickbeard.DELETE_FAILED)]/>
+                                <input id="delete_failed" type="checkbox" name="delete_failed" ${("", "checked=\"checked\"")[bool(sickbeard.DELETE_FAILED)]}/>
                                 <label for="delete_failed">
                                     <span class="component-title">Delete Failed</span>
                                     <span class="component-desc">Delete files left over from a failed download?</span>
@@ -427,7 +427,7 @@
                                 <span class="component-title">Multi-Episode Style:</span>
                                 <span class="component-desc">
                                     <select id="naming_multi_ep" name="naming_multi_ep" class="form-control input-sm">
-                                    % for cur_multi_ep in sorted(multiEpStrings.items(), key=lambda x: x[1]):
+                                    % for cur_multi_ep in sorted(multiEpStrings.iteritems(), key=lambda x: x[1]):
                                         <option value="${cur_multi_ep[0]}" ${('', ' selected="selected"')[cur_multi_ep[0] == sickbeard.NAMING_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                     % endfor
                                     </select>
@@ -985,8 +985,8 @@
                                     <span class="component-title">Multi-Episode Style:</span>
                                     <span class="component-desc">
                                         <select id="naming_anime_multi_ep" name="naming_anime_multi_ep" class="form-control input-sm">
-                                        % for cur_multi_ep in sorted(multiEpStrings.items(), key=lambda x: x[1]):
-                                            <option value="${cur_multi_ep[0]}" ${("", '"selected=\"selected\" class=\"selected\""')[cur_multi_ep[0] == sickbeard.NAMING_ANIME_MULTI_EP]}>${cur_multi_ep[1]}</option>
+                                        % for cur_multi_ep in sorted(multiEpStrings.iteritems(), key=lambda x: x[1]):
+                                            <option value="${cur_multi_ep[0]}" ${("", "selected=\"selected\" class=\"selected\"")[cur_multi_ep[0] == sickbeard.NAMING_ANIME_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                         % endfor
                                         </select>
                                     </span>
@@ -1010,7 +1010,7 @@
                             </div>
 
                             <div class="field-pair">
-                                <input type="radio" name="naming_anime" id="naming_anime" value="1" ${("", "checked=\"checked\"")[sickbeard.NAMING_ANIME == 1]/>
+                                <input type="radio" name="naming_anime" id="naming_anime" value="1" ${("", "checked=\"checked\"")[sickbeard.NAMING_ANIME == 1]}/>
                                 <label for="naming_anime">
                                     <span class="component-title">Add Absolute Number</span>
                                     <span class="component-desc">Add the absolute number to the season/episode format?</span>
@@ -1022,7 +1022,7 @@
                             </div>
 
                             <div class="field-pair">
-                                <input type="radio" name="naming_anime" id="naming_anime_only" value="2" ${("", "checked=\"checked\"")[sickbeard.NAMING_ANIME == 2]/>
+                                <input type="radio" name="naming_anime" id="naming_anime_only" value="2" ${("", "checked=\"checked\"")[sickbeard.NAMING_ANIME == 2]}/>
                                 <label for="naming_anime_only">
                                     <span class="component-title">Only Absolute Number</span>
                                     <span class="component-desc">Replace season/episode format with absolute number</span>
@@ -1034,7 +1034,7 @@
                             </div>
 
                             <div class="field-pair">
-                                <input type="radio" name="naming_anime" id="naming_anime_none" value="3" ${("", "checked=\"checked\"")[sickbeard.NAMING_ANIME == 3]/>
+                                <input type="radio" name="naming_anime" id="naming_anime_none" value="3" ${("", "checked=\"checked\"")[sickbeard.NAMING_ANIME == 3]}/>
                                 <label for="naming_anime_none">
                                     <span class="component-title">No Absolute Number</span>
                                     <span class="component-desc">Dont include the absolute number</span>
@@ -1067,7 +1067,7 @@
                                 <span class="component-desc">
                                     <% m_dict = metadata.get_metadata_generator_dict() %>
                                     <select id="metadataType" class="form-control input-sm">
-                                    % for (cur_name, cur_generator) in sorted(m_dict.items()):
+                                    % for (cur_name, cur_generator) in sorted(m_dict.iteritems()):
                                         <option value="${cur_generator.get_id()}">${cur_name}</option>
                                     % endfor
                                     </select>
@@ -1076,7 +1076,7 @@
                             <span>Toggle the metadata options that you wish to be created. <b>Multiple targets may be used.</b></span>
                         </div>
 
-                        % for (cur_name, cur_generator) in m_dict.items():
+                        % for (cur_name, cur_generator) in m_dict.iteritems():
                         <% cur_metadata_inst = sickbeard.metadata_provider_dict[cur_generator.name] %>
                         <% cur_id = cur_generator.get_id() %>
                         <div class="metadataDiv" id="${cur_id}">

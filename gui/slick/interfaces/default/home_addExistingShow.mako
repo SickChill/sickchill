@@ -11,7 +11,7 @@
 $(document).ready(function(){
     $( "#tabs" ).tabs({
         collapsible: true,
-        selected: ${('0', '-1')[bool(sickbeard.ROOT_DIRS)]}
+        selected: '${('0', '-1')[bool(sickbeard.ROOT_DIRS)]}'
     });
 });
 </script>
@@ -54,7 +54,6 @@ $(document).ready(function(){
     <p><b>Displaying folders within these directories which aren't already added to SickRage:</b></p>
 
     <ul id="rootDirStaticList"><li></li</ul>
-
     <br />
     <div id="tableDiv"></div>
     <br />

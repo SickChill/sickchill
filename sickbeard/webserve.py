@@ -714,7 +714,7 @@ class Home(WebRoot):
 
     def _genericMessage(self, subject, message):
         t = PageTemplate(rh=self, file="genericMessage.mako")
-        return t.render(message=message, subject=subject, submenu=self.HomeMenu())
+        return t.render(message=message, subject=subject, submenu=self.HomeMenu(), topmenu="home", title="")
 
     def _getEpisode(self, show, season=None, episode=None, absolute=None):
         if show is None:
@@ -3109,7 +3109,6 @@ class Manage(Home, WebRoot):
     def massEdit(self, toEdit=None):
 
         t = PageTemplate(rh=self, file="manage_massEdit.mako")
-        t.submenu = self.ManageMenu()
 
         if not toEdit:
             return self.redirect("/manage/")

@@ -8,7 +8,6 @@
     else:
         backend_default = ''
         backend_dirs = []
-    endif
 %>
 
 <span id="sampleRootDir"></span>
