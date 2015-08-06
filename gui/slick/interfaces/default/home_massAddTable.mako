@@ -10,20 +10,17 @@
     <%
         if curDir['added_already']:
             continue
-        endif
 
         show_id = curDir['dir']
         if curDir['existing_info'][0]:
             show_id = show_id + '|' + str(curDir['existing_info'][0]) + '|' + str(curDir['existing_info'][1])
             indexer = curDir['existing_info'][2]
-        endif
 
         indexer = 0
         if curDir['existing_info'][0]:
             indexer = curDir['existing_info'][2]
         elif sickbeard.INDEXER_DEFAULT > 0:
             indexer = sickbeard.INDEXER_DEFAULT
-        endif
     %>
     <tr>
         <td class="col-checkbox"><input type="checkbox" id="${show_id}" class="dirCheck" checked=checked></td>

@@ -67,7 +67,7 @@
                                     <select name="process_method" id="process_method" class="form-control input-sm">
                                         <% process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"} %>
                                         % for curAction in ('copy', 'move', 'hardlink', 'symlink'):
-                                        <option value="${curAction}" ${(' selected="selected"', '')[sickbeard.PROCESS_METHOD == curAction]}>${process_method_text[curAction]}</option>
+                                        <option value="${curAction}" ${('selected="selected"', '')[sickbeard.PROCESS_METHOD == curAction]}>${process_method_text[curAction]}</option>
                                         % endfor
                                     </select>
                                 </span>
@@ -986,7 +986,7 @@
                                     <span class="component-desc">
                                         <select id="naming_anime_multi_ep" name="naming_anime_multi_ep" class="form-control input-sm">
                                         % for cur_multi_ep in sorted(multiEpStrings.iteritems(), key=lambda x: x[1]):
-                                            <option value="${cur_multi_ep[0]}" ${("", '"selected=\"selected\" class=\"selected\""')[cur_multi_ep[0] == sickbeard.NAMING_ANIME_MULTI_EP]}>${cur_multi_ep[1]}</option>
+                                            <option value="${cur_multi_ep[0]}" ${("", "selected=\"selected\" class=\"selected\"")[cur_multi_ep[0] == sickbeard.NAMING_ANIME_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                         % endfor
                                         </select>
                                     </span>

@@ -115,9 +115,7 @@ $(document).ready(function(){
                                                 continue
                                             elif curProvider.providerType == GenericProvider.TORRENT and ( not sickbeard.USE_TORRENTS or not curProvider.isEnabled()):
                                                 continue
-                                            endif
                                             provider_config_list.append(curProvider)
-                                        endfor
                                     %>
                                     % if provider_config_list:
                                         <select id="editAProvider" class="form-control input-sm">
