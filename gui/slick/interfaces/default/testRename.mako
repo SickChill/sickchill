@@ -24,7 +24,7 @@
     <% sickbeard.NAMING_ABD_PATTERN %>
 % elif int(show.sports) == 1 and sickbeard.NAMING_CUSTOM_SPORTS:
     <% sickbeard.NAMING_SPORTS_PATTERN %>
-% else
+% else:
     <% sickbeard.NAMING_PATTERN %>
 % endif
 </blockquote>
