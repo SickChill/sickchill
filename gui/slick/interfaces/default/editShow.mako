@@ -2,10 +2,10 @@
     import sickbeard
     import adba
     from sickbeard import common
-    from sickbeard.common import *
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import statusStrings
     from sickbeard import exceptions
     from sickbeard import scene_exceptions
-    from sickbeard.blackandwhitelist import *
 %>
 <%include file="/inc_top.mako"/>
 % if not header is UNDEFINED:
@@ -48,9 +48,11 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
 <br />
 
 <b>Quality:</b><br />
-<% qualities = common.Quality.splitQuality(int(show.quality)) %>
-<% anyQualities = qualities[0] %>
-<% bestQualities = qualities[1] %>
+<%
+    qualities = common.Quality.splitQuality(int(show.quality))
+    anyQualities = qualities[0]
+    bestQualities = qualities[1]
+%>
 <%include file="/inc_qualityChooser.mako"/>
 <br />
 
@@ -124,8 +126,7 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 <br />
 
 % if show.is_anime:
-    <% from sickbeard.blackandwhitelist import * %>
-    % include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_blackwhitelist.mako")
+    <%include file="/inc_blackwhitelist.mako"/>
     <script type="text/javascript" src="${sbRoot}/js/blackwhite.js?${sbPID}"></script>
 % endif
 

@@ -34,7 +34,6 @@ from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
 from sickbeard import image_cache
 from sickbeard import naming
-from sickbeard import scene_exceptions
 from sickbeard import subtitles
 from sickbeard import network_timezones
 from sickbeard import sbdatetime
@@ -44,7 +43,6 @@ from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILE
 from sickbeard.common import SD, HD720p, HD1080p
 from sickbeard.exceptions import ex
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
-from sickbeard.scene_exceptions import get_scene_exceptions
 from sickbeard.browser import foldersAtPath
 from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
     get_xem_numbering_for_show, get_scene_absolute_numbering_for_show, get_xem_absolute_numbering_for_show, \
@@ -1313,7 +1311,7 @@ class Home(WebRoot):
         if showObj.is_anime:
             bwl = showObj.release_groups
 
-        showObj.exceptions = scene_exceptions.get_scene_exceptions(showObj.indexerid)
+        showObj.exceptions = sickbeard.scene_exceptions.get_scene_exceptions(showObj.indexerid)
 
         indexerid = int(showObj.indexerid)
         indexer = int(showObj.indexer)
@@ -1373,7 +1371,7 @@ class Home(WebRoot):
             else:
                 return self._genericMessage("Error", errString)
 
-        showObj.exceptions = scene_exceptions.get_scene_exceptions(showObj.indexerid)
+        showObj.exceptions = sickbeard.scene_exceptions.get_scene_exceptions(showObj.indexerid)
 
         if not location and not anyQualities and not bestQualities and not flatten_folders:
             t = PageTemplate(rh=self, file="editShow.mako")
@@ -1394,14 +1392,14 @@ class Home(WebRoot):
 
             with showObj.lock:
                 show = showObj
-                scene_exceptions = get_scene_exceptions(showObj.indexerid)
+                scene_exceptions = sickbeard.scene_exceptions.get_scene_exceptions(showObj.indexerid)
 
             if showObj.is_anime:
                 return t.render(submenu=self.HomeMenu(), show=show, scene_exceptions=scene_exceptions, groups=groups, whitelist=whitelist,
                                 blacklist=blacklist, title='Edit Shows', header='Edit Shows')
             else:
                 return t.render(submenu=self.HomeMenu(), show=show, scene_exceptions=scene_exceptions, title='Edit Shows',
-                                headers='Edit Shows')
+                                header='Edit Shows')
 
         flatten_folders = config.checkbox_to_value(flatten_folders)
         dvdorder = config.checkbox_to_value(dvdorder)
@@ -1527,7 +1525,7 @@ class Home(WebRoot):
 
         if do_update_exceptions:
             try:
-                scene_exceptions.update_scene_exceptions(showObj.indexerid, exceptions_list)  # @UndefinedVdexerid)
+                sickbeard.scene_exceptions.update_scene_exceptions(showObj.indexerid, exceptions_list)  # @UndefinedVdexerid)
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on scene exceptions of the show.")
