@@ -2460,7 +2460,7 @@ class HomeAddShows(Home):
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, file="home_recommendedShows.mako")
-        return t.render(submenu=self.HomeMenu(), enable_anime_options=False)
+        return t.render(title="Recommended Shows", header="Recommended Shows", submenu=self.HomeMenu(), enable_anime_options=False)
 
     def getRecommendedShows(self):
         t = PageTemplate(rh=self, file="trendingShows.mako")
@@ -2505,7 +2505,7 @@ class HomeAddShows(Home):
         except traktException as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
-        return t.render(trending_shows=trending_shows, blacklist=blacklist, submenu=self.HomeMenu())
+        return t.render(title="Trending Shows", header="Trending Shows", trending_shows=trending_shows, blacklist=blacklist, submenu=self.HomeMenu())
 
     def trendingShows(self):
         """

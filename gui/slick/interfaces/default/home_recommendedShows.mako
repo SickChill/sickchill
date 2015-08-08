@@ -1,10 +1,5 @@
 <%!
     import sickbeard
-    import datetime
-    import re
-    from sickbeard.common import *
-    from sickbeard import sbdatetime
-    from sickbeard.helpers import anon_url
 %>
 <%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/recommendedShows.js?${sbPID}"></script>
@@ -76,7 +71,7 @@ $(document).ready(function(){
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 
