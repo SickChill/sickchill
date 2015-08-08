@@ -278,7 +278,7 @@
                                             % endif
                                             <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
-                                        <option id="${sickbeard.NAMING_PATTERN}" ${('', 'selected="selected"')[is_custom == True]}>Custom...</option>
+                                        <option id="${sickbeard.NAMING_PATTERN}" ${('', 'selected="selected"')[bool(is_custom)]}>Custom...</option>
                                     </select>
                                 </span>
                             </label>
@@ -428,7 +428,7 @@
                                 <span class="component-desc">
                                     <select id="naming_multi_ep" name="naming_multi_ep" class="form-control input-sm">
                                     % for cur_multi_ep in sorted(multiEpStrings.iteritems(), key=lambda x: x[1]):
-                                        <option value="${cur_multi_ep[0]}" ${('', ' selected="selected"')[cur_multi_ep[0] == sickbeard.NAMING_MULTI_EP]}>${cur_multi_ep[1]}</option>
+                                        <option value="${cur_multi_ep[0]}" ${('', 'selected="selected"')[cur_multi_ep[0] == sickbeard.NAMING_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                     % endfor
                                     </select>
                                 </span>
@@ -485,7 +485,7 @@
                                                 % endif
                                                 <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_ABD_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                             % endfor
-                                            <option id="${sickbeard.NAMING_ABD_PATTERN}" ${('', 'selected="selected"')[is_abd_custom == True]}>Custom...</option>
+                                            <option id="${sickbeard.NAMING_ABD_PATTERN}" ${('', 'selected="selected"')[bool(is_abd_custom)]}>Custom...</option>
                                         </select>
                                     </span>
                                 </label>
@@ -662,7 +662,7 @@
                                                 % endif
                                                 <option id="${cur_preset}" ${('', 'selected="selected"')[NAMING_SPORTS_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                             % endfor
-                                            <option id="${sickbeard.NAMING_SPORTS_PATTERN}" ${('', 'selected="selected"')[is_sports_custom == True]}>Custom...</option>
+                                            <option id="${sickbeard.NAMING_SPORTS_PATTERN}" ${('', 'selected="selected"')[bool(is_sports_custom)]}>Custom...</option>
                                         </select>
                                     </span>
                                 </label>
@@ -838,9 +838,9 @@
                                                 % if cur_preset == sickbeard.NAMING_ANIME_PATTERN:
                                                     <% is_anime_custom = False %>
                                                 % endif
-                                                <option id="${cur_preset}" ${("", "selected=\"selected\"")[cur_preset == sickbeard.NAMING_ANIME_PATTERN]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                                <option id="${cur_preset}" ${('', 'selected="selected"')[cur_preset == sickbeard.NAMING_ANIME_PATTERN]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                             % endfor
-                                            <option id="${sickbeard.NAMING_ANIME_PATTERN}" ${("", "selected=\"selected\"")[bool(is_anime_custom)]}>Custom...</option>
+                                            <option id="${sickbeard.NAMING_ANIME_PATTERN}" ${('', 'selected="selected"')[bool(is_anime_custom)]}>Custom...</option>
                                         </select>
                                     </span>
                                 </label>
@@ -986,7 +986,7 @@
                                     <span class="component-desc">
                                         <select id="naming_anime_multi_ep" name="naming_anime_multi_ep" class="form-control input-sm">
                                         % for cur_multi_ep in sorted(multiEpStrings.iteritems(), key=lambda x: x[1]):
-                                            <option value="${cur_multi_ep[0]}" ${("", "selected=\"selected\" class=\"selected\"")[cur_multi_ep[0] == sickbeard.NAMING_ANIME_MULTI_EP]}>${cur_multi_ep[1]}</option>
+                                            <option value="${cur_multi_ep[0]}" ${('', 'selected="selected" class="selected"')[cur_multi_ep[0] == sickbeard.NAMING_ANIME_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                         % endfor
                                         </select>
                                     </span>

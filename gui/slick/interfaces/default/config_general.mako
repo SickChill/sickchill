@@ -92,11 +92,11 @@
                                 <span class="component-title">Initial page</span>
                                 <span class="component-desc">
                                     <select id="default_page" name="default_page" class="form-control input-sm">
-                                        <option value="news" ${('', ' selected="selected"')[sickbeard.DEFAULT_PAGE == 'news']}>News</option>
-                                        <option value="home" ${('', ' selected="selected"')[sickbeard.DEFAULT_PAGE == 'home']}>Home</option>
-                                        <option value="comingEpisodes" ${('', ' selected="selected"')[sickbeard.DEFAULT_PAGE == 'comingEpisodes']}>Coming Episodes</option>
-                                        <option value="history" ${('', ' selected="selected"')[sickbeard.DEFAULT_PAGE == 'history']}>History</option>
-                                        <option value="IRC" ${('', ' selected="selected"')[sickbeard.DEFAULT_PAGE == 'IRC']}>IRC</option>
+                                        <option value="news" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'news']}>News</option>
+                                        <option value="home" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'home']}>Home</option>
+                                        <option value="comingEpisodes" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'comingEpisodes']}>Coming Episodes</option>
+                                        <option value="history" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'history']}>History</option>
+                                        <option value="IRC" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'IRC']}>IRC</option>
                                     </select>
                                     <span>when launching SickRage interface</span>
                                 </span>
@@ -181,9 +181,9 @@
                                 <span class="component-title">Use initial indexer set to</span>
                                 <span class="component-desc">
                                     <select id="indexer_default" name="indexer_default" class="form-control input-sm">
-                                        <option value="0" ${('', ' selected="selected"')[indexer == 0]}>All Indexers</option>
+                                        <option value="0" ${('', 'selected="selected"')[indexer == 0]}>All Indexers</option>
                                         % for indexer in sickbeard.indexerApi().indexers:
-                                        <option value="${indexer}" ${('', ' selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
+                                        <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
                                         % endfor
                                     </select>
                                     <span>as the default selection when adding new shows</span>
@@ -286,8 +286,8 @@
                                 <span class="component-title">Display theme:</span>
                                 <span class="component-desc">
                                     <select id="theme_name" name="theme_name" class="form-control input-sm">
-                                        <option value="dark" ${('', ' selected="selected"')[sickbeard.THEME_NAME == 'dark']}>Dark</option>
-                                        <option value="light" ${('', ' selected="selected"')[sickbeard.THEME_NAME == 'light']}>Light</option>
+                                        <option value="dark" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'dark']}>Dark</option>
+                                        <option value="light" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'light']}>Light</option>
                                     </select>
                                     <span class="red-text">for appearance to take effect, save then refresh your browser</span>
                                 </span>
@@ -345,7 +345,7 @@
                             <label for="trim_zero">
                                 <span class="component-title">Trim zero padding</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="trim_zero" id="trim_zero" ${('', ' checked="checked"')[sickbeard.TRIM_ZERO == True]}/>
+                                    <input type="checkbox" name="trim_zero" id="trim_zero" ${('', ' checked="checked"')[bool(sickbeard.TRIM_ZERO)]}/>
                                     <p>remove the leading number "0" shown on hour of day, and date of month</p>
                                 </span>
                             </label>
@@ -357,13 +357,13 @@
                                 <span class="component-desc">
                                     <select class="form-control input-sm ${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" id="date_presets${('_na', '')[not bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[not bool(sickbeard.FUZZY_DATING)]}">
                                         % for cur_preset in date_presets:
-                                            <option value="${cur_preset}" ${(' selected="selected", ''')[sickbeard.DATE_PRESET == cur_preset or ("%x" == sickbeard.DATE_PRESET and cur_preset == '%a, %b %d, %Y')]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
+                                            <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.DATE_PRESET == cur_preset or ("%x" == sickbeard.DATE_PRESET and cur_preset == '%a, %b %d, %Y')]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
                                         % endfor
                                     </select>
                                     <select class="form-control input-sm ${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" id="date_presets${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[bool(sickbeard.FUZZY_DATING)]}">
-                                        <option value="%x" ${(' selected="selected"', '')[sickbeard.DATE_PRESET == '%x']}>Use System Default</option>
+                                        <option value="%x" ${('', 'selected="selected"')[sickbeard.DATE_PRESET == '%x']}>Use System Default</option>
                                         % for cur_preset in date_presets:
-                                            <option value="${cur_preset}" ${('', ' selected="selected"')[sickbeard.DATE_PRESET == cur_preset]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
+                                            <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.DATE_PRESET == cur_preset]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
                                         % endfor
                                     </select>
                                 </span>

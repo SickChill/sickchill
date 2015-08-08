@@ -83,7 +83,7 @@ $(document).ready(function(){
                     <optgroup label="${curShowType}">
                 % endif
                     % for curShow in curShowList:
-                    <option value="${curShow.indexerid}" ${("", "selected=\"selected\"")[curShow == show]}>${curShow.name}</option>
+                    <option value="${curShow.indexerid}" ${('', 'selected="selected"')[curShow == show]}>${curShow.name}</option>
                     % endfor
                 % if len(sortedShowLists) > 1:
                     </optgroup>

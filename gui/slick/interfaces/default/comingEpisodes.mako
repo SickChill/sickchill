@@ -39,8 +39,8 @@
 
     <span>View Paused:
         <select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${('selected="selected"', '')[sickbeard.COMING_EPS_DISPLAY_PAUSED == True]}>Hidden</option>
-            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${('', 'selected="selected"')[sickbeard.COMING_EPS_DISPLAY_PAUSED == True]}>Shown</option>
+            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>Hidden</option>
+            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>Shown</option>
         </select>
     </span>
 </div>

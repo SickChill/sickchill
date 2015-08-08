@@ -394,10 +394,10 @@ $(document).ready(function(){
     % endif
     <span> Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/setHomeLayout/?layout=poster" ${('', ' selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
-            <option value="${sbRoot}/setHomeLayout/?layout=small" ${('', ' selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
-            <option value="${sbRoot}/setHomeLayout/?layout=banner" ${('', ' selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
-            <option value="${sbRoot}/setHomeLayout/?layout=simple" ${('', ' selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
         </select>
         % if layout != 'poster':
         Search:
@@ -410,17 +410,17 @@ $(document).ready(function(){
     &nbsp;
     <span> Sort By:
         <select id="postersort" class="form-control form-control-inline input-sm">
-            <option value="name" data-sort="${sbRoot}/setPosterSortBy/?sort=name" ${('', ' selected="selected"')[sickbeard.POSTER_SORTBY == 'name']}>Name</option>
-            <option value="date" data-sort="${sbRoot}/setPosterSortBy/?sort=date" ${('', ' selected="selected"')[sickbeard.POSTER_SORTBY == 'date']}>Next Episode</option>
-            <option value="network" data-sort="${sbRoot}/setPosterSortBy/?sort=network" ${('', ' selected="selected"')[sickbeard.POSTER_SORTBY == 'network']}>Network</option>
-            <option value="progress" data-sort="${sbRoot}/setPosterSortBy/?sort=progress" ${('', ' selected="selected"')[sickbeard.POSTER_SORTBY == 'progress']}>Progress</option>
+            <option value="name" data-sort="${sbRoot}/setPosterSortBy/?sort=name" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'name']}>Name</option>
+            <option value="date" data-sort="${sbRoot}/setPosterSortBy/?sort=date" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'date']}>Next Episode</option>
+            <option value="network" data-sort="${sbRoot}/setPosterSortBy/?sort=network" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'network']}>Network</option>
+            <option value="progress" data-sort="${sbRoot}/setPosterSortBy/?sort=progress" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'progress']}>Progress</option>
         </select>
     </span>
     &nbsp;
     <span> Sort Order:
         <select id="postersortdirection" class="form-control form-control-inline input-sm">
-            <option value="true" data-sort="${sbRoot}/setPosterSortDir/?direction=1" ${('', ' selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>Asc</option>
-            <option value="false" data-sort="${sbRoot}/setPosterSortDir/?direction=0" ${('', ' selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Desc</option>
+            <option value="true" data-sort="${sbRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>Asc</option>
+            <option value="false" data-sort="${sbRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Desc</option>
         </select>
     </span>
     &nbsp;

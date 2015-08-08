@@ -88,16 +88,16 @@ $(document).ready(function(){
 % endif
 <div class="h2footer pull-right"><b>Limit:</b>
     <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=100" ${('', ' selected="selected"')[history_limit == 100]}>100</option>
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=250" ${('', ' selected="selected"')[history_limit == 250]}>250</option>
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=500" ${('', ' selected="selected"')[history_limit == 500]}>500</option>
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=0"   ${('', ' selected="selected"')[history_limit == 0  ]}>All</option>
+        <option value="${sbRoot}/setHistoryLimit/?history_limit=100" ${('', 'selected="selected"')[history_limit == 100]}>100</option>
+        <option value="${sbRoot}/setHistoryLimit/?history_limit=250" ${('', 'selected="selected"')[history_limit == 250]}>250</option>
+        <option value="${sbRoot}/setHistoryLimit/?history_limit=500" ${('', 'selected="selected"')[history_limit == 500]}>500</option>
+        <option value="${sbRoot}/setHistoryLimit/?history_limit=0"   ${('', 'selected="selected"')[history_limit == 0  ]}>All</option>
     </select>
 
     <span> Layout:
         <select name="HistoryLayout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/setHistoryLayout/?layout=compact"  ${('', ' selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>Compact</option>
-            <option value="${sbRoot}/setHistoryLayout/?layout=detailed" ${('', ' selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>Detailed</option>
+            <option value="${sbRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>Compact</option>
+            <option value="${sbRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>Detailed</option>
         </select>
     </span>
 </div>

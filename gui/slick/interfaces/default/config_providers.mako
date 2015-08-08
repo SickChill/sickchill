@@ -466,7 +466,7 @@ $(document).ready(function(){
                                 <span class="component-desc">
                                   <select name="${curTorrentProvider.getID()}_proxy_url" id="${curTorrentProvider.getID()}_proxy_url" class="form-control input-sm">
                                     % for i in curTorrentProvider.proxy.urls.keys():
-                                    <option value="${curTorrentProvider.proxy.urls[i]}" ${("", "selected=\"selected\"")[curTorrentProvider.proxy.urls[i] == curTorrentProvider.proxy.url]}>${i}</option>
+                                    <option value="${curTorrentProvider.proxy.urls[i]}" ${('', 'selected="selected"')[curTorrentProvider.proxy.urls[i] == curTorrentProvider.proxy.url]}>${i}</option>
                                     % endfor
                                     </select>
                                 </span>
@@ -553,7 +553,7 @@ $(document).ready(function(){
                                 <span class="component-desc">
                                     <select name="${curTorrentProvider.getID()}_cat" id="${curTorrentProvider.getID()}_cat" class="form-control input-sm">
                                         % for i in curTorrentProvider.category_dict.keys():
-                                        <option value="${curTorrentProvider.category_dict[i]}" ${("", "selected=\"selected\"")[curTorrentProvider.category_dict[i] == curTorrentProvider.cat]}>${i}</option>
+                                        <option value="${curTorrentProvider.category_dict[i]}" ${('', 'selected="selected"')[curTorrentProvider.category_dict[i] == curTorrentProvider.cat]}>${i}</option>
                                         % endfor
                                     </select>
                                 </span>

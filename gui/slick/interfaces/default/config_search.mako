@@ -369,11 +369,11 @@
                                     <span class="component-desc">
                                         <select name="nzbget_priority" id="nzbget_priority" class="form-control input-sm">
                                             <option value="-100" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == -100]}>Very low</option>
-                                            <option value="-50" ${(' selected="selected"')[sickbeard.NZBGET_PRIORITY == -50]}>Low</option>
-                                            <option value="0" ${('', ' selected="selected"')[sickbeard.NZBGET_PRIORITY == 0]}>Normal</option>
-                                            <option value="50" ${('', ' selected="selected"')[sickbeard.NZBGET_PRIORITY == 50]}>High</option>
-                                            <option value="100" ${('', ' selected="selected"')[sickbeard.NZBGET_PRIORITY == 100]}>Very high</option>
-                                            <option value="900" ${('', ' selected="selected"')[sickbeard.NZBGET_PRIORITY == 900]}>Force</option>
+                                            <option value="-50" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == -50]}>Low</option>
+                                            <option value="0" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == 0]}>Normal</option>
+                                            <option value="50" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == 50]}>High</option>
+                                            <option value="100" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == 100]}>Very high</option>
+                                            <option value="900" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == 900]}>Force</option>
                                         </select>
                                         <span>priority for daily snatches (no backlog)</span>
                                     </span>
@@ -418,7 +418,7 @@
                                 <select name="torrent_method" id="torrent_method" class="form-control input-sm">
 <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent"} %>
 % for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'download_station', 'rtorrent', 'qbittorrent'):
-                                <option value="${curAction}" ${('', ' selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
+                                <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
 % endfor
                                 </select>
                             </label>

@@ -94,8 +94,8 @@
     <div class="selectChoices">
         <select id="edit_flatten_folders" name="flatten_folders" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" ${('', 'selected="selected"')[flatten_folders_value == True]}>enable</option>
-            <option value="disable" ${('', 'selected="selected"')[flatten_folders_value == False]}>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[bool(flatten_folders_value)]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[not bool(flatten_folders_value)]}>disable</option>
         </select>
     </div>
 </div>
@@ -105,8 +105,8 @@
     <div class="selectChoices">
         <select id="edit_paused" name="paused" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" ${('', 'selected="selected"')[paused_value == True]}>enable</option>
-            <option value="disable" ${('', 'selected="selected"')[paused_value == False]}>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[bool(paused_value)]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[not bool(paused_value)]}>disable</option>
         </select>
     </div><br />
 </div>
@@ -128,8 +128,8 @@
     <div class="selectChoices">
         <select id="edit_scene" name="scene" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" ${('', 'selected="selected"')[scene_value == True]}>enable</option>
-            <option value="disable" ${('', 'selected="selected"')[scene_value == False]}>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[bool(scene_value)]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[not bool(scene_value)]}>disable</option>
         </select>
     </div><br />
 </div>
@@ -139,8 +139,8 @@
     <div class="selectChoices">
         <select id="edit_anime" name="anime" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" ${('', 'selected="selected"')[anime_value == True]}>enable</option>
-            <option value="disable" ${('', 'selected="selected"')[anime_value == False]}>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[bool(anime_value)]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[not bool(anime_value)]}>disable</option>
         </select>
     </div><br />
 </div>
@@ -150,8 +150,8 @@
     <div class="selectChoices">
         <select id="edit_sports" name="sports" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" ${('', 'selected="selected"')[sports_value == True]}>enable</option>
-            <option value="disable" ${('', 'selected="selected"')[sports_value == False]}>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[bool(sports_value)]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[not bool(sports_value)]}>disable</option>
         </select>
     </div><br />
 </div>
@@ -161,8 +161,8 @@
     <div class="selectChoices">
         <select id="edit_air_by_date" name="air_by_date" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" ${('', 'selected="selected"')[air_by_date_value == True]}>enable</option>
-            <option value="disable" ${('', 'selected="selected"')[air_by_date_value == False]}>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[bool(air_by_date_value)]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[not bool(air_by_date_value)]}>disable</option>
         </select>
     </div><br />
 </div>
@@ -172,8 +172,8 @@
     <div class="selectChoices">
         <select id="edit_subtitles" name="subtitles" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable" ${('', 'selected="selected"')[subtitles_value == True]}>enable</option>
-            <option value="disable" ${('', 'selected="selected"')[subtitles_value == False]}>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[bool(subtitles_value)]}>enable</option>
+            <option value="disable" ${('', 'selected="selected"')[not bool(subtitles_value)]}>disable</option>
         </select>
     </div><br />
 </div>
