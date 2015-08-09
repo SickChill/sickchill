@@ -38,7 +38,7 @@
         ep_snatched = 0
         ep_downloaded = 0
         ep_total = 0
-     
+
     ep_percentage = '' if ep_total == 0 else '(<span class="footerhighlight">%s%%</span>)' % re.sub(r'(\d+)(\.\d)\d+', r'\1\2', str((float(ep_downloaded)/float(ep_total))*100))
 
     try:
@@ -55,10 +55,10 @@
         <span class="footerhighlight">${shows_total}</span> Shows (<span class="footerhighlight">${shows_active}</span> Active)
         | <span class="footerhighlight">${ep_downloaded}</span>
 
-        ## FIXME
-        ##${
-##('', (' (<span class="footerhighlight">+%s</span> Snatched)' % (str(ep_snatched), '<a href="%s/manage/episodeStatuses?whichStatus=2" title="View overview of snatched episodes">%s</a>' % (localRoot, str(ep_snatched))
-##)['Episode Overview' != localheader])[0 < ep_snatched]}
+        % if ep_snatched:
+        <span class="footerhighlight"><a href="${localRoot}/manage/episodeStatuses?whichStatus=2" title="View overview of snatched episodes">+${ep_snatched}</a></span> Snatched
+        % endif
+
                 &nbsp;/&nbsp;<span class="footerhighlight">${ep_total}</span> Episodes Downloaded ${ep_percentage}
         | Daily Search: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span>
         | Backlog Search: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span>

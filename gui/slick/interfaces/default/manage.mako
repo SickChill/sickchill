@@ -147,7 +147,7 @@ $(document).ready(function()
         <% curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-"+str(curShow.indexerid)+"\" "+curSubtitle_disabled+"/>" %>
 
         % if sickbeard.showQueueScheduler.action.isBeingRenamed(curShow) or sickbeard.showQueueScheduler.action.isInRenameQueue(curShow) or sickbeard.showQueueScheduler.action.isInRefreshQueue(curShow):
-            curDelete = "disabled=\"disabled\" " %>
+            <% curDelete = "disabled=\"disabled\" " %>
         % endif
 
         <% curDelete = "<input type=\"checkbox\" class=\"deleteCheck\" id=\"delete-"+str(curShow.indexerid)+"\" "+curDelete_disabled+"/>" %>
