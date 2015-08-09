@@ -709,9 +709,9 @@ class GenericMetadata():
             return False
 
         image_dir = ek.ek(os.path.dirname, image_path)
-        
+
         if not image_data:
-            logger.log(u"Unable to retrieve image to %s to save in %s, skipping" % ( ek.ss(obj.prettyName()), ek.ss(image_dir) ), logger.WARNING)
+            logger.log(u"Unable to retrieve image to %s to save in %s, skipping" % ( ek.ss(obj.prettyName() if obj else "(obj is None)"), ek.ss(image_path) ), logger.WARNING)
             return False
 
         try:
@@ -763,7 +763,7 @@ class GenericMetadata():
         except (sickbeard.indexer_error, IOError), e:
             logger.log(u"Unable to look up show on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log(u"Indexer " + sickbeard.indexerApi(show_obj.indexer).name + "maybe experiencing some problems. Try again later", logger.DEBUG)                
+            logger.log(u"Indexer " + sickbeard.indexerApi(show_obj.indexer).name + "maybe experiencing some problems. Try again later", logger.DEBUG)
             return None
 
         if image_type not in ('fanart', 'poster', 'banner', 'poster_thumb', 'banner_thumb'):
