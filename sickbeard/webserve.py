@@ -272,7 +272,7 @@ class LoginHandler(BaseHandler):
             self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
         else:
             t = PageTemplate(rh=self, file="login.mako")
-            self.finish(t.render(title="Login", topmenu="login"))
+            self.finish(t.render(title="Login", header="Login", topmenu="login"))
 
     def post(self, *args, **kwargs):
 
@@ -364,7 +364,7 @@ class WebRoot(WebHandler):
         else:
             apikey = "api key not generated"
 
-        return t.render(sortedShowList=sortedShowList, seasonSQLResults=seasonSQLResults, episodeSQLResults=episodeSQLResults, apikey=apikey)
+        return t.render(title="Api Builder", header="Api Builder", sortedShowList=sortedShowList, seasonSQLResults=seasonSQLResults, episodeSQLResults=episodeSQLResults, apikey=apikey)
 
     def showPoster(self, show=None, which=None):
         # Redirect initial poster/banner thumb to default images
@@ -1164,7 +1164,7 @@ class Home(WebRoot):
                 sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
                 t = PageTemplate(rh=self, file="restart.mako")
-                return t.render()
+                return t.render(title="Home", header="Restarting SickRage", topmenu="home", submenu=self.HomeMenu())
             else:
                 return self._genericMessage("Update Failed",
                                             "Update wasn't successful, not restarting. Check your log for more information.")
