@@ -87,7 +87,7 @@
                                     <label class="clearfix" for="subtitles_history">
                                         <span class="component-title">Subtitles History</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="subtitles_history" id="subtitles_history" ${('', 'checked="checked"')[sickbeard.SUBTITLES_HISTORY == True]}/>
+                                            <input type="checkbox" name="subtitles_history" id="subtitles_history" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_HISTORY)]}/>
                                             <p>Log downloaded Subtitle on History page?</p>
                                         </span>
                                     </label>
@@ -96,7 +96,7 @@
                                     <label class="clearfix" for="subtitles_multi">
                                         <span class="component-title">Subtitles Multi-Language</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="subtitles_multi" id="subtitles_multi" ${('', 'checked="checked"')[sickbeard.SUBTITLES_MULTI == True]}/>
+                                            <input type="checkbox" name="subtitles_multi" id="subtitles_multi" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_MULTI)]}/>
                                             <p>Append language codes to subtitle filenames?</p>
                                         </span>
                                     </label>
@@ -105,7 +105,7 @@
                                     <label class="clearfix" for="embedded_subtitles_all">
                                         <span class="component-title">Embedded Subtitles</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="embedded_subtitles_all" id="embedded_subtitles_all" ${('', 'checked="checked"')[sickbeard.EMBEDDED_SUBTITLES_ALL == True]}/>
+                                            <input type="checkbox" name="embedded_subtitles_all" id="embedded_subtitles_all" ${('', 'checked="checked"')[bool(sickbeard.EMBEDDED_SUBTITLES_ALL)]}/>
                                             <p>Ignore subtitles embedded inside video file?</p>
                                             <p><b>Warning: </b>this will ignore <u>all</u> embedded subtitles for every video file!</p>
                                         </span>
