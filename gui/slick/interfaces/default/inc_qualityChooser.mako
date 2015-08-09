@@ -7,7 +7,12 @@
     <label for="qualityPreset">
 
 <%
-qualities = Quality.splitQuality(int(show.quality))
+if not show is UNDEFINED:
+    __quality = int(show.quality)
+else:
+    __quality = int(sickbeard.QUALITY_DEFAULT)
+
+qualities = Quality.splitQuality(__quality)
 anyQualities = qualities[0]
 bestQualities = qualities[1]
 %>
