@@ -1,4 +1,4 @@
-<%inherit file="/inc_top.tmpl"/>
+<%inherit file="/inc_top.mako"/>
 <div class="login">
     <form action="" method="post">
         <h1>SickRage</h1>
