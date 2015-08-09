@@ -1911,7 +1911,7 @@ class Home(WebRoot):
         t = PageTemplate(rh=self, file="testRename.mako")
         submenu = [{'title': 'Edit', 'path': 'home/editShow?show=%d' % showObj.indexerid}]
 
-        return t.render(submenu=submenu, ep_obj_list=ep_obj_rename_list, show=showObj, title='Test Rename', header='Test Rename')
+        return t.render(submenu=submenu, ep_obj_list=ep_obj_rename_list, show=showObj, title='Preview Rename', header='Preview Rename')
 
 
     def doRename(self, show=None, eps=None):
