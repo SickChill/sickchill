@@ -1323,7 +1323,8 @@ class Home(WebRoot):
                 scene_numbering=get_scene_numbering_for_show(indexerid, indexer),
                 xem_numbering=get_xem_numbering_for_show(indexerid, indexer),
                 scene_absolute_numbering=get_scene_absolute_numbering_for_show(indexerid, indexer),
-                xem_absolute_numbering=get_xem_absolute_numbering_for_show(indexerid, indexer)
+                xem_absolute_numbering=get_xem_absolute_numbering_for_show(indexerid, indexer),
+                title=showObj.name
         )
 
 
