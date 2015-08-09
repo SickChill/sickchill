@@ -1131,8 +1131,8 @@
 <div class="clearfix"></div>
 
 <script type="text/javascript" charset="utf-8">
-    jQuery('#config-components').tabs();
-    jQuery('#tv_download_dir').fileBrowser({ title: 'Select TV Download Directory' });
+    $('#config-components').tabs();
+    $('#tv_download_dir').fileBrowser({ title: 'Select TV Download Directory' });
 </script>
 
 <%include file="/inc_bottom.mako"/>

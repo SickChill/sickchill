@@ -180,7 +180,7 @@
 
 <div class="clearfix"></div>
 <script type="text/javascript" charset="utf-8">
-    jQuery('#config-components').tabs();
-    jQuery('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' });
+    $('#config-components').tabs();
+    $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' });
 </script>
 <%include file="/inc_bottom.mako"/>

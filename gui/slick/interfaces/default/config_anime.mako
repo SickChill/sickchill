@@ -18,7 +18,7 @@
 
                 <ul>
                     <li><a href="#core-component-group1">AnimeDB Settings</a></li>
-                    <li><a href="#core-component-group2">Look & Feel</a></li>
+                    <li><a href="#core-component-group2">Look &amp; Feel</a></li>
                 </ul>
 
                 <div id="core-component-group1" class="tab-pane active component-group">

@@ -238,7 +238,7 @@ $(document).ready(function(){
                 <a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
             </td>
         </tr>
-        <!-- end cur_result['show_name'] //-->
+        <!-- end ${cur_result['show_name']} //-->
 % endfor
     </tbody>
 
@@ -460,8 +460,8 @@ $(document).ready(function(){
 
 % if 'calendar' == layout:
 
-##<%today = datetime.date.today()%>
-<% dates = [today + datetime.timedelta(days = i) for i in range(7)] %>
+## <% today = datetime.date.today() %>
+<% dates = [today.date() + datetime.timedelta(days = i) for i in range(7)] %>
 <% tbl_day = 0 %>
 <br>
 <br>
@@ -525,9 +525,7 @@ $(document).ready(function(){
 <div class="clearfix"></div>
 
 <script type="text/javascript" charset="utf-8">
-<!--
 window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
-//-->
 </script>
 
 <%include file="/inc_bottom.mako"/>

@@ -191,6 +191,6 @@
 <br />
 
 <script type="text/javascript" charset="utf-8">
-    jQuery('#location').fileBrowser({ title: 'Select Show Location' });
+    $('#location').fileBrowser({ title: 'Select Show Location' });
 </script>
 <%include file="/inc_bottom.mako"/>

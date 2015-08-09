@@ -91,52 +91,50 @@
         <script type="text/javascript" src="${sbRoot}/js/ajaxNotifications.js"></script>
         <script type="text/javascript">
             function initActions() {
-                $("#SubMenu a[href*='/home/restart/']").addClass('btn restart').html('<span class="submenu-icon-restart pull-left"></span> Restart');
-                $("#SubMenu a[href*='/home/shutdown/']").addClass('btn shutdown').html('<span class="submenu-icon-shutdown pull-left"></span> Shutdown');
-                $("#SubMenu a[href*='/home/logout/']").addClass('btn').html('<span class="ui-icon ui-icon-power pull-left"></span> Logout');
-                $("#SubMenu a:contains('Edit')").addClass('btn').html('<span class="ui-icon ui-icon-pencil pull-left"></span> Edit');
-                $("#SubMenu a:contains('Remove')").addClass('btn remove').html('<span class="ui-icon ui-icon-trash pull-left"></span> Remove');
-                $("#SubMenu a:contains('Clear History')").addClass('btn clearhistory').html('<span class="ui-icon ui-icon-trash pull-left"></span> Clear History');
-                $("#SubMenu a:contains('Trim History')").addClass('btn trimhistory').html('<span class="ui-icon ui-icon-trash pull-left"></span> Trim History');
-                $("#SubMenu a[href$='/errorlogs/clearerrors/']").addClass('btn').html('<span class="ui-icon ui-icon-trash pull-left"></span> Clear Errors');
-                $("#SubMenu a[href$='/errorlogs/submit_errors/']").addClass('btn').html('<span class="ui-icon ui-icon-arrowreturnthick-1-n pull-left"></span> Submit Errors');
-                $("#SubMenu a:contains('Re-scan')").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Re-scan');
-                $("#SubMenu a:contains('Backlog Overview')").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Backlog Overview');
-                $("#SubMenu a[href$='/home/updatePLEX/']").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Update PLEX');
-                $("#SubMenu a:contains('Force')").addClass('btn').html('<span class="ui-icon ui-icon-transfer-e-w pull-left"></span> Force Full Update');
-                $("#SubMenu a:contains('Rename')").addClass('btn').html('<span class="ui-icon ui-icon-tag pull-left"></span> Preview Rename');
-                $("#SubMenu a[href$='/config/subtitles/']").addClass('btn').html('<span class="ui-icon ui-icon-comment pull-left"></span> Search Subtitles');
-                $("#SubMenu a[href*='/home/subtitleShow']").addClass('btn').html('<span class="ui-icon ui-icon-comment pull-left"></span> Download Subtitles');
-                $("#SubMenu a:contains('Anime')").addClass('btn').html('<span class="submenu-icon-anime pull-left"></span> Anime');
-                $("#SubMenu a:contains('Settings')").addClass('btn').html('<span class="ui-icon ui-icon-search pull-left"></span> Search Settings');
-                $("#SubMenu a:contains('Provider')").addClass('btn').html('<span class="ui-icon ui-icon-search pull-left"></span> Search Providers');
-                $("#SubMenu a:contains('Backup/Restore')").addClass('btn').html('<span class="ui-icon ui-icon-gear pull-left"></span> Backup/Restore');
-                $("#SubMenu a:contains('General')").addClass('btn').html('<span class="ui-icon ui-icon-gear pull-left"></span> General');
-                $("#SubMenu a:contains('Episode Status')").addClass('btn').html('<span class="ui-icon ui-icon-transferthick-e-w pull-left"></span> Episode Status Management');
-                $("#SubMenu a:contains('Missed Subtitle')").addClass('btn').html('<span class="ui-icon ui-icon-transferthick-e-w pull-left"></span> Missed Subtitles');
-                $("#SubMenu a[href$='/home/addShows/']").addClass('btn').html('<span class="ui-icon ui-icon-video pull-left"></span> Add Show');
-                $("#SubMenu a:contains('Processing')").addClass('btn').html('<span class="ui-icon ui-icon-folder-open pull-left"></span> Post-Processing');
-                $("#SubMenu a:contains('Manage Searches')").addClass('btn').html('<span class="ui-icon ui-icon-search pull-left"></span> Manage Searches');
-                $("#SubMenu a:contains('Manage Torrents')").addClass('btn').html('<span class="submenu-icon-bittorrent pull-left"></span> Manage Torrents');
-                $("#SubMenu a[href$='/manage/failedDownloads/']").addClass('btn').html('<span class="submenu-icon-failed-download pull-left"></span> Failed Downloads');
-                $("#SubMenu a:contains('Notification')").addClass('btn').html('<span class="ui-icon ui-icon-note pull-left"></span> Notifications');
-                $("#SubMenu a:contains('Update show in KODI')").addClass('btn').html('<span class="submenu-icon-kodi pull-left"></span> Update show in KODI');
-                $("#SubMenu a[href$='/home/updateKODI/']").addClass('btn').html('<span class="submenu-icon-kodi pull-left"></span> Update KODI');
-                $("#SubMenu a:contains('Update show in Emby')").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Update show in Emby');
-                $("#SubMenu a[href$='/home/updateEMBY/']").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Update Emby');
-                $("#SubMenu a:contains('Pause')").addClass('btn').html('<span class="ui-icon ui-icon-pause pull-left"></span> Pause');
-                $("#SubMenu a:contains('Resume')").addClass('btn').html('<span class="ui-icon ui-icon-play pull-left"></span> Resume');
+                $("#SubMenu a[href*='/home/restart/']").addClass('restart').html('<span class="submenu-icon-restart"></span> Restart');
+                $("#SubMenu a[href*='/home/shutdown/']").addClass('shutdown').html('<span class="submenu-icon-shutdown"></span> Shutdown');
+                $("#SubMenu a[href*='/home/logout/']").html('<span class="ui-icon ui-icon-power"></span> Logout');
+                $("#SubMenu a:contains('Edit')").html('<span class="ui-icon ui-icon-pencil"></span> Edit');
+                $("#SubMenu a:contains('Remove')").addClass('remove').html('<span class="ui-icon ui-icon-trash"></span> Remove');
+                $("#SubMenu a:contains('Clear History')").addClass('clearhistory').html('<span class="ui-icon ui-icon-trash"></span> Clear History');
+                $("#SubMenu a:contains('Trim History')").addClass('trimhistory').html('<span class="ui-icon ui-icon-trash"></span> Trim History');
+                $("#SubMenu a[href$='/errorlogs/clearerrors/']").html('<span class="ui-icon ui-icon-trash"></span> Clear Errors');
+                $("#SubMenu a[href$='/errorlogs/submit_errors/']").html('<span class="ui-icon ui-icon-arrowreturnthick-1-n"></span> Submit Errors');
+                $("#SubMenu a:contains('Re-scan')").html('<span class="ui-icon ui-icon-refresh"></span> Re-scan');
+                $("#SubMenu a:contains('Backlog Overview')").html('<span class="ui-icon ui-icon-refresh"></span> Backlog Overview');
+                $("#SubMenu a[href$='/home/updatePLEX/']").html('<span class="ui-icon ui-icon-refresh"></span> Update PLEX');
+                $("#SubMenu a:contains('Force')").html('<span class="ui-icon ui-icon-transfer-e-w"></span> Force Full Update');
+                $("#SubMenu a:contains('Rename')").html('<span class="ui-icon ui-icon-tag"></span> Preview Rename');
+                $("#SubMenu a[href$='/config/subtitles/']").html('<span class="ui-icon ui-icon-comment"></span> Search Subtitles');
+                $("#SubMenu a[href*='/home/subtitleShow']").html('<span class="ui-icon ui-icon-comment"></span> Download Subtitles');
+                $("#SubMenu a:contains('Anime')").html('<span class="submenu-icon-anime"></span> Anime');
+                $("#SubMenu a:contains('Settings')").html('<span class="ui-icon ui-icon-search"></span> Search Settings');
+                $("#SubMenu a:contains('Provider')").html('<span class="ui-icon ui-icon-search"></span> Search Providers');
+                $("#SubMenu a:contains('Backup/Restore')").html('<span class="ui-icon ui-icon-gear"></span> Backup/Restore');
+                $("#SubMenu a:contains('General')").html('<span class="ui-icon ui-icon-gear"></span> General');
+                $("#SubMenu a:contains('Episode Status')").html('<span class="ui-icon ui-icon-transferthick-e-w"></span> Episode Status Management');
+                $("#SubMenu a:contains('Missed Subtitle')").html('<span class="ui-icon ui-icon-transferthick-e-w"></span> Missed Subtitles');
+                $("#SubMenu a[href$='/home/addShows/']").html('<span class="ui-icon ui-icon-video"></span> Add Show');
+                $("#SubMenu a:contains('Processing')").html('<span class="ui-icon ui-icon-folder-open"></span> Post-Processing');
+                $("#SubMenu a:contains('Manage Searches')").html('<span class="ui-icon ui-icon-search"></span> Manage Searches');
+                $("#SubMenu a:contains('Manage Torrents')").html('<span class="submenu-icon-bittorrent"></span> Manage Torrents');
+                $("#SubMenu a[href$='/manage/failedDownloads/']").html('<span class="submenu-icon-failed-download"></span> Failed Downloads');
+                $("#SubMenu a:contains('Notification')").html('<span class="ui-icon ui-icon-note"></span> Notifications');
+                $("#SubMenu a:contains('Update show in KODI')").html('<span class="submenu-icon-kodi"></span> Update show in KODI');
+                $("#SubMenu a[href$='/home/updateKODI/']").html('<span class="submenu-icon-kodi"></span> Update KODI');
+                $("#SubMenu a:contains('Update show in Emby')").html('<span class="ui-icon ui-icon-refresh"></span> Update show in Emby');
+                $("#SubMenu a[href$='/home/updateEMBY/']").html('<span class="ui-icon ui-icon-refresh"></span> Update Emby');
+                $("#SubMenu a:contains('Pause')").html('<span class="ui-icon ui-icon-pause"></span> Pause');
+                $("#SubMenu a:contains('Resume')").html('<span class="ui-icon ui-icon-play"></span> Resume');
+
+                $('#SubMenu a span').addClass('pull-left');
 
             };
 
             $(document).ready(function() {
-
                 initActions();
 
-                $("#NAV${topmenu}").addClass("active");
-
                 $('.dropdown-toggle').dropdownHover();
-
             });
         </script>
     <script type="text/javascript" src="${sbRoot}/js/confirmations.js?${sbPID}"></script>
@@ -159,25 +157,25 @@
             % if sbLogin:
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li id="NAVnews">
+                        <li id="NAVnews" ${('', 'class="active"')[topmenu == 'news']}>
                             <a href="${sbRoot}/news/">News</a>
                         </li>
-                        <li id="NAVnews">
+                        <li id="NAVirc" ${('', 'class="active"')[topmenu == 'irc']}>
                             <a href="${sbRoot}/IRC/">IRC</a>
                         </li>
-                        <li id="NAVhome">
+                        <li id="NAVhome" ${('', 'class="active"')[topmenu == 'home']}>
                             <a href="${sbRoot}/home/">Shows</a>
                         </li>
 
-                        <li id="NAVcomingEpisodes">
+                        <li id="NAVcomingEpisodes" ${('', 'class="active"')[topmenu == 'comingEpisodes']}>
                             <a href="${sbRoot}/comingEpisodes/">Coming Episodes</a>
                         </li>
 
-                        <li id="NAVhistory">
+                        <li id="NAVhistory" ${('', 'class="active"')[topmenu == 'history']}>
                             <a href="${sbRoot}/history/">History</a>
                         </li>
 
-                        <li id="NAVmanage" class="dropdown">
+                        <li id="NAVmanage" class="dropdown ${('', 'active')[topmenu == 'manage']}">
                             <a href="${sbRoot}/manage/" class="dropdown-toggle" data-toggle="dropdown">Manage <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${sbRoot}/manage/"><i class="menu-icon-manage"></i>&nbsp;Mass Update</a></li>
@@ -205,7 +203,7 @@
                             </ul>
                         </li>
 
-                        <li id="NAVerrorlogs" class="dropdown">
+                        <li id="NAVerrorlogs" class="dropdown" ${('', 'class="active"')[topmenu == 'errorlogs']}>
                             <a href="${sbRoot}/errorlogs/" class="dropdown-toggle" data-toggle="dropdown">${logPageTitle} <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${sbRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Log (Errors)</a></li>
@@ -213,7 +211,7 @@
                             </ul>
                         </li>
 
-                        <li id="NAVconfig" class="dropdown">
+                        <li id="NAVconfig" class="dropdown" ${('', 'class="active"')[topmenu == 'config']}>
                             <a href="${sbRoot}/config/" class="dropdown-toggle" data-toggle="dropdown"><img src="${sbRoot}/images/menu/system18.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${sbRoot}/config/"><i class="menu-icon-help"></i>&nbsp;Help &amp; Info</a></li>
@@ -263,7 +261,7 @@
                           <% inner_first = False %>
                       % endfor
                   % else:
-                      <a href="${sbRoot}/${menuItem['path']}" ${("", "class=\"confirm\"")['confirm' in menuItem]}>${menuItem['title']}</a>
+                      <a href="${sbRoot}/${menuItem['path']}" class="btn${('', ' confirm')['confirm' in menuItem]}">${menuItem['title']}</a>
                       <% first = False %>
                   % endif
             % endif
