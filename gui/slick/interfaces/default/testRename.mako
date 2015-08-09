@@ -21,11 +21,11 @@
 <h3>Preview of the proposed name changes</h3>
 <blockquote>
 % if int(show.air_by_date) == 1 and sickbeard.NAMING_CUSTOM_ABD:
-    <% sickbeard.NAMING_ABD_PATTERN %>
+    ${sickbeard.NAMING_ABD_PATTERN}
 % elif int(show.sports) == 1 and sickbeard.NAMING_CUSTOM_SPORTS:
-    <% sickbeard.NAMING_SPORTS_PATTERN %>
+    ${sickbeard.NAMING_SPORTS_PATTERN}
 % else:
-    <% sickbeard.NAMING_PATTERN %>
+    ${sickbeard.NAMING_PATTERN}
 % endif
 </blockquote>
 
@@ -53,10 +53,11 @@
 <table id="testRenameTable" class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
 
 % for cur_ep_obj in ep_obj_list:
-<% curLoc = cur_ep_obj.location[len(cur_ep_obj.show.location)+1:] %>
-<% curExt = curLoc.split('.')[-1] %>
-<% newLoc = cur_ep_obj.proper_path() + '.' + curExt %>
-
+<%
+    curLoc = cur_ep_obj.location[len(cur_ep_obj.show.location)+1:]
+    curExt = curLoc.split('.')[-1]
+    newLoc = cur_ep_obj.proper_path() + '.' + curExt
+%>
 % if int(cur_ep_obj.season) != curSeason:
     <thead>
         <tr class="seasonheader" id="season-${cur_ep_obj.season}">
@@ -65,7 +66,7 @@
                 <h2>${('Season '+str(cur_ep_obj.season), 'Specials')[int(cur_ep_obj.season) == 0]}</h2>
             </td>
         </tr>
-        <tr class="seasoncols" id="season-${cur_ep_obj.season-cols}">
+        <tr class="seasoncols" id="season-${cur_ep_obj.season}-cols">
             <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${cur_ep_obj.season}" /></th>
             <th class="nowrap">Episode</th>
             <th class="col-name">Old Location</th>
@@ -75,12 +76,13 @@
 <% curSeason = int(cur_ep_obj.season) %>
 % endif
     <tbody>
-<% odd = not odd %>
-<% epStr = str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode) %>
-<% epList = sorted([cur_ep_obj.episode] + [x.episode for x in cur_ep_obj.relatedEps]) %>
-% if len(epList) > 1:
-    <% epList = [min(epList), max(epList)] %>
-% endif
+<%
+odd = not odd
+epStr = str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode)
+epList = sorted([cur_ep_obj.episode] + [x.episode for x in cur_ep_obj.relatedEps])
+if len(epList) > 1:
+    epList = [min(epList), max(epList)]
+%>
         <tr class="season-${curSeason} ${('wanted', 'good')[curLoc == newLoc]} seasonstyle">
             <td class="col-checkbox">
             % if curLoc != newLoc:
