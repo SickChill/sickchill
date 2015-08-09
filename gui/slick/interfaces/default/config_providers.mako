@@ -66,7 +66,6 @@ $(document).ready(function(){
 
                         <div>
                             <p class="note">* Provider does not support backlog searches at this time.</p>
-                            <p class="note">** Provider supports <b>limited</b> backlog searches, all episodes/qualities may not be available.</p>
                             <p class="note">! Provider is <b>NOT WORKING</b>.</p>
                         </div>
                     </div>
@@ -74,20 +73,21 @@ $(document).ready(function(){
                     <fieldset class="component-group-list">
                         <ul id="provider_order_list">
                         % for curProvider in sickbeard.providers.sortedProviderList():
-                            % if curProvider.providerType == GenericProvider.NZB and not sickbeard.USE_NZBS:
-                                <% continue %>
-                            % elif curProvider.providerType == GenericProvider.TORRENT and not sickbeard.USE_TORRENTS:
-                                <% continue %>
-                            % endif
-                            <% curName = curProvider.getID() %>
-                          <li class="ui-state-default" id="${curName}">
-                            <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.isEnabled() == True]}/>
-                            <a href="${anon_url(curProvider.url)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${sbRoot}/images/providers/${curProvider.imageName()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
-                            <span style="vertical-align:middle;">${curProvider.name}</span>
-                            ${('', '*')[bool(curProvider.supportsBacklog)]}
-                            ${('', '**')[curProvider.name == 'EZRSS']}
-                            <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
-                          </li>
+                            <%
+                                if curProvider.providerType == GenericProvider.NZB and not sickbeard.USE_NZBS:
+                                    continue
+                                elif curProvider.providerType == GenericProvider.TORRENT and not sickbeard.USE_TORRENTS:
+                                    continue
+
+                                curName = curProvider.getID()
+                            %>
+                            <li class="ui-state-default" id="${curName}">
+                                <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.isEnabled() == True]}/>
+                                <a href="${anon_url(curProvider.url)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${sbRoot}/images/providers/${curProvider.imageName()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
+                                <span style="vertical-align:middle;">${curProvider.name}</span>
+                                ${('*', '')[bool(curProvider.supportsBacklog)]}
+                                <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
+                            </li>
                         % endfor
                         </ul>
                         <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.getID()+':'+str(int(x.isEnabled())) for x in sickbeard.providers.sortedProviderList()])}"/>
