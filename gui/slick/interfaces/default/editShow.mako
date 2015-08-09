@@ -69,7 +69,7 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
 (this will only affect the language of the retrieved metadata file contents and episode filenames)<br />
 <select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="${show.lang}" data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select><br />
 <br />
-<b>Flatten files (no folders): </b> <input type="checkbox" name="flatten_folders" ${('', 'checked="checked"')[show.flatten_folders == 1 and not sickbeard.NAMING_FORCE_FOLDERS]} ${('', 'disabled="disabled"')[sickbeard.NAMING_FORCE_FOLDERS == False]}/><br />
+<b>Flatten files (no folders): </b> <input type="checkbox" name="flatten_folders" ${('', 'checked="checked"')[show.flatten_folders == 1 and not sickbeard.NAMING_FORCE_FOLDERS]} ${('', 'disabled="disabled"')[bool(sickbeard.NAMING_FORCE_FOLDERS)]}/><br />
 (Disabled: episodes folder-grouped by season. Enabled: no season folders)<br/>
 <br />
 
@@ -77,7 +77,7 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
 (check this if you wish to pause this show. Will not download anything until unpause)<br/>
 <br />
 
-<b>Subtitles: </b> <input type="checkbox" name="subtitles" ${('', 'checked="checked"')[show.subtitles == 1 and sickbeard.USE_SUBTITLES == True]} ${('', 'disabled="disabled"')[sickbeard.USE_SUBTITLES == True]}/><br />
+<b>Subtitles: </b> <input type="checkbox" name="subtitles" ${('', 'checked="checked"')[show.subtitles == 1 and sickbeard.USE_SUBTITLES == True]} ${('disabled="disabled"', '')[bool(sickbeard.USE_SUBTITLES)]}/><br />
 (check this if you wish to search for subtitles in this show)<br/>
 <br />
 
