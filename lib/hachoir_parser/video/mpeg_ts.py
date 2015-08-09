@@ -92,11 +92,11 @@ class MPEG_TS(Parser):
         return True
 
     def createFields(self):
-        sync = self.stream.searchBytes("\x47", 0, 204*8)
-        if sync is None:
-            raise ParserError("Unable to find synchronization byte")
-        elif sync:
-            yield RawBytes(self, "incomplete_packet", sync//8)
         while not self.eof:
+            sync = self.stream.searchBytes("\x47", self.current_size, self.current_size+204*8)
+            if sync is None:
+                raise ParserError("Unable to find synchronization byte")
+            elif sync:
+                yield RawBytes(self, "incomplete_packet[]", (sync-self.current_size)//8)
             yield Packet(self, "packet[]")
 

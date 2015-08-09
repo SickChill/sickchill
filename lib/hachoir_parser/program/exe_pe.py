@@ -72,7 +72,7 @@ class SectionHeader(FieldSet):
                 return "section_%s" % name
         except HACHOIR_ERRORS, err:
             self.warning(unicode(err))
-            return "section[]"
+        return "section[]"
 
 class DataDirectory(FieldSet):
     def createFields(self):

@@ -66,7 +66,7 @@ def SInt(parent):
     return GenericInteger(parent, 'signed', True, parent['size'].value*8)
 
 def String(parent):
-    return _String(parent, 'string', parent['size'].value, charset="ASCII")
+    return _String(parent, 'string', parent['size'].value, charset="ASCII", strip="\0")
 
 def EnumString(parent, enum):
     return _Enum(String(parent), enum)
@@ -206,7 +206,7 @@ class Block(FieldSet):
             yield Bit(self, 'invisible')
             yield self.lacing()
             yield NullBits(self, 'reserved[]', 1)
-        elif self.parent._name == 'SimpleBlock[]':
+        elif self.parent._name.startswith('SimpleBlock'):
             yield Bit(self, 'keyframe')
             yield NullBits(self, 'reserved', 3)
             yield Bit(self, 'invisible')

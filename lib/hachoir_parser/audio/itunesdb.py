@@ -10,8 +10,8 @@ Creation date: 19 august 2006
 
 from hachoir_parser import Parser
 from hachoir_core.field import (FieldSet,
-    UInt8, UInt16, UInt32, UInt64, TimestampMac32,
-    String, Float32, NullBytes, Enum)
+    UInt8, UInt16, UInt32, Int32, UInt64, TimestampMac32,
+    String, Float32, NullBytes, Enum, RawBytes)
 from hachoir_core.endian import LITTLE_ENDIAN
 from hachoir_core.tools import humanDuration
 from hachoir_core.text_handler import displayHandler, filesizeHandler
@@ -75,6 +75,9 @@ class DataObject(FieldSet):
         51:"Smart Playlist Rules",
         52:"Library Playlist Index",
         100:"Column info",
+        200:"Album name (for album descriptions)",
+        201:"Album artist (for album descriptions)",
+        202:"Album sort artist (for album descriptions)"
     }
 
     mhod52_sort_index_type_name={
@@ -94,7 +97,7 @@ class DataObject(FieldSet):
         yield UInt32(self, "header_length", "Header Length")
         yield UInt32(self, "entry_length", "Entry Length")
         yield Enum(UInt32(self, "type", "type"),self.type_name)
-        if(self["type"].value<15):
+        if(self["type"].value<15) or (self["type"].value >= 200):
             yield UInt32(self, "unknown[]")
             yield UInt32(self, "unknown[]")
             yield UInt32(self, "position", "Position")
@@ -162,7 +165,7 @@ class TrackItem(FieldSet):
         yield Enum(UInt8(self, "x2_type", "Extended type 2"),self.x2_type_name)
         yield UInt8(self, "compilation_flag", "Compilation Flag")
         yield UInt8(self, "rating", "Rating")
-        yield TimestampMac32(self, "added_date", "Date when the item was added")
+        yield TimestampMac32(self, "last_modified", "Time of the last modification of the track")
         yield filesizeHandler(UInt32(self, "size", "Track size in bytes"))
         yield displayHandler(UInt32(self, "length", "Track length in milliseconds"), humanDuration)
         yield UInt32(self, "track_number", "Number of this track")
@@ -180,23 +183,24 @@ class TrackItem(FieldSet):
         yield UInt32(self, "disc_number", "disc number in multi disc sets")
         yield UInt32(self, "total_discs", "Total number of discs in the disc set")
         yield UInt32(self, "userid", "User ID in the DRM scheme")
-        yield TimestampMac32(self, "last_modified", "Time of the last modification of the track")
+        yield TimestampMac32(self, "added_date", "Date when the item was added")
         yield UInt32(self, "bookmark_time", "Bookmark time for AudioBook")
         yield UInt64(self, "dbid", "Unique DataBase ID for the song (identical in mhit and in mhii)")
         yield UInt8(self, "checked", "song is checked")
         yield UInt8(self, "application_rating", "Last Rating before change")
         yield UInt16(self, "BPM", "BPM of the track")
-        yield UInt16(self, "artwork_count", "number of artworks fo this item")
+        yield UInt16(self, "artwork_count", "number of artworks for this item")
         yield UInt16(self, "unknown[]")
         yield UInt32(self, "artwork_size", "Total size of artworks in bytes")
         yield UInt32(self, "unknown[]")
         yield Float32(self, "sample_rate_2", "Sample Rate express in float")
         yield UInt32(self, "released_date", "Date of release in Music Store or in Podcast")
+        yield UInt16(self, "unknown[]")
+        yield UInt16(self, "explicit_flag[]", "Explicit flag")
         yield UInt32(self, "unknown[]")
         yield UInt32(self, "unknown[]")
-        yield UInt32(self, "unknown[]")
-        yield UInt32(self, "unknown[]")
-        yield UInt32(self, "unknown[]")
+        yield UInt32(self, "skip_count[]", "Skip Count")
+        yield TimestampMac32(self, "last_skipped", "Date when the item was last skipped")
         yield UInt8(self, "has_artwork", "0x01 for track with artwork, 0x02 otherwise")
         yield UInt8(self, "skip_wen_shuffling", "Skip that track when shuffling")
         yield UInt8(self, "remember_playback_position", "Remember playback position")
@@ -207,11 +211,10 @@ class TrackItem(FieldSet):
         yield UInt8(self, "played_mark", "Track has been played")
         yield UInt8(self, "unknown[]")
         yield UInt32(self, "unknown[]")
+        yield UInt32(self, "pregap[]", "Number of samples of silence before the song starts")
+        yield UInt64(self, "sample_count", "Number of samples in the song (only for WAV and AAC files)")
         yield UInt32(self, "unknown[]")
-        yield UInt32(self, "sample_count", "Number of samples in the song (only for WAV and AAC files)")
-        yield UInt32(self, "unknown[]")
-        yield UInt32(self, "unknown[]")
-        yield UInt32(self, "unknown[]")
+        yield UInt32(self, "postgap[]", "Number of samples of silence at the end of the song")
         yield UInt32(self, "unknown[]")
         yield Enum(UInt32(self, "media_type", "Media Type for video iPod"),self.media_type_name)
         yield UInt32(self, "season_number", "Season Number")
@@ -222,6 +225,20 @@ class TrackItem(FieldSet):
         yield UInt32(self, "unknown[]")
         yield UInt32(self, "unknown[]")
         yield UInt32(self, "unknown[]")
+        yield UInt32(self, "unknown[]")
+        yield UInt32(self, "gapless_data[]","The size in bytes from first Sync Frame until the 8th before the last frame." )
+        yield UInt32(self, "unknown[]")
+        yield UInt16(self, "gaplessTrackFlag[]", "1 if track has gapless data")
+        yield UInt16(self, "gaplessAlbumFlag[]", "1 if track uses crossfading in iTunes")
+        yield RawBytes(self, "unknown[]", 20)
+        yield UInt32(self, "unknown[]")
+        yield UInt32(self, "unknown[]")
+        yield UInt32(self, "unknown[]")
+        yield UInt32(self, "unknown[]")
+        yield UInt16(self, "unknown[]")
+        yield UInt16(self, "album_id[]", "Album ID (used to link tracks with MHIAs)")
+        yield RawBytes(self, "unknown[]", 52)
+        yield UInt32(self, "mhii_link[]", "Artwork ID (used to link tracks with MHIIs)")
         padding = self.seekByte(self["header_length"].value, "header padding")
         if padding:
             yield padding
@@ -319,7 +336,7 @@ class Playlist(FieldSet):
         self._size = self["entry_length"].value *8
 
     def createFields(self):
-        yield String(self, "header_id", 4, "Playlist List Header Markup (\"mhyp\")", charset="ISO-8859-1")
+        yield String(self, "header_id", 4, "Playlist Header Markup (\"mhyp\")", charset="ISO-8859-1")
         yield UInt32(self, "header_length", "Header Length")
         yield UInt32(self, "entry_length", "Entry Length")
         yield UInt32(self, "data_object_child_count", "Number of Child Data Objects")
@@ -360,11 +377,48 @@ class PlaylistList(FieldSet):
         for i in xrange(self["playlist_number"].value):
             yield Playlist(self, "playlist[]")
 
+class Album(FieldSet):
+    def __init__(self, *args, **kw):
+        FieldSet.__init__(self, *args, **kw)
+        self._size = self["entry_length"].value *8
+
+    def createFields(self):
+        yield String(self, "header_id", 4, "Album Item Header Markup (\"mhia\")", charset="ISO-8859-1")
+        yield UInt32(self, "header_length", "Header Length")
+        yield UInt32(self, "entry_length", "Entry Length")
+        yield UInt32(self, "data_object_child_count", "Number of Child Data Objects")
+        yield UInt16(self, "unknow[]")
+        yield UInt16(self, "album_id[]", "Album ID")
+        yield UInt32(self, "unknow[]")
+        yield UInt32(self, "unknow[]")
+        yield UInt32(self, "unknow[]")
+
+        padding = self.seekByte(self["header_length"].value, "entry padding")
+        if padding:
+            yield padding
+
+        for i in xrange(self["data_object_child_count"].value):
+            yield DataObject(self, "mhod[]")
+
+class AlbumList(FieldSet):
+    def createFields(self):
+        yield String(self, "header_id", 4, "Album List Header Markup (\"mhla\")", charset="ISO-8859-1")
+        yield UInt32(self, "header_length", "Header Length")
+        yield UInt32(self, "album_number", "Number of Albums")
+
+        padding = self.seekByte(self["header_length"].value, "header padding")
+        if padding:
+            yield padding
+
+        for i in xrange(self["album_number"].value):
+            yield Album(self, "album[]")
+
 class DataSet(FieldSet):
     type_name={
         1:"Track List",
         2:"Play List",
-        3:"Podcast List"
+        3:"Podcast List",
+        4:"Album List"
         }
     def __init__(self, *args, **kw):
         FieldSet.__init__(self, *args, **kw)
@@ -384,6 +438,8 @@ class DataSet(FieldSet):
             yield PlaylistList(self, "playlist_list[]");
         if self["type"].value == 3:
             yield PlaylistList(self, "podcast_list[]");
+        if self["type"].value == 4:
+            yield AlbumList(self, "album_list[]");
         padding = self.seekBit(self._size, "entry padding")
         if padding:
             yield padding
@@ -417,8 +473,20 @@ class ITunesDBFile(Parser):
         yield UInt32(self, "version_number", "Version Number")
         yield UInt32(self, "child_number", "Number of Children")
         yield UInt64(self, "id", "ID for this database")
+        yield UInt16(self, "unknown[]")
         yield UInt32(self, "unknown[]")
-        yield UInt64(self, "initial_dbid", "Initial DBID")
+        yield UInt64(self, "unknown[]")
+        yield UInt16(self, "unknown[]")
+        yield UInt16(self, "hashing_scheme[]", "Algorithm used to calculate the database hash")
+        yield NullBytes(self, "unknown[]", 20)
+        yield String(self, "language_id", 2, "Language ID")
+        yield UInt64(self, "persistent_id", "Library Persistent ID")
+        yield UInt32(self, "unknown[]")
+        yield UInt32(self, "unknown[]")
+        yield RawBytes(self, "hash[]", 20)
+        yield Int32(self, "timezone_offset[]", "Timezone offset in seconds")
+        yield UInt16(self, "unknown[]")
+        yield RawBytes(self, "iphone_hash[]", 45)
         size = self["header_length"].value-self.current_size/ 8
         if size>0:
             yield NullBytes(self, "padding", size)

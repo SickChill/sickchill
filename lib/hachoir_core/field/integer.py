@@ -11,8 +11,8 @@ class GenericInteger(Bits):
     Generic integer class used to generate other classes.
     """
     def __init__(self, parent, name, signed, size, description=None):
-        if not (8 <= size <= 256):
-            raise FieldError("Invalid integer size (%s): have to be in 8..256" % size)
+        if not (8 <= size <= 16384):
+            raise FieldError("Invalid integer size (%s): have to be in 8..16384" % size)
         Bits.__init__(self, parent, name, size, description)
         self.signed = signed
 

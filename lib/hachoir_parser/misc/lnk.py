@@ -56,7 +56,7 @@ class ItemId(FieldSet):
         0x23: "Drive",
         0x25: "Drive",
         0x29: "Drive",
-        0x2E: "GUID",
+        0x2E: "Shell Extension",
         0x2F: "Drive",
         0x30: "Dir/File",
         0x31: "Directory",
@@ -66,6 +66,7 @@ class ItemId(FieldSet):
         0x42: "Computer",
         0x46: "Net Provider",
         0x47: "Whole Network",
+        0x4C: "Web Folder",
         0x61: "MSITStore",
         0x70: "Printer/RAS Connection",
         0xB1: "History/Favorite",
@@ -86,16 +87,26 @@ class ItemId(FieldSet):
 
         yield Enum(UInt8(self, "type"),self.ITEM_TYPE)
         entrytype=self["type"].value
-        if entrytype in (0x1F, 0x2E, 0x70):
+        if entrytype in (0x1F, 0x70):
             # GUID
             yield RawBytes(self, "dummy", 1, "should be 0x50")
+            yield GUID(self, "guid")
+
+        elif entrytype == 0x2E:
+            # Shell extension
+            yield RawBytes(self, "dummy", 1, "should be 0x50")
+            if self["dummy"].value == '\0':
+                yield UInt16(self, "length_data", "Length of shell extension-specific data")
+                if self["length_data"].value:
+                    yield RawBytes(self, "data", self["length_data"].value, "Shell extension-specific data")
+                yield GUID(self, "handler_guid")
             yield GUID(self, "guid")
 
         elif entrytype in (0x23, 0x25, 0x29, 0x2F):
             # Drive
             yield String(self, "drive", self["length"].value-3, strip="\0")
 
-        elif entrytype in (0x30, 0x31, 0x32):
+        elif entrytype in (0x30, 0x31, 0x32, 0x61, 0xb1):
             yield RawBytes(self, "dummy", 1, "should be 0x00")
             yield UInt32(self, "size", "size of file; 0 for folders")
             yield DateTimeMSDOS32(self, "date_time", "File/folder date and time")
@@ -111,8 +122,11 @@ class ItemId(FieldSet):
                 yield RawBytes(self, "unknown[]", 6)
                 yield DateTimeMSDOS32(self, "creation_date_time", "File/folder creation date and time")
                 yield DateTimeMSDOS32(self, "access_date_time", "File/folder last access date and time")
-                yield RawBytes(self, "unknown[]", 4)
+                yield RawBytes(self, "unknown[]", 2)
+                yield UInt16(self, "length_next", "Length of next two strings (if zero, ignore this field)")
                 yield CString(self, "unicode_name", "File/folder name", charset="UTF-16-LE")
+                if self["length_next"].value:
+                    yield CString(self, "localized_name", "Localized name")
                 yield RawBytes(self, "unknown[]", 2)
             else:
                 yield CString(self, "name_short", "File/folder short name")
@@ -135,6 +149,19 @@ class ItemId(FieldSet):
             yield CString(self, "protocol")
             yield CString(self, "description")
             yield RawBytes(self, "unknown[]", 2)
+
+        elif entrytype == 0x4C:
+            # Web Folder
+            yield RawBytes(self, "unknown[]", 5)
+            yield TimestampWin64(self, "modification_time")
+            yield UInt32(self, "unknown[]")
+            yield UInt32(self, "unknown[]")
+            yield UInt32(self, "unknown[]")
+            yield LnkString(self, "name")
+            yield RawBytes(self, "padding[]", 2)
+            yield LnkString(self, "address")
+            if self["address/length"].value:
+                yield RawBytes(self, "padding[]", 2)
 
         else:
             yield RawBytes(self, "raw", self["length"].value-3)
@@ -249,13 +276,17 @@ class FileLocationInfo(FieldSet):
 class LnkString(FieldSet):
     def createFields(self):
         yield UInt16(self, "length", "Length of this string")
-        if self.root.hasUnicodeNames():
-            yield String(self, "data", self["length"].value*2, charset="UTF-16-LE")
-        else:
-            yield String(self, "data", self["length"].value, charset="ASCII")
+        if self["length"].value:
+            if self.root.hasUnicodeNames():
+                yield String(self, "data", self["length"].value*2, charset="UTF-16-LE")
+            else:
+                yield String(self, "data", self["length"].value, charset="ASCII")
 
     def createValue(self):
-        return self["data"].value
+        if self["length"].value:
+            return self["data"].value
+        else:
+            return ""
 
 class ColorRef(FieldSet):
     ''' COLORREF struct, 0x00bbggrr '''

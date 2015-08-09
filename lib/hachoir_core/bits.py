@@ -3,7 +3,7 @@ Utilities to convert integers and binary strings to binary (number), binary
 string, number, hexadecimal, etc.
 """
 
-from hachoir_core.endian import BIG_ENDIAN, LITTLE_ENDIAN
+from hachoir_core.endian import BIG_ENDIAN, LITTLE_ENDIAN, MIDDLE_ENDIAN
 from hachoir_core.compatibility import reversed
 from itertools import chain, repeat
 from struct import calcsize, unpack, error as struct_error
@@ -30,6 +30,28 @@ def swap32(value):
          | ((value & 0x00FF0000L) >> 8) \
          | ((value & 0xFF000000L) >> 24)
 
+def arrswapmid(data):
+    r"""
+    Convert an array of characters from middle-endian to big-endian and vice-versa.
+
+    >>> arrswapmid("badcfehg")
+    ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+    """
+    assert len(data)%2 == 0
+    ret = ['']*len(data)
+    ret[1::2] = data[0::2]
+    ret[0::2] = data[1::2]
+    return ret
+
+def strswapmid(data):
+    r"""
+    Convert raw data from middle-endian to big-endian and vice-versa.
+
+    >>> strswapmid("badcfehg")
+    'abcdefgh'
+    """
+    return ''.join(arrswapmid(data))
+
 def bin2long(text, endian):
     """
     Convert binary number written in a string into an integer.
@@ -45,9 +67,10 @@ def bin2long(text, endian):
     assert endian in (LITTLE_ENDIAN, BIG_ENDIAN)
     bits = [ (ord(character)-ord("0")) \
         for character in text if character in "01" ]
-    assert len(bits) != 0
     if endian is not BIG_ENDIAN:
-        bits = reversed(bits)
+        bits = bits[::-1]
+    size = len(bits)
+    assert 0 < size
     value = 0
     for bit in bits:
         value *= 2
@@ -142,7 +165,7 @@ def long2raw(value, endian, size=None):
     '\x19\x12\x00\x00'
     """
     assert (not size and 0 < value) or (0 <= value)
-    assert endian in (LITTLE_ENDIAN, BIG_ENDIAN)
+    assert endian in (LITTLE_ENDIAN, BIG_ENDIAN, MIDDLE_ENDIAN)
     text = []
     while (value != 0 or text == ""):
         byte = value % 256
@@ -153,13 +176,15 @@ def long2raw(value, endian, size=None):
     else:
         need = 0
     if need:
-        if endian is BIG_ENDIAN:
-            text = chain(repeat("\0", need), reversed(text))
-        else:
+        if endian is LITTLE_ENDIAN:
             text = chain(text, repeat("\0", need))
+        else:
+            text = chain(repeat("\0", need), reversed(text))
     else:
-        if endian is BIG_ENDIAN:
+        if endian is not LITTLE_ENDIAN:
             text = reversed(text)
+    if endian is MIDDLE_ENDIAN:
+        text = arrswapmid(text)
     return "".join(text)
 
 def long2bin(size, value, endian, classic_mode=False):
@@ -257,6 +282,8 @@ def str2long(data, endian):
     True
     >>> str2long("\xff\xff\xff\xff\xff\xff\xff\xff", BIG_ENDIAN) == (2**64-1)
     True
+    >>> str2long("\x0b\x0a\x0d\x0c", MIDDLE_ENDIAN) == 0x0a0b0c0d
+    True
     """
     assert 1 <= len(data) <= 32   # arbitrary limit: 256 bits
     try:
@@ -264,14 +291,15 @@ def str2long(data, endian):
     except KeyError:
         pass
 
-    assert endian in (BIG_ENDIAN, LITTLE_ENDIAN)
+    assert endian in (BIG_ENDIAN, LITTLE_ENDIAN, MIDDLE_ENDIAN)
     shift = 0
     value = 0
     if endian is BIG_ENDIAN:
         data = reversed(data)
+    elif endian is MIDDLE_ENDIAN:
+        data = reversed(strswapmid(data))
     for character in data:
         byte = ord(character)
         value += (byte << shift)
         shift += 8
     return value
-
