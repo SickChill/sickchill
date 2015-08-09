@@ -85,15 +85,15 @@ def floatFactory(name, format, mantissa_bits, exponent_bits, doc):
     cls.__name__ = name
     return cls
 
-# 32-bit float (standart: IEEE 754/854)
+# 32-bit float (standard: IEEE 754/854)
 Float32 = floatFactory("Float32", "f", 23, 8,
     "Floating point number: format IEEE 754 int 32 bit")
 
-# 64-bit float (standart: IEEE 754/854)
+# 64-bit float (standard: IEEE 754/854)
 Float64 = floatFactory("Float64", "d", 52, 11,
     "Floating point number: format IEEE 754 in 64 bit")
 
-# 80-bit float (standart: IEEE 754/854)
+# 80-bit float (standard: IEEE 754/854)
 Float80 = floatFactory("Float80", None, 64, 15,
     "Floating point number: format IEEE 754 in 80 bit")
 

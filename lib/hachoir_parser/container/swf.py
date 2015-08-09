@@ -15,7 +15,7 @@ Creation date: 29 october 2006
 
 from hachoir_parser import Parser
 from hachoir_core.field import (FieldSet, ParserError,
-    Bit, Bits, UInt8, UInt32, UInt16, CString, Enum,
+    Bit, Bits, UInt8, UInt16, Int32, UInt32, Int64, CString, Enum,
     Bytes, RawBytes, NullBits, String, SubFile)
 from hachoir_core.endian import LITTLE_ENDIAN, BIG_ENDIAN
 from hachoir_core.text_handler import textHandler, filesizeHandler
@@ -24,7 +24,7 @@ from hachoir_parser.image.common import RGB
 from hachoir_parser.image.jpeg import JpegChunk, JpegFile
 from hachoir_core.stream import StringInputStream, ConcatStream
 from hachoir_parser.common.deflate import Deflate, has_deflate
-from hachoir_parser.container.action_script import parseActionScript
+from hachoir_parser.container.action_script import parseActionScript, parseABC
 import math
 
 # Maximum file size (50 MB)
@@ -206,10 +206,35 @@ def parseExport(parent, size):
     for index in xrange(parent["count"].value):
         yield Export(parent, "export[]")
 
+def parseProductInfo(parent, size):
+    yield Int32(parent, "product_id")
+    yield Int32(parent, "edition")
+    yield UInt8(parent, "major_version")
+    yield UInt8(parent, "minor_version")
+    yield Int64(parent, "build_number")
+    yield Int64(parent, "compilation_date")
+
+def parseScriptLimits(parent, size):
+    yield UInt16(parent, "max_recursion_limit")
+    yield UInt16(parent, "timeout_seconds", "Seconds of processing until the SWF is considered 'stuck'")
+
+def parseSymbolClass(parent, size):
+    yield UInt16(parent, "count")
+    for index in xrange(parent["count"].value):
+        yield UInt16(parent, "symbol_id[]")
+        yield CString(parent, "symbol_name[]")
+
+def parseBinaryData(parent, size):
+    yield UInt16(parent, "data_id")
+    yield UInt32(parent, "reserved")
+    if size > 6:
+        yield RawBytes(parent, "data", size-6)
+
 class Tag(FieldSet):
     TAG_BITS = 6
     TAG_BITS_JPEG2 = 32
     TAG_BITS_JPEG3 = 35
+    TAG_DO_ABC_DEFINE = 82
     TAG_INFO = {
         # SWF version 1.0
          0: ("end[]", "End", None),
@@ -253,7 +278,7 @@ class Tag(FieldSet):
         36: ("def_bits_lossless2[]", "Define bits lossless 2", None),
         39: ("def_sprite[]", "Define sprite", None),
         40: ("name_character[]", "Name character", None),
-        41: ("serial_number", "Serial number", None),
+        41: ("product_info", "Generator product info", parseProductInfo),
         42: ("generator_text[]", "Generator text", None),
         43: ("frame_label[]", "Frame label", None),
         45: ("sound_hdr2[]", "Sound stream header2", parseSoundHeader),
@@ -283,7 +308,7 @@ class Tag(FieldSet):
         64: ("enable_debug2", "Enable debugger 2", None),
 
         # SWF version 7.0
-        65: ("script_limits[]", "Script limits", None),
+        65: ("script_limits[]", "Script limits", parseScriptLimits),
         66: ("tab_index[]", "Set tab index", None),
 
         # SWF version 8.0
@@ -297,6 +322,14 @@ class Tag(FieldSet):
         78: ("def_scale_grid[]", "Define scaling factors", None),
         83: ("def_shape4[]", "Define shape 4", None),
         84: ("def_morph2[]", "Define a morphing shape 2", None),
+
+        # SWF version 9.0
+        72: ("do_abc[]", "SWF 9 ActionScript container; actions only", parseABC),
+        76: ("symbol_class[]", "Instantiate objects from a set of classes", parseSymbolClass),
+        82: ("do_abc_define[]", "SWF 9 ActionScript container; identifier, name, actions", parseABC),
+        86: ("def_scene_frame[]", "Define raw data for scenes and frames", None),
+        87: ("def_binary_data[]", "Defines a buffer of any size with any binary user data", parseBinaryData),
+        88: ("def_font_name[]", "Define the legal font name and copyright", None),
     }
 
     def __init__(self, *args):
@@ -332,7 +365,7 @@ class Tag(FieldSet):
         return "Tag: %s (%s)" % (self["code"].display, self["length"].display)
 
 class SwfFile(Parser):
-    VALID_VERSIONS = set(xrange(1, 9+1))
+    VALID_VERSIONS = set(xrange(1, 10+1))
     PARSER_TAGS = {
         "id": "swf",
         "category": "container",

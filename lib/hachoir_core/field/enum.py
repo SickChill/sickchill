@@ -1,7 +1,7 @@
 def Enum(field, enum, key_func=None):
     """
     Enum is an adapter to another field: it will just change its display
-    attribute. It uses a dictionnary to associate a value to another.
+    attribute. It uses a dictionary to associate a value to another.
 
     key_func is an optional function with prototype "def func(key)->key"
     which is called to transform key.
@@ -23,4 +23,3 @@ def Enum(field, enum, key_func=None):
     field.createDisplay = createDisplay
     field.getEnum = lambda: enum
     return field
-

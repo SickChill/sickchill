@@ -1,6 +1,6 @@
 from hachoir_core.field import Field, FieldError
 from hachoir_core.stream import InputStream
-from hachoir_core.endian import BIG_ENDIAN, LITTLE_ENDIAN
+from hachoir_core.endian import BIG_ENDIAN, LITTLE_ENDIAN, MIDDLE_ENDIAN
 from hachoir_core.event_handler import EventHandler
 
 class ParserError(FieldError):
@@ -60,7 +60,7 @@ class BasicFieldSet(Field):
             self._global_event_handler = None
 
         # Sanity checks (post-conditions)
-        assert self.endian in (BIG_ENDIAN, LITTLE_ENDIAN)
+        assert self.endian in (BIG_ENDIAN, LITTLE_ENDIAN, MIDDLE_ENDIAN)
         if (self._size is not None) and (self._size <= 0):
             raise ParserError("Invalid parser '%s' size: %s" % (self.path, self._size))
 

@@ -110,7 +110,7 @@ class CabMetadata(MultipleMetadata):
     def extract(self, cab):
         if "folder[0]" in cab:
             self.useFolder(cab["folder[0]"])
-        self.format_version = "Microsoft Cabinet version %s" % cab["cab_version"].display
+        self.format_version = "Microsoft Cabinet version %s.%s" % (cab["major_version"].display, cab["minor_version"].display)
         self.comment = "%s folders, %s files" % (
             cab["nb_folder"].value, cab["nb_files"].value)
         max_nb = maxNbFile(self)

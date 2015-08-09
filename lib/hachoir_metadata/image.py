@@ -240,7 +240,7 @@ class GifMetadata(RootMetadata):
     def useScreen(self, screen):
         self.width = screen["width"].value
         self.height = screen["height"].value
-        self.bits_per_pixel = (1 + screen["bpp"].value)
+        self.bits_per_pixel = (1 + screen["size_global_map"].value)
 
 class TargaMetadata(RootMetadata):
     def extract(self, tga):

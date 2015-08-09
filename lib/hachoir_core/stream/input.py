@@ -1,11 +1,11 @@
-from hachoir_core.endian import BIG_ENDIAN, LITTLE_ENDIAN
+from hachoir_core.endian import BIG_ENDIAN, LITTLE_ENDIAN, MIDDLE_ENDIAN
 from hachoir_core.error import info
 from hachoir_core.log import Logger
 from hachoir_core.bits import str2long
 from hachoir_core.i18n import getTerminalCharset
 from hachoir_core.tools import lowerBound
 from hachoir_core.i18n import _
-from os import dup, fdopen
+from hachoir_core.tools import alignValue
 from errno import ESPIPE
 from weakref import ref as weakref_ref
 from hachoir_core.stream import StreamError
@@ -168,13 +168,20 @@ class InputStream(Logger):
         raise NotImplementedError
 
     def readBits(self, address, nbits, endian):
-        assert endian in (BIG_ENDIAN, LITTLE_ENDIAN)
+        assert endian in (BIG_ENDIAN, LITTLE_ENDIAN, MIDDLE_ENDIAN)
 
-        shift, data, missing = self.read(address, nbits)
+        if endian is MIDDLE_ENDIAN:
+            # read an aligned chunk of words
+            wordaddr, remainder = divmod(address, 16)
+            wordnbits = alignValue(remainder+nbits, 16)
+            _, data, missing = self.read(wordaddr*16, wordnbits)
+            shift = remainder
+        else:
+            shift, data, missing = self.read(address, nbits)
         if missing:
             raise ReadStreamError(nbits, address)
         value = str2long(data, endian)
-        if endian is BIG_ENDIAN:
+        if endian in (BIG_ENDIAN, MIDDLE_ENDIAN):
             value >>= len(data) * 8 - shift - nbits
         else:
             value >>= shift
@@ -404,6 +411,7 @@ class InputIOStream(InputStream):
 
     def file(self):
         if hasattr(self._input, "fileno"):
+            from os import dup, fdopen
             new_fd = dup(self._input.fileno())
             new_file = fdopen(new_fd, "r")
             new_file.seek(0)

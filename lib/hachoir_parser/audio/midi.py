@@ -10,7 +10,7 @@ Creation: 27 december 2006
 
 from hachoir_parser import Parser
 from hachoir_core.field import (FieldSet, Bits, ParserError,
-    String, UInt32, UInt24, UInt16, UInt8, Enum, RawBytes)
+    String, UInt32, UInt24, UInt16, UInt8, Enum, RawBits, RawBytes)
 from hachoir_core.endian import BIG_ENDIAN
 from hachoir_core.text_handler import textHandler, hexadecimal
 from hachoir_core.tools import createDict, humanDurationNanosec
@@ -46,7 +46,7 @@ def parseControl(parser):
 def parsePatch(parser):
     yield UInt8(parser, "program", "New program number")
 
-def parseChannel(parser):
+def parseChannel(parser, size=1):
     yield UInt8(parser, "channel", "Channel number")
 
 def parsePitch(parser):
@@ -55,6 +55,16 @@ def parsePitch(parser):
 
 def parseText(parser, size):
     yield String(parser, "text", size)
+
+def parseSMPTEOffset(parser, size):
+    yield RawBits(parser, "padding", 1)
+    yield Enum(Bits(parser, "frame_rate", 2),
+        {0:"24 fps", 1:"25 fps", 2:"30 fps (drop frame)", 3:"30 fps"})
+    yield Bits(parser, "hour", 5)
+    yield UInt8(parser, "minute")
+    yield UInt8(parser, "second")
+    yield UInt8(parser, "frame")
+    yield UInt8(parser, "subframe", "100 subframes per frame")
 
 def formatTempo(field):
     return humanDurationNanosec(field.value*1000)
@@ -92,8 +102,10 @@ class Command(FieldSet):
         0x05: ("Lyric", parseText),
         0x06: ("Marker", parseText),
         0x07: ("Cue point", parseText),
+        0x20: ("MIDI Channel Prefix", parseChannel),
         0x2F: ("End of the track", None),
         0x51: ("Set tempo", parseTempo),
+        0x54: ("SMPTE offset", parseSMPTEOffset),
         0x58: ("Time Signature", parseTimeSignature),
         0x59: ("Key signature", None),
         0x7F: ("Sequencer specific information", None),
@@ -101,11 +113,27 @@ class Command(FieldSet):
     META_COMMAND_DESC = createDict(META_COMMAND, 0)
     META_COMMAND_PARSER = createDict(META_COMMAND, 1)
 
+    def __init__(self, *args, **kwargs):
+        if 'prev_command' in kwargs:
+            self.prev_command = kwargs['prev_command']
+            del kwargs['prev_command']
+        else:
+            self.prev_command = None
+        self.command = None
+        FieldSet.__init__(self, *args, **kwargs)
+
     def createFields(self):
         yield Integer(self, "time", "Delta time in ticks")
-        yield Enum(textHandler(UInt8(self, "command"), hexadecimal), self.COMMAND_DESC)
-        command = self["command"].value
-        if command == 0xFF:
+        next = self.stream.readBits(self.absolute_address+self.current_size, 8, self.root.endian)
+        if next & 0x80 == 0:
+            # "Running Status" command
+            if self.prev_command is None:
+                raise ParserError("Running Status command not preceded by another command.")
+            self.command = self.prev_command.command
+        else:
+            yield Enum(textHandler(UInt8(self, "command"), hexadecimal), self.COMMAND_DESC)
+            self.command = self["command"].value
+        if self.command == 0xFF:
             yield Enum(textHandler(UInt8(self, "meta_command"), hexadecimal), self.META_COMMAND_DESC)
             yield UInt8(self, "data_len")
             size = self["data_len"].value
@@ -121,9 +149,9 @@ class Command(FieldSet):
                 else:
                     yield RawBytes(self, "data", size)
         else:
-            if command not in self.COMMAND_PARSER:
+            if self.command not in self.COMMAND_PARSER:
                 raise ParserError("Unknown command: %s" % self["command"].display)
-            parser = self.COMMAND_PARSER[command]
+            parser = self.COMMAND_PARSER[self.command]
             for field in parser(self):
                 yield field
 
@@ -131,7 +159,7 @@ class Command(FieldSet):
         if "meta_command" in self:
             return self["meta_command"].display
         else:
-            return self["command"].display
+            return self.COMMAND_DESC[self.command]
 
 class Track(FieldSet):
     def __init__(self, *args):
@@ -141,9 +169,11 @@ class Track(FieldSet):
     def createFields(self):
         yield String(self, "marker", 4, "Track marker (MTrk)", charset="ASCII")
         yield UInt32(self, "size")
+        cur = None
         if True:
             while not self.eof:
-                yield Command(self, "command[]")
+                cur = Command(self, "command[]", prev_command=cur)
+                yield cur
         else:
             size = self["size"].value
             if size:
