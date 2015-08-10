@@ -3251,3 +3251,49 @@ login.css
 		padding: 20px;
 		float: right;
 	}
+
+/* =======================================================================
+IMDB Popular
+========================================================================== */
+
+.popularShow{
+	margin-bottom:30px;
+}
+
+.popularShow h3{
+	padding:0px;
+	margin:0px;
+	display:inline-block;
+	margin-right:30px;
+}
+
+.popularShow .left{
+	float:left;
+	width:100px;
+}
+
+.popularShow .right{
+	float:left;
+	width:600px;
+}
+
+.popularShow .year{
+	font-style:italic;
+	opacity:0.7;
+}
+
+.popularShow .coverImage{
+	width:80%;
+	padding-left:20px;
+	margin-top:4px;
+}
+
+.popularShow .rating{
+	font-size:90%;
+	display:inline-block;
+	margin-left:0px;
+}
+
+.popularShow p{
+	margin-bottom:0px;
+}

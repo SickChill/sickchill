@@ -41,6 +41,21 @@
 
     <br/><br/>
     % endif
+
+
+    % if sickbeard.USE_IMDB_POPULAR == True:
+    <a href="${sbRoot}/home/addShows/popularShows/" id="btnNewShow" class="btn btn-large">
+        <div class="button"><div class="icon-addtrendingshow"></div></div>
+        <div class="buttontext">
+            <h3>View Popular Shows</h3>
+            <p>View IMDB's list of the most popular shows. This feature uses IMDB's MOVIEMeter algorithm to identify popular TV Series.</p>
+        </div>
+    </a>
+
+    <br/><br/>
+    % endif
+
+
     <a href="${sbRoot}/home/addShows/existingShows/" id="btnExistingShow" class="btn btn-large">
         <div class="button"><div class="icon-addexistingshow"></div></div>
         <div class="buttontext">
