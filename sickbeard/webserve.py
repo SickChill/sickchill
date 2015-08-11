@@ -48,6 +48,8 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
     get_xem_numbering_for_show, get_scene_absolute_numbering_for_show, get_xem_absolute_numbering_for_show, \
     get_scene_absolute_numbering
 
+import imdbPopular
+
 from dateutil import tz, parser as dateutil_parser
 from unrar2 import RarFile
 import adba, subliminal
@@ -2412,7 +2414,7 @@ class HomeAddShows(Home):
         return t.render(submenu=self.HomeMenu(), dirList=dir_list)
 
 
-    def newShow(self, show_to_add=None, other_shows=None):
+    def newShow(self, show_to_add=None, other_shows=None, search_string=None):
         """
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
@@ -2428,7 +2430,11 @@ class HomeAddShows(Home):
 
         # use the given show_dir for the indexer search if available
         if not show_dir:
-            default_show_name = ''
+            if search_string:
+                default_show_name = search_string
+            else:
+                default_show_name = ''
+
         elif not show_name:
             default_show_name = re.sub(' \(\d{4}\)', '',
                                          ek.ek(os.path.basename, ek.ek(os.path.normpath, show_dir)).replace('.', ' '))
@@ -2561,6 +2567,21 @@ class HomeAddShows(Home):
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
         return t.render(submenu = self.HomeMenu(), blacklist=blacklist, trending_shows=trending_shows)
+
+
+    def popularShows(self):
+        """
+        Fetches data from IMDB to show a list of popular shows.
+        """
+        t = PageTemplate(rh=self, file="home_popularShows.mako")
+
+        try:
+            popular_shows = imdbPopular.fetch_popular_shows()
+        except:
+            popular_shows = None
+
+        return t.render(submenu = self.HomeMenu(), popular_shows=popular_shows)
+
 
     def addShowToBlacklist(self, indexer_id):
 
@@ -4860,6 +4881,8 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_ROLLING_NUM_EP = int(trakt_rolling_num_ep)
         sickbeard.TRAKT_ROLLING_ADD_PAUSED = config.checkbox_to_value(trakt_rolling_add_paused)
         sickbeard.TRAKT_ROLLING_FREQUENCY = int(trakt_rolling_frequency)
+
+        sickbeard.USE_IMDB_POPULAR = config.checkbox_to_value(use_imdb_popular)
 
         sickbeard.USE_EMAIL = config.checkbox_to_value(use_email)
         sickbeard.EMAIL_NOTIFY_ONSNATCH = config.checkbox_to_value(email_notify_onsnatch)
