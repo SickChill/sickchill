@@ -1435,6 +1435,24 @@
                                 </label>
                             </div>
                             <div class="field-pair">
+                                <label for="twitter_usedm">
+                                    <span class="component-title">Send direct message</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="twitter_usedm" id="twitter_usedm" ${('', 'checked="checked"')[bool(sickbeard.TWITTER_USEDM)]}/>
+                                        <p>send a notification via Direct Message, not via status update</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="twitter_dmto">
+                                    <span class="component-title">Send DM to</span>
+                                    <input type="text" name="twitter_dmto" id="twitter_dmto" value="${sickbeard.TWITTER_DMTO}" class="form-control input-sm input250" />
+                                </label>
+                                <p>
+                                    <span class="component-desc">Twitter account to send Direct Messages to (must follow you)</span>
+                                </p>
+                            </div>
+                            <div class="field-pair">
                                 <label>
                                     <span class="component-title">Step One</span>
                                 </label>

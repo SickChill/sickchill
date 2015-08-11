@@ -135,13 +135,35 @@ class TwitterNotifier:
 
         return True
 
+    def _send_dm(self, message=None):
+
+        username = self.consumer_key
+        password = self.consumer_secret
+        dmdest = sickbeard.TWITTER_DMTO
+        access_token_key = sickbeard.TWITTER_USERNAME
+        access_token_secret = sickbeard.TWITTER_PASSWORD
+
+        logger.log(u"Sending DM: " + dmdest + " " + message, logger.DEBUG)
+
+        api = twitter.Api(username, password, access_token_key, access_token_secret)
+
+        try:
+            api.PostDirectMessage(dmdest, message.encode('utf8'))
+        except Exception, e:
+            logger.log(u"Error Sending Tweet (DM): " + ex(e), logger.ERROR)
+            return False
+
+        return True
+
     def _notifyTwitter(self, message='', force=False):
         prefix = sickbeard.TWITTER_PREFIX
 
         if not sickbeard.USE_TWITTER and not force:
             return False
 
-        return self._send_tweet(prefix + ": " + message)
-
+        if sickbeard.TWITTER_USEDM and sickbeard.TWITTER_DMTO:
+            return self._send_dm(self, sickbeard.TWITTER_DMTO, prefix + ": " + message)
+        else:
+            return self._send_tweet(prefix + ": " + message)
 
 notifier = TwitterNotifier
