@@ -102,6 +102,15 @@ Please follow this process; it's the best way to get your work included in the p
    # merge upstream changes
    git merge upstream/master
    ```
+   
+- Make sure that your develop branch is up to date:
+
+   ```bash
+   # Switch to the develop branch
+   git checkout develop
+   # Pull down any updates
+   git pull
+   ```
 
 - Create a new topic branch to contain your feature, change, or fix:
 
