@@ -196,4 +196,28 @@
             % endfor
         </tbody>
     </table>
+    <h2 class="header">Disk Space</h2>
+    <table id="DFStatusTable" class="tablesorter" width="50%">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Location</th>
+                <th>Free space</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>TV Download Directory</td>
+                <td>${sickbeard.TV_DOWNLOAD_DIR}</td>
+                <td>${tvdirFree} MB</td>
+            </tr>
+            <tr>
+                <td rowspan=${len(rootDir)}>Media Root Directories</td>
+            % for cur_dir in rootDir:
+                <td>${cur_dir}</td>
+                <td>${rootDir[cur_dir]} MB</td>
+            </tr>
+            % endfor
+        </tbody>
+    </table>
 </div>
