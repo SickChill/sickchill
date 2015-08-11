@@ -4013,7 +4013,7 @@ class ConfigSearch(Config):
         sickbeard.TORRENT_LABEL = torrent_label
         sickbeard.TORRENT_LABEL_ANIME = torrent_label_anime
         sickbeard.TORRENT_VERIFY_CERT = config.checkbox_to_value(torrent_verify_cert)
-        sickbeard.TORRENT_PATH = torrent_path
+        sickbeard.TORRENT_PATH = torrent_path.rstrip('/\\')
         sickbeard.TORRENT_SEED_TIME = torrent_seed_time
         sickbeard.TORRENT_PAUSED = config.checkbox_to_value(torrent_paused)
         sickbeard.TORRENT_HIGH_BANDWIDTH = config.checkbox_to_value(torrent_high_bandwidth)
