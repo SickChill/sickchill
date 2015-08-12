@@ -4819,6 +4819,8 @@ class ConfigNotifications(Config):
         sickbeard.TWITTER_NOTIFY_ONSNATCH = config.checkbox_to_value(twitter_notify_onsnatch)
         sickbeard.TWITTER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(twitter_notify_ondownload)
         sickbeard.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twitter_notify_onsubtitledownload)
+        sickbeard.TWITTER_USEDM = config.checkbox_to_value(twitter_usedm)
+        sickbeard.TWITTER_DMTO = twitter_dmto
 
         sickbeard.USE_BOXCAR = config.checkbox_to_value(use_boxcar)
         sickbeard.BOXCAR_NOTIFY_ONSNATCH = config.checkbox_to_value(boxcar_notify_onsnatch)
