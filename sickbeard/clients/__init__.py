@@ -19,6 +19,7 @@
 __all__ = ['utorrent',
            'transmission',
            'deluge',
+           'deluged',
            'download_station',
            'rtorrent',
            'qbittorrent'
@@ -101,6 +102,7 @@ http_error_code = {
 default_host = {'utorrent': 'http://localhost:8000',
                 'transmission': 'http://localhost:9091',
                 'deluge': 'http://localhost:8112',
+                'deluged': 'scgi://localhost:58846',
                 'download_station': 'http://localhost:5000',
                 'rtorrent': 'scgi://localhost:5000',
                 'qbittorrent': 'http://localhost:8080'

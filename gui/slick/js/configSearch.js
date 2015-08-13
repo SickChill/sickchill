@@ -132,6 +132,16 @@ $(document).ready(function(){
                 $('#torrent_username').prop('value', '');
                 $('#host_desc_torrent').text('URL to your Deluge client (e.g. http://localhost:8112)');
                 //$('#directory_title').text(client + directory);
+            } else if ('deluged' == selectedProvider){
+                client = 'Deluge';
+                $(torrent_verify_cert_option).hide();
+                $(torrent_verify_deluge).hide();
+                $(torrent_verify_rtorrent).hide();
+                $(label_warning_deluge).show();
+                $(label_anime_warning_deluge).show();
+                $('#torrent_username_option').show();
+                $('#host_desc_torrent').text('IP or Hostname of your Deluge Daemon (e.g. scgi://localhost:58846)');
+                //$('#directory_title').text(client + directory);
             } else if ('download_station' == selectedProvider){
                 client = 'Synology DS';
                 $(torrent_label_option).hide();
