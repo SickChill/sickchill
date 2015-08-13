@@ -1,4 +1,3 @@
 #!/usr/bin/python
 
-from pynma import PyNMA 
-
+from .pynma import PyNMA
