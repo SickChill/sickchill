@@ -182,10 +182,10 @@ class PLEXNotifier:
                 username = sickbeard.PLEX_USERNAME
             if not password:
                 password = sickbeard.PLEX_PASSWORD
-                
+
             if not plex_server_token:
                 plex_server_token = sickbeard.PLEX_SERVER_TOKEN
-            
+
             # if username and password were provided, fetch the auth token from plex.tv
             token_arg = ''
             if plex_server_token:
@@ -211,7 +211,7 @@ class PLEXNotifier:
 
                 except (ValueError, IndexError) as e:
                     logger.log(u'PLEX: Error parsing plex.tv response: ' + ex(e), logger.DEBUG)
-                
+
             file_location = '' if None is ep_obj else ep_obj.location
             host_list = [x.strip() for x in host.split(',')]
             hosts_all = {}
@@ -257,7 +257,7 @@ class PLEXNotifier:
                             if section_path in location_path:
                                 hosts_match.update(keyed_host)
 
-            hosts_try = (hosts_all.copy(), hosts_match.copy())[len(hosts_match)]
+            hosts_try = (hosts_all.copy(), hosts_match.copy())[bool(hosts_match)]
             host_list = []
             for section_key, cur_host in hosts_try.iteritems():
 
@@ -269,7 +269,7 @@ class PLEXNotifier:
                     logger.log(u'PLEX: Error updating library section for Plex Media Server: ' + ex(e), logger.WARNING)
                     hosts_failed.append(cur_host)
 
-            if len(hosts_match):
+            if hosts_match:
                 logger.log(u'PLEX: Updating hosts where TV section paths match the downloaded show: ' + ', '.join(set(host_list)), logger.DEBUG)
             else:
                 logger.log(u'PLEX: Updating all hosts with TV sections: ' + ', '.join(set(host_list)), logger.DEBUG)
