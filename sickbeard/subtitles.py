@@ -218,8 +218,8 @@ def run_subs_extra_scripts(epObj, foundSubs):
                 if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
                     subpath = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, subpath))
 
-                inner_cmd = script_cmd + [video.name] + [subpath] + [sub.language.opensubtitles] + [epObj.show.name] + \
-                                         [epObj.season] + [epObj.episode] + [epObj.name]
+                inner_cmd = script_cmd + [video.name, subpath, sub.language.opensubtitles, epObj.show.name,
+                                         str(epObj.season), str(epObj.episode), epObj.name, str(epObj.show.indexerid)]
 
                 # use subprocess to run the command and capture output
                 logger.log(u"Executing command: %s" % inner_cmd)
