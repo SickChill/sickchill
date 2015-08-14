@@ -34,26 +34,26 @@ import sys
 
 from github import Github
 
-from sickbeard import providers, metadata, config, webserveInit
-from sickbeard.providers.generic import GenericProvider
-from providers import btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, \
+from . import providers, metadata, config, webserveInit
+from .providers.generic import GenericProvider
+from .providers import btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, nextgen, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, animezb, \
     frenchtorrentdb, freshontv, titansoftv, libertalia, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, scenetime, btdigg
-from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
+from .config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
-from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
+from . import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
     subtitles, traktChecker
-from sickbeard import helpers, db, exceptions, show_queue, search_queue, scheduler, show_name_helpers
-from sickbeard import logger
-from sickbeard import naming
-from sickbeard import dailysearcher
-from sickbeard import scene_numbering, scene_exceptions, name_cache
-from indexers.indexer_api import indexerApi
-from indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, indexer_error, \
+from . import helpers, db, exceptions, show_queue, search_queue, scheduler, show_name_helpers
+from . import logger
+from . import naming
+from . import dailysearcher
+from . import scene_numbering, scene_exceptions, name_cache
+from .indexers.indexer_api import indexerApi
+from .indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, indexer_error, \
     indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, indexerExcepts
-from sickbeard.common import SD, SKIPPED, WANTED, NAMING_REPEAT
-from sickbeard.databases import mainDB, cache_db, failed_db
-from sickbeard.helpers import ex
+from .common import SD, SKIPPED, WANTED, NAMING_REPEAT
+from .databases import mainDB, cache_db, failed_db
+from .helpers import ex
 
 from configobj import ConfigObj
 
@@ -642,7 +642,7 @@ def initialize(consoleLogging=True):
 
         # debugging
         DEBUG = bool(check_setting_int(CFG, 'General', 'debug', 0))
-        
+
         DEFAULT_PAGE = check_setting_str(CFG, 'General', 'default_page', 'home')
 
         ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
@@ -1065,7 +1065,7 @@ def initialize(consoleLogging=True):
             TRAKT_ROLLING_FREQUENCY = 4
 
         USE_IMDB_POPULAR = bool(check_setting_int(CFG, 'IMDB', 'use_imdb_popular', 1))
-       
+
         USE_PYTIVO = bool(check_setting_int(CFG, 'pyTivo', 'use_pytivo', 0))
         PYTIVO_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'pyTivo', 'pytivo_notify_onsnatch', 0))
         PYTIVO_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'pyTivo', 'pytivo_notify_ondownload', 0))
@@ -2121,7 +2121,7 @@ def save_config():
     new_config['GUI']['poster_sortby'] = POSTER_SORTBY
     new_config['GUI']['poster_sortdir'] = POSTER_SORTDIR
     new_config['GUI']['filter_row'] = int(FILTER_ROW)
-   
+
     new_config['Subtitles'] = {}
     new_config['Subtitles']['use_subtitles'] = int(USE_SUBTITLES)
     new_config['Subtitles']['subtitles_languages'] = ','.join(SUBTITLES_LANGUAGES)
