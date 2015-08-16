@@ -33,13 +33,14 @@ class PushoverNotifier:
     def test_notify(self, userKey=None, apiKey=None):
         return self._notifyPushover("This is a test notification from SickRage", 'Test', userKey, apiKey, force=True)
 
-    def _sendPushover(self, msg, title, userKey=None, apiKey=None):
+    def _sendPushover(self, msg, title, sound=None, userKey=None, apiKey=None):
         """
         Sends a pushover notification to the address provided
         
         msg: The message to send (unicode)
         title: The title of the message
         userKey: The pushover user id to send the message to (or to subscribe with)
+        sound: The notification sound to use
         
         returns: True if the message succeeded, False otherwise
         """
@@ -49,6 +50,9 @@ class PushoverNotifier:
 
         if apiKey == None:
             apiKey = sickbeard.PUSHOVER_APIKEY
+
+        if sound == None:
+            sound = sickbeard.PUSHOVER_SOUND
 
         logger.log("Pushover API KEY in use: " + apiKey, logger.DEBUG)
 
@@ -65,6 +69,7 @@ class PushoverNotifier:
                     "timestamp": int(time.time()),
                     "retry": 60,
                     "expire": 3600,
+                    "sound": sound,
                    }
 
             if sickbeard.PUSHOVER_DEVICE:
@@ -93,10 +98,10 @@ class PushoverNotifier:
                 #HTTP status 401 if the user doesn't have the service added
                 subscribeNote = self._sendPushover(msg, title, userKey, apiKey)
                 if subscribeNote:
-                    logger.log("Subscription send", logger.DEBUG)
+                    logger.log("Subscription sent", logger.DEBUG)
                     return True
                 else:
-                    logger.log("Subscription could not be send", logger.ERROR)
+                    logger.log("Subscription could not be sent", logger.ERROR)
                     return False
 
             # If you receive an HTTP status code of 400, it is because you failed to send the proper parameters
@@ -131,13 +136,14 @@ class PushoverNotifier:
             title=notifyStrings[NOTIFY_GIT_UPDATE]
             self._notifyPushover(title, update_text + new_version) 
 
-    def _notifyPushover(self, title, message, userKey=None, apiKey=None, force=False):
+    def _notifyPushover(self, title, message, sound=None, userKey=None, apiKey=None, force=False):
         """
         Sends a pushover notification based on the provided info or SB config
 
         title: The title of the notification to send
         message: The message string to send
         userKey: The userKey to send the notification to 
+        sound: The notification sound to use
         force: Enforce sending, for instance for testing
         """
 
