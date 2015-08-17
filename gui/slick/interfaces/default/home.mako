@@ -815,11 +815,7 @@ $(document).ready(function(){
         </td>
 
         <td align="center">
-% if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
-            <img src="${sbRoot}/images/${('no16.png", alt="No"', 'yes16.png", alt="Yes"')[int(curShow.paused) == 0]} width="16" height="16" />
-% else:
             <img src="${sbRoot}/images/${('no16.png", alt="No"', 'yes16.png", alt="Yes"')[int(curShow.paused) == 0 and curShow.status == 'Continuing']} width="16" height="16" />
-% endif
         </td>
 
         <td align="center">

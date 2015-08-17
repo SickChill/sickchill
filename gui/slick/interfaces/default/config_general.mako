@@ -644,7 +644,7 @@
                             <label for="ep_default_deleted_status">
                                 <span class="component-title">Default deleted episode status:</span>
                                     <span class="component-desc">
-% if not sickbeard.SKIP_REMOVED_FILES or (sickbeard.USE_TRAKT and sickbeard.TRAKT_USE_ROLLING_DOWNLOAD):
+% if not sickbeard.SKIP_REMOVED_FILES:
                                         <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm">
                                         % for defStatus in [ARCHIVED, IGNORED]:
                                             <option value="${defStatus}" ${('', 'selected="selected"')[sickbeard.EP_DEFAULT_DELETED_STATUS == defStatus]}>${statusStrings[defStatus]}</option>

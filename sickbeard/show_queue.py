@@ -215,9 +215,6 @@ class QueueItemAdd(ShowQueueItem):
         self.whitelist = whitelist
         self.default_status_after = default_status_after
 
-        if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
-            self.paused = sickbeard.TRAKT_ROLLING_ADD_PAUSED
-
         self.show = None
 
         # this will initialize self.show to None
@@ -389,8 +386,6 @@ class QueueItemAdd(ShowQueueItem):
         except Exception, e:
             logger.log(u"Error searching dir for episodes: " + ex(e), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
-
-        sickbeard.traktRollingScheduler.action.updateWantedList(self.show.indexerid)
 
         # if they set default ep status to WANTED then run the backlog to search for episodes
         # FIXME: This needs to be a backlog queue item!!!
