@@ -80,16 +80,7 @@ class ZipGeneralFlags(FieldSet):
         # Need the compression info from the parent, and that is the byte following
         method = self.stream.readBits(self.absolute_address+16, 16, LITTLE_ENDIAN)
 
-        yield Bits(self, "unused[]", 2, "Unused")
-        yield Bit(self, "encrypted_central_dir", "Selected data values in the Local Header are masked")
-        yield Bit(self, "incomplete", "Reserved by PKWARE for enhanced compression.")
-        yield Bit(self, "uses_unicode", "Filename and comments are in UTF-8")
-        yield Bits(self, "unused[]", 4, "Unused")
-        yield Bit(self, "strong_encrypt", "Strong encryption (version >= 50)")
-        yield Bit(self, "is_patched", "File is compressed with patched data?")
-        yield Bit(self, "enhanced_deflate", "Reserved for use with method 8")
-        yield Bit(self, "has_descriptor",
-                  "Compressed data followed by descriptor?")
+        yield Bit(self, "is_encrypted", "File is encrypted?")
         if method == 6:
             yield Bit(self, "use_8k_sliding", "Use 8K sliding dictionary (instead of 4K)")
             yield Bit(self, "use_3shannon", "Use a 3 Shannon-Fano tree (instead of 2 Shannon-Fano)")
@@ -106,7 +97,16 @@ class ZipGeneralFlags(FieldSet):
             yield Bit(self, "unused[]")
         else:
             yield Bits(self, "compression_info", 2)
-        yield Bit(self, "is_encrypted", "File is encrypted?")
+        yield Bit(self, "has_descriptor",
+                  "Compressed data followed by descriptor?")
+        yield Bit(self, "enhanced_deflate", "Reserved for use with method 8")
+        yield Bit(self, "is_patched", "File is compressed with patched data?")
+        yield Bit(self, "strong_encrypt", "Strong encryption (version >= 50)")
+        yield Bits(self, "unused[]", 4, "Unused")
+        yield Bit(self, "uses_unicode", "Filename and comments are in UTF-8")
+        yield Bit(self, "incomplete", "Reserved by PKWARE for enhanced compression.")
+        yield Bit(self, "encrypted_central_dir", "Selected data values in the Local Header are masked")
+        yield Bits(self, "unused[]", 2, "Unused")
 
 class ExtraField(FieldSet):
     EXTRA_FIELD_ID = {
@@ -141,7 +141,12 @@ class ExtraField(FieldSet):
         size = UInt16(self, "field_data_size", "Extra field data size")
         yield size
         if size.value > 0:
-            yield RawBytes(self, "field_data", size, "Unknown field data")
+            yield RawBytes(self, "field_data", size.value, "Unknown field data")
+
+class ExtraFields(FieldSet):
+    def createFields(self):
+        while self.current_size < self.size:
+            yield ExtraField(self, "extra[]")
 
 def ZipStartCommonFields(self):
     yield ZipVersion(self, "version_needed", "Version needed")
@@ -179,8 +184,8 @@ class ZipCentralDirectory(FieldSet):
         yield String(self, "filename", self["filename_length"].value,
                      "Filename", charset=charset)
         if 0 < self["extra_length"].value:
-            yield RawBytes(self, "extra", self["extra_length"].value,
-                           "Extra fields")
+            yield ExtraFields(self, "extra", size=self["extra_length"].value*8,
+                           description="Extra fields")
         if 0 < self["comment_length"].value:
             yield String(self, "comment", self["comment_length"].value,
                          "Comment", charset=charset)
@@ -278,14 +283,15 @@ class FileEntry(FieldSet):
             yield filename
             self.filename = filename.value
         if self["extra_length"].value:
-            yield RawBytes(self, "extra", self["extra_length"].value, "Extra")
+            yield ExtraFields(self, "extra", size=self["extra_length"].value*8,
+                           description="Extra fields")
         size = self["compressed_size"].value
         if size > 0:
             yield self.data(size)
         elif self["flags/incomplete"].value:
             for field in self.resync():
                 yield field
-        if self["flags/has_descriptor"].value:
+        if self["flags/has_descriptor"].value and self['crc32'].value == 0:
             yield ZipDataDescriptor(self, "data_desc", "Data descriptor")
 
     def createDescription(self):

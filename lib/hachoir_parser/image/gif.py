@@ -1,7 +1,12 @@
 """
 GIF picture parser.
 
-Author: Victor Stinner
+Author: Victor Stinner, Robert Xiao
+
+- GIF format
+  http://local.wasp.uwa.edu.au/~pbourke/dataformats/gif/
+- LZW compression
+  http://en.wikipedia.org/wiki/LZW
 """
 
 from hachoir_parser import Parser
@@ -12,13 +17,145 @@ from hachoir_core.field import (FieldSet, ParserError,
     NullBits, RawBytes)
 from hachoir_parser.image.common import PaletteRGB
 from hachoir_core.endian import LITTLE_ENDIAN
-from hachoir_core.tools import humanDuration
+from hachoir_core.stream import StringInputStream
+from hachoir_core.tools import humanDuration, paddingSize
 from hachoir_core.text_handler import textHandler, displayHandler, hexadecimal
 
 # Maximum image dimension (in pixel)
 MAX_WIDTH = 6000
 MAX_HEIGHT = MAX_WIDTH
 MAX_FILE_SIZE = 100 * 1024 * 1024
+
+class FragmentGroup:
+    def __init__(self, parser):
+        self.items = []
+        self.parser = parser
+        self.args = {}
+
+    def add(self, item):
+        self.items.append(item)
+
+    def createInputStream(self):
+        # FIXME: Use lazy stream creation
+        data = []
+        for item in self.items:
+            data.append( item["rawdata"].value )
+        data = "".join(data)
+
+        # FIXME: Use smarter code to send arguments
+        self.args["startbits"] = self.items[0].parent["lzw_min_code_size"].value
+        tags = {"class": self.parser, "args": self.args}
+        tags = tags.iteritems()
+        return StringInputStream(data, "<fragment group>", tags=tags)
+
+class CustomFragment(FieldSet):
+    def __init__(self, parent, name, size, parser, description=None, group=None):
+        FieldSet.__init__(self, parent, name, description, size=size)
+        if not group:
+            group = FragmentGroup(parser)
+        self.group = group
+        self.group.add(self)
+
+    def createFields(self):
+        yield UInt8(self, "size")
+        yield RawBytes(self, "rawdata", self["size"].value)
+
+    def _createInputStream(self, **args):
+        return self.group.createInputStream()
+
+def rle_repr(l):
+    """Run-length encode a list into an "eval"-able form
+
+    Example:
+    >>> rle_repr([20, 16, 16, 16, 16, 16, 18, 18, 65])
+    '[20] + [16]*5 + [18]*2 + [65]'
+
+    Adapted from http://twistedmatrix.com/trac/browser/trunk/twisted/python/dxprofile.py
+    """
+    def add_rle(previous, runlen, result):
+        if isinstance(previous, (list, tuple)):
+            previous = rle_repr(previous)
+        if runlen>1:
+            result.append('[%s]*%i'%(previous, runlen))
+        else:
+            if result and '*' not in result[-1]:
+                result[-1] = '[%s, %s]'%(result[-1][1:-1], previous)
+            else:
+                result.append('[%s]'%previous)
+    iterable = iter(l)
+    runlen = 1
+    result = []
+    try:
+        previous = iterable.next()
+    except StopIteration:
+        return "[]"
+    for element in iterable:
+        if element == previous:
+            runlen = runlen + 1
+            continue
+        else:
+            add_rle(previous, runlen, result)
+            previous = element
+            runlen = 1
+    add_rle(previous, runlen, result)
+    return ' + '.join(result)
+
+class GifImageBlock(Parser):
+    endian = LITTLE_ENDIAN
+    def createFields(self):
+        dictionary = {}
+        self.nbits = self.startbits
+        CLEAR_CODE = 2**self.nbits
+        END_CODE = CLEAR_CODE + 1
+        compress_code = CLEAR_CODE + 2
+        obuf = []
+        output = []
+        while True:
+            if compress_code >= 2**self.nbits:
+                self.nbits += 1
+            code = Bits(self, "code[]", self.nbits)
+            if code.value == CLEAR_CODE:
+                if compress_code == 2**(self.nbits-1):
+                    # this fixes a bizarre edge case where the reset code could
+                    # appear just after the bits incremented. Apparently, the
+                    # correct behaviour is to express the reset code with the
+                    # old number of bits, not the new...
+                    code = Bits(self, "code[]", self.nbits-1)
+                self.nbits = self.startbits + 1
+                dictionary = {}
+                compress_code = CLEAR_CODE + 2
+                obuf = []
+                code._description = "Reset Code (LZW code %i)" % code.value
+                yield code
+                continue
+            elif code.value == END_CODE:
+                code._description = "End of Information Code (LZW code %i)" % code.value
+                yield code
+                break
+            if code.value < CLEAR_CODE: # literal
+                if obuf:
+                    chain = obuf + [code.value]
+                    dictionary[compress_code] = chain
+                    compress_code += 1
+                obuf = [code.value]
+                output.append(code.value)
+                code._description = "Literal Code %i" % code.value
+            elif code.value >= CLEAR_CODE + 2:
+                if code.value in dictionary:
+                    chain = dictionary[code.value]
+                    code._description = "Compression Code %i (found in dictionary as %s)" % (code.value, rle_repr(chain))
+                else:
+                    chain = obuf + [obuf[0]]
+                    code._description = "Compression Code %i (not found in dictionary; guessed to be %s)" % (code.value, rle_repr(chain))
+                dictionary[compress_code] = obuf + [chain[0]]
+                compress_code += 1
+                obuf = chain
+                output += chain
+            code._description += "; Current Decoded Length %i"%len(output)
+            yield code
+        padding = paddingSize(self.current_size, 8)
+        if padding:
+            yield NullBits(self, "padding[]", padding)
 
 class Image(FieldSet):
     def createFields(self):
@@ -27,24 +164,26 @@ class Image(FieldSet):
         yield UInt16(self, "width", "Width")
         yield UInt16(self, "height", "Height")
 
-        yield Bits(self, "bpp", 3, "Bits / pixel minus one")
-        yield NullBits(self, "nul", 2)
-        yield Bit(self, "sorted", "Sorted??")
+        yield Bits(self, "size_local_map", 3, "log2(size of local map) minus one")
+        yield NullBits(self, "reserved", 2)
+        yield Bit(self, "sort_flag", "Is the local map sorted by decreasing importance?")
         yield Bit(self, "interlaced", "Interlaced?")
         yield Bit(self, "has_local_map", "Use local color map?")
 
         if self["has_local_map"].value:
-            nb_color = 1 << (1 + self["bpp"].value)
+            nb_color = 1 << (1 + self["size_local_map"].value)
             yield PaletteRGB(self, "local_map", nb_color, "Local color map")
 
-        yield UInt8(self, "code_size", "LZW Minimum Code Size")
+        yield UInt8(self, "lzw_min_code_size", "LZW Minimum Code Size")
+        group = None
         while True:
-            blen = UInt8(self, "block_len[]", "Block Length")
-            yield blen
-            if blen.value != 0:
-                yield RawBytes(self, "data[]", blen.value, "Image Data")
-            else:
+            size = UInt8(self, "block_size")
+            if size.value == 0:
                 break
+            block = CustomFragment(self, "image_block[]", None, GifImageBlock, "GIF Image Block", group)
+            group = block.group
+            yield block
+        yield NullBytes(self, "terminator", 1, "Terminator (0)")
 
     def createDescription(self):
         return "Image: %ux%u pixels at (%u,%u)" % (
@@ -64,16 +203,19 @@ NETSCAPE_CODE = {
 
 def parseApplicationExtension(parent):
     yield PascalString8(parent, "app_name", "Application name")
-    yield UInt8(parent, "size")
-    size = parent["size"].value
-    if parent["app_name"].value == "NETSCAPE2.0" and size == 3:
-        yield Enum(UInt8(parent, "netscape_code"), NETSCAPE_CODE)
-        if parent["netscape_code"].value == 1:
-            yield UInt16(parent, "loop_count")
+    while True:
+        size = UInt8(parent, "size[]")
+        if size.value == 0:
+            break
+        yield size
+        if parent["app_name"].value == "NETSCAPE2.0" and size.value == 3:
+            yield Enum(UInt8(parent, "netscape_code"), NETSCAPE_CODE)
+            if parent["netscape_code"].value == 1:
+                yield UInt16(parent, "loop_count")
+            else:
+                yield RawBytes(parent, "raw[]", 2)
         else:
-            yield RawBytes(parent, "raw", 2)
-    else:
-        yield RawBytes(parent, "raw", size)
+            yield RawBytes(parent, "raw[]", size.value)
     yield NullBytes(parent, "terminator", 1, "Terminator (0)")
 
 def parseGraphicControl(parent):
@@ -149,15 +291,20 @@ class ScreenDescriptor(FieldSet):
     def createFields(self):
         yield UInt16(self, "width", "Width")
         yield UInt16(self, "height", "Height")
-        yield Bits(self, "bpp", 3, "Bits per pixel minus one")
-        yield Bit(self, "reserved", "(reserved)")
+        yield Bits(self, "size_global_map", 3, "log2(size of global map) minus one")
+        yield Bit(self, "sort_flag", "Is the global map sorted by decreasing importance?")
         yield Bits(self, "color_res", 3, "Color resolution minus one")
         yield Bit(self, "global_map", "Has global map?")
         yield UInt8(self, "background", "Background color")
-        yield UInt8(self, "pixel_aspect_ratio", "Pixel Aspect Ratio")
+        field = UInt8(self, "pixel_aspect_ratio")
+        if field.value:
+            field._description = "Pixel aspect ratio: %f (stored as %i)"%((field.value + 15)/64., field.value)
+        else:
+            field._description = "Pixel aspect ratio: not specified"
+        yield field
 
     def createDescription(self):
-        colors = 1 << (self["bpp"].value+1)
+        colors = 1 << (self["size_global_map"].value+1)
         return "Screen descriptor: %ux%u pixels %u colors" \
             % (self["width"].value, self["height"].value, colors)
 
@@ -196,7 +343,7 @@ class GifFile(Parser):
 
         yield ScreenDescriptor(self, "screen")
         if self["screen/global_map"].value:
-            bpp = (self["screen/bpp"].value+1)
+            bpp = (self["screen/size_global_map"].value+1)
             yield PaletteRGB(self, "color_map", 1 << bpp, "Color map")
             self.color_map = self["color_map"]
         else:

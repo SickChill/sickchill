@@ -32,7 +32,7 @@ def timestampFactory(cls_name, handler, size):
 
 TimestampUnix32 = timestampFactory("TimestampUnix32", timestampUNIX, 32)
 TimestampUnix64 = timestampFactory("TimestampUnix64", timestampUNIX, 64)
-TimestampMac32 = timestampFactory("TimestampUnix32", timestampMac32, 32)
+TimestampMac32 = timestampFactory("TimestampMac32", timestampMac32, 32)
 TimestampUUID60 = timestampFactory("TimestampUUID60", timestampUUID60, 60)
 TimestampWin64 = timestampFactory("TimestampWin64", timestampWin64, 64)
 

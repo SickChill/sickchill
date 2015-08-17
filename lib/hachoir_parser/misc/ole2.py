@@ -1,5 +1,6 @@
 """
 Microsoft Office documents parser.
+OLE2 files are also used by many other programs to store data.
 
 Informations:
 * wordole.c of AntiWord program (v0.35)
@@ -23,13 +24,11 @@ from hachoir_parser import HachoirParser
 from hachoir_core.field import (
     FieldSet, ParserError, SeekableFieldSet, RootSeekableFieldSet,
     UInt8, UInt16, UInt32, UInt64, TimestampWin64, Enum,
-    Bytes, RawBytes, NullBytes, String)
+    Bytes, NullBytes, String)
 from hachoir_core.text_handler import filesizeHandler
-from hachoir_core.endian import LITTLE_ENDIAN
+from hachoir_core.endian import LITTLE_ENDIAN, BIG_ENDIAN
 from hachoir_parser.common.win32 import GUID
-from hachoir_parser.misc.msoffice import CustomFragment, OfficeRootEntry, PROPERTY_NAME
-from hachoir_parser.misc.word_doc import WordDocumentParser
-from hachoir_parser.misc.msoffice_summary import SummaryParser
+from hachoir_parser.misc.msoffice import PROPERTY_NAME, RootEntry, RawParser, CustomFragment
 
 MIN_BIG_BLOCK_LOG2 = 6   # 512 bytes
 MAX_BIG_BLOCK_LOG2 = 14  # 64 kB
@@ -112,19 +111,26 @@ class DIFat(SeekableFieldSet):
         for index in xrange(NB_DIFAT):
             yield SECT(self, "index[%u]" % index)
 
-        for index in xrange(self.count):
+        difat_sect = self.start
+        index = NB_DIFAT
+        entries_per_sect = self.parent.sector_size / 32 - 1
+        for ctr in xrange(self.count):
             # this is relative to real DIFAT start
-            self.seekBit(NB_DIFAT * SECT.static_size+self.parent.sector_size*(self.start+index))
-            for sect_index in xrange(NB_DIFAT*(index+1),NB_DIFAT*(index+2)):
-                yield SECT(self, "index[%u]" % sect_index)
+            self.seekBit(NB_DIFAT*SECT.static_size + self.parent.sector_size*difat_sect)
+            for sect_index in xrange(entries_per_sect):
+                yield SECT(self, "index[%u]" % (index+sect_index))
+            index += entries_per_sect
+            next = SECT(self, "difat[%u]" % ctr)
+            yield next
+            difat_sect = next.value
 
 class Header(FieldSet):
     static_size = 68 * 8
     def createFields(self):
         yield GUID(self, "clsid", "16 bytes GUID used by some apps")
         yield UInt16(self, "ver_min", "Minor version")
-        yield UInt16(self, "ver_maj", "Minor version")
-        yield Bytes(self, "endian", 2, "Endian (0xFFFE for Intel)")
+        yield UInt16(self, "ver_maj", "Major version")
+        yield Bytes(self, "endian", 2, "Endian (\\xfe\\xff for little endian)")
         yield UInt16(self, "bb_shift", "Log, base 2, of the big block size")
         yield UInt16(self, "sb_shift", "Log, base 2, of the small block size")
         yield NullBytes(self, "reserved[]", 6, "(reserved)")
@@ -156,6 +162,7 @@ class OLE2_File(HachoirParser, RootSeekableFieldSet):
         "id": "ole2",
         "category": "misc",
         "file_ext": (
+            "db",                        # Thumbs.db
             "doc", "dot",                # Microsoft Word
             "ppt", "ppz", "pps", "pot",  # Microsoft Powerpoint
             "xls", "xla",                # Microsoft Excel
@@ -229,21 +236,20 @@ class OLE2_File(HachoirParser, RootSeekableFieldSet):
         # Parse first property
         for index, property in enumerate(self.properties):
             if index == 0:
-                name = "root"
+                name, parser = 'root', RootEntry
             else:
                 try:
-                    name = PROPERTY_NAME[property["name"].value]
+                    name, parser = PROPERTY_NAME[property["name"].value]
                 except LookupError:
                     name = property.name+"content"
-            for field in self.parseProperty(property, name):
+                    parser = RawParser
+            for field in self.parseProperty(property, name, parser):
                 yield field
 
-    def parseProperty(self, property, name_prefix):
+    def parseProperty(self, property, name_prefix, parser=RawParser):
         if not property["size"].value:
             return
-        if property.name != "property[0]" \
-        and (property["size"].value < self["header/threshold"].value):
-            # Field is stored in the ministream, skip it
+        if property["size"].value < self["header/threshold"].value and name_prefix!='root':
             return
         name = "%s[]" % name_prefix
         first = None
@@ -255,10 +261,10 @@ class OLE2_File(HachoirParser, RootSeekableFieldSet):
             try:
                 block = chain.next()
                 contiguous = False
-                if not first:
+                if first is None:
                     first = block
                     contiguous = True
-                if previous and block == (previous+1):
+                if previous is not None and block == (previous+1):
                     contiguous = True
                 if contiguous:
                     previous = block
@@ -271,19 +277,12 @@ class OLE2_File(HachoirParser, RootSeekableFieldSet):
             self.seekBlock(first)
             desc = "Big blocks %s..%s (%s)" % (first, previous, previous-first+1)
             desc += " of %s bytes" % (self.sector_size // 8)
-            if name_prefix in set(("root", "summary", "doc_summary", "word_doc")):
-                if name_prefix == "root":
-                    parser = OfficeRootEntry
-                elif name_prefix == "word_doc":
-                    parser = WordDocumentParser
-                else:
-                    parser = SummaryParser
-                field = CustomFragment(self, name, size, parser, desc, fragment_group)
-                yield field
-                if not fragment_group:
-                    fragment_group = field.group
-            else:
-                yield RawBytes(self, name, size//8, desc)
+            field = CustomFragment(self, name, size, parser, desc, fragment_group)
+            if not fragment_group:
+                fragment_group = field.group
+                fragment_group.args["datasize"] = property["size"].value
+                fragment_group.args["ole2name"] = property["name"].value
+            yield field
             if block is None:
                 break
             first = block
@@ -313,7 +312,7 @@ class OLE2_File(HachoirParser, RootSeekableFieldSet):
             index = block // items_per_fat
             try:
                 block = fat[index]["index[%u]" % block].value
-            except LookupError:
+            except LookupError, err:
                 break
 
     def readBFAT(self):

@@ -39,6 +39,8 @@ import datetime
 import errno
 import ast
 import operator
+import platform
+import sys
 from contextlib import closing
 
 import sickbeard
@@ -1628,3 +1630,20 @@ def isFileLocked(file, writeLockCheck=False):
             return True
            
     return False
+
+def getDiskSpaceUsage(diskPath=None):
+    '''
+    returns the free space in MB for a given path or False if no path given
+    @param diskPath: the filesystem path being checked
+    '''
+
+    if diskPath:
+        if platform.system() == 'Windows':
+            free_bytes = ctypes.c_ulonglong(0)
+            ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(diskPath), None, None, ctypes.pointer(free_bytes))
+            return free_bytes.value / 1024 / 1024
+        else:
+            st = os.statvfs(diskPath)
+            return st.f_bavail * st.f_frsize / 1024 / 1024
+    else:
+        return False

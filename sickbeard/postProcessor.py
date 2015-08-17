@@ -94,7 +94,7 @@ class PostProcessor(object):
         self.is_priority = is_priority
 
         self.log = ''
-        
+
         self.version = None
 
     def _log(self, message, level=logger.INFO):
@@ -182,21 +182,21 @@ class PostProcessor(object):
 
         # don't confuse glob with chars we didn't mean to use
         base_name = re.sub(r'[\[\]\*\?]', r'[\g<0>]', base_name)
-        
+
         if subfolders: # subfolders are only checked in show folder, so names will always be exactly alike
             filelist = ek.ek(recursive_glob, ek.ek(os.path.dirname, file_path), base_name + '*') # just create the list of all files starting with the basename
         else: # this is called when PP, so we need to do the filename check case-insensitive
             filelist = []
-                
+
             checklist = ek.ek(glob.glob, helpers.fixGlob(ek.ek(os.path.join, ek.ek(os.path.dirname, file_path), '*'))) # get a list of all the files in the folder
             for filefound in checklist: # loop through all the files in the folder, and check if they are the same name even when the cases don't match
                 file_name = filefound.rpartition('.')[0]
                 if not base_name_only:
                     file_name = file_name + '.'
                 if file_name.lower() == base_name.lower(): # if there's no difference in the filename add it to the filelist
-                    filelist.append(filefound) 
-             
-                             
+                    filelist.append(filefound)
+
+
         for associated_file_path in filelist:
             # only add associated to list
             if associated_file_path == file_path:
@@ -211,12 +211,12 @@ class PostProcessor(object):
 
             if ek.ek(os.path.isfile, associated_file_path):
                 file_path_list.append(associated_file_path)
-        
+
         if file_path_list:
             self._log(u"Found the following associated files: " + str(file_path_list), logger.DEBUG)
         else:
             self._log(u"No associated files were during this pass", logger.DEBUG)
-            
+
         return file_path_list
 
     def _delete(self, file_path, associated_files=False):
@@ -730,7 +730,7 @@ class PostProcessor(object):
                 return ep_quality
 
         # Try guessing quality from the file name
-        ep_quality = common.Quality.assumeQuality(self.file_name)
+        ep_quality = common.Quality.assumeQuality(self.file_path)
         self._log(
             u"Guessing quality for name " + self.file_name + u", got " + common.Quality.qualityStrings[ep_quality],
             logger.DEBUG)
@@ -802,7 +802,7 @@ class PostProcessor(object):
                 self._log(u"SB snatched this episode and it is a proper of equal or higher quality so I'm marking it as priority", logger.DEBUG)
                 return True
             return False
-            
+
         # if the user downloaded it manually and it's higher quality than the existing episode then it's priority
         if new_ep_quality > old_ep_quality and new_ep_quality != common.Quality.UNKNOWN:
             self._log(
@@ -909,7 +909,7 @@ class PostProcessor(object):
             self._log(
                 u"This download is marked a priority download so I'm going to replace an existing file if I find one",
                 logger.DEBUG)
-        
+
         # try to find out if we have enough space to perform the copy or move action.
         if not helpers.isFileLocked(self.file_path, False):
             if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps):
@@ -917,7 +917,7 @@ class PostProcessor(object):
                 return False
         else:
             self._log("Unable to determine needed filespace as the source file is locked for access")
-        
+
 
         # delete the existing file (and company)
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
@@ -1020,7 +1020,7 @@ class PostProcessor(object):
         # add to anidb
         if ep_obj.show.is_anime and sickbeard.ANIDB_USE_MYLIST:
             self._add_to_anidb_mylist(self.file_path)
-        
+
         try:
             # move the episode and associated files to the show dir
             if self.process_method == "copy":
@@ -1046,7 +1046,7 @@ class PostProcessor(object):
                 raise exceptions.PostProcessingFailed("Unable to move the files to their new home")
         except (OSError, IOError):
             raise exceptions.PostProcessingFailed("Unable to move the files to their new home")
-                
+
         # download subtitles
         if sickbeard.USE_SUBTITLES and ep_obj.show.subtitles:
             for cur_ep in [ep_obj] + ep_obj.relatedEps:

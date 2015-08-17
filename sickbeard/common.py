@@ -115,7 +115,7 @@ class Quality:
     RAWHDTV = 1 << 3  # 8  -- 720p/1080i mpeg2 (trollhd releases)
     FULLHDTV = 1 << 4  # 16 -- 1080p HDTV (QCF releases)
     HDWEBDL = 1 << 5  # 32
-    FULLHDWEBDL = 1 << 6  # 64 -- 1080p web-dl                        
+    FULLHDWEBDL = 1 << 6  # 64 -- 1080p web-dl
     HDBLURAY = 1 << 7  # 128
     FULLHDBLURAY = 1 << 8  # 256
 
@@ -199,7 +199,7 @@ class Quality:
     @staticmethod
     def sceneQuality(name, anime=False):
         """
-        Return The quality from the scene episode File 
+        Return The quality from the scene episode File
         """
         if not name:
             return Quality.UNKNOWN
@@ -259,12 +259,56 @@ class Quality:
 
     @staticmethod
     def assumeQuality(name):
+        quality = Quality.qualityFromFileMeta(name)
+        if quality != Quality.UNKNOWN:
+            return quality
+
         if name.lower().endswith((".avi", ".mp4")):
             return Quality.SDTV
         elif name.lower().endswith(".ts"):
             return Quality.RAWHDTV
         else:
             return Quality.UNKNOWN
+
+    @staticmethod
+    def qualityFromFileMeta(filename):
+        from hachoir_parser import createParser
+        from hachoir_metadata import extractMetadata
+
+        parser = createParser(filename)
+        if not parser:
+            return Quality.UNKNOWN
+
+        try:
+            metadata = extractMetadata(parser)
+        except Exception:
+            metadata = None
+            pass
+
+        if not metadata:
+            return Quality.UNKNOWN
+
+        height = 0
+        if metadata.has('height'):
+            height = int(metadata.get('height') or 0)
+        else:
+            test = getattr(metadata, "iterGroups", None)
+            if callable(test):
+                for metagroup in metadata.iterGroups():
+                    if metagroup.has('height'):
+                        height = int(metagroup.get('height') or 0)
+
+        if not height:
+            return Quality.UNKNOWN
+
+        if height > 1040:
+            return Quality.FULLHDTV
+        elif height > 680 and height < 760:
+            return Quality.HDTV
+        elif height < 680:
+            return Quality.SDTV
+
+        return Quality.UNKNOWN
 
     @staticmethod
     def compositeStatus(status, quality):
@@ -316,7 +360,7 @@ ANY = Quality.combineQualities(
     [Quality.SDTV, Quality.SDDVD, Quality.HDTV, Quality.FULLHDTV, Quality.HDWEBDL, Quality.FULLHDWEBDL,
      Quality.HDBLURAY, Quality.FULLHDBLURAY, Quality.UNKNOWN], [])  # SD + HD
 
-# legacy template, cant remove due to reference in mainDB upgrade?                                                                                                                                        
+# legacy template, cant remove due to reference in mainDB upgrade?
 BEST = Quality.combineQualities([Quality.SDTV, Quality.HDTV, Quality.HDWEBDL], [Quality.HDTV])
 
 qualityPresets = (SD, HD, HD720p, HD1080p, ANY)
@@ -384,4 +428,3 @@ countryList = {'Australia': 'AU',
                'Canada': 'CA',
                'USA': 'US'
 }
-

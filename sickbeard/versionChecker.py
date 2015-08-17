@@ -148,7 +148,7 @@ class CheckVersion():
 
         def db_safe(self):
             try:
-                result = self.getDBcompare(sickbeard.BRANCH)
+                result = self.getDBcompare()
                 if result == 'equal':
                     logger.log(u"We can proceed with the update. New update has same DB version", logger.DEBUG)
                     return True
@@ -192,9 +192,9 @@ class CheckVersion():
             logger.log(u"Auto update aborted", logger.DEBUG)
             return False
 
-    def getDBcompare(self, branchDest):
+    def getDBcompare(self):
         try:
-            response = requests.get("https://raw.githubusercontent.com/SICKRAGETV/SickRage/" + str(branchDest) +"/sickbeard/databases/mainDB.py")
+            response = requests.get("http://cdn.rawgit.com/SICKRAGETV/SickRage/" + str(self._newest_commit_hash) +"/sickbeard/databases/mainDB.py")
             response.raise_for_status()
             match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})",response.text)
             branchDestDBversion = int(match.group('version'))

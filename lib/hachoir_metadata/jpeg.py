@@ -1,6 +1,6 @@
 from hachoir_metadata.metadata import RootMetadata, registerExtractor
 from hachoir_metadata.image import computeComprRate
-from hachoir_parser.image.exif import ExifEntry
+from hachoir_parser.image.exif import IFD, BasicIFDEntry
 from hachoir_parser.image.jpeg import (
     JpegFile, JpegChunk,
     QUALITY_HASH_COLOR, QUALITY_SUM_COLOR,
@@ -17,21 +17,21 @@ def deg2float(degree, minute, second):
 class JpegMetadata(RootMetadata):
     EXIF_KEY = {
         # Exif metadatas
-        ExifEntry.TAG_CAMERA_MANUFACTURER: "camera_manufacturer",
-        ExifEntry.TAG_CAMERA_MODEL: "camera_model",
-        ExifEntry.TAG_ORIENTATION: "image_orientation",
-        ExifEntry.TAG_EXPOSURE: "camera_exposure",
-        ExifEntry.TAG_FOCAL: "camera_focal",
-        ExifEntry.TAG_BRIGHTNESS: "camera_brightness",
-        ExifEntry.TAG_APERTURE: "camera_aperture",
+        "Make": "camera_manufacturer",
+        "Model": "camera_model",
+        "Orientation": "image_orientation",
+        "ExposureTime": "camera_exposure",
+        "FNumber": "camera_focal",
+        "BrightnessValue": "camera_brightness",
+        "MaxApertureValue": "camera_aperture",
 
         # Generic metadatas
-        ExifEntry.TAG_IMG_TITLE: "title",
-        ExifEntry.TAG_SOFTWARE: "producer",
-        ExifEntry.TAG_FILE_TIMESTAMP: "creation_date",
-        ExifEntry.TAG_WIDTH: "width",
-        ExifEntry.TAG_HEIGHT: "height",
-        ExifEntry.TAG_USER_COMMENT: "comment",
+        "ImageDescription": "title",
+        "Software": "producer",
+        "DateTime": "creation_date",
+        "PixelXDimension": "width",
+        "PixelYDimension": "height",
+        "UserComment": "comment",
     }
 
     IPTC_KEY = {
@@ -63,7 +63,8 @@ class JpegMetadata(RootMetadata):
             self.extractAPP0(jpeg["app0/content"])
 
         if "exif/content" in jpeg:
-            for ifd in jpeg.array("exif/content/ifd"):
+            for ifd in jpeg['exif/content']:
+                if not isinstance(ifd, IFD): continue
                 for entry in ifd.array("entry"):
                     self.processIfdEntry(ifd, entry)
                 self.readGPS(ifd)
@@ -156,7 +157,7 @@ class JpegMetadata(RootMetadata):
     @fault_tolerant
     def processIfdEntry(self, ifd, entry):
         # Skip unknown tags
-        tag = entry["tag"].value
+        tag = entry["tag"].display
         if tag not in self.EXIF_KEY:
             return
         key = self.EXIF_KEY[tag]
@@ -166,20 +167,17 @@ class JpegMetadata(RootMetadata):
             return
 
         # Read value
-        if "value" in entry:
-            value = entry["value"].value
-        else:
-            value = ifd["value_%s" % entry.name].value
+        value = ifd.getEntryValues(entry)[0].value
 
         # Convert value to string
-        if tag == ExifEntry.TAG_ORIENTATION:
+        if tag == "Orientation":
             value = self.orientation_name.get(value, value)
-        elif tag == ExifEntry.TAG_EXPOSURE:
+        elif tag == "ExposureTime":
             if not value:
                 return
             if isinstance(value, float):
                 value = (value, u"1/%g" % (1/value))
-        elif entry["type"].value in (ExifEntry.TYPE_RATIONAL, ExifEntry.TYPE_SIGNED_RATIONAL):
+        elif entry["type"].value in (BasicIFDEntry.TYPE_RATIONAL, BasicIFDEntry.TYPE_SIGNED_RATIONAL):
             value = (value, u"%.3g" % value)
 
         # Store information
@@ -197,35 +195,33 @@ class JpegMetadata(RootMetadata):
         timestamp = None
         datestamp = None
         for entry in ifd.array("entry"):
-            tag = entry["tag"].value
-            if tag == ExifEntry.TAG_GPS_LATITUDE_REF:
-                if entry["value"].value == "N":
+            tag = entry["tag"].display
+            values = [v.value for v in ifd.getEntryValues(entry)]
+            if tag == "GPSLatitudeRef":
+                if values[0] == "N":
                     latitude_ref = 1
                 else:
                     latitude_ref = -1
-            elif tag == ExifEntry.TAG_GPS_LONGITUDE_REF:
-                if entry["value"].value == "E":
+            elif tag == "GPSLongitudeRef":
+                if values[0] == "E":
                     longitude_ref = 1
                 else:
                     longitude_ref = -1
-            elif tag == ExifEntry.TAG_GPS_ALTITUDE_REF:
-                if entry["value"].value == 1:
+            elif tag == "GPSAltitudeRef":
+                if values[0] == 1:
                     altitude_ref = -1
                 else:
                     altitude_ref = 1
-            elif tag == ExifEntry.TAG_GPS_LATITUDE:
-                latitude = [ifd["value_%s[%u]" % (entry.name, index)].value for index in xrange(3)]
-            elif tag == ExifEntry.TAG_GPS_LONGITUDE:
-                longitude = [ifd["value_%s[%u]" % (entry.name, index)].value for index in xrange(3)]
-            elif tag == ExifEntry.TAG_GPS_ALTITUDE:
-                altitude = ifd["value_%s" % entry.name].value
-            elif tag == ExifEntry.TAG_GPS_DATESTAMP:
-                datestamp = ifd["value_%s" % entry.name].value
-            elif tag == ExifEntry.TAG_GPS_TIMESTAMP:
-                items = [ifd["value_%s[%u]" % (entry.name, index)].value for index in xrange(3)]
-                items = map(int, items)
-                items = map(str, items)
-                timestamp = ":".join(items)
+            elif tag == "GPSLatitude":
+                latitude = values
+            elif tag == "GPSLongitude":
+                longitude = values
+            elif tag == "GPSAltitude":
+                altitude = values[0]
+            elif tag == "GPSDateStamp":
+                datestamp = values[0]
+            elif tag == "GPSTimeStamp":
+                timestamp = ':'.join(str(int(x)) for x in values)
         if latitude_ref and latitude:
             value = deg2float(*latitude)
             if latitude_ref < 0:

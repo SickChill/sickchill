@@ -326,7 +326,7 @@ class PTMHeader(Header):
     # static_size should prime over _size, right?
     static_size = 8*608
 
-    def getTrackerVersion(val):
+    def getTrackerVersion(self, val):
         val = val.value
         return "ProTracker x%04X" % val
 

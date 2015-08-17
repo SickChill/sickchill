@@ -59,9 +59,10 @@ class MkvMetadata(MultipleMetadata):
     def trackCommon(self, track, meta):
         if "Name/unicode" in track:
             meta.title = track["Name/unicode"].value
-        if "Language/string" in track \
-        and track["Language/string"].value not in ("mis", "und"):
+        if "Language/string" in track:
             meta.language = track["Language/string"].value
+        else:
+            meta.language = "eng"
 
     def processVideo(self, track):
         video = Metadata(self)
@@ -222,7 +223,7 @@ class MovMetadata(RootMetadata):
         self.last_modification = hdr["lastmod_date"].value
         self.duration = timedelta(seconds=float(hdr["duration"].value) / hdr["time_scale"].value)
         self.comment = _("Play speed: %.1f%%") % (hdr["play_speed"].value*100)
-        self.comment = _("User volume: %.1f%%") % (float(hdr["volume"].value)*100//255)
+        self.comment = _("User volume: %.1f%%") % (float(hdr["volume"].value)*100)
 
     @fault_tolerant
     def processTrackHeader(self, hdr):

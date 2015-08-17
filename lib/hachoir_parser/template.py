@@ -23,7 +23,7 @@ class TODOFile(Parser):
         "id": "TODO",
         "category": "TODO",    # "archive", "audio", "container", ...
         "file_ext": ("TODO",), # TODO: Example ("bmp",) to parse the file "image.bmp"
-        "mime": (u"TODO"),      # TODO: Example: "image/png"
+        "mime": (u"TODO",),    # TODO: Example: "image/png"
         "min_size": 0,         # TODO: Minimum file size (x bits, or x*8 in bytes)
         "description": "TODO", # TODO: Example: "A bitmap picture"
     }

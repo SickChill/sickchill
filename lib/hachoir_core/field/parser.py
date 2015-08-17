@@ -1,4 +1,4 @@
-from hachoir_core.endian import BIG_ENDIAN, LITTLE_ENDIAN
+from hachoir_core.endian import BIG_ENDIAN, LITTLE_ENDIAN, MIDDLE_ENDIAN
 from hachoir_core.field import GenericFieldSet
 from hachoir_core.log import Logger
 import hachoir_core.config as config
@@ -7,7 +7,7 @@ class Parser(GenericFieldSet):
     """
     A parser is the root of all other fields. It create first level of fields
     and have special attributes and methods:
-    - endian: Byte order (L{BIG_ENDIAN} or L{LITTLE_ENDIAN}) of input data ;
+    - endian: Byte order (L{BIG_ENDIAN}, L{LITTLE_ENDIAN} or L{MIDDLE_ENDIAN}) of input data ;
     - stream: Data input stream (set in L{__init__()}) ;
     - size: Field set size will be size of input stream.
     """
@@ -21,7 +21,7 @@ class Parser(GenericFieldSet):
         """
         # Check arguments
         assert hasattr(self, "endian") \
-            and self.endian in (BIG_ENDIAN, LITTLE_ENDIAN)
+            and self.endian in (BIG_ENDIAN, LITTLE_ENDIAN, MIDDLE_ENDIAN)
 
         # Call parent constructor
         GenericFieldSet.__init__(self, None, "root", stream, description, stream.askSize(self))

@@ -1,5 +1,5 @@
 """
-ReiserFS file system version 3 parser (version 1, 2 and 4 are not supported).
+ReiserFS file system version 3 parser (other version have not been tested).
 
 Author: Frederic Weisbecker
 Creation date: 8 december 2006
@@ -22,8 +22,61 @@ Kurz.
 
 from hachoir_parser import Parser
 from hachoir_core.field import (FieldSet, Enum,
-    UInt16, UInt32, String, RawBytes, NullBytes)
+    UInt16, UInt32, String, RawBytes, NullBytes, SeekableFieldSet, Bit)
 from hachoir_core.endian import LITTLE_ENDIAN
+
+
+class BlockState(Bit):
+    """The state (used/free) of a ReiserFs Block"""
+
+    STATE={
+        True : "used",
+        False : "free"
+    }
+
+    block_nb = 0
+
+    def __init__(self, parent, name, nb_block):
+        """@param nb_block: Number of the block concerned"""
+        Bit.__init__(self, parent, name)
+        self.block_nb = self.__class__.block_nb
+        self.__class__.block_nb += 1
+
+    def createDescription(self):
+        return "State of the block %d" %  self.block_nb
+
+    def createDisplay(self):
+        return self.STATE[Bit.createValue(self)]
+
+
+class BitmapBlock(SeekableFieldSet):
+    """ The bitmap blocks are Reiserfs blocks where each byte contains
+        the state of 8 blocks in the filesystem. So each bit will describe
+        the state of a block to tell if it is used or not.
+    """    
+    def createFields(self):
+        block_size=self["/superblock/blocksize"].value
+        
+        for i in xrange(0, block_size * 8):
+            yield BlockState(self, "block[]", i)
+
+
+class BitmapBlockGroup(SeekableFieldSet):
+    """The group that manages the Bitmap Blocks"""
+    
+    def createFields(self):   
+        block_size=self["/superblock/blocksize"].value  
+        nb_bitmap_block = self["/superblock/bmap_nr"].value
+        # Position of the first bitmap block
+        self.seekByte(REISER_FS.SUPERBLOCK_OFFSET + block_size, relative=False)
+   
+        yield BitmapBlock(self, "BitmapBlock[]", "Bitmap blocks tells for each block if it is used")    
+        # The other bitmap blocks
+        for i in xrange(1, nb_bitmap_block):
+            self.seekByte( (block_size**2) * 8 * i, relative=False)
+            yield BitmapBlock(self, "BitmapBlock[]", "Bitmap blocks tells for each block if it is used")
+
+
 
 class Journal_params(FieldSet):
     static_size = 32*8
@@ -44,7 +97,7 @@ class Journal_params(FieldSet):
         return "Parameters of the journal"
 
 class SuperBlock(FieldSet):
-    static_size = 204*8
+    #static_size = 204*8
 
     UMOUNT_STATE = { 1: "unmounted", 2: "not unmounted" }
     HASH_FUNCTIONS = {
@@ -84,6 +137,7 @@ class SuperBlock(FieldSet):
         yield RawBytes(self, "uuid", 16, "Filesystem unique identifier")
         yield String(self, "label", 16, "Filesystem volume label", strip="\0")
         yield NullBytes(self, "unused", 88)
+        yield NullBytes(self, "Bytes before end of the block", self["blocksize"].value-204)
 
     def createDescription(self):
         return "Superblock: ReiserFs Filesystem"
@@ -108,13 +162,11 @@ class REISER_FS(Parser):
     def validate(self):
         # Let's look at the magic field in the superblock
         magic = self.stream.readBytes(self.MAGIC_OFFSET*8, 9).rstrip("\0")
-        if magic == "ReIsEr3Fs":
+        if magic in ("ReIsEr3Fs", "ReIsErFs", "ReIsEr2Fs"):
             return True
-        if magic in ("ReIsEr2Fs", "ReIsErFs"):
-            return "Unsupported version of ReiserFs"
         return "Invalid magic string"
 
     def createFields(self):
         yield NullBytes(self, "padding[]", self.SUPERBLOCK_OFFSET)
         yield SuperBlock(self, "superblock")
-
+        yield BitmapBlockGroup(self, "Group of bitmap blocks")

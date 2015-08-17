@@ -24,6 +24,26 @@ CODEPAGE_CHARSET = {
     65001: "UTF-8",
 }
 
+class PascalStringWin16(FieldSet):
+    def __init__(self, parent, name, description=None, strip=None, charset="UTF-16-LE"):
+        FieldSet.__init__(self, parent, name, description)
+        length = self["length"].value
+        self._size = 16 + length * 16
+        self.strip = strip
+        self.charset = charset
+
+    def createFields(self):
+        yield UInt16(self, "length", "Length in widechar characters")
+        size = self["length"].value
+        if size:
+            yield String(self, "text", size*2, charset=self.charset, strip=self.strip)
+
+    def createValue(self):
+        if "text" in self:
+            return self["text"].value
+        else:
+            return None
+
 class PascalStringWin32(FieldSet):
     def __init__(self, parent, name, description=None, strip=None, charset="UTF-16-LE"):
         FieldSet.__init__(self, parent, name, description)
