@@ -4745,7 +4745,7 @@ class ConfigNotifications(Config):
                           trakt_remove_watchlist=None, trakt_sync_watchlist=None, trakt_remove_show_from_sickrage=None, trakt_method_add=None,
                           trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None, trakt_sync_remove=None,
                           trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_timeout=None, trakt_blacklist_name=None,
-                          use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
+                          use_synologynotifier=None, synologynotifier_notify_onsnatch=None, use_imdb_popular=None,
                           synologynotifier_notify_ondownload=None, synologynotifier_notify_onsubtitledownload=None,
                           use_pytivo=None, pytivo_notify_onsnatch=None, pytivo_notify_ondownload=None,
                           pytivo_notify_onsubtitledownload=None, pytivo_update_library=None,
