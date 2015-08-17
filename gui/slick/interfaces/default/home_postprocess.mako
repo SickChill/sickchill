@@ -75,7 +75,7 @@
     </form>
 
 <script type="text/javascript" charset="utf-8">
-    jQuery('#episodeDir').fileBrowser({ title: 'Select Unprocessed Episode Folder', key: 'postprocessPath' });
+    $('#episodeDir').fileBrowser({ title: 'Select Unprocessed Episode Folder', key: 'postprocessPath' });
 </script>
 </div>
 

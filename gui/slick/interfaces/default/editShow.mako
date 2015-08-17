@@ -136,7 +136,7 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 <script type="text/javascript" charset="utf-8">
     var all_exceptions = new Array;
 
-    jQuery('#location').fileBrowser({ title: 'Select Show Location' });
+    $('#location').fileBrowser({ title: 'Select Show Location' });
 
     $('#submit').click(function(){
         all_exceptions = []
@@ -162,7 +162,7 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 
         $('#SceneName').val('')
 
-        if (jQuery.inArray(scene_ex, all_exceptions) > -1 || (scene_ex == ''))
+        if ($.inArray(scene_ex, all_exceptions) > -1 || (scene_ex == ''))
             return
 
         $("#SceneException").show()

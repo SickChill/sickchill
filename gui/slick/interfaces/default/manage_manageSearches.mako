@@ -27,11 +27,7 @@
 
 <h3>Daily Search:</h3>
 <a class="btn" href="${sbRoot}/manage/manageSearches/forceSearch"><i class="icon-exclamation-sign"></i> Force</a>
-% if not dailySearchStatus:
-    Not in progress<br />
-% else:
-    In Progress<br />
-% endif
+${('Not in progress', 'In Progress')[dailySearchStatus]}<br />
 <br />
 
 <h3>Find Propers Search:</h3>

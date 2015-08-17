@@ -22,7 +22,7 @@ sbDefaultPage = "${sbDefaultPage}";
 </script>
 
 <script type="text/javascript" src="${sbRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/restart.js?${sbPID}&${sbDefaultPage}"></script>
+<script type="text/javascript" src="${sbRoot}/js/restart.js?${sbPID}&amp;${sbDefaultPage}"></script>
 
 <% themeSpinner = ('', '-dark')['dark' == themeSpinner] %>
 <h2>Performing Restart</h2>

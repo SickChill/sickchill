@@ -87,9 +87,9 @@
 <div class="clearfix"></div>
 
 <script type="text/javascript" charset="utf-8">
-    jQuery('#backupDir').fileBrowser({ title: 'Select backup folder to save to', key: 'backupPath' });
-    jQuery('#backupFile').fileBrowser({ title: 'Select backup files to restore', key: 'backupFile', includeFiles: 1 });
-    jQuery('#config-components').tabs();
+    $('#backupDir').fileBrowser({ title: 'Select backup folder to save to', key: 'backupPath' });
+    $('#backupFile').fileBrowser({ title: 'Select backup files to restore', key: 'backupFile', includeFiles: 1 });
+    $('#config-components').tabs();
 </script>
 
 <%include file="/inc_bottom.mako"/>
