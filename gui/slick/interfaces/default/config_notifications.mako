@@ -959,6 +959,39 @@
                                     <span class="component-desc">comma separated list of pushover devices you want to send notifications to</span>
                                 </label>
                             </div>
+                            <div class="field-pair">
+                                <label for="pushover_sound">
+                                    <span class="component-title">Pushover notification sound</span>
+                                    <select id="pushover_sound" name="pushover_sound" class="form-control input-sm">
+                                        <option value="pushover" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'pushover']}>Pushover</option>
+                                        <option value="bike" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'bike']}>Bike</option>
+                                        <option value="bugle" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'bugle']}>Bugle</option>
+                                        <option value="cashregister" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'cashregister']}>Cash Register</option>
+                                        <option value="classical" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'classical']}>Classical</option>
+                                        <option value="cosmic" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'cosmic']}>Cosmic</option>
+                                        <option value="falling" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'falling']}>Falling</option>
+                                        <option value="gamelan" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'gamelan']}>Gamelan</option>
+                                        <option value="incoming" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'incoming']}> Incoming</option>
+                                        <option value="intermission" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'intermission']}>Intermission</option>
+                                        <option value="magic" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'magic']}>Magic</option>
+                                        <option value="mechanical" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'mechanical']}>Mechanical</option>
+                                        <option value="pianobar" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'pianobar']}>Piano Bar</option>
+                                        <option value="siren" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'siren']}>Siren</option>
+                                        <option value="spacealarm" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'spacealarm']}>Space Alarm</option>
+                                        <option value="tugboat" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'tugboat']}>Tug Boat</option>
+                                        <option value="alien" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'alien']}>Alien Alarm (long)</option>
+                                        <option value="climb" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'climb']}>Climb (long)</option>
+                                        <option value="persistent" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'persistent']}>Persistent (long)</option>
+                                        <option value="echo" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'echo']}>Pushover Echo (long)</option>
+                                        <option value="updown" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'updown']}>Up Down (long)</option>
+                                        <option value="none" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'none']}>None (silent)</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Choose notification sound to use</span>
+                                </label>
+                            </div>
                             <div class="testNotification" id="testPushover-result">Click below to test.</div>
                             <input  class="btn" type="button" value="Test Pushover" id="testPushover" />
                             <input type="submit" class="config_submitter btn" value="Save Changes" />
