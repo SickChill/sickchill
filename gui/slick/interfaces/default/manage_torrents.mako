@@ -1,8 +1,3 @@
-<%!
-    import sickbeard
-    import datetime
-    from sickbeard.common import *
-%>
 <%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
 % if not header is UNDEFINED:

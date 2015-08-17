@@ -196,10 +196,10 @@ def change_SHOWUPDATE_HOUR(freq):
     sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
 
 def change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency):
-    
+
     if subtitles_finder_frequency == '' or subtitles_finder_frequency is None:
             subtitles_finder_frequency = 1
-    
+
     sickbeard.SUBTITLES_FINDER_FREQUENCY = to_int(subtitles_finder_frequency, 1)
 
 def change_VERSION_NOTIFY(version_notify):
@@ -215,7 +215,7 @@ def change_VERSION_NOTIFY(version_notify):
 
 def change_DOWNLOAD_PROPERS(download_propers):
     download_propers = checkbox_to_value(download_propers)
-    
+
     if sickbeard.DOWNLOAD_PROPERS == download_propers:
         return
 
@@ -234,7 +234,7 @@ def change_DOWNLOAD_PROPERS(download_propers):
 
 def change_USE_TRAKT(use_trakt):
     use_trakt = checkbox_to_value(use_trakt)
-    
+
     if sickbeard.USE_TRAKT == use_trakt:
         return
 
@@ -251,29 +251,10 @@ def change_USE_TRAKT(use_trakt):
         sickbeard.traktCheckerScheduler.silent = True
         logger.log(u"Stopping TRAKTCHECKER thread", logger.INFO)
 
-def change_TRAKT_USE_ROLLING_DOWNLOAD(trakt_use_rolling_download):
-    trakt_use_rolling_download = checkbox_to_value(trakt_use_rolling_download)
-    
-    if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD == trakt_use_rolling_download:
-        return
-    
-    sickbeard.TRAKT_USE_ROLLING_DOWNLOAD = trakt_use_rolling_download
-    
-    if sickbeard.USE_TRAKT and sickbeard.TRAKT_USE_ROLLING_DOWNLOAD:
-        if not sickbeard.traktRollingScheduler.enable:
-            logger.log(u"Starting TRAKTROLLING thread", logger.INFO)
-            sickbeard.traktRollingScheduler.silent = False
-            sickbeard.traktRollingScheduler.enable = True
-        else:
-            logger.log(u"Unable to start TRAKTROLLING thread. Already running", logger.INFO)
-    else:
-        sickbeard.traktRollingScheduler.enable = False
-        sickbeard.traktRollingScheduler.silent = True
-        logger.log(u"Stopping TRAKTROLLING thread", logger.INFO)
 
 def change_USE_SUBTITLES(use_subtitles):
     use_subtitles = checkbox_to_value(use_subtitles)
-    
+
     if sickbeard.USE_SUBTITLES == use_subtitles:
         return
 
@@ -292,7 +273,7 @@ def change_USE_SUBTITLES(use_subtitles):
 
 def change_PROCESS_AUTOMATICALLY(process_automatically):
     process_automatically = checkbox_to_value(process_automatically)
-    
+
     if sickbeard.PROCESS_AUTOMATICALLY == process_automatically:
         return
 

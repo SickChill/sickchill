@@ -1657,17 +1657,10 @@
                                 <div class="field-pair">
                                     <label for="trakt_start_paused">
                                         <span class="component-title">Start paused</span>
-% if not sickbeard.TRAKT_USE_ROLLING_DOWNLOAD:
                                         <span class="component-desc">
                                             <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_START_PAUSED)]}/>
                                             <p>show's grabbed from your trakt watchlist start paused.</p>
                                         </span>
-% else:
-                                        <span class="component-desc">
-                                            <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" #${('', 'checked="checked"')[bool(sickbeard.TRAKT_START_PAUSED)]} disabled="disable"/>
-                                            <p>show's grabbed from your trakt watchlist start paused.</p>
-                                        </span>
-% endif
                                     </label>
                                 </div>
                             </div>
@@ -1680,48 +1673,6 @@
                                     <span class="component-title">&nbsp;</span>
                                     <span class="component-desc">Name(slug) of List on Trakt for blacklisting show on 'Add Trending Show' & 'Add Recommended Shows' pages</span>
                                 </label>
-                            </div>
-                            <div class="field-pair">
-                                <label for="trakt_use_rolling_download">
-                                    <span class="component-title">Use rolling download</span>
-                                    <span class="component-desc">
-                                        <input type="checkbox" class="enabler" name="trakt_use_rolling_download" id="trakt_use_rolling_download" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_USE_ROLLING_DOWNLOAD)]}/>
-                                        <p>Collect defined number of episodes after last watched one</p>
-                                    </span>
-                                </label>
-                            </div>
-                            <div id="content_trakt_use_rolling_download">
-                                  <div class="field-pair">
-                                    <label for="trakt_rolling_num_ep">
-                                        <span class="component-title">Number of episodes</span>
-                                        <span class="component-desc">
-                                        <input type="number" name="trakt_rolling_num_ep" id="trakt_rolling_num_ep" value="${sickbeard.TRAKT_ROLLING_NUM_EP}" class="form-control input-sm input75"/>
-                                    </label>
-                                    <label>
-                                        <span class="component-title">&nbsp;</span>
-                                        <span class="component-desc">Episodes that Sickrage will download based on the last watched episode</span>
-                                    </label>
-                                </div>
-                                <div class="field-pair">
-                                    <label for="trakt_rolling_frequency">
-                                        <span class="component-title">Rolling frequency check</span>
-                                        <input type="text" name="trakt_rolling_frequency" id="trakt_rolling_frequency" value="${sickbeard.TRAKT_ROLLING_FREQUENCY}" class="form-control input-sm input250" />
-                                    </label>
-                                    <p>
-                                        <span class="component-desc">Hours between check. (Cannot be lower than 4 hours)</span>
-                                    </p>
-                                </div>
-                                  <div class="field-pair">
-                                    <label for="trakt_rolling_add_paused">
-                                        <span class="component-title">Add new show as paused</span>
-                                        <span class="component-desc">
-                                        <input type="checkbox" name="trakt_rolling_add_paused" id="trakt_rolling_add_paused" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_ROLLING_ADD_PAUSED)]}/>
-                                    </label>
-                                    <label>
-                                        <span class="component-title">&nbsp;</span>
-                                        <span class="component-desc">Stop rolling download to start to download episode.</span>
-                                    </label>
-                                </div>
                             </div>
                             <div class="testNotification" id="testTrakt-result">Click below to test.</div>
                             <input type="button" class="btn" value="Test Trakt" id="testTrakt" />

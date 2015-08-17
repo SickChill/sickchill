@@ -1547,12 +1547,6 @@ class Home(WebRoot):
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on scene exceptions of the show.")
 
-        if not paused and (sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT):
-            # Checking if trakt and rolling_download are enable because updateWantedList()
-            # doesn't do the distinction between a failuire and being not activated(Return false)
-            if not sickbeard.traktRollingScheduler.action.updateWantedList(showObj.indexerid):
-                errors.append("Unable to force an update on wanted episode")
-
         if do_update_scene_numbering:
             try:
                 sickbeard.scene_numbering.xem_refresh(showObj.indexerid, showObj.indexer)
@@ -1585,12 +1579,6 @@ class Home(WebRoot):
             showObj.paused = 1
 
         showObj.saveToDB()
-
-        if not showObj.paused and sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
-            # Checking if trakt and rolling_download are enable because updateWantedList()
-            # doesn't do the distinction between a failuire and being not activated(Return false)
-            if not sickbeard.traktRollingScheduler.action.updateWantedList(showObj.indexerid):
-                errors.append("Unable to force an update on wanted episode")
 
         ui.notifications.message('%s has been %s' % (showObj.name,('resumed', 'paused')[showObj.paused]))
         return self.redirect("/home/displayShow?show=" + show)
@@ -4758,7 +4746,6 @@ class ConfigNotifications(Config):
                           trakt_remove_watchlist=None, trakt_sync_watchlist=None, trakt_remove_show_from_sickrage=None, trakt_method_add=None,
                           trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None, trakt_sync_remove=None,
                           trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_timeout=None, trakt_blacklist_name=None,
-                          trakt_use_rolling_download=None, trakt_rolling_num_ep=None, trakt_rolling_add_paused=None, trakt_rolling_frequency=None,
                           use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
                           synologynotifier_notify_ondownload=None, synologynotifier_notify_onsubtitledownload=None,
                           use_pytivo=None, pytivo_notify_onsnatch=None, pytivo_notify_ondownload=None,
@@ -4894,10 +4881,6 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_DEFAULT_INDEXER = int(trakt_default_indexer)
         sickbeard.TRAKT_TIMEOUT = int(trakt_timeout)
         sickbeard.TRAKT_BLACKLIST_NAME = trakt_blacklist_name
-        config.change_TRAKT_USE_ROLLING_DOWNLOAD(trakt_use_rolling_download)
-        sickbeard.TRAKT_ROLLING_NUM_EP = int(trakt_rolling_num_ep)
-        sickbeard.TRAKT_ROLLING_ADD_PAUSED = config.checkbox_to_value(trakt_rolling_add_paused)
-        sickbeard.TRAKT_ROLLING_FREQUENCY = int(trakt_rolling_frequency)
 
         sickbeard.USE_IMDB_POPULAR = config.checkbox_to_value(use_imdb_popular)
 
@@ -5136,7 +5119,6 @@ class ErrorLogs(WebRoot):
                           'TORNADO': u'Tornado',
                           'Thread': u'Thread',
                           'MAIN': u'Main',
-                          'TRAKTROLLING': u'Trakt Rolling'
                           }
 
         if logFilter not in logNameFilters:

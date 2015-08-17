@@ -23,7 +23,6 @@
         'Post Process': 'autoPostProcesserScheduler',
         'Subtitles Finder': 'subtitlesFinderScheduler',
         'Trakt Checker': 'traktCheckerScheduler',
-        'Trakt Rolling': 'traktRollingScheduler',
     }
 %>
 
