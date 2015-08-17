@@ -37,8 +37,8 @@ init.*			text
 *.pyw 			text
 *.pyx  			text
 
-# Cheetah template
-*.tmpl			text
+# Mako template
+*.mako			text
 
 # Web file
 *.htm text
