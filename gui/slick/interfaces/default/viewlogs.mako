@@ -77,7 +77,7 @@ Filter log by: <select name="logFilter" id="logFilter" class="form-control form-
 % endfor
 </select>
 Search log by:
-<input type="text" name="logSearch" placeholder="clear to reset" id="logSearch" value="${('', logsearch)[bool(logSearch)]}" class="form-control form-control-inline input-sm" />
+<input type="text" name="logSearch" placeholder="clear to reset" id="logSearch" value="${('', logSearch)[bool(logSearch)]}" class="form-control form-control-inline input-sm" />
 </div>
 <br />
 <div class="align-left"><pre>
