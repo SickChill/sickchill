@@ -306,7 +306,7 @@ $(document).ready(function(){
     <% fuzzydate = 'airdate' %>
     % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
-        dtInline : ${('true', 'false')[sickbeard.HOME_LAYOUT == 'poster']},
+        dtInline : ${('true', 'false')[layout == 'poster']},
         containerClass : '.${fuzzydate}',
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
@@ -317,7 +317,7 @@ $(document).ready(function(){
 
     var $container = [$('#container'), $('#container-anime')];
 
-    jQuery.each($container, function (j) {
+    $.each($container, function (j) {
         this.isotope({
             itemSelector: '.show',
             sortBy : '${sickbeard.POSTER_SORTBY}',
@@ -394,10 +394,10 @@ $(document).ready(function(){
     % endif
     <span> Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
-            <option value="${sbRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
-            <option value="${sbRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
-            <option value="${sbRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[layout == 'poster']}>Poster</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[layout == 'small']}>Small Poster</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[layout == 'banner']}>Banner</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[layout == 'simple']}>Simple</option>
         </select>
         % if layout != 'poster':
         Search:
@@ -815,11 +815,7 @@ $(document).ready(function(){
         </td>
 
         <td align="center">
-% if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
-            <img src="${sbRoot}/images/${('no16.png", alt="No"', 'yes16.png", alt="Yes"')[int(curShow.paused) == 0]} width="16" height="16" />
-% else:
             <img src="${sbRoot}/images/${('no16.png", alt="No"', 'yes16.png", alt="Yes"')[int(curShow.paused) == 0 and curShow.status == 'Continuing']} width="16" height="16" />
-% endif
         </td>
 
         <td align="center">

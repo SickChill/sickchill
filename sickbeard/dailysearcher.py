@@ -88,15 +88,11 @@ class DailySearcher():
                 # if an error occured assume the episode hasn't aired yet
                 continue
 
-            UpdateWantedList = 0
             ep = show.getEpisode(int(sqlEp["season"]), int(sqlEp["episode"]))
             with ep.lock:
                 if ep.season == 0:
                     logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to SKIPPED because is a special season")
                     ep.status = common.SKIPPED
-                elif sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
-                    ep.status = common.SKIPPED
-                    UpdateWantedList = 1
                 else:
                     logger.log(u"New episode %s airs today, setting to default episode status for this show: %s" % (ep.prettyName(), common.statusStrings[ep.show.default_ep_status]))
                     ep.status = ep.show.default_ep_status
@@ -108,8 +104,6 @@ class DailySearcher():
             myDB.mass_action(sql_l)
         else:
             logger.log(u"No new released episodes found ...")
-
-        sickbeard.traktRollingScheduler.action.updateWantedList()
 
         # queue episode for daily search
         dailysearch_queue_item = sickbeard.search_queue.DailySearchQueueItem()

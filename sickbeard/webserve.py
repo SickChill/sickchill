@@ -1547,12 +1547,6 @@ class Home(WebRoot):
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on scene exceptions of the show.")
 
-        if not paused and (sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT):
-            # Checking if trakt and rolling_download are enable because updateWantedList()
-            # doesn't do the distinction between a failuire and being not activated(Return false)
-            if not sickbeard.traktRollingScheduler.action.updateWantedList(showObj.indexerid):
-                errors.append("Unable to force an update on wanted episode")
-
         if do_update_scene_numbering:
             try:
                 sickbeard.scene_numbering.xem_refresh(showObj.indexerid, showObj.indexer)
@@ -1585,12 +1579,6 @@ class Home(WebRoot):
             showObj.paused = 1
 
         showObj.saveToDB()
-
-        if not showObj.paused and sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
-            # Checking if trakt and rolling_download are enable because updateWantedList()
-            # doesn't do the distinction between a failuire and being not activated(Return false)
-            if not sickbeard.traktRollingScheduler.action.updateWantedList(showObj.indexerid):
-                errors.append("Unable to force an update on wanted episode")
 
         ui.notifications.message('%s has been %s' % (showObj.name,('resumed', 'paused')[showObj.paused]))
         return self.redirect("/home/displayShow?show=" + show)
@@ -2213,7 +2201,7 @@ class HomeIRC(Home):
     def index(self):
 
         t = PageTemplate(rh=self, file="IRC.mako")
-        return t.render(topmenu="IRC", header="IRC", title="IRC", submenu=self.HomeMenu())
+        return t.render(topmenu="irc", header="IRC", title="IRC", submenu=self.HomeMenu())
 
 @route('/news(/?.*)')
 class HomeNews(Home):
@@ -2221,7 +2209,6 @@ class HomeNews(Home):
         super(HomeNews, self).__init__(*args, **kwargs)
 
     def index(self):
-
         try:
             news = helpers.getURL('http://sickragetv.github.io/sickrage-news/news.md', session=requests.Session())
         except Exception:
@@ -2884,7 +2871,7 @@ class Manage(Home, WebRoot):
 
     def index(self):
         t = PageTemplate(rh=self, file="manage.mako")
-        return t.render(submenu=self.ManageMenu(), title='Mass Update', header='Mass Update')
+        return t.render(submenu=self.ManageMenu(), title='Mass Update', header='Mass Update', topmenu='manage')
 
 
     def showEpisodeStatuses(self, indexer_id, whichStatus):
@@ -2947,7 +2934,7 @@ class Manage(Home, WebRoot):
                 sorted_show_ids.append(cur_indexer_id)
 
         return t.render(title="Episode Overview",  header="Episode Overview",
-                    topmenu="manage", submenu=self.ManageMenu(), whichStatus=whichStatus,
+                    topmenu='manage', submenu=self.ManageMenu(), whichStatus=whichStatus,
                     show_names=show_names, ep_counts=ep_counts, sorted_show_ids=sorted_show_ids)
 
 
@@ -3024,7 +3011,7 @@ class Manage(Home, WebRoot):
         t = PageTemplate(rh=self, file="manage_subtitleMissed.mako")
 
         if not whichSubs:
-            return t.render(submenu=self.ManageMenu(), whichSubs=whichSubs, title='Episode Overview', header='Episode Overview')
+            return t.render(submenu=self.ManageMenu(), whichSubs=whichSubs, title='Episode Overview', header='Episode Overview', topmenu='manage')
 
         myDB = db.DBConnection()
         status_results = myDB.select(
@@ -3054,7 +3041,7 @@ class Manage(Home, WebRoot):
                 sorted_show_ids.append(cur_indexer_id)
 
         return t.render(submenu=self.ManageMenu(), whichSubs=whichSubs, show_names=show_names, ep_counts=ep_counts, sorted_show_ids=sorted_show_ids,
-                        title='Episode Overview', header='Episode Overview')
+                        title='Episode Overview', header='Episode Overview', topmenu='manage')
 
 
     def downloadSubtitleMissed(self, *args, **kwargs):
@@ -3137,7 +3124,7 @@ class Manage(Home, WebRoot):
             showSQLResults[curShow.indexerid] = sqlResults
 
         return t.render(submenu=self.ManageMenu(), showCounts=showCounts, showCats=showCats, showSQLResults=showSQLResults,
-                        title='Backlog Overview', header='Backlog Overview')
+                        title='Backlog Overview', header='Backlog Overview', topmenu='manage')
 
 
     def massEdit(self, toEdit=None):
@@ -3272,7 +3259,7 @@ class Manage(Home, WebRoot):
         return t.render(submenu=self.ManageMenu(), showList=toEdit, archive_firstmatch_value=archive_firstmatch_value, default_ep_status_value=default_ep_status_value,
                         paused_value=paused_value, anime_value=anime_value, flatten_folders_value=flatten_folders_value,
                         quality_value=quality_value, subtitles_value=subtitles_value, scene_value=scene_value, sports_value=sports_value,
-                        air_by_date_value=air_by_date_value, root_dir_list=root_dir_list, title='Mass Edit', header='Mass Edit')
+                        air_by_date_value=air_by_date_value, root_dir_list=root_dir_list, title='Mass Edit', header='Mass Edit', topmenu='manage')
 
 
     def massEditSubmit(self, archive_firstmatch=None, paused=None, default_ep_status=None,
@@ -3532,7 +3519,7 @@ class Manage(Home, WebRoot):
             webui_url = re.sub('://', '://' + str(sickbeard.TORRENT_USERNAME) + ':' + str(sickbeard.TORRENT_PASSWORD) + '@' ,webui_url)
 
         return t.render(submenu=self.ManageMenu(), webui_url=webui_url, info_download_station=info_download_station,
-                        title='Manage Torrents', header='Manage Torrents')
+                        title='Manage Torrents', header='Manage Torrents', topmenu='manage')
 
 
     def failedDownloads(self, limit=100, toRemove=None):
@@ -3554,7 +3541,7 @@ class Manage(Home, WebRoot):
 
         t = PageTemplate(rh=self, file="manage_failedDownloads.mako")
 
-        return t.render(submenu=self.ManageMenu(), limit=limit, failedResults=sqlResults, title='Failed Downloads', header='Failed Downloads')
+        return t.render(submenu=self.ManageMenu(), limit=limit, failedResults=sqlResults, title='Failed Downloads', header='Failed Downloads', topmenu='manage')
 
 
 @route('/manage/manageSearches(/?.*)')
@@ -3569,7 +3556,7 @@ class ManageSearches(Manage):
         return t.render(submenu=self.ManageMenu(), backlogPaused=sickbeard.searchQueueScheduler.action.is_backlog_paused(),
                         backlogRunning=sickbeard.searchQueueScheduler.action.is_backlog_in_progress(), dailySearchStatus=sickbeard.dailySearchScheduler.action.amActive,
                         findPropersStatus=sickbeard.properFinderScheduler.action.amActive, queueLength=sickbeard.searchQueueScheduler.action.queue_length(),
-                        title='Manage Searches', header='Manage Searches')
+                        title='Manage Searches', header='Manage Searches', topmenu='manage')
 
     def forceBacklog(self):
         # force it to run the next time it looks
@@ -3681,7 +3668,7 @@ class History(WebRoot):
             {'title': 'Trim History', 'path': 'history/trimHistory'},
         ]
 
-        return t.render(historyResults=sqlResults, compactResults=compact, limit=limit, submenu=submenu, title='History', header='History')
+        return t.render(historyResults=sqlResults, compactResults=compact, limit=limit, submenu=submenu, title='History', header='History', topmenu="history")
 
 
     def clearHistory(self):
@@ -3956,7 +3943,7 @@ class ConfigSearch(Config):
     def index(self):
         t = PageTemplate(rh=self, file="config_search.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='Config - Episode Search', header='Search Settings')
+        return t.render(submenu=self.ConfigMenu(), title='Config - Episode Search', header='Search Settings', topmenu='config')
 
 
     def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
@@ -4056,7 +4043,7 @@ class ConfigPostProcessing(Config):
     def index(self):
         t = PageTemplate(rh=self, file="config_postProcessing.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='Config - Post Processing', header='Post Processing')
+        return t.render(submenu=self.ConfigMenu(), title='Config - Post Processing', header='Post Processing', topmenu='config')
 
 
     def savePostProcessing(self, naming_pattern=None, naming_multi_ep=None,
@@ -4246,7 +4233,7 @@ class ConfigProviders(Config):
     def index(self):
         t = PageTemplate(rh=self, file="config_providers.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='Config - Providers', header='Search Providers')
+        return t.render(submenu=self.ConfigMenu(), title='Config - Providers', header='Search Providers', topmenu='config')
 
 
     def canAddNewznabProvider(self, name):
@@ -4723,7 +4710,7 @@ class ConfigNotifications(Config):
     def index(self):
         t = PageTemplate(rh=self, file="config_notifications.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='Config - Notifications', header='Notifications')
+        return t.render(submenu=self.ConfigMenu(), title='Config - Notifications', header='Notifications', topmenu='config')
 
 
     def saveNotifications(self, use_kodi=None, kodi_always_on=None, kodi_notify_onsnatch=None,
@@ -4758,7 +4745,6 @@ class ConfigNotifications(Config):
                           trakt_remove_watchlist=None, trakt_sync_watchlist=None, trakt_remove_show_from_sickrage=None, trakt_method_add=None,
                           trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None, trakt_sync_remove=None,
                           trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_timeout=None, trakt_blacklist_name=None,
-                          trakt_use_rolling_download=None, trakt_rolling_num_ep=None, trakt_rolling_add_paused=None, trakt_rolling_frequency=None,
                           use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
                           synologynotifier_notify_ondownload=None, synologynotifier_notify_onsubtitledownload=None,
                           use_pytivo=None, pytivo_notify_onsnatch=None, pytivo_notify_ondownload=None,
@@ -4894,10 +4880,6 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_DEFAULT_INDEXER = int(trakt_default_indexer)
         sickbeard.TRAKT_TIMEOUT = int(trakt_timeout)
         sickbeard.TRAKT_BLACKLIST_NAME = trakt_blacklist_name
-        config.change_TRAKT_USE_ROLLING_DOWNLOAD(trakt_use_rolling_download)
-        sickbeard.TRAKT_ROLLING_NUM_EP = int(trakt_rolling_num_ep)
-        sickbeard.TRAKT_ROLLING_ADD_PAUSED = config.checkbox_to_value(trakt_rolling_add_paused)
-        sickbeard.TRAKT_ROLLING_FREQUENCY = int(trakt_rolling_frequency)
 
         sickbeard.USE_IMDB_POPULAR = config.checkbox_to_value(use_imdb_popular)
 
@@ -4963,7 +4945,7 @@ class ConfigSubtitles(Config):
     def index(self):
         t = PageTemplate(rh=self, file="config_subtitles.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='Config - Subtitles', header='Subtitles')
+        return t.render(submenu=self.ConfigMenu(), title='Config - Subtitles', header='Subtitles', topmenu='config')
 
 
     def saveSubtitles(self, use_subtitles=None, subtitles_plugins=None, subtitles_languages=None, subtitles_dir=None,
@@ -5016,7 +4998,7 @@ class ConfigAnime(Config):
 
         t = PageTemplate(rh=self, file="config_anime.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='Config - Anime', header='Anime')
+        return t.render(submenu=self.ConfigMenu(), title='Config - Anime', header='Anime', topmenu='config')
 
 
     def saveAnime(self, use_anidb=None, anidb_username=None, anidb_password=None, anidb_use_mylist=None,
@@ -5136,7 +5118,6 @@ class ErrorLogs(WebRoot):
                           'TORNADO': u'Tornado',
                           'Thread': u'Thread',
                           'MAIN': u'Main',
-                          'TRAKTROLLING': u'Trakt Rolling'
                           }
 
         if logFilter not in logNameFilters:

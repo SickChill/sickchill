@@ -595,11 +595,11 @@
 <div></div>
 
 <script type="text/javascript" charset="utf-8">
-    jQuery('#config-components').tabs();
-    jQuery('#nzb_dir').fileBrowser({ title: 'Select .nzb black hole/watch location' });
-    jQuery('#torrent_dir').fileBrowser({ title: 'Select .torrent black hole/watch location' });
-    jQuery('#torrent_path').fileBrowser({ title: 'Select .torrent download location' });
-    jQuery('#tv_download_dir').fileBrowser({ title: 'Select TV download location' });
+    $('#config-components').tabs();
+    $('#nzb_dir').fileBrowser({ title: 'Select .nzb black hole/watch location' });
+    $('#torrent_dir').fileBrowser({ title: 'Select .torrent black hole/watch location' });
+    $('#torrent_path').fileBrowser({ title: 'Select .torrent download location' });
+    $('#tv_download_dir').fileBrowser({ title: 'Select TV download location' });
 </script>
 
 <%include file="/inc_bottom.mako"/>

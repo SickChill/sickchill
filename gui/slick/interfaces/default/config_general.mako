@@ -27,7 +27,6 @@
 <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
 
 <script type="text/javascript" charset="utf-8">
-    <!--
     $(document).ready(function(){
         if ($("input[name='proxy_setting']").val().length == 0) {
             $("input[id='proxy_indexers']").prop('checked', false);
@@ -43,7 +42,6 @@
             }
         });
     });
-    //-->
 </script>
 
 <div id="config">
@@ -644,7 +642,7 @@
                             <label for="ep_default_deleted_status">
                                 <span class="component-title">Default deleted episode status:</span>
                                     <span class="component-desc">
-% if not sickbeard.SKIP_REMOVED_FILES or (sickbeard.USE_TRAKT and sickbeard.TRAKT_USE_ROLLING_DOWNLOAD):
+% if not sickbeard.SKIP_REMOVED_FILES:
                                         <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm">
                                         % for defStatus in [ARCHIVED, IGNORED]:
                                             <option value="${defStatus}" ${('', 'selected="selected"')[sickbeard.EP_DEFAULT_DELETED_STATUS == defStatus]}>${statusStrings[defStatus]}</option>
@@ -787,8 +785,8 @@
 <div></div>
 
 <script type="text/javascript" charset="utf-8">
-    jQuery('#log_dir').fileBrowser({ title: 'Select log file folder location' });
-    jQuery('#config-components').tabs();
+    $('#log_dir').fileBrowser({ title: 'Select log file folder location' });
+    $('#config-components').tabs();
 </script>
 
 <%include file="/inc_bottom.mako"/>
