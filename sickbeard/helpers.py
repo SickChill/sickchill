@@ -148,6 +148,7 @@ def remove_non_release_groups(name):
                        ' \[1044\]$':       'searchre',
                        '\.RiPSaLoT$':      'searchre',
                        '\.GiuseppeTnT$':   'searchre',
+                       '\.Renc$':   'searchre',
                        '-NZBGEEK$':        'searchre',
                        '-Siklopentan$':        'searchre',
                        '-RP$':             'searchre',
