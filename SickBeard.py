@@ -100,7 +100,6 @@ class SickRage(object):
 
         # webserver constants
         self.webserver = None
-        self.forceUpdate = False
         self.forcedPort = None
         self.noLaunch = False
 
@@ -114,7 +113,6 @@ class SickRage(object):
         help_msg += "Options:\n"
         help_msg += "\n"
         help_msg += "    -h          --help              Prints this message\n"
-        help_msg += "    -f          --forceupdate       Force update all shows in the DB (from tvdb) on startup\n"
         help_msg += "    -q          --quiet             Disables logging to console\n"
         help_msg += "                --nolaunch          Suppress launching web browser on startup\n"
 
@@ -135,9 +133,9 @@ class SickRage(object):
         help_msg += "                --noresize          Prevent resizing of the banner/posters even if PIL is installed\n"
 
         return help_msg
-        
+
     def fix_clients_nonsense(self):
-    
+
         files = ["sickbeard/clients/download_station.py",
                  "sickbeard/clients/utorrent.py",
                  "sickbeard/clients/qbittorrent.py",
@@ -146,7 +144,7 @@ class SickRage(object):
                  "sickbeard/clients/deluged.py",
                  "sickbeard/clients/rtorrent.py"
                 ]
-                
+
         for file in files:
             file = ek.ek(os.path.join, sickbeard.PROG_DIR, file)
             try:
@@ -181,7 +179,7 @@ class SickRage(object):
 
         if not hasattr(sys, "setdefaultencoding"):
             reload(sys)
-  
+
         if sys.platform == 'win32':
             if sys.getwindowsversion()[0] >= 6 and sys.stdout.encoding == 'cp65001':
                 sickbeard.SYS_ENCODING = 'UTF-8'
@@ -202,7 +200,7 @@ class SickRage(object):
 
         try:
             opts, args = getopt.getopt(sys.argv[1:], "hfqdp::",
-                                       ['help', 'forceupdate', 'quiet', 'nolaunch', 'daemon', 'pidfile=', 'port=',
+                                       ['help', 'quiet', 'nolaunch', 'daemon', 'pidfile=', 'port=',
                                         'datadir=', 'config=', 'noresize'])  # @UnusedVariable
         except getopt.GetoptError:
             sys.exit(self.help_message())
@@ -215,10 +213,6 @@ class SickRage(object):
             # For now we'll just silence the logging
             if o in ('-q', '--quiet'):
                 self.consoleLogging = False
-
-            # Should we update (from indexer) all shows in the DB right away?
-            if o in ('-f', '--forceupdate'):
-                self.forceUpdate = True
 
             # Suppress launching web browser
             # Needed for OSes without default browser assigned
@@ -329,7 +323,7 @@ class SickRage(object):
 
         # Get PID
         sickbeard.PID = os.getpid()
-        
+
         # Fix clients old files
         self.fix_clients_nonsense()
 
@@ -381,7 +375,7 @@ class SickRage(object):
 
         # Fire up all our threads
         sickbeard.start()
-        
+
         # Build internal name cache
         name_cache.buildNameCache()
 
@@ -392,9 +386,8 @@ class SickRage(object):
         if sickbeard.USE_FAILED_DOWNLOADS:
             failed_history.trimHistory()
 
-        # Start an update if we're supposed to
-        if self.forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
-            sickbeard.showUpdateScheduler.forceRun()
+        # Check for metadata indexer updates for shows (Disabled until we use api)
+        #sickbeard.showUpdateScheduler.forceRun()
 
         # Launch browser
         if sickbeard.LAUNCH_BROWSER and not (self.noLaunch or self.runAsDaemon):

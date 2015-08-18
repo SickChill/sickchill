@@ -3759,7 +3759,7 @@ class ConfigGeneral(Config):
         sickbeard.save_config()
 
     def saveGeneral(self, log_dir=None, log_nr = 5, log_size = 1048576, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
-                    update_shows_on_start=None, update_shows_on_snatch=None, trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
+                    trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
                     indexerDefaultLang='en', ep_default_deleted_status=None, launch_browser=None, showupdate_hour=3, web_username=None,
                     api_key=None, indexer_default=None, timezone_display=None, cpu_preset='NORMAL',
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
@@ -3784,8 +3784,7 @@ class ConfigGeneral(Config):
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
         sickbeard.LOG_NR = log_nr
         sickbeard.LOG_SIZE = log_size
-        sickbeard.UPDATE_SHOWS_ON_START = config.checkbox_to_value(update_shows_on_start)
-        sickbeard.UPDATE_SHOWS_ON_SNATCH = config.checkbox_to_value(update_shows_on_snatch)
+
         sickbeard.TRASH_REMOVE_SHOW = config.checkbox_to_value(trash_remove_show)
         sickbeard.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
         config.change_UPDATE_FREQUENCY(update_frequency)

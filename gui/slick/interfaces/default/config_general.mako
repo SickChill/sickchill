@@ -111,26 +111,6 @@
                         </div>
 
                         <div class="field-pair">
-                            <label for="update_shows_on_start">
-                                <span class="component-title">Update shows on startup</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="update_shows_on_start" id="update_shows_on_start" ${('', 'checked="checked"')[bool(sickbeard.UPDATE_SHOWS_ON_START)]}/>
-                                    <p>with information such as next air dates, show ended, etc. Disable for a faster startup as show info is sheduled to update in the background anyway</p>
-                                </span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label for="update_shows_on_snatch">
-                                <span class="component-title">Update shows on snatch</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="update_shows_on_snatch" id="update_shows_on_snatch" ${('', 'checked="checked"')[bool(sickbeard.UPDATE_SHOWS_ON_SNATCH)]}/>
-                                    <p>with information such as next air dates, show ended, etc.</p>
-                                </span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
                             <span class="component-title">Send to trash for actions</span>
                             <span class="component-desc">
                                 <label for="trash_remove_show" class="nextline-block">
