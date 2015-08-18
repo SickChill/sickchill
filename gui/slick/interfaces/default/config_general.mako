@@ -569,7 +569,7 @@
                             <label for="debug">
                                 <span class="component-title">Enable debug</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="debug" id="debug" ${('', 'checked="checked"')[sickbeard.DEBUG == cur_preset]}/>
+                                    <input type="checkbox" name="debug" id="debug" ${('', 'checked="checked"')[bool(sickbeard.DEBUG)]}/>
                                     <p>Enable debug logs<p>
                                 </span>
                             </label>
