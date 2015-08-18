@@ -132,26 +132,6 @@
                             </label>
                         </div>
 
-                        <div class="field-pair">
-                            <label for="dailysearch_startup">
-                                <span class="component-title">Daily search on startup</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="dailysearch_startup" id="dailysearch_startup" ${('', 'checked="checked"')[bool(sickbeard.DAILYSEARCH_STARTUP)]}/>
-                                    <p>start daily search on startup of SickRage</p>
-                                </span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label for="backlog_startup">
-                                <span class="component-title">Run backlog on startup</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="backlog_startup" id="backlog_startup" ${('', 'checked="checked"')[bool(sickbeard.BACKLOG_STARTUP)]}/>
-                                    <p>start processing backlogged episodes on startup of SickRage</p>
-                                </span>
-                            </label>
-                        </div>
-
                          <div class="field-pair">
                              <input id="use_failed_downloads" type="checkbox" class="enabler" name="use_failed_downloads" ${('', 'checked="checked"')[bool(sickbeard.USE_FAILED_DOWNLOADS)]} />
                              <label for="use_failed_downloads">
