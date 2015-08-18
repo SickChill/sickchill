@@ -1534,7 +1534,7 @@ class DOMHTMLSeasonEpisodesParser(DOMParserBase):
                                             '').strip()
             episode_title = episode.get('title', '').strip()
             episode_plot = episode.get('plot', '')
-            if not (episode_nr and episode_id and episode_title):
+            if not (episode_nr is not None and episode_id and episode_title):
                 continue
             ep_obj = Movie(movieID=episode_id, title=episode_title,
                         accessSystem=self._as, modFunct=self._modFunct)
