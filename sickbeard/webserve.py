@@ -1196,10 +1196,10 @@ class Home(WebRoot):
             ui.notifications.message('Already on branch: ', branch)
             return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
 
-    def getDBcompare(self, branchDest=None):
+    def getDBcompare(self):
 
         checkversion = CheckVersion()
-        db_status = checkversion.getDBcompare(branchDest)
+        db_status = checkversion.getDBcompare()
 
         if db_status == 'upgrade':
             logger.log(u"Checkout branch has a new DB version - Upgrade", logger.DEBUG)
