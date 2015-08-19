@@ -181,12 +181,6 @@ def snatchEpisode(result, endStatus=SNATCHED):
         myDB = db.DBConnection()
         myDB.mass_action(sql_l)
 
-    if sickbeard.UPDATE_SHOWS_ON_SNATCH and not sickbeard.showQueueScheduler.action.isBeingUpdated(result.show) and result.show.status == "Continuing":
-        try:
-            sickbeard.showQueueScheduler.action.updateShow(result.show, True)
-        except exceptions.CantUpdateException as e:
-            logger.log("Unable to update show: {0}".format(str(e)),logger.DEBUG)
-
     return True
 
 
@@ -237,11 +231,13 @@ def pickBestResult(results, show):
                 logger.log(cur_result.name + u" has previously failed, rejecting it")
                 continue
 
-        if cur_result.quality in bestQualities and (not bestResult or bestResult.quality < cur_result.quality or bestResult not in bestQualities):
+        if not bestResult:
             bestResult = cur_result
-        elif cur_result.quality in anyQualities and (not bestResult or bestResult not in bestQualities) and (not bestResult or bestResult.quality < cur_result.quality):
+        elif cur_result.quality in bestQualities and (bestResult.quality < cur_result.quality or bestResult not in bestQualities):
             bestResult = cur_result
-        elif bestResult and bestResult.quality == cur_result.quality:
+        elif cur_result.quality in anyQualities and bestResult not in bestQualities and bestResult.quality < cur_result.quality:
+            bestResult = cur_result
+        elif bestResult.quality == cur_result.quality:
             if "proper" in cur_result.name.lower() or "repack" in cur_result.name.lower():
                 bestResult = cur_result
             elif "internal" in bestResult.name.lower() and "internal" not in cur_result.name.lower():
@@ -595,11 +591,11 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
         # go through multi-ep results and see if we really want them or not, get rid of the rest
         multiResults = {}
         if MULTI_EP_RESULT in foundResults[curProvider.name]:
-            for multiResult in foundResults[curProvider.name][MULTI_EP_RESULT]:
+            for _multiResult in foundResults[curProvider.name][MULTI_EP_RESULT]:
 
                 logger.log(u"Seeing if we want to bother with multi-episode result " + multiResult.name, logger.DEBUG)
 
-                multiResult = pickBestResult([multiResult], show)
+                multiResult = pickBestResult(_multiResult, show)
                 if not multiResult:
                     continue
 

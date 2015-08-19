@@ -49,7 +49,7 @@ class CheckVersion():
 
     def __init__(self):
         self.updater = None
-        self.install_type = None        
+        self.install_type = None
         self.amActive = False
         if sickbeard.gh:
             self.install_type = self.find_install_type()
@@ -88,7 +88,7 @@ class CheckVersion():
             backupDir = os.path.join(sickbeard.DATA_DIR, 'backup')
             if not os.path.isdir(backupDir):
                 os.mkdir(backupDir)
-    
+
             if self._keeplatestbackup(backupDir) == True and self._backup(backupDir) == True:
                 logger.log(u"Config backup successful, updating...")
                 ui.notifications.message('Backup', 'Config backup successful, updating...')
@@ -115,13 +115,13 @@ class CheckVersion():
                 if age < newest[1]:
                     newest = file, age
             files.remove(newest[0])
-            
+
             for file in files:
                 os.remove(file)
             return True
         else:
             return False
-    
+
     # TODO: Merge with backup in helpers
     def _backup(self,backupDir=None):
         if backupDir:
@@ -164,7 +164,7 @@ class CheckVersion():
             except:
                 logger.log(u"We can't proceed with the update. Unable to compare DB version", logger.ERROR)
                 return False
-        
+
         def postprocessor_safe(self):
             if not sickbeard.autoPostProcesserScheduler.action.amActive:
                 logger.log(u"We can proceed with the update. Post-Processor is not running", logger.DEBUG)
@@ -172,7 +172,7 @@ class CheckVersion():
             else:
                 logger.log(u"We can't proceed with the update. Post-Processor is running", logger.DEBUG)
                 return False
-        
+
         def showupdate_safe(self):
             if not sickbeard.showUpdateScheduler.action.amActive:
                 logger.log(u"We can proceed with the update. Shows are not being updated", logger.DEBUG)
@@ -194,7 +194,7 @@ class CheckVersion():
 
     def getDBcompare(self):
         try:
-            response = requests.get("http://cdn.rawgit.com/SICKRAGETV/SickRage/" + str(self._newest_commit_hash) +"/sickbeard/databases/mainDB.py")
+            response = requests.get("http://cdn.rawgit.com/SICKRAGETV/SickRage/" + str(self.updater.get_newest_commit_hash()) +"/sickbeard/databases/mainDB.py")
             response.raise_for_status()
             match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})",response.text)
             branchDestDBversion = int(match.group('version'))
@@ -447,9 +447,9 @@ class GitUpdateManager(UpdateManager):
             if branch:
                 sickbeard.BRANCH = branch
                 return branch
-                
+
         return ""
-        
+
     def _check_github_for_update(self):
         """
         Uses git commands to check if there is a newer version that the provided
@@ -804,7 +804,7 @@ class SourceUpdateManager(UpdateManager):
 
             sickbeard.CUR_COMMIT_HASH = self._newest_commit_hash
             sickbeard.CUR_COMMIT_BRANCH = self.branch
-            
+
         except Exception, e:
             logger.log(u"Error while trying to update: " + ex(e), logger.ERROR)
             logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)

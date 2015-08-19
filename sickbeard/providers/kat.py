@@ -136,8 +136,8 @@ class KATProvider(generic.TorrentProvider):
                     quality = Quality.sceneQuality(os.path.basename(fileName))
                     if quality != Quality.UNKNOWN: break
 
-                if fileName is not None and quality == Quality.UNKNOWN:
-                    quality = Quality.assumeQuality(fileName)
+                #if fileName is not None and quality == Quality.UNKNOWN:
+                #    quality = Quality.assumeQuality(fileName)
 
                 if quality == Quality.UNKNOWN:
                     logger.log(u"Unable to obtain a Season Quality for " + title, logger.DEBUG)

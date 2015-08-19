@@ -326,6 +326,107 @@ class DOMHTMLBioParser(DOMParserBase):
         return data
 
 
+class DOMHTMLResumeParser(DOMParserBase):
+    """Parser for the "resume" page of a given person.
+    The page should be provided as a string, as taken from
+    the akas.imdb.com server.  The final result will be a
+    dictionary, with a key for every relevant section.
+
+    Example:
+        resumeparser = DOMHTMLResumeParser()
+        result = resumeparser.parse(resume_html_string)
+    """
+    _defGetRefs = True
+
+    extractors = [
+            Extractor(label='info',
+                        group="//div[@class='section_box']",
+                        group_key="./h3/text()",
+                        group_key_normalize=lambda x: x.lower().replace(' ', '_'),
+                        path="./ul[@class='resume_section_multi_list']//li",
+                        attrs=Attribute(key=None,
+                            multi=True,
+                            path={
+                                'title': ".//b//text()",
+                                'desc': ".//text()",
+                                },
+                            postprocess=lambda x: (x.get('title'), x.get('desc').strip().replace('\n', ' ')))),
+            Extractor(label='other_info',
+                        group="//div[@class='section_box']",
+                        group_key="./h3/text()",
+                        group_key_normalize=lambda x: x.lower().replace(' ', '_'),
+                        path="./ul[@class='_imdbpy']//li",
+                        attrs=Attribute(key=None,
+                            multi=True,
+                            path=".//text()",
+                            postprocess=lambda x: x.strip().replace('\n', ' '))),
+            Extractor(label='credits',
+                        group="//div[@class='section_box']",
+                        group_key="./h3/text()",
+                        group_key_normalize=lambda x: x.lower().replace(' ', '_'),
+                        path="./table[@class='credits']//tr",
+                        attrs=Attribute(key=None,
+                            multi=True,
+                            path={
+                                '0':".//td[1]//text()",
+                                '1':".//td[2]//text()",
+                                '2':".//td[3]//text()",
+                            },
+                            postprocess=lambda x: [x.get('0'),x.get('1'),x.get('2')])),
+            Extractor(label='mini_info',
+                        path="//div[@class='center']",
+                        attrs=Attribute(key='mini_info',
+                            path=".//text()",
+                            postprocess=lambda x: x.strip().replace('\n', ' '))),
+            Extractor(label='name',
+                        path="//div[@class='center']/h1[@id='preview_user_name']",
+                        attrs=Attribute(key='name',
+                            path=".//text()",
+                            postprocess=lambda x: x.strip().replace('\n', ' '))),
+            Extractor(label='resume_bio',
+                        path="//div[@id='resume_rendered_html']//p",
+                        attrs=Attribute(key='resume_bio',
+                            multi=True,
+                            path=".//text()")),
+
+            ]
+
+    preprocessors = [
+        (re.compile('(<ul>)', re.I), r'<ul class="_imdbpy">\1'),
+        ]
+
+    def postprocess_data(self, data):
+        
+        for key in data.keys():
+            if data[key] == '':
+                del data[key]
+            if key in ('mini_info', 'name', 'resume_bio'):
+                if key == 'resume_bio':
+                    data[key] = "".join(data[key]).strip()
+                continue
+            if len(data[key][0]) == 3:
+                for item in data[key]:
+                    item[:] = [x for x in item if not x == None]
+                continue
+
+            if len(data[key][0]) == 2:
+                new_key = {}
+                for item in data[key]:
+                    if item[0] == None:
+                        continue
+                    if ':' in item[0]:
+                        if item[1].replace(item[0], '')[1:].strip() == '':
+                            continue
+                        new_key[item[0].strip().replace(':', '')] = item[1].replace(item[0], '')[1:].strip()
+                    else:
+                        new_key[item[0]] = item[1]
+                data[key] = new_key
+
+        new_data = {}
+        new_data['resume'] = data
+        return new_data
+
+
 class DOMHTMLOtherWorksParser(DOMParserBase):
     """Parser for the "other works" and "agent" pages of a given person.
     The page should be provided as a string, as taken from
@@ -502,6 +603,7 @@ from movieParser import DOMHTMLNewsParser
 _OBJECTS = {
     'maindetails_parser': ((DOMHTMLMaindetailsParser,), None),
     'bio_parser': ((DOMHTMLBioParser,), None),
+    'resume_parser': ((DOMHTMLResumeParser,), None),
     'otherworks_parser': ((DOMHTMLOtherWorksParser,), None),
     #'agent_parser': ((DOMHTMLOtherWorksParser,), {'kind': 'agent'}),
     'person_officialsites_parser': ((DOMHTMLOfficialsitesParser,), None),

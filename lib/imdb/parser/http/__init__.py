@@ -726,6 +726,10 @@ class IMDbHTTPAccessSystem(IMDbBase):
         cont = self._retrieve(self.urls['person_main'] % personID + 'bio')
         return self.pProxy.bio_parser.parse(cont, getRefs=self._getRefs)
 
+    def get_person_resume(self, personID):
+        cont = self._retrieve(self.urls['person_main'] % personID + 'resume')
+        return self.pProxy.resume_parser.parse(cont, getRefs=self._getRefs)
+
     def get_person_awards(self, personID):
         cont = self._retrieve(self.urls['person_main'] % personID + 'awards')
         return self.pProxy.person_awards_parser.parse(cont)
