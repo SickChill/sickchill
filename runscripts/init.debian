@@ -148,7 +148,7 @@ case "$1" in
         ;;
     status)
         status_of_proc -p "$PID_FILE" "$DAEMON" "$DESC"
-        exit 0
+        exit $?
         ;;
     *)
         N=/etc/init.d/$NAME
