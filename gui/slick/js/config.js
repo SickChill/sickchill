@@ -70,9 +70,8 @@ $(document).ready(function(){
 
     $('#branchCheckout').click(function() {
     	var url = sbRoot+'/home/branchCheckout?branch='+$("#branchVersion").val();
-    	var  checkDBversion = sbRoot + "/home/getDBcompare?branchDest="
-    	var branchDest = $('#branchVersion option:selected').val()
-    	$.getJSON(checkDBversion + branchDest, function(data){
+    	var  checkDBversion = sbRoot + "/home/getDBcompare"
+    	$.getJSON(checkDBversion, function(data){
     		if (data.status == "success") {
     			if (data.message == "equal") {
     				//Checkout Branch
