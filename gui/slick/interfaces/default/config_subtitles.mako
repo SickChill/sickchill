@@ -157,7 +157,7 @@
                             <li class="ui-state-default" id="${curService['name']}">
                                 <input type="checkbox" id="enable_${curService['name']}" class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] == True]}/>
                                 <a href="${anon_url(curService['url'])}" class="imgLink" target="_new">
-                                    <img src="${sbRoot}/images/subtitles/${curService['image'] + "?v=" + sickbeard.CUR_COMMIT_HASH[:6]}" alt="${curService['url']}" title="${curService['url']}" width="16" height="16" style="vertical-align:middle;"/>
+                                    <img src="${sbRoot}/images/subtitles/${curService['image']}" alt="${curService['url']}" title="${curService['url']}" width="16" height="16" style="vertical-align:middle;"/>
                                 </a>
                             <span style="vertical-align:middle;">${curService['name'].capitalize()}</span>
                             <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>

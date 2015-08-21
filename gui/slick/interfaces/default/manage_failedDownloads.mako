@@ -70,9 +70,9 @@ $(document).ready(function(){
     <td align="center">
     <% provider = providers.getProviderClass(generic.GenericProvider.makeID(hItem["provider"])) %>
     % if provider != None:
-        <img src="${sbRoot}/images/providers/${provider.imageName() + "?v=" + sickbeard.CUR_COMMIT_HASH[:6]}" width="16" height="16" alt="${provider.name}" title="${provider.name}"/>
+        <img src="${sbRoot}/images/providers/${provider.imageName()}" width="16" height="16" alt="${provider.name}" title="${provider.name}"/>
     % else:
-        <img src="${sbRoot}/images/providers/missing.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" width="16" height="16" alt="missing provider" title="missing provider"/>
+        <img src="${sbRoot}/images/providers/missing.png" width="16" height="16" alt="missing provider" title="missing provider"/>
     % endif
     </td>
     <td align="center">${curRemove}</td>

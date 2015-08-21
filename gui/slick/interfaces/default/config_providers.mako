@@ -83,7 +83,7 @@ $(document).ready(function(){
                             %>
                             <li class="ui-state-default" id="${curName}">
                                 <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.isEnabled() == True]}/>
-                                <a href="${anon_url(curProvider.url)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${sbRoot}/images/providers/${curProvider.imageName() + "?v=" + sickbeard.CUR_COMMIT_HASH[:6]}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
+                                <a href="${anon_url(curProvider.url)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${sbRoot}/images/providers/${curProvider.imageName()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
                                 <span style="vertical-align:middle;">${curProvider.name}</span>
                                 ${('*', '')[bool(curProvider.supportsBacklog)]}
                                 <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
