@@ -61,16 +61,28 @@ class PushoverNotifier:
 
         # send the request to pushover
         try:
-            args = {
-                    "token": apiKey,
-                    "user": userKey,
-                    "title": title.encode('utf-8'),
-                    "message": msg.encode('utf-8'),
-                    "timestamp": int(time.time()),
-                    "retry": 60,
-                    "expire": 3600,
-                    "sound": sound,
-                   }
+            if sickbeard.PUSHOVER_SOUND != "default":
+                args = {
+                        "token": apiKey,
+                        "user": userKey,
+                        "title": title.encode('utf-8'),
+                        "message": msg.encode('utf-8'),
+                        "timestamp": int(time.time()),
+                        "retry": 60,
+                        "expire": 3600,
+                        "sound": sound,
+                       }
+            else:
+                # sound is default, so don't send it
+                args = {
+                        "token": apiKey,
+                        "user": userKey,
+                        "title": title.encode('utf-8'),
+                        "message": msg.encode('utf-8'),
+                        "timestamp": int(time.time()),
+                        "retry": 60,
+                        "expire": 3600,
+                       }
 
             if sickbeard.PUSHOVER_DEVICE:
                 args["device"] = sickbeard.PUSHOVER_DEVICE
