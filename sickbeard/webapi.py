@@ -281,7 +281,7 @@ class ApiHandler(RequestHandler):
             if ek.ek(os.path.isfile, image_file_name):
                 static_image_path = os.path.normpath(image_file_name.replace(sickbeard.CACHE_DIR, '/cache'))
 
-        static_image_path = sickbeard.WEB_ROOT + static_image_path.replace('\\', '/')
+        static_image_path = sickbeard.WEB_ROOT + static_image_path.replace('\\', '/') + "?v=%s" % sickbeard.CUR_COMMIT_HASH[:6]
         return self.redirect(static_image_path)
 
     def showNetworkLogo(self, show=None):
@@ -292,7 +292,7 @@ class ApiHandler(RequestHandler):
         else:
             image_file_name = 'nonetwork'
 
-        static_image_path = '%s/images/network/%s.png' % (sickbeard.WEB_ROOT, image_file_name)
+        static_image_path = '%s/images/network/%s.png?v=%s' % (sickbeard.WEB_ROOT, image_file_name, sickbeard.CUR_COMMIT_HASH[:6])
 
         return self.redirect(static_image_path)
 
