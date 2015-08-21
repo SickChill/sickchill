@@ -5,6 +5,7 @@
     from sickbeard.common import qualityPresets, qualityPresetStrings
     import datetime
     import time
+    import re
 %>
 <%
     sort = sickbeard.COMING_EPS_SORT
