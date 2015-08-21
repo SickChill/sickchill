@@ -760,7 +760,7 @@ $(document).ready(function(){
             <span style="display: none;">${curShow.name}</span>
             <div class="imgbanner ${layout}">
                 <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">
-                <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
+                <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner&amp;v=${sickbeard.CUR_COMMIT_HASH[:6]}" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
             </div>
         </td>
     % elif layout == 'simple':
@@ -770,7 +770,7 @@ $(document).ready(function(){
     % if layout != 'simple':
         <td align="center">
         % if curShow.network:
-            <span title="${curShow.network}"><img id="network" width="54" height="27" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
+            <span title="${curShow.network}"><img id="network" width="54" height="27" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}&amp;v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="${curShow.network}" title="${curShow.network}" /></span>
         % else:
             <span title="No Network"><img id="network" width="54" height="27" src="${sbRoot}/images/network/nonetwork.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="No Network" title="No Network" /></span>
         % endif
