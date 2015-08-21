@@ -9,7 +9,7 @@
     % for cur_result in popular_shows:
         <div class="popularShow">
             <div class="left">
-                <img class="coverImage" src="${cur_result['image_url_large']}" />
+                <img class="coverImage" src="${cur_result['image_url_large'] + "?v=" + sickbeard.CUR_COMMIT_HASH[:6]}" />
             </div>
             <div class="right">
                 <h3>${cur_result['name']}</h3>

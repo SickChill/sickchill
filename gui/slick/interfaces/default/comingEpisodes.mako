@@ -209,9 +209,9 @@ $(document).ready(function(){
 
             <td>
 % if cur_result['description']:
-                <img alt='' src='${sbRoot}/images/info32.png' height='16' width='16' class='plotInfo' id="plot_info_${'%s_%s_%s' % (str(cur_result['showid']), str(cur_result['season']), str(cur_result['episode']))}" />
+                <img alt='' src='${sbRoot}/images/info32.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}' height='16' width='16' class='plotInfo' id="plot_info_${'%s_%s_%s' % (str(cur_result['showid']), str(cur_result['season']), str(cur_result['episode']))}" />
 % else:
-                <img alt="" src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfoNone"  />
+                <img alt="" src="${sbRoot}/images/info32.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" width="16" height="16" class="plotInfoNone"  />
 % endif
                 ${cur_result['name']}
             </td>
@@ -230,13 +230,13 @@ $(document).ready(function(){
 
             <td align="center" style="vertical-align: middle;">
 % if cur_result['imdb_id']:
-                <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" />
+                <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" />
 % endif
-                <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result['showid']}"><img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" /></a>
+                <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result['showid']}"><img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon'] + "?v=" + sickbeard.CUR_COMMIT_HASH[:6]}" /></a>
             </td>
 
             <td align="center">
-                <a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
+                <a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" id="forceUpdateImage-${cur_result['showid']}" /></a>
             </td>
         </tr>
         <!-- end ${cur_result['show_name']} //-->
@@ -257,7 +257,7 @@ $(document).ready(function(){
 <!-- start non list view //-->
 <script type="text/javascript" charset="utf-8">
 $(document).ready(function(){
-    $('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
+    $('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif?v=${sickbeard.CUR_COMMIT_HASH[:6]}'});
     $('.ep_summary').hide();
     $('.ep_summaryTrigger').click(function() {
         $(this).next('.ep_summary').slideToggle('normal', function() {
@@ -412,10 +412,10 @@ $(document).ready(function(){
 
                     <span class="tvshowTitleIcons">
 % if cur_result['imdb_id']:
-                        <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" />
+                        <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" />
 % endif
-                        <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_url']}"><img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" /></a>
-                        <span><a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}" class="epSearch forceUpdate"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a></span>
+                        <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_url']}"><img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon'] + "?v=" + sickbeard.CUR_COMMIT_HASH[:6]}" /></a>
+                        <span><a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}" class="epSearch forceUpdate"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" id="forceUpdateImage-${cur_result['showid']}" /></a></span>
                     </span>
                 </div>
 
@@ -441,10 +441,10 @@ $(document).ready(function(){
                 <div>
 % if cur_result['description']:
                         <span class="title" style="vertical-align:middle;">Plot:</span>
-                        <img class="ep_summaryTrigger" src="${sbRoot}/images/plus.png" height="16" width="16" alt="" title="Toggle Summary" /><div class="ep_summary">${cur_result['description']}</div>
+                        <img class="ep_summaryTrigger" src="${sbRoot}/images/plus.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" height="16" width="16" alt="" title="Toggle Summary" /><div class="ep_summary">${cur_result['description']}</div>
 % else:
                         <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">Plot:</span>
-                        <img class="ep_summaryTriggerNone" src="${sbRoot}/images/plus.png" height="16" width="16" alt="" />
+                        <img class="ep_summaryTriggerNone" src="${sbRoot}/images/plus.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" height="16" width="16" alt="" />
 % endif
                 </div>
         </td>

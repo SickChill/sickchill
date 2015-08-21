@@ -23,7 +23,7 @@
 
                 <div id="core-component-group1" class="tab-pane active component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="${sbRoot}/images/anidb24.png" alt="AniDB" title="AniDB" width="24" height="24" />
+                        <img class="notifier-icon" src="${sbRoot}/images/anidb24.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="AniDB" title="AniDB" width="24" height="24" />
                         <h3><a href="${anon_url('http://anidb.info')}" onclick="window.open(this.href, '_blank'); return false;">AniDB</a></h3>
                         <p>AniDB is non-profit database of anime information that is freely open to the public</p>
                     </div>

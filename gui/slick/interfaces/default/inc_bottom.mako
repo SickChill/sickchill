@@ -65,9 +65,9 @@
     </div>
         <!--
         <ul style="display: table; margin: 0 auto; font-size: 12px; list-style-type: none; padding: 0; padding-top: 10px;">
-            <li><a href="${sbRoot}/manage/manageSearches/forceVersionCheck"><img src="${sbRoot}/images/menu/update16.png" alt="" width="16" height="16" style="vertical-align:middle;" />Force Version Check</a></li>
-            <li><a href="${sbRoot}/home/restart/?pid=${sbPID}" class="confirm"><img src="${sbRoot}/images/menu/restart16.png" alt="" width="16" height="16" style="vertical-align:middle;" />Restart</a></li>
-            <li><a href="${sbRoot}/home/shutdown/?pid=${sbPID}" class="confirm"><img src="${sbRoot}/images/menu/shutdown16.png" alt="" width="16" height="16" style="vertical-align:middle;" />Shutdown</a></li>
+            <li><a href="${sbRoot}/manage/manageSearches/forceVersionCheck"><img src="${sbRoot}/images/menu/update16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="" width="16" height="16" style="vertical-align:middle;" />Force Version Check</a></li>
+            <li><a href="${sbRoot}/home/restart/?pid=${sbPID}" class="confirm"><img src="${sbRoot}/images/menu/restart16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="" width="16" height="16" style="vertical-align:middle;" />Restart</a></li>
+            <li><a href="${sbRoot}/home/shutdown/?pid=${sbPID}" class="confirm"><img src="${sbRoot}/images/menu/shutdown16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="" width="16" height="16" style="vertical-align:middle;" />Shutdown</a></li>
         </ul>
         -->
 </footer>

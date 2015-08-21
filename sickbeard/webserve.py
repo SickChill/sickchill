@@ -371,11 +371,11 @@ class WebRoot(WebHandler):
     def showPoster(self, show=None, which=None):
         # Redirect initial poster/banner thumb to default images
         if which[0:6] == 'poster':
-            default_image_name = 'poster.png'
+            default_image_name = 'poster.png?v=sickbeard.CUR_COMMIT_HASH[:6]'
         elif which[0:6] == 'fanart':
-            default_image_name = 'fanart.png'
+            default_image_name = 'fanart.png?v=sickbeard.CUR_COMMIT_HASH[:6]'
         else:
-            default_image_name = 'banner.png'
+            default_image_name = 'banner.png?v=sickbeard.CUR_COMMIT_HASH[:6]'
 
         # image_path = ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', 'slick', 'images', default_image_name)
         static_image_path = os.path.join('/images', default_image_name)
@@ -399,7 +399,7 @@ class WebRoot(WebHandler):
             if ek.ek(os.path.isfile, image_file_name):
                 static_image_path = os.path.normpath(image_file_name.replace(sickbeard.CACHE_DIR, '/cache'))
 
-        static_image_path = static_image_path.replace('\\', '/')
+        static_image_path = static_image_path.replace('\\', '/') + "?v=" + sickbeard.CUR_COMMIT_HASH[:6]
         return self.redirect(static_image_path)
 
     def showNetworkLogo(self, show=None):

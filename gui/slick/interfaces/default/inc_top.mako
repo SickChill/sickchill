@@ -24,23 +24,23 @@
             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
 
-        <link rel="shortcut icon" href="${sbRoot}/images/ico/favicon.ico">
-        <link rel="icon" sizes="16x16 32x32 64x64" href="${sbRoot}/images/ico/favicon.ico">
-        <link rel="icon" type="image/png" sizes="196x196" href="${sbRoot}/images/ico/favicon-196.png">
-        <link rel="icon" type="image/png" sizes="160x160" href="${sbRoot}/images/ico/favicon-160.png">
-        <link rel="icon" type="image/png" sizes="96x96" href="${sbRoot}/images/ico/favicon-96.png">
-        <link rel="icon" type="image/png" sizes="64x64" href="${sbRoot}/images/ico/favicon-64.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="${sbRoot}/images/ico/favicon-32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="${sbRoot}/images/ico/favicon-16.png">
-        <link rel="apple-touch-icon" sizes="152x152" href="${sbRoot}/images/ico/favicon-152.png">
-        <link rel="apple-touch-icon" sizes="144x144" href="${sbRoot}/images/ico/favicon-144.png">
-        <link rel="apple-touch-icon" sizes="120x120" href="${sbRoot}/images/ico/favicon-120.png">
-        <link rel="apple-touch-icon" sizes="114x114" href="${sbRoot}/images/ico/favicon-114.png">
-        <link rel="apple-touch-icon" sizes="76x76" href="${sbRoot}/images/ico/favicon-76.png">
-        <link rel="apple-touch-icon" sizes="72x72" href="${sbRoot}/images/ico/favicon-72.png">
-        <link rel="apple-touch-icon" href="${sbRoot}/images/ico/favicon-57.png">
+        <link rel="shortcut icon" href="${sbRoot}/images/ico/favicon.ico?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="icon" sizes="16x16 32x32 64x64" href="${sbRoot}/images/ico/favicon.ico?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="icon" type="image/png" sizes="196x196" href="${sbRoot}/images/ico/favicon-196.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="icon" type="image/png" sizes="160x160" href="${sbRoot}/images/ico/favicon-160.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="icon" type="image/png" sizes="96x96" href="${sbRoot}/images/ico/favicon-96.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="icon" type="image/png" sizes="64x64" href="${sbRoot}/images/ico/favicon-64.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="icon" type="image/png" sizes="32x32" href="${sbRoot}/images/ico/favicon-32.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="icon" type="image/png" sizes="16x16" href="${sbRoot}/images/ico/favicon-16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="apple-touch-icon" sizes="152x152" href="${sbRoot}/images/ico/favicon-152.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="apple-touch-icon" sizes="144x144" href="${sbRoot}/images/ico/favicon-144.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="apple-touch-icon" sizes="120x120" href="${sbRoot}/images/ico/favicon-120.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="apple-touch-icon" sizes="114x114" href="${sbRoot}/images/ico/favicon-114.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="apple-touch-icon" sizes="76x76" href="${sbRoot}/images/ico/favicon-76.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="apple-touch-icon" sizes="72x72" href="${sbRoot}/images/ico/favicon-72.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
+        <link rel="apple-touch-icon" href="${sbRoot}/images/ico/favicon-57.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
         <meta name="msapplication-TileColor" content="#FFFFFF">
-        <meta name="msapplication-TileImage" content="${sbRoot}/images/ico/favicon-144.png">
+        <meta name="msapplication-TileImage" content="${sbRoot}/images/ico/favicon-144.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}">
         <meta name="msapplication-config" content="${sbRoot}/css/browserconfig.xml">
 
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/bootstrap.css?${sbPID}"/>
@@ -82,7 +82,7 @@
         <script type="text/javascript" charset="utf-8">
             sbRoot = '${sbRoot}'; // needed for browser.js & ajaxNotifications.js
             //HTML for scrolltopcontrol, which is auto wrapped in DIV w/ ID="topcontrol"
-            top_image_html = '<img src="${sbRoot}/images/top.gif" width="31" height="11" alt="Jump to top" />';
+            top_image_html = '<img src="${sbRoot}/images/top.gif?v=${sickbeard.CUR_COMMIT_HASH[:6]}" width="31" height="11" alt="Jump to top" />';
             themeSpinner = '${('', '-dark')[sickbeard.THEME_NAME == 'dark']}';
             anonURL = '${sickbeard.ANON_REDIRECT}'
         </script>
@@ -151,7 +151,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="${sbRoot}/home/" title="SickRage"><img alt="SickRage" src="${sbRoot}/images/sickrage.png" style="height: 50px;" class="img-responsive pull-left" /></a>
+                    <a class="navbar-brand" href="${sbRoot}/home/" title="SickRage"><img alt="SickRage" src="${sbRoot}/images/sickrage.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" style="height: 50px;" class="img-responsive pull-left" /></a>
                 </div>
 
             % if sbLogin:
@@ -212,7 +212,7 @@
                         </li>
 
                         <li id="NAVconfig" class="dropdown" ${('', 'class="active"')[topmenu == 'config']}>
-                            <a href="${sbRoot}/config/" class="dropdown-toggle" data-toggle="dropdown"><img src="${sbRoot}/images/menu/system18.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
+                            <a href="${sbRoot}/config/" class="dropdown-toggle" data-toggle="dropdown"><img src="${sbRoot}/images/menu/system18.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${sbRoot}/config/"><i class="menu-icon-help"></i>&nbsp;Help &amp; Info</a></li>
                                 <li><a href="${sbRoot}/config/general/"><i class="menu-icon-config"></i>&nbsp;General</a></li>
@@ -227,7 +227,7 @@
                         </li>
 
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="${sbRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="${sbRoot}/images/menu/system18-2.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${sbRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
                                 <li><a href="${sbRoot}/changes"><i class="menu-icon-help"></i>&nbsp;Changelog</a></li>
@@ -237,7 +237,7 @@
                                 <li><a href="${sbRoot}/home/status/"><i class="menu-icon-help"></i>&nbsp;Server Status</a></li>
                             </ul>
                         </li>
-                        <li id="donate"><a href="https://github.com/SiCKRAGETV/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="${sbRoot}/images/donate.jpg" alt="[donate]" class="navbaricon hidden-xs" /></a></li>
+                        <li id="donate"><a href="https://github.com/SiCKRAGETV/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="${sbRoot}/images/donate.jpg?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="[donate]" class="navbaricon hidden-xs" /></a></li>
                     </ul>
             % endif
                 </div><!-- /.navbar-collapse -->

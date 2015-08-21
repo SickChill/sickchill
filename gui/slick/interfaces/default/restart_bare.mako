@@ -29,20 +29,20 @@ sbDefaultPage = "${sbDefaultPage}";
 <br />
 <div id="shut_down_message">
 Waiting for SickRage to shut down:
-<img src="${sbRoot}/images/loading16${themeSpinner}.gif" height="16" width="16" id="shut_down_loading" />
-<img src="${sbRoot}/images/yes16.png" height="16" width="16" id="shut_down_success" style="display: none;" />
+<img src="${sbRoot}/images/loading16${themeSpinner}.gif?v=${sickbeard.CUR_COMMIT_HASH[:6]}" height="16" width="16" id="shut_down_loading" />
+<img src="${sbRoot}/images/yes16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" height="16" width="16" id="shut_down_success" style="display: none;" />
 </div>
 
 <div id="restart_message" style="display: none;">
 Waiting for SickRage to start again:
-<img src="${sbRoot}/images/loading16${themeSpinner}.gif" height="16" width="16" id="restart_loading" />
-<img src="${sbRoot}/images/yes16.png" height="16" width="16" id="restart_success" style="display: none;" />
-<img src="${sbRoot}/images/no16.png" height="16" width="16" id="restart_failure" style="display: none;" />
+<img src="${sbRoot}/images/loading16${themeSpinner}.gif?v=${sickbeard.CUR_COMMIT_HASH[:6]}" height="16" width="16" id="restart_loading" />
+<img src="${sbRoot}/images/yes16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" height="16" width="16" id="restart_success" style="display: none;" />
+<img src="${sbRoot}/images/no16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" height="16" width="16" id="restart_failure" style="display: none;" />
 </div>
 
 <div id="refresh_message" style="display: none;">
 Loading the default page:
-<img src="${sbRoot}/images/loading16${themeSpinner}.gif" height="16" width="16" id="refresh_loading" />
+<img src="${sbRoot}/images/loading16${themeSpinner}.gif?v=${sickbeard.CUR_COMMIT_HASH[:6]}" height="16" width="16" id="refresh_loading" />
 </div>
 
 <div id="restart_fail_message" style="display: none;">

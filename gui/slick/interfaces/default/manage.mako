@@ -165,12 +165,12 @@ $(document).ready(function()
         % else:
             <td align="center"><span class="quality Custom">Custom</span></td>
         % endif
-            <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_sports) == 1]} width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_scene) == 1]} width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_anime) == 1]} width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.flatten_folders) == 1]} width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.paused) == 1]} width="16" height="16" /></td>
-            <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.subtitles) == 1]} width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/${('no16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="N"', 'yes16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="Y"')[int(curShow.is_sports) == 1]} width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/${('no16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="N"', 'yes16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="Y"')[int(curShow.is_scene) == 1]} width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/${('no16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="N"', 'yes16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="Y"')[int(curShow.is_anime) == 1]} width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/${('no16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="N"', 'yes16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="Y"')[int(curShow.flatten_folders) == 1]} width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/${('no16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="N"', 'yes16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="Y"')[int(curShow.paused) == 1]} width="16" height="16" /></td>
+            <td align="center"><img src="${sbRoot}/images/${('no16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="N"', 'yes16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="Y"')[int(curShow.subtitles) == 1]} width="16" height="16" /></td>
             <td align="center">${statusStrings[curShow.default_ep_status]}</td>
             <td align="center">${curShow.status}</td>
             <td align="center">${curUpdate}</td>

@@ -78,7 +78,7 @@ $(document).ready(function(){
     <div class="trakt_show" data-name="${cur_show['show']['title']}" data-rating="${cur_show['show']['rating']}" data-votes="${cur_show['show']['votes']}">
         <div class="traktContainer">
             <div class="trakt-image">
-                <a class="trakt-image" href="${anon_url(show_url)}" target="_blank"><img alt="" class="trakt-image" src="${cur_show['show']['images']['poster']['thumb']}" /></a>
+                <a class="trakt-image" href="${anon_url(show_url)}" target="_blank"><img alt="" class="trakt-image" src="${cur_show['show']['images']['poster']['thumb'] + "?v=" + ${sickbeard.CUR_COMMIT_HASH[:6]}" /></a>
             </div>
 
             <div class="show-title">
@@ -86,7 +86,7 @@ $(document).ready(function(){
             </div>
 
         <div class="clearfix">
-            <p>${int(cur_show['show']['rating']*10)}% <img src="${sbRoot}/images/heart.png"></p>
+            <p>${int(cur_show['show']['rating']*10)}% <img src="${sbRoot}/images/heart.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}"></p>
             <i>${cur_show['show']['votes']} votes</i>
             <div class="traktShowTitleIcons">
                 <a href="${sbRoot}/home/addShows/addTraktShow?indexer_id=${cur_show['show']['ids']['tvdb'] or cur_show['show']['ids']['tvrage']}&amp;showName=${cur_show['show']['title']}" class="btn btn-xs">Add Show</a>

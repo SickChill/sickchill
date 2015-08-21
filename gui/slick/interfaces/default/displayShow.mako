@@ -73,7 +73,7 @@ $(document).ready(function(){
 </script>
     <div class="pull-left form-inline">
         Change Show:
-        <div class="navShow"><img id="prevShow" src="${sbRoot}/images/prev.png" alt="&lt;&lt;" title="Prev Show" /></div>
+        <div class="navShow"><img id="prevShow" src="${sbRoot}/images/prev.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="&lt;&lt;" title="Prev Show" /></div>
             <select id="pickShow" class="form-control form-control-inline input-sm">
             % for curShowList in sortedShowLists:
                 <% curShowType = curShowList[0] %>
@@ -90,7 +90,7 @@ $(document).ready(function(){
                 % endif
             % endfor
             </select>
-        <div class="navShow"><img id="nextShow" src="${sbRoot}/images/next.png" alt="&gt;&gt;" title="Next Show" /></div>
+        <div class="navShow"><img id="nextShow" src="${sbRoot}/images/next.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="&gt;&gt;" title="Next Show" /></div>
     </div>
 
     <div class="clearfix"></div>
@@ -170,17 +170,17 @@ $(document).ready(function(){
 % else:
     % if 'country_codes' in show.imdb_info:
         % for country in show.imdb_info['country_codes'].split('|'):
-                <img src="${sbRoot}/images/blank.png" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
+                <img src="${sbRoot}/images/blank.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
         % endfor
     % endif
     % if 'year' in show.imdb_info:
                 <span>(${show.imdb_info['year']}) - ${show.imdb_info['runtimes']} minutes - </span>
     % endif
-                <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
+                <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" style="margin-top: -1px; vertical-align:middle;"/></a>
 % endif
-                <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(show.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/></a>
+                <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(show.indexer).config["icon"] + "?v=" + sickbeard.CUR_COMMIT_HASH[:6]}" style="margin-top: -1px; vertical-align:middle;"/></a>
 % if xem_numbering or xem_absolute_numbering:
-                <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><img alt="[xem]" height="16" width="16" src="${sbRoot}/images/xem.png" style="margin-top: -1px; vertical-align:middle;"/></a>
+                <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><img alt="[xem]" height="16" width="16" src="${sbRoot}/images/xem.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" style="margin-top: -1px; vertical-align:middle;"/></a>
 % endif
             </div>
 
@@ -255,19 +255,19 @@ $(document).ready(function(){
 
                 <table style="width:180px; float: right; vertical-align: middle; height: 100%;">
                     <% info_flag = subtitles.fromietf(show.lang).opensubtitles if show.lang else '' %>
-                    <tr><td class="showLegend">Info Language:</td><td><img src="${sbRoot}/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${sbRoot}/images/flags/unknown.png';"/></td></tr>
+                    <tr><td class="showLegend">Info Language:</td><td><img src="${sbRoot}/images/subtitles/flags/${info_flag}.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${sbRoot}/images/flags/unknown.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}';"/></td></tr>
                     % if sickbeard.USE_SUBTITLES:
-                    <tr><td class="showLegend">Subtitles: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Subtitles: </td><td><img src="${sbRoot}/images/${("no16.png?v=sickbeard.CUR_COMMIT_HASH[:6]", "yes16.png?v=sickbeard.CUR_COMMIT_HASH[:6]")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td></tr>
                     % endif
-                    <tr><td class="showLegend">Flat Folders: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Paused: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.paused)]}" alt="${("N", "Y")[bool(show.paused)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Air-by-Date: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.air_by_date)]}" alt="${("N", "Y")[bool(show.air_by_date)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Sports: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.is_sports)]}" alt="${("N", "Y")[bool(show.is_sports)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Anime: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.is_anime)]}" alt="${("N", "Y")[bool(show.is_anime)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">DVD Order: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.dvdorder)]}" alt="${("N", "Y")[bool(show.dvdorder)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Scene Numbering: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.scene)]}" alt="${("N", "Y")[bool(show.scene)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Flat Folders: </td><td><img src="${sbRoot}/images/${("no16.png?v=sickbeard.CUR_COMMIT_HASH[:6]", "yes16.png?v=sickbeard.CUR_COMMIT_HASH[:6]")[bool(show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Paused: </td><td><img src="${sbRoot}/images/${("no16.png?v=sickbeard.CUR_COMMIT_HASH[:6]", "yes16.png?v=sickbeard.CUR_COMMIT_HASH[:6]")[bool(show.paused)]}" alt="${("N", "Y")[bool(show.paused)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Air-by-Date: </td><td><img src="${sbRoot}/images/${("no16.png?v=sickbeard.CUR_COMMIT_HASH[:6]", "yes16.png?v=sickbeard.CUR_COMMIT_HASH[:6]")[bool(show.air_by_date)]}" alt="${("N", "Y")[bool(show.air_by_date)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Sports: </td><td><img src="${sbRoot}/images/${("no16.png?v=sickbeard.CUR_COMMIT_HASH[:6]", "yes16.png?v=sickbeard.CUR_COMMIT_HASH[:6]")[bool(show.is_sports)]}" alt="${("N", "Y")[bool(show.is_sports)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Anime: </td><td><img src="${sbRoot}/images/${("no16.png?v=sickbeard.CUR_COMMIT_HASH[:6]", "yes16.png?v=sickbeard.CUR_COMMIT_HASH[:6]")[bool(show.is_anime)]}" alt="${("N", "Y")[bool(show.is_anime)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">DVD Order: </td><td><img src="${sbRoot}/images/${("no16.png?v=sickbeard.CUR_COMMIT_HASH[:6]", "yes16.png?v=sickbeard.CUR_COMMIT_HASH[:6]")[bool(show.dvdorder)]}" alt="${("N", "Y")[bool(show.dvdorder)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Scene Numbering: </td><td><img src="${sbRoot}/images/${("no16.png?v=sickbeard.CUR_COMMIT_HASH[:6]", "yes16.png?v=sickbeard.CUR_COMMIT_HASH[:6]")[bool(show.scene)]}" alt="${("N", "Y")[bool(show.scene)]}" width="16" height="16" /></td></tr>
                     % if anyQualities and bestQualities:
-                    <tr><td class="showLegend">Archive First Match: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.archive_firstmatch)]}" alt="${("N", "Y")[bool(show.archive_firstmatch)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Archive First Match: </td><td><img src="${sbRoot}/images/${("no16.png?v=sickbeard.CUR_COMMIT_HASH[:6]", "yes16.png?v=sickbeard.CUR_COMMIT_HASH[:6]")[bool(show.archive_firstmatch)]}" alt="${("N", "Y")[bool(show.archive_firstmatch)]}" width="16" height="16" /></td></tr>
                     % endif
                 </table>
             </div>
@@ -470,8 +470,8 @@ $(document).ready(function(){
                     <input type="checkbox" class="epCheck" id="${str(epResult["season"])+'x'+str(epResult["episode"])}" name="${str(epResult["season"]) +"x"+str(epResult["episode"])}" />
                 % endif
             </td>
-            <td align="center"><img src="${sbRoot}/images/${("nfo-no.gif", "nfo.gif")[epResult["hasnfo"]]}" alt="${("N", "Y")[epResult["hasnfo"]]}" width="23" height="11" /></td>
-            <td align="center"><img src="${sbRoot}/images/${("tbn-no.gif", "tbn.gif")[epResult["hastbn"]]}" alt="${("N", "Y")[epResult["hastbn"]]}" width="23" height="11" /></td>
+            <td align="center"><img src="${sbRoot}/images/${("nfo-no.gif?v=sickbeard.CUR_COMMIT_HASH[:6]", "nfo.gif?v=sickbeard.CUR_COMMIT_HASH[:6]")[epResult["hasnfo"]]}" alt="${("N", "Y")[epResult["hasnfo"]]}" width="23" height="11" /></td>
+            <td align="center"><img src="${sbRoot}/images/${("tbn-no.gif?v=sickbeard.CUR_COMMIT_HASH[:6]", "tbn.gif?v=sickbeard.CUR_COMMIT_HASH[:6]")[epResult["hastbn"]]}" alt="${("N", "Y")[epResult["hastbn"]]}" width="23" height="11" /></td>
             <td align="center">
             <%
                 if epLoc and show._location and epLoc.lower().startswith(show._location.lower()):
@@ -511,9 +511,9 @@ $(document).ready(function(){
             </td>
             <td class="col-name">
             % if epResult["description"] != "" and epResult["description"] != None:
-                <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["episode"])}" />
+                <img src="${sbRoot}/images/info32.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" width="16" height="16" class="plotInfo" alt="" id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["episode"])}" />
             % else:
-                <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfoNone" alt="" />
+                <img src="${sbRoot}/images/info32.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" width="16" height="16" class="plotInfoNone" alt="" />
             % endif
             ${epResult["name"]}
             </td>
@@ -554,7 +554,7 @@ $(document).ready(function(){
             <td class="col-subtitles" align="center">
             % for sub_lang in [subtitles.fromietf(x) for x in epResult["subtitles"].split(',') if epResult["subtitles"]]:
                 <% flag = sub_lang.opensubtitles %>
-                <img src="${sbRoot}/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${sub_lang.name}" onError="this.onerror=null;this.src='${sbRoot}/images/flags/unknown.png';" />
+                <img src="${sbRoot}/images/subtitles/flags/${flag}.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" width="16" height="11" alt="${sub_lang.name}" onError="this.onerror=null;this.src='${sbRoot}/images/flags/unknown.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}';" />
             % endfor
             </td>
                 <% curStatus, curQuality = Quality.splitCompositeStatus(int(epResult["status"])) %>
@@ -566,13 +566,13 @@ $(document).ready(function(){
             <td class="col-search">
                 % if int(epResult["season"]) != 0:
                     % if ( int(epResult["status"]) in Quality.SNATCHED + Quality.DOWNLOADED ) and sickbeard.USE_FAILED_DOWNLOADS:
-                        <a class="epRetry" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="retryEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${sbRoot}/images/search16.png" height="16" alt="retry" title="Retry Download" /></a>
+                        <a class="epRetry" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="retryEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${sbRoot}/images/search16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" height="16" alt="retry" title="Retry Download" /></a>
                     % else:
-                        <a class="epSearch" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="searchEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${sbRoot}/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
+                        <a class="epSearch" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="searchEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${sbRoot}/images/search16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" width="16" height="16" alt="search" title="Manual Search" /></a>
                     % endif
                 % endif
                 % if sickbeard.USE_SUBTITLES and show.subtitles and epResult["location"] and frozenset(subtitles.wantedLanguages()).difference(epResult["subtitles"].split(',')):
-                    <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${sbRoot}/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
+                    <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${sbRoot}/images/closed_captioning.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" height="16" alt="search subtitles" title="Search Subtitles" /></a>
                 % endif
             </td>
         </tr>
