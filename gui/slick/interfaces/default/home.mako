@@ -440,7 +440,7 @@ $(document).ready(function(){
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
     % if curLoadingShow.show == None:
         <div class="show" data-name="0" data-date="010101" data-network="0" data-progress="101">
-            <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="${sbRoot}/images/poster.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" />
+            <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="${sbRoot}/images/poster.png" />
             <div class="show-details">
                 <div class="show-add">Loading... (${curLoadingShow.show_name})</div>
             </div>
@@ -583,7 +583,7 @@ $(document).ready(function(){
                         % if curShow.network:
                             <span title="${curShow.network}"><img class="show-network-image" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
                         % else:
-                            <span title="No Network"><img class="show-network-image" src="${sbRoot}/images/network/nonetwork.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="No Network" title="No Network" /></span>
+                            <span title="No Network"><img class="show-network-image" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
                         % endif
                     % else:
                         <span title="${curShow.network}">${curShow.network}</span>
@@ -760,7 +760,7 @@ $(document).ready(function(){
             <span style="display: none;">${curShow.name}</span>
             <div class="imgbanner ${layout}">
                 <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">
-                <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner&amp;v=${sickbeard.CUR_COMMIT_HASH[:6]}" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
+                <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
             </div>
         </td>
     % elif layout == 'simple':
@@ -770,9 +770,9 @@ $(document).ready(function(){
     % if layout != 'simple':
         <td align="center">
         % if curShow.network:
-            <span title="${curShow.network}"><img id="network" width="54" height="27" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}&amp;v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="${curShow.network}" title="${curShow.network}" /></span>
+            <span title="${curShow.network}"><img id="network" width="54" height="27" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
         % else:
-            <span title="No Network"><img id="network" width="54" height="27" src="${sbRoot}/images/network/nonetwork.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}" alt="No Network" title="No Network" /></span>
+            <span title="No Network"><img id="network" width="54" height="27" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
         % endif
         </td>
     % else:
@@ -815,7 +815,7 @@ $(document).ready(function(){
         </td>
 
         <td align="center">
-            <img src="${sbRoot}/images/${('no16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}", alt="No"', 'yes16.png?v=${sickbeard.CUR_COMMIT_HASH[:6]}", alt="Yes"')[int(curShow.paused) == 0 and curShow.status == 'Continuing']} width="16" height="16" />
+            <img src="${sbRoot}/images/${('no16.png", alt="No"', 'yes16.png", alt="Yes"')[int(curShow.paused) == 0 and curShow.status == 'Continuing']} width="16" height="16" />
         </td>
 
         <td align="center">
