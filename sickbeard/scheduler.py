@@ -80,7 +80,7 @@ class Scheduler(threading.Thread):
                     # check if interval has passed
                     elif current_time - self.lastRun >= self.cycleTime:
                         # check if wanting to start around certain time taking interval into account
-                        if self.start_time:
+                        if self.start_time is not None:
                             hour_diff = current_time.time().hour - self.start_time.hour
                             if not hour_diff < 0 and hour_diff < self.cycleTime.seconds / 3600:
                                 should_run = True
