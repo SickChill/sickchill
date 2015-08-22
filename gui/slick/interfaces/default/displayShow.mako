@@ -23,7 +23,7 @@
 <script type="text/javascript" src="${sbRoot}/js/ratingTooltip.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSubtitles.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/lib/jquery.collapser.min.js?${sbPID}"></script>
+##<script type="text/javascript" src="${sbRoot}/js/lib/jquery.collapser.min.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
 $(document).ready(function(){
     <% fuzzydate = 'airdate' %>
