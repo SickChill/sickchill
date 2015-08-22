@@ -159,9 +159,7 @@ class BacklogSearcher:
                 highestBestQuality = 0
 
             # if we need a better one then say yes
-            if (curStatus in (common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER,
-                              common.SNATCHED_BEST) and curQuality < highestBestQuality) or curStatus == common.WANTED:
-
+            if (curStatus in (common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER) and curQuality < highestBestQuality) or curStatus == common.WANTED:
                 epObj = show.getEpisode(int(result["season"]), int(result["episode"]))
                 if epObj.season not in wanted:
                     wanted[epObj.season] = [epObj]
