@@ -392,15 +392,13 @@ class WebRoot(WebHandler):
             if which == 'banner_thumb':
                 image_file_name = cache_obj.banner_thumb_path(show)
             if which == 'fanart':
-                if not cache_obj.has_fanart(show):
-                    cache_obj.fill_cache(sickbeard.helpers.findCertainShow(sickbeard.showList, int(show)))
                 image_file_name = cache_obj.fanart_path(show)
 
             if ek.ek(os.path.isfile, image_file_name):
                 static_image_path = os.path.normpath(image_file_name.replace(sickbeard.CACHE_DIR, '/cache'))
 
         static_image_path = static_image_path.replace('\\', '/')
-        return self.redirect(static_image_path)
+        return self.redirect(static_image_path, permanent=True)
 
     def showNetworkLogo(self, show=None):
         show = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
@@ -412,7 +410,7 @@ class WebRoot(WebHandler):
 
         static_image_path = '%s/images/network/%s.png' % (sickbeard.WEB_ROOT, image_file_name)
 
-        return self.redirect(static_image_path)
+        return self.redirect(static_image_path, permanent=True)
 
     def setHomeLayout(self, layout):
 
