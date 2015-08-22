@@ -159,8 +159,8 @@ class BaseHandler(RequestHandler):
     def __init__(self, *args, **kwargs):
         super(BaseHandler, self).__init__(*args, **kwargs)
 
-    def set_default_headers(self):
-        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    #def set_default_headers(self):
+        #self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
     def write_error(self, status_code, **kwargs):
         # handle 404 http errors
