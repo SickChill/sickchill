@@ -100,7 +100,11 @@
                <td>N/A</td>
                    % endtry
                % endif
+               % if service.start_time:
                <td align="right">${service.start_time}</td>
+               % else:
+               <td align="right"></td>
+               % endif               
                <% cycleTime = (service.cycleTime.microseconds + (service.cycleTime.seconds + service.cycleTime.days * 24 * 3600) * 10**6) / 10**6 %>
                <td align="right">${helpers.pretty_time_delta(cycleTime)}</td>
                % if service.enable:
