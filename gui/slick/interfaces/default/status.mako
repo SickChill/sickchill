@@ -205,11 +205,13 @@
             </tr>
         </thead>
         <tbody>
+            % if sickbeard.TV_DOWNLOAD_DIR:
             <tr>
                 <td>TV Download Directory</td>
                 <td>${sickbeard.TV_DOWNLOAD_DIR}</td>
                 <td>${tvdirFree} MB</td>
             </tr>
+            % endif            
             <tr>
                 <td rowspan=${len(rootDir)}>Media Root Directories</td>
             % for cur_dir in rootDir:
