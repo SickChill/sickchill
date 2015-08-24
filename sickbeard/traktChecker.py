@@ -67,8 +67,11 @@ class TraktChecker():
         self.ShowWatchlist = {}
         self.EpisodeWatchlist = {}
         self.Collectionlist = {}
+        self.amActive = False
 
     def run(self, force=False):
+        
+        self.amActive = True
 
         # add shows from trakt.tv watchlist
         if sickbeard.TRAKT_SYNC_WATCHLIST:
@@ -87,6 +90,8 @@ class TraktChecker():
                 self.syncLibrary()
             except Exception:
                 logger.log(traceback.format_exc(), logger.DEBUG)
+                
+        self.amActive = False
 
     def findShow(self, indexer, indexerid):
         traktShow = None

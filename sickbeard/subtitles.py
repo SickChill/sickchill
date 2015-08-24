@@ -125,6 +125,8 @@ class SubtitlesFinder():
     """
 
     def run(self, force=False):
+        
+        self.amActive = True        
         if not sickbeard.USE_SUBTITLES:
             return
 
@@ -194,6 +196,8 @@ class SubtitlesFinder():
                 newSubtitles = frozenset(epObj.subtitles).difference(previous_subtitles)
                 if newSubtitles:
                     logger.log(u'Downloaded subtitles for S%02dE%02d in %s' % (epToSub["season"], epToSub["episode"], ', '.join(newSubtitles)))
+                    
+        self.amActive = False 
 
     def _getRules(self):
         """
