@@ -48,7 +48,7 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
     get_xem_numbering_for_show, get_scene_absolute_numbering_for_show, get_xem_absolute_numbering_for_show, \
     get_scene_absolute_numbering
 
-import imdbPopular
+from imdbPopular import imdb_popular
 
 from dateutil import tz, parser as dateutil_parser
 from unrar2 import RarFile
@@ -2573,13 +2573,14 @@ class HomeAddShows(Home):
         Fetches data from IMDB to show a list of popular shows.
         """
         t = PageTemplate(rh=self, file="home_popularShows.mako")
+        e = None
 
         try:
-            popular_shows = imdbPopular.fetch_popular_shows()
-        except:
+            popular_shows = imdb_popular.fetch_popular_shows()
+        except Exception as e:
             popular_shows = None
 
-        return t.render(submenu = self.HomeMenu(), popular_shows=popular_shows)
+        return t.render(submenu = self.HomeMenu(), popular_shows=popular_shows, imdb_exception=e)
 
 
     def addShowToBlacklist(self, indexer_id):
