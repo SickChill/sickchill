@@ -138,8 +138,8 @@ class Quality:
                       SNATCHED: "Snatched",
                       SNATCHED_PROPER: "Snatched (Proper)",
                       FAILED: "Failed",
-                      SNATCHED_BEST: "Snatched (Best)"}
-
+                      SNATCHED_BEST: "Snatched (Best)",
+                      ARCHIVED: "Archived"}
     @staticmethod
     def _getStatusStrings(status):
         toReturn = {}
@@ -342,13 +342,14 @@ class Quality:
     SNATCHED_PROPER = None
     FAILED = None
     SNATCHED_BEST = None
-
+    ARCHIVED = None
 
 Quality.DOWNLOADED = [Quality.compositeStatus(DOWNLOADED, x) for x in Quality.qualityStrings.keys()]
 Quality.SNATCHED = [Quality.compositeStatus(SNATCHED, x) for x in Quality.qualityStrings.keys()]
 Quality.SNATCHED_PROPER = [Quality.compositeStatus(SNATCHED_PROPER, x) for x in Quality.qualityStrings.keys()]
 Quality.FAILED = [Quality.compositeStatus(FAILED, x) for x in Quality.qualityStrings.keys()]
 Quality.SNATCHED_BEST = [Quality.compositeStatus(SNATCHED_BEST, x) for x in Quality.qualityStrings.keys()]
+Quality.ARCHIVED = [Quality.compositeStatus(ARCHIVED, x) for x in Quality.qualityStrings.keys()]
 
 SD = Quality.combineQualities([Quality.SDTV, Quality.SDDVD], [])
 HD = Quality.combineQualities(

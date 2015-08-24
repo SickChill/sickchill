@@ -1301,7 +1301,7 @@ class TVShow(object):
             return Overview.SKIPPED
         elif epStatus == ARCHIVED:
             return Overview.GOOD
-        elif epStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.FAILED + Quality.SNATCHED_BEST:
+        elif epStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.FAILED + Quality.SNATCHED_BEST + Quality.ARCHIVED:
 
             anyQualities, bestQualities = Quality.splitQuality(self.quality)  # @UnusedVariable
             if bestQualities:
