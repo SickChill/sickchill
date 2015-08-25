@@ -23,7 +23,7 @@
 <script type="text/javascript" src="${sbRoot}/js/ratingTooltip.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSubtitles.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/lib/jquery.collapser.min.js?${sbPID}"></script>
+##<script type="text/javascript" src="${sbRoot}/js/lib/jquery.collapser.min.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
 $(document).ready(function(){
     <% fuzzydate = 'airdate' %>
@@ -463,7 +463,7 @@ $(document).ready(function(){
         % endif
         <% curSeason = int(epResult["season"]) %>
         % endif
-        <% epLoc = str(epResult["location"]) %>
+        <% epLoc = epResult["location"] %>
         <tr class="${Overview.overviewStrings[epCats[epStr]]} season-${curSeason} seasonstyle">
             <td class="col-checkbox">
                 % if int(epResult["status"]) != UNAIRED:

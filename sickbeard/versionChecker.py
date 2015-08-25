@@ -59,6 +59,8 @@ class CheckVersion():
                 self.updater = SourceUpdateManager()
 
     def run(self, force=False):
+        
+        self.amActive = True
 
         if self.updater:
             # set current branch version
@@ -76,6 +78,8 @@ class CheckVersion():
                         else:
                             logger.log(u"Update failed!")
                             ui.notifications.message('Update failed!')
+                            
+        self.amActive = False
 
     def run_backup_if_safe(self):
         return self.safe_to_update() is True and self._runbackup() is True

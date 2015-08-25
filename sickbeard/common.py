@@ -138,8 +138,8 @@ class Quality:
                       SNATCHED: "Snatched",
                       SNATCHED_PROPER: "Snatched (Proper)",
                       FAILED: "Failed",
-                      SNATCHED_BEST: "Snatched (Best)"}
-
+                      SNATCHED_BEST: "Snatched (Best)",
+                      ARCHIVED: "Archived"}
     @staticmethod
     def _getStatusStrings(status):
         toReturn = {}
@@ -275,7 +275,12 @@ class Quality:
         from hachoir_parser import createParser
         from hachoir_metadata import extractMetadata
 
-        parser = createParser(filename)
+        try:
+            parser = createParser(filename)
+        except Exception:
+            parser = None
+            pass
+
         if not parser:
             return Quality.UNKNOWN
 
@@ -284,6 +289,8 @@ class Quality:
         except Exception:
             metadata = None
             pass
+
+        del parser
 
         if not metadata:
             return Quality.UNKNOWN
@@ -297,6 +304,8 @@ class Quality:
                 for metagroup in metadata.iterGroups():
                     if metagroup.has('height'):
                         height = int(metagroup.get('height') or 0)
+
+        del metadata
 
         if not height:
             return Quality.UNKNOWN
@@ -342,13 +351,14 @@ class Quality:
     SNATCHED_PROPER = None
     FAILED = None
     SNATCHED_BEST = None
-
+    ARCHIVED = None
 
 Quality.DOWNLOADED = [Quality.compositeStatus(DOWNLOADED, x) for x in Quality.qualityStrings.keys()]
 Quality.SNATCHED = [Quality.compositeStatus(SNATCHED, x) for x in Quality.qualityStrings.keys()]
 Quality.SNATCHED_PROPER = [Quality.compositeStatus(SNATCHED_PROPER, x) for x in Quality.qualityStrings.keys()]
 Quality.FAILED = [Quality.compositeStatus(FAILED, x) for x in Quality.qualityStrings.keys()]
 Quality.SNATCHED_BEST = [Quality.compositeStatus(SNATCHED_BEST, x) for x in Quality.qualityStrings.keys()]
+Quality.ARCHIVED = [Quality.compositeStatus(ARCHIVED, x) for x in Quality.qualityStrings.keys()]
 
 SD = Quality.combineQualities([Quality.SDTV, Quality.SDDVD], [])
 HD = Quality.combineQualities(

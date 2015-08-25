@@ -48,7 +48,7 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
     get_xem_numbering_for_show, get_scene_absolute_numbering_for_show, get_xem_absolute_numbering_for_show, \
     get_scene_absolute_numbering
 
-import imdbPopular
+from imdbPopular import imdb_popular
 
 from dateutil import tz, parser as dateutil_parser
 from unrar2 import RarFile
@@ -159,8 +159,8 @@ class BaseHandler(RequestHandler):
     def __init__(self, *args, **kwargs):
         super(BaseHandler, self).__init__(*args, **kwargs)
 
-    def set_default_headers(self):
-        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    #def set_default_headers(self):
+        #self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
     def write_error(self, status_code, **kwargs):
         # handle 404 http errors
@@ -392,15 +392,13 @@ class WebRoot(WebHandler):
             if which == 'banner_thumb':
                 image_file_name = cache_obj.banner_thumb_path(show)
             if which == 'fanart':
-                if not cache_obj.has_fanart(show):
-                    cache_obj.fill_cache(sickbeard.helpers.findCertainShow(sickbeard.showList, int(show)))
                 image_file_name = cache_obj.fanart_path(show)
 
             if ek.ek(os.path.isfile, image_file_name):
                 static_image_path = os.path.normpath(image_file_name.replace(sickbeard.CACHE_DIR, '/cache'))
 
         static_image_path = static_image_path.replace('\\', '/')
-        return self.redirect(static_image_path)
+        return self.redirect(static_image_path, permanent=True)
 
     def showNetworkLogo(self, show=None):
         show = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
@@ -412,7 +410,7 @@ class WebRoot(WebHandler):
 
         static_image_path = '%s/images/network/%s.png' % (sickbeard.WEB_ROOT, image_file_name)
 
-        return self.redirect(static_image_path)
+        return self.redirect(static_image_path, permanent=True)
 
     def setHomeLayout(self, layout):
 
@@ -2575,13 +2573,14 @@ class HomeAddShows(Home):
         Fetches data from IMDB to show a list of popular shows.
         """
         t = PageTemplate(rh=self, file="home_popularShows.mako")
+        e = None
 
         try:
-            popular_shows = imdbPopular.fetch_popular_shows()
-        except:
+            popular_shows = imdb_popular.fetch_popular_shows()
+        except Exception as e:
             popular_shows = None
 
-        return t.render(submenu = self.HomeMenu(), popular_shows=popular_shows)
+        return t.render(submenu = self.HomeMenu(), popular_shows=popular_shows, imdb_exception=e)
 
 
     def addShowToBlacklist(self, indexer_id):
@@ -3951,8 +3950,8 @@ class ConfigSearch(Config):
                    nzbget_host=None, nzbget_use_https=None, backlog_frequency=None,
                    dailysearch_frequency=None, nzb_method=None, torrent_method=None, usenet_retention=None,
                    download_propers=None, check_propers_interval=None, allow_high_priority=None, sab_forced=None,
-                   randomize_providers=None, backlog_startup=None, use_failed_downloads=None, delete_failed=None,
-                   dailysearch_startup=None, torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
+                   randomize_providers=None, use_failed_downloads=None, delete_failed=None,
+                   torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
                    torrent_rpcurl=None, torrent_auth_type = None, ignore_words=None, require_words=None):
@@ -3987,8 +3986,6 @@ class ConfigSearch(Config):
 
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
 
-        sickbeard.DAILYSEARCH_STARTUP = config.checkbox_to_value(dailysearch_startup)
-        sickbeard.BACKLOG_STARTUP = config.checkbox_to_value(backlog_startup)
         sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
         sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
 

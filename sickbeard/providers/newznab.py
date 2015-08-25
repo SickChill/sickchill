@@ -216,8 +216,8 @@ class NewznabProvider(generic.NZBProvider):
 
         if self.needs_auth and not self.key:
             logger.log(u"Incorrect authentication credentials for " + self.name + " : " + "API key is missing",
-                       logger.DEBUG)
-            raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
+                       logger.WARNING)
+            #raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
 

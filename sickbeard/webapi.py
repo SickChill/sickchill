@@ -80,8 +80,8 @@ class ApiHandler(RequestHandler):
     def __init__(self, *args, **kwargs):
         super(ApiHandler, self).__init__(*args, **kwargs)
 
-    def set_default_headers(self):
-        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    #def set_default_headers(self):
+        #self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
     def get(self, *args, **kwargs):
         kwargs = self.request.arguments
@@ -1387,7 +1387,8 @@ class CMD_PostProcess(ApiCall):
                                     "force_replace": {"desc": "Force already Post Processed Dir/Files"},
                                     "return_data": {"desc": "Returns result for the process"},
                                     "process_method": {"desc": "Symlink, hardlink, move or copy the file"},
-                                    "is_priority": {"desc": "Replace the file even if it exists in a higher quality)"},
+                                    "is_priority": {"desc": "Replace the file even if it exists in a higher quality"},
+                                    "failed": {"desc": "Mark download as failed"},
                                     "type": {"desc": "What type of postprocess request is this, auto of manual"}
              }
     }

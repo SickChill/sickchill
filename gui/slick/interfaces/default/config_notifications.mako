@@ -985,6 +985,7 @@
                                         <option value="echo" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'echo']}>Pushover Echo (long)</option>
                                         <option value="updown" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'updown']}>Up Down (long)</option>
                                         <option value="none" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'none']}>None (silent)</option>
+                                        <option value="default" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'default']}>Device specific</option>
                                     </select>
                                 </label>
                                 <label>
