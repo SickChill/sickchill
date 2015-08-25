@@ -94,7 +94,11 @@ class DelugeDAPI(GenericClient):
 
     def _set_torrent_path(self, result):
 
-        return True
+        path = sickbeard.TORRENT_PATH
+        if path:
+            if self.drpc.set_torrent_path(result.hash, path):
+                return True
+        return False
 
     def _set_torrent_pause(self, result):
 
@@ -173,6 +177,19 @@ class DelugeRPC(object):
             self.client.label.set_torrent(torrent_id, label).get()
         except Exception as err:
             logger.log('DelugeD: Failed to set label for torrent: ' + err + ' ' + traceback.format_exc(), logger.ERROR)
+            return False
+        finally:
+            if self.client:
+                self.disconnect()
+        return True
+
+    def set_torrent_path(self, torrent_id, path):
+        try:
+            self.connect()
+            self.client.core.set_torrent_move_completed_path(torrent_id, path).get()
+            self.client.core.set_torrent_move_completed(torrent_id, 1).get()
+        except Exception as err:
+            logger.log('DelugeD: Failed to set path for torrent: ' + err + ' ' + traceback.format_exc(), logger.ERROR)
             return False
         finally:
             if self.client:
