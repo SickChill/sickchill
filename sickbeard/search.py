@@ -591,8 +591,9 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
         if MULTI_EP_RESULT in foundResults[curProvider.name]:
             for _multiResult in foundResults[curProvider.name][MULTI_EP_RESULT]:
 
-                logger.log(u"Seeing if we want to bother with multi-episode result " + multiResult.name, logger.DEBUG)
+                logger.log(u"Seeing if we want to bother with multi-episode result " + _multiResult.name, logger.DEBUG)
 
+		# Filter result by ignore/required/whitelist/blacklist/quality, etc
                 multiResult = pickBestResult(_multiResult, show)
                 if not multiResult:
                     continue
