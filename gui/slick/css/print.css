@@ -8,4 +8,9 @@
     a[href]:after {
         content: none !important;
     }
+
+    #content {
+        margin-left: 0;
+        margin-right: 0;
+    }
 }

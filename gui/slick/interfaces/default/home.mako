@@ -517,30 +517,30 @@ $(document).ready(function(){
             <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
         </div>
 
-        <div id="progressbar${curShow.indexerid}"></div>
-            <script type="text/javascript">
-                $(function() {
-                    $("#progressbar${curShow.indexerid}").progressbar({
-                    value: ${progressbar_percent} });
-                    classvalue = ${progressbar_percent}
-                    if (classvalue<20) {
-                        classtoadd = "progress-20"
-                    }
-                    if (classvalue>=20 && classvalue<40) {
-                        classtoadd = "progress-40"
-                    }
-                    if (classvalue>=40 && classvalue<80) {
-                        classtoadd = "progress-60"
-                    }
-                    if (classvalue>=80 && classvalue<100) {
-                        classtoadd = "progress-80"
-                    }
-                    if (classvalue==100) {
-                        classtoadd = "progress-100"
-                    }
-                    $("#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
-                });
-            </script>
+        <div id="progressbar${curShow.indexerid}" class="hidden-print"></div>
+        <script type="text/javascript">
+            $(function() {
+                $("#progressbar${curShow.indexerid}").progressbar({
+                value: ${progressbar_percent} });
+                classvalue = ${progressbar_percent}
+                if (classvalue<20) {
+                    classtoadd = "progress-20"
+                }
+                if (classvalue>=20 && classvalue<40) {
+                    classtoadd = "progress-40"
+                }
+                if (classvalue>=40 && classvalue<80) {
+                    classtoadd = "progress-60"
+                }
+                if (classvalue>=80 && classvalue<100) {
+                    classtoadd = "progress-80"
+                }
+                if (classvalue==100) {
+                    classtoadd = "progress-100"
+                }
+                $("#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
+            });
+        </script>
 
         <div class="show-title">
             ${curShow.name}
