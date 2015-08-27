@@ -388,7 +388,7 @@ $(document).ready(function(){
     <h1 class="title">${title}</h1>
 % endif
 
-<div id="HomeLayout" class="pull-right" style="margin-top: -40px;">
+<div id="HomeLayout" class="pull-right hidden-print" style="margin-top: -40px;">
     % if layout != 'poster':
         <button id="popover" type="button" class="btn btn-inline">Select Column</button>
     % endif
@@ -517,30 +517,30 @@ $(document).ready(function(){
             <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
         </div>
 
-        <div id="progressbar${curShow.indexerid}"></div>
-            <script type="text/javascript">
-                $(function() {
-                    $("#progressbar${curShow.indexerid}").progressbar({
-                    value: ${progressbar_percent} });
-                    classvalue = ${progressbar_percent}
-                    if (classvalue<20) {
-                        classtoadd = "progress-20"
-                    }
-                    if (classvalue>=20 && classvalue<40) {
-                        classtoadd = "progress-40"
-                    }
-                    if (classvalue>=40 && classvalue<80) {
-                        classtoadd = "progress-60"
-                    }
-                    if (classvalue>=80 && classvalue<100) {
-                        classtoadd = "progress-80"
-                    }
-                    if (classvalue==100) {
-                        classtoadd = "progress-100"
-                    }
-                    $("#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
-                });
-            </script>
+        <div id="progressbar${curShow.indexerid}" class="hidden-print"></div>
+        <script type="text/javascript">
+            $(function() {
+                $("#progressbar${curShow.indexerid}").progressbar({
+                value: ${progressbar_percent} });
+                classvalue = ${progressbar_percent}
+                if (classvalue<20) {
+                    classtoadd = "progress-20"
+                }
+                if (classvalue>=20 && classvalue<40) {
+                    classtoadd = "progress-40"
+                }
+                if (classvalue>=40 && classvalue<80) {
+                    classtoadd = "progress-60"
+                }
+                if (classvalue>=80 && classvalue<100) {
+                    classtoadd = "progress-80"
+                }
+                if (classvalue==100) {
+                    classtoadd = "progress-100"
+                }
+                $("#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
+            });
+        </script>
 
         <div class="show-title">
             ${curShow.name}
@@ -623,7 +623,7 @@ $(document).ready(function(){
         </tr>
     </thead>
 
-    <tfoot>
+    <tfoot class="hidden-print">
         <tr>
             <th rowspan="1" colspan="1" align="center"><a href="${sbRoot}/home/addShows/">Add Show</a></th>
             <th>&nbsp;</th>
@@ -770,9 +770,11 @@ $(document).ready(function(){
     % if layout != 'simple':
         <td align="center">
         % if curShow.network:
-            <span title="${curShow.network}"><img id="network" width="54" height="27" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
+            <span title="${curShow.network}" class="hidden-print"><img id="network" width="54" height="27" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
+            <span class="visible-print-inline">${curShow.network}</span>
         % else:
-            <span title="No Network"><img id="network" width="54" height="27" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+            <span title="No Network" class="hidden-print"><img id="network" width="54" height="27" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+            <span class="visible-print-inline">No Network</span>
         % endif
         </td>
     % else:
@@ -787,7 +789,9 @@ $(document).ready(function(){
         <td align="center"><span class="quality Custom">Custom</span></td>
     % endif
 
-        <td align="center"><span style="display: none;">${download_stat}</span><div id="progressbar${curShow.indexerid}" style="position:relative;"></div>
+        <td align="center">
+            <span style="display: none;">${download_stat}</span><div id="progressbar${curShow.indexerid}" style="position:relative;" class="hidden-print"></div>
+            <span class="visible-print-inline">${download_stat}</span>
             <script type="text/javascript">
                 $(function() {
                     $("#progressbar${curShow.indexerid}").progressbar({
