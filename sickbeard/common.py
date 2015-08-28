@@ -278,6 +278,8 @@ class Quality:
         try:
             parser = createParser(filename)
         except Exception:
+            if parser:
+                del parser
             parser = None
             pass
 
@@ -287,12 +289,13 @@ class Quality:
         try:
             metadata = extractMetadata(parser)
         except Exception:
+            if metadata:
+                del metadata
             metadata = None
             pass
 
-        del parser
-
         if not metadata:
+            del parser
             return Quality.UNKNOWN
 
         height = 0
@@ -306,6 +309,7 @@ class Quality:
                         height = int(metagroup.get('height') or 0)
 
         del metadata
+        del parser
 
         if not height:
             return Quality.UNKNOWN
