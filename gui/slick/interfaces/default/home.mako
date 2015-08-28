@@ -108,6 +108,16 @@ $.tablesorter.addParser({
 
 $(document).ready(function(){
 
+    // This needs to be refined to work a little faster.
+    $('.progressbar').each(function(progressbar){
+        var showId = $(this).data('show-id');
+        var percentage = $(this).data('progress-percentage');
+        var classToAdd = percentage > 80 ? 100 : percentage > 60 ? 80 : percentage > 40 ? 60 : percentage > 20 ? 40 : 20;
+        $(this).progressbar({ value:  percentage });
+        $(this).data('progress-text') ? $(this).append('<div class="progressbarText" title="' + $(this).data('progress-tip') + '">' + $(this).data('progress-text') + '</div>') : '';
+        $(this).find('.ui-progressbar-value').addClass('progress-' + classToAdd);
+    });
+
     $("img#network").on('error', function(){
         $(this).parent().text($(this).attr('alt'));
         $(this).remove();
@@ -517,30 +527,7 @@ $(document).ready(function(){
             <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
         </div>
 
-        <div id="progressbar${curShow.indexerid}" class="hidden-print"></div>
-        <script type="text/javascript">
-            $(function() {
-                $("#progressbar${curShow.indexerid}").progressbar({
-                value: ${progressbar_percent} });
-                classvalue = ${progressbar_percent}
-                if (classvalue<20) {
-                    classtoadd = "progress-20"
-                }
-                if (classvalue>=20 && classvalue<40) {
-                    classtoadd = "progress-40"
-                }
-                if (classvalue>=40 && classvalue<80) {
-                    classtoadd = "progress-60"
-                }
-                if (classvalue>=80 && classvalue<100) {
-                    classtoadd = "progress-80"
-                }
-                if (classvalue==100) {
-                    classtoadd = "progress-100"
-                }
-                $("#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
-            });
-        </script>
+        <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}"></div>
 
         <div class="show-title">
             ${curShow.name}
@@ -790,36 +777,13 @@ $(document).ready(function(){
     % endif
 
         <td align="center">
-            <span style="display: none;">${download_stat}</span><div id="progressbar${curShow.indexerid}" style="position:relative;" class="hidden-print"></div>
+            <span style="display: none;">${download_stat}</span>
+            <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}" data-progress-text="${download_stat}" data-progress-tip="${download_stat_tip}"></div>
             <span class="visible-print-inline">${download_stat}</span>
-            <script type="text/javascript">
-                $(function() {
-                    $("#progressbar${curShow.indexerid}").progressbar({
-                    value: ${progressbar_percent} });
-                    $("#progressbar${curShow.indexerid}").append( "<div class='progressbarText' title='${download_stat_tip}'>${download_stat}</div>" )
-                    classvalue = ${progressbar_percent}
-                    if (classvalue<20) {
-                        classtoadd = "progress-20"
-                    }
-                    if (classvalue>=20 && classvalue<40) {
-                        classtoadd = "progress-40"
-                    }
-                    if (classvalue>=40 && classvalue<80) {
-                        classtoadd = "progress-60"
-                    }
-                    if (classvalue>=80 && classvalue<100) {
-                        classtoadd = "progress-80"
-                    }
-                    if (classvalue==100) {
-                        classtoadd = "progress-100"
-                    }
-                    $("#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
-                });
-            </script>
         </td>
 
         <td align="center">
-            <img src="${sbRoot}/images/${('no16.png", alt="No"', 'yes16.png", alt="Yes"')[int(curShow.paused) == 0 and curShow.status == 'Continuing']} width="16" height="16" />
+            <img src="${sbRoot}/images/${('no16.png" alt="No"', 'yes16.png" alt="Yes"')[int(curShow.paused) == 0 and curShow.status == 'Continuing']} width="16" height="16" />
         </td>
 
         <td align="center">
