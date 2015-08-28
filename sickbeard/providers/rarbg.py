@@ -83,7 +83,7 @@ class RarbgProvider(generic.TorrentProvider):
                         'ranked': '&ranked={ranked}',
                         'token': '&token={token}',
         }
-        
+
         self.defaultOptions = self.urlOptions['categories'].format(categories='tv') + \
                                 self.urlOptions['limit'].format(limit='100') + \
                                 self.urlOptions['format'].format(format='json')
@@ -91,7 +91,7 @@ class RarbgProvider(generic.TorrentProvider):
         self.next_request = datetime.datetime.now()
 
         self.cache = RarbgCache(self)
-        
+
         self.headers = {'User-Agent': USER_AGENT}
 
     def isEnabled(self):
@@ -224,7 +224,7 @@ class RarbgProvider(generic.TorrentProvider):
 
                 if self.minseed:
                     searchURL += self.urlOptions['seeders'].format(min_seeders=int(self.minseed))
-                    
+
                 if self.sorting:
                     searchURL += self.urlOptions['sorting'].format(sorting=self.sorting)
 

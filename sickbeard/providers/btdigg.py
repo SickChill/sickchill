@@ -30,6 +30,7 @@ from sickbeard import db
 from sickbeard.common import WANTED
 from sickbeard.exceptions import ex
 from sickbeard.config import naming_ep_type
+from sickbeard.helpers import sanitizeSceneName
 
 class BTDIGGProvider(generic.TorrentProvider):
 
@@ -78,10 +79,10 @@ class BTDIGGProvider(generic.TorrentProvider):
         for sqlEp in sqlResults:
             for show_name in set(show_name_helpers.allPossibleShowNames(show)):
                 if show.air_by_date:
-                    ep_string = show_name_helpers.sanitizeSceneName(show_name) +' '+ str(datetime.date.fromordinal(sqlEp["airdate"])).replace('-', '.')
+                    ep_string = sanitizeSceneName(show_name) +' '+ str(datetime.date.fromordinal(sqlEp["airdate"])).replace('-', '.')
                     search_string.append(ep_string)
                 else:
-                    ep_string = show_name_helpers.sanitizeSceneName(show_name) + ' S%02d' % sqlEp["season"]
+                    ep_string = sanitizeSceneName(show_name) + ' S%02d' % sqlEp["season"]
                     search_string.append(ep_string)
 
         return search_string
@@ -95,7 +96,7 @@ class BTDIGGProvider(generic.TorrentProvider):
         search_string = []
 
         for show_name in set(show_name_helpers.allPossibleShowNames(ep_obj.show)):
-            ep_string = show_name_helpers.sanitizeSceneName(show_name)
+            ep_string = sanitizeSceneName(show_name)
             if ep_obj.show.air_by_date:
                 ep_string += ' ' + str(ep_obj.airdate).replace('-', '.')
             else:
