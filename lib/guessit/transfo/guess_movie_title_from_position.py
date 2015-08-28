@@ -44,14 +44,16 @@ class GuessMovieTitleFromPosition(Transformer):
         if 'title' in mtree.info:
             return
 
-        basename = mtree.node_at((-2,))
+        path_nodes = list(filter(lambda x: x.category == 'path', mtree.nodes()))
+
+        basename = path_nodes[-2]
         all_valid = lambda leaf: len(leaf.clean_value) > 0
         basename_leftover = list(basename.unidentified_leaves(valid=all_valid))
 
         try:
-            folder = mtree.node_at((-3,))
+            folder = path_nodes[-3]
             folder_leftover = list(folder.unidentified_leaves())
-        except ValueError:
+        except IndexError:
             folder = None
             folder_leftover = []
 
@@ -164,7 +166,6 @@ class GuessMovieTitleFromPosition(Transformer):
 
         # if nothing worked, look if we have a very small group at the beginning
         # of the basename
-        basename = mtree.node_at((-2,))
         basename_leftover = basename.unidentified_leaves(valid=lambda leaf: True)
         try:
             found_property(next(basename_leftover), 'title', confidence=0.4)

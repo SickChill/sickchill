@@ -503,7 +503,7 @@ def smart_merge(guesses):
 
     # 1- try to merge similar information together and give it a higher
     #    confidence
-    for int_part in ('year', 'season', 'episodeNumber'):
+    for int_part in ('year', 'season'):
         merge_similar_guesses(guesses, int_part, choose_int)
 
     for string_part in ('title', 'series', 'container', 'format',

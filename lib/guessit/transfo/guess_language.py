@@ -133,6 +133,8 @@ class GuessLanguage(Transformer):
 
     def post_process(self, mtree, options=None):
         # 1- try to promote language to subtitle language where it makes sense
+        prefixes = []
+
         for node in mtree.nodes():
             if 'language' not in node.guess:
                 continue
@@ -141,7 +143,8 @@ class GuessLanguage(Transformer):
             #   the group is the last group of the filename, it is probably the
             #   language of the subtitle
             #   (eg: 'xxx.english.srt')
-            if (mtree.node_at((-1,)).value.lower() in subtitle_exts and
+            ext_node = list(filter(lambda x: x.category == 'path', mtree.nodes()))[-1]
+            if (ext_node.value.lower() in subtitle_exts and
                     node == list(mtree.leaves())[-2]):
                 self.promote_subtitle(node)
 
@@ -155,11 +158,7 @@ class GuessLanguage(Transformer):
             for sub_prefix in subtitle_prefixes:
                 if (sub_prefix in find_words(group_str) and
                         0 <= group_str.find(sub_prefix) < (node.span[0] - explicit_group.span[0])):
-                    self.promote_subtitle(node)
-
-            for sub_suffix in subtitle_suffixes:
-                if (sub_suffix in find_words(group_str) and
-                        (node.span[0] - explicit_group.span[0]) < group_str.find(sub_suffix)):
+                    prefixes.append((explicit_group, sub_prefix))
                     self.promote_subtitle(node)
 
             # - if a language is in an explicit group just preceded by "st",
@@ -171,3 +170,21 @@ class GuessLanguage(Transformer):
                     self.promote_subtitle(node)
             except IndexError:
                 pass
+
+        for node in mtree.nodes():
+            if 'language' not in node.guess:
+                continue
+
+            explicit_group = mtree.node_at(node.node_idx[:2])
+            group_str = explicit_group.value.lower()
+
+            for sub_suffix in subtitle_suffixes:
+                if (sub_suffix in find_words(group_str) and
+                            (node.span[0] - explicit_group.span[0]) < group_str.find(sub_suffix)):
+                    is_a_prefix = False
+                    for prefix in prefixes:
+                        if prefix[0] == explicit_group and group_str.find(prefix[1]) == group_str.find(sub_suffix):
+                            is_a_prefix = True
+                            break
+                    if not is_a_prefix:
+                        self.promote_subtitle(node)
