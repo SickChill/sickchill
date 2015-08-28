@@ -128,13 +128,14 @@ class GuessEpisodeInfoFromPosition(Transformer):
         if not eps:
             eps = [node for node in mtree.leaves() if 'date' in node.guess]
 
+        eps = sorted(eps, key=lambda ep: -ep.guess.confidence())
         if eps:
             self.match_from_epnum_position(mtree, eps[0], options)
 
         else:
             # if we don't have the episode number, but at least 2 groups in the
             # basename, then it's probably series - eptitle
-            basename = mtree.node_at((-2,))
+            basename = list(filter(lambda x: x.category == 'path', mtree.nodes()))[-2]
 
             title_candidates = self._filter_candidates(basename.unidentified_leaves(), options)
 
@@ -147,9 +148,10 @@ class GuessEpisodeInfoFromPosition(Transformer):
 
         # if we only have 1 remaining valid group in the folder containing the
         # file, then it's likely that it is the series name
+        path_nodes = list(filter(lambda x: x.category == 'path', mtree.nodes()))
         try:
-            series_candidates = list(mtree.node_at((-3,)).unidentified_leaves())
-        except ValueError:
+            series_candidates = list(path_nodes[-3].unidentified_leaves())
+        except IndexError:
             series_candidates = []
 
         if len(series_candidates) == 1:

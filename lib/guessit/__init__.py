@@ -93,6 +93,10 @@ from copy import deepcopy
 import babelfish
 import os.path
 import logging
+from guessit.options import get_opts
+import shlex
+# Needed for guessit.plugins.transformers.reload() to be called.
+from guessit.plugins import transformers
 
 log = logging.getLogger(__name__)
 
@@ -271,8 +275,16 @@ def guess_file_info(filename, info=None, options=None, **kwargs):
     """
     info = info or 'filename'
     options = options or {}
+
+    if isinstance(options, base_text_type):
+        args = shlex.split(options)
+        options = vars(get_opts().parse_args(args))
     if default_options:
-        merged_options = deepcopy(default_options)
+        if isinstance(default_options, base_text_type):
+            default_args = shlex.split(default_options)
+            merged_options = vars(get_opts().parse_args(default_args))
+        else:
+            merged_options = deepcopy(default_options)
         merged_options.update(options)
         options = merged_options
 

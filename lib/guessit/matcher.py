@@ -269,35 +269,29 @@ class GuessFinder(object):
                         self.process_node(node, partial_span=relative_span)
                     return
 
-
         # restore sentinels compensation
         if isinstance(result, Guess):
             guess = result
         else:
-            guess = Guess(result, confidence=self.confidence, input=string, span=span)
+            no_sentinel_string =string[1:-1]
+            guess = Guess(result, confidence=self.confidence, input=no_sentinel_string, span=span)
 
         if not iterative:
             found_guess(node, guess, logger=self.logger)
         else:
             absolute_span = (span[0] + node.offset, span[1] + node.offset)
             node.partition(span)
+            found_child = None
 
-            if node.is_leaf():
-                # FIXME: this seems like it is dead code...
-                found_guess(node, guess, logger=self.logger)
+            for child in node.children:
+                if child.span == absolute_span:
+                    # if we have a match on one of our children, mark it as such...
+                    found_guess(child, guess, logger=self.logger)
+                    found_child = child
+                    break
 
-            else:
-                found_child = None
-
-                for child in node.children:
-                    if child.span == absolute_span:
-                        # if we have a match on one of our children, mark it as such...
-                        found_guess(child, guess, logger=self.logger)
-                        found_child = child
-                        break
-
-                # ...and only then recurse on the other children
-                for child in node.children:
-                    if child is not found_child:
-                        self.process_node(child)
+            # ...and only then recurse on the other children
+            for child in node.children:
+                if child is not found_child:
+                    self.process_node(child)
 
