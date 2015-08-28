@@ -78,8 +78,6 @@ $.tablesorter.addParser({
         return false;
     },
     format: function(s) {
-        s = s.substring(s.length/2);
-
         match = s.match(/^(.*)/);
 
         if (match == null || match[1] == "?")
@@ -132,7 +130,7 @@ $(document).ready(function(){
             1: function(node) { return $(node).find("span").text().toLowerCase(); },
             3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
             4: function(node) { return $(node).find("span").text().toLowerCase(); },
-            5: function(node) { return $(node).find("span").text(); },
+            5: function(node) { return $(node).find("span:first").text(); },
             6: function(node) { return $(node).find("img").attr("alt"); }
         },
         widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
@@ -223,7 +221,7 @@ $(document).ready(function(){
             1: function(node) { return $(node).find("span").text().toLowerCase(); },
             3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
             4: function(node) { return $(node).find("span").text().toLowerCase(); },
-            5: function(node) { return $(node).find("span").text(); },
+            5: function(node) { return $(node).find("span:first").text(); },
             6: function(node) { return $(node).find("img").attr("alt"); }
         },
         widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
@@ -779,6 +777,7 @@ $(document).ready(function(){
     % endif
 
         <td align="center">
+            ## This first span is used for sorting and is never displayed to user
             <span style="display: none;">${download_stat}</span>
             <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}" data-progress-text="${download_stat}" data-progress-tip="${download_stat_tip}"></div>
             <span class="visible-print-inline">${download_stat}</span>
