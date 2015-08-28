@@ -182,17 +182,9 @@ class Quality:
         if quality != Quality.UNKNOWN:
             return quality
 
-        name = os.path.basename(name)
-
-        # if we have our exact text then assume we put it there
-        for x in sorted(Quality.qualityStrings.keys(), reverse=True):
-            if x == Quality.UNKNOWN or x == Quality.NONE:
-                continue
-
-            regex = '\W' + Quality.qualityStrings[x].replace(' ', '\W') + '\W'
-            regex_match = re.search(regex, name, re.I)
-            if regex_match:
-                return x
+        quality = Quality.assumeQuality(name)
+        if quality != Quality.UNKNOWN:
+            return quality
 
         return Quality.UNKNOWN
 
@@ -275,6 +267,7 @@ class Quality:
         from hachoir_parser import createParser
         from hachoir_metadata import extractMetadata
 
+        parser = None
         try:
             parser = createParser(filename)
         except Exception:
@@ -286,6 +279,7 @@ class Quality:
         if not parser:
             return Quality.UNKNOWN
 
+        metadata = None
         try:
             metadata = extractMetadata(parser)
         except Exception:
