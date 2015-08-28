@@ -6,11 +6,11 @@ fonts
 @font-face {
 	font-family: 'Open Sans';
 
-	src:url('fonts/OpenSans-Regular-webfont.eot');
-	src:url('fonts/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-		url('fonts/OpenSans-Regular-webfont.woff') format('woff'),
-		url('fonts/OpenSans-Regular-webfont.ttf') format('truetype'),
-		url('fonts/OpenSans-Regular-webfont.svg#OpenSansRegular') format('svg');
+	src: url('fonts/OpenSans-Regular-webfont.eot');
+	src: url('fonts/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/OpenSans-Regular-webfont.woff') format('woff'),
+		 url('fonts/OpenSans-Regular-webfont.ttf') format('truetype'),
+		 url('fonts/OpenSans-Regular-webfont.svg#OpenSansRegular') format('svg');
 	font-weight: normal;
 	font-weight: 400;
 	font-style: normal;
@@ -19,11 +19,11 @@ fonts
 /* Italic */
 @font-face {
 	font-family: 'Open Sans';
-	src:url('fonts/OpenSans-Italic-webfont.eot');
-	src:url('fonts/OpenSans-Italic-webfont.eot?#iefix') format('embedded-opentype'),
-		url('fonts/OpenSans-Italic-webfont.woff') format('woff'),
-		url('fonts/OpenSans-Italic-webfont.ttf') format('truetype'),
-		url('fonts/OpenSans-Italic-webfont.svg#OpenSansItalic') format('svg');
+	src: url('fonts/OpenSans-Italic-webfont.eot');
+	src: url('fonts/OpenSans-Italic-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/OpenSans-Italic-webfont.woff') format('woff'),
+		 url('fonts/OpenSans-Italic-webfont.ttf') format('truetype'),
+		 url('fonts/OpenSans-Italic-webfont.svg#OpenSansItalic') format('svg');
 	font-weight: normal;
 	font-weight: 400;
 	font-style: italic;
@@ -32,11 +32,11 @@ fonts
 /* Light */
 @font-face {
 	font-family: 'Open Sans';
-	src:url('fonts/OpenSans-Light-webfont.eot');
-	src:url('fonts/OpenSans-Light-webfont.eot?#iefix') format('embedded-opentype'),
-		url('fonts/OpenSans-Light-webfont.woff') format('woff'),
-		url('fonts/OpenSans-Light-webfont.ttf') format('truetype'),
-		url('fonts/OpenSans-Light-webfont.svg#OpenSansLight') format('svg');
+	src: url('fonts/OpenSans-Light-webfont.eot');
+	src: url('fonts/OpenSans-Light-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/OpenSans-Light-webfont.woff') format('woff'),
+		 url('fonts/OpenSans-Light-webfont.ttf') format('truetype'),
+		 url('fonts/OpenSans-Light-webfont.svg#OpenSansLight') format('svg');
 	font-weight: 200;
 	font-style: normal;
 }
@@ -44,11 +44,11 @@ fonts
 /* Light Italic */
 @font-face {
 	font-family: 'Open Sans';
-	src:url('fonts/OpenSans-LightItalic-webfont.eot');
-	src:url('fonts/OpenSans-LightItalic-webfont.eot?#iefix') format('embedded-opentype'),
-		url('fonts/OpenSans-LightItalic-webfont.woff') format('woff'),
-		url('fonts/OpenSans-LightItalic-webfont.ttf') format('truetype'),
-		url('fonts/OpenSans-LightItalic-webfont.svg#OpenSansLightItalic') format('svg');
+	src: url('fonts/OpenSans-LightItalic-webfont.eot');
+	src: url('fonts/OpenSans-LightItalic-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/OpenSans-LightItalic-webfont.woff') format('woff'),
+		 url('fonts/OpenSans-LightItalic-webfont.ttf') format('truetype'),
+		 url('fonts/OpenSans-LightItalic-webfont.svg#OpenSansLightItalic') format('svg');
 	font-weight: 200;
 	font-style: italic;
 }
@@ -56,11 +56,11 @@ fonts
 /* Semibold */
 @font-face {
 	font-family: 'Open Sans';
-	src:url('fonts/OpenSans-Semibold-webfont.eot');
-	src:url('fonts/OpenSans-Semibold-webfont.eot?#iefix') format('embedded-opentype'),
-		url('fonts/OpenSans-Semibold-webfont.woff') format('woff'),
-		url('fonts/OpenSans-Semibold-webfont.ttf') format('truetype'),
-		url('fonts/OpenSans-Semibold-webfont.svg#OpenSansSemibold') format('svg');
+	src: url('fonts/OpenSans-Semibold-webfont.eot');
+	src: url('fonts/OpenSans-Semibold-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/OpenSans-Semibold-webfont.woff') format('woff'),
+		 url('fonts/OpenSans-Semibold-webfont.ttf') format('truetype'),
+		 url('fonts/OpenSans-Semibold-webfont.svg#OpenSansSemibold') format('svg');
 	font-weight: 600;
 	font-style: normal;
 }
@@ -68,11 +68,11 @@ fonts
 /* Semibold Italic */
 @font-face {
 	font-family: 'Open Sans';
-	src:url('fonts/OpenSans-SemiboldItalic-webfont.eot');
-	src:url('fonts/OpenSans-SemiboldItalic-webfont.eot?#iefix') format('embedded-opentype'),
-		url('fonts/OpenSans-SemiboldItalic-webfont.woff') format('woff'),
-		url('fonts/OpenSans-SemiboldItalic-webfont.ttf') format('truetype'),
-		url('fonts/OpenSans-SemiboldItalic-webfont.svg#OpenSansSemiboldItalic') format('svg');
+	src: url('fonts/OpenSans-SemiboldItalic-webfont.eot');
+	src: url('fonts/OpenSans-SemiboldItalic-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/OpenSans-SemiboldItalic-webfont.woff') format('woff'),
+		 url('fonts/OpenSans-SemiboldItalic-webfont.ttf') format('truetype'),
+		 url('fonts/OpenSans-SemiboldItalic-webfont.svg#OpenSansSemiboldItalic') format('svg');
 	font-weight: 600;
 	font-style: italic;
 }
@@ -80,11 +80,11 @@ fonts
 /* Bold */
 @font-face {
 	font-family: 'Open Sans';
-	src:url('fonts/OpenSans-Semibold-webfont.eot');
-	src:url('fonts/OpenSans-Semibold-webfont.eot?#iefix') format('embedded-opentype'),
-		url('fonts/OpenSans-Semibold-webfont.woff') format('woff'),
-		url('fonts/OpenSans-Semibold-webfont.ttf') format('truetype'),
-		url('fonts/OpenSans-Semibold-webfont.svg#OpenSansSemibold') format('svg');
+	src: url('fonts/OpenSans-Semibold-webfont.eot');
+	src: url('fonts/OpenSans-Semibold-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/OpenSans-Semibold-webfont.woff') format('woff'),
+		 url('fonts/OpenSans-Semibold-webfont.ttf') format('truetype'),
+		 url('fonts/OpenSans-Semibold-webfont.svg#OpenSansSemibold') format('svg');
 	font-weight: bold;
 	font-weight: 700;
 	font-style: normal;
@@ -93,11 +93,11 @@ fonts
 /* Bold Italic */
 @font-face {
 	font-family: 'Open Sans';
-	src:url('fonts/OpenSans-SemiboldItalic-webfont.eot');
-	src:url('fonts/OpenSans-SemiboldItalic-webfont.eot?#iefix') format('embedded-opentype'),
-		url('fonts/OpenSans-SemiboldItalic-webfont.woff') format('woff'),
-		url('fonts/OpenSans-SemiboldItalic-webfont.ttf') format('truetype'),
-		url('fonts/OpenSans-SemiboldItalic-webfont.svg#OpenSansSemiboldItalic') format('svg');
+	src: url('fonts/OpenSans-SemiboldItalic-webfont.eot');
+	src: url('fonts/OpenSans-SemiboldItalic-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/OpenSans-SemiboldItalic-webfont.woff') format('woff'),
+		 url('fonts/OpenSans-SemiboldItalic-webfont.ttf') format('truetype'),
+		 url('fonts/OpenSans-SemiboldItalic-webfont.svg#OpenSansSemiboldItalic') format('svg');
 	font-weight: bold;
 	font-weight: 700;
 	font-style: italic;
@@ -106,11 +106,11 @@ fonts
 /* Extra Bold */
 @font-face {
 	font-family: 'Open Sans';
-	src:url('fonts/OpenSans-Bold-webfont.eot');
-	src:url('fonts/OpenSans-Bold-webfont.eot?#iefix') format('embedded-opentype'),
-		url('fonts/OpenSans-Bold-webfont.woff') format('woff'),
-		url('fonts/OpenSans-Bold-webfont.ttf') format('truetype'),
-		url('fonts/OpenSans-Bold-webfont.svg#OpenSansBold') format('svg');
+	src: url('fonts/OpenSans-Bold-webfont.eot');
+	src: url('fonts/OpenSans-Bold-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/OpenSans-Bold-webfont.woff') format('woff'),
+		 url('fonts/OpenSans-Bold-webfont.ttf') format('truetype'),
+		 url('fonts/OpenSans-Bold-webfont.svg#OpenSansBold') format('svg');
 	font-weight: 900;
 	font-style: normal;
 }
@@ -118,11 +118,11 @@ fonts
 /* Extra Bold Italic */
 @font-face {
 	font-family: 'Open Sans';
-	src:url('fonts/OpenSans-BoldItalic-webfont.eot');
-	src:url('fonts/OpenSans-BoldItalic-webfont.eot?#iefix') format('embedded-opentype'),
-		url('fonts/OpenSans-BoldItalic-webfont.woff') format('woff'),
-		url('fonts/OpenSans-BoldItalic-webfont.ttf') format('truetype'),
-		url('fonts/OpenSans-BoldItalic-webfont.svg#OpenSansBoldItalic') format('svg');
+	src: url('fonts/OpenSans-BoldItalic-webfont.eot');
+	src: url('fonts/OpenSans-BoldItalic-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/OpenSans-BoldItalic-webfont.woff') format('woff'),
+		 url('fonts/OpenSans-BoldItalic-webfont.ttf') format('truetype'),
+		 url('fonts/OpenSans-BoldItalic-webfont.svg#OpenSansBoldItalic') format('svg');
 	font-weight: 900;
 	font-style: italic;
 }
@@ -130,18 +130,18 @@ fonts
 /* Droid Sans */
 @font-face {
 	font-family: 'droid_sans_mono';
-	src:url('fonts/droidsansmono-webfont.eot');
-	src:url('fonts/droidsansmono-webfont.eot?#iefix') format('embedded-opentype'),
-		url('fonts/droidsansmono-webfont.woff') format('woff'),
-		url('fonts/droidsansmono-webfont.ttf') format('truetype'),
-		url('fonts/droidsansmono-webfont.svg#droid_sans_monoregular') format('svg');
+	src: url('fonts/droidsansmono-webfont.eot');
+	src: url('fonts/droidsansmono-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/droidsansmono-webfont.woff') format('woff'),
+		 url('fonts/droidsansmono-webfont.ttf') format('truetype'),
+		 url('fonts/droidsansmono-webfont.svg#droid_sans_monoregular') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
 
 
 /* =======================================================================
-inc_top.tmpl
+inc_top.mako
 ========================================================================== */
 
 .navbaricon {
@@ -280,6 +280,7 @@ inc_top.tmpl
 	color: #140F06;
 	text-decoration: none;
 }
+
 .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
 	color: #222;
 	text-decoration: none;
@@ -473,7 +474,7 @@ inc_top.tmpl
 }
 
 /* =======================================================================
-inc_bottom.tmpl
+inc_bottom.mako
 ========================================================================== */
 
 .footer {
@@ -490,7 +491,7 @@ inc_bottom.tmpl
 }
 
 /* =======================================================================
-inc_rootDirs.tmpl
+inc_rootDirs.mako
 ========================================================================== */
 .rootdir-selectbox,
 .rootdir-selectbox #rootDirs,
@@ -505,7 +506,7 @@ inc_rootDirs.tmpl
 }
 
 /* =======================================================================
-home.tmpl
+home.mako
 ========================================================================== */
 
 .imgbanner .banner {
@@ -665,23 +666,8 @@ home.tmpl
 .show .progress-40,
 .show .progress-60,
 .show .progress-80 {
+	border-radius: 0px;
 	height: 7px
-}
-
-.show .progress-80 {
-	border-radius: 0px;
-}
-
-.show .progress-60 {
-	border-radius: 0px;
-}
-
-.show .progress-40 {
-	border-radius: 0px;
-}
-
-.show .progress-20 {
-	border-radius: 0px;
 }
 
 .show-title {
@@ -795,18 +781,20 @@ td.tvShow a:hover {
 }
 
 #popover-target label {
-  margin: 0 5px;
-  display: block;
+    margin: 0 5px;
+    display: block;
 }
+
 #popover-target input {
-  margin-left: 5px;
+    margin-left: 5px;
 }
+
 .popover {
-  margin-left: -50px;
+    margin-left: -50px;
 }
 
 /* =======================================================================
-home_addShows.tmpl
+home_addShows.mako
 ========================================================================== */
 
 #addShowPortal {
@@ -866,8 +854,9 @@ div.buttontext p {
 }
 
 /* =======================================================================
-home_newShow.tmpl
+home_newShow.mako
 ========================================================================== */
+
 #addShowForm, #recommendedShowsForm {
 	width: 800px;
 	margin-left: auto;
@@ -896,7 +885,7 @@ home_newShow.tmpl
 }
 
 /* =======================================================================
-home_addExistingShow.tmpl
+home_addExistingShow.mako
 ========================================================================== */
 
 .existingtabs {
@@ -927,7 +916,7 @@ ul#rootDirStaticList li input[type="checkbox"] {
 }
 
 /* =======================================================================
-home_trendingShows.tmpl
+home_trendingShows.mako
 ========================================================================== */
 
 .traktShowTitleIcons {
@@ -971,9 +960,8 @@ home_trendingShows.tmpl
 	border-bottom: 1px solid #111;
 }
 
-
 /* =======================================================================
-home_postprocess.tmpl
+home_postprocess.mako
 ========================================================================== */
 
 #postProcess {
@@ -983,9 +971,8 @@ home_postprocess.tmpl
 	margin-left: auto;
 }
 
-
 /* =======================================================================
-displayShow.tmpl 
+displayShow.mako
 ========================================================================== */
 
 #posterCol {
@@ -1125,22 +1112,22 @@ ul.tags li a{
 }
 
 .unaired {
-  background-color: #f5f1e4;
+    background-color: #f5f1e4;
 }
 .skipped {
-  background-color: #bedeed;
+    background-color: #bedeed;
 }
 .good {
-  background-color: #c3e3c8;
+    background-color: #c3e3c8;
 }
 .qual {
-  background-color: #ffda8a;
+    background-color: #ffda8a;
 }
 .wanted {
-  background-color: #ffb0b0;
+    background-color: #ffb0b0;
 }
 .snatched {
-  background-color: #ebc1ea;
+    background-color: #ebc1ea;
 }
 
 span.unaired {
@@ -1217,7 +1204,7 @@ span.snatched b {
 }
 
 .displayShowTable td.col-search {
-    text-align: center;
+	text-align: center;
 }
 
 .sickbeardTable {
@@ -1229,6 +1216,7 @@ span.snatched b {
 	border: none;
 	empty-cells: show;
 }
+
 .sickbeardTable.display_show {
 	clear:both
 }
@@ -1343,7 +1331,7 @@ td.col-search {
 }
 
 /* =======================================================================
-comingEpisodes.tmpl
+comingEpisodes.mako
 ========================================================================== */
 
 .sort_data {
@@ -1437,7 +1425,7 @@ h2.day, h2.network {
 	float: left;
 	line-height: 1.4em;
 	font-size: 1.4em;
-	text-shadow: -1px -1px 0 #FFF);
+	text-shadow: -1px -1px 0 #FFF;
 }
 
 .tvshowTitleIcons {
@@ -1513,6 +1501,7 @@ h2.day, h2.network {
 .calendarShow .poster {
 	padding-bottom:2px
 }
+
 .calendarShow .poster img {
 	width:142px;
 	height:auto
@@ -1536,7 +1525,7 @@ h2.day, h2.network {
 }
 
 /* =======================================================================
-config*.tmpl
+config*.mako
 ========================================================================== */
 
 #config-content {
@@ -1610,6 +1599,7 @@ config*.tmpl
 #config label.space-right {
 	margin-right:10px
 }
+
 #config .metadataDiv {
 	display: none;
 }
@@ -1708,7 +1698,7 @@ select .selected {
 }
 
 /* =======================================================================
-config_postProcessing.tmpl
+config_postProcessing.mako
 ========================================================================== */
 
 #config div.example {
@@ -1751,7 +1741,7 @@ config_postProcessing.tmpl
 }
 
 /* =======================================================================
-config_notifications.tmpl
+config_notifications.mako
 ========================================================================== */
 
 div.metadata_options_wrapper {
@@ -1810,7 +1800,7 @@ div.metadataDiv .disabled {
 }
 
 /* =======================================================================
-manage*.tmpl
+manage*.mako
 ========================================================================== */
 
 .manageTable th {
@@ -1865,7 +1855,6 @@ td.tableright {
 a.whitelink {
 	color: #fff;
 }
-
 
 /* =======================================================================
 Global
@@ -1999,23 +1988,27 @@ div.blackwhitelist{
 	float:left;
 	text-align: center; 
 }
+
 div.blackwhitelist input {
 	margin: 5px 0px;
 }
+
 div.blackwhitelist.pool select{
 	width: 230px;
 }
+
 div.blackwhitelist.white select, div.blackwhitelist.black select {
 	width: 150px;
 }
+
 div.blackwhitelist span {
 	display: block;
 	text-align: center;
 }
+
 div.blackwhitelist.anidb, div.blackwhitelist.manual {
 	margin: 7px 0px;
 }
-
 
 /* =======================================================================
 bootstrap Overrides
@@ -2108,11 +2101,6 @@ input, textarea, select, .uneditable-input {
 	background-color: #333333;
 }
 
-.navbar-default .navbar-collapse,
-.navbar-default .navbar-form {
-	border-color: #3e3f3a;
-}
-
 .navbar-default .navbar-nav > .open > a,
 .navbar-default .navbar-nav > .open > a:hover,
 .navbar-default .navbar-nav > .open > a:focus {
@@ -2121,26 +2109,26 @@ input, textarea, select, .uneditable-input {
 }
 
 @media (max-width: 767px) {
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
-		color: #dddddd;
-  }
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
-		color: #ffffff;
-		background-color: transparent;
-  }
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
-		color: #ffffff;
-		background-color: #333333;
-  }
-  .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a,
-  .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:hover,
-  .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:focus {
-		color: #cccccc;
-		background-color: transparent;
-  }
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+        color: #dddddd;
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+        color: #ffffff;
+        background-color: transparent;
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+        color: #ffffff;
+        background-color: #333333;
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a,
+    .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:focus {
+        color: #cccccc;
+        background-color: transparent;
+    }
 }
 
 .navbar-default .navbar-link {
@@ -2682,7 +2670,6 @@ browser.css
 	background-position: -80px -224px;
 }
 
-
 /* =======================================================================
 formWizard.css
 ========================================================================== */
@@ -2886,6 +2873,7 @@ thead.tablesorter-stickyHeader {
 .tablesorter .filtered {
 	display: none;
 }
+
 .tablesorter input.tablesorter-filter {
 	width: 98%;
 	height: auto;
@@ -3074,6 +3062,7 @@ span.token-input-delete-token {
 	z-index: 0;
 	background-image: url(/images/poster-dark.jpg)
 }
+
 /* =======================================================================
 jquery.confirm.css
 ========================================================================== */
@@ -3174,12 +3163,12 @@ pnotify.css
 ========================================================================== */
 
 .ui-pnotify-sticker {
-    margin-top: -12px;
+	margin-top: -12px;
 }
 
 .ui-pnotify-closer {
-    margin-top: -12px;
-    margin-right: -10px;
+	margin-top: -12px;
+	margin-right: -10px;
 }
 
 /* =======================================================================
@@ -3190,67 +3179,67 @@ login.css
 	display: block;
 }
 
-	.login h1 {
-		padding: 0 0 10px;
-		font-size: 60px;
-		font-family: Lobster;
-		font-weight: normal;
-	}
+.login h1 {
+    padding: 0 0 10px;
+    font-size: 60px;
+    font-family: Lobster;
+    font-weight: normal;
+}
 
-	.login form {
-		padding: 0;
-		height: 300px;
-		width: 400px;
-		position: fixed;
-		left: 50%;
-		top: 50%;
-		margin: -200px 0 0 -200px;
-	}
-		@media all and (max-width: 480px) {
+.login form {
+    padding: 0;
+    height: 300px;
+    width: 400px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    margin: -200px 0 0 -200px;
+}
 
-			.login form {
-				padding: 0;
-				height: 300px;
-				width: 90%;
-				position: absolute;
-				left: 5%;
-				top: 10px;
-				margin: 0;
-			}
+@media all and (max-width: 480px) {
+    .login form {
+        padding: 0;
+        height: 300px;
+        width: 90%;
+        position: absolute;
+        left: 5%;
+        top: 10px;
+        margin: 0;
+    }
+}
 
-		}
+.login .ctrlHolder {
+    padding: 0;
+    margin: 0 0 20px;
+}
 
-	.login .ctrlHolder {
-		padding: 0;
-		margin: 0 0 20px;
-	}
-		.login .ctrlHolder:hover {
-			background: none;
-		}
+.login .ctrlHolder:hover {
+    background: none;
+}
 
-	.login input[type=text],
-	.login input[type=password] {
-		width: 100% !important;
-		font-size: 25px;
-		padding: 14px !important;
-	}
+.login input[type=text],
+.login input[type=password] {
+    width: 100% !important;
+    font-size: 25px;
+    padding: 14px !important;
+}
 
-	.login .remember_me {
-		font-size: 15px;
-		float: left;
-		width: 150px;
-		padding: 20px 0;
-	}
+.login .remember_me {
+    font-size: 15px;
+    float: left;
+    width: 150px;
+    padding: 20px 0;
+}
 
-		.login .remember_me .check {
-			margin: 5px 5px 0 0;
-		}
+.login .remember_me .check {
+    margin: 5px 5px 0 0;
+}
 
-	.login .button {
-		font-size: 25px;
-		padding: 20px;
-		float: right;
-	}
+.login .button {
+    font-size: 25px;
+    padding: 20px;
+    float: right;
+}
 
 /* =======================================================================
 IMDB Popular
