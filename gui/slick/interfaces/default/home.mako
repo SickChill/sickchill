@@ -78,6 +78,8 @@ $.tablesorter.addParser({
         return false;
     },
     format: function(s) {
+        s = s.substring(s.length/2);
+
         match = s.match(/^(.*)/);
 
         if (match == null || match[1] == "?")
