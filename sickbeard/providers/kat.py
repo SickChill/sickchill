@@ -65,102 +65,6 @@ class KATProvider(generic.TorrentProvider):
     def imageName(self):
         return 'kat.png'
 
-    def getQuality(self, item, anime=False):
-
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
-
-    def _reverseQuality(self, quality):
-
-        quality_string = ''
-
-        if quality == Quality.SDTV:
-            quality_string = 'HDTV x264'
-        if quality == Quality.SDDVD:
-            quality_string = 'DVDRIP'
-        elif quality == Quality.HDTV:
-            quality_string = '720p HDTV x264'
-        elif quality == Quality.FULLHDTV:
-            quality_string = '1080p HDTV x264'
-        elif quality == Quality.RAWHDTV:
-            quality_string = '1080i HDTV mpeg2'
-        elif quality == Quality.HDWEBDL:
-            quality_string = '720p WEB-DL h264'
-        elif quality == Quality.FULLHDWEBDL:
-            quality_string = '1080p WEB-DL h264'
-        elif quality == Quality.HDBLURAY:
-            quality_string = '720p Bluray x264'
-        elif quality == Quality.FULLHDBLURAY:
-            quality_string = '1080p Bluray x264'
-
-        return quality_string
-
-    def _find_season_quality(self, title, torrent_link, ep_number):
-        """ Return the modified title of a Season Torrent with the quality found inspecting torrent file list """
-
-        mediaExtensions = ['avi', 'mkv', 'wmv', 'divx',
-                           'vob', 'dvr-ms', 'wtv', 'ts'
-                                                   'ogv', 'rar', 'zip', 'mp4']
-
-        quality = Quality.UNKNOWN
-
-        fileName = None
-
-        data = self.getURL(torrent_link)
-        if not data:
-            return None
-
-        try:
-            with BS4Parser(data, features=["html5lib", "permissive"]) as soup:
-                file_table = soup.find('table', attrs={'class': 'torrentFileList'})
-
-                if not file_table:
-                    return None
-
-                files = [x.text for x in file_table.find_all('td', attrs={'class': 'torFileName'})]
-                videoFiles = filter(lambda x: x.rpartition(".")[2].lower() in mediaExtensions, files)
-
-                #Filtering SingleEpisode/MultiSeason Torrent
-                if len(videoFiles) < ep_number or len(videoFiles) > float(ep_number * 1.1):
-                    logger.log(u"Result " + title + " have " + str(
-                        ep_number) + " episode and episodes retrived in torrent are " + str(len(videoFiles)), logger.DEBUG)
-                    logger.log(
-                        u"Result " + title + " Seem to be a Single Episode or MultiSeason torrent, skipping result...",
-                        logger.DEBUG)
-                    return None
-
-                if Quality.sceneQuality(title) != Quality.UNKNOWN:
-                    return title
-
-                for fileName in videoFiles:
-                    quality = Quality.sceneQuality(os.path.basename(fileName))
-                    if quality != Quality.UNKNOWN: break
-
-                #if fileName is not None and quality == Quality.UNKNOWN:
-                #    quality = Quality.assumeQuality(fileName)
-
-                if quality == Quality.UNKNOWN:
-                    logger.log(u"Unable to obtain a Season Quality for " + title, logger.DEBUG)
-                    return None
-
-                try:
-                    myParser = NameParser(showObj=self.show)
-                    parse_result = myParser.parse(fileName)
-                except (InvalidNameException, InvalidShowException):
-                    return None
-
-                logger.log(u"Season quality for " + title + " is " + Quality.qualityStrings[quality], logger.DEBUG)
-
-                if parse_result.series_name and parse_result.season_number:
-                    title = parse_result.series_name + ' S%02d' % int(
-                        parse_result.season_number) + ' ' + self._reverseQuality(quality)
-
-                return title
-
-        except Exception, e:
-            logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
-
-
     def _get_season_search_strings(self, ep_obj):
         search_string = {'Season': []}
 
@@ -203,13 +107,11 @@ class KATProvider(generic.TorrentProvider):
 
         return [search_string]
 
-
     def _get_size(self, item):
         title, url, id, seeders, leechers, size, pubdate = item
         return size or -1
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
-
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
@@ -244,15 +146,8 @@ class KATProvider(generic.TorrentProvider):
                             continue
 
                         if self.confirmed and not verified:
-                            logger.log(
-                                u"KAT Provider found result " + title + " but that doesn't seem like a verified result so I'm ignoring it",
-                                logger.DEBUG)
+                            logger.log(u"KAT Provider found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                             continue
-
-                        #Check number video files = episode in season and find the real Quality for full season torrent analyzing files in torrent
-                        if mode == 'Season' and search_mode == 'sponly':
-                            ep_number = int(epcount / len(set(allPossibleShowNames(self.show))))
-                            title = self._find_season_quality(title, link, ep_number)
 
                         if not title or not url:
                             continue
@@ -287,7 +182,6 @@ class KATProvider(generic.TorrentProvider):
         return results
 
     def _get_title_and_url(self, item):
-
         title, url, id, seeders, leechers, size, pubdate = item
 
         if title:
@@ -299,7 +193,6 @@ class KATProvider(generic.TorrentProvider):
         return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()):
-
         results = []
 
         myDB = db.DBConnection()

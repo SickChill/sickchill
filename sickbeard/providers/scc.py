@@ -138,7 +138,7 @@ class SCCProvider(generic.TorrentProvider):
             elif self.show.anime:
                 ep_string = sanitizeSceneName(show_name) + ' %i' % int(ep_obj.scene_absolute_number)
             else:
-                ep_string = show_name_helpers.sanitizeSceneName(show_name) + ' ' + \
+                ep_string = sanitizeSceneName(show_name) + ' ' + \
                         sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
                                                                   'episodenumber': ep_obj.scene_episode}
 
