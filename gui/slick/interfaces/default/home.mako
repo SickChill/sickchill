@@ -114,7 +114,7 @@ $(document).ready(function(){
     $('.progressbar').each(function(progressbar){
         var showId = $(this).data('show-id');
         var percentage = $(this).data('progress-percentage');
-        var classToAdd = percentage > 80 ? 100 : percentage > 60 ? 80 : percentage > 40 ? 60 : percentage > 20 ? 40 : 20;
+        var classToAdd = percentage == 100 ? 100 : percentage > 80 ? 80 : percentage > 60 ? 60 : percentage > 40 ? 40 : 20;
         $(this).progressbar({ value:  percentage });
         $(this).data('progress-text') ? $(this).append('<div class="progressbarText" title="' + $(this).data('progress-tip') + '">' + $(this).data('progress-text') + '</div>') : '';
         $(this).find('.ui-progressbar-value').addClass('progress-' + classToAdd);
