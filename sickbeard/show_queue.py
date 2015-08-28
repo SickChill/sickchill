@@ -30,7 +30,8 @@ from sickbeard import generic_queue
 from sickbeard import name_cache
 from sickbeard.exceptions import ex
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
-
+from libtrakt import TraktAPI
+from libtrakt.exceptions import traktException, traktServerBusy, traktAuthException
 
 class ShowQueue(generic_queue.GenericQueue):
     def __init__(self):
@@ -282,12 +283,35 @@ class QueueItemAdd(ShowQueueItem):
                 self._finishEarly()
                 return
         except Exception, e:
-            logger.log(u"Show name with ID %s don't exist in %s anymore. Please change/delete your local .nfo file or remove it from your TRAKT watchlist" %
+            logger.log(u"Show name with ID %s doesn't exist on %s anymore. If you are using trakt, it will be removed from your TRAKT watchlist. If you are adding manually, try removing the nfo and adding again" %
                 (self.indexer_id,sickbeard.indexerApi(self.indexer).name) , logger.ERROR)
+
             ui.notifications.error("Unable to add show",
                                    "Unable to look up the show in " + self.showDir + " on " + str(sickbeard.indexerApi(
                                        self.indexer).name) + " using ID " + str(
                                        self.indexer_id) + ", not using the NFO. Delete .nfo and try adding manually again.")
+
+            if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+
+                trakt_id = sickbeard.indexerApi(self.indexer).config['trakt_id']
+                trakt_api = TraktAPI(sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+
+                title = self.showDir.split("/")[-1]
+                data = {
+                    'shows': [
+                        {
+                            'title': title,
+                            'ids': {}
+                        }
+                    ]
+                }
+                if trakt_id == 'tvdb_id':
+                    data['shows'][0]['ids']['tvdb'] = self.indexer_id
+                else:
+                    data['shows'][0]['ids']['tvrage'] = self.indexer_id
+
+                trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
+
             self._finishEarly()
             return
 
@@ -409,7 +433,7 @@ class QueueItemAdd(ShowQueueItem):
 
             if sickbeard.TRAKT_SYNC_WATCHLIST:
                 logger.log(u"update watchlist")
-                notifiers.trakt_notifier.update_watchlist(self.show)
+                notifiers.trakt_notifier.update_watchlist(show_obj=self.show)
 
         # Load XEM data to DB for show
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
