@@ -2,7 +2,6 @@
     import sickbeard
     from sickbeard.helpers import anon_url
     from sickbeard import sbdatetime
-    from sickbeard.common import qualityPresets, qualityPresetStrings
     import datetime
     import time
     import re
@@ -10,6 +9,7 @@
 <%
     sort = sickbeard.COMING_EPS_SORT
 %>
+<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 <h1 class="header">${header}</h1>
@@ -221,11 +221,7 @@ $(document).ready(function(){
             </td>
 
             <td align="center">
-% if int(cur_result['quality']) in qualityPresets:
-                <span class="quality ${qualityPresetStrings[int(cur_result['quality'])]}">${qualityPresetStrings[int(cur_result['quality'])]}</span>
-% else:
-                <span class="quality Custom">Custom</span>
-% endif
+	        ${renderQualityPill(cur_result['quality'])}
             </td>
 
             <td align="center" style="vertical-align: middle;">
@@ -428,11 +424,7 @@ $(document).ready(function(){
 
                 <div class="clearfix">
                     <span class="title">Quality:</span>
-                    % if int(cur_result['quality']) in qualityPresets:
-                        <span class="quality ${qualityPresetStrings[int(cur_result['quality'])]}">${qualityPresetStrings[int(cur_result['quality'])]}</span>
-                    % else:
-                        <span class="quality Custom">Custom</span>
-                    % endif
+	            ${renderQualityPill(cur_result['quality'])}
                 </div>
             </td>
         </tr>
