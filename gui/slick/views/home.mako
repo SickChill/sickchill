@@ -126,14 +126,14 @@ $(document).ready(function(){
     });
 
     $("#showListTableShows:has(tbody tr)").tablesorter({
-        sortList: [[6,1],[2,0]],
+        sortList: [[7,1],[2,0]],
         textExtraction: {
             0: function(node) { return $(node).find("span").text().toLowerCase(); },
             1: function(node) { return $(node).find("span").text().toLowerCase(); },
             3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
             4: function(node) { return $(node).find("span").text().toLowerCase(); },
             5: function(node) { return $(node).find("span:first").text(); },
-            6: function(node) { return $(node).find("img").attr("alt"); }
+            6: function(node) { return $(node).data('show-size'); },
             7: function(node) { return $(node).find("img").attr("alt"); }
         },
         widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
@@ -218,7 +218,7 @@ $(document).ready(function(){
     });
 
     $("#showListTableAnime:has(tbody tr)").tablesorter({
-        sortList: [[6,1],[2,0]],
+        sortList: [[7,1],[2,0]],
         textExtraction: {
             0: function(node) { return $(node).find("span").text().toLowerCase(); },
             1: function(node) { return $(node).find("span").text().toLowerCase(); },
