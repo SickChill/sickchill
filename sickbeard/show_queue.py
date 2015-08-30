@@ -644,7 +644,9 @@ class QueueItemForceUpdate(QueueItemUpdate):
 class QueueItemRemove(ShowQueueItem):
     def __init__(self, show=None, full=False):
         ShowQueueItem.__init__(self, ShowQueueActions.REMOVE, show)
-        self.priority = generic_queue.QueuePriorities.NORMAL
+
+        # lets make sure this happens before any other high priority actions
+        self.priority = generic_queue.QueuePriorities.HIGH + generic_queue.QueuePriorities.HIGH
         self.full = full
 
     def run(self):
