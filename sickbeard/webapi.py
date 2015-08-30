@@ -2365,9 +2365,6 @@ class CMD_ShowDelete(ApiCall):
         except sickbeard.exceptions.CantRemoveException as e:
             return _responds(RESULT_FAILURE, msg=ex(e))
 
-        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC:
-            sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(showObj)
-
         return _responds(RESULT_SUCCESS, msg=showObj.name + " has been queued to be deleted")
 
 

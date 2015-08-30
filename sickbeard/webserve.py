@@ -1593,22 +1593,16 @@ class Home(WebRoot):
 
         try:
             sickbeard.showQueueScheduler.action.removeShow(showObj, bool(full))
-        except sickbeard.exceptions.CantRemoveException as e:
+        except Exception as e:
             logger.log(u"Unable to delete show: %s. Error: %s" % (showObj.name, ex(e)),logger.WARNING)
             return self._genericMessage("Error", "Unable to delete show: %s" % showObj.name)
-
-        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC:
-            # remove show from trakt.tv library
-            try:
-                sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(showObj)
-            except traktException as e:
-                logger.log(u"Unable to delete show from Trakt: %s. Error: %s" % (showObj.name, ex(e)),logger.WARNING)
-                return self._genericMessage("Error", "Unable to delete show: %s" % showObj.name)
 
         ui.notifications.message('%s has been %s %s' %
                                  (showObj.name,
                                   ('deleted', 'trashed')[bool(sickbeard.TRASH_REMOVE_SHOW)],
                                   ('(media untouched)', '(with all related media)')[bool(full)]))
+
+        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
         #Dont redirect to default page so user can confirm show was deleted
         return self.redirect('/home/')
 
