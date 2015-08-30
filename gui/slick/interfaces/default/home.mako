@@ -43,7 +43,6 @@
 %>
 
 <script type="text/javascript" charset="utf-8">
-
 $.tablesorter.addParser({
     id: 'loadingNames',
     is: function(s) {
@@ -108,6 +107,10 @@ $.tablesorter.addParser({
 
 
 $(document).ready(function(){
+
+    $('[data-src]').each(function(){
+       $(this).attr('src', $(this).data('src'));
+    });
 
     // This needs to be refined to work a little faster.
     $('.progressbar').each(function(progressbar){
@@ -451,7 +454,7 @@ $(document).ready(function(){
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
     % if curLoadingShow.show == None:
         <div class="show" data-name="0" data-date="010101" data-network="0" data-progress="101">
-            <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="${sbRoot}/images/poster.png" />
+            <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" data-src="${sbRoot}/images/poster.png" />
             <div class="show-details">
                 <div class="show-add">Loading... (${curLoadingShow.show_name})</div>
             </div>
@@ -525,7 +528,7 @@ $(document).ready(function(){
 %>
     <div class="show" id="show${curShow.indexerid}" data-name="${curShow.name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
         <div class="show-image">
-            <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
+            <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" data-src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
         </div>
 
         <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}"></div>
@@ -569,9 +572,9 @@ $(document).ready(function(){
                 <td class="show-table">
                     % if layout != 'simple':
                         % if curShow.network:
-                            <span title="${curShow.network}"><img class="show-network-image" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
+                            <span title="${curShow.network}"><img class="show-network-image" data-src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
                         % else:
-                            <span title="No Network"><img class="show-network-image" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+                            <span title="No Network"><img class="show-network-image" data-src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
                         % endif
                     % else:
                         <span title="${curShow.network}">${curShow.network}</span>
@@ -734,7 +737,7 @@ $(document).ready(function(){
         <td class="tvShow">
             <div class="imgsmallposter ${layout}">
                 <a href="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=${layout}" rel="dialog" title="${curShow.name}">
-                    <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="${layout}" alt="${curShow.indexerid}"/>
+                    <img data-src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="${layout}" alt="${curShow.indexerid}"/>
                 </a>
                 <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
             </div>
@@ -744,7 +747,7 @@ $(document).ready(function(){
             <span style="display: none;">${curShow.name}</span>
             <div class="imgbanner ${layout}">
                 <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">
-                <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
+                <img data-src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
             </div>
         </td>
     % elif layout == 'simple':
@@ -754,10 +757,10 @@ $(document).ready(function(){
     % if layout != 'simple':
         <td align="center">
         % if curShow.network:
-            <span title="${curShow.network}" class="hidden-print"><img id="network" width="54" height="27" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
+            <span title="${curShow.network}" class="hidden-print"><img id="network" width="54" height="27" data-src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
             <span class="visible-print-inline">${curShow.network}</span>
         % else:
-            <span title="No Network" class="hidden-print"><img id="network" width="54" height="27" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+            <span title="No Network" class="hidden-print"><img id="network" width="54" height="27" data-src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
             <span class="visible-print-inline">No Network</span>
         % endif
         </td>
@@ -777,7 +780,7 @@ $(document).ready(function(){
         </td>
 
         <td align="center">
-            <img src="${sbRoot}/images/${('no16.png" alt="No"', 'yes16.png" alt="Yes"')[int(curShow.paused) == 0 and curShow.status == 'Continuing']} width="16" height="16" />
+            <img data-src="${sbRoot}/images/${('no16.png" alt="No"', 'yes16.png" alt="Yes"')[int(curShow.paused) == 0 and curShow.status == 'Continuing']} width="16" height="16" />
         </td>
 
         <td align="center">
