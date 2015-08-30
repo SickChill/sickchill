@@ -63,7 +63,7 @@ function resetFilters(text) {
 
 function initFancybox() {
     if ($("a[rel=dialog]").length > 0) {
-        $.getScript(sbRoot + '/js/fancybox/jquery.fancybox.js', function () {
+        $.getScript(sbRoot + '/js/fancybox/jquery.fancybox.pack.js', function () {
             $("head").append("<link rel='stylesheet' href='" + sbRoot + "/js/fancybox/jquery.fancybox.css'>");
             $("a[rel=dialog]").fancybox({
                 type: "image",
@@ -99,7 +99,7 @@ function initTabs() {
             }
 
             //Dont use the builtin fx effects. This will fade in/out both tabs, we dont want that
-            //Fadein the new tab yourself            
+            //Fadein the new tab yourself
             $(ui.newPanel).hide().fadeIn(0);
 
             if (lastOpenedPanel) {
