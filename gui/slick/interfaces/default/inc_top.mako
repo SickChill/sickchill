@@ -43,7 +43,7 @@
         <meta name="msapplication-TileImage" content="${sbRoot}/images/ico/favicon-144.png">
         <meta name="msapplication-config" content="${sbRoot}/css/browserconfig.xml">
 
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/bootstrap.css?${sbPID}"/>
+        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/bootstrap.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/browser.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/jquery-ui-1.10.4.custom.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/jquery.qtip-2.2.1.min.css?${sbPID}"/>

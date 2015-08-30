@@ -1,50 +1,59 @@
 #fileBrowserDialog {
-  max-height: 480px;
-  overflow-y: auto;
+    max-height: 480px;
+    overflow-y: auto;
 }
+
 #fileBrowserDialog ul {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
+
 #fileBrowserDialog ul li {
-  margin: 2px 0;
-  cursor: pointer;
-  list-style-type: none;
+    margin: 2px 0;
+    cursor: pointer;
+    list-style-type: none;
 }
+
 #fileBrowserDialog ul li a {
-  display: block;
-  padding: 4px 0;
+    display: block;
+    padding: 4px 0;
 }
+
 #fileBrowserDialog ul li a:hover {
-  color: #09A2FF;
-  background: none;
+    color: #09A2FF;
+    background: none;
 }
+
 #fileBrowserDialog ul li a span.ui-icon {
-  margin: 0 4px;
-  float: left;
+    margin: 0 4px;
+    float: left;
 }
 
 
-/* jquery ui autocomplete overrides to make it look more like the old autocomplete */
+/* jQuery-UI autocomplete overrides to make it look more like the old autocomplete */
 .ui-autocomplete {
-  max-height: 180px;
-  overflow-y: auto;
-  /* prevent horizontal scrollbar */
-  overflow-x: hidden;
-  /* add padding to account for vertical scrollbar */
-  padding-right: 20px;
+    max-height: 180px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+    /* add padding to account for vertical scrollbar */
+    padding-right: 20px;
 }
+
 * html .ui-autocomplete {
-  height: 180px;
+    height: 180px;
 }
+
 .ui-menu .ui-menu-item {
-  background-color: #eeeeee;
+    background-color: #eeeeee;
 }
+
 .ui-menu .ui-menu-item-alternate{
-  background-color: #ffffff;
+    background-color: #ffffff;
 }
+
 .ui-menu a.ui-state-hover{
-  background: none;
-  background-color: #0A246A;
-  color: #ffffff;
+    background: none;
+    background-color: #0A246A;
+    color: #ffffff;
 }
