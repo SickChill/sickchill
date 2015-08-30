@@ -2598,37 +2598,16 @@ input sizing (for config pages)
 }
 
 /* =======================================================================
-browser.css
+browser.css overrides
 ========================================================================== */
 
 #fileBrowserDialog {
 	overflow-y: auto;
 }
 
-#fileBrowserDialog ul {
-	padding: 0;
-	margin: 0;
-}
-
-#fileBrowserDialog ul li {
-	margin: 2px 0;
-	list-style-type: none;
-	cursor: pointer;
-}
-
-#fileBrowserDialog ul li a {
-	display: block;
-	padding: 4px 0;
-}
-
 #fileBrowserDialog ul li a:hover {
 	color: #00f;
 	background: none;
-}
-
-#fileBrowserDialog ul li a span.ui-icon {
-	float: left;
-	margin: 0 4px;
 }
 
 #fileBrowserDialog h2 {
@@ -2645,14 +2624,6 @@ browser.css
 * html .ui-autocomplete {
 	height: 180px;
 	padding-right: 20px;
-}
-
-.ui-menu .ui-menu-item {
-	background-color: #eee;
-}
-
-.ui-menu .ui-menu-item-alternate {
-	background-color: #fff;
 }
 
 .ui-autocomplete .ui-menu-item .ui-state-focus {
