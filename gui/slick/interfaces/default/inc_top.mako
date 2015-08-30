@@ -45,7 +45,7 @@
 
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/bootstrap.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/browser.css?${sbPID}" />
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/jquery-ui-1.10.4.custom.css?${sbPID}" />
+        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/jquery.qtip-2.2.1.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/style.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
