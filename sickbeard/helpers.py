@@ -145,6 +145,7 @@ def remove_non_release_groups(name):
                        '\[silv4\]$':       'searchre',
                        '\[Seedbox\]$':     'searchre',
                        '\[AndroidTwoU\]$': 'searchre',
+                       '\.\[BT\]$': 'searchre',
                        ' \[1044\]$':       'searchre',
                        '\.RiPSaLoT$':      'searchre',
                        '\.GiuseppeTnT$':   'searchre',
