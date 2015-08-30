@@ -1,8 +1,9 @@
 <%!
     import sickbeard
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings
+    from sickbeard.common import statusStrings
 %>
+<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/lib/bootbox.min.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
@@ -81,7 +82,7 @@ $(document).ready(function()
         <tr>
             <th class="col-checkbox">Edit<br/><input type="checkbox" class="bulkCheck" id="editCheck" /></th>
             <th class="nowrap" style="text-align: left;">Show Name</th>
-            <th class="col-legend">Quality</th>
+            <th class="col-quality">Quality</th>
             <th class="col-legend">Sports</th>
             <th class="col-legend">Scene</th>
             <th class="col-legend">Anime</th>
@@ -160,11 +161,7 @@ $(document).ready(function()
         <tr>
             <td align="center"><input type="checkbox" class="editCheck" id="edit-${curShow.indexerid}" /></td>
             <td class="tvShow"><a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
-        % if curShow.quality in qualityPresets:
-            <td align="center"><span class="quality ${qualityPresetStrings[curShow.quality]}">${qualityPresetStrings[curShow.quality]}</span></td>
-        % else:
-            <td align="center"><span class="quality Custom">Custom</span></td>
-        % endif
+            <td align="center">${renderQualityPill(curShow.quality)}</td>
             <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_sports) == 1]} width="16" height="16" /></td>
             <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_scene) == 1]} width="16" height="16" /></td>
             <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_anime) == 1]} width="16" height="16" /></td>

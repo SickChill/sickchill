@@ -7,6 +7,7 @@
     import datetime
     import re
 %>
+<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <%include file="/inc_top.mako"/>
 <%
     myDB = db.DBConnection()
@@ -578,11 +579,7 @@ $(document).ready(function(){
                 </td>
 
                 <td class="show-table">
-                    % if curShow.quality in qualityPresets:
-                        <span class="show-quality">${qualityPresetStrings[curShow.quality]}</span>
-                    % else:
-                        <span class="show-quality">Custom</span>
-                    % endif
+		    ${renderQualityPill(curShow.quality, overrideClass="show-quality")}
                 </td>
             </tr>
         </table>
@@ -770,11 +767,7 @@ $(document).ready(function(){
         </td>
     % endif
 
-    % if curShow.quality in qualityPresets:
-        <td align="center"><span class="quality ${qualityPresetStrings[curShow.quality]}">${qualityPresetStrings[curShow.quality]}</span></td>
-    % else:
-        <td align="center"><span class="quality Custom">Custom</span></td>
-    % endif
+        <td align="center">${renderQualityPill(curShow.quality)}</td>
 
         <td align="center">
             ## This first span is used for sorting and is never displayed to user
