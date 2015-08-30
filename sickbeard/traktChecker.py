@@ -70,7 +70,7 @@ class TraktChecker():
         self.amActive = False
 
     def run(self, force=False):
-        
+
         self.amActive = True
 
         # add shows from trakt.tv watchlist
@@ -90,7 +90,7 @@ class TraktChecker():
                 self.syncLibrary()
             except Exception:
                 logger.log(traceback.format_exc(), logger.DEBUG)
-                
+
         self.amActive = False
 
     def findShow(self, indexer, indexerid):
@@ -320,7 +320,7 @@ class TraktChecker():
         if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT and sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKRAGE:
             logger.log(u"SHOW_SICKRAGE::REMOVE::START - Look for Shows to remove from SickRage", logger.DEBUG)
 
-            if sickbeard.showList is not None:
+            if sickbeard.showList:
                 for show in sickbeard.showList:
                     if show.status == "Ended":
                         try:
@@ -330,7 +330,7 @@ class TraktChecker():
                             return
 
                         if 'aired' in progress and 'completed' in progress and progress['aired'] == progress['completed']:
-                            show.deleteShow(full=True)
+                            sickbeard.showQueueScheduler.action.removeShow(show, full=True)
                             logger.log(u"Show: " + show.name + " has been removed from SickRage", logger.DEBUG)
 
             logger.log(u"SHOW_SICKRAGE::REMOVE::FINISH - Trakt Show Watchlist", logger.DEBUG)
