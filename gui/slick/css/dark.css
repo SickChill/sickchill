@@ -7,7 +7,9 @@ inc_top.mako
 	background: #2a2a2a !important;
 }
 
-.ui-widget-content { 
+.ui-widget-content {
+    background: #606060;
+    border: 1px solid #111;
 	color: #fff;
 }
 
@@ -67,6 +69,12 @@ inc_top.mako
 
 .ui-dialog .ui-dialog-titlebar-close {
 	background: #333;
+}
+
+.ui-tabs {
+    padding: 0px;
+    background: none;
+    border-width: 0px;
 }
 
 .ui-tabs .ui-tabs-panel {
