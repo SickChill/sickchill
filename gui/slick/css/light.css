@@ -59,7 +59,7 @@ displayShow.mako
 .displayShowTable th.row-seasonheader {
 	border: none !important;
 	background-color: #fff !important;
-	color: #000 !important; 
+	color: #000 !important;
 	padding-top: 15px !important;
 	text-align: left !important;
 }

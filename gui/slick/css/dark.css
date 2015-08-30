@@ -2,8 +2,8 @@
 inc_top.mako
 ========================================================================== */
 
-.ui-dialog, 
-.ui-dialog-buttonpane { 
+.ui-dialog,
+.ui-dialog-buttonpane {
 	background: #2a2a2a !important;
 }
 
@@ -22,44 +22,44 @@ inc_top.mako
 	text-decoration: none;
 }
 
-.ui-widget-header { 
+.ui-widget-header {
 	background: #3d3d3d;
 	border: 1px solid #111;
 	color: #fff;
 }
 
-.ui-state-default, 
-.ui-widget-content .ui-state-default, 
-.ui-widget-header .ui-state-default { 
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default {
 	border: 1px solid #111;
 }
 
-.ui-state-hover, 
-.ui-widget-content .ui-state-hover, 
-.ui-widget-header .ui-state-hover, 
-.ui-state-focus, 
-.ui-widget-content .ui-state-focus, 
-.ui-widget-header .ui-state-focus { 
-	background: #3d3d3d; 
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-widget-header .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus,
+.ui-widget-header .ui-state-focus {
+	background: #3d3d3d;
 }
 
-.ui-state-active, 
-.ui-widget-content .ui-state-active, 
-.ui-widget-header .ui-state-active { 
+.ui-state-active,
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active {
 	background: #3d3d3d;
 }
 
 .ui-icon,
-.ui-widget-content .ui-icon { 
-	background-image: url("../css/lib/images/ui-icons_ffffff_256x240.png"); 
+.ui-widget-content .ui-icon {
+	background-image: url("../css/lib/images/ui-icons_ffffff_256x240.png");
 }
 
-.ui-state-default .ui-icon { 
-	background-image: url('../css/lib/images/ui-icons_09a2ff_256x240.png'); 
+.ui-state-default .ui-icon {
+	background-image: url('../css/lib/images/ui-icons_09a2ff_256x240.png');
 }
 
 .ui-widget-overlay {
-	background: #000000 url("../css/lib/images/ui-bg_flat_0_000000_40x100.png") 50% 50% repeat-x; 
+	background: #000000 url("../css/lib/images/ui-bg_flat_0_000000_40x100.png") 50% 50% repeat-x;
 }
 
 .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
@@ -280,7 +280,7 @@ home.mako
 	position: absolute;
 	width: 20px;
 	height: 100%;
-	top: 0; 
+	top: 0;
 	right: 0;
 	background-image: -webkit-linear-gradient(right, rgba(51, 51, 51, 1), rgba(51, 51, 51, 0));
 	background-image: -moz-linear-gradient(right, rgba(51, 51, 51, 1), rgba(51, 51, 51, 0));
@@ -295,7 +295,7 @@ home.mako
 	position: absolute;
 	width: 20px;
 	height: 100%;
-	top: 0; 
+	top: 0;
 	right: 0;
 	background-image: -webkit-linear-gradient(right, rgba(51, 51, 51, 1), rgba(51, 51, 51, 0));
 	background-image: -moz-linear-gradient(right, rgba(51, 51, 51, 1), rgba(51, 51, 51, 0));
@@ -460,7 +460,7 @@ ul.tags li {
 	white-space: nowrap;
 }
 
-.sickbeardTable th, 
+.sickbeardTable th,
 .sickbeardTable td {
 	border-top: 1px solid #222;
 	border-left: 1px solid #222;
@@ -565,7 +565,7 @@ config*.mako
 	color: #ddd;
 }
 
-#provider_order_list li, 
+#provider_order_list li,
 #service_order_list li {
 	padding: 5px;
 	margin: 5px 0;
@@ -590,7 +590,7 @@ config_postProcessing.mako
 ========================================================================== */
 
 #config div.example {
-	padding: 10px; 
+	padding: 10px;
 	background-color: #333333;
 	border: 1px solid #111;
 }
@@ -679,8 +679,8 @@ span.path {
 bootstrap Overrides
 ========================================================================== */
 
-body { 
-	padding-top: 60px; 
+body {
+	padding-top: 60px;
 	overflow-y: scroll;
 	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	color: #fff;
