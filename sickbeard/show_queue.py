@@ -39,7 +39,7 @@ class ShowQueue(generic_queue.GenericQueue):
         self.queue_name = "SHOWQUEUE"
 
     def _isInQueue(self, show, actions):
-        return show in [x.show for x in self.queue if x.action_id in actions]
+        return show.indexerid in [x.show.indexerid for x in self.queue if x.action_id in actions]
 
     def _isBeingSomethinged(self, show, actions):
         return self.currentItem != None and show == self.currentItem.show and \
@@ -148,6 +148,19 @@ class ShowQueue(generic_queue.GenericQueue):
 
         return queueItemObj
 
+    def removeShow(self, show, full=False):
+        if self._isInQueue(show, ShowQueueActions.REMOVE):
+            raise sickbeard.exceptions.CantRemoveException("This show is already queued to be removed")
+
+        # remove other queued actions for this show.
+        for x in self.queue:
+            if show.indexerid == x.show.indexerid and x != self.currentItem:
+                self.queue.remove(x)
+
+        queueItemObj = QueueItemRemove(show=show, full=full)
+        self.add_item(queueItemObj)
+
+        return queueItemObj
 
 class ShowQueueActions:
     REFRESH = 1
@@ -156,6 +169,7 @@ class ShowQueueActions:
     FORCEUPDATE = 4
     RENAME = 5
     SUBTITLE = 6
+    REMOVE = 7
 
     names = {REFRESH: 'Refresh',
              ADD: 'Add',
@@ -163,6 +177,7 @@ class ShowQueueActions:
              FORCEUPDATE: 'Force Update',
              RENAME: 'Rename',
              SUBTITLE: 'Subtitle',
+             REMOVE: 'Remove Show'
     }
 
 
@@ -450,7 +465,7 @@ class QueueItemAdd(ShowQueueItem):
 
     def _finishEarly(self):
         if self.show != None:
-            self.show.deleteShow()
+            sickbeard.showQueueScheduler.action.removeShow(self.show)
 
         self.finish()
 
@@ -479,7 +494,7 @@ class QueueItemRefresh(ShowQueueItem):
         # Load XEM data to DB for show
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
-        self.inProgress = False
+        self.finish()
 
 class QueueItemRename(ShowQueueItem):
     def __init__(self, show=None):
@@ -519,8 +534,7 @@ class QueueItemRename(ShowQueueItem):
         for cur_ep_obj in ep_obj_rename_list:
             cur_ep_obj.rename()
 
-        self.inProgress = False
-
+        self.finish()
 
 class QueueItemSubtitle(ShowQueueItem):
     def __init__(self, show=None):
@@ -532,9 +546,7 @@ class QueueItemSubtitle(ShowQueueItem):
         logger.log(u"Downloading subtitles for " + self.show.name)
 
         self.show.downloadSubtitles()
-
-        self.inProgress = False
-
+        self.finish()
 
 class QueueItemUpdate(ShowQueueItem):
     def __init__(self, show=None):
@@ -622,8 +634,21 @@ class QueueItemUpdate(ShowQueueItem):
         logger.log(u"Finished update of " + self.show.name, logger.DEBUG)
 
         sickbeard.showQueueScheduler.action.refreshShow(self.show, self.force)
+        self.finish()
 
 class QueueItemForceUpdate(QueueItemUpdate):
     def __init__(self, show=None):
         ShowQueueItem.__init__(self, ShowQueueActions.FORCEUPDATE, show)
         self.force = True
+
+class QueueItemRemove(ShowQueueItem):
+    def __init__(self, show=None, full=False):
+        ShowQueueItem.__init__(self, ShowQueueActions.REMOVE, show)
+        self.priority = generic_queue.QueuePriorities.NORMAL
+        self.full = full
+
+    def run(self):
+        ShowQueueItem.run(self)
+        logger.log(u"Removing %s" % self.show.name)
+        self.show.deleteShow(full=self.full)
+        self.finish()
