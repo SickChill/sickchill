@@ -47,6 +47,7 @@ $(document).ready(function () {
         var seasCheck = this;
         var seasNo = $(seasCheck).attr('id');
 
+        $('#collapseSeason-' + seasNo).collapse('show');
         $('.epCheck:visible').each(function () {
             var epParts = $(this).attr('id').split('x');
 
