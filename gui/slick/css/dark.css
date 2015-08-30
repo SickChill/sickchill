@@ -90,10 +90,114 @@ inc_top.mako
 	float: left;
 }
 
+.menu-icon-addshow {
+	background-position: 0px 0px;
+}
+
+.menu-icon-anime {
+	background-position: -21px 0px;
+}
+
+.menu-icon-backlog-view {
+	background-position: -42px 0px;
+}
+
+.menu-icon-backlog {
+	background-position: -63px 0px;
+}
+
+.menu-icon-bittorrent {
+	background-position: -84px 0px;
+}
+
+.menu-icon-config-index {
+	background-position: -105px 0px;
+}
+
+.menu-icon-config {
+	background-position: -126px 0px;
+}
+
+.menu-icon-failed-download {
+	background-position: -147px 0px;
+}
+
+.menu-icon-home {
+	background-position: -168px 0px;
+}
+
+.menu-icon-manage {
+	background-position: -189px 0px;
+}
+
+.menu-icon-manage-searches {
+	background-position: -210px 0px;
+}
+
+.menu-icon-poster {
+	background-position: -231px 0px;
+}
+
+.menu-icon-postprocess {
+	background-position: -252px 0px;
+}
+
+.menu-icon-restart {
+	background-position: -273px 0px;
+}
+
+.menu-icon-shutdown {
+	background-position: -294px 0px;
+}
+
+.menu-icon-update {
+	background-position: -315px 0px;
+}
+
+.menu-icon-viewlog-errors {
+	background-position: -336px 0px;
+}
+
+.menu-icon-viewlog {
+	background-position: -357px 0px;
+}
+
+.menu-icon-kodi {
+	background-position: -378px 0px;
+}
+
+.menu-icon-help {
+	background-position: -399px 0px;
+}
+
 [class^="submenu-icon-"], [class*=" submenu-icon-"] {
 	background: url("../images/menu/menu-icons-white.png");
 	height: 16px;
 	width: 16px;
+}
+
+.submenu-icon-anime {
+	background-position: -21px 0px;
+}
+
+.submenu-icon-bittorrent {
+	background-position: -84px 0px;
+}
+
+.submenu-icon-failed-download {
+	background-position: -147px 0px;
+}
+
+.submenu-icon-restart {
+	background-position: -273px 0px;
+}
+
+.submenu-icon-shutdown {
+	background-position: -294px 0px;
+}
+
+.submenu-icon-kodi {
+	background-position: -378px 0px;
 }
 
 /* =======================================================================
