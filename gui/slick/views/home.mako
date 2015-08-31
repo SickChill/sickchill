@@ -780,13 +780,7 @@ $(document).ready(function(){
             <span class="visible-print-inline">${download_stat}</span>
         </td>
 
-        <% show_size = 0 %>
-        % try:
-            <% show_size = sickbeard.helpers.get_size(curShow.location) %>
-        % except sickbeard.exceptions.ShowDirNotFoundException:
-            <% show_size = sickbeard.helpers.get_size(curShow._location) %>
-        % endtry
-
+        <% show_size = sickbeard.helpers.get_size(curShow._location) %>
         <td align="center" data-show-size="${show_size}">${sickbeard.helpers.pretty_filesize(show_size)}</td>
 
         <td align="center">
