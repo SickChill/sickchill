@@ -61,7 +61,6 @@ class GuessProperties(Transformer):
             for canonical_form, quality in quality_dict.items():
                 self.qualities.register_quality(propname, canonical_form, quality)
 
-        register_property('container', {'mp4': ['MP4']})
 
         # http://en.wikipedia.org/wiki/Pirated_movie_release_types
         register_property('format', {'VHS': ['VHS', 'VHS-Rip'],
@@ -110,26 +109,8 @@ class GuessProperties(Transformer):
                                          '1080p': ['(?:\d{3,}(?:\\|\/|x|\*))?1080p?x?'],
                                          '4K': ['(?:\d{3,}(?:\\|\/|x|\*))?2160(?:i|p?x?)']
                                          },
-                          validator=ChainedValidator(DefaultValidator(), OnlyOneValidator()))
-
-        class ResolutionValidator(object):
-            """Make sure our match is surrounded by separators, or by another entry"""
-            @staticmethod
-            def validate(prop, string, node, match, entry_start, entry_end):
-                """
-                span = _get_span(prop, match)
-                span = _trim_span(span, string[span[0]:span[1]])
-                start, end = span
-
-                sep_start = start <= 0 or string[start - 1] in sep
-                sep_end = end >= len(string) or string[end] in sep
-                start_by_other = start in entry_end
-                end_by_other = end in entry_start
-                if (sep_start or start_by_other) and (sep_end or end_by_other):
-                    return True
-                return False
-                """
-                return True
+                          validator=ChainedValidator(DefaultValidator(), OnlyOneValidator())) #
+                          #TODO: Edit OnlyOneValitor to check only in current folder
 
         _digits_re = re.compile('\d+')
 
@@ -137,7 +118,7 @@ class GuessProperties(Transformer):
             digits = _digits_re.findall(value)
             return 'x'.join(digits)
 
-        self.container.register_property('screenSize', '\d{3,4}-?[x\*]-?\d{3,4}', canonical_from_pattern=False, formatter=resolution_formatter, validator=ChainedValidator(DefaultValidator(), ResolutionValidator()))
+        self.container.register_property('screenSize', '\d{3,4}-?[x\*]-?\d{3,4}', canonical_from_pattern=False, formatter=resolution_formatter)
 
         register_quality('screenSize', {'360p': -300,
                                         '368p': -200,

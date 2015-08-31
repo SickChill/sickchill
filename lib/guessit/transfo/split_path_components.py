@@ -44,3 +44,29 @@ class SplitPathComponents(Transformer):
             mtree.split_on_components(components, category='path')
         else:
             mtree.split_on_components([mtree.value, ''], category='path')
+
+    def post_process(self, mtree, options=None):
+        """
+        Decrease confidence for properties found in directories, filename should always have priority.
+
+        :param mtree:
+        :param options:
+        :return:
+        """
+        if not options.get('name_only'):
+            path_nodes = [node for node in mtree.nodes() if node.category == 'path']
+
+            for path_node in path_nodes[:-2]:
+                self.alter_confidence(path_node, 0.3)
+
+            try:
+                last_directory_node = path_nodes[-2]
+                self.alter_confidence(last_directory_node, 0.6)
+            except IndexError:
+                pass
+
+    def alter_confidence(self, node, factor):
+        for guess in node.guesses:
+            for k in guess.keys():
+                confidence = guess.confidence(k)
+                guess.set_confidence(k, confidence * factor)

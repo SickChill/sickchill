@@ -93,8 +93,12 @@ class GuessReleaseGroup(Transformer):
                 return False
             if self.re_sep.match(val[-1]):
                 val = val[:len(val)-1]
+            if not val:
+                return False
             if self.re_sep.match(val[0]):
                 val = val[1:]
+            if not val:
+                return False
             guess['releaseGroup'] = val
             forbidden = False
             for forbidden_lambda in self._forbidden_groupname_lambda:
