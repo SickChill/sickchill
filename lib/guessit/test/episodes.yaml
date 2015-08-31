@@ -629,7 +629,7 @@
   format: HDTV
   releaseGroup: lol
 
-? 03-Criminal.Minds.5x03.Reckoner.ENG.-.sub.FR.HDTV.XviD-STi.[tvu.org.ru].avi
+? Criminal.Minds.5x03.Reckoner.ENG.-.sub.FR.HDTV.XviD-STi.[tvu.org.ru].avi
 : series: Criminal Minds
   language: English
   subtitleLanguage: French
@@ -1187,3 +1187,620 @@
   episodeNumber: 6
   title: I'm Sorry, Who's Yosi?
 
+? 24.S05E07.FRENCH.DVDRip.XviD-FiXi0N.avi
+: episodeNumber: 7
+  format: DVD
+  language: fr
+  season: 5
+  series: '24'
+  videoCodec: XviD
+  releaseGroup: FiXi0N
+
+? 12.Monkeys.S01E12.FRENCH.BDRip.x264-VENUE.mkv
+: episodeNumber: 12
+  format: BluRay
+  language: fr
+  releaseGroup: VENUE
+  season: 1
+  series: 12 Monkeys
+  videoCodec: h264
+
+? The.Daily.Show.2015.07.01.Kirsten.Gillibrand.Extended.720p.CC.WEBRip.AAC2.0.x264-BTW.mkv
+: audioChannels: '2.0'
+  audioCodec: AAC
+  date: 2015-07-01
+  format: WEBRip
+  other: CC
+  releaseGroup: BTW
+  screenSize: 720p
+  series: The Daily Show
+  title: Kirsten Gillibrand Extended
+  videoCodec: h264
+
+? The.Daily.Show.2015.07.02.Sarah.Vowell.CC.WEBRip.AAC2.0.x264-BTW.mkv
+: audioChannels: '2.0'
+  audioCodec: AAC
+  date: 2015-07-02
+  format: WEBRip
+  other: CC
+  releaseGroup: BTW
+  series: The Daily Show
+  title: Sarah Vowell
+  videoCodec: h264
+
+? 90.Day.Fiance.S02E07.I.Have.To.Tell.You.Something.720p.HDTV.x264-W4F
+: options: -n
+  episodeNumber: 7
+  format: HDTV
+  screenSize: 720p
+  season: 2
+  series: 90 Day Fiance
+  title: I Have To Tell You Something
+
+? Doctor.Who.2005.S04E06.FRENCH.LD.DVDRip.XviD-TRACKS.avi
+: episodeNumber: 6
+  format: DVD
+  language: fr
+  releaseGroup: TRACKS
+  season: 4
+  series: Doctor Who
+  other: LD
+  videoCodec: XviD
+  year: 2005
+
+? Astro.Le.Petit.Robot.S01E01+02.FRENCH.DVDRiP.X264.INT-BOOLZ.mkv
+: episodeNumber: 1
+  episodeList: [1, 2]
+  format: DVD
+  language: fr
+  releaseGroup: INT-BOOLZ
+  season: 1
+  series: Astro Le Petit Robot
+  videoCodec: h264
+
+? Annika.Bengtzon.2012.E01.Le.Testament.De.Nobel.FRENCH.DVDRiP.XViD-STVFRV.avi
+: episodeNumber: 1
+  format: DVD
+  language: fr
+  releaseGroup: STVFRV
+  series: Annika Bengtzon
+  title: Le Testament De Nobel
+  videoCodec: XviD
+  year: 2012
+
+? Dead.Set.02.FRENCH.LD.DVDRip.XviD-EPZ.avi
+: episodeNumber: 2
+  format: DVD
+  language: fr
+  other: LD
+  releaseGroup: EPZ
+  series: Dead Set
+  videoCodec: XviD
+
+? Phineas and Ferb S01E00 & S01E01 & S01E02
+: options: -n
+  episodeList:
+  - 0
+  - 1
+  - 2
+  episodeNumber: 0
+  season: 1
+  series: Phineas and Ferb
+
+? Show.Name.S01E02.S01E03.HDTV.XViD.Etc-Group
+: options: -n
+  episodeList:
+  - 2
+  - 3
+  episodeNumber: 2
+  format: HDTV
+  releaseGroup: Etc-Group
+  season: 1
+  series: Show Name
+  videoCodec: XviD
+
+? Show Name - S01E02 - S01E03 - S01E04 - Ep Name
+: options: -n
+  episodeList:
+  - 2
+  - 3
+  - 4
+  episodeNumber: 2
+  season: 1
+  series: Show Name
+  title: Ep Name
+
+? Show.Name.1x02.1x03.HDTV.XViD.Etc-Group
+: options: -n
+  episodeList:
+  - 2
+  - 3
+  episodeNumber: 2
+  format: HDTV
+  releaseGroup: Etc-Group
+  season: 1
+  series: Show Name
+  videoCodec: XviD
+
+? Show Name - 1x02 - 1x03 - 1x04 - Ep Name
+: options: -n
+  episodeList:
+  - 2
+  - 3
+  - 4
+  episodeNumber: 2
+  season: 1
+  series: Show Name
+  title: Ep Name
+
+? Show.Name.S01E02.HDTV.XViD.Etc-Group
+: options: -n
+  episodeNumber: 2
+  format: HDTV
+  releaseGroup: Etc-Group
+  season: 1
+  series: Show Name
+  videoCodec: XviD
+
+? Show Name - S01E02 - My Ep Name
+: options: -n
+  episodeNumber: 2
+  season: 1
+  series: Show Name
+  title: My Ep Name
+
+? Show Name - S01.E03 - My Ep Name
+: options: -n
+  episodeNumber: 3
+  season: 1
+  series: Show Name
+  title: My Ep Name
+
+? Show.Name.S01E02E03.HDTV.XViD.Etc-Group
+: options: -n
+  episodeList:
+  - 2
+  - 3
+  episodeNumber: 2
+  format: HDTV
+  releaseGroup: Etc-Group
+  season: 1
+  series: Show Name
+  videoCodec: XviD
+
+? Show Name - S01E02-03 - My Ep Name
+: options: -n
+  episodeList:
+  - 2
+  - 3
+  episodeNumber: 2
+  season: 1
+  series: Show Name
+  title: My Ep Name
+
+? Show.Name.S01.E02.E03
+: options: -n
+  episodeList:
+  - 2
+  - 3
+  episodeNumber: 2
+  season: 1
+  series: Show Name
+
+? Show_Name.1x02.HDTV_XViD_Etc-Group
+: options: -n
+  episodeNumber: 2
+  format: HDTV
+  releaseGroup: Etc-Group
+  season: 1
+  series: Show Name
+  videoCodec: XviD
+
+? Show Name - 1x02 - My Ep Name
+: options: -n
+  episodeNumber: 2
+  season: 1
+  series: Show Name
+  title: My Ep Name
+
+? Show_Name.1x02x03x04.HDTV_XViD_Etc-Group
+: options: -n
+  episodeList:
+  - 2
+  - 3
+  - 4
+  episodeNumber: 2
+  format: HDTV
+  releaseGroup: Etc-Group
+  season: 1
+  series: Show Name
+  videoCodec: XviD
+
+? Show Name - 1x02-03-04 - My Ep Name
+: options: -n
+  episodeList:
+  - 2
+  - 3
+  - 4
+  episodeNumber: 2
+  season: 1
+  series: Show Name
+  title: My Ep Name
+
+? Show.Name.100.Event.2010.11.23.HDTV.XViD.Etc-Group
+: options: -n
+  date: 2010-11-23
+  episodeNumber: 100
+  format: HDTV
+  releaseGroup: Etc-Group
+  series: Show Name
+  title: Event
+  videoCodec: XviD
+
+? Show.Name.2010.11.23.HDTV.XViD.Etc-Group
+: options: -n
+  date: 2010-11-23
+  format: HDTV
+  releaseGroup: Etc-Group
+  series: Show Name
+
+? Show Name - 2010-11-23 - Ep Name
+: options: -n
+  date: 2010-11-23
+  series: Show Name
+  title: Ep Name
+
+? Show Name Season 1 Episode 2 Ep Name
+: options: -n
+  episodeNumber: 2
+  season: 1
+  series: Show Name
+  title: Ep Name
+
+? Show.Name.S01.HDTV.XViD.Etc-Group
+: options: -n
+  format: HDTV
+  releaseGroup: Etc-Group
+  season: 1
+  series: Show Name
+  videoCodec: XviD
+
+? Show.Name.E02-03
+: options: -n
+  episodeNumber: 2
+  episodeList:
+  - 2
+  - 3
+  series: Show Name
+
+? Show.Name.E02.2010
+: options: -n
+  episodeNumber: 2
+  year: 2010
+  series: Show Name
+
+? Show.Name.E23.Test
+: options: -n
+  episodeNumber: 23
+  series: Show Name
+  title: Test
+
+? Show.Name.Part.3.HDTV.XViD.Etc-Group
+: options: -n -t episode
+  part: 3
+  series: Show Name
+  format: HDTV
+  videoCodec: XviD
+  releaseGroup: Etc-Group
+
+? Show.Name.Part.1.and.Part.2.Blah-Group
+: options: -n -t episode
+  part: 1
+  partList:
+  - 1
+  - 2
+  series: Show Name
+
+? Show Name - 01 - Ep Name
+: options: -n
+  episodeNumber: 1
+  series: Show Name
+  title: Ep Name
+
+? 01 - Ep Name
+: options: -n
+  episodeNumber: 1
+  series: Ep Name
+
+? Show.Name.102.HDTV.XViD.Etc-Group
+: options: -n
+  episodeNumber: 2
+  format: HDTV
+  releaseGroup: Etc-Group
+  season: 1
+  series: Show Name
+  videoCodec: XviD
+
+? '[HorribleSubs] Maria the Virgin Witch - 01 [720p].mkv'
+: episodeNumber: 1
+  releaseGroup: HorribleSubs
+  screenSize: 720p
+  series: Maria the Virgin Witch
+
+? '[ISLAND]One_Piece_679_[VOSTFR]_[V1]_[8bit]_[720p]_[EB7838FC].mp4'
+: options: -E
+  crc32: EB7838FC
+  episodeNumber: 679
+  releaseGroup: ISLAND
+  screenSize: 720p
+  series: One Piece
+  subtitleLanguage: fr
+  videoProfile: 8bit
+  version: 1
+
+
+? '[ISLAND]One_Piece_679_[VOSTFR]_[8bit]_[720p]_[EB7838FC].mp4'
+: options: -E
+  crc32: EB7838FC
+  episodeNumber: 679
+  releaseGroup: ISLAND
+  screenSize: 720p
+  series: One Piece
+  subtitleLanguage: fr
+  videoProfile: 8bit
+
+? '[Kaerizaki-Fansub]_One_Piece_679_[VOSTFR][HD_1280x720].mp4'
+: options: -E
+  episodeNumber: 679
+  other: HD
+  releaseGroup: Kaerizaki-Fansub
+  screenSize: 720p
+  series: One Piece
+  subtitleLanguage: fr
+
+? '[Kaerizaki-Fansub]_One_Piece_679_[VOSTFR][FANSUB][HD_1280x720].mp4'
+: options: -E
+  episodeNumber: 679
+  other:
+  - Fansub
+  - HD
+  releaseGroup: Kaerizaki-Fansub
+  screenSize: 720p
+  series: One Piece
+  subtitleLanguage: fr
+
+? '[Kaerizaki-Fansub]_One_Piece_681_[VOSTFR][HD_1280x720]_V2.mp4'
+: options: -E
+  episodeNumber: 681
+  other: HD
+  releaseGroup: Kaerizaki-Fansub
+  screenSize: 720p
+  series: One Piece
+  subtitleLanguage: fr
+  version: 2
+
+? '[Kaerizaki-Fansub] High School DxD New 04 VOSTFR HD (1280x720) V2.mp4'
+: options: -E
+  episodeNumber: 4
+  other: HD
+  releaseGroup: Kaerizaki-Fansub
+  screenSize: 720p
+  series: High School DxD New
+  subtitleLanguage: fr
+  version: 2
+
+? '[Kaerizaki-Fansub] One Piece 603 VOSTFR PS VITA (960x544) V2.mp4'
+: options: -E
+  episodeNumber: 603
+  releaseGroup: Kaerizaki-Fansub
+  screenSize: 960x544
+  series: One Piece
+  subtitleLanguage: fr
+  version: 2
+
+? '[Group Name] Show Name.13'
+: options: -n
+  episodeNumber: 13
+  releaseGroup: Group Name
+  series: Show Name
+
+? '[Group Name] Show Name - 13'
+: options: -n
+  episodeNumber: 13
+  releaseGroup: Group Name
+  series: Show Name
+
+? '[Group Name] Show Name 13'
+: options: -n
+  episodeNumber: 13
+  releaseGroup: Group Name
+  series: Show Name
+
+# [Group Name] Show Name.13-14
+# [Group Name] Show Name - 13-14
+# Show Name 13-14
+
+? '[Stratos-Subs]_Infinite_Stratos_-_12_(1280x720_H.264_AAC)_[379759DB]'
+: options: -n
+  audioCodec: AAC
+  crc32: 379759DB
+  episodeNumber: 12
+  releaseGroup: Stratos-Subs
+  screenSize: 720p
+  series: Infinite Stratos
+  videoCodec: h264
+
+# [ShinBunBu-Subs] Bleach - 02-03 (CX 1280x720 x264 AAC)
+
+? '[SGKK] Bleach 312v1 [720p/MKV]'
+: options: -n
+  episodeNumber: 312
+  releaseGroup: SGKK
+  screenSize: 720p
+  series: Bleach
+  version: 1
+
+? '[Ayako]_Infinite_Stratos_-_IS_-_07_[H264][720p][EB7838FC]'
+: options: -n
+  crc32: EB7838FC
+  episodeNumber: 7
+  releaseGroup: Ayako
+  screenSize: 720p
+  series: Infinite Stratos
+  videoCodec: h264
+
+? '[Ayako] Infinite Stratos - IS - 07v2 [H264][720p][44419534]'
+: options: -n
+  crc32: '44419534'
+  episodeNumber: 7
+  releaseGroup: Ayako
+  screenSize: 720p
+  series: Infinite Stratos
+  videoCodec: h264
+  version: 2
+
+? '[Ayako-Shikkaku] Oniichan no Koto Nanka Zenzen Suki Janain Dakara ne - 10 [LQ][h264][720p] [8853B21C]'
+: options: -n
+  crc32: 8853B21C
+  episodeNumber: 10
+  releaseGroup: Ayako-Shikkaku
+  screenSize: 720p
+  series: Oniichan no Koto Nanka Zenzen Suki Janain Dakara ne
+  videoCodec: h264
+
+# Add support for absolute episodes
+? Bleach - s16e03-04 - 313-314
+: options: -n
+  episodeList:
+  - 3
+  - 4
+  episodeNumber: 3
+  season: 16
+  series: Bleach
+
+? Bleach.s16e03-04.313-314
+: options: -n
+  episodeList:
+  - 3
+  - 4
+  episodeNumber: 3
+  season: 16
+  series: Bleach
+
+? Bleach.s16e03-04.313-314
+: options: -n
+  episodeList:
+  - 3
+  - 4
+  episodeNumber: 3
+  season: 16
+  series: Bleach
+
+? Bleach - 313-314
+: options: -En
+  episodeList:
+  - 313
+  - 314
+  episodeNumber: 313
+  series: Bleach
+
+? Bleach - s16e03-04 - 313-314
+: options: -n
+  episodeList:
+  - 3
+  - 4
+  episodeNumber: 3
+  season: 16
+  series: Bleach
+
+? Bleach.s16e03-04.313-314
+: options: -n
+  episodeList:
+  - 3
+  - 4
+  episodeNumber: 3
+  season: 16
+  series: Bleach
+
+
+? Bleach s16e03e04 313-314
+: options: -n
+  episodeList:
+  - 3
+  - 4
+  episodeNumber: 3
+  season: 16
+  series: Bleach
+
+? '[ShinBunBu-Subs] Bleach - 02-03 (CX 1280x720 x264 AAC)'
+: audioCodec: AAC
+  episodeList:
+  - 2
+  - 3
+  episodeNumber: 2
+  releaseGroup: ShinBunBu-Subs
+  screenSize: 720p
+  series: Bleach
+  videoCodec: h264
+
+? 003. Show Name - Ep Name.ext
+: episodeNumber: 3
+  series: Show Name
+  title: Ep Name
+
+? 003-004. Show Name - Ep Name.ext
+: episodeList:
+  - 3
+  - 4
+  episodeNumber: 3
+  series: Show Name
+  title: Ep Name
+
+? One Piece - 102
+: options: -n -t episode
+  episodeNumber: 2
+  season: 1
+  series: One Piece
+
+? "[ACX]_Wolf's_Spirit_001.mkv"
+: episodeNumber: 1
+  releaseGroup: ACX
+  series: "Wolf's Spirit"
+
+? Project.Runway.S14E00.and.S14E01.(Eng.Subs).SDTV.x264-[2Maverick].mp4
+: episodeList:
+  - 0
+  - 1
+  episodeNumber: 0
+  format: TV
+  subtitleLanguage: en
+  releaseGroup: 2Maverick
+  season: 14
+  series: Project Runway
+  videoCodec: h264
+
+? '[Hatsuyuki-Kaitou]_Fairy_Tail_2_-_16-20_[720p][10bit].torrent'
+: episodeList:
+  - 16
+  - 17
+  - 18
+  - 19
+  - 20
+  episodeNumber: 16
+  releaseGroup: Hatsuyuki-Kaitou
+  screenSize: 720p
+  series: Fairy Tail 2
+  videoProfile: 10bit
+
+? '[Hatsuyuki-Kaitou]_Fairy_Tail_2_-_16-20_(191-195)_[720p][10bit].torrent'
+: options: -E
+  episodeList:
+  - 16
+  - 17
+  - 18
+  - 19
+  - 20
+  episodeNumber: 16
+  releaseGroup: Hatsuyuki-Kaitou
+  screenSize: 720p
+  series: Fairy Tail 2

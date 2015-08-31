@@ -30,7 +30,6 @@ from guessit.patterns import group_delimiters
 from guessit.guess import (smart_merge,
                            Guess)
 
-
 log = logging.getLogger(__name__)
 
 
@@ -75,7 +74,7 @@ class BaseMatchTree(UnicodeMixin):
     (as shown by the ``f``'s on the last-but-one line).
     """
 
-    def __init__(self, string='', span=None, parent=None, clean_function=None):
+    def __init__(self, string='', span=None, parent=None, clean_function=None, category=None):
         self.string = string
         self.span = span or (0, len(string))
         self.parent = parent
@@ -83,6 +82,7 @@ class BaseMatchTree(UnicodeMixin):
         self.guess = Guess()
         self._clean_value = None
         self._clean_function = clean_function or clean_default
+        self.category = category
 
     @property
     def value(self):
@@ -117,12 +117,55 @@ class BaseMatchTree(UnicodeMixin):
         return result
 
     @property
+    def raw(self):
+        result = {}
+        for guess in self.guesses:
+            for k in guess.keys():
+                result[k] = guess.raw(k)
+        return result
+
+    @property
+    def guesses(self):
+        """
+        List all guesses, including children ones.
+
+        :return: list of guesses objects
+        """
+
+        result = []
+
+        if self.guess:
+            result.append(self.guess)
+
+        for c in self.children:
+            result.extend(c.guesses)
+
+        return result
+
+    @property
     def root(self):
         """Return the root node of the tree."""
         if not self.parent:
             return self
 
         return self.parent.root
+
+    @property
+    def ancestors(self):
+        """
+        Retrieve all ancestors, from this node to root node.
+
+        :return: a list of MatchTree objects
+        """
+        ret = [self]
+
+        if not self.parent:
+            return ret
+
+        parent_ancestors = self.parent.ancestors
+        ret.extend(parent_ancestors)
+
+        return ret
 
     @property
     def depth(self):
@@ -136,16 +179,25 @@ class BaseMatchTree(UnicodeMixin):
         """Return whether this node is a leaf or not."""
         return self.children == []
 
-    def add_child(self, span):
-        """Add a new child node to this node with the given span."""
-        child = MatchTree(self.string, span=span, parent=self, clean_function=self._clean_function)
+    def add_child(self, span, category=None):
+        """Add a new child node to this node with the given span.
+
+        :param span: span of the new MatchTree
+        :param category: category of the new MatchTree
+        :return: A new MatchTree instance having self as a parent
+        """
+        child = MatchTree(self.string, span=span, parent=self, clean_function=self._clean_function, category=category)
         self.children.append(child)
         return child
 
     def get_partition_spans(self, indices):
         """Return the list of absolute spans for the regions of the original
         string defined by splitting this node at the given indices (relative
-        to this node)"""
+        to this node)
+
+        :param indices: indices of the partition spans
+        :return: a list of tuple of the spans
+        """
         indices = sorted(indices)
         if indices[-1] > len(self.value):
             log.error('Filename: {}'.format(self.string))
@@ -163,20 +215,29 @@ class BaseMatchTree(UnicodeMixin):
 
         return spans
 
-    def partition(self, indices):
+    def partition(self, indices, category=None):
         """Partition this node by splitting it at the given indices,
-        relative to this node."""
-        for partition_span in self.get_partition_spans(indices):
-            self.add_child(span=partition_span)
+        relative to this node.
 
-    def split_on_components(self, components):
+        :param indices: indices of the partition spans
+        :param category: category of the new MatchTree
+        :return: a list of created MatchTree instances
+        """
+        created = []
+        for partition_span in self.get_partition_spans(indices):
+            created.append(self.add_child(span=partition_span, category=category))
+        return created
+
+    def split_on_components(self, components, category=None):
         offset = 0
+        created = []
         for c in components:
             start = self.value.find(c, offset)
             end = start + len(c)
-            self.add_child(span=(self.offset + start,
-                                 self.offset + end))
+            created.append(self.add_child(span=(self.offset + start,
+                                       self.offset + end), category=category))
             offset = end
+        return created
 
     def nodes_at_depth(self, depth):
         """Return all the nodes at a given depth in the tree"""
@@ -213,7 +274,7 @@ class BaseMatchTree(UnicodeMixin):
             raise ValueError('Non-existent node index: %s' % (idx,))
 
     def nodes(self):
-        """Return all the nodes and subnodes in this tree."""
+        """Return a generator of all nodes and subnodes in this tree."""
         yield self
         for child in self.children:
             for node in child.nodes():
@@ -225,7 +286,6 @@ class BaseMatchTree(UnicodeMixin):
             yield self
         else:
             for child in self.children:
-                # pylint: disable=W0212
                 for leaf in child.leaves():
                     yield leaf
 

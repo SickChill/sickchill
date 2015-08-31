@@ -2360,17 +2360,12 @@ class CMD_ShowDelete(ApiCall):
         if not showObj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        if sickbeard.showQueueScheduler.action.isBeingAdded(
-                showObj) or sickbeard.showQueueScheduler.action.isBeingUpdated(showObj):  # @UndefinedVariable
-            return _responds(RESULT_FAILURE, msg="Show can not be deleted while being added or updated")
+        try:
+            sickbeard.showQueueScheduler.action.removeShow(showObj, bool(self.removefiles))
+        except sickbeard.exceptions.CantRemoveException as e:
+            return _responds(RESULT_FAILURE, msg=ex(e))
 
-        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC:
-            # remove show from trakt.tv library
-            sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(showObj)
-
-        showObj.deleteShow(bool(self.removefiles))
-
-        return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been deleted")
+        return _responds(RESULT_SUCCESS, msg=showObj.name + " has been queued to be deleted")
 
 
 class CMD_ShowGetQuality(ApiCall):

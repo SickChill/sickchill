@@ -45,4 +45,4 @@ class SplitOnDash(Transformer):
                 match = pattern.search(node.value, span[1])
 
             if indices:
-                node.partition(indices)
+                node.partition(indices, category='dash')

@@ -1591,24 +1591,18 @@ class Home(WebRoot):
         if showObj is None:
             return self._genericMessage("Error", "Unable to find the specified show")
 
-        if sickbeard.showQueueScheduler.action.isBeingAdded(
-                showObj) or sickbeard.showQueueScheduler.action.isBeingUpdated(showObj):
-            return self._genericMessage("Error", "Shows can't be deleted while they're being added or updated.")
-
-        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC:
-            # remove show from trakt.tv library
-            try:
-                sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(showObj)
-            except traktException as e:
-                logger.log("Trakt: Unable to delete show: {0}. Error: {1}".format(showObj.name, ex(e)),logger.ERROR)
-                return self._genericMessage("Error", "Unable to delete show: {0}".format(showObj.name))
-
-        showObj.deleteShow(bool(full))
+        try:
+            sickbeard.showQueueScheduler.action.removeShow(showObj, bool(full))
+        except Exception as e:
+            logger.log(u"Unable to delete show: %s. Error: %s" % (showObj.name, ex(e)),logger.WARNING)
+            return self._genericMessage("Error", "Unable to delete show: %s" % showObj.name)
 
         ui.notifications.message('%s has been %s %s' %
                                  (showObj.name,
                                   ('deleted', 'trashed')[bool(sickbeard.TRASH_REMOVE_SHOW)],
                                   ('(media untouched)', '(with all related media)')[bool(full)]))
+
+        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
         #Dont redirect to default page so user can confirm show was deleted
         return self.redirect('/home/')
 
@@ -3427,12 +3421,12 @@ class Manage(Home, WebRoot):
                 continue
 
             if curShowID in toDelete:
-                showObj.deleteShow(True)
+                sickbeard.showQueueScheduler.action.removeShow(showObj, True)
                 # don't do anything else if it's being deleted
                 continue
 
             if curShowID in toRemove:
-                showObj.deleteShow()
+                sickbeard.showQueueScheduler.action.removeShow(showObj)
                 # don't do anything else if it's being remove
                 continue
 

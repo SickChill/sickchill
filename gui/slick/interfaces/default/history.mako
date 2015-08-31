@@ -11,12 +11,13 @@
     from sickbeard.providers import generic
 
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED, DOWNLOADED, SUBTITLED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings, Overview
+    from sickbeard.common import Quality, statusStrings, Overview
 %>
 <%
     layout = sickbeard.HISTORY_LAYOUT
     history_limit = sickbeard.HISTORY_LIMIT
 %>
+<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <%include file="/inc_top.mako"/>
 
 <style type="text/css">
@@ -155,7 +156,7 @@ $(document).ready(function(){
                 % endif
                 </td>
                 <span style="display: none;">${curQuality}</span>
-                <td align="center"><span class="quality ${Quality.qualityStrings[curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")}">${Quality.qualityStrings[curQuality]}</span></td>
+                <td align="center">${renderQualityPill(curQuality)}</td>
             </tr>
         % endfor
         </tbody>
@@ -228,7 +229,7 @@ $(document).ready(function(){
                     % endfor
                 </td>
                 % endif
-                <td align="center" width="14%" quality="${curQuality}"><span class="quality ${Quality.qualityStrings[curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("RawHD TV", "RawHD").replace("HD TV", "HD720p")}">${Quality.qualityStrings[curQuality]}</span></td>
+                <td align="center" width="14%" quality="${curQuality}">${renderQualityPill(curQuality)}</td>
             </tr>
         % endfor
         </tbody>

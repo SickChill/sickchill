@@ -73,13 +73,13 @@ class BLUETIGERSProvider(generic.TorrentProvider):
         quality = Quality.sceneQuality(item[0], anime)
         return quality
 
-    def _doLogin(self):      
+    def _doLogin(self):
 
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-      
+
         login_params = {'username': self.username,
                             'password': self.password,
                             'take_login' : '1'
@@ -97,9 +97,9 @@ class BLUETIGERSProvider(generic.TorrentProvider):
 
         if re.search('/account-logout.php', response.text):
             logger.log(u'Login to ' + self.name + ' was successful.', logger.DEBUG)
-            return True                
+            return True
         else:
-            logger.log(u'Login to ' + self.name + ' was unsuccessful.', logger.DEBUG)                
+            logger.log(u'Login to ' + self.name + ' was unsuccessful.', logger.DEBUG)
             return False
 
         return True
@@ -144,7 +144,7 @@ class BLUETIGERSProvider(generic.TorrentProvider):
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = show_name_helpers.sanitizeSceneName(show_name) + '.' + \
+                ep_string = sanitizeSceneName(show_name) + '.' + \
                             sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
                                                                   'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
 
@@ -166,11 +166,11 @@ class BLUETIGERSProvider(generic.TorrentProvider):
                 if isinstance(search_string, unicode):
                     search_string = unidecode(search_string)
 
-                
+
                 searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories)
 
                 logger.log(u"Search string: " + searchURL, logger.DEBUG)
-                                
+
                 data = self.getURL(searchURL)
                 if not data:
                     continue
@@ -178,20 +178,20 @@ class BLUETIGERSProvider(generic.TorrentProvider):
                 try:
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                         result_linkz = html.findAll('a',  href=re.compile("torrents-details"))
-        
+
                         if not result_linkz:
                             logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
                                        logger.DEBUG)
                             continue
-                        
+
                         if result_linkz:
-                            for link in result_linkz:                                                                                                                               
+                            for link in result_linkz:
                                 title = link.text
-                                logger.log(u"BLUETIGERS TITLE TEMP: " + title, logger.DEBUG)                   
-                                download_url =   self.urls['base_url']  + "/" + link['href'] 
-                                download_url = download_url.replace("torrents-details","download")             
+                                logger.log(u"BLUETIGERS TITLE TEMP: " + title, logger.DEBUG)
+                                download_url =   self.urls['base_url']  + "/" + link['href']
+                                download_url = download_url.replace("torrents-details","download")
                                 logger.log(u"BLUETIGERS downloadURL: " + download_url, logger.DEBUG)
-        
+
                                 if not title or not download_url:
                                    continue
 

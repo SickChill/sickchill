@@ -118,6 +118,9 @@ class Quality:
     FULLHDWEBDL = 1 << 6  # 64 -- 1080p web-dl
     HDBLURAY = 1 << 7  # 128
     FULLHDBLURAY = 1 << 8  # 256
+    ANYHDTV = HDTV | FULLHDTV  # 20
+    ANYWEBDL = HDWEBDL | FULLHDWEBDL  # 96
+    ANYBLURAY = HDBLURAY | FULLHDBLURAY  # 384
 
     # put these bits at the other end of the spectrum, far enough out that they shouldn't interfere
     UNKNOWN = 1 << 15  # 32768
@@ -126,13 +129,32 @@ class Quality:
                       UNKNOWN: "Unknown",
                       SDTV: "SDTV",
                       SDDVD: "SD DVD",
-                      HDTV: "HDTV",
+                      HDTV: "720p HDTV",
                       RAWHDTV: "RawHD",
                       FULLHDTV: "1080p HDTV",
                       HDWEBDL: "720p WEB-DL",
                       FULLHDWEBDL: "1080p WEB-DL",
                       HDBLURAY: "720p BluRay",
                       FULLHDBLURAY: "1080p BluRay"}
+
+    combinedQualityStrings = {ANYHDTV: "HDTV",
+                              ANYWEBDL: "WEB-DL",
+                              ANYBLURAY: "BluRay"}
+
+    cssClassStrings = {NONE: "N/A",
+                       UNKNOWN: "Unknown",
+                       SDTV: "SDTV",
+                       SDDVD: "SDDVD",
+                       HDTV: "HD720p",
+                       RAWHDTV: "RawHD",
+                       FULLHDTV: "HD1080p",
+                       HDWEBDL: "HD720p",
+                       FULLHDWEBDL: "HD1080p",
+                       HDBLURAY: "HD720p",
+                       FULLHDBLURAY: "HD1080p",
+                       ANYHDTV: "any-hd",
+                       ANYWEBDL: "any-hd",
+                       ANYBLURAY: "any-hd"}
 
     statusPrefixes = {DOWNLOADED: "Downloaded",
                       SNATCHED: "Snatched",
@@ -182,17 +204,9 @@ class Quality:
         if quality != Quality.UNKNOWN:
             return quality
 
-        name = os.path.basename(name)
-
-        # if we have our exact text then assume we put it there
-        for x in sorted(Quality.qualityStrings.keys(), reverse=True):
-            if x == Quality.UNKNOWN or x == Quality.NONE:
-                continue
-
-            regex = '\W' + Quality.qualityStrings[x].replace(' ', '\W') + '\W'
-            regex_match = re.search(regex, name, re.I)
-            if regex_match:
-                return x
+        quality = Quality.assumeQuality(name)
+        if quality != Quality.UNKNOWN:
+            return quality
 
         return Quality.UNKNOWN
 
@@ -232,27 +246,27 @@ class Quality:
             else:
                 return Quality.UNKNOWN
 
-        if checkName(["(pdtv|hdtv|dsr|tvrip).(xvid|x264|h.?264)"], all) and not checkName(["(720|1080)[pi]"], all) and\
-                not checkName(["hr.ws.pdtv.x264"], any):
+        if checkName(["(pdtv|hdtv|dsr|tvrip).(xvid|x26[45]|h.?26[45])"], all) and not checkName(["(720|1080)[pi]"], all) and\
+                not checkName(["hr.ws.pdtv.x26[45]"], any):
             return Quality.SDTV
-        elif checkName(["web.dl|webrip", "xvid|x264|h.?264"], all) and not checkName(["(720|1080)[pi]"], all):
+        elif checkName(["web.dl|webrip", "xvid|x26[45]|h.?26[45]"], all) and not checkName(["(720|1080)[pi]"], all):
             return Quality.SDTV
-        elif checkName(["(dvdrip|b[rd]rip|blue?-?ray)(.ws)?.(xvid|divx|x264)"], any) and not checkName(["(720|1080)[pi]"], all):
+        elif checkName(["(dvdrip|b[rd]rip|blue?-?ray)(.ws)?.(xvid|divx|x26[45])"], any) and not checkName(["(720|1080)[pi]"], all):
             return Quality.SDDVD
-        elif checkName(["720p", "hdtv", "x264"], all) or checkName(["hr.ws.pdtv.x264"], any) and not checkName(
+        elif checkName(["720p", "hdtv", "x26[45]"], all) or checkName(["hr.ws.pdtv.x26[45]"], any) and not checkName(
                 ["1080[pi]"], all):
             return Quality.HDTV
-        elif checkName(["720p|1080i", "hdtv", "mpeg-?2"], all) or checkName(["1080[pi].hdtv", "h.?264"], all):
+        elif checkName(["720p|1080i", "hdtv", "mpeg-?2"], all) or checkName(["1080[pi].hdtv", "h.?26[45]"], all):
             return Quality.RAWHDTV
-        elif checkName(["1080p", "hdtv", "x264"], all):
+        elif checkName(["1080p", "hdtv", "x26[45]"], all):
             return Quality.FULLHDTV
-        elif checkName(["720p", "web.dl|webrip"], all) or checkName(["720p", "itunes", "h.?264"], all):
+        elif checkName(["720p", "web.dl|webrip"], all) or checkName(["720p", "itunes", "h.?26[45]"], all):
             return Quality.HDWEBDL
-        elif checkName(["1080p", "web.dl|webrip"], all) or checkName(["1080p", "itunes", "h.?264"], all):
+        elif checkName(["1080p", "web.dl|webrip"], all) or checkName(["1080p", "itunes", "h.?26[45]"], all):
             return Quality.FULLHDWEBDL
-        elif checkName(["720p", "blue?-?ray|hddvd|b[rd]rip", "x264"], all):
+        elif checkName(["720p", "blue?-?ray|hddvd|b[rd]rip", "x26[45]"], all):
             return Quality.HDBLURAY
-        elif checkName(["1080p", "blue?-?ray|hddvd|b[rd]rip", "x264"], all):
+        elif checkName(["1080p", "blue?-?ray|hddvd|b[rd]rip", "x26[45]"], all):
             return Quality.FULLHDBLURAY
         else:
             return Quality.UNKNOWN
@@ -263,9 +277,7 @@ class Quality:
         if quality != Quality.UNKNOWN:
             return quality
 
-        if name.lower().endswith((".avi", ".mp4")):
-            return Quality.SDTV
-        elif name.lower().endswith(".ts"):
+        if name.lower().endswith(".ts"):
             return Quality.RAWHDTV
         else:
             return Quality.UNKNOWN
@@ -290,7 +302,10 @@ class Quality:
             metadata = None
             pass
 
-        del parser
+        try:
+            parser.stream._input.close()
+        except:
+            pass
 
         if not metadata:
             return Quality.UNKNOWN
@@ -304,8 +319,6 @@ class Quality:
                 for metagroup in metadata.iterGroups():
                     if metagroup.has('height'):
                         height = int(metagroup.get('height') or 0)
-
-        del metadata
 
         if not height:
             return Quality.UNKNOWN

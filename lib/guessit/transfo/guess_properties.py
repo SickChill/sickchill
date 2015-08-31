@@ -22,7 +22,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import re
 
-from guessit.containers import PropertiesContainer, WeakValidator, LeavesValidator, QualitiesContainer, ChainedValidator, DefaultValidator, OnlyOneValidator, LeftValidator, NeighborValidator
+from guessit.containers import PropertiesContainer, WeakValidator, LeavesValidator, QualitiesContainer, ChainedValidator, DefaultValidator, OnlyOneValidator, LeftValidator, NeighborValidator, FullMatchValidator
 from guessit.patterns import sep, build_or_pattern
 from guessit.patterns.extension import subtitle_exts, video_exts, info_exts
 from guessit.patterns.numeral import numeral, parse_numeral
@@ -239,8 +239,8 @@ class GuessProperties(Transformer):
 
         self.container.register_property('crc32', '(?:[a-fA-F]|[0-9]){8}', enhance=False, canonical_from_pattern=False)
 
-        weak_episode_words = ['pt', 'part']
-        self.container.register_property(None, '(' + build_or_pattern(weak_episode_words) + sep + '?(?P<part>' + numeral + '))[^0-9]', enhance=False, canonical_from_pattern=False, confidence=0.4, formatter=parse_numeral)
+        part_words = ['pt', 'part']
+        self.container.register_property(None, '(' + build_or_pattern(part_words) + sep + '?(?P<part>' + numeral + '))[^0-9]', enhance=False, canonical_from_pattern=False, confidence=0.4, formatter=parse_numeral)
 
         register_property('other', {'AudioFix': ['Audio-Fix', 'Audio-Fixed'],
                                     'SyncFix': ['Sync-Fix', 'Sync-Fixed'],
@@ -249,13 +249,15 @@ class GuessProperties(Transformer):
                                     'Netflix': ['Netflix', 'NF']
                                     })
 
-        self.container.register_property('other', 'Real', 'Fix', canonical_form='Proper', validator=NeighborValidator())
+        self.container.register_property('other', 'Real', 'Fix', canonical_form='Proper', validator=ChainedValidator(FullMatchValidator(), NeighborValidator()))
         self.container.register_property('other', 'Proper', 'Repack', 'Rerip', canonical_form='Proper')
-        self.container.register_property('other', 'Fansub', canonical_form='Fansub')
-        self.container.register_property('other', 'Fastsub', canonical_form='Fastsub')
+        self.container.register_property('other', 'Fansub', canonical_form='Fansub', validator=ChainedValidator(FullMatchValidator(), NeighborValidator()))
+        self.container.register_property('other', 'Fastsub', canonical_form='Fastsub', validator=ChainedValidator(FullMatchValidator(), NeighborValidator()))
         self.container.register_property('other', '(?:Seasons?' + sep + '?)?Complete', canonical_form='Complete')
         self.container.register_property('other', 'R5', 'RC', canonical_form='R5')
         self.container.register_property('other', 'Pre-Air', 'Preair', canonical_form='Preair')
+        self.container.register_property('other', 'CC')  # Close Caption
+        self.container.register_property('other', 'LD', 'MD')  # Line/Mic Dubbed
 
         self.container.register_canonical_properties('other', 'Screener', 'Remux', '3D', 'HD', 'mHD', 'HDLight', 'HQ',
                                                      'DDC',
@@ -271,10 +273,29 @@ class GuessProperties(Transformer):
 
     def guess_properties(self, string, node=None, options=None):
         found = self.container.find_properties(string, node, options)
-        return self.container.as_guess(found, string)
+        guess = self.container.as_guess(found, string)
+
+        if guess and node:
+            if 'part' in guess:
+                # If two guesses contains both part in same group, create an partList
+                for existing_guess in node.group_node().guesses:
+                    if 'part' in existing_guess:
+                        if 'partList' not in existing_guess:
+                            existing_guess['partList'] = [existing_guess['part']]
+                        existing_guess['partList'].append(guess['part'])
+                        existing_guess['partList'].sort()
+                        if existing_guess['part'] > guess['part']:
+                            existing_guess.set_confidence('part', 0)
+                        else:
+                            guess.set_confidence('part', 0)
+                        guess['partList'] = list(existing_guess['partList'])
+
+        return guess
 
     def supported_properties(self):
-        return self.container.get_supported_properties()
+        supported_properties = list(self.container.get_supported_properties())
+        supported_properties.append('partList')
+        return supported_properties
 
     def process(self, mtree, options=None):
         GuessFinder(self.guess_properties, 1.0, self.log, options).process_nodes(mtree.unidentified_leaves())

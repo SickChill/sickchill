@@ -606,7 +606,9 @@
 ? Yves.Saint.Laurent.2013.FRENCH.DVDSCR.MD.XviD-ViVARiUM.avi
 : format: DVD
   language: French
-  other: Screener
+  other:
+      - MD
+      - Screener
   releaseGroup: ViVARiUM
   title: Yves Saint Laurent
   videoCodec: XviD
@@ -759,3 +761,16 @@
   screenSize: 1080p
   title: transformers 2
   videoCodec: h265
+
+? 1.Angry.Man.1957.mkv
+: title: 1 Angry Man
+  year: 1957
+
+? 12.Angry.Men.1957.mkv
+: title: 12 Angry Men
+  year: 1957
+
+? 123.Angry.Men.1957.mkv
+: title: 123 Angry Men
+  year: 1957
+

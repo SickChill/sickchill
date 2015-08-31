@@ -7,11 +7,11 @@
     import sickbeard.helpers
 
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings, Overview
+    from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
 
     from sickbeard.helpers import anon_url
 %>
-
+<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <%include file="/inc_top.mako"/>
 <script type="text/javascript" src="${sbRoot}/js/lib/jquery.bookmarkscroll.js?${sbPID}"></script>
 
@@ -204,13 +204,13 @@ $(document).ready(function(){
                 <% anyQualities, bestQualities = Quality.splitQuality(int(show.quality)) %>
                     <tr><td class="showLegend">Quality: </td><td>
                 % if show.quality in qualityPresets:
-                    <span class="quality ${qualityPresetStrings[show.quality]}">${qualityPresetStrings[show.quality]}</span>
+                    ${renderQualityPill(show.quality)}
                 % else:
                 % if anyQualities:
-                    <i>Initial:</i> ${", ".join([Quality.qualityStrings[x] for x in sorted(anyQualities)])}${("", "</br>")[bool(bestQualities)]}
+                    <i>Initial:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "</br>")[bool(bestQualities)]}
                 % endif
                 % if bestQualities:
-                    <i>Replace with:</i> ${", ".join([Quality.qualityStrings[x] for x in sorted(bestQualities)])}
+                    <i>Replace with:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(bestQualities)])}
                 % endif
                 % endif
 
@@ -559,7 +559,7 @@ $(document).ready(function(){
             </td>
                 <% curStatus, curQuality = Quality.splitCompositeStatus(int(epResult["status"])) %>
                 % if curQuality != Quality.NONE:
-                    <td class="col-status">${statusStrings[curStatus]} <span class="quality ${Quality.qualityStrings[curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")}">${Quality.qualityStrings[curQuality]}</span></td>
+                    <td class="col-status">${statusStrings[curStatus]} ${renderQualityPill(curQuality)}</td>
                 % else:
                     <td class="col-status">${statusStrings[curStatus]}</td>
                 % endif

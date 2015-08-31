@@ -41,6 +41,6 @@ class SplitPathComponents(Transformer):
             components += list(splitext(basename))
             components[-1] = components[-1][1:]  # remove the '.' from the extension
 
-            mtree.split_on_components(components)
+            mtree.split_on_components(components, category='path')
         else:
-            mtree.split_on_components([mtree.value, ''])
+            mtree.split_on_components([mtree.value, ''], category='path')

@@ -181,16 +181,16 @@ def submit_bug(filename, options):
         opts = dict((k, v) for k, v in options.__dict__.items()
                     if v and k != 'submit_bug')
 
-        r = requests.post('http://localhost:5000/bugs', {'filename': filename,
+        r = requests.post('http://guessit.io/bugs', {'filename': filename,
                                                          'version': __version__,
                                                          'options': str(opts)})
         if r.status_code == 200:
             print('Successfully submitted file: %s' % r.text)
         else:
-            print('Could not submit bug at the moment, please try again later.')
+            print('Could not submit bug at the moment, please try again later: %s %s' % (r.status_code, r.reason))
 
     except RequestException as e:
-        print('Could not submit bug at the moment, please try again later.')
+        print('Could not submit bug at the moment, please try again later: %s' % e)
 
 
 def main(args=None, setup_logging=True):

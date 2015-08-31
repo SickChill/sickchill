@@ -73,98 +73,6 @@ class ThePirateBayProvider(generic.TorrentProvider):
     def imageName(self):
         return 'thepiratebay.png'
 
-    def getQuality(self, item, anime=False):
-
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
-
-    def _reverseQuality(self, quality):
-
-        quality_string = ''
-
-        if quality == Quality.SDTV:
-            quality_string = 'HDTV x264'
-        if quality == Quality.SDDVD:
-            quality_string = 'DVDRIP'
-        elif quality == Quality.HDTV:
-            quality_string = '720p HDTV x264'
-        elif quality == Quality.FULLHDTV:
-            quality_string = '1080p HDTV x264'
-        elif quality == Quality.RAWHDTV:
-            quality_string = '1080i HDTV mpeg2'
-        elif quality == Quality.HDWEBDL:
-            quality_string = '720p WEB-DL h264'
-        elif quality == Quality.FULLHDWEBDL:
-            quality_string = '1080p WEB-DL h264'
-        elif quality == Quality.HDBLURAY:
-            quality_string = '720p Bluray x264'
-        elif quality == Quality.FULLHDBLURAY:
-            quality_string = '1080p Bluray x264'
-
-        return quality_string
-
-    def _find_season_quality(self, title, torrent_id, ep_number):
-        """ Return the modified title of a Season Torrent with the quality found inspecting torrent file list """
-
-        mediaExtensions = ['avi', 'mkv', 'wmv', 'divx',
-                           'vob', 'dvr-ms', 'wtv', 'ts'
-                                                   'ogv', 'rar', 'zip', 'mp4']
-
-        quality = Quality.UNKNOWN
-
-        fileName = None
-
-        fileURL = self.url + 'ajax_details_filelist.php?id=' + str(torrent_id)
-        data = self.getURL(fileURL)
-        if not data:
-            return None
-
-        filesList = re.findall('<td.+>(.*?)</td>', data)
-
-        if not filesList:
-            # disabled errormsg for now
-            # logger.log(u"Unable to get the torrent file list for " + title, logger.ERROR)
-            return None
-
-        videoFiles = filter(lambda x: x.rpartition(".")[2].lower() in mediaExtensions, filesList)
-
-        #Filtering SingleEpisode/MultiSeason Torrent
-        if len(videoFiles) < ep_number or len(videoFiles) > float(ep_number * 1.1):
-            logger.log(
-                u"Result " + title + " have " + str(ep_number) + " episode and episodes retrived in torrent are " + str(
-                    len(videoFiles)), logger.DEBUG)
-            logger.log(u"Result " + title + " Seem to be a Single Episode or MultiSeason torrent, skipping result...",
-                       logger.DEBUG)
-            return None
-
-        if Quality.sceneQuality(title) != Quality.UNKNOWN:
-            return title
-
-        for fileName in videoFiles:
-            quality = Quality.sceneQuality(os.path.basename(fileName))
-            if quality != Quality.UNKNOWN: break
-
-        #if fileName is not None and quality == Quality.UNKNOWN:
-        #    quality = Quality.assumeQuality(fileName)
-
-        if quality == Quality.UNKNOWN:
-            logger.log(u"Unable to obtain a Season Quality for " + title, logger.DEBUG)
-            return None
-
-        try:
-            myParser = NameParser(showObj=self.show)
-            parse_result = myParser.parse(fileName)
-        except (InvalidNameException, InvalidShowException):
-            return None
-
-        logger.log(u"Season quality for " + title + " is " + Quality.qualityStrings[quality], logger.DEBUG)
-
-        if parse_result.series_name and parse_result.season_number:
-            title = parse_result.series_name + ' S%02d' % int(parse_result.season_number) + ' ' + self._reverseQuality(
-                quality)
-
-        return title
-
     def _get_season_search_strings(self, ep_obj):
 
         search_string = {'Season': []}
@@ -242,26 +150,21 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 re_title_url = self.proxy._buildRE(self.re_title_url).replace('&amp;f=norefer', '')
                 matches = re.compile(re_title_url, re.DOTALL).finditer(urllib.unquote(data))
                 for torrent in matches:
-                    title = torrent.group('title').replace('_',
-                                                           '.')  #Do not know why but SickBeard skip release with '_' in name
+                    title = torrent.group('title')
                     url = torrent.group('url')
                     id = int(torrent.group('id'))
                     seeders = int(torrent.group('seeders'))
                     leechers = int(torrent.group('leechers'))
+
                     #Filter unseeded torrent
                     if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
                         continue
 
-                        #Accept Torrent only from Good People for every Episode Search
+                    #Accept Torrent only from Good People for every Episode Search
                     if self.confirmed and re.search('(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None:
                         logger.log(u"ThePirateBay Provider found result " + torrent.group(
                             'title') + " but that doesn't seem like a trusted result so I'm ignoring it", logger.DEBUG)
                         continue
-
-                    #Check number video files = episode in season and find the real Quality for full season torrent analyzing files in torrent
-                    if mode == 'Season' and search_mode == 'sponly':
-                        ep_number = int(epcount / len(set(allPossibleShowNames(self.show))))
-                        title = self._find_season_quality(title, id, ep_number)
 
                     if not title or not url:
                         continue
@@ -315,7 +218,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
                 for item in self._doSearch(searchString[0]):
                     title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
+                    results.append(classes.Proper(title, url, search_date, self.show))
 
         return results
 

@@ -7,6 +7,7 @@
     import datetime
     import re
 %>
+<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <%include file="/inc_top.mako"/>
 <%
     myDB = db.DBConnection()
@@ -42,7 +43,6 @@
 %>
 
 <script type="text/javascript" charset="utf-8">
-
 $.tablesorter.addParser({
     id: 'loadingNames',
     is: function(s) {
@@ -108,6 +108,20 @@ $.tablesorter.addParser({
 
 $(document).ready(function(){
 
+    $('[data-src]').each(function(){
+       $(this).attr('src', $(this).data('src'));
+    });
+
+    // This needs to be refined to work a little faster.
+    $('.progressbar').each(function(progressbar){
+        var showId = $(this).data('show-id');
+        var percentage = $(this).data('progress-percentage');
+        var classToAdd = percentage == 100 ? 100 : percentage > 80 ? 80 : percentage > 60 ? 60 : percentage > 40 ? 40 : 20;
+        $(this).progressbar({ value:  percentage });
+        $(this).data('progress-text') ? $(this).append('<div class="progressbarText" title="' + $(this).data('progress-tip') + '">' + $(this).data('progress-text') + '</div>') : '';
+        $(this).find('.ui-progressbar-value').addClass('progress-' + classToAdd);
+    });
+
     $("img#network").on('error', function(){
         $(this).parent().text($(this).attr('alt'));
         $(this).remove();
@@ -120,7 +134,7 @@ $(document).ready(function(){
             1: function(node) { return $(node).find("span").text().toLowerCase(); },
             3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
             4: function(node) { return $(node).find("span").text().toLowerCase(); },
-            5: function(node) { return $(node).find("span").text(); },
+            5: function(node) { return $(node).find("span:first").text(); },
             6: function(node) { return $(node).find("img").attr("alt"); }
         },
         widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
@@ -211,7 +225,7 @@ $(document).ready(function(){
             1: function(node) { return $(node).find("span").text().toLowerCase(); },
             3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
             4: function(node) { return $(node).find("span").text().toLowerCase(); },
-            5: function(node) { return $(node).find("span").text(); },
+            5: function(node) { return $(node).find("span:first").text(); },
             6: function(node) { return $(node).find("img").attr("alt"); }
         },
         widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
@@ -388,7 +402,7 @@ $(document).ready(function(){
     <h1 class="title">${title}</h1>
 % endif
 
-<div id="HomeLayout" class="pull-right" style="margin-top: -40px;">
+<div id="HomeLayout" class="pull-right hidden-print" style="margin-top: -40px;">
     % if layout != 'poster':
         <button id="popover" type="button" class="btn btn-inline">Select Column</button>
     % endif
@@ -440,7 +454,7 @@ $(document).ready(function(){
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
     % if curLoadingShow.show == None:
         <div class="show" data-name="0" data-date="010101" data-network="0" data-progress="101">
-            <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="${sbRoot}/images/poster.png" />
+            <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" data-src="${sbRoot}/images/poster.png" />
             <div class="show-details">
                 <div class="show-add">Loading... (${curLoadingShow.show_name})</div>
             </div>
@@ -514,33 +528,10 @@ $(document).ready(function(){
 %>
     <div class="show" id="show${curShow.indexerid}" data-name="${curShow.name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
         <div class="show-image">
-            <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
+            <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" data-src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
         </div>
 
-        <div id="progressbar${curShow.indexerid}"></div>
-            <script type="text/javascript">
-                $(function() {
-                    $("#progressbar${curShow.indexerid}").progressbar({
-                    value: ${progressbar_percent} });
-                    classvalue = ${progressbar_percent}
-                    if (classvalue<20) {
-                        classtoadd = "progress-20"
-                    }
-                    if (classvalue>=20 && classvalue<40) {
-                        classtoadd = "progress-40"
-                    }
-                    if (classvalue>=40 && classvalue<80) {
-                        classtoadd = "progress-60"
-                    }
-                    if (classvalue>=80 && classvalue<100) {
-                        classtoadd = "progress-80"
-                    }
-                    if (classvalue==100) {
-                        classtoadd = "progress-100"
-                    }
-                    $("#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
-                });
-            </script>
+        <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}"></div>
 
         <div class="show-title">
             ${curShow.name}
@@ -581,9 +572,9 @@ $(document).ready(function(){
                 <td class="show-table">
                     % if layout != 'simple':
                         % if curShow.network:
-                            <span title="${curShow.network}"><img class="show-network-image" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
+                            <span title="${curShow.network}"><img class="show-network-image" data-src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
                         % else:
-                            <span title="No Network"><img class="show-network-image" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+                            <span title="No Network"><img class="show-network-image" data-src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
                         % endif
                     % else:
                         <span title="${curShow.network}">${curShow.network}</span>
@@ -591,11 +582,7 @@ $(document).ready(function(){
                 </td>
 
                 <td class="show-table">
-                    % if curShow.quality in qualityPresets:
-                        <span class="show-quality">${qualityPresetStrings[curShow.quality]}</span>
-                    % else:
-                        <span class="show-quality">Custom</span>
-                    % endif
+		    ${renderQualityPill(curShow.quality, overrideClass="show-quality")}
                 </td>
             </tr>
         </table>
@@ -623,7 +610,7 @@ $(document).ready(function(){
         </tr>
     </thead>
 
-    <tfoot>
+    <tfoot class="hidden-print">
         <tr>
             <th rowspan="1" colspan="1" align="center"><a href="${sbRoot}/home/addShows/">Add Show</a></th>
             <th>&nbsp;</th>
@@ -750,7 +737,7 @@ $(document).ready(function(){
         <td class="tvShow">
             <div class="imgsmallposter ${layout}">
                 <a href="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=${layout}" rel="dialog" title="${curShow.name}">
-                    <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="${layout}" alt="${curShow.indexerid}"/>
+                    <img data-src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="${layout}" alt="${curShow.indexerid}"/>
                 </a>
                 <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
             </div>
@@ -760,7 +747,7 @@ $(document).ready(function(){
             <span style="display: none;">${curShow.name}</span>
             <div class="imgbanner ${layout}">
                 <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">
-                <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
+                <img data-src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
             </div>
         </td>
     % elif layout == 'simple':
@@ -770,9 +757,11 @@ $(document).ready(function(){
     % if layout != 'simple':
         <td align="center">
         % if curShow.network:
-            <span title="${curShow.network}"><img id="network" width="54" height="27" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
+            <span title="${curShow.network}" class="hidden-print"><img id="network" width="54" height="27" data-src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
+            <span class="visible-print-inline">${curShow.network}</span>
         % else:
-            <span title="No Network"><img id="network" width="54" height="27" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+            <span title="No Network" class="hidden-print"><img id="network" width="54" height="27" data-src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+            <span class="visible-print-inline">No Network</span>
         % endif
         </td>
     % else:
@@ -781,41 +770,17 @@ $(document).ready(function(){
         </td>
     % endif
 
-    % if curShow.quality in qualityPresets:
-        <td align="center"><span class="quality ${qualityPresetStrings[curShow.quality]}">${qualityPresetStrings[curShow.quality]}</span></td>
-    % else:
-        <td align="center"><span class="quality Custom">Custom</span></td>
-    % endif
+        <td align="center">${renderQualityPill(curShow.quality)}</td>
 
-        <td align="center"><span style="display: none;">${download_stat}</span><div id="progressbar${curShow.indexerid}" style="position:relative;"></div>
-            <script type="text/javascript">
-                $(function() {
-                    $("#progressbar${curShow.indexerid}").progressbar({
-                    value: ${progressbar_percent} });
-                    $("#progressbar${curShow.indexerid}").append( "<div class='progressbarText' title='${download_stat_tip}'>${download_stat}</div>" )
-                    classvalue = ${progressbar_percent}
-                    if (classvalue<20) {
-                        classtoadd = "progress-20"
-                    }
-                    if (classvalue>=20 && classvalue<40) {
-                        classtoadd = "progress-40"
-                    }
-                    if (classvalue>=40 && classvalue<80) {
-                        classtoadd = "progress-60"
-                    }
-                    if (classvalue>=80 && classvalue<100) {
-                        classtoadd = "progress-80"
-                    }
-                    if (classvalue==100) {
-                        classtoadd = "progress-100"
-                    }
-                    $("#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
-                });
-            </script>
+        <td align="center">
+            ## This first span is used for sorting and is never displayed to user
+            <span style="display: none;">${download_stat}</span>
+            <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}" data-progress-text="${download_stat}" data-progress-tip="${download_stat_tip}"></div>
+            <span class="visible-print-inline">${download_stat}</span>
         </td>
 
         <td align="center">
-            <img src="${sbRoot}/images/${('no16.png", alt="No"', 'yes16.png", alt="Yes"')[int(curShow.paused) == 0 and curShow.status == 'Continuing']} width="16" height="16" />
+            <img data-src="${sbRoot}/images/${('no16.png" alt="No"', 'yes16.png" alt="Yes"')[int(curShow.paused) == 0 and curShow.status == 'Continuing']} width="16" height="16" />
         </td>
 
         <td align="center">

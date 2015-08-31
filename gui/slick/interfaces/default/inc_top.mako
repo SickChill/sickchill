@@ -43,12 +43,13 @@
         <meta name="msapplication-TileImage" content="${sbRoot}/images/ico/favicon-144.png">
         <meta name="msapplication-config" content="${sbRoot}/css/browserconfig.xml">
 
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/bootstrap.css?${sbPID}"/>
+        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/bootstrap.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/browser.css?${sbPID}" />
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/jquery-ui-1.10.4.custom.css?${sbPID}" />
+        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/jquery.qtip-2.2.1.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/style.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
+        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/print.css?${sbPID}" />
         % if sbLogin:
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/pnotify.custom.min.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/country-flags.css?${sbPID}"/>
@@ -142,7 +143,7 @@
     </head>
 
     <body>
-        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <nav class="navbar navbar-default navbar-fixed-top hidden-print" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -245,7 +246,7 @@
         </nav>
 
         % if not submenu is UNDEFINED:
-        <div id="SubMenu">
+        <div id="SubMenu" class="hidden-print">
         <span>
         <% first = True %>
         % for menuItem in submenu:
@@ -271,13 +272,13 @@
         % endif
 
         % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and sbLogin:
-        <div class="alert alert-danger upgrade-notification" role="alert">
+        <div class="alert alert-danger upgrade-notification hidden-print" role="alert">
             <span>You're using the ${sickbeard.BRANCH} branch. Please use 'master' unless specifically asked</span>
         </div>
         % endif
 
         % if sickbeard.NEWEST_VERSION_STRING and sbLogin:
-        <div class="alert alert-success upgrade-notification" role="alert">
+        <div class="alert alert-success upgrade-notification hidden-print" role="alert">
             <span>${sickbeard.NEWEST_VERSION_STRING}</span>
         </div>
         % endif
