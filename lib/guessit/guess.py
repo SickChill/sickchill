@@ -287,10 +287,10 @@ def choose_int(g1, g2):
     if v1 == v2:
         return v1, 1 - (1 - c1) * (1 - c2)
     else:
-        if c1 > c2:
-            return v1, c1 - c2
+        if c1 >= c2:
+            return v1, (c1 * 2 - c2 * 2) / 2
         else:
-            return v2, c2 - c1
+            return v2, (c2 * 2 - c1 * 2) / 2
 
 
 def choose_string(g1, g2):
@@ -354,10 +354,10 @@ def choose_string(g1, g2):
 
     # in case of conflict, return the one with highest confidence
     else:
-        if c1 > c2:
-            return v1, c1 - c2
+        if c1 >= c2:
+            return v1, (c1 * 2 - c2 * 2) / 2
         else:
-            return v2, c2 - c1
+            return v2, (c2 * 2 - c1 * 2) / 2
 
 
 def _merge_similar_guesses_nocheck(guesses, prop, choose):
@@ -474,8 +474,8 @@ def merge_all(guesses, append=None):
 
     # delete very unlikely values
     for p in list(result.keys()):
-        if result.confidence(p) < 0.05:
-            del result[p]
+       if result.confidence(p) < 0.05:
+           del result[p]
 
     # make sure our appendable properties contain unique values
     for prop in append:
@@ -503,13 +503,13 @@ def smart_merge(guesses):
 
     # 1- try to merge similar information together and give it a higher
     #    confidence
-    for int_part in ('year', 'season'):
+    for int_part in ('year', 'season', 'episodeNumber'):
         merge_similar_guesses(guesses, int_part, choose_int)
 
     for string_part in ('title', 'series', 'container', 'format',
                         'releaseGroup', 'website', 'audioCodec',
                         'videoCodec', 'screenSize', 'episodeFormat',
-                        'audioChannels', 'idNumber'):
+                        'audioChannels', 'idNumber', 'container'):
         merge_similar_guesses(guesses, string_part, choose_string)
 
     # 2- merge the rest, potentially discarding information not properly

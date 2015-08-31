@@ -1804,3 +1804,33 @@
   releaseGroup: Hatsuyuki-Kaitou
   screenSize: 720p
   series: Fairy Tail 2
+
+? "Looney Tunes 1940x01 Porky's Last Stand.mkv"
+: episodeNumber: 1
+  season: 1940
+  series: Looney Tunes
+  title: Porky's Last Stand
+  year: 1940
+
+? The.Good.Wife.S06E01.E10.720p.WEB-DL.DD5.1.H.264-CtrlHD/The.Good.Wife.S06E09.Trust.Issues.720p.WEB-DL.DD5.1.H.264-CtrlHD.mk
+: audioChannels: '5.1'
+  audioCodec: DolbyDigital
+  episodeList:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  episodeNumber: 9
+  format: WEB-DL
+  releaseGroup: CtrlHD
+  screenSize: 720p
+  season: 6
+  series: The Good Wife
+  title: Trust Issues
+  videoCodec: h264

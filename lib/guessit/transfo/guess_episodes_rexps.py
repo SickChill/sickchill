@@ -67,7 +67,14 @@ class GuessEpisodesRexps(Transformer):
         class ResolutionCollisionValidator(object):
             @staticmethod
             def validate(prop, string, node, match, entry_start, entry_end):
-                return len(match.group(2)) < 3  # limit
+                # Invalidate when season or episode is more than 100.
+                try:
+                    season_value = season_parser(match.group(2))
+                    episode_value = episode_parser_x(match.group(3))
+                    return season_value < 100 or episode_value < 100
+                except:
+                    # This may occur for 1xAll or patterns like this.
+                    return True
 
         self.container.register_property(None, r'(' + season_words_re.pattern + sep + '?(?P<season>' + numeral + ')' + sep + '?' + season_words_re.pattern + '?)', confidence=1.0, formatter=parse_numeral)
         self.container.register_property(None, r'(' + season_words_re.pattern + sep + '?(?P<season>' + digital_numeral + '(?:' + sep + '?' + all_separators_re.pattern + sep + '?' + digital_numeral + ')*)' + sep + '?' + season_words_re.pattern + '?)' + sep, confidence=1.0, formatter={None: parse_numeral, 'season': season_parser}, validator=ChainedValidator(DefaultValidator(), FormatterValidator('season', lambda x: len(x) > 1 if hasattr(x, '__len__') else False)))

@@ -135,8 +135,14 @@ class SameKeyValidator(object):
         self.validator_function = validator_function
 
     def validate(self, prop, string, node, match, entry_start, entry_end):
+        path_nodes = [path_node for path_node in node.ancestors if path_node.category == 'path']
+        if path_nodes:
+            path_node = path_nodes[0]
+        else:
+            path_node = node.root
+
         for key in prop.keys:
-            for same_value_leaf in node.root.leaves_containing(key):
+            for same_value_leaf in path_node.leaves_containing(key):
                 ret = self.validator_function(same_value_leaf, key, prop, string, node, match, entry_start, entry_end)
                 if ret is not None:
                     return ret
@@ -144,6 +150,9 @@ class SameKeyValidator(object):
 
 
 class OnlyOneValidator(SameKeyValidator):
+    """
+    Check that there's only one occurence of key for current directory
+    """
     def __init__(self):
         super(OnlyOneValidator, self).__init__(lambda same_value_leaf, key, prop, string, node, match, entry_start, entry_end: False)
 
