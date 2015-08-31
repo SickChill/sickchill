@@ -287,29 +287,27 @@ class Quality:
         from hachoir_parser import createParser
         from hachoir_metadata import extractMetadata
 
-        parser = None
         try:
             parser = createParser(filename)
         except Exception:
-            if parser:
-                del parser
             parser = None
             pass
 
         if not parser:
             return Quality.UNKNOWN
 
-        metadata = None
         try:
             metadata = extractMetadata(parser)
         except Exception:
-            if metadata:
-                del metadata
             metadata = None
             pass
 
+        try:
+            parser.stream._input.close()
+        except:
+            pass
+
         if not metadata:
-            del parser
             return Quality.UNKNOWN
 
         height = 0
@@ -321,9 +319,6 @@ class Quality:
                 for metagroup in metadata.iterGroups():
                     if metagroup.has('height'):
                         height = int(metagroup.get('height') or 0)
-
-        del metadata
-        del parser
 
         if not height:
             return Quality.UNKNOWN
