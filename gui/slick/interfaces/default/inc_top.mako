@@ -90,55 +90,7 @@
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery.scrolltopcontrol-1.1.js"></script>
         <script type="text/javascript" src="${sbRoot}/js/browser.js"></script>
         <script type="text/javascript" src="${sbRoot}/js/ajaxNotifications.js"></script>
-        <script type="text/javascript">
-            function initActions() {
-                $("#SubMenu a[href*='/home/restart/']").addClass('restart').html('<span class="submenu-icon-restart"></span> Restart');
-                $("#SubMenu a[href*='/home/shutdown/']").addClass('shutdown').html('<span class="submenu-icon-shutdown"></span> Shutdown');
-                $("#SubMenu a[href*='/home/logout/']").html('<span class="ui-icon ui-icon-power"></span> Logout');
-                $("#SubMenu a:contains('Edit')").html('<span class="ui-icon ui-icon-pencil"></span> Edit');
-                $("#SubMenu a:contains('Remove')").addClass('remove').html('<span class="ui-icon ui-icon-trash"></span> Remove');
-                $("#SubMenu a:contains('Clear History')").addClass('clearhistory').html('<span class="ui-icon ui-icon-trash"></span> Clear History');
-                $("#SubMenu a:contains('Trim History')").addClass('trimhistory').html('<span class="ui-icon ui-icon-trash"></span> Trim History');
-                $("#SubMenu a[href$='/errorlogs/clearerrors/']").html('<span class="ui-icon ui-icon-trash"></span> Clear Errors');
-                $("#SubMenu a[href$='/errorlogs/submit_errors/']").html('<span class="ui-icon ui-icon-arrowreturnthick-1-n"></span> Submit Errors');
-                $("#SubMenu a:contains('Re-scan')").html('<span class="ui-icon ui-icon-refresh"></span> Re-scan');
-                $("#SubMenu a:contains('Backlog Overview')").html('<span class="ui-icon ui-icon-refresh"></span> Backlog Overview');
-                $("#SubMenu a[href$='/home/updatePLEX/']").html('<span class="ui-icon ui-icon-refresh"></span> Update PLEX');
-                $("#SubMenu a:contains('Force')").html('<span class="ui-icon ui-icon-transfer-e-w"></span> Force Full Update');
-                $("#SubMenu a:contains('Rename')").html('<span class="ui-icon ui-icon-tag"></span> Preview Rename');
-                $("#SubMenu a[href$='/config/subtitles/']").html('<span class="ui-icon ui-icon-comment"></span> Search Subtitles');
-                $("#SubMenu a[href*='/home/subtitleShow']").html('<span class="ui-icon ui-icon-comment"></span> Download Subtitles');
-                $("#SubMenu a:contains('Anime')").html('<span class="submenu-icon-anime"></span> Anime');
-                $("#SubMenu a:contains('Settings')").html('<span class="ui-icon ui-icon-search"></span> Search Settings');
-                $("#SubMenu a:contains('Provider')").html('<span class="ui-icon ui-icon-search"></span> Search Providers');
-                $("#SubMenu a:contains('Backup/Restore')").html('<span class="ui-icon ui-icon-gear"></span> Backup/Restore');
-                $("#SubMenu a:contains('General')").html('<span class="ui-icon ui-icon-gear"></span> General');
-                $("#SubMenu a:contains('Episode Status')").html('<span class="ui-icon ui-icon-transferthick-e-w"></span> Episode Status Management');
-                $("#SubMenu a:contains('Missed Subtitle')").html('<span class="ui-icon ui-icon-transferthick-e-w"></span> Missed Subtitles');
-                $("#SubMenu a[href$='/home/addShows/']").html('<span class="ui-icon ui-icon-video"></span> Add Show');
-                $("#SubMenu a:contains('Processing')").html('<span class="ui-icon ui-icon-folder-open"></span> Post-Processing');
-                $("#SubMenu a:contains('Manage Searches')").html('<span class="ui-icon ui-icon-search"></span> Manage Searches');
-                $("#SubMenu a:contains('Manage Torrents')").html('<span class="submenu-icon-bittorrent"></span> Manage Torrents');
-                $("#SubMenu a[href$='/manage/failedDownloads/']").html('<span class="submenu-icon-failed-download"></span> Failed Downloads');
-                $("#SubMenu a:contains('Notification')").html('<span class="ui-icon ui-icon-note"></span> Notifications');
-                $("#SubMenu a:contains('Update show in KODI')").html('<span class="submenu-icon-kodi"></span> Update show in KODI');
-                $("#SubMenu a[href$='/home/updateKODI/']").html('<span class="submenu-icon-kodi"></span> Update KODI');
-                $("#SubMenu a:contains('Update show in Emby')").html('<span class="ui-icon ui-icon-refresh"></span> Update show in Emby');
-                $("#SubMenu a[href$='/home/updateEMBY/']").html('<span class="ui-icon ui-icon-refresh"></span> Update Emby');
-                $("#SubMenu a:contains('Pause')").html('<span class="ui-icon ui-icon-pause"></span> Pause');
-                $("#SubMenu a:contains('Resume')").html('<span class="ui-icon ui-icon-play"></span> Resume');
-
-                $('#SubMenu a span').addClass('pull-left');
-
-            };
-
-            $(document).ready(function() {
-                initActions();
-
-                $('.dropdown-toggle').dropdownHover();
-            });
-        </script>
-    <script type="text/javascript" src="${sbRoot}/js/confirmations.js?${sbPID}"></script>
+        <script type="text/javascript" src="${sbRoot}/js/confirmations.js?${sbPID}"></script>
     % endif
     </head>
 
@@ -251,6 +203,7 @@
         <% first = True %>
         % for menuItem in submenu:
             % if 'requires' not in menuItem or menuItem['requires']:
+                <% icon_class = '' if 'icon' not in menuItem else ' ' + menuItem['icon'] %>
                   % if type(menuItem['path']) == dict:
                       ${("</span><span>", "")[bool(first)]}<b>${menuItem['title']}</b>
                       <%
@@ -262,7 +215,7 @@
                           <% inner_first = False %>
                       % endfor
                   % else:
-                      <a href="${sbRoot}/${menuItem['path']}" class="btn${('', ' confirm')['confirm' in menuItem]}">${menuItem['title']}</a>
+                      <a href="${sbRoot}/${menuItem['path']}" class="btn${('', ' confirm')['confirm' in menuItem]}">${('', '<span class="pull-left ' + icon_class + '"></span> ')[bool(icon_class)]}${menuItem['title']}</a>
                       <% first = False %>
                   % endif
             % endif
