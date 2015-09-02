@@ -700,12 +700,12 @@ class Home(WebRoot):
 
     def HomeMenu(self):
         menu = [
-            {'title': 'Add Shows', 'path': 'home/addShows/', },
-            {'title': 'Manual Post-Processing', 'path': 'home/postprocess/'},
-            {'title': 'Update KODI', 'path': 'home/updateKODI/', 'requires': self.haveKODI()},
-            {'title': 'Update Plex', 'path': 'home/updatePLEX/', 'requires': self.havePLEX()},
-            {'title': 'Update Emby', 'path': 'home/updateEMBY/', 'requires': self.haveEMBY()},
-            {'title': 'Manage Torrents', 'path': 'manage/manageTorrents/', 'requires': self.haveTORRENT()},
+            {'title': 'Add Shows', 'path': 'home/addShows/', 'icon': 'ui-icon ui-icon-video'},
+            {'title': 'Manual Post-Processing', 'path': 'home/postprocess/', 'icon': 'ui-icon ui-icon-folder-open'},
+            {'title': 'Update KODI', 'path': 'home/updateKODI/', 'requires': self.haveKODI(), 'icon': 'submenu-icon-kodi'},
+            {'title': 'Update Plex', 'path': 'home/updatePLEX/', 'requires': self.havePLEX(), 'icon': 'ui-icon ui-icon-refresh'},
+            {'title': 'Update Emby', 'path': 'home/updateEMBY/', 'requires': self.haveEMBY(), 'icon': 'ui-icon ui-icon-refresh'},
+            {'title': 'Manage Torrents', 'path': 'manage/manageTorrents/', 'requires': self.haveTORRENT(), 'icon': 'submenu-icon-bittorrent'},
         ]
 
         return menu
@@ -1234,7 +1234,7 @@ class Home(WebRoot):
         )
 
         t = PageTemplate(rh=self, file="displayShow.mako")
-        submenu = [{'title': 'Edit', 'path': 'home/editShow?show=%d' % showObj.indexerid}]
+        submenu = [{'title': 'Edit', 'path': 'home/editShow?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-pencil'}]
 
         try:
             showLoc = (showObj.location, True)
@@ -1267,27 +1267,20 @@ class Home(WebRoot):
         if not sickbeard.showQueueScheduler.action.isBeingAdded(showObj):
             if not sickbeard.showQueueScheduler.action.isBeingUpdated(showObj):
                 if showObj.paused:
-                    submenu.append({'title': 'Resume', 'path': 'home/togglePause?show=%d' % showObj.indexerid})
+                    submenu.append({'title': 'Resume', 'path': 'home/togglePause?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-play'})
                 else:
-                    submenu.append({'title': 'Pause', 'path': 'home/togglePause?show=%d' % showObj.indexerid})
+                    submenu.append({'title': 'Pause', 'path': 'home/togglePause?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-pause'})
 
-                submenu.append(
-                    {'title': 'Remove', 'path': 'home/deleteShow?show=%d' % showObj.indexerid, 'confirm': True})
-                submenu.append({'title': 'Re-scan files', 'path': 'home/refreshShow?show=%d' % showObj.indexerid})
-                submenu.append(
-                    {'title': 'Force Full Update', 'path': 'home/updateShow?show=%d&amp;force=1' % showObj.indexerid})
-                submenu.append({'title': 'Update show in KODI',
-                                  'path': 'home/updateKODI?show=%d' % showObj.indexerid, 'requires': self.haveKODI()})
-
-                submenu.append({'title': 'Update show in Emby',
-                                  'path': 'home/updateEMBY?show=%d' % showObj.indexerid, 'requires': self.haveEMBY()})
-
-                submenu.append({'title': 'Preview Rename', 'path': 'home/testRename?show=%d' % showObj.indexerid})
+                submenu.append({'title': 'Remove', 'path': 'home/deleteShow?show=%d' % showObj.indexerid, 'confirm': True, 'icon': 'ui-icon ui-icon-trash'})
+                submenu.append({'title': 'Re-scan files', 'path': 'home/refreshShow?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-refresh'})
+                submenu.append({'title': 'Force Full Update', 'path': 'home/updateShow?show=%d&amp;force=1' % showObj.indexerid, 'icon': 'ui-icon ui-icon-transfer-e-w'})
+                submenu.append({'title': 'Update show in KODI','path': 'home/updateKODI?show=%d' % showObj.indexerid, 'requires': self.haveKODI(), 'icon': 'submenu-icon-kodi'})
+                submenu.append({'title': 'Update show in Emby', 'path': 'home/updateEMBY?show=%d' % showObj.indexerid, 'requires': self.haveEMBY(), 'icon': 'ui-icon ui-icon-refresh'})
+                submenu.append({'title': 'Preview Rename', 'path': 'home/testRename?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-tag'})
 
                 if sickbeard.USE_SUBTITLES and not sickbeard.showQueueScheduler.action.isBeingSubtitled(
                         showObj) and showObj.subtitles:
-                    submenu.append(
-                        {'title': 'Download Subtitles', 'path': 'home/subtitleShow?show=%d' % showObj.indexerid})
+                    submenu.append({'title': 'Download Subtitles', 'path': 'home/subtitleShow?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-comment'})
 
         epCounts = {}
         epCats = {}
@@ -1906,7 +1899,7 @@ class Home(WebRoot):
             ep_obj_rename_list.reverse()
 
         t = PageTemplate(rh=self, file="testRename.mako")
-        submenu = [{'title': 'Edit', 'path': 'home/editShow?show=%d' % showObj.indexerid}]
+        submenu = [{'title': 'Edit', 'path': 'home/editShow?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-pencil'}]
 
         return t.render(submenu=submenu, ep_obj_list=ep_obj_rename_list, show=showObj, title='Preview Rename', header='Preview Rename')
 
@@ -2845,20 +2838,20 @@ class Manage(Home, WebRoot):
 
     def ManageMenu(self):
         menu = [
-            {'title': 'Backlog Overview', 'path': 'manage/backlogOverview/'},
-            {'title': 'Manage Searches', 'path': 'manage/manageSearches/'},
-            {'title': 'Episode Status Management', 'path': 'manage/episodeStatuses/'}, ]
+            {'title': 'Backlog Overview', 'path': 'manage/backlogOverview/', 'icon': 'ui-icon ui-icon-refresh'},
+            {'title': 'Manage Searches', 'path': 'manage/manageSearches/', 'icon': 'ui-icon ui-icon-search'},
+            {'title': 'Episode Status Management', 'path': 'manage/episodeStatuses/', 'icon': 'ui-icon ui-icon-transferthick-e-w'}, ]
 
         if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' \
                 and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https'
                      or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
-            menu.append({'title': 'Manage Torrents', 'path': 'manage/manageTorrents/'})
+            menu.append({'title': 'Manage Torrents', 'path': 'manage/manageTorrents/', 'icon': 'submenu-icon-bittorrent'})
 
         if sickbeard.USE_SUBTITLES:
-            menu.append({'title': 'Missed Subtitle Management', 'path': 'manage/subtitleMissed/'})
+            menu.append({'title': 'Missed Subtitle Management', 'path': 'manage/subtitleMissed/', 'icon': 'ui-icon ui-icon-transferthick-e-w'})
 
         if sickbeard.USE_FAILED_DOWNLOADS:
-            menu.append({'title': 'Failed Downloads', 'path': 'manage/failedDownloads/'})
+            menu.append({'title': 'Failed Downloads', 'path': 'manage/failedDownloads/', 'icon': 'submenu-icon-failed-download'})
 
         return menu
 
@@ -3657,8 +3650,8 @@ class History(WebRoot):
 
         t = PageTemplate(rh=self, file="history.mako")
         submenu = [
-            {'title': 'Clear History', 'path': 'history/clearHistory'},
-            {'title': 'Trim History', 'path': 'history/trimHistory'},
+            {'title': 'Clear History', 'path': 'history/clearHistory', 'icon': 'ui-icon ui-icon-trash', 'class': 'clearhistory'},
+            {'title': 'Trim History', 'path': 'history/trimHistory', 'icon': 'ui-icon ui-icon-trash', 'class': 'trimhistory'},
         ]
 
         return t.render(historyResults=sqlResults, compactResults=compact, limit=limit, submenu=submenu, title='History', header='History', topmenu="history")
@@ -3690,14 +3683,14 @@ class Config(WebRoot):
 
     def ConfigMenu(self):
         menu = [
-            {'title': 'General', 'path': 'config/general/'},
-            {'title': 'Backup/Restore', 'path': 'config/backuprestore/'},
-            {'title': 'Search Settings', 'path': 'config/search/'},
-            {'title': 'Search Providers', 'path': 'config/providers/'},
-            {'title': 'Subtitles Settings', 'path': 'config/subtitles/'},
-            {'title': 'Post Processing', 'path': 'config/postProcessing/'},
-            {'title': 'Notifications', 'path': 'config/notifications/'},
-            {'title': 'Anime', 'path': 'config/anime/'},
+            {'title': 'General', 'path': 'config/general/', 'icon': 'ui-icon ui-icon-gear'},
+            {'title': 'Backup/Restore', 'path': 'config/backuprestore/', 'icon': 'ui-icon ui-icon-gear'},
+            {'title': 'Search Settings', 'path': 'config/search/', 'icon': 'ui-icon ui-icon-search'},
+            {'title': 'Search Providers', 'path': 'config/providers/', 'icon': 'ui-icon ui-icon-search'},
+            {'title': 'Subtitles Settings', 'path': 'config/subtitles/', 'icon': 'ui-icon ui-icon-comment'},
+            {'title': 'Post Processing', 'path': 'config/postProcessing/', 'icon': 'ui-icon ui-icon-folder-open'},
+            {'title': 'Notifications', 'path': 'config/notifications/', 'icon': 'ui-icon ui-icon-note'},
+            {'title': 'Anime', 'path': 'config/anime/', 'icon': 'submenu-icon-anime'},
         ]
 
         return menu
@@ -5022,8 +5015,8 @@ class ErrorLogs(WebRoot):
 
     def ErrorLogsMenu(self):
         menu = [
-            {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/'},
-            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors(), 'confirm': True},
+            {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/', 'icon': 'ui-icon ui-icon-trash'},
+            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors(), 'confirm': True, 'icon': 'ui-icon ui-icon-arrowreturnthick-1-n'},
         ]
 
         return menu
