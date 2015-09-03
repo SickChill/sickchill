@@ -226,7 +226,12 @@ class GuessFinder(object):
         for node in nodes:
             self.process_node(node)
 
-    def process_node(self, node, iterative=True, partial_span=None):
+    def process_node(self, node, iterative=True, partial_span=None, skip_nodes=True):
+        if skip_nodes and not isinstance(skip_nodes, list):
+            skip_nodes = self.options.get('skip_nodes')
+        elif not isinstance(skip_nodes, list):
+            skip_nodes = []
+
         if partial_span:
             value = node.value[partial_span[0]:partial_span[1]]
         else:
@@ -257,17 +262,29 @@ class GuessFinder(object):
         if partial_span:
             span = (span[0] + partial_span[0], span[1] + partial_span[0])
 
-        skip_nodes = self.options.get('skip_nodes')
         if skip_nodes:
+            skip_nodes = [skip_node for skip_node in self.options.get('skip_nodes') if skip_node.parent.span[0] == node.span[0] or skip_node.parent.span[1] == node.span[1]]
             # if we guessed a node that we need to skip, recurse down the tree and ignore that node
+            indices = set()
+            skip_nodes_spans = []
+            next_skip_nodes = []
             for skip_node in skip_nodes:
-                skip_node_relative_span = (skip_node.span[0] - node.offset, skip_node.span[1] - node.offset)
-                if skip_node_relative_span == span:
-                    partition_spans = [s for s in node.get_partition_spans(span) if s != skip_node.span]
-                    for partition_span in partition_spans:
-                        relative_span = (partition_span[0] - node.offset, partition_span[1] - node.offset)
-                        self.process_node(node, partial_span=relative_span)
-                    return
+                skip_for_next = False
+                skip_nodes_spans.append(skip_node.span)
+                if node.offset <= skip_node.span[0] <= node.span[1]:
+                    indices.add(skip_node.span[0] - node.offset)
+                    skip_for_next = True
+                if node.offset <= skip_node.span[1] <= node.span[1]:
+                    indices.add(skip_node.span[1] - node.offset)
+                    skip_for_next = True
+                if not skip_for_next:
+                    next_skip_nodes.append(skip_node)
+            if indices:
+                partition_spans = [s for s in node.get_partition_spans(indices) if s not in skip_nodes_spans]
+                for partition_span in partition_spans:
+                    relative_span = (partition_span[0] - node.offset, partition_span[1] - node.offset)
+                    self.process_node(node, partial_span=relative_span, skip_nodes=next_skip_nodes)
+                return
 
         # restore sentinels compensation
         if isinstance(result, Guess):
