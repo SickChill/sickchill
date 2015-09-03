@@ -121,7 +121,7 @@ class NextGenProvider(generic.TorrentProvider):
             data = self.session.get(self.urls['login_page'])
             with BS4Parser(data.content.decode('iso-8859-1')) as bs:
                 csrfraw = bs.find('form', attrs={'id': 'login'})['action']
-                output = self.session.post(self.urls['base_url'] + csrfraw, data=login_params)
+                output = self.getURL(self.urls['base_url'] + csrfraw,  post_data=login_params)
 
                 if self.loginSuccess(output):
                     self.last_login_check = now

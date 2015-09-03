@@ -153,7 +153,7 @@ class TNTVillageProvider(generic.TorrentProvider):
         }
 
         try:
-            response = self.session.post(self.urls['login'], data=login_params, timeout=30)
+            response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
         except RequestException as e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False

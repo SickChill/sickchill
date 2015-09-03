@@ -90,7 +90,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                         'submit': 'Confirm'}
 
         try:
-            response = self.session.post(self.urls['login'], data=login_params, timeout=30)
+            response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False

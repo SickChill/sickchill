@@ -148,7 +148,7 @@ class XthorProvider(generic.TorrentProvider):
         logger.log('Performing authentication to Xthor', logger.DEBUG)
         
         try:
-            response = self.session.post(self.url + '/takelogin.php', data=login_params, timeout=30, headers=header)
+            response = self.getURL(self.url + '/takelogin.php',  post_data=login_params, timeout=30, headers=header)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False
