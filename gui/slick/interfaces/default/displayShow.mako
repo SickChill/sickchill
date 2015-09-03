@@ -279,7 +279,7 @@ $(document).ready(function(){
     <div class="pull-left" >
         Change selected episodes to:</br>
         <select id="statusSelect" class="form-control form-control-inline input-sm">
-        <% availableStatus = [WANTED, SKIPPED, ARCHIVED, IGNORED, FAILED] %>
+        <% availableStatus = [WANTED, SKIPPED, IGNORED, FAILED] %>
         % if not sickbeard.USE_FAILED_DOWNLOADS:
         <% availableStatus.remove(FAILED) %>
         % endif      
