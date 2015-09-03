@@ -1,5 +1,6 @@
 <%!
     from sickbeard import common
+    import sickbeard
 %>
 <%include file="/inc_top.mako"/>
 
@@ -20,7 +21,7 @@
 
 <form action="${sbRoot}/manage/episodeStatuses" method="get">
 Manage episodes with status <select name="whichStatus" class="form-control form-control-inline input-sm">
-% for curStatus in [common.SKIPPED, common.SNATCHED, common.WANTED, common.ARCHIVED, common.IGNORED]:
+% for curStatus in [common.SKIPPED, common.SNATCHED, common.WANTED, common.ARCHIVED, common.IGNORED] + common.Quality.ARCHIVED:
 <option value="${curStatus}">${common.statusStrings[curStatus]}</option>
 % endfor
 </select>
@@ -39,7 +40,7 @@ Manage episodes with status <select name="whichStatus" class="form-control form-
 <br />
 
 <%
-    if int(whichStatus) in [common.ARCHIVED, common.IGNORED, common.SNATCHED]:
+    if int(whichStatus) in [common.IGNORED, common.SNATCHED] + common.Quality.ARCHIVED:
         row_class = "good"
     else:
         row_class = common.Overview.overviewStrings[int(whichStatus)]
@@ -49,11 +50,11 @@ Manage episodes with status <select name="whichStatus" class="form-control form-
 
 Set checked shows/episodes to <select name="newStatus" class="form-control form-control-inline input-sm">
 <%
-    statusList = [common.SKIPPED, common.WANTED, common.ARCHIVED, common.IGNORED]
+    statusList = [common.SKIPPED, common.WANTED, common.IGNORED] + common.Quality.ARCHIVED
     if int(whichStatus) in statusList:
         statusList.remove(int(whichStatus))
 
-    if int(whichStatus) in [common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST]:
+    if int(whichStatus) in [common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST] + common.Quality.DOWNLOADED and sickbeard.USE_FAILED_DOWNLOADS:
         statusList.append(common.FAILED)
 %>
 
