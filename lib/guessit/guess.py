@@ -288,9 +288,9 @@ def choose_int(g1, g2):
         return v1, 1 - (1 - c1) * (1 - c2)
     else:
         if c1 >= c2:
-            return v1, (c1 * 2 - c2 * 2) / 2
+            return v1, c1 - c2 / 2
         else:
-            return v2, (c2 * 2 - c1 * 2) / 2
+            return v2, c2 - c1 / 2
 
 
 def choose_string(g1, g2):
@@ -308,7 +308,7 @@ def choose_string(g1, g2):
     prepended to it.
 
     >>> s(choose_string(('Hello', 0.75), ('World', 0.5)))
-    ('Hello', 0.25)
+    ('Hello', 0.5)
 
     >>> s(choose_string(('Hello', 0.5), ('hello', 0.5)))
     ('Hello', 0.75)
@@ -355,9 +355,9 @@ def choose_string(g1, g2):
     # in case of conflict, return the one with highest confidence
     else:
         if c1 >= c2:
-            return v1, (c1 * 2 - c2 * 2) / 2
+            return v1, c1 - c2 / 2
         else:
-            return v2, (c2 * 2 - c1 * 2) / 2
+            return v2, c2 - c1 / 2
 
 
 def _merge_similar_guesses_nocheck(guesses, prop, choose):
