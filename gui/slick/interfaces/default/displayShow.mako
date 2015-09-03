@@ -282,8 +282,8 @@ $(document).ready(function(){
         <% availableStatus = [WANTED, SKIPPED, IGNORED, FAILED] %>
         % if not sickbeard.USE_FAILED_DOWNLOADS:
         <% availableStatus.remove(FAILED) %>
-        % endif      
-        % for curStatus in availableStatus + sorted(Quality.DOWNLOADED):
+        % endif
+        % for curStatus in availableStatus + sorted(Quality.DOWNLOADED) + sorted(Quality.ARCHIVED):
             % if curStatus != DOWNLOADED:
             <option value="${curStatus}">${statusStrings[curStatus]}</option>
             % endif

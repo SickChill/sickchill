@@ -582,25 +582,6 @@ def _historyDate_to_dateTimeForm(timeString):
     return date.strftime(dateTimeFormat)
 
 
-def _replace_statusStrings_with_statusCodes(statusStrings):
-    statusCodes = []
-    if "snatched" in statusStrings:
-        statusCodes += Quality.SNATCHED
-    if "downloaded" in statusStrings:
-        statusCodes += Quality.DOWNLOADED
-    if "skipped" in statusStrings:
-        statusCodes.append(SKIPPED)
-    if "wanted" in statusStrings:
-        statusCodes.append(WANTED)
-    if "archived" in statusStrings:
-        statusCodes.append(ARCHIVED)
-    if "ignored" in statusStrings:
-        statusCodes.append(IGNORED)
-    if "unaired" in statusStrings:
-        statusCodes.append(UNAIRED)
-    return statusCodes
-
-
 def _mapQuality(showObj):
     quality_map = _getQualityMap()
 
@@ -733,7 +714,7 @@ class CMD_ComingEpisodes(ApiCall):
         recently = (datetime.date.today() - datetime.timedelta(days=sickbeard.COMING_EPS_MISSED_RANGE)).toordinal()
 
         done_show_list = []
-        qualList = Quality.DOWNLOADED + Quality.SNATCHED + [ARCHIVED, IGNORED]
+        qualList = Quality.DOWNLOADED + Quality.SNATCHED + Quality.ARCHIVED + [IGNORED]
 
         myDB = db.DBConnection(row_type="dict")
         sql_results = myDB.select(
@@ -948,7 +929,7 @@ class CMD_EpisodeSetStatus(ApiCall):
              "requiredParameters": {
                  "indexerid": {"desc": "unique id of a show"},
                  "season": {"desc": "the season number"},
-                 "status": {"desc": "the status values: wanted, skipped, archived, ignored, failed"}
+                 "status": {"desc": "the status values: wanted, skipped, ignored, failed"}
              },
              "optionalParameters": {
                  "episode": {"desc": "the episode number"},
@@ -964,7 +945,7 @@ class CMD_EpisodeSetStatus(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.status, args = self.check_params(args, kwargs, "status", None, True, "string",
-                                              ["wanted", "skipped", "archived", "ignored", "failed"])
+                                              ["wanted", "skipped", "ignored", "failed"])
         # optional
         self.e, args = self.check_params(args, kwargs, "episode", None, False, "int", [])
         self.force, args = self.check_params(args, kwargs, "force", 0, False, "bool", [])
@@ -980,6 +961,7 @@ class CMD_EpisodeSetStatus(ApiCall):
         # convert the string status to a int
         for status in statusStrings.statusStrings:
             if str(statusStrings[status]).lower() == str(self.status).lower():
+
                 self.status = status
                 break
         else:  # if we dont break out of the for loop we got here.
@@ -1023,10 +1005,14 @@ class CMD_EpisodeSetStatus(ApiCall):
                         failure = True
                     continue
 
+                if self.status == FAILED and not sickbeard.USE_FAILED_DOWNLOADS:
+                    ep_results.append(_epResult(RESULT_FAILURE, epObj, "Refusing to change status to FAILED because failed download handling is disabled"))
+                    failure = True
+                    continue
+
                 # allow the user to force setting the status for an already downloaded episode
                 if epObj.status in Quality.DOWNLOADED and not self.force:
-                    ep_results.append(_epResult(RESULT_FAILURE, epObj,
-                                                "Refusing to change status because it is already marked as DOWNLOADED"))
+                    ep_results.append(_epResult(RESULT_FAILURE, epObj, "Refusing to change status because it is already marked as DOWNLOADED"))
                     failure = True
                     continue
 
@@ -1848,7 +1834,7 @@ class CMD_SickBeardSetDefaults(ApiCall):
         self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders", None, False,
                                                        "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
-                                              ["wanted", "skipped", "archived", "ignored"])
+                                              ["wanted", "skipped", "ignored"])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -2162,7 +2148,7 @@ class CMD_ShowAddNew(ApiCall):
                                                        str(sickbeard.FLATTEN_FOLDERS_DEFAULT), False,
                                                        "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
-                                              ["wanted", "skipped", "archived", "ignored"])
+                                              ["wanted", "skipped", "ignored"])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             self.valid_languages.keys())
         self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES),
@@ -2175,7 +2161,7 @@ class CMD_ShowAddNew(ApiCall):
                                              "int",
             [])
         self.future_status, args = self.check_params(args, kwargs, "future_status", None, False, "string",
-                                              ["wanted", "skipped", "archived", "ignored"])
+                                              ["wanted", "skipped", "ignored"])
 
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
@@ -2236,7 +2222,7 @@ class CMD_ShowAddNew(ApiCall):
             if not self.status in statusStrings.statusStrings:
                 raise ApiError("Invalid Status")
             # only allow the status options we want
-            if int(self.status) not in (WANTED, SKIPPED, ARCHIVED, IGNORED):
+            if int(self.status) not in (WANTED, SKIPPED, IGNORED):
                 return _responds(RESULT_FAILURE, msg="Status prohibited")
             newStatus = self.status
 
@@ -2252,7 +2238,7 @@ class CMD_ShowAddNew(ApiCall):
             if not self.future_status in statusStrings.statusStrings:
                 raise ApiError("Invalid Status")
             # only allow the status options we want
-            if int(self.future_status) not in (WANTED, SKIPPED, ARCHIVED, IGNORED):
+            if int(self.future_status) not in (WANTED, SKIPPED, IGNORED):
                 return _responds(RESULT_FAILURE, msg="Status prohibited")
             default_ep_status_after = self.future_status
 
@@ -2977,17 +2963,11 @@ class CMD_ShowsStats(ApiCall):
         stats["shows_active"] = len(
             [show for show in sickbeard.showList if show.paused == 0 and "Unknown" not in show.status and "Ended" not in show.status])
         stats["ep_downloaded"] = myDB.select("SELECT COUNT(*) FROM tv_episodes WHERE status IN (" + ",".join(
-            [str(show) for show in
-             Quality.DOWNLOADED + [ARCHIVED]]) + ") AND season != 0 and episode != 0 AND airdate <= " + today + "")[0][
-            0]
+            [str(show) for show in Quality.DOWNLOADED + Quality.ARCHIVED]) + ") AND season != 0 and episode != 0 AND airdate <= " + today + "")[0][0]
         stats["ep_snatched"] = myDB.select("SELECT COUNT(*) FROM tv_episodes WHERE status IN (" + ",".join(
-            [str(show) for show in
-             Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ") AND season != 0 and episode != 0 AND airdate <= " + today + "")[0][
-            0]
-        stats["ep_total"] = myDB.select(
-            "SELECT COUNT(*) FROM tv_episodes WHERE season != 0 AND episode != 0 AND (airdate != 1 OR status IN (" + ",".join(
-                [str(show) for show in (Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER) + [
-                    ARCHIVED]]) + ")) AND airdate <= " + today + " AND status != " + str(IGNORED) + "")[0][0]
+            [str(show) for show in Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ") AND season != 0 and episode != 0 AND airdate <= " + today + "")[0][0]
+        stats["ep_total"] = myDB.select("SELECT COUNT(*) FROM tv_episodes WHERE season != 0 AND episode != 0 AND (airdate != 1 OR status IN (" + ",".join(
+                [str(show) for show in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.ARCHIVED]) + ")) AND airdate <= " + today + " AND status != " + str(IGNORED) + "")[0][0]
 
         return _responds(RESULT_SUCCESS, stats)
 
