@@ -109,8 +109,7 @@ class GuessProperties(Transformer):
                                          '1080p': ['(?:\d{3,}(?:\\|\/|x|\*))?1080p?x?'],
                                          '4K': ['(?:\d{3,}(?:\\|\/|x|\*))?2160(?:i|p?x?)']
                                          },
-                          validator=ChainedValidator(DefaultValidator(), OnlyOneValidator())) #
-                          #TODO: Edit OnlyOneValitor to check only in current folder
+                          validator=ChainedValidator(DefaultValidator(), OnlyOneValidator()))
 
         _digits_re = re.compile('\d+')
 
