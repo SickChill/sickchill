@@ -1120,10 +1120,8 @@ class Home(WebRoot):
         rootDir = {}
         if sickbeard.ROOT_DIRS:
             backend_pieces = sickbeard.ROOT_DIRS.split('|')
-            backend_default = 'rd-' + backend_pieces[0]
             backend_dirs = backend_pieces[1:]
         else:
-            backend_default = ''
             backend_dirs = []
 
         if len(backend_dirs):
@@ -1131,11 +1129,11 @@ class Home(WebRoot):
                 rootDir[subject] = helpers.getDiskSpaceUsage(subject)
 
         t = PageTemplate(rh=self, file="status.mako")
-        return t.render(title='Status', header='Status', topmenu='home', submenu=self.HomeMenu(), tvdirFree=tvdirFree, rootDir=rootDir)
+        return t.render(title='Status', header='Status', topmenu='system', submenu=self.HomeMenu(), tvdirFree=tvdirFree, rootDir=rootDir)
 
     def shutdown(self, pid=None):
         if str(pid) != str(sickbeard.PID):
-            return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+            return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
         sickbeard.events.put(sickbeard.events.SystemEvent.SHUTDOWN)
 
@@ -1146,14 +1144,14 @@ class Home(WebRoot):
 
     def restart(self, pid=None):
         if str(pid) != str(sickbeard.PID):
-            return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+            return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
         t = PageTemplate(rh=self, file="restart.mako")
 
         # restart
         sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
-        return t.render(title="Home", header="Restarting SickRage", topmenu="home", submenu=self.HomeMenu())
+        return t.render(title="Home", header="Restarting SickRage", topmenu="system", submenu=self.HomeMenu())
 
     def updateCheck(self, pid=None):
         if str(pid) != str(sickbeard.PID):
@@ -1161,7 +1159,7 @@ class Home(WebRoot):
 
         sickbeard.versionCheckScheduler.action.check_for_new_version(force=True)
 
-        return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+        return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
     def update(self, pid=None):
 
@@ -2205,6 +2203,7 @@ class HomeNews(Home):
 
         return t.render(title="News", header="News", topmenu="news", data=data, submenu=self.HomeMenu())
 
+
 @route('/changes(/?.*)')
 class HomeChangeLog(Home):
     def __init__(self, *args, **kwargs):
@@ -2220,7 +2219,8 @@ class HomeChangeLog(Home):
         t = PageTemplate(rh=self, file="markdown.mako")
         data = markdown2.markdown(changes if changes else "The was a problem connecting to github, please refresh and try again")
 
-        return t.render(title="Changelog", header="Changelog", topmenu="changes", data=data, submenu=self.HomeMenu())
+        return t.render(title="Changelog", header="Changelog", topmenu="system", data=data, submenu=self.HomeMenu())
+
 
 @route('/home/postprocess(/?.*)')
 class HomePostProcess(Home):
@@ -3868,7 +3868,7 @@ class ConfigBackupRestore(Config):
     def index(self):
         t = PageTemplate(rh=self, file="config_backuprestore.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='Config - Backup/Restore', header='Backup/Restore', topmenu='comingEpisodes')
+        return t.render(submenu=self.ConfigMenu(), title='Config - Backup/Restore', header='Backup/Restore', topmenu='config')
 
     def backup(self, backupDir=None):
 
@@ -3929,7 +3929,6 @@ class ConfigSearch(Config):
         t = PageTemplate(rh=self, file="config_search.mako")
 
         return t.render(submenu=self.ConfigMenu(), title='Config - Episode Search', header='Search Settings', topmenu='config')
-
 
     def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
                    sab_apikey=None, sab_category=None, sab_category_anime=None, sab_host=None, nzbget_username=None,
@@ -4027,7 +4026,6 @@ class ConfigPostProcessing(Config):
         t = PageTemplate(rh=self, file="config_postProcessing.mako")
 
         return t.render(submenu=self.ConfigMenu(), title='Config - Post Processing', header='Post Processing', topmenu='config')
-
 
     def savePostProcessing(self, naming_pattern=None, naming_multi_ep=None,
                            kodi_data=None, kodi_12plus_data=None, mediabrowser_data=None, sony_ps3_data=None,
@@ -4218,7 +4216,6 @@ class ConfigProviders(Config):
 
         return t.render(submenu=self.ConfigMenu(), title='Config - Providers', header='Search Providers', topmenu='config')
 
-
     def canAddNewznabProvider(self, name):
 
         if not name:
@@ -4232,7 +4229,6 @@ class ConfigProviders(Config):
             return json.dumps({'error': 'Provider Name already exists as ' + providerDict[tempProvider.getID()].name})
         else:
             return json.dumps({'success': tempProvider.getID()})
-
 
     def saveNewznabProvider(self, name, url, key=''):
 
@@ -4695,7 +4691,6 @@ class ConfigNotifications(Config):
 
         return t.render(submenu=self.ConfigMenu(), title='Config - Notifications', header='Notifications', topmenu='config')
 
-
     def saveNotifications(self, use_kodi=None, kodi_always_on=None, kodi_notify_onsnatch=None,
                           kodi_notify_ondownload=None,
                           kodi_notify_onsubtitledownload=None, kodi_update_onlyfirst=None,
@@ -4930,7 +4925,6 @@ class ConfigSubtitles(Config):
 
         return t.render(submenu=self.ConfigMenu(), title='Config - Subtitles', header='Subtitles', topmenu='config')
 
-
     def saveSubtitles(self, use_subtitles=None, subtitles_plugins=None, subtitles_languages=None, subtitles_dir=None,
                       service_order=None, subtitles_history=None, subtitles_finder_frequency=None,
                       subtitles_multi=None, embedded_subtitles_all=None, subtitles_extra_scripts=None):
@@ -4982,7 +4976,6 @@ class ConfigAnime(Config):
         t = PageTemplate(rh=self, file="config_anime.mako")
 
         return t.render(submenu=self.ConfigMenu(), title='Config - Anime', header='Anime', topmenu='config')
-
 
     def saveAnime(self, use_anidb=None, anidb_username=None, anidb_password=None, anidb_use_mylist=None,
                   split_home=None):

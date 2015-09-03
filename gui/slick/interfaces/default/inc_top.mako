@@ -156,7 +156,7 @@
                             </ul>
                         </li>
 
-                        <li id="NAVerrorlogs" class="dropdown" ${('', 'class="active"')[topmenu == 'errorlogs']}>
+                        <li id="NAVerrorlogs" class="dropdown ${('', 'active')[topmenu == 'errorlogs']}">
                             <a href="${sbRoot}/errorlogs/" class="dropdown-toggle" data-toggle="dropdown">${logPageTitle} <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${sbRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Log (Errors)</a></li>
@@ -164,7 +164,7 @@
                             </ul>
                         </li>
 
-                        <li id="NAVconfig" class="dropdown" ${('', 'class="active"')[topmenu == 'config']}>
+                        <li id="NAVconfig" class="dropdown ${('', 'active')[topmenu == 'config']}">
                             <a href="${sbRoot}/config/" class="dropdown-toggle" data-toggle="dropdown"><img src="${sbRoot}/images/menu/system18.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${sbRoot}/config/"><i class="menu-icon-help"></i>&nbsp;Help &amp; Info</a></li>
@@ -179,7 +179,7 @@
                             </ul>
                         </li>
 
-                        <li class="dropdown">
+                        <li class="dropdown ${('', 'active')[topmenu == 'system']}">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="${sbRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${sbRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
