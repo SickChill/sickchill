@@ -13,10 +13,7 @@
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED, DOWNLOADED, SUBTITLED
     from sickbeard.common import Quality, statusStrings, Overview
 %>
-<%
-    layout = sickbeard.HISTORY_LAYOUT
-    history_limit = sickbeard.HISTORY_LIMIT
-%>
+<% layout = sickbeard.HISTORY_LAYOUT %>
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <%include file="/inc_top.mako"/>
 
@@ -63,8 +60,8 @@ $(document).ready(function(){
       }
 
     });
-    $('#limit').change(function(){
-        url = '${sbRoot}/history/?limit='+$(this).val()
+    $('#history_limit').on('change', function() {
+        var url = '${sbRoot}/history/?limit=' + $(this).val()
         window.location.href = url
     });
 
@@ -83,16 +80,16 @@ $(document).ready(function(){
 });
 </script>
 % if not header is UNDEFINED:
-  <h1 class="header">${header}</h1>
+    <h1 class="header">${header}</h1>
 % else:
-  <h1 class="title">${title}</h1>
+    <h1 class="title">${title}</h1>
 % endif
 <div class="h2footer pull-right"><b>Limit:</b>
-    <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=100" ${('', 'selected="selected"')[history_limit == 100]}>100</option>
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=250" ${('', 'selected="selected"')[history_limit == 250]}>250</option>
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=500" ${('', 'selected="selected"')[history_limit == 500]}>500</option>
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=0"   ${('', 'selected="selected"')[history_limit == 0  ]}>All</option>
+    <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm">
+        <option value="100" ${('', 'selected="selected"')[limit == 100]}>100</option>
+        <option value="250" ${('', 'selected="selected"')[limit == 250]}>250</option>
+        <option value="500" ${('', 'selected="selected"')[limit == 500]}>500</option>
+        <option value="0"   ${('', 'selected="selected"')[limit == 0  ]}>All</option>
     </select>
 
     <span> Layout:
