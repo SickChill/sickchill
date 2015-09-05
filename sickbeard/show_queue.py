@@ -306,10 +306,10 @@ class QueueItemAdd(ShowQueueItem):
                                        self.indexer).name) + " using ID " + str(
                                        self.indexer_id) + ", not using the NFO. Delete .nfo and try adding manually again.")
 
-            if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+            if sickbeard.USE_TRAKT:
 
                 trakt_id = sickbeard.indexerApi(self.indexer).config['trakt_id']
-                trakt_api = TraktAPI(sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+                trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
                 title = self.showDir.split("/")[-1]
                 data = {
