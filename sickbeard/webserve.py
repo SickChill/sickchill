@@ -443,15 +443,6 @@ class WebRoot(WebHandler):
 
         return self.redirect("/history/")
 
-    def setHistoryLimit(self, history_limit):
-
-        if not int(history_limit):
-            history_limit = 100
-
-        sickbeard.HISTORY_LIMIT = history_limit
-
-        return self.redirect("/history/")
-
     def toggleDisplayShowSpecials(self, show):
 
         sickbeard.DISPLAY_SHOW_SPECIALS = not sickbeard.DISPLAY_SHOW_SPECIALS
@@ -3590,10 +3581,12 @@ class History(WebRoot):
         super(History, self).__init__(*args, **kwargs)
 
     def index(self, limit=100):
+        limit = int(limit)
+        sickbeard.HISTORY_LIMIT = limit
 
         # sqlResults = myDB.select("SELECT h.*, show_name, name FROM history h, tv_shows s, tv_episodes e WHERE h.showid=s.indexer_id AND h.showid=e.showid AND h.season=e.season AND h.episode=e.episode ORDER BY date DESC LIMIT "+str(numPerPage*(p-1))+", "+str(numPerPage))
         myDB = db.DBConnection()
-        if limit == "0":
+        if limit == 0:
             sqlResults = myDB.select(
                 "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id ORDER BY date DESC")
         else:
