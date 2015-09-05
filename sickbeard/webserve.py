@@ -29,7 +29,7 @@ from sickbeard import config, sab
 from sickbeard import clients
 from sickbeard import history, notifiers, processTV
 from sickbeard import ui
-from sickbeard import logger, helpers, exceptions, classes, db, scheduler, showUpdater
+from sickbeard import logger, helpers, exceptions, classes, db
 from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
 from sickbeard import image_cache
@@ -50,7 +50,7 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
 
 from imdbPopular import imdb_popular
 
-from dateutil import tz, parser as dateutil_parser
+from dateutil import tz
 from unrar2 import RarFile
 import adba, subliminal
 from libtrakt import TraktAPI
@@ -74,7 +74,7 @@ from mako.template import Template as MakoTemplate
 from mako.lookup import TemplateLookup
 
 from tornado.routes import route
-from tornado.web import RequestHandler, HTTPError, authenticated, asynchronous
+from tornado.web import RequestHandler, HTTPError, authenticated
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.concurrent import run_on_executor
@@ -97,8 +97,10 @@ class _setupLookup():
         if not mako_lookup:
             mako_lookup = TemplateLookup(directories=[mako_path], module_directory=mako_cache, format_exceptions=True)
 
+
 class PageTemplate(MakoTemplate):
     arguments = {}
+
     def __init__(self, rh, file, *args, **kwargs):
         _setupLookup()
         kwargs['filename'] = os.path.join(mako_path, file)
@@ -116,6 +118,7 @@ class PageTemplate(MakoTemplate):
         self.arguments['sbThemeName'] = sickbeard.THEME_NAME
         self.arguments['sbDefaultPage'] = sickbeard.DEFAULT_PAGE
         self.arguments['sbLogin'] = rh.get_current_user()
+        self.arguments['sbStartTime'] = rh.startTime
 
         if rh.request.headers['Host'][0] == '[':
             self.arguments['sbHost'] = re.match("^\[.*\]", rh.request.headers['Host'], re.X | re.M | re.S).group(0)
@@ -153,10 +156,17 @@ class PageTemplate(MakoTemplate):
             if key not in kwargs:
                 kwargs[key] = self.arguments[key]
 
+        kwargs['makoStartTime'] = time.time()
+
         return super(PageTemplate, self).render(*args, **kwargs)
 
+
 class BaseHandler(RequestHandler):
+    startTime = 0.
+
     def __init__(self, *args, **kwargs):
+        self.startTime = time.time()
+
         super(BaseHandler, self).__init__(*args, **kwargs)
 
     #def set_default_headers(self):
