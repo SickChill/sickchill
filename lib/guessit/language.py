@@ -210,6 +210,8 @@ subtitle_prefixes = ['sub', 'subs', 'st', 'vost', 'subforced', 'fansub', 'hardsu
 subtitle_suffixes = ['subforced', 'fansub', 'hardsub', 'sub', 'subs']
 lang_prefixes = ['true']
 
+all_lang_prefixes_suffixes = subtitle_prefixes + subtitle_suffixes + lang_prefixes
+
 
 def find_possible_languages(string, allowed_languages=None):
     """Find possible languages in the string

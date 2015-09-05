@@ -1773,10 +1773,10 @@
   - 1
   episodeNumber: 0
   format: TV
-  subtitleLanguage: en
   releaseGroup: 2Maverick
   season: 14
   series: Project Runway
+  subtitleLanguage: en
   videoCodec: h264
 
 ? '[Hatsuyuki-Kaitou]_Fairy_Tail_2_-_16-20_[720p][10bit].torrent'
@@ -1852,3 +1852,12 @@
   season: 1
   series: Fear the Walking Dead
   title: En Close, Yet En Far
+
+? /av/unsorted/The.Daily.Show.2015.07.22.Jake.Gyllenhaal.720p.HDTV.x264-BATV.mkv
+: date: 2015-07-22
+  format: HDTV
+  releaseGroup: BATV
+  screenSize: 720p
+  series: The Daily Show
+  title: Jake Gyllenhaal
+  videoCodec: h264

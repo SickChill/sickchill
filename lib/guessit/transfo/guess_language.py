@@ -43,6 +43,12 @@ class GuessLanguage(Transformer):
         allowed_languages = None
         if options and 'allowed_languages' in options:
             allowed_languages = options.get('allowed_languages')
+
+        directory = list(filter(lambda x: x.category == 'path', node.ancestors))[0]
+        if len(directory.clean_value) <= 3:
+            # skip if we have a langage code as directory
+            return None
+
         guess = search_language(string, allowed_languages)
         return guess
 
