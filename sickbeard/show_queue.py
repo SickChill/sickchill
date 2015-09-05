@@ -654,11 +654,10 @@ class QueueItemRemove(ShowQueueItem):
         logger.log(u"Removing %s" % self.show.name)
         self.show.deleteShow(full=self.full)
 
-        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC:
+        if sickbeard.USE_TRAKT:
             try:
                 sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
             except Exception as e:
-                logger.log(u"Unable to delete show from Trakt: %s. Error: %s" % (showObj.name, ex(e)),logger.WARNING)
-                pass
+                logger.log(u"Unable to delete show from Trakt: %s. Error: %s" % (self.show.name, ex(e)),logger.WARNING)
 
         self.finish()

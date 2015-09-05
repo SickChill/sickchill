@@ -202,7 +202,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                     # Skip torrents released before the episode aired (fakes)
                     if re.match('..:..:..  ..:..:....', cells[6].text):
                         if (datetime.strptime(cells[6].text, '%H:%M:%S  %m/%d/%Y') -
-                            datetime.combine(ep_obj.airdate, datetime.min.time())).days < 0:
+                            datetime.combine(epObj.airdate, datetime.min.time())).days < 0:
                             continue
 
                     # Need size for failed downloads handling
