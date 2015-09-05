@@ -195,6 +195,11 @@ inc_top.mako
 	background-image: none !important;
 }
 
+.ui-widget {
+    font-family: inherit;
+    font-size: 1em;
+}
+
 .ui-widget-content {
 	background: #dcdcdc url("../css/lib/images/ui-bg_highlight-soft_75_dcdcdc_1x100.png") 50% top repeat-x;
 }
@@ -304,6 +309,7 @@ inc_top.mako
 .ui-tabs .ui-tabs-panel {
 	background-color: #F7F7F7 !important;
 	border: 1px solid #CCCCCC !important;
+	padding: 1em;
 }
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-active {
