@@ -1033,13 +1033,8 @@ class Home(WebRoot):
             return "Trakt Authorized"
         return "Trakt Not Authorized!"
 
-    def testTrakt(self, username=None, password=None, disable_ssl=None, blacklist_name=None):
-        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-        if disable_ssl == 'true':
-            disable_ssl = True
-        else:
-            disable_ssl = False
-        return notifiers.trakt_notifier.test_notify(username, disable_ssl, blacklist_name)
+    def testTrakt(self, username=None, blacklist_name=None):
+        return notifiers.trakt_notifier.test_notify(username, blacklist_name)
 
 
     def loadShowNotifyLists(self):
