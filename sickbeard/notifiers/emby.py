@@ -45,7 +45,7 @@ class EMBYNotifier:
         if not host:
             host = sickbeard.EMBY_HOST
         if not emby_apikey:
-            username = sickbeard.EMBY_APIKEY
+            emby_apikey = sickbeard.EMBY_APIKEY
 
         url = 'http://%s/emby/Notifications/Admin' % (host)
         values = {'Name': 'SickRage', 'Description': message, 'ImageUrl': 'https://raw.githubusercontent.com/SiCKRAGETV/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'}
