@@ -84,21 +84,26 @@ class DelugeDAPI(GenericClient):
             return False
 
         if label:
-            if self.drpc.set_torrent_label(result.hash, label):
-                return True
-
+            return self.drpc.set_torrent_label(result.hash, label)
         return False
 
-    def _set_torrent_ratio(self, result):
 
-        return True
+    def _set_torrent_ratio(self, result):
+        if result.ratio:
+            ratio = float(result.ratio)
+            return self.drpc.set_torrent_ratio(result.hash, ratio)
+        return False
+
+    def _set_torrent_priority(self, result):
+        if result.priority == 1:
+            return self.drpc.set_torrent_priority(result.hash, True)
+        return False
 
     def _set_torrent_path(self, result):
 
         path = sickbeard.TORRENT_PATH
         if path:
-            if self.drpc.set_torrent_path(result.hash, path):
-                return True
+            return self.drpc.set_torrent_path(result.hash, path)
         return False
 
     def _set_torrent_pause(self, result):
@@ -175,7 +180,6 @@ class DelugeRPC(object):
             self.connect()
             self.client.label.set_torrent(torrent_id, label).get()
         except Exception as err:
-            logger.log('DelugeD: Failed to set label for torrent: ' + err + ' ' + traceback.format_exc(), logger.ERROR)
             return False
         finally:
             if self.client:
@@ -188,7 +192,30 @@ class DelugeRPC(object):
             self.client.core.set_torrent_move_completed_path(torrent_id, path).get()
             self.client.core.set_torrent_move_completed(torrent_id, 1).get()
         except Exception as err:
-            logger.log('DelugeD: Failed to set path for torrent: ' + err + ' ' + traceback.format_exc(), logger.ERROR)
+            return False
+        finally:
+            if self.client:
+                self.disconnect()
+        return True
+
+    def set_torrent_priority(self, torrent_ids, priority):
+        try:
+            self.connect()
+            if priority:
+                self.client.core.queue_top([torrent_ids]).get()
+        except Exception, err:
+            return False
+        finally:
+            if self.client:
+                self.disconnect()
+        return True
+
+    def set_torrent_ratio(self, torrent_ids, ratio):
+        try:
+            self.connect()
+            self.client.core.set_torrent_stop_at_ratio(torrent_ids, True).get()
+            self.client.core.set_torrent_stop_ratio(torrent_ids, ratio).get()
+        except Exception, err:
             return False
         finally:
             if self.client:
@@ -200,7 +227,6 @@ class DelugeRPC(object):
             self.connect()
             self.client.core.pause_torrent(torrent_ids).get()
         except Exception as err:
-            logger.log('DelugeD: Failed to pause torrent: ' + err + ' ' + traceback.format_exc(), logger.ERROR)
             return False
         finally:
             if self.client:
