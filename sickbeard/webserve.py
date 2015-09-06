@@ -40,6 +40,7 @@ from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
 from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED, SKIPPED
 from sickbeard.common import SD, HD720p, HD1080p
+from sickbeard.event_queue import Events
 from sickbeard.exceptions import ex
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
@@ -1103,7 +1104,7 @@ class Home(WebRoot):
         if str(pid) != str(sickbeard.PID):
             return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
-        sickbeard.events.put(sickbeard.events.SystemEvent.SHUTDOWN)
+        sickbeard.events.put(Events.SystemEvent.SHUTDOWN)
 
         title = "Shutting down"
         message = "SickRage is shutting down..."
@@ -1117,7 +1118,7 @@ class Home(WebRoot):
         t = PageTemplate(rh=self, file="restart.mako")
 
         # restart
-        sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+        sickbeard.events.put(Events.SystemEvent.RESTART)
 
         return t.render(title="Home", header="Restarting SickRage", topmenu="system", submenu=self.HomeMenu())
 
