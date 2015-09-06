@@ -626,4 +626,4 @@ $(document).ready(function(){
 
 <!--End - Bootstrap Modal-->
 
-<%/block>
+</%block>
