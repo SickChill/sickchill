@@ -40,6 +40,7 @@ from sickbeard import image_cache
 from sickbeard import classes
 from sickbeard import processTV
 from sickbeard import network_timezones, sbdatetime
+from sickbeard.event_queue import Events
 from sickbeard.exceptions import ex
 from sickbeard.common import DOWNLOADED
 from sickbeard.common import FAILED
@@ -1867,7 +1868,7 @@ class CMD_SickBeardShutdown(ApiCall):
 
     def run(self):
         """ shutdown sickrage """
-        sickbeard.events.put(sickbeard.events.SystemEvent.SHUTDOWN)
+        sickbeard.events.put(Events.SystemEvent.SHUTDOWN)
         return _responds(RESULT_SUCCESS, msg="SickRage is shutting down...")
 
 class CMD_SickBeardUpdate(ApiCall):

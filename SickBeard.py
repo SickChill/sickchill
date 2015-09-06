@@ -494,7 +494,7 @@ class SickRage(object):
             if self.runAsDaemon and self.CREATEPID:
                 self.remove_pid_file(self.PIDFILE)
 
-            if type == sickbeard.events.SystemEvent.RESTART:
+            if type == sickbeard.event_queue.Events.SystemEvent.RESTART:
                 install_type = sickbeard.versionCheckScheduler.action.install_type
 
                 popen_list = []

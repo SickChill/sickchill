@@ -59,6 +59,7 @@ from sickbeard.common import SD
 from sickbeard.common import SKIPPED
 from sickbeard.common import WANTED
 from sickbeard.databases import mainDB, cache_db, failed_db
+from sickbeard.event_queue import Events
 from sickbeard.exceptions import ex
 
 from configobj import ConfigObj
@@ -1577,7 +1578,7 @@ def halt():
 def sig_handler(signum=None, frame=None):
     if type(signum) != type(None):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
-        events.put(events.SystemEvent.SHUTDOWN)
+        events.put(Events.SystemEvent.SHUTDOWN)
 
 
 def saveAll():
