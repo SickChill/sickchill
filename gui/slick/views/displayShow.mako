@@ -70,6 +70,7 @@ $(document).ready(function(){
 </script>
 </%block>
 <%block name="content">
+<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <input type="hidden" id="sbRoot" value="${sbRoot}" />
     <div class="pull-left form-inline">
         Change Show:
