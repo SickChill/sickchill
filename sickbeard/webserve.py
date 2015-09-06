@@ -1054,7 +1054,7 @@ class Home(WebRoot):
         if myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [emails, show]):
             return 'OK'
         else:
-            return 'ERROR: %s' % myDB.last_err
+            return 'ERROR'
 
 
     def testEmail(self, host=None, port=None, smtp_from=None, use_tls=None, user=None, pwd=None, to=None):
