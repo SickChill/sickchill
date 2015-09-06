@@ -41,10 +41,6 @@ if sys.version_info < (2, 7):
     print "Sorry, requires Python 2.7.x"
     sys.exit(1)
 
-# We only need this for compiling an EXE and I will just always do that on 2.7+
-if sys.hexversion >= 0x020600F0:
-    from multiprocessing import freeze_support  # @UnresolvedImport
-
 import certifi
 for env_cert_var in ['REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE']:
     ca_cert_loc = os.environ.get(env_cert_var)
@@ -543,8 +539,5 @@ class SickRage(object):
 
 
 if __name__ == "__main__":
-    if sys.hexversion >= 0x020600F0:
-        freeze_support()
-
     # start sickrage
     SickRage().start()
