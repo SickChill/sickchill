@@ -1586,7 +1586,7 @@ class CMD_SickBeardGetMessages(ApiCall):
 
     def run(self):
         messages = []
-        for cur_notification in ui.notifications.get_notifications(self.request.remote_ip):
+        for cur_notification in ui.notifications.get_notifications(self.rh.request.remote_ip):
             messages.append({"title": cur_notification.title,
                              "message": cur_notification.message,
                              "type": cur_notification.type})
