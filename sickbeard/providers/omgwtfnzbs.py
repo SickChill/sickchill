@@ -22,22 +22,11 @@ import sickbeard
 import generic
 
 from sickbeard import tvcache
-from sickbeard import helpers
 from sickbeard import classes
 from sickbeard import logger
-from sickbeard.exceptions import ex, AuthException
+from sickbeard.exceptions import AuthException
 from sickbeard import show_name_helpers
 from datetime import datetime
-
-try:
-    import xml.etree.cElementTree as etree
-except ImportError:
-    import elementtree.ElementTree as etree
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
 
 
 class OmgwtfnzbsProvider(generic.NZBProvider):

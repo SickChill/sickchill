@@ -24,11 +24,8 @@ import datetime
 import sickbeard
 import adba
 from sickbeard import helpers
-from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
-from sickbeard import encodingKludge as ek
-import os
 import requests
 
 exception_dict = {}

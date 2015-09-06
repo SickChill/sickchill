@@ -23,7 +23,6 @@ from sickbeard import db
 from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
-from sickbeard.exceptions import ex
 from os.path import basename, join, isfile
 import os
 import re

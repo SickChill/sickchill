@@ -21,7 +21,6 @@ from __future__ import with_statement
 import time
 import datetime
 import itertools
-import traceback
 import urllib2
 
 import sickbeard

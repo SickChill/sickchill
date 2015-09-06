@@ -19,7 +19,6 @@
 import re
 
 import sickbeard
-from sickbeard import logger
 from .generic import GenericClient
 
 

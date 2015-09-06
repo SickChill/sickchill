@@ -16,7 +16,6 @@
 import datetime
 import urllib
 
-import sickbeard
 import generic
 
 from sickbeard import classes

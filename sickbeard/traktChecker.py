@@ -19,7 +19,6 @@
 import os
 import traceback
 import datetime
-import json
 
 import sickbeard
 from sickbeard import encodingKludge as ek
@@ -28,9 +27,11 @@ from sickbeard import logger
 from sickbeard import helpers
 from sickbeard import search_queue
 from sickbeard import db
-from sickbeard import notifiers
-from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN, FAILED
-from common import Quality, qualityPresetStrings, statusStrings
+from sickbeard.common import ARCHIVED
+from sickbeard.common import SKIPPED
+from sickbeard.common import UNKNOWN
+from sickbeard.common import WANTED
+from common import Quality
 from libtrakt import *
 from libtrakt.exceptions import traktException
 
@@ -137,7 +138,6 @@ class TraktChecker():
                 self.trakt_api.traktRequest("sync/collection/remove", data, method='POST')
             except traktException as e:
                 logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
-                pass
 
     def addShowToTraktLibrary(self, show_obj):
         """

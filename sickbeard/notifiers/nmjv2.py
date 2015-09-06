@@ -17,11 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import urllib, urllib2, xml.dom.minidom
+import urllib2
 from xml.dom.minidom import parseString
 import sickbeard
-import telnetlib
-import re
 import time
 
 from sickbeard import logger

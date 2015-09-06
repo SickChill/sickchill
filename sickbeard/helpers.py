@@ -40,7 +40,6 @@ import errno
 import ast
 import operator
 import platform
-import sys
 from contextlib import closing
 
 import sickbeard
@@ -48,9 +47,7 @@ import sickbeard
 import adba
 import requests
 import certifi
-import xmltodict
 
-import subprocess
 
 try:
     from io import BytesIO as _StringIO
@@ -67,7 +64,9 @@ except ImportError:
 
 from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard import logger, classes
-from sickbeard.common import USER_AGENT, cpu_presets, mediaExtensions, subtitleExtensions
+from sickbeard.common import USER_AGENT
+from sickbeard.common import mediaExtensions
+from sickbeard.common import subtitleExtensions
 from sickbeard import db
 from sickbeard import encodingKludge as ek
 from sickbeard import notifiers
@@ -647,7 +646,6 @@ def chmodAsParent(childPath):
                    logger.DEBUG)
     except OSError:
         logger.log(u"Failed to set permission for %s to %o" % (childPath, childMode), logger.DEBUG)
-        pass
 
 
 def fixSetGroupID(childPath):
@@ -1284,7 +1282,6 @@ def touchFile(fname, atime=None):
                 logger.log(u"File air date stamping failed(Permission denied). Check permissions for file: %s" % fname, logger.ERROR)
             else:
                 logger.log(u"File air date stamping failed. The error is: %s." % ex(e), logger.ERROR)
-            pass
 
     return False
 

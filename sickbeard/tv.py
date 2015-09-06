@@ -40,7 +40,6 @@ except ImportError:
     pass
 
 from imdb import imdb
-import logging
 from sickbeard import db
 from sickbeard import helpers, exceptions, logger
 from sickbeard.exceptions import ex
@@ -53,7 +52,6 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import sbdatetime
 from sickbeard import network_timezones
 from dateutil.tz import *
-from subliminal.exceptions import Error as ServiceError
 
 from sickbeard import encodingKludge as ek
 
@@ -66,7 +64,6 @@ from common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMIN
 import shutil
 import shutil_custom
 
-import babelfish
 
 shutil.copyfile = shutil_custom.copyfile_custom
 
@@ -1460,7 +1457,6 @@ class TVEpisode(object):
                 logger.log(u'%s: Exception caught in subliminal.scan_video for S%02dE%02d' %
                     (self.show.indexerid, self.season, self.episode), logger.DEBUG)
                 return
-                pass
 
             if not video:
                 return
@@ -1557,7 +1553,6 @@ class TVEpisode(object):
                     self.loadFromNFO(self.location)
                 except exceptions.NoNFOException:
                     logger.log(u"%s: There was an error loading the NFO for episode S%02dE%02d" % (self.show.indexerid, season, episode), logger.ERROR)
-                    pass
 
                 # if we tried loading it from NFO and didn't find the NFO, try the Indexers
                 if not self.hasnfo:

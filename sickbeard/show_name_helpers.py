@@ -30,8 +30,6 @@ from sickbeard import logger
 from sickbeard import db
 from sickbeard import encodingKludge as ek
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from unidecode import unidecode
-from sickbeard.blackandwhitelist import BlackAndWhiteList
 
 resultFilters = ["sub(bed|ed|pack|s)", "(dk|fin|heb|kor|nor|nordic|pl|swe)sub(bed|ed|s)?",
                  "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras",

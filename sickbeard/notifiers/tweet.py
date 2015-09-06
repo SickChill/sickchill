@@ -162,7 +162,7 @@ class TwitterNotifier:
             return False
 
         if sickbeard.TWITTER_USEDM and sickbeard.TWITTER_DMTO:
-            return self._send_dm(self, sickbeard.TWITTER_DMTO, prefix + ": " + message)
+            return self._send_dm(prefix + ": " + message)
         else:
             return self._send_tweet(prefix + ": " + message)
 

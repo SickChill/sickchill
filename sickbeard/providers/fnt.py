@@ -20,13 +20,11 @@
 import traceback
 import re
 import datetime
-import time
 from requests.auth import AuthBase
 import sickbeard
 import generic
 import urllib
 import requests
-from requests import exceptions
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import Quality
 from sickbeard import logger

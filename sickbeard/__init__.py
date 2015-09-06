@@ -34,26 +34,32 @@ import sys
 
 from github import Github
 
-from . import providers, metadata, config, webserveInit
-from .providers.generic import GenericProvider
-from .providers import btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, \
+from sickbeard import metadata
+from sickbeard import providers
+from sickbeard.providers.generic import GenericProvider
+from sickbeard.providers import btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, nextgen, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, \
     frenchtorrentdb, freshontv, titansoftv, libertalia, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, scenetime, btdigg
-from .config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
+from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
-from . import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
+from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
     subtitles, traktChecker
-from . import helpers, db, exceptions, show_queue, search_queue, scheduler, show_name_helpers
-from . import logger
-from . import naming
-from . import dailysearcher
-from . import scene_numbering, scene_exceptions, name_cache
-from .indexers.indexer_api import indexerApi
-from .indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, indexer_error, \
+from sickbeard import db
+from sickbeard import helpers
+from sickbeard import scheduler
+from sickbeard import search_queue
+from sickbeard import show_queue
+from sickbeard import logger
+from sickbeard import naming
+from sickbeard import dailysearcher
+from sickbeard.indexers.indexer_api import indexerApi
+from sickbeard.indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, indexer_error, \
     indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, indexerExcepts
-from .common import SD, SKIPPED, WANTED, NAMING_REPEAT
-from .databases import mainDB, cache_db, failed_db
-from .helpers import ex
+from sickbeard.common import SD
+from sickbeard.common import SKIPPED
+from sickbeard.common import WANTED
+from sickbeard.databases import mainDB, cache_db, failed_db
+from sickbeard.exceptions import ex
 
 from configobj import ConfigObj
 

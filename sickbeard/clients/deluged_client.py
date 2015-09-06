@@ -4,7 +4,6 @@
 # This client script allows connection to Deluge Daemon directly, completely
 # circumventing the requirement to use the WebUI.
 
-import json
 from base64 import b64encode
 
 import sickbeard

@@ -22,7 +22,6 @@ import urllib2
 import sickbeard
 
 from sickbeard import logger
-from sickbeard import common
 from sickbeard.exceptions import ex
 
 

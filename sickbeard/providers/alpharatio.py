@@ -19,23 +19,19 @@
 import re
 import traceback
 import datetime
-import urlparse
 
 import sickbeard
 import generic
 
-from sickbeard.common import Quality, cpu_presets
+from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.common import Overview
 from sickbeard.exceptions import ex
-from sickbeard import clients
 import requests
-from requests import exceptions
 from sickbeard.bs4_parser import BS4Parser
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName

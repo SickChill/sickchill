@@ -40,7 +40,6 @@ from sickbeard import encodingKludge as ek
 from sickbeard import failed_history
 from sickbeard.exceptions import ex
 from sickbeard.providers.generic import GenericProvider
-from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import common
 
 def _downloadResult(result):

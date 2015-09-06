@@ -19,7 +19,6 @@
 import re
 import traceback
 import datetime
-import urlparse
 import sickbeard
 import generic
 import urllib
@@ -31,9 +30,7 @@ from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex
-from sickbeard import clients
 import requests
-from requests import exceptions
 from sickbeard.bs4_parser import BS4Parser
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName

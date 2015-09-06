@@ -25,13 +25,8 @@
 import time
 import datetime
 import traceback
+
 import sickbeard
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
-
 from sickbeard import logger
 from sickbeard import db
 from sickbeard.exceptions import ex

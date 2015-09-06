@@ -52,7 +52,7 @@ from imdbPopular import imdb_popular
 
 from dateutil import tz
 from unrar2 import RarFile
-import adba, subliminal
+import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
 from versionChecker import CheckVersion
@@ -64,11 +64,6 @@ try:
     import json
 except ImportError:
     import simplejson as json
-
-try:
-    import xml.etree.cElementTree as etree
-except ImportError:
-    import xml.etree.ElementTree as etree
 
 from mako.template import Template as MakoTemplate
 from mako.lookup import TemplateLookup
@@ -1059,7 +1054,7 @@ class Home(WebRoot):
         if myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [emails, show]):
             return 'OK'
         else:
-            return 'ERROR: %s' % myDB.last_err
+            return 'ERROR'
 
 
     def testEmail(self, host=None, port=None, smtp_from=None, use_tls=None, user=None, pwd=None, to=None):

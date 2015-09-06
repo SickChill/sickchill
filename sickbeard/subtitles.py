@@ -16,16 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
 import datetime
 import sickbeard
 from sickbeard.common import *
 from sickbeard.exceptions import ex
-from sickbeard import notifiers
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
 from sickbeard import db
-from sickbeard import history
 import subliminal
 import babelfish
 import subprocess
