@@ -32,6 +32,7 @@ from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
 from sickrage.media.ShowBanner import ShowBanner
 from sickrage.show.History import History
+from sickrage.system.Shutdown import Shutdown
 
 from versionChecker import CheckVersion
 from sickbeard import db, logger, exceptions, ui, helpers
@@ -41,7 +42,6 @@ from sickbeard import image_cache
 from sickbeard import classes
 from sickbeard import processTV
 from sickbeard import network_timezones, sbdatetime
-from sickbeard.event_queue import Events
 from sickbeard.exceptions import ex
 from sickbeard.common import DOWNLOADED
 from sickbeard.common import FAILED
@@ -1843,7 +1843,7 @@ class CMD_SickBeardSetDefaults(ApiCall):
 
 
 class CMD_SickBeardShutdown(ApiCall):
-    _help = {"desc": "shutdown sickrage"}
+    _help = {"desc": "shutdown SickRage"}
 
     def __init__(self, args, kwargs):
         # required
@@ -1852,9 +1852,12 @@ class CMD_SickBeardShutdown(ApiCall):
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ shutdown sickrage """
-        sickbeard.events.put(Events.SystemEvent.SHUTDOWN)
+        """ shutdown SickRage """
+        if not Shutdown.stop(sickbeard.PID):
+            return _responds(RESULT_FAILURE, msg='SickRage can not be shut down')
+
         return _responds(RESULT_SUCCESS, msg="SickRage is shutting down...")
+
 
 class CMD_SickBeardUpdate(ApiCall):
     _help = {"desc": "update SickRage to the latest version available"}
