@@ -1,4 +1,5 @@
-<%include file="/inc_top.mako"/>
+<%inherit file="/layouts/main.mako"/>
+<%block name="content">
 <div class="login">
     <form action="" method="post">
         <h1>SickRage</h1>
@@ -10,3 +11,4 @@
         </div>
     </form>
 </div>
+</%block>

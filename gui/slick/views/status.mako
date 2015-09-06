@@ -1,10 +1,23 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
     from sickbeard import helpers
     from sickbeard.show_queue import ShowQueueActions
 %>
-<%include file="/inc_top.mako"/>
-
+<%block name="scripts">
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#schedulerStatusTable").tablesorter({
+            widgets: ['saveSort', 'zebra']
+        });
+        $("#queueStatusTable").tablesorter({
+            widgets: ['saveSort', 'zebra'],
+            sortList: [[3,0], [4,0], [2,1]]
+        });
+    });
+</script>
+</%block>
+<%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -25,21 +38,6 @@
         'Trakt Checker': 'traktCheckerScheduler',
     }
 %>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#schedulerStatusTable").tablesorter({
-            widgets: ['saveSort', 'zebra']
-        });
-    });
-    $(document).ready(function() {
-        $("#queueStatusTable").tablesorter({
-            widgets: ['saveSort', 'zebra'],
-            sortList: [[3,0], [4,0], [2,1]]
-        });
-    });
-</script>
-
 <div id="config-content">
     <h2 class="header">Scheduler</h2>
     <table id="schedulerStatusTable" class="tablesorter" width="100%">
@@ -104,7 +102,7 @@
                <td align="right">${service.start_time}</td>
                % else:
                <td align="right"></td>
-               % endif               
+               % endif
                <% cycleTime = (service.cycleTime.microseconds + (service.cycleTime.seconds + service.cycleTime.days * 24 * 3600) * 10**6) / 10**6 %>
                <td align="right">${helpers.pretty_time_delta(cycleTime)}</td>
                % if service.enable:
@@ -215,7 +213,7 @@
                 <td>${sickbeard.TV_DOWNLOAD_DIR}</td>
                 <td>${tvdirFree} MB</td>
             </tr>
-            % endif            
+            % endif
             <tr>
                 <td rowspan=${len(rootDir)}>Media Root Directories</td>
             % for cur_dir in rootDir:
@@ -226,3 +224,4 @@
         </tbody>
     </table>
 </div>
+</%block>

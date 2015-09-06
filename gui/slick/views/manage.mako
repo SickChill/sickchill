@@ -1,10 +1,10 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import statusStrings
 %>
-<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/lib/bootbox.min.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
 $.tablesorter.addParser({
@@ -32,8 +32,7 @@ $.tablesorter.addParser({
     type: 'numeric'
 });
 
-$(document).ready(function()
-{
+$(document).ready(function(){
     $("#massUpdateTable:has(tbody tr)").tablesorter({
         sortList: [[1,0]],
         textExtraction: {
@@ -70,6 +69,9 @@ $(document).ready(function()
 });
 </script>
 <script type="text/javascript" src="${sbRoot}/js/massUpdate.js?${sbPID}"></script>
+</%block>
+<%block name="content">
+<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -181,11 +183,7 @@ $(document).ready(function()
         </tr>
 
         % endfor
-
     </tbody>
-
 </table>
-
 </form>
-
-<%include file="/inc_bottom.mako"/>
+</%block>

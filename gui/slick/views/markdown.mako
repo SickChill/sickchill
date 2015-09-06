@@ -1,3 +1,4 @@
-<%include file="/inc_top.mako"/>
+<%inherit file="/layouts/main.mako"/>
+<%block name="content">
 ${data}
-<%include file="/inc_bottom.mako"/>
+</%block>

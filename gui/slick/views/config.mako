@@ -1,10 +1,11 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
     from sickbeard import db
     from sickbeard.helpers import anon_url
     import sys, os
 %>
-<%include file="/inc_top.mako"/>
+<%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -68,5 +69,4 @@
     <tr><td class="infoTableHeader"><i class="icon16-mirc"></i> Internet Relay Chat</td><td class="infoTableCell"><a href="irc://irc.freenode.net/#sickrage" rel="noreferrer"><i>#sickrage</i> on <i>irc.freenode.net</i></a></td></tr>
 </table>
 </div>
-
-<%include file="/inc_bottom.mako"/>
+</%block>

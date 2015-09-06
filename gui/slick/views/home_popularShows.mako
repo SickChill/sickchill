@@ -1,7 +1,6 @@
+<%inherit file="/layouts/main.mako"/>
 <% from sickbeard.helpers import anon_url %>
-
-<%include file="/inc_top.mako"/>
-
+<%block name="content">
 <h2>Popular Shows</h2>
 <br />
 
@@ -35,6 +34,4 @@
         </div>
     % endfor
 % endif
-
-
-<%include file="/inc_bottom.mako"/>
+</%block>

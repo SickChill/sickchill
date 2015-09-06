@@ -1,3 +1,4 @@
+<%inherit file="/layouts/main.mako"/>
 <%
     import sickbeard
     import re
@@ -5,10 +6,15 @@
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets, multiEpStrings
 %>
-<%include file="/inc_top.mako"/>
+
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/configNotifications.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
-
+<script type="text/javascript" charset="utf-8">
+    $('#config-components').tabs();
+</script>
+</%block>
+<%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -1833,7 +1839,4 @@
 </div>
 
 <div class="clearfix"></div>
-<script type="text/javascript" charset="utf-8">
-    $('#config-components').tabs();
-</script>
-<%include file="/inc_bottom.mako"/>
+</%block>

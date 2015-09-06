@@ -1,3 +1,4 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import datetime
     import urllib
@@ -10,23 +11,19 @@
     from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
 
     from sickbeard.helpers import anon_url
+
+    fuzzydate = 'airdate'
 %>
-<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/lib/jquery.bookmarkscroll.js?${sbPID}"></script>
-
-<input type="hidden" id="sbRoot" value="${sbRoot}" />
-
 <script type="text/javascript" src="${sbRoot}/js/displayShow.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/sceneExceptionsTooltip.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/ratingTooltip.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSubtitles.js?${sbPID}"></script>
-##<script type="text/javascript" src="${sbRoot}/js/lib/jquery.collapser.min.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
 $(document).ready(function(){
-    <% fuzzydate = 'airdate' %>
     % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
         containerClass : '.${fuzzydate}',
@@ -71,6 +68,9 @@ $(document).ready(function(){
     });
 });
 </script>
+</%block>
+<%block name="content">
+<input type="hidden" id="sbRoot" value="${sbRoot}" />
     <div class="pull-left form-inline">
         Change Show:
         <div class="navShow"><img id="prevShow" src="${sbRoot}/images/prev.png" alt="&lt;&lt;" title="Prev Show" /></div>
@@ -626,4 +626,4 @@ $(document).ready(function(){
 
 <!--End - Bootstrap Modal-->
 
-<%include file="/inc_bottom.mako"/>
+<%/block>

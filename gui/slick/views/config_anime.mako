@@ -1,12 +1,14 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
     from sickbeard.helpers import anon_url
 %>
 
-<%include file="/inc_top.mako"/>
-
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/configAnime.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
+</%block>
+<%block name="content">
 <div id="content960">
 <h1 class="header">${header}</h1>
 <div id="config">
@@ -96,6 +98,4 @@
         </form>
     </div>
 </div>
-
-
-<%include file="/inc_bottom.mako"/>
+</%block>

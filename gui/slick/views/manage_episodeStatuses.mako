@@ -1,11 +1,10 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     from sickbeard import common
     import sickbeard
 %>
-<%include file="/inc_top.mako"/>
-
+<%block name="content">
 <div id="content960">
-
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -84,5 +83,4 @@ Set checked shows/episodes to <select name="newStatus" class="form-control form-
 
 % endif
 </div>
-
-<%include file="/inc_bottom.mako"/>
+</%block>

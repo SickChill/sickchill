@@ -1,3 +1,4 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import datetime
     import locale
@@ -10,22 +11,10 @@
     from sickbeard.metadata.generic import GenericMetadata
     from sickbeard.helpers import anon_url
 %>
-<%include file="/inc_top.mako"/>
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
-
-<% indexer = 0 %>
-% if sickbeard.INDEXER_DEFAULT:
-    <% indexer = sickbeard.INDEXER_DEFAULT %>
-% endif
-
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
-
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function(){
         if ($("input[name='proxy_setting']").val().length == 0) {
@@ -42,7 +31,22 @@
             }
         });
     });
+
+    $('#log_dir').fileBrowser({ title: 'Select log file folder location' });
+    $('#config-components').tabs();
 </script>
+</%block>
+<%block name="content">
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else:
+    <h1 class="title">${title}</h1>
+% endif
+
+<% indexer = 0 %>
+% if sickbeard.INDEXER_DEFAULT:
+    <% indexer = sickbeard.INDEXER_DEFAULT %>
+% endif
 
 <div id="config">
     <div id="config-content">
@@ -763,10 +767,4 @@
 </div>
 
 <div></div>
-
-<script type="text/javascript" charset="utf-8">
-    $('#log_dir').fileBrowser({ title: 'Select log file folder location' });
-    $('#config-components').tabs();
-</script>
-
-<%include file="/inc_bottom.mako"/>
+</%block>

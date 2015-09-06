@@ -1,3 +1,4 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
     import os.path
@@ -8,7 +9,7 @@
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings, Overview
 %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
 <script type="text/javascript">
 $(document).ready(function(){
     $("#failedTable:has(tbody tr)").tablesorter({
@@ -23,7 +24,8 @@ $(document).ready(function(){
 });
 </script>
 <script type="text/javascript" src="${sbRoot}/js/failedDownloads.js?${sbPID}"></script>
-
+</%block>
+<%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -80,4 +82,4 @@ $(document).ready(function(){
 % endfor
   </tbody>
 </table>
-<%include file="/inc_bottom.mako"/>
+</%block>

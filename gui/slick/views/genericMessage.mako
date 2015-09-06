@@ -1,4 +1,5 @@
-<%include file="/inc_top.mako"/>
+<%inherit file="/layouts/main.mako"/>
+<%block name="content">
 <h2>${subject}</h2>
 ${message}
-<%include file="/inc_bottom.mako"/>
+</%block>

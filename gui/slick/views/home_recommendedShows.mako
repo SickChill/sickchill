@@ -1,11 +1,11 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
 %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/recommendedShows.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
-
 <script type="text/javascript" charset="utf-8">
 $(document).ready(function(){
     $( "#tabs" ).tabs({
@@ -67,8 +67,11 @@ $(document).ready(function(){
         $('#container').isotope({sortAscending: ('asc' == this.value)});
     });
 });
-</script>
 
+window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
+</script>
+</%block>
+<%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -107,9 +110,4 @@ $(document).ready(function(){
 <br />
 <div id="trendingShows"></div>
 <br />
-
-<script type="text/javascript" charset="utf-8">
-window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
-</script>
-
-<%include file="/inc_bottom.mako"/>
+</%block>

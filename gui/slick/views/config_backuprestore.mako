@@ -1,3 +1,4 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import datetime
     import locale
@@ -9,9 +10,15 @@
     from sickbeard import metadata
     from sickbeard.metadata.generic import GenericMetadata
 %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/configBackupRestore.js?${sbPID}"></script>
-
+<script type="text/javascript" charset="utf-8">
+    $('#backupDir').fileBrowser({ title: 'Select backup folder to save to', key: 'backupPath' });
+    $('#backupFile').fileBrowser({ title: 'Select backup files to restore', key: 'backupFile', includeFiles: 1 });
+    $('#config-components').tabs();
+</script>
+</%block>
+<%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -85,11 +92,4 @@
 </div>
 
 <div class="clearfix"></div>
-
-<script type="text/javascript" charset="utf-8">
-    $('#backupDir').fileBrowser({ title: 'Select backup folder to save to', key: 'backupPath' });
-    $('#backupFile').fileBrowser({ title: 'Select backup files to restore', key: 'backupFile', includeFiles: 1 });
-    $('#config-components').tabs();
-</script>
-
-<%include file="/inc_bottom.mako"/>
+</%block>

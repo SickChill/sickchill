@@ -1,3 +1,4 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
     from sickbeard.helpers import anon_url
@@ -6,18 +7,19 @@
     import time
     import re
 %>
-<%
-    sort = sickbeard.COMING_EPS_SORT
-%>
-<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
-<h1 class="header">${header}</h1>
+</%block>
+<%block name="css">
 <style type="text/css">
 #SubMenu {display:none;}
 #contentWrapper {padding-top:30px;}
 </style>
-
+</%block>
+<%block name="content">
+<% sort = sickbeard.COMING_EPS_SORT %>
+<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
+<h1 class="header">${header}</h1>
 <div class="h2footer pull-right">
     <span>Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
@@ -520,5 +522,4 @@ $(document).ready(function(){
 <script type="text/javascript" charset="utf-8">
 window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
 </script>
-
-<%include file="/inc_bottom.mako"/>
+</%block>

@@ -1,11 +1,14 @@
+<%inherit file="/layouts/main.mako"/>
 <%
     import sickbeard
     import datetime
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import Overview, Quality, qualityPresets, qualityPresetStrings
     from sickbeard import sbdatetime, network_timezones
+
+    fuzzydate = 'airdate'
 %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
 <script type="text/javascript">
 $(document).ready(function(){
     $('#pickShow').change(function(){
@@ -15,7 +18,6 @@ $(document).ready(function(){
         }
     });
 
-    <% fuzzydate = 'airdate' %>
     % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
         containerClass : '.${fuzzydate}',
@@ -28,7 +30,8 @@ $(document).ready(function(){
 
 });
 </script>
-
+</%block>
+<%block name="content">
 <div id="content960">
 
 % if not header is UNDEFINED:
@@ -104,4 +107,4 @@ Jump to Show
 
 </table>
 </div>
-<%include file="/inc_bottom.mako"/>
+</%block>

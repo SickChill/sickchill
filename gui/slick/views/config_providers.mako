@@ -1,3 +1,4 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
     from sickbeard.providers.generic import GenericProvider
@@ -5,35 +6,32 @@
     from sickbeard.helpers import anon_url
 
 %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
+<script type="text/javascript" src="${sbRoot}/js/configProviders.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    % if sickbeard.USE_NZBS:
+        var show_nzb_providers = ${("false", "true")[bool(sickbeard.USE_NZBS)]};
+        % for curNewznabProvider in sickbeard.newznabProviderList:
+        $(this).addProvider('${curNewznabProvider.getID()}', '${curNewznabProvider.name}', '${curNewznabProvider.url}', '${curNewznabProvider.key}', '${curNewznabProvider.catIDs}', ${int(curNewznabProvider.default)}, show_nzb_providers);
+        % endfor
+    % endif
+    % if sickbeard.USE_TORRENTS:
+        % for curTorrentRssProvider in sickbeard.torrentRssProviderList:
+        $(this).addTorrentRssProvider('${curTorrentRssProvider.getID()}', '${curTorrentRssProvider.name}', '${curTorrentRssProvider.url}', '${curTorrentRssProvider.cookies}', '${curTorrentRssProvider.titleTAG}');
+        % endfor
+    % endif
+});
+$('#config-components').tabs();
+</script>
+</%block>
+<%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
     <h1 class="title">${title}</h1>
 % endif
-<script type="text/javascript" src="${sbRoot}/js/configProviders.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
-% if sickbeard.USE_NZBS:
-<script type="text/javascript" charset="utf-8">
-$(document).ready(function(){
-    var show_nzb_providers = ${("false", "true")[bool(sickbeard.USE_NZBS)]};
-    % for curNewznabProvider in sickbeard.newznabProviderList:
-    $(this).addProvider('${curNewznabProvider.getID()}', '${curNewznabProvider.name}', '${curNewznabProvider.url}', '${curNewznabProvider.key}', '${curNewznabProvider.catIDs}', ${int(curNewznabProvider.default)}, show_nzb_providers);
-    % endfor
-});
-</script>
-% endif
-
-% if sickbeard.USE_TORRENTS:
-<script type="text/javascript" charset="utf-8">
-$(document).ready(function(){
-% for curTorrentRssProvider in sickbeard.torrentRssProviderList:
-    $(this).addTorrentRssProvider('${curTorrentRssProvider.getID()}', '${curTorrentRssProvider.name}', '${curTorrentRssProvider.url}', '${curTorrentRssProvider.cookies}', '${curTorrentRssProvider.titleTAG}');
-% endfor
-});
-</script>
-% endif
-
 <div id="config">
     <div id="config-content">
 
@@ -732,8 +730,4 @@ $(document).ready(function(){
         </form>
     </div>
 </div>
-
-<script type="text/javascript" charset="utf-8">
-    $('#config-components').tabs();
-</script>
-<%include file="/inc_bottom.mako"/>
+</%block>

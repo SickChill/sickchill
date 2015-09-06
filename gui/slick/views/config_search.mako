@@ -1,12 +1,21 @@
+<%inherit file="/layouts/main.mako"/>
 <%
     import sickbeard
     from sickbeard import clients
 %>
-<%include file="/inc_top.mako"/>
 
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/configSearch.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
-
+<script type="text/javascript" charset="utf-8">
+    $('#config-components').tabs();
+    $('#nzb_dir').fileBrowser({ title: 'Select .nzb black hole/watch location' });
+    $('#torrent_dir').fileBrowser({ title: 'Select .torrent black hole/watch location' });
+    $('#torrent_path').fileBrowser({ title: 'Select .torrent download location' });
+    $('#tv_download_dir').fileBrowser({ title: 'Select TV download location' });
+</script>
+</%block>
+<%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -573,13 +582,4 @@
 </div>
 
 <div></div>
-
-<script type="text/javascript" charset="utf-8">
-    $('#config-components').tabs();
-    $('#nzb_dir').fileBrowser({ title: 'Select .nzb black hole/watch location' });
-    $('#torrent_dir').fileBrowser({ title: 'Select .torrent black hole/watch location' });
-    $('#torrent_path').fileBrowser({ title: 'Select .torrent download location' });
-    $('#tv_download_dir').fileBrowser({ title: 'Select TV download location' });
-</script>
-
-<%include file="/inc_bottom.mako"/>
+</%block>

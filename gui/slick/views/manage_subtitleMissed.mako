@@ -1,10 +1,14 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     from sickbeard import subtitles
     import datetime
     import sickbeard
     from sickbeard import common
 %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
+<script type="text/javascript" src="${sbRoot}/js/manageSubtitleMissed.js?${sbPID}"></script>
+</%block>
+<%block name="content">
 <div id="content960">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -34,8 +38,6 @@ subtitles
 </form>
 
 % else:
-
-<script type="text/javascript" src="${sbRoot}/js/manageSubtitleMissed.js?${sbPID}"></script>
 <input type="hidden" id="selectSubLang" name="selectSubLang" value="${whichSubs}" />
 
 <form action="${sbRoot}/manage/downloadSubtitleMissed" method="post">
@@ -59,4 +61,4 @@ Download missed subtitles for selected episodes <input class="btn btn-inline" ty
 
 % endif
 </div>
-<%include file="/inc_bottom.mako"/>
+</%block>

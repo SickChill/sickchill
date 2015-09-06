@@ -1,3 +1,4 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
     import calendar
@@ -7,7 +8,10 @@
     import datetime
     import re
 %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
+<script type="text/javascript" src="${sbRoot}/js/testRename.js"></script>
+</%block>
+<%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -15,8 +19,6 @@
 % endif
 
 <input type="hidden" id="showID" value="${show.indexerid}" />
-
-<script type="text/javascript" src="${sbRoot}/js/testRename.js"></script>
 
 <h3>Preview of the proposed name changes</h3>
 <blockquote>
@@ -98,4 +100,4 @@ if len(epList) > 1:
 % endfor
 </table><br />
 <input type="submit" value="Rename Selected" class="btn btn-success"> <a href="/home/displayShow?show=${show.indexerid}" class="btn btn-danger">Cancel Rename</a>
-<%include file="/inc_bottom.mako"/>
+<%/block>

@@ -1,3 +1,4 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
     import datetime
@@ -7,8 +8,8 @@
     from sickbeard import sbdatetime
     from sickbeard.helpers import anon_url
 %>
-
-<script type="text/javascript" charset="utf-8">
+<%block name="scripts">
+<script type="text/javascript">
 $(document).ready(function(){
     // initialise combos for dirty page refreshes
     $('#showsort').val('original');
@@ -65,7 +66,8 @@ $(document).ready(function(){
     });
 });
 </script>
-
+<%block>
+<%block name="content">
 <div id="container">
 % if not trending_shows:
     <div class="trakt_show" style="width:100%; margin-top:20px">
@@ -100,3 +102,4 @@ $(document).ready(function(){
 % endfor
 % endif
 </div>
+</%block>

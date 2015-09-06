@@ -212,7 +212,7 @@
                 <%block name="content" />
             </div> <!-- /content -->
         </div> <!-- /contentWrapper -->
-
+    % if sbLogin:
         <footer>
             <div class="footer clearfix">
             <%
@@ -269,7 +269,6 @@
         <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-hover-dropdown.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery-ui-1.10.4.custom.min.js?${sbPID}"></script>
-    % if sbLogin:
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery.cookie.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery.cookiejar.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery.json-2.2.min.js?${sbPID}"></script>

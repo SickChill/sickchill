@@ -1,7 +1,13 @@
+<%inherit file="/layouts/main.mako"/>
 <%
     import sickbeard
 %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
+<script type="text/javascript">
+    $('#episodeDir').fileBrowser({ title: 'Select Unprocessed Episode Folder', key: 'postprocessPath' });
+</script>
+</%block>
+<%block name="content">
 <div id="content800">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -73,10 +79,5 @@
     </table>
         <input id="submit" class="btn" type="submit" value="Process" />
     </form>
-
-<script type="text/javascript" charset="utf-8">
-    $('#episodeDir').fileBrowser({ title: 'Select Unprocessed Episode Folder', key: 'postprocessPath' });
-</script>
 </div>
-
-<%include file="/inc_bottom.mako"/>
+<%/block>

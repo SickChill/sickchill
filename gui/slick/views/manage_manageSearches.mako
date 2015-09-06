@@ -1,11 +1,14 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
     import datetime
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets
 %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
+</%block>
+<%block name="content">
 <div id="content800">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -46,4 +49,4 @@ Manual: <i>${queueLength['manual']} pending items</i></br>
 Failed: <i>${queueLength['failed']} pending items</i></br>
 </div>
 </div>
-<%include file="/inc_bottom.mako"/>
+</%block>

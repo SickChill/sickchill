@@ -1,3 +1,4 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
     import adba
@@ -7,7 +8,71 @@
     from sickbeard import exceptions
     from sickbeard import scene_exceptions
 %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
+<script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
+<script type="text/javascript" charset="utf-8">
+    var all_exceptions = new Array;
+
+    $('#location').fileBrowser({ title: 'Select Show Location' });
+
+    $('#submit').click(function(){
+        all_exceptions = []
+
+        $("#exceptions_list option").each  ( function() {
+            all_exceptions.push( $(this).val() );
+        });
+
+        $("#exceptions_list").val(all_exceptions);
+
+        % if show.is_anime:
+            generate_bwlist()
+        % endif
+        });
+    $('#addSceneName').click(function() {
+        var scene_ex = $('#SceneName').val()
+        var option = $("<option>")
+        all_exceptions = []
+
+        $("#exceptions_list option").each  ( function() {
+           all_exceptions.push( $(this).val() )
+        });
+
+        $('#SceneName').val('')
+
+        if ($.inArray(scene_ex, all_exceptions) > -1 || (scene_ex == ''))
+            return
+
+        $("#SceneException").show()
+
+        option.attr("value",scene_ex)
+        option.html(scene_ex)
+        return option.appendTo('#exceptions_list');
+    });
+
+    $('#removeSceneName').click(function() {
+        $('#exceptions_list option:selected').remove();
+
+        $(this).toggle_SceneException()
+    });
+
+   $.fn.toggle_SceneException = function() {
+        all_exceptions = []
+
+        $("#exceptions_list option").each  ( function() {
+            all_exceptions.push( $(this).val() );
+        });
+
+        if (all_exceptions == '')
+            $("#SceneException").hide();
+        else
+            $("#SceneException").show();
+    }
+
+    $(this).toggle_SceneException();
+</script>
+</%block>
+<%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -15,9 +80,6 @@
 % endif
 
 <div id="editShow">
-<script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
-
 <form action="editShow" method="post">
 <input type="hidden" name="show" value="${show.indexerid}" />
 <b>Location:</b></br>
@@ -132,66 +194,5 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 
 <input type="submit" id="submit" value="Submit" class="btn btn-primary" />
 </form>
-
-<script type="text/javascript" charset="utf-8">
-    var all_exceptions = new Array;
-
-    $('#location').fileBrowser({ title: 'Select Show Location' });
-
-    $('#submit').click(function(){
-        all_exceptions = []
-
-        $("#exceptions_list option").each  ( function() {
-            all_exceptions.push( $(this).val() );
-        });
-
-        $("#exceptions_list").val(all_exceptions);
-
-        % if show.is_anime:
-            generate_bwlist()
-        % endif
-        });
-    $('#addSceneName').click(function() {
-        var scene_ex = $('#SceneName').val()
-        var option = $("<option>")
-        all_exceptions = []
-
-        $("#exceptions_list option").each  ( function() {
-           all_exceptions.push( $(this).val() )
-        });
-
-        $('#SceneName').val('')
-
-        if ($.inArray(scene_ex, all_exceptions) > -1 || (scene_ex == ''))
-            return
-
-        $("#SceneException").show()
-
-        option.attr("value",scene_ex)
-        option.html(scene_ex)
-        return option.appendTo('#exceptions_list');
-    });
-
-    $('#removeSceneName').click(function() {
-        $('#exceptions_list option:selected').remove();
-
-        $(this).toggle_SceneException()
-    });
-
-   $.fn.toggle_SceneException = function() {
-        all_exceptions = []
-
-        $("#exceptions_list option").each  ( function() {
-            all_exceptions.push( $(this).val() );
-        });
-
-        if (all_exceptions == '')
-            $("#SceneException").hide();
-        else
-            $("#SceneException").show();
-    }
-
-    $(this).toggle_SceneException();
-</script>
 </div>
-<%include file="/inc_bottom.mako"/>
+</%block>

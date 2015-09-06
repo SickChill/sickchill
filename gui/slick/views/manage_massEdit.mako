@@ -1,3 +1,4 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
     from sickbeard import common
@@ -11,10 +12,14 @@
     <% initial_quality = common.SD %>
 % endif
 <% anyQualities, bestQualities = common.Quality.splitQuality(initial_quality) %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/massEdit.js?${sbPID}"></script>
-
+<script type="text/javascript" charset="utf-8">
+    $('#location').fileBrowser({ title: 'Select Show Location' });
+</script>
+</%block>
+<%block name="content">
 <form action="massEditSubmit" method="post">
 <input type="hidden" name="toEdit" value="${showList}" />
 
@@ -189,8 +194,4 @@
 
 </form>
 <br />
-
-<script type="text/javascript" charset="utf-8">
-    $('#location').fileBrowser({ title: 'Select Show Location' });
-</script>
-<%include file="/inc_bottom.mako"/>
+</%block>

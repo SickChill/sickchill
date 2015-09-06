@@ -1,15 +1,15 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     from sickbeard import subtitles
     import sickbeard
     from sickbeard.helpers import anon_url
 %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/configSubtitles.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js"></script>
 <script type="text/javascript" src="${sbRoot}/js/lib/jquery.tokeninput.js"></script>
-
 <script type="text/javascript">
-      $(document).ready(function() {
+    $(document).ready(function() {
         $("#subtitles_languages").tokenInput(
                 [${",\r\n".join("{id: \"" + lang.opensubtitles + "\", name: \"" + lang.name + "\"}" for lang in subtitles.subtitleLanguageFilter())}],
                 {
@@ -20,8 +20,11 @@
                 }
             );
     });
+    $('#config-components').tabs();
+    $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' });
 </script>
-
+</%block>
+<%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -179,8 +182,4 @@
 </div>
 
 <div class="clearfix"></div>
-<script type="text/javascript" charset="utf-8">
-    $('#config-components').tabs();
-    $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' });
-</script>
-<%include file="/inc_bottom.mako"/>
+</%block>

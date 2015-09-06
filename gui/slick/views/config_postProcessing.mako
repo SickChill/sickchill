@@ -1,3 +1,4 @@
+<%inherit file="/layouts/main.mako"/>
 <%
     import os.path
     import sickbeard
@@ -8,9 +9,16 @@
     from sickbeard.metadata.generic import GenericMetadata
     from sickbeard import naming
 %>
-<%include file="/inc_top.mako"/>
+
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/configPostProcessing.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
+<script type="text/javascript">
+    $('#config-components').tabs();
+    $('#tv_download_dir').fileBrowser({ title: 'Select TV Download Directory' });
+</script>
+</%block>
+<%block name="content">
 <div id="content960">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -1129,10 +1137,4 @@
 </div>
 
 <div class="clearfix"></div>
-
-<script type="text/javascript" charset="utf-8">
-    $('#config-components').tabs();
-    $('#tv_download_dir').fileBrowser({ title: 'Select TV Download Directory' });
-</script>
-
-<%include file="/inc_bottom.mako"/>
+</%block>

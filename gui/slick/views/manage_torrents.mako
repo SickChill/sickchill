@@ -1,5 +1,8 @@
-<%include file="/inc_top.mako"/>
+<%inherit file="/layouts/main.mako"/>
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
+</%block>
+<%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -8,5 +11,4 @@
 
 ${info_download_station}
 <iframe id="extFrame" src="${webui_url}" width="100%" height="500" frameBorder="0" style="border: 1px black solid;"></iframe>
-
-<%include file="/inc_bottom.mako"/>
+</%block>

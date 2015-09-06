@@ -1,12 +1,12 @@
+<%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
 %>
-<%include file="/inc_top.mako"/>
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/addExistingShow.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/addShowOptions.js?${sbPID}"></script>
-
 <script type="text/javascript" charset="utf-8">
 $(document).ready(function(){
     $( "#tabs" ).tabs({
@@ -15,7 +15,8 @@ $(document).ready(function(){
     });
 });
 </script>
-
+</%block>
+<%block name="content">
 % if not header is UNDEFINED:
 <h1 class="header">${header}</h1>
 % else:
@@ -65,4 +66,4 @@ $(document).ready(function(){
     </div>
     </div>
 </div>
-<%include file="/inc_bottom.mako"/>
+</%block>
