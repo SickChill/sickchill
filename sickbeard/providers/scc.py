@@ -87,10 +87,9 @@ class SCCProvider(generic.TorrentProvider):
                         'submit': 'come on in',
         }
 
-        self.session = requests.Session()
 
         try:
-            response = self.getURL(self.urls['login'],  post_data=login_params, headers=self.headers, timeout=30)
+            response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False

@@ -124,18 +124,15 @@ class LibertaliaProvider(generic.TorrentProvider):
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
             
-        header = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.8 (KHTML, like Gecko) Chrome/17.0.940.0 Safari/535.8'}
+        self.headers.update({'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.8 (KHTML, like Gecko) Chrome/17.0.940.0 Safari/535.8'})
         
         login_params = {'username': self.username,
                             'password': self.password
         }
 
-        if not self.session:
-            self.session = requests.Session()
-
         logger.log('Performing authentication to Libertalia', logger.DEBUG)
         try:
-            response = self.getURL(self.url + '/login.php',  post_data=login_params, timeout=30, headers=header)
+            response = self.getURL(self.url + '/login.php',  post_data=login_params, timeout=30)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False
