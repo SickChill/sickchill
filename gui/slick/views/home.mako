@@ -126,14 +126,15 @@ $(document).ready(function(){
     });
 
     $("#showListTableShows:has(tbody tr)").tablesorter({
-        sortList: [[6,1],[2,0]],
+        sortList: [[7,1],[2,0]],
         textExtraction: {
             0: function(node) { return $(node).find("span").text().toLowerCase(); },
             1: function(node) { return $(node).find("span").text().toLowerCase(); },
             3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
             4: function(node) { return $(node).find("span").text().toLowerCase(); },
             5: function(node) { return $(node).find("span:first").text(); },
-            6: function(node) { return $(node).find("img").attr("alt"); }
+            6: function(node) { return $(node).data('show-size'); },
+            7: function(node) { return $(node).find("img").attr("alt"); }
         },
         widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
         headers: {
@@ -143,7 +144,7 @@ $(document).ready(function(){
             4: { sorter: 'quality' },
             5: { sorter: 'eps' },
             % if sickbeard.FILTER_ROW:
-                6: { filter : 'parsed' }
+                7: { filter : 'parsed' }
             % endif
         },
         widgetOptions : {
@@ -217,14 +218,15 @@ $(document).ready(function(){
     });
 
     $("#showListTableAnime:has(tbody tr)").tablesorter({
-        sortList: [[6,1],[2,0]],
+        sortList: [[7,1],[2,0]],
         textExtraction: {
             0: function(node) { return $(node).find("span").text().toLowerCase(); },
             1: function(node) { return $(node).find("span").text().toLowerCase(); },
             3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
             4: function(node) { return $(node).find("span").text().toLowerCase(); },
             5: function(node) { return $(node).find("span:first").text(); },
-            6: function(node) { return $(node).find("img").attr("alt"); }
+            6: function(node) { return $(node).data('show-size'); },
+            7: function(node) { return $(node).find("img").attr("alt"); }
         },
         widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
         headers: {
@@ -234,7 +236,7 @@ $(document).ready(function(){
             4: { sorter: 'quality' },
             5: { sorter: 'eps' },
             % if sickbeard.FILTER_ROW:
-            6: { filter : 'parsed' }
+                7: { filter : 'parsed' }
             % endif
         },
         widgetOptions : {
@@ -604,6 +606,7 @@ $(document).ready(function(){
             <th>Network</th>
             <th>Quality</th>
             <th>Downloads</th>
+            <th>Size</th>
             <th>Active</th>
             <th>Status</th>
         </tr>
@@ -612,6 +615,7 @@ $(document).ready(function(){
     <tfoot class="hidden-print">
         <tr>
             <th rowspan="1" colspan="1" align="center"><a href="${sbRoot}/home/addShows/">Add Show</a></th>
+            <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
@@ -775,6 +779,9 @@ $(document).ready(function(){
             <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}" data-progress-text="${download_stat}" data-progress-tip="${download_stat_tip}"></div>
             <span class="visible-print-inline">${download_stat}</span>
         </td>
+
+        <% show_size = sickbeard.helpers.get_size(curShow._location) %>
+        <td align="center" data-show-size="${show_size}">${sickbeard.helpers.pretty_filesize(show_size)}</td>
 
         <td align="center">
             <% paused = int(curShow.paused) == 0 and curShow.status == 'Continuing' %>
