@@ -3,8 +3,9 @@ from sickrage.media.GenericMedia import GenericMedia
 
 
 class ShowPoster(GenericMedia):
-    def __init__(self, indexer_id, media_format):
-        GenericMedia.__init__(self, indexer_id, media_format)
+    """
+    Get the poster of a show
+    """
 
     def get_default_media_name(self):
         return 'poster.png'

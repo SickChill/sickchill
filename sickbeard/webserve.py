@@ -393,7 +393,7 @@ class WebRoot(WebHandler):
         return None
 
     def showNetworkLogo(self, show=None):
-        return ShowNetworkLogo(show, 'normal')
+        return ShowNetworkLogo(show)
 
     def setHomeLayout(self, layout):
 

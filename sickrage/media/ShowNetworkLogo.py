@@ -4,8 +4,9 @@ from sickrage.media.GenericMedia import GenericMedia
 
 
 class ShowNetworkLogo(GenericMedia):
-    def __init__(self, indexer_id, media_format):
-        GenericMedia.__init__(self, indexer_id, media_format)
+    """
+    Get the network logo of a show
+    """
 
     def get_default_media_name(self):
         return 'network/nonetwork.png'

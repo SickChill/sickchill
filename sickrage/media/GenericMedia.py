@@ -8,7 +8,7 @@ from sickbeard.helpers import findCertainShow
 
 
 class GenericMedia:
-    def __init__(self, indexer_id, media_format):
+    def __init__(self, indexer_id, media_format='normal'):
         """
         :param indexer_id: The indexer id of the show
         :param media_format: The format of the media to get. Must be either 'normal' or 'thumb'
@@ -48,7 +48,7 @@ class GenericMedia:
     @abstractmethod
     def get_media_path(self):
         """
-        :return: The path to the media related to self.indexer_id
+        :return: The path to the media related to ``self.indexer_id``
         """
 
         return ''
@@ -62,7 +62,7 @@ class GenericMedia:
 
     def get_show(self):
         """
-        :return: The show object associated with self.indexer_if or None
+        :return: The show object associated with ``self.indexer_id`` or ``None``
         """
 
         try:

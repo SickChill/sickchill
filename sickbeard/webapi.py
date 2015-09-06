@@ -2375,7 +2375,7 @@ class CMD_ShowGetPoster(ApiCall):
         """ get the poster for a show in sickrage """
         return {
             'outputType': 'image',
-            'image': ShowPoster(self.indexerid, 'normal').get_media()
+            'image': ShowPoster(self.indexerid).get_media()
         }
 
 
@@ -2402,7 +2402,7 @@ class CMD_ShowGetBanner(ApiCall):
         """ get the banner for a show in sickrage """
         return {
             'outputType': 'image',
-            'image': ShowBanner(self.indexerid, 'normal').get_media()
+            'image': ShowBanner(self.indexerid).get_media()
         }
 
 
@@ -2437,7 +2437,7 @@ class CMD_ShowGetNetworkLogo(ApiCall):
         """
         return {
             'outputType': 'image',
-            'image': ShowNetworkLogo(self.indexerid, 'normal').get_media()
+            'image': ShowNetworkLogo(self.indexerid).get_media()
         }
 
 
@@ -2464,7 +2464,7 @@ class CMD_ShowGetFanArt(ApiCall):
         """ Get the fan art for a show in SickRage """
         return {
             'outputType': 'image',
-            'image': ShowFanArt(self.indexerid, 'normal').get_media()
+            'image': ShowFanArt(self.indexerid).get_media()
         }
 
 
