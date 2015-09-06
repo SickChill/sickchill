@@ -27,6 +27,10 @@ import re
 import traceback
 
 import sickbeard
+from sickrage.media.ShowFanArt import ShowFanArt
+from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
+from sickrage.media.ShowPoster import ShowPoster
+from sickrage.media.ShowBanner import ShowBanner
 
 from versionChecker import CheckVersion
 from sickbeard import db, logger, exceptions, history, ui, helpers
@@ -80,6 +84,7 @@ result_type_map = {RESULT_SUCCESS: "success",
                    RESULT_DENIED: "denied",
 }
 # basically everything except RESULT_SUCCESS / success is bad
+
 
 class ApiHandler(RequestHandler):
     """ api class that returns json results """
@@ -258,52 +263,6 @@ class ApiHandler(RequestHandler):
                 curKwargs[kwarg] = kwargs[kwarg]
         return curArgs, curKwargs
 
-
-    def showPoster(self, show=None, which=None):
-        # Redirect initial poster/banner thumb to default images
-        if which[0:6] == 'poster':
-            default_image_name = 'poster.png'
-        elif which[0:6] == 'fanart':
-            default_image_name = 'fanart.png'
-        else:
-            default_image_name = 'banner.png'
-
-        # image_path = ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', 'slick', 'images', default_image_name)
-        static_image_path = os.path.join('/images', default_image_name)
-        if show and sickbeard.helpers.findCertainShow(sickbeard.showList, int(show)):
-            cache_obj = image_cache.ImageCache()
-
-            image_file_name = None
-            if which == 'poster':
-                image_file_name = cache_obj.poster_path(show)
-            if which == 'poster_thumb' or which == 'small':
-                image_file_name = cache_obj.poster_thumb_path(show)
-            if which == 'banner':
-                image_file_name = cache_obj.banner_path(show)
-            if which == 'banner_thumb':
-                image_file_name = cache_obj.banner_thumb_path(show)
-            if which == 'fanart':
-                if not cache_obj.has_fanart(show):
-                    cache_obj.fill_cache(sickbeard.helpers.findCertainShow(sickbeard.showList, int(show)))
-                image_file_name = cache_obj.fanart_path(show)
-
-            if ek.ek(os.path.isfile, image_file_name):
-                static_image_path = os.path.normpath(image_file_name.replace(sickbeard.CACHE_DIR, '/cache'))
-
-        static_image_path = sickbeard.WEB_ROOT + static_image_path.replace('\\', '/')
-        return self.redirect(static_image_path)
-
-    def showNetworkLogo(self, show=None):
-        show = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
-
-        if show:
-            image_file_name = show.network_logo_name
-        else:
-            image_file_name = 'nonetwork'
-
-        static_image_path = '%s/images/network/%s.png' % (sickbeard.WEB_ROOT, image_file_name)
-
-        return self.redirect(static_image_path)
 
 class ApiCall(ApiHandler):
     _help = {"desc": "No help message available. Please tell the devs that a help msg is missing for this cmd"}
@@ -2393,14 +2352,15 @@ class CMD_ShowGetQuality(ApiCall):
 
 
 class CMD_ShowGetPoster(ApiCall):
-    _help = {"desc": "get the poster stored for a show in sickrage",
-             "requiredParameters": {
-                 "indexerid": {"desc": "unique id of a show"}
-             },
-             "optionalParameters": {
-                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
-             }
+    _help = {
+        "desc": "get the poster stored for a show in sickrage",
+        "requiredParameters": {
+            "indexerid": {"desc": "unique id of a show"}
+        },
+        "optionalParameters": {
+            "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+            "tvrageid": {"desc": "tvrage.com unique id of a show"},
+        }
     }
 
     def __init__(self, args, kwargs):
@@ -2412,18 +2372,22 @@ class CMD_ShowGetPoster(ApiCall):
 
     def run(self):
         """ get the poster for a show in sickrage """
-        return {'outputType': 'image', 'image': self.rh.showPoster(self.indexerid, 'poster')}
+        return {
+            'outputType': 'image',
+            'image': ShowPoster(self.indexerid, 'normal').get_media()
+        }
 
 
 class CMD_ShowGetBanner(ApiCall):
-    _help = {"desc": "get the banner stored for a show in sickrage",
-             "requiredParameters": {
-                 "indexerid": {"desc": "unique id of a show"}
-             },
-             "optionalParameters": {
-                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
-             }
+    _help = {
+        "desc": "get the banner stored for a show in sickrage",
+        "requiredParameters": {
+            "indexerid": {"desc": "unique id of a show"}
+        },
+        "optionalParameters": {
+            "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+            "tvrageid": {"desc": "tvrage.com unique id of a show"},
+        }
     }
 
     def __init__(self, args, kwargs):
@@ -2435,7 +2399,10 @@ class CMD_ShowGetBanner(ApiCall):
 
     def run(self):
         """ get the banner for a show in sickrage """
-        return {'outputType': 'image', 'image': self.rh.showPoster(self.indexerid, 'banner')}
+        return {
+            'outputType': 'image',
+            'image': ShowBanner(self.indexerid, 'normal').get_media()
+        }
 
 
 class CMD_ShowGetNetworkLogo(ApiCall):
@@ -2469,7 +2436,7 @@ class CMD_ShowGetNetworkLogo(ApiCall):
         """
         return {
             'outputType': 'image',
-            'image': self.rh.showNetworkLogo(self.indexerid)
+            'image': ShowNetworkLogo(self.indexerid, 'normal').get_media()
         }
 
 
@@ -2496,7 +2463,7 @@ class CMD_ShowGetFanArt(ApiCall):
         """ Get the fan art for a show in SickRage """
         return {
             'outputType': 'image',
-            'image': self.rh.showPoster(self.indexerid, 'fanart')
+            'image': ShowFanArt(self.indexerid, 'normal').get_media()
         }
 
 
