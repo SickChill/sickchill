@@ -41,28 +41,9 @@ if sys.version_info < (2, 7):
     print "Sorry, requires Python 2.7.x"
     sys.exit(1)
 
-import certifi
-for env_cert_var in ['REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE']:
-    ca_cert_loc = os.environ.get(env_cert_var)
-    if (not isinstance(ca_cert_loc, basestring)) or (not os.path.isfile(ca_cert_loc)):
-        os.environ[env_cert_var] = certifi.where()
-
 if sys.version_info >= (2, 7, 9):
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
-else:
-    try:
-        import cryptography
-    except ImportError:
-        try:
-            from OpenSSL.version import __version__ as pyOpenSSL_Version
-            if int(pyOpenSSL_Version.replace('.', '')[:3]) > 13:
-                raise ImportError
-        except ImportError:
-            print('\nSNI is disabled with pyOpenSSL >= 0.14 when the cryptography module is missing,\n' +
-                    'you will encounter SSL errors with HTTPS! To fix this issue:\n' +
-                    'pip install pyopenssl==0.13.1 (easy) or pip install cryptography (pita)')
-
 
 import locale
 import datetime
