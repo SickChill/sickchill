@@ -26,7 +26,9 @@ import generic
 import requests
 from requests import exceptions
 
-from sickbeard.common import USER_AGENT, Quality, cpu_presets
+from sickbeard.common import Quality
+from sickbeard.common import USER_AGENT
+from sickbeard.common import cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import show_name_helpers
@@ -34,10 +36,10 @@ from sickbeard.bs4_parser import BS4Parser
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
-from sickbeard.helpers import sanitizeSceneName, arithmeticEval
+from sickbeard.helpers import arithmeticEval
+from sickbeard.helpers import sanitizeSceneName
 from sickbeard.exceptions import ex
 
-import cookielib
 
 
 class CpasbienProvider(generic.TorrentProvider):

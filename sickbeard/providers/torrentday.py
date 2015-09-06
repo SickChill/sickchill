@@ -17,7 +17,6 @@
 
 import re
 import datetime
-import urlparse
 import sickbeard
 import generic
 from sickbeard.common import Quality

@@ -25,7 +25,8 @@ from sickbeard import tvcache
 from sickbeard import helpers
 from sickbeard import classes
 from sickbeard import logger
-from sickbeard.exceptions import ex, AuthException
+from sickbeard.exceptions import AuthException
+from sickbeard.exceptions import ex
 from sickbeard import show_name_helpers
 from datetime import datetime
 

@@ -19,7 +19,6 @@
 
 from __future__ import with_statement
 
-import os
 import traceback
 import urllib
 import re
@@ -29,7 +28,9 @@ import sickbeard
 import generic
 
 from sickbeard.common import Quality
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickbeard.name_parser.parser import InvalidNameException
+from sickbeard.name_parser.parser import InvalidShowException
+from sickbeard.name_parser.parser import NameParser
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import helpers

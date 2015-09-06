@@ -20,10 +20,10 @@ import re
 import traceback
 import datetime
 import time
-import urlparse
 import sickbeard
 import generic
-from sickbeard.common import Quality, cpu_presets
+from sickbeard.common import Quality
+from sickbeard.common import cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db

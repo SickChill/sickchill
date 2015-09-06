@@ -19,7 +19,6 @@
 import re
 import traceback
 import datetime
-import urlparse
 import sickbeard
 import generic
 import urllib

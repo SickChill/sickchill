@@ -18,17 +18,17 @@
 
 from __future__ import with_statement
 
-import time
 import re
-import urllib, urllib2, urlparse
-import sys
-import os
+import urllib
 import datetime
 
 import sickbeard
 import generic
-from sickbeard.common import Quality, cpu_presets
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickbeard.common import Quality
+from sickbeard.common import cpu_presets
+from sickbeard.name_parser.parser import InvalidNameException
+from sickbeard.name_parser.parser import InvalidShowException
+from sickbeard.name_parser.parser import NameParser
 from sickbeard import db
 from sickbeard import classes
 from sickbeard import logger

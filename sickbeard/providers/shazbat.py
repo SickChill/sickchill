@@ -24,7 +24,8 @@ except ImportError:
 import sickbeard
 import generic
 
-from sickbeard.exceptions import ex, AuthException
+from sickbeard.exceptions import AuthException
+from sickbeard.exceptions import ex
 from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import tvcache

@@ -19,16 +19,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
 import re
 import datetime
-import time
 from requests.auth import AuthBase
 import sickbeard
 import generic
 
 import requests
-import json
 import cookielib
 import urllib
 

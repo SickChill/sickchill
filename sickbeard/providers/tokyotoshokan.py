@@ -17,7 +17,6 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
-import re
 import traceback
 
 import sickbeard
@@ -27,7 +26,8 @@ from sickbeard import show_name_helpers
 from sickbeard import logger
 from sickbeard.common import Quality
 from sickbeard import tvcache
-from sickbeard import show_name_helpers, helpers
+from sickbeard import helpers
+from sickbeard import show_name_helpers
 from sickbeard.bs4_parser import BS4Parser
 
 

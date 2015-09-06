@@ -20,7 +20,6 @@
 
 import httplib
 import datetime
-import re
 
 import sickbeard
 

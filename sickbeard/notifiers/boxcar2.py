@@ -19,7 +19,6 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib, urllib2
-import time
 
 import sickbeard
 

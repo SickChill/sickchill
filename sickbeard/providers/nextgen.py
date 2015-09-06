@@ -17,15 +17,14 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import traceback
-import urllib2
 import urllib
 import time
 import re
 import datetime
-import urlparse
 import sickbeard
 import generic
-from sickbeard.common import Quality, cpu_presets
+from sickbeard.common import Quality
+from sickbeard.common import cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db

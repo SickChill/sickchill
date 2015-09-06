@@ -17,7 +17,6 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import os
 import threading
 import sickbeard
 

@@ -20,7 +20,6 @@
 import traceback
 import re
 import datetime
-import urllib
 import generic
 import datetime
 import json

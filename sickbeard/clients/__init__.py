@@ -27,7 +27,6 @@ __all__ = ['utorrent',
 
 import sickbeard
 
-from os import sys
 
 # Mapping error status codes to official W3C names
 http_error_code = {

@@ -291,7 +291,6 @@ class Quality:
             parser = createParser(filename)
         except Exception:
             parser = None
-            pass
 
         if not parser:
             return Quality.UNKNOWN
@@ -300,7 +299,6 @@ class Quality:
             metadata = extractMetadata(parser)
         except Exception:
             metadata = None
-            pass
 
         try:
             parser.stream._input.close()

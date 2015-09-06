@@ -32,7 +32,8 @@ from sickbeard import common
 
 from sickbeard import failedProcessor
 
-from unrar2 import RarFile, RarInfo
+from unrar2 import RarFile
+from unrar2 import RarInfo
 from unrar2.rar_exceptions import *
 
 import shutil
@@ -457,7 +458,6 @@ def already_postprocessed(dirName, videofile, force, result):
             parse_result = np.parse(dirName)
         except: #ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
             parse_result = False
-            pass
         
         
         search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid" #This part is always the same

@@ -20,7 +20,6 @@
 import traceback
 import re
 import datetime
-import time
 from requests.auth import AuthBase
 import sickbeard
 import generic

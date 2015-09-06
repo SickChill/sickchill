@@ -52,7 +52,8 @@ from imdbPopular import imdb_popular
 
 from dateutil import tz
 from unrar2 import RarFile
-import adba, subliminal
+import adba
+import subliminal
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
 from versionChecker import CheckVersion
@@ -66,9 +67,9 @@ except ImportError:
     import simplejson as json
 
 try:
-    import xml.etree.cElementTree as etree
+    pass
 except ImportError:
-    import xml.etree.ElementTree as etree
+    pass
 
 from mako.template import Template as MakoTemplate
 from mako.lookup import TemplateLookup

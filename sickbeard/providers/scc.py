@@ -18,11 +18,9 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import traceback
 import datetime
 import time
 
-import urlparse
 import sickbeard
 import generic
 import urllib

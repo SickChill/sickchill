@@ -1,6 +1,5 @@
 import os
 import threading
-import sys
 import sickbeard
 
 from sickbeard.webserve import LoginHandler, LogoutHandler, KeyHandler, CalendarHandler

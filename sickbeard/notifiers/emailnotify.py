@@ -29,7 +29,8 @@ import re
 
 import sickbeard
 
-from sickbeard import logger, common
+from sickbeard import common
+from sickbeard import logger
 from sickbeard import db
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex

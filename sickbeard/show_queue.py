@@ -23,15 +23,23 @@ import traceback
 import sickbeard
 
 from imdb import _exceptions as imdb_exceptions
-from sickbeard.common import SKIPPED, WANTED
+from sickbeard.common import SKIPPED
+from sickbeard.common import WANTED
 from sickbeard.tv import TVShow
-from sickbeard import exceptions, logger, ui, db, notifiers
+from sickbeard import db
+from sickbeard import exceptions
+from sickbeard import logger
+from sickbeard import notifiers
+from sickbeard import ui
 from sickbeard import generic_queue
 from sickbeard import name_cache
 from sickbeard.exceptions import ex
-from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
+from sickbeard.blackandwhitelist import BlackAndWhiteList
+from sickbeard.blackandwhitelist import short_group_names
 from libtrakt import TraktAPI
-from libtrakt.exceptions import traktException, traktServerBusy, traktAuthException
+from libtrakt.exceptions import traktAuthException
+from libtrakt.exceptions import traktException
+from libtrakt.exceptions import traktServerBusy
 
 class ShowQueue(generic_queue.GenericQueue):
     def __init__(self):

@@ -15,7 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-import time
 
 import sickbeard
 import generic

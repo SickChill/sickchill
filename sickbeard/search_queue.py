@@ -23,8 +23,13 @@ import traceback
 import threading
 
 import sickbeard
-from sickbeard import db, logger, common, exceptions, helpers
-from sickbeard import generic_queue, scheduler
+from sickbeard import common
+from sickbeard import db
+from sickbeard import exceptions
+from sickbeard import helpers
+from sickbeard import logger
+from sickbeard import generic_queue
+from sickbeard import scheduler
 from sickbeard import search, failed_history, history
 from sickbeard import ui
 from sickbeard.exceptions import ex

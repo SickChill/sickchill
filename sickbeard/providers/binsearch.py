@@ -16,7 +16,6 @@
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 import urllib
 import re
-import time
 
 import sickbeard
 
