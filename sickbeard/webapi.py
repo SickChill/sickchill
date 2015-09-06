@@ -31,6 +31,7 @@ from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
 from sickrage.media.ShowBanner import ShowBanner
+from sickrage.show.History import History
 
 from versionChecker import CheckVersion
 from sickbeard import db, logger, exceptions, history, ui, helpers
@@ -1176,8 +1177,7 @@ class CMD_History(ApiCall):
 
 
 class CMD_HistoryClear(ApiCall):
-    _help = {"desc": "clear sickrage's history",
-    }
+    _help = {"desc": "clear SickRage's history"}
 
     def __init__(self, args, kwargs):
         # required
@@ -1186,9 +1186,8 @@ class CMD_HistoryClear(ApiCall):
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ clear sickrage's history """
-        myDB = db.DBConnection()
-        myDB.action("DELETE FROM history WHERE 1=1")
+        """ clear SickRage's history """
+        History().clear()
 
         return _responds(RESULT_SUCCESS, msg="History cleared")
 

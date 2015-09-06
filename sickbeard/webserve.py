@@ -59,6 +59,7 @@ from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
+from sickrage.show.History import History
 from versionChecker import CheckVersion
 
 import requests
@@ -3627,15 +3628,12 @@ class History(WebRoot):
 
         return t.render(historyResults=sqlResults, compactResults=compact, limit=limit, submenu=submenu, title='History', header='History', topmenu="history")
 
-
     def clearHistory(self):
-
-        myDB = db.DBConnection()
-        myDB.action("DELETE FROM history WHERE 1=1")
+        History().clear()
 
         ui.notifications.message('History cleared')
-        return self.redirect("/history/")
 
+        return self.redirect("/history/")
 
     def trimHistory(self):
 
