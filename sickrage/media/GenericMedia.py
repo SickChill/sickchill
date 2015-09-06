@@ -53,12 +53,13 @@ class GenericMedia:
 
         return ''
 
-    def get_media_root(self):
+    @staticmethod
+    def get_media_root():
         """
         :return: The root folder containing the media
         """
 
-        return sickbeard.WEB_ROOT
+        return sickbeard.DATA_DIR + '/gui/slick'
 
     def get_show(self):
         """
@@ -81,6 +82,6 @@ class GenericMedia:
             if ek(isfile, media_path):
                 return normpath(media_path)
 
-        image_path = join('/images', self.get_default_media_name())
+        image_path = join(self.get_media_root(), 'images', self.get_default_media_name())
 
-        return self.get_media_root() + image_path.replace('\\', '/')
+        return image_path.replace('\\', '/')

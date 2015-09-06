@@ -1,5 +1,3 @@
-import sickbeard
-
 from sickrage.media.GenericMedia import GenericMedia
 
 
@@ -18,6 +16,3 @@ class ShowNetworkLogo(GenericMedia):
             return '%s/images/network/%s.png' % (self.get_media_root(), show.network_logo_name)
 
         return ''
-
-    def get_media_root(self):
-        return sickbeard.DATA_DIR + '/gui/slick'

@@ -12,10 +12,10 @@ class ShowBanner(GenericMedia):
 
     def get_media_path(self):
         if self.get_show():
-            if self.media_format is 'normal':
+            if self.media_format == 'normal':
                 return ImageCache().banner_path(self.indexer_id)
 
-            if self.media_format is 'thumb':
+            if self.media_format == 'thumb':
                 return ImageCache().banner_thumb_path(self.indexer_id)
 
         return ''
