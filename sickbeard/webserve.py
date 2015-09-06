@@ -27,7 +27,7 @@ import codecs
 import sickbeard
 from sickbeard import config, sab
 from sickbeard import clients
-from sickbeard import history, notifiers, processTV
+from sickbeard import notifiers, processTV
 from sickbeard import ui
 from sickbeard import logger, helpers, exceptions, classes, db
 from sickbeard import encodingKludge as ek
@@ -59,6 +59,7 @@ from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
+from sickrage.show.History import History as HistoryTool
 from versionChecker import CheckVersion
 
 import requests
@@ -3558,64 +3559,45 @@ class History(WebRoot):
     def __init__(self, *args, **kwargs):
         super(History, self).__init__(*args, **kwargs)
 
+        self.history = HistoryTool()
+
     def index(self, limit=100):
         limit = int(limit)
         sickbeard.HISTORY_LIMIT = limit
 
-        # sqlResults = myDB.select("SELECT h.*, show_name, name FROM history h, tv_shows s, tv_episodes e WHERE h.showid=s.indexer_id AND h.showid=e.showid AND h.season=e.season AND h.episode=e.episode ORDER BY date DESC LIMIT "+str(numPerPage*(p-1))+", "+str(numPerPage))
-        myDB = db.DBConnection()
-        if limit == 0:
-            sqlResults = myDB.select(
-                "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id ORDER BY date DESC")
-        else:
-            sqlResults = myDB.select(
-                "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id ORDER BY date DESC LIMIT ?",
-                [limit])
-
-        history = {'show_id': 0, 'season': 0, 'episode': 0, 'quality': 0,
-                   'actions': [{'time': '', 'action': '', 'provider': ''}]}
         compact = []
+        data = self.history.get(limit)
 
-        for sql_result in sqlResults:
+        for row in data:
+            action = {
+                'action': row['action'],
+                'provider': row['provider'],
+                'resource': row['resource'],
+                'time': row['date']
+            }
 
-            if not any((history['show_id'] == sql_result['showid']
-                        and history['season'] == sql_result['season']
-                        and history['episode'] == sql_result['episode']
-                        and history['quality'] == sql_result['quality'])
-                       for history in compact):
+            if not any((history['show_id'] == row['show_id'] and
+                        history['season'] == row['season'] and
+                        history['episode'] == row['episode'] and
+                        history['quality'] == row['quality']) for history in compact):
+                history = {
+                    'actions': [action],
+                    'episode': row['episode'],
+                    'quality': row['quality'],
+                    'resource': row['resource'],
+                    'season': row['season'],
+                    'show_id': row['show_id'],
+                    'show_name': row['show_name']
+                }
 
-                history = {}
-                history['show_id'] = sql_result['showid']
-                history['season'] = sql_result['season']
-                history['episode'] = sql_result['episode']
-                history['quality'] = sql_result['quality']
-                history['show_name'] = sql_result['show_name']
-                history['resource'] = sql_result['resource']
-
-                action = {}
-                history['actions'] = []
-
-                action['time'] = sql_result['date']
-                action['action'] = sql_result['action']
-                action['provider'] = sql_result['provider']
-                action['resource'] = sql_result['resource']
-                history['actions'].append(action)
-                history['actions'].sort(key=lambda x: x['time'])
                 compact.append(history)
             else:
-                index = [i for i, dict in enumerate(compact) \
-                         if dict['show_id'] == sql_result['showid'] \
-                         and dict['season'] == sql_result['season'] \
-                         and dict['episode'] == sql_result['episode']
-                         and dict['quality'] == sql_result['quality']][0]
-
-                action = {}
+                index = [i for i, item in enumerate(compact)
+                         if item['show_id'] == row['show_id'] and
+                         item['season'] == row['season'] and
+                         item['episode'] == row['episode'] and
+                         item['quality'] == row['quality']][0]
                 history = compact[index]
-
-                action['time'] = sql_result['date']
-                action['action'] = sql_result['action']
-                action['provider'] = sql_result['provider']
-                action['resource'] = sql_result['resource']
                 history['actions'].append(action)
                 history['actions'].sort(key=lambda x: x['time'], reverse=True)
 
@@ -3625,25 +3607,20 @@ class History(WebRoot):
             {'title': 'Trim History', 'path': 'history/trimHistory', 'icon': 'ui-icon ui-icon-trash', 'class': 'trimhistory'},
         ]
 
-        return t.render(historyResults=sqlResults, compactResults=compact, limit=limit, submenu=submenu, title='History', header='History', topmenu="history")
-
+        return t.render(historyResults=data, compactResults=compact, limit=limit, submenu=submenu, title='History', header='History', topmenu="history")
 
     def clearHistory(self):
-
-        myDB = db.DBConnection()
-        myDB.action("DELETE FROM history WHERE 1=1")
+        self.history.clear()
 
         ui.notifications.message('History cleared')
+
         return self.redirect("/history/")
 
-
     def trimHistory(self):
+        self.history.trim()
 
-        myDB = db.DBConnection()
-        myDB.action("DELETE FROM history WHERE date < " + str(
-            (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(history.dateFormat)))
+        ui.notifications.message('Removed history entries older than 30 days')
 
-        ui.notifications.message('Removed history entries greater than 30 days old')
         return self.redirect("/history/")
 
 

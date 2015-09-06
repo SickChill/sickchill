@@ -21,13 +21,11 @@ import datetime
 
 from sickbeard.common import SNATCHED, SUBTITLED, FAILED, Quality
 from sickbeard import encodingKludge as ek
-
-
-dateFormat = "%Y%m%d%H%M%S"
+from sickrage.show.History import History
 
 
 def _logHistoryItem(action, showid, season, episode, quality, resource, provider, version=-1):
-    logDate = datetime.datetime.today().strftime(dateFormat)
+    logDate = datetime.datetime.today().strftime(History.date_format)
     resource = ek.ss(resource)
 
     myDB = db.DBConnection()

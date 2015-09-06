@@ -31,9 +31,10 @@ from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
 from sickrage.media.ShowBanner import ShowBanner
+from sickrage.show.History import History
 
 from versionChecker import CheckVersion
-from sickbeard import db, logger, exceptions, history, ui, helpers
+from sickbeard import db, logger, exceptions, ui, helpers
 from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
 from sickbeard import image_cache
@@ -547,7 +548,7 @@ def _ordinal_to_dateForm(ordinal):
 
 
 def _historyDate_to_dateTimeForm(timeString):
-    date = datetime.datetime.strptime(timeString, history.dateFormat)
+    date = datetime.datetime.strptime(timeString, History.date_format)
     return date.strftime(dateTimeFormat)
 
 
@@ -1115,10 +1116,12 @@ class CMD_Exceptions(ApiCall):
 
 
 class CMD_History(ApiCall):
-    _help = {"desc": "display sickrage downloaded/snatched history",
-             "optionalParameters": {"limit": {"desc": "limit returned results"},
-                                    "type": {"desc": "only show a specific type of results"},
-             }
+    _help = {
+        "desc": "display SickRage downloaded/snatched history",
+        "optionalParameters": {
+            "limit": {"desc": "limit returned results"},
+            "type": {"desc": "only show a specific type of results"},
+        }
     }
 
     def __init__(self, args, kwargs):
@@ -1127,48 +1130,34 @@ class CMD_History(ApiCall):
         self.limit, args = self.check_params(args, kwargs, "limit", 100, False, "int", [])
         self.type, args = self.check_params(args, kwargs, "type", None, False, "string",
                                             ["downloaded", "snatched"])
+        self.type = self.type.lower() if isinstance(self.type, str) else ''
+
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ display sickrage downloaded/snatched history """
-
-        typeCodes = []
-        if self.type == "downloaded":
-            self.type = "Downloaded"
-            typeCodes = Quality.DOWNLOADED
-        elif self.type == "snatched":
-            self.type = "Snatched"
-            typeCodes = Quality.SNATCHED
-        else:
-            typeCodes = Quality.SNATCHED + Quality.DOWNLOADED
-
-        myDB = db.DBConnection(row_type="dict")
-
-        ulimit = min(int(self.limit), 100)
-        if ulimit == 0:
-            sqlResults = myDB.select(
-                "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id AND action in (" + ','.join(
-                    ['?'] * len(typeCodes)) + ") ORDER BY date DESC", typeCodes)
-        else:
-            sqlResults = myDB.select(
-                "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id AND action in (" + ','.join(
-                    ['?'] * len(typeCodes)) + ") ORDER BY date DESC LIMIT ?", typeCodes + [ulimit])
-
+        """ display SickRage downloaded/snatched history """
+        data = History().get(self.limit, self.type)
         results = []
-        for row in sqlResults:
+
+        for row in data:
             status, quality = Quality.splitCompositeStatus(int(row["action"]))
             status = _get_status_Strings(status)
-            if self.type and not status == self.type:
+
+            if self.type and not status.lower() == self.type:
                 continue
+
             row["status"] = status
             row["quality"] = _get_quality_string(quality)
             row["date"] = _historyDate_to_dateTimeForm(str(row["date"]))
+
             del row["action"]
-            _rename_element(row, "showid", "indexerid")
+
+            _rename_element(row, "show_id", "indexerid")
             row["resource_path"] = os.path.dirname(row["resource"])
             row["resource"] = os.path.basename(row["resource"])
-            # Add tvdbid for backward compability
+
+            # Add tvdbid for backward compatibility
             row['tvdbid'] = row['indexerid']
             results.append(row)
 
@@ -1176,8 +1165,7 @@ class CMD_History(ApiCall):
 
 
 class CMD_HistoryClear(ApiCall):
-    _help = {"desc": "clear sickrage's history",
-    }
+    _help = {"desc": "clear SickRage's history"}
 
     def __init__(self, args, kwargs):
         # required
@@ -1186,16 +1174,14 @@ class CMD_HistoryClear(ApiCall):
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ clear sickrage's history """
-        myDB = db.DBConnection()
-        myDB.action("DELETE FROM history WHERE 1=1")
+        """ clear SickRage's history """
+        History().clear()
 
         return _responds(RESULT_SUCCESS, msg="History cleared")
 
 
 class CMD_HistoryTrim(ApiCall):
-    _help = {"desc": "trim sickrage's history by removing entries greater than 30 days old"
-    }
+    _help = {"desc": "trim SickRage's history by removing entries greater than 30 days old"}
 
     def __init__(self, args, kwargs):
         # required
@@ -1204,12 +1190,11 @@ class CMD_HistoryTrim(ApiCall):
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ trim sickrage's history """
-        myDB = db.DBConnection()
-        myDB.action("DELETE FROM history WHERE date < " + str(
-            (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(history.dateFormat)))
+        """ trim SickRage's history """
+        History().trim()
 
-        return _responds(RESULT_SUCCESS, msg="Removed history entries greater than 30 days old")
+        return _responds(RESULT_SUCCESS, msg='Removed history entries older than 30 days')
+
 
 class CMD_Failed(ApiCall):
     _help = {"desc": "display failed downloads",
