@@ -9,6 +9,8 @@
 <script type="text/javascript" src="${sbRoot}/js/newShow.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/addShowOptions.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/blackwhite.js?${sbPID}"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -104,9 +106,5 @@
 <input class="btn" type="button" id="skipShowButton" value="Skip Show" />
 % endif
 </div>
-
-<script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/blackwhite.js?${sbPID}"></script>
-
 </div></div></div></div>
 </%block>
