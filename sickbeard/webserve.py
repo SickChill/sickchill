@@ -390,10 +390,10 @@ class WebRoot(WebHandler):
         if which[0:6] == 'poster':
             return ShowPoster(show, media_format).get_media()
 
-        return None
+        if which[0:7] == 'network':
+            return ShowNetworkLogo(show).get_media()
 
-    def showNetworkLogo(self, show=None):
-        return ShowNetworkLogo(show, 'normal')
+        return None
 
     def setHomeLayout(self, layout):
 

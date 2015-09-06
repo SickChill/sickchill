@@ -8,7 +8,7 @@ from sickbeard.helpers import findCertainShow
 
 
 class GenericMedia:
-    def __init__(self, indexer_id, media_format):
+    def __init__(self, indexer_id, media_format='normal'):
         """
         :param indexer_id: The indexer id of the show
         :param media_format: The format of the media to get. Must be either 'normal' or 'thumb'
@@ -48,21 +48,22 @@ class GenericMedia:
     @abstractmethod
     def get_media_path(self):
         """
-        :return: The path to the media related to self.indexer_id
+        :return: The path to the media related to ``self.indexer_id``
         """
 
         return ''
 
-    def get_media_root(self):
+    @staticmethod
+    def get_media_root():
         """
         :return: The root folder containing the media
         """
 
-        return sickbeard.WEB_ROOT
+        return sickbeard.DATA_DIR + '/gui/slick'
 
     def get_show(self):
         """
-        :return: The show object associated with self.indexer_if or None
+        :return: The show object associated with ``self.indexer_id`` or ``None``
         """
 
         try:
@@ -81,6 +82,6 @@ class GenericMedia:
             if ek(isfile, media_path):
                 return normpath(media_path)
 
-        image_path = join('/images', self.get_default_media_name())
+        image_path = join(self.get_media_root(), 'images', self.get_default_media_name())
 
-        return self.get_media_root() + image_path.replace('\\', '/')
+        return image_path.replace('\\', '/')
