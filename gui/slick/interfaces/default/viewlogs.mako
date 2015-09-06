@@ -8,23 +8,25 @@
 $(document).ready(
 
 function(){
-    $('#minLevel,#logFilter,#logSearch').change(function(){
-        if ( $('#logSearch').val().length > 0 ) {
+    $('#minLevel,#logFilter,#logSearch').on('change', function(){
+        if ($('#logSearch').val().length > 0){
             $('#logSearch').prop('disabled', true);
-            $('#logFilter option[value=\\<NONE\\>]').prop('selected', true);
+            $('#logFilter option[value="<NONE>"]').prop('selected', true);
             $('#minLevel option[value=5]').prop('selected', true);
         }
         $('#minLevel').prop('disabled', true);
         $('#logFilter').prop('disabled', true);
         $('#logSearch').prop('disabled', true);
-        document.body.style.cursor='wait'
         url = '${sbRoot}/errorlogs/viewlog/?minLevel='+$('select[name=minLevel]').val()+'&logFilter='+$('select[name=logFilter]').val()+'&logSearch='+$('#logSearch').val()
-        window.location.href = url
-
+        $.get(url, function(data){
+            $('pre').html($(data).find('pre').html());
+            $('#minLevel').removeProp('disabled');
+            $('#logFilter').removeProp('disabled');
+            $('#logSearch').removeProp('disabled');
+        });
     });
 
     $(window).load(function(){
-
         if ( $('#logSearch').val().length == 0 ) {
             $('#minLevel').prop('disabled', false);
             $('#logFilter').prop('disabled', false);
@@ -35,7 +37,7 @@ function(){
             $('#logSearch').prop('disabled', false);
         }
 
-         document.body.style.cursor='default';
+        document.body.style.cursor='default';
     });
 
     $('#logSearch').keyup(function() {
