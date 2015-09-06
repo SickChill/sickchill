@@ -27,7 +27,7 @@ import codecs
 import sickbeard
 from sickbeard import config, sab
 from sickbeard import clients
-from sickbeard import history, notifiers, processTV
+from sickbeard import notifiers, processTV
 from sickbeard import ui
 from sickbeard import logger, helpers, exceptions, classes, db
 from sickbeard import encodingKludge as ek
@@ -59,7 +59,7 @@ from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
-from sickrage.show.History import History
+from sickrage.show.History import History as HistoryTool
 from versionChecker import CheckVersion
 
 import requests
@@ -3559,6 +3559,8 @@ class History(WebRoot):
     def __init__(self, *args, **kwargs):
         super(History, self).__init__(*args, **kwargs)
 
+        self.history = HistoryTool()
+
     def index(self, limit=100):
         limit = int(limit)
         sickbeard.HISTORY_LIMIT = limit
@@ -3629,19 +3631,17 @@ class History(WebRoot):
         return t.render(historyResults=sqlResults, compactResults=compact, limit=limit, submenu=submenu, title='History', header='History', topmenu="history")
 
     def clearHistory(self):
-        History().clear()
+        self.history.clear()
 
         ui.notifications.message('History cleared')
 
         return self.redirect("/history/")
 
     def trimHistory(self):
+        self.history.trim()
 
-        myDB = db.DBConnection()
-        myDB.action("DELETE FROM history WHERE date < " + str(
-            (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(history.dateFormat)))
+        ui.notifications.message('Removed history entries older than 30 days')
 
-        ui.notifications.message('Removed history entries greater than 30 days old')
         return self.redirect("/history/")
 
 

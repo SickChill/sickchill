@@ -34,7 +34,7 @@ from sickrage.media.ShowBanner import ShowBanner
 from sickrage.show.History import History
 
 from versionChecker import CheckVersion
-from sickbeard import db, logger, exceptions, history, ui, helpers
+from sickbeard import db, logger, exceptions, ui, helpers
 from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
 from sickbeard import image_cache
@@ -548,7 +548,7 @@ def _ordinal_to_dateForm(ordinal):
 
 
 def _historyDate_to_dateTimeForm(timeString):
-    date = datetime.datetime.strptime(timeString, history.dateFormat)
+    date = datetime.datetime.strptime(timeString, History.date_format)
     return date.strftime(dateTimeFormat)
 
 
@@ -1193,8 +1193,7 @@ class CMD_HistoryClear(ApiCall):
 
 
 class CMD_HistoryTrim(ApiCall):
-    _help = {"desc": "trim sickrage's history by removing entries greater than 30 days old"
-    }
+    _help = {"desc": "trim SickRage's history by removing entries greater than 30 days old"}
 
     def __init__(self, args, kwargs):
         # required
@@ -1203,12 +1202,11 @@ class CMD_HistoryTrim(ApiCall):
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ trim sickrage's history """
-        myDB = db.DBConnection()
-        myDB.action("DELETE FROM history WHERE date < " + str(
-            (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(history.dateFormat)))
+        """ trim SickRage's history """
+        History().trim()
 
-        return _responds(RESULT_SUCCESS, msg="Removed history entries greater than 30 days old")
+        return _responds(RESULT_SUCCESS, msg='Removed history entries older than 30 days')
+
 
 class CMD_Failed(ApiCall):
     _help = {"desc": "display failed downloads",
