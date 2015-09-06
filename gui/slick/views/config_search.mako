@@ -1,9 +1,8 @@
 <%inherit file="/layouts/main.mako"/>
-<%
+<%!
     import sickbeard
     from sickbeard import clients
 %>
-
 <%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/configSearch.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
