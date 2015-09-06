@@ -6,13 +6,14 @@
     import re
     import time
 
-    from sickbeard import history
     from sickbeard import providers
     from sickbeard import sbdatetime
     from sickbeard.providers import generic
 
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED, DOWNLOADED, SUBTITLED
     from sickbeard.common import Quality, statusStrings, Overview
+
+    from sickrage.show.History import History
 
     layout = sickbeard.HISTORY_LAYOUT
     history_limit = sickbeard.HISTORY_LIMIT
@@ -129,9 +130,9 @@ $(document).ready(function(){
         % for hItem in historyResults:
             <% curStatus, curQuality = Quality.splitCompositeStatus(int(hItem["action"])) %>
             <tr>
-                <% curdatetime = datetime.datetime.strptime(str(hItem["date"]), history.dateFormat) %>
+                <% curdatetime = datetime.datetime.strptime(str(hItem["date"]), History.date_format) %>
                 <td align="center"><div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(curdatetime, show_seconds=True)}</div><span class="sort_data">${time.mktime(curdatetime.timetuple())}</span></td>
-                <td class="tvShow" width="35%"><a href="${sbRoot}/home/displayShow?show=${hItem["showid"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem["resource"].lower() or "repack" in hItem["resource"].lower()]}</a></td>
+                <td class="tvShow" width="35%"><a href="${sbRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem["resource"].lower() or "repack" in hItem["resource"].lower()]}</a></td>
                 <td align="center" ${('', 'class="subtitles_column"')[curStatus == SUBTITLED]}>
                 % if curStatus == SUBTITLED:
                     <img width="16" height="11" style="vertical-align:middle;" src="${sbRoot}/images/subtitles/flags/${hItem['resource']}.png" onError="this.onerror=null;this.src='${sbRoot}/images/flags/unknown.png';">
@@ -189,7 +190,7 @@ $(document).ready(function(){
         <tbody>
         % for hItem in compactResults:
             <tr>
-                <% curdatetime = datetime.datetime.strptime(str(hItem["actions"][0]["time"]), history.dateFormat) %>
+                <% curdatetime = datetime.datetime.strptime(str(hItem["actions"][0]["time"]), History.date_format) %>
                 <td align="center"><div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(curdatetime, show_seconds=True)}</div><span class="sort_data">${time.mktime(curdatetime.timetuple())}</span></td>
                 <td class="tvShow" width="25%">
                     <span><a href="${sbRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])}${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}</a></span>

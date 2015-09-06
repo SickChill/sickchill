@@ -1116,10 +1116,12 @@ class CMD_Exceptions(ApiCall):
 
 
 class CMD_History(ApiCall):
-    _help = {"desc": "display sickrage downloaded/snatched history",
-             "optionalParameters": {"limit": {"desc": "limit returned results"},
-                                    "type": {"desc": "only show a specific type of results"},
-             }
+    _help = {
+        "desc": "display SickRage downloaded/snatched history",
+        "optionalParameters": {
+            "limit": {"desc": "limit returned results"},
+            "type": {"desc": "only show a specific type of results"},
+        }
     }
 
     def __init__(self, args, kwargs):
@@ -1128,48 +1130,34 @@ class CMD_History(ApiCall):
         self.limit, args = self.check_params(args, kwargs, "limit", 100, False, "int", [])
         self.type, args = self.check_params(args, kwargs, "type", None, False, "string",
                                             ["downloaded", "snatched"])
+        self.type = self.type.lower() if isinstance(self.type, str) else ''
+
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ display sickrage downloaded/snatched history """
-
-        typeCodes = []
-        if self.type == "downloaded":
-            self.type = "Downloaded"
-            typeCodes = Quality.DOWNLOADED
-        elif self.type == "snatched":
-            self.type = "Snatched"
-            typeCodes = Quality.SNATCHED
-        else:
-            typeCodes = Quality.SNATCHED + Quality.DOWNLOADED
-
-        myDB = db.DBConnection(row_type="dict")
-
-        ulimit = min(int(self.limit), 100)
-        if ulimit == 0:
-            sqlResults = myDB.select(
-                "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id AND action in (" + ','.join(
-                    ['?'] * len(typeCodes)) + ") ORDER BY date DESC", typeCodes)
-        else:
-            sqlResults = myDB.select(
-                "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id AND action in (" + ','.join(
-                    ['?'] * len(typeCodes)) + ") ORDER BY date DESC LIMIT ?", typeCodes + [ulimit])
-
+        """ display SickRage downloaded/snatched history """
+        data = History().get(self.limit, self.type)
         results = []
-        for row in sqlResults:
+
+        for row in data:
             status, quality = Quality.splitCompositeStatus(int(row["action"]))
             status = _get_status_Strings(status)
-            if self.type and not status == self.type:
+
+            if self.type and not status.lower() == self.type:
                 continue
+
             row["status"] = status
             row["quality"] = _get_quality_string(quality)
             row["date"] = _historyDate_to_dateTimeForm(str(row["date"]))
+
             del row["action"]
-            _rename_element(row, "showid", "indexerid")
+
+            _rename_element(row, "show_id", "indexerid")
             row["resource_path"] = os.path.dirname(row["resource"])
             row["resource"] = os.path.basename(row["resource"])
-            # Add tvdbid for backward compability
+
+            # Add tvdbid for backward compatibility
             row['tvdbid'] = row['indexerid']
             results.append(row)
 

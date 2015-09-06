@@ -32,9 +32,9 @@ from sickbeard import exceptions
 from sickbeard.exceptions import ex
 from sickbeard import helpers, logger
 from sickbeard import search
-from sickbeard import history
 
 from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, Quality, cpu_presets
+from sickrage.show.History import History
 
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
@@ -213,7 +213,7 @@ class ProperFinder():
                 "WHERE showid = ? AND season = ? AND episode = ? AND quality = ? AND date >= ? " +
                 "AND action IN (" + ",".join([str(x) for x in Quality.SNATCHED + Quality.DOWNLOADED]) + ")",
                 [curProper.indexerid, curProper.season, curProper.episode, curProper.quality,
-                 historyLimit.strftime(history.dateFormat)])
+                 historyLimit.strftime(History.date_format)])
 
             # if we didn't download this episode in the first place we don't know what quality to use for the proper so we can't do it
             if len(historyResults) == 0:
