@@ -28,16 +28,12 @@ import sickbeard
 import generic
 
 from sickbeard.common import Quality
-from sickbeard.name_parser.parser import InvalidNameException
-from sickbeard.name_parser.parser import InvalidShowException
-from sickbeard.name_parser.parser import NameParser
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import helpers
 from sickbeard import db
 from sickbeard import classes
 from sickbeard.show_name_helpers import allPossibleShowNames, sanitizeSceneName
-from sickbeard.bs4_parser import BS4Parser
 from unidecode import unidecode
 
 

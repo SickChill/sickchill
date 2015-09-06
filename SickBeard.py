@@ -54,8 +54,6 @@ import sickbeard
 from sickbeard import db, logger, network_timezones, failed_history, name_cache
 from sickbeard.tv import TVShow
 from sickbeard.webserveInit import SRWebServer
-from sickbeard.databases.mainDB import MAX_DB_VERSION
-from sickbeard.databases.mainDB import MIN_DB_VERSION
 from sickbeard.event_queue import Events
 from configobj import ConfigObj
 from sickbeard import encodingKludge as ek

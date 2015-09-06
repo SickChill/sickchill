@@ -25,11 +25,9 @@ import generic
 import urllib
 
 import urllib2
-import requests
 import json
 import cookielib
 
-from requests import exceptions
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import Quality
 from sickbeard import logger
@@ -40,7 +38,6 @@ from sickbeard import helpers
 from sickbeard import classes
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
-from sickbeard.exceptions import ex
 
 class FrenchTorrentDBProvider(generic.TorrentProvider):
 

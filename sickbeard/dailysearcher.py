@@ -28,11 +28,6 @@ from sickbeard import common
 from sickbeard import helpers
 from sickbeard import exceptions
 from sickbeard import network_timezones
-from sickbeard.exceptions import ex
-from sickbeard.common import SKIPPED
-from common import Quality
-from common import qualityPresetStrings
-from common import statusStrings
 
 
 class DailySearcher():

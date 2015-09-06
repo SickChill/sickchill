@@ -33,7 +33,6 @@ from sickbeard import common
 from sickbeard import failedProcessor
 
 from unrar2 import RarFile
-from unrar2 import RarInfo
 from unrar2.rar_exceptions import *
 
 import shutil

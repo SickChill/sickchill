@@ -5,11 +5,9 @@ from base64 import b16encode, b32decode
 
 import sickbeard
 from sickbeard import logger
-from sickbeard.exceptions import ex
 from . import http_error_code
 from bencode import bencode, bdecode
 import requests
-from requests import exceptions
 from bencode.BTL import BTFailure
 
 class GenericClient(object):

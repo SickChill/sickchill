@@ -22,7 +22,6 @@ import datetime
 import sickbeard
 import generic
 import requests
-from requests import exceptions
 import urllib
 
 from sickbeard.common import Quality

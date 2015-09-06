@@ -25,7 +25,6 @@ __all__ = ['utorrent',
            'qbittorrent'
 ]
 
-import sickbeard
 
 
 # Mapping error status codes to official W3C names

@@ -22,7 +22,6 @@ import urllib2
 import sickbeard
 from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT
-from sickbeard.exceptions import ex
 
 class FreeMobileNotifier:
     def test_notify(self, id=None, apiKey=None):

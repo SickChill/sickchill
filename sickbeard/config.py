@@ -22,7 +22,6 @@ import re
 import urlparse
 import sickbeard
 
-from sickbeard import encodingKludge as ek
 from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import naming

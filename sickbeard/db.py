@@ -23,7 +23,6 @@ import re
 import sqlite3
 import time
 import threading
-import chardet
 import sickbeard
 
 from sickbeard import encodingKludge as ek

@@ -16,12 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import sickbeard
 import generic
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.exceptions import AuthException
 
 
 class WombleProvider(generic.NZBProvider):

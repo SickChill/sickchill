@@ -22,7 +22,6 @@ import sickbeard
 from sickbeard import logger
 from .generic import GenericClient
 from rtorrent import RTorrent
-from rtorrent.err import MethodError
 
 
 class rTorrentAPI(GenericClient):

@@ -22,7 +22,6 @@ import sickbeard
 import generic
 import urllib
 from sickbeard.common import Quality
-from sickbeard.common import cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
@@ -30,13 +29,10 @@ from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex, AuthException
-from sickbeard import clients
 import requests
-from requests import exceptions
 from bs4 import BeautifulSoup as soup
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
-from requests.auth import AuthBase
 from datetime import datetime
 
 class HDTorrentsProvider(generic.TorrentProvider):

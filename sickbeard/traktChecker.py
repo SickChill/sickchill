@@ -27,20 +27,11 @@ from sickbeard import logger
 from sickbeard import helpers
 from sickbeard import search_queue
 from sickbeard import db
-from sickbeard import notifiers
 from sickbeard.common import ARCHIVED
-from sickbeard.common import DOWNLOADED
-from sickbeard.common import FAILED
-from sickbeard.common import IGNORED
 from sickbeard.common import SKIPPED
-from sickbeard.common import SNATCHED
-from sickbeard.common import SNATCHED_PROPER
-from sickbeard.common import UNAIRED
 from sickbeard.common import UNKNOWN
 from sickbeard.common import WANTED
 from common import Quality
-from common import qualityPresetStrings
-from common import statusStrings
 from libtrakt import *
 from libtrakt.exceptions import traktException
 

@@ -32,7 +32,6 @@ from sickbeard.helpers import sanitizeSceneName
 from sickbeard.exceptions import ex, AuthException
 from sickbeard.common import MULTI_EP_RESULT
 from sickbeard.common import SEASON_RESULT
-from sickbeard.common import USER_AGENT
 from sickbeard import db
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality, cpu_presets

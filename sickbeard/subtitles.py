@@ -20,11 +20,9 @@ import datetime
 import sickbeard
 from sickbeard.common import *
 from sickbeard.exceptions import ex
-from sickbeard import notifiers
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
 from sickbeard import db
-from sickbeard import history
 import subliminal
 import babelfish
 import subprocess

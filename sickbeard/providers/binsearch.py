@@ -17,13 +17,11 @@
 import urllib
 import re
 
-import sickbeard
 
 import generic
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.exceptions import AuthException
 
 class BinSearchProvider(generic.NZBProvider):
     def __init__(self):

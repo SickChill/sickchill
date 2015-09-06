@@ -47,7 +47,6 @@ import sickbeard
 import adba
 import requests
 import certifi
-import xmltodict
 
 
 try:
@@ -66,7 +65,6 @@ except ImportError:
 from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard import logger, classes
 from sickbeard.common import USER_AGENT
-from sickbeard.common import cpu_presets
 from sickbeard.common import mediaExtensions
 from sickbeard.common import subtitleExtensions
 from sickbeard import db

@@ -34,10 +34,8 @@ import sys
 
 from github import Github
 
-from sickbeard import config
 from sickbeard import metadata
 from sickbeard import providers
-from sickbeard import webserveInit
 from sickbeard.providers.generic import GenericProvider
 from sickbeard.providers import btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, nextgen, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, \
@@ -47,22 +45,16 @@ from sickbeard.config import CheckSection, check_setting_int, check_setting_str,
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
     subtitles, traktChecker
 from sickbeard import db
-from sickbeard import exceptions
 from sickbeard import helpers
 from sickbeard import scheduler
 from sickbeard import search_queue
-from sickbeard import show_name_helpers
 from sickbeard import show_queue
 from sickbeard import logger
 from sickbeard import naming
 from sickbeard import dailysearcher
-from sickbeard import name_cache
-from sickbeard import scene_exceptions
-from sickbeard import scene_numbering
 from sickbeard.indexers.indexer_api import indexerApi
 from sickbeard.indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, indexer_error, \
     indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, indexerExcepts
-from sickbeard.common import NAMING_REPEAT
 from sickbeard.common import SD
 from sickbeard.common import SKIPPED
 from sickbeard.common import WANTED

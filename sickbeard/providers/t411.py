@@ -26,7 +26,6 @@ import sickbeard
 import generic
 
 import requests
-from requests import exceptions
 
 from sickbeard.common import Quality
 from sickbeard import logger

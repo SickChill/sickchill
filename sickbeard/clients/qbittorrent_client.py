@@ -17,9 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import sickbeard
-from sickbeard import logger
 from .generic import GenericClient
-import requests
 from requests.auth import HTTPDigestAuth
 
 class qbittorrentAPI(GenericClient):

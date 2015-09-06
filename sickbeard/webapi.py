@@ -37,7 +37,6 @@ from sickbeard import classes
 from sickbeard import processTV
 from sickbeard import network_timezones, sbdatetime
 from sickbeard.exceptions import ex
-from sickbeard.common import ARCHIVED
 from sickbeard.common import DOWNLOADED
 from sickbeard.common import FAILED
 from sickbeard.common import IGNORED
@@ -51,7 +50,6 @@ from sickbeard.common import UNKNOWN
 from sickbeard.common import WANTED
 from sickbeard.common import qualityPresetStrings
 from sickbeard.common import statusStrings
-from sickbeard.webserve import WebRoot
 import codecs
 
 try:
@@ -59,8 +57,6 @@ try:
 except ImportError:
     import simplejson as json
 
-import subliminal
-import babelfish
 
 from tornado.web import RequestHandler
 

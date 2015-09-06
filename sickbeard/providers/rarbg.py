@@ -25,20 +25,16 @@ import datetime
 import json
 import time
 
-import requests
-from requests import exceptions
 
 import sickbeard
 from sickbeard.common import Quality, USER_AGENT
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import show_name_helpers
-from sickbeard.bs4_parser import BS4Parser
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
 from sickbeard.exceptions import ex
-from sickbeard.helpers import sanitizeSceneName
 from requests.exceptions import RequestException
 from sickbeard.indexers.indexer_config import INDEXER_TVDB,INDEXER_TVRAGE
 

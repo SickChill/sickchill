@@ -36,8 +36,6 @@ from sickbeard import logger
 from sickbeard import notifiers
 from sickbeard import show_name_helpers
 from sickbeard import failed_history
-from sickbeard import name_cache
-from sickbeard import subtitles
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 

@@ -25,22 +25,12 @@ import datetime
 import sickbeard
 import generic
 from sickbeard.common import Quality
-from sickbeard.common import cpu_presets
-from sickbeard.name_parser.parser import InvalidNameException
-from sickbeard.name_parser.parser import InvalidShowException
-from sickbeard.name_parser.parser import NameParser
 from sickbeard import db
 from sickbeard import classes
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import helpers
-from sickbeard import clients
 from sickbeard.show_name_helpers import allPossibleShowNames, sanitizeSceneName
-from sickbeard.common import Overview
-from sickbeard.exceptions import ex
-from sickbeard import encodingKludge as ek
-import requests
-from requests import exceptions
 from unidecode import unidecode
 
 

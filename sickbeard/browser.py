@@ -19,7 +19,6 @@
 import os
 import string
 
-from tornado.web import RequestHandler
 from sickbeard import encodingKludge as ek
 from sickbeard import logger
 

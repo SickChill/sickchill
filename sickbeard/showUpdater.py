@@ -24,7 +24,6 @@ from sickbeard import logger
 from sickbeard import exceptions
 from sickbeard import ui
 from sickbeard.exceptions import ex
-from sickbeard import encodingKludge as ek
 from sickbeard import db
 from sickbeard import network_timezones
 from sickbeard import failed_history

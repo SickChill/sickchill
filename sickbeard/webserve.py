@@ -53,7 +53,6 @@ from imdbPopular import imdb_popular
 from dateutil import tz
 from unrar2 import RarFile
 import adba
-import subliminal
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
 from versionChecker import CheckVersion
@@ -65,11 +64,6 @@ try:
     import json
 except ImportError:
     import simplejson as json
-
-try:
-    pass
-except ImportError:
-    pass
 
 from mako.template import Template as MakoTemplate
 from mako.lookup import TemplateLookup
