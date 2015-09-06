@@ -32,7 +32,6 @@ from sickbeard import ui
 from sickbeard import logger, helpers, exceptions, classes, db
 from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
-from sickbeard import image_cache
 from sickbeard import naming
 from sickbeard import subtitles
 from sickbeard import network_timezones
@@ -55,6 +54,10 @@ from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
+from sickrage.media.ShowBanner import ShowBanner
+from sickrage.media.ShowFanArt import ShowFanArt
+from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
+from sickrage.media.ShowPoster import ShowPoster
 from versionChecker import CheckVersion
 
 import requests
@@ -78,6 +81,7 @@ from concurrent.futures import ThreadPoolExecutor
 route_locks = {}
 
 mako_path = mako_cache = mako_lookup = None
+
 
 class _setupLookup():
     def __init__(self, *args, **kwargs):
@@ -374,48 +378,21 @@ class WebRoot(WebHandler):
         return t.render(title="Api Builder", header="Api Builder", sortedShowList=sortedShowList, seasonSQLResults=seasonSQLResults, episodeSQLResults=episodeSQLResults, apikey=apikey)
 
     def showPoster(self, show=None, which=None):
-        # Redirect initial poster/banner thumb to default images
+        media_format = ('normal', 'thumb')[which in ('banner_thumb', 'poster_thumb', 'small')]
+
+        if which[0:6] == 'banner':
+            return ShowBanner(show, media_format).get_media()
+
+        if which[0:6] == 'fanart':
+            return ShowFanArt(show, media_format).get_media()
+
         if which[0:6] == 'poster':
-            default_image_name = 'poster.png'
-        elif which[0:6] == 'fanart':
-            default_image_name = 'fanart.png'
-        else:
-            default_image_name = 'banner.png'
+            return ShowPoster(show, media_format).get_media()
 
-        # image_path = ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', 'slick', 'images', default_image_name)
-        static_image_path = os.path.join('/images', default_image_name)
-        if show and sickbeard.helpers.findCertainShow(sickbeard.showList, int(show)):
-            cache_obj = image_cache.ImageCache()
-
-            image_file_name = None
-            if which == 'poster':
-                image_file_name = cache_obj.poster_path(show)
-            if which == 'poster_thumb' or which == 'small':
-                image_file_name = cache_obj.poster_thumb_path(show)
-            if which == 'banner':
-                image_file_name = cache_obj.banner_path(show)
-            if which == 'banner_thumb':
-                image_file_name = cache_obj.banner_thumb_path(show)
-            if which == 'fanart':
-                image_file_name = cache_obj.fanart_path(show)
-
-            if ek.ek(os.path.isfile, image_file_name):
-                static_image_path = os.path.normpath(image_file_name.replace(sickbeard.CACHE_DIR, '/cache'))
-
-        static_image_path = static_image_path.replace('\\', '/')
-        return self.redirect(static_image_path, permanent=True)
+        return None
 
     def showNetworkLogo(self, show=None):
-        show = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
-
-        if show:
-            image_file_name = show.network_logo_name
-        else:
-            image_file_name = 'nonetwork'
-
-        static_image_path = '%s/images/network/%s.png' % (sickbeard.WEB_ROOT, image_file_name)
-
-        return self.redirect(static_image_path, permanent=True)
+        return ShowNetworkLogo(show, 'normal')
 
     def setHomeLayout(self, layout):
 
