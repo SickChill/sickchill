@@ -71,7 +71,7 @@ class LibnotifyNotifier:
             logger.log(u"Unable to import Notify from gi.repository. libnotify notifications won't work.", logger.ERROR)
             return False
         try:
-            import gobject
+            from gi.repository import GObject
         except ImportError:
             logger.log(u"Unable to import gobject. We can't catch a GError in display.", logger.ERROR)
             return False
