@@ -554,6 +554,7 @@ $(document).ready(function(){
 % else:
     <%
     output_html = '?'
+    display_status = curShow.status
     if None is not display_status:
         if 'nded' not in display_status and 1 == int(curShow.paused):
           output_html = 'Paused'
@@ -789,14 +790,15 @@ $(document).ready(function(){
         </td>
 
         <td align="center">
-        <% display_status = curShow.status %>
-        % if None is not display_status:
-            % if re.search(r'(?i)(?:new|returning)\s*series', curShow.status):
-                Continuing
-            % elif re.search(r'(?i)(?:nded)', curShow.status):
-                Ended
-            % endif
-        % endif
+        <%
+            display_status = curShow.status
+            if None is not display_status:
+                if re.search('(?i)(?:new|returning)\s*series', curShow.status):
+                    display_status = 'Continuing'
+                elif re.search('(?i)(?:nded)', curShow.status):
+                    display_status = 'Ended'
+        %>
+        ${display_status}
         </td>
     </tr>
 % endfor
