@@ -86,7 +86,7 @@ class _setupLookup():
         global mako_lookup
 
         if not mako_path:
-            mako_path = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/interfaces/default/")
+            mako_path = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")
         if not mako_cache:
             mako_cache = os.path.join(sickbeard.CACHE_DIR, 'mako')
         if not mako_lookup:
