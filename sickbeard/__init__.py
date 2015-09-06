@@ -1954,7 +1954,7 @@ def save_config():
     new_config['Pushover']['pushover_userkey'] = PUSHOVER_USERKEY
     new_config['Pushover']['pushover_apikey'] = PUSHOVER_APIKEY
     new_config['Pushover']['pushover_device'] = PUSHOVER_DEVICE
-    new_config['Pushover']['pushover_sound]'] = PUSHOVER_SOUND
+    new_config['Pushover']['pushover_sound'] = PUSHOVER_SOUND
 
     new_config['Libnotify'] = {}
     new_config['Libnotify']['use_libnotify'] = int(USE_LIBNOTIFY)
