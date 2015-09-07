@@ -8,63 +8,9 @@
     import re
 %>
 <%block name="scripts">
+<% fuzzydate = 'airdate' %>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
-</%block>
-<%block name="css">
-<style type="text/css">
-#SubMenu {display:none;}
-#contentWrapper {padding-top:30px;}
-</style>
-</%block>
-<%block name="content">
-<% sort = sickbeard.COMING_EPS_SORT %>
-<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-<h1 class="header">${header}</h1>
-<div class="h2footer pull-right">
-    <span>Layout:
-        <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/setComingEpsLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'poster']} >Poster</option>
-            <option value="${sbRoot}/setComingEpsLayout/?layout=calendar" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'calendar']} >Calendar</option>
-            <option value="${sbRoot}/setComingEpsLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'banner']} >Banner</option>
-            <option value="${sbRoot}/setComingEpsLayout/?layout=list" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'list']} >List</option>
-        </select>
-    </span>
-    &nbsp;
-
-    <span>Sort By:
-        <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/setComingEpsSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >Date</option>
-            <option value="${sbRoot}/setComingEpsSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >Network</option>
-            <option value="${sbRoot}/setComingEpsSort/?sort=show" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'show']} >Show</option>
-        </select>
-    </span>
-    &nbsp;
-
-    <span>View Paused:
-        <select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>Hidden</option>
-            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>Shown</option>
-        </select>
-    </span>
-</div>
-
-<div class="key pull-right">
-% if 'calendar' != layout:
-    <b>Key:</b>
-    <span class="listing-key listing-overdue">Missed</span>
-    <span class="listing-key listing-current">Current</span>
-    <span class="listing-key listing-default">Future</span>
-    <span class="listing-key listing-toofar">Distant</span>
-% endif
-    <a class="btn btn-inline forceBacklog" href="webcal://${sbHost}:${sbHttpPort}/calendar">
-    <i class="icon-calendar icon-white"></i>Subscribe</a>
-</div>
-
-<br>
-
 % if 'list' == layout:
-<!-- start list view //-->
-
 <script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
 $.tablesorter.addParser({
@@ -147,7 +93,93 @@ $(document).ready(function(){
 
 });
 </script>
+% elif layout in ['banner', 'poster']:
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function(){
+    $('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
+    $('.ep_summary').hide();
+    $('.ep_summaryTrigger').click(function() {
+        $(this).next('.ep_summary').slideToggle('normal', function() {
+            $(this).prev('.ep_summaryTrigger').attr('src', function(i, src) {
+                return $(this).next('.ep_summary').is(':visible') ? src.replace('plus','minus') : src.replace('minus','plus')
+            });
+        });
+    });
 
+    % if sickbeard.FUZZY_DATING:
+    fuzzyMoment({
+        dtInline : true,
+        dtGlue : ' at ',
+        containerClass : '.${fuzzydate}',
+        dateHasTime : true,
+        dateFormat : '${sickbeard.DATE_PRESET}',
+        timeFormat : '${sickbeard.TIME_PRESET}',
+        trimZero : ${('false', 'true')[bool(sickbeard.TRIM_ZERO)]}
+    });
+    % endif
+
+});
+</script>
+% endif
+<script type="text/javascript" charset="utf-8">
+window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
+</script>
+</%block>
+<%block name="css">
+<style type="text/css">
+#SubMenu {display:none;}
+#contentWrapper {padding-top:30px;}
+</style>
+</%block>
+<%block name="content">
+<% sort = sickbeard.COMING_EPS_SORT %>
+<% fuzzydate = 'airdate' %>
+<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
+<h1 class="header">${header}</h1>
+<div class="h2footer pull-right">
+    <span>Layout:
+        <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+            <option value="${sbRoot}/setComingEpsLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'poster']} >Poster</option>
+            <option value="${sbRoot}/setComingEpsLayout/?layout=calendar" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'calendar']} >Calendar</option>
+            <option value="${sbRoot}/setComingEpsLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'banner']} >Banner</option>
+            <option value="${sbRoot}/setComingEpsLayout/?layout=list" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'list']} >List</option>
+        </select>
+    </span>
+    &nbsp;
+
+    <span>Sort By:
+        <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+            <option value="${sbRoot}/setComingEpsSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >Date</option>
+            <option value="${sbRoot}/setComingEpsSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >Network</option>
+            <option value="${sbRoot}/setComingEpsSort/?sort=show" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'show']} >Show</option>
+        </select>
+    </span>
+    &nbsp;
+
+    <span>View Paused:
+        <select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>Hidden</option>
+            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>Shown</option>
+        </select>
+    </span>
+</div>
+
+<div class="key pull-right">
+% if 'calendar' != layout:
+    <b>Key:</b>
+    <span class="listing-key listing-overdue">Missed</span>
+    <span class="listing-key listing-current">Current</span>
+    <span class="listing-key listing-default">Future</span>
+    <span class="listing-key listing-toofar">Distant</span>
+% endif
+    <a class="btn btn-inline forceBacklog" href="webcal://${sbHost}:${sbHttpPort}/calendar">
+    <i class="icon-calendar icon-white"></i>Subscribe</a>
+</div>
+
+<br>
+
+% if 'list' == layout:
+<!-- start list view //-->
 <% show_div = 'listing-default' %>
 
 <input type="hidden" id="sbRoot" value="${sbRoot}" />
@@ -253,34 +285,6 @@ $(document).ready(function(){
 
 % elif layout in ['banner', 'poster']:
 <!-- start non list view //-->
-<script type="text/javascript" charset="utf-8">
-$(document).ready(function(){
-    $('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
-    $('.ep_summary').hide();
-    $('.ep_summaryTrigger').click(function() {
-        $(this).next('.ep_summary').slideToggle('normal', function() {
-            $(this).prev('.ep_summaryTrigger').attr('src', function(i, src) {
-                return $(this).next('.ep_summary').is(':visible') ? src.replace('plus','minus') : src.replace('minus','plus')
-            });
-        });
-    });
-
-    <% fuzzydate = 'airdate' %>
-    % if sickbeard.FUZZY_DATING:
-    fuzzyMoment({
-        dtInline : true,
-        dtGlue : ' at ',
-        containerClass : '.${fuzzydate}',
-        dateHasTime : true,
-        dateFormat : '${sickbeard.DATE_PRESET}',
-        timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('false', 'true')[bool(sickbeard.TRIM_ZERO)]}
-    });
-    % endif
-
-});
-</script>
-
 <%
     cur_segment = None
     too_late_header = False
@@ -398,7 +402,6 @@ $(document).ready(function(){
         </tr>
         <tr>
 % endif
-
             <td class="next_episode">
                 <div class="clearfix">
                     <span class="tvshowTitle">
@@ -518,8 +521,4 @@ $(document).ready(function(){
 % endif
 
 <div class="clearfix"></div>
-
-<script type="text/javascript" charset="utf-8">
-window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
-</script>
 </%block>
