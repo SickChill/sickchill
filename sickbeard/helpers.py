@@ -1361,6 +1361,10 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
     try:
         # decide if we get or post data to server
         if post_data:
+	    for param in post_data:
+                if isinstance(post_data[param], unicode):
+                    post_data[param] = post_data[param].encode('utf-8')
+
             session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
             resp = session.post(url, data=post_data, timeout=timeout, allow_redirects=True, verify=session.verify)
         else:
