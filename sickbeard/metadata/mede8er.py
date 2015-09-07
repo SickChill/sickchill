@@ -390,7 +390,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
             nfo_file = ek.ek(open, nfo_file_path, 'w')
 
-            nfo_file.write(data, encoding="UTF-8")
+            data.write(nfo_file, encoding="UTF-8")
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError, e:
@@ -435,7 +435,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
             nfo_file = ek.ek(open, nfo_file_path, 'w')
 
-            nfo_file.write(data, encoding="UTF-8")
+            data.write(nfo_file, encoding="UTF-8")
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError, e:

@@ -426,7 +426,7 @@ class GenericMetadata():
 
             nfo_file = ek.ek(open, nfo_file_path, 'w')
 
-            nfo_file.write(data, encoding="utf-8")
+            data.write(nfo_file, encoding="utf-8")
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError, e:
@@ -471,7 +471,7 @@ class GenericMetadata():
 
             nfo_file = ek.ek(open, nfo_file_path, 'w')
 
-            nfo_file.write(data, encoding="utf-8")
+            data.write(nfo_file, encoding="utf-8")
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError, e:
