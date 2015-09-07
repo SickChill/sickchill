@@ -32,6 +32,8 @@ from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
 from sickrage.media.ShowBanner import ShowBanner
 from sickrage.show.History import History
+from sickrage.system.Restart import Restart
+from sickrage.system.Shutdown import Shutdown
 
 from versionChecker import CheckVersion
 from sickbeard import db, logger, exceptions, ui, helpers
@@ -41,7 +43,6 @@ from sickbeard import image_cache
 from sickbeard import classes
 from sickbeard import processTV
 from sickbeard import network_timezones, sbdatetime
-from sickbeard.event_queue import Events
 from sickbeard.exceptions import ex
 from sickbeard.common import DOWNLOADED
 from sickbeard.common import FAILED
@@ -77,13 +78,14 @@ RESULT_FAILURE = 20  # only use inside the run methods
 RESULT_TIMEOUT = 30  # not used yet :(
 RESULT_ERROR = 40  # only use outside of the run methods !
 RESULT_FATAL = 50  # only use in Api.default() ! this is the "we encountered an internal error" error
-RESULT_DENIED = 60  # only use in Api.default() ! this is the acces denied error
-result_type_map = {RESULT_SUCCESS: "success",
-                   RESULT_FAILURE: "failure",
-                   RESULT_TIMEOUT: "timeout",
-                   RESULT_ERROR: "error",
-                   RESULT_FATAL: "fatal",
-                   RESULT_DENIED: "denied",
+RESULT_DENIED = 60  # only use in Api.default() ! this is the access denied error
+result_type_map = {
+    RESULT_SUCCESS: "success",
+    RESULT_FAILURE: "failure",
+    RESULT_TIMEOUT: "timeout",
+    RESULT_ERROR: "error",
+    RESULT_FATAL: "fatal",
+    RESULT_DENIED: "denied",
 }
 # basically everything except RESULT_SUCCESS / success is bad
 
@@ -1634,7 +1636,7 @@ class CMD_SickBeardPing(ApiCall):
 
 
 class CMD_SickBeardRestart(ApiCall):
-    _help = {"desc": "restart sickrage"}
+    _help = {"desc": "restart SickRage"}
 
     def __init__(self, args, kwargs):
         # required
@@ -1643,8 +1645,10 @@ class CMD_SickBeardRestart(ApiCall):
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ restart sickrage """
-        sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+        """ restart SickRage """
+        if not Restart.restart(sickbeard.PID):
+            return _responds(RESULT_FAILURE, msg='SickRage can not be restarted')
+
         return _responds(RESULT_SUCCESS, msg="SickRage is restarting...")
 
 
@@ -1843,7 +1847,7 @@ class CMD_SickBeardSetDefaults(ApiCall):
 
 
 class CMD_SickBeardShutdown(ApiCall):
-    _help = {"desc": "shutdown sickrage"}
+    _help = {"desc": "shutdown SickRage"}
 
     def __init__(self, args, kwargs):
         # required
@@ -1852,9 +1856,12 @@ class CMD_SickBeardShutdown(ApiCall):
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ shutdown sickrage """
-        sickbeard.events.put(Events.SystemEvent.SHUTDOWN)
+        """ shutdown SickRage """
+        if not Shutdown.stop(sickbeard.PID):
+            return _responds(RESULT_FAILURE, msg='SickRage can not be shut down')
+
         return _responds(RESULT_SUCCESS, msg="SickRage is shutting down...")
+
 
 class CMD_SickBeardUpdate(ApiCall):
     _help = {"desc": "update SickRage to the latest version available"}
@@ -2937,55 +2944,56 @@ class CMD_ShowsStats(ApiCall):
 # this is reserved for cmd indexes used while cmd chaining
 
 # WARNING: never define a param name that contains a "." (dot)
-# this is reserved for cmd namspaces used while cmd chaining
-_functionMaper = {"help": CMD_Help,
-                  "future": CMD_ComingEpisodes,
-                  "episode": CMD_Episode,
-                  "episode.search": CMD_EpisodeSearch,
-                  "episode.setstatus": CMD_EpisodeSetStatus,
-                  "episode.subtitlesearch": CMD_SubtitleSearch,
-                  "exceptions": CMD_Exceptions,
-                  "history": CMD_History,
-                  "history.clear": CMD_HistoryClear,
-                  "history.trim": CMD_HistoryTrim,
-                  "failed": CMD_Failed,
-                  "backlog": CMD_Backlog,
-                  "logs": CMD_Logs,
-                  "sb": CMD_SickBeard,
-                  "postprocess": CMD_PostProcess,
-                  "sb.addrootdir": CMD_SickBeardAddRootDir,
-                  "sb.checkversion": CMD_SickBeardCheckVersion,
-                  "sb.checkscheduler": CMD_SickBeardCheckScheduler,
-                  "sb.deleterootdir": CMD_SickBeardDeleteRootDir,
-                  "sb.getdefaults": CMD_SickBeardGetDefaults,
-                  "sb.getmessages": CMD_SickBeardGetMessages,
-                  "sb.getrootdirs": CMD_SickBeardGetRootDirs,
-                  "sb.pausebacklog": CMD_SickBeardPauseBacklog,
-                  "sb.ping": CMD_SickBeardPing,
-                  "sb.restart": CMD_SickBeardRestart,
-                  "sb.searchindexers": CMD_SickBeardSearchIndexers,
-                  "sb.searchtvdb": CMD_SickBeardSearchTVDB,
-                  "sb.searchtvrage": CMD_SickBeardSearchTVRAGE,
-                  "sb.setdefaults": CMD_SickBeardSetDefaults,
-                  "sb.update": CMD_SickBeardUpdate,
-                  "sb.shutdown": CMD_SickBeardShutdown,
-                  "show": CMD_Show,
-                  "show.addexisting": CMD_ShowAddExisting,
-                  "show.addnew": CMD_ShowAddNew,
-                  "show.cache": CMD_ShowCache,
-                  "show.delete": CMD_ShowDelete,
-                  "show.getquality": CMD_ShowGetQuality,
-                  "show.getposter": CMD_ShowGetPoster,
-                  "show.getbanner": CMD_ShowGetBanner,
-                  "show.getnetworklogo": CMD_ShowGetNetworkLogo,
-                  "show.getfanart": CMD_ShowGetFanArt,
-                  "show.pause": CMD_ShowPause,
-                  "show.refresh": CMD_ShowRefresh,
-                  "show.seasonlist": CMD_ShowSeasonList,
-                  "show.seasons": CMD_ShowSeasons,
-                  "show.setquality": CMD_ShowSetQuality,
-                  "show.stats": CMD_ShowStats,
-                  "show.update": CMD_ShowUpdate,
-                  "shows": CMD_Shows,
-                  "shows.stats": CMD_ShowsStats
+# this is reserved for cmd namespaces used while cmd chaining
+_functionMaper = {
+    "help": CMD_Help,
+    "future": CMD_ComingEpisodes,
+    "episode": CMD_Episode,
+    "episode.search": CMD_EpisodeSearch,
+    "episode.setstatus": CMD_EpisodeSetStatus,
+    "episode.subtitlesearch": CMD_SubtitleSearch,
+    "exceptions": CMD_Exceptions,
+    "history": CMD_History,
+    "history.clear": CMD_HistoryClear,
+    "history.trim": CMD_HistoryTrim,
+    "failed": CMD_Failed,
+    "backlog": CMD_Backlog,
+    "logs": CMD_Logs,
+    "sb": CMD_SickBeard,
+    "postprocess": CMD_PostProcess,
+    "sb.addrootdir": CMD_SickBeardAddRootDir,
+    "sb.checkversion": CMD_SickBeardCheckVersion,
+    "sb.checkscheduler": CMD_SickBeardCheckScheduler,
+    "sb.deleterootdir": CMD_SickBeardDeleteRootDir,
+    "sb.getdefaults": CMD_SickBeardGetDefaults,
+    "sb.getmessages": CMD_SickBeardGetMessages,
+    "sb.getrootdirs": CMD_SickBeardGetRootDirs,
+    "sb.pausebacklog": CMD_SickBeardPauseBacklog,
+    "sb.ping": CMD_SickBeardPing,
+    "sb.restart": CMD_SickBeardRestart,
+    "sb.searchindexers": CMD_SickBeardSearchIndexers,
+    "sb.searchtvdb": CMD_SickBeardSearchTVDB,
+    "sb.searchtvrage": CMD_SickBeardSearchTVRAGE,
+    "sb.setdefaults": CMD_SickBeardSetDefaults,
+    "sb.update": CMD_SickBeardUpdate,
+    "sb.shutdown": CMD_SickBeardShutdown,
+    "show": CMD_Show,
+    "show.addexisting": CMD_ShowAddExisting,
+    "show.addnew": CMD_ShowAddNew,
+    "show.cache": CMD_ShowCache,
+    "show.delete": CMD_ShowDelete,
+    "show.getquality": CMD_ShowGetQuality,
+    "show.getposter": CMD_ShowGetPoster,
+    "show.getbanner": CMD_ShowGetBanner,
+    "show.getnetworklogo": CMD_ShowGetNetworkLogo,
+    "show.getfanart": CMD_ShowGetFanArt,
+    "show.pause": CMD_ShowPause,
+    "show.refresh": CMD_ShowRefresh,
+    "show.seasonlist": CMD_ShowSeasonList,
+    "show.seasons": CMD_ShowSeasons,
+    "show.setquality": CMD_ShowSetQuality,
+    "show.stats": CMD_ShowStats,
+    "show.update": CMD_ShowUpdate,
+    "shows": CMD_Shows,
+    "shows.stats": CMD_ShowsStats
 }
