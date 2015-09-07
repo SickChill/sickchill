@@ -9,6 +9,7 @@
 %>
 <%block name="scripts">
 <% fuzzydate = 'airdate' %>
+<% sort = sickbeard.COMING_EPS_SORT %>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 % if 'list' == layout:
 <script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
