@@ -31,7 +31,6 @@ from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex
-import requests
 from sickbeard.bs4_parser import BS4Parser
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
@@ -85,11 +84,9 @@ class TorrentLeechProvider(generic.TorrentProvider):
                         'login': 'submit',
                         }
 
-        self.session = requests.Session()
-
         try:
             response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
+        except Exception as e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False
 
