@@ -51,6 +51,7 @@ from sickbeard import history
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import sbdatetime
 from sickbeard import network_timezones
+from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from dateutil.tz import *
 
 from sickbeard import encodingKludge as ek
@@ -845,52 +846,55 @@ class TVShow(object):
 
     def loadFromIndexer(self, cache=True, tvapi=None, cachedSeason=None):
 
-        logger.log(str(self.indexerid) + u": Loading show info from " + sickbeard.indexerApi(self.indexer).name, logger.DEBUG)
+        if self.indexer is not INDEXER_TVRAGE:
+            logger.log(str(self.indexerid) + u": Loading show info from " + sickbeard.indexerApi(self.indexer).name, logger.DEBUG)
 
-        # There's gotta be a better way of doing this but we don't wanna
-        # change the cache value elsewhere
-        if tvapi is None:
-            lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
+            # There's gotta be a better way of doing this but we don't wanna
+            # change the cache value elsewhere
+            if tvapi is None:
+                lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
 
-            if not cache:
-                lINDEXER_API_PARMS['cache'] = False
+                if not cache:
+                    lINDEXER_API_PARMS['cache'] = False
 
-            if self.lang:
-                lINDEXER_API_PARMS['language'] = self.lang
+                if self.lang:
+                    lINDEXER_API_PARMS['language'] = self.lang
 
-            if self.dvdorder != 0:
-                lINDEXER_API_PARMS['dvdorder'] = True
+                if self.dvdorder != 0:
+                    lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
+                t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
 
+            else:
+                t = tvapi
+
+            myEp = t[self.indexerid]
+
+            try:
+                self.name = myEp['seriesname'].strip()
+            except AttributeError:
+                raise sickbeard.indexer_attributenotfound(
+                    "Found %s, but attribute 'seriesname' was empty." % (self.indexerid))
+
+            self.classification = getattr(myEp, 'classification', 'Scripted')
+            self.genre = getattr(myEp, 'genre', '')
+            self.network = getattr(myEp, 'network', '')
+            self.runtime = getattr(myEp, 'runtime', '')
+
+            self.imdbid = getattr(myEp, 'imdb_id', '')
+
+            if getattr(myEp, 'airs_dayofweek', None) is not None and getattr(myEp, 'airs_time', None) is not None:
+                self.airs = myEp["airs_dayofweek"] + " " + myEp["airs_time"]
+
+            if self.airs is None:
+                self.airs = ''
+
+            if getattr(myEp, 'firstaired', None) is not None:
+                self.startyear = int(str(myEp["firstaired"]).split('-')[0])
+
+            self.status = getattr(myEp, 'status', 'Unknown')
         else:
-            t = tvapi
-
-        myEp = t[self.indexerid]
-
-        try:
-            self.name = myEp['seriesname'].strip()
-        except AttributeError:
-            raise sickbeard.indexer_attributenotfound(
-                "Found %s, but attribute 'seriesname' was empty." % (self.indexerid))
-
-        self.classification = getattr(myEp, 'classification', 'Scripted')
-        self.genre = getattr(myEp, 'genre', '')
-        self.network = getattr(myEp, 'network', '')
-        self.runtime = getattr(myEp, 'runtime', '')
-
-        self.imdbid = getattr(myEp, 'imdb_id', '')
-
-        if getattr(myEp, 'airs_dayofweek', None) is not None and getattr(myEp, 'airs_time', None) is not None:
-            self.airs = myEp["airs_dayofweek"] + " " + myEp["airs_time"]
-
-        if self.airs is None:
-            self.airs = ''
-
-        if getattr(myEp, 'firstaired', None) is not None:
-            self.startyear = int(str(myEp["firstaired"]).split('-')[0])
-
-        self.status = getattr(myEp, 'status', 'Unknown')
+            logger.log(str(self.indexerid) + u": NOT loading info from " + sickbeard.indexerApi(self.indexer).name + " as it is temporarily disabled.", logger.WARNING)
 
     def loadIMDbInfo(self, imdbapi=None):
 
