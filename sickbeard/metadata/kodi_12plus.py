@@ -22,6 +22,7 @@ import sickbeard
 
 from sickbeard import logger, exceptions, helpers
 from sickbeard.exceptions import ex
+from sickrage.helper.common import dateFormat
 
 import xml.etree.cElementTree as etree
 
@@ -141,7 +142,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         year = etree.SubElement(tv_node, "year")
         if getattr(myShow, 'firstaired', None) is not None:
             try:
-                year_text = str(datetime.datetime.strptime(myShow["firstaired"], '%Y-%m-%d').year)
+                year_text = str(datetime.datetime.strptime(myShow["firstaired"], dateFormat).year)
                 if year_text:
                     year.text = year_text
             except:

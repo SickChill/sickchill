@@ -58,6 +58,7 @@ from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
+from sickrage.show.ComingEpisodes import ComingEpisodes
 from sickrage.show.History import History as HistoryTool
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
@@ -498,13 +499,6 @@ class WebRoot(WebHandler):
                 ['?'] * len(qualList)) + ")", [today, recently, WANTED] + qualList)
         sql_results += more_sql_results
 
-        # sort by localtime
-        sorts = {
-            'date': (lambda x, y: cmp(x["localtime"], y["localtime"])),
-            'show': (lambda a, b: cmp((a["show_name"], a["localtime"]), (b["show_name"], b["localtime"]))),
-            'network': (lambda a, b: cmp((a["network"], a["localtime"]), (b["network"], b["localtime"]))),
-        }
-
         # make a dict out of the sql results
         sql_results = [dict(row) for row in sql_results]
 
@@ -514,7 +508,7 @@ class WebRoot(WebHandler):
                 network_timezones.parse_date_time(item['airdate'],
                                                   item['airs'], item['network']))
 
-        sql_results.sort(sorts[sickbeard.COMING_EPS_SORT])
+        sql_results.sort(ComingEpisodes.sorts[sickbeard.COMING_EPS_SORT])
 
         t = PageTemplate(rh=self, file="comingEpisodes.mako")
         # paused_item = { 'title': '', 'path': 'toggleComingEpsDisplayPaused' }
@@ -547,7 +541,7 @@ class WebRoot(WebHandler):
             layout = sickbeard.COMING_EPS_LAYOUT
 
         return t.render(submenu=submenu, next_week=next_week, today=today, sql_results=sql_results, layout=layout,
-                title='Coming Episodes', header='Coming Episodes', topmenu='comingEpisodes')
+                        title='Coming Episodes', header='Coming Episodes', topmenu='comingEpisodes')
 
 
 class CalendarHandler(BaseHandler):
