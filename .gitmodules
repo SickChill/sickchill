@@ -1,0 +1,3 @@
+[submodule "contrib/nzbToMedia"]
+	path = contrib/nzbToMedia
+	url = https://github.com/clinton-hall/nzbToMedia
