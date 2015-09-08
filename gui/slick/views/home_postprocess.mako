@@ -1,5 +1,5 @@
 <%inherit file="/layouts/main.mako"/>
-<%
+<%!
     import sickbeard
 %>
 <%block name="scripts">
