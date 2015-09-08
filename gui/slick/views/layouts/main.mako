@@ -5,7 +5,8 @@
     from sickbeard.common import Quality, SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import qualityPresets, qualityPresetStrings
     import calendar
-    import re
+    from time import time
+    import re, resource
 %>
 <%
     sbRoot = sickbeard.WEB_ROOT
@@ -264,12 +265,12 @@
                 | Daily Search: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span>
                 | Backlog Search: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span>
 
-                % if sickbeard.DEVELOPER:
-               <div>
-                   Memory used: <span class="footerhighlight">${sickbeard.helpers.pretty_filesize(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span> |
-                   Load time: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
-                   Branch: <span class="footerhighlight">${sickbeard.BRANCH}</span>
-               </div>
+                % if not sickbeard.BRANCH or sickbeard.BRANCH != 'master' and sickbeard.DEVELOPER and sbLogin:
+                <div>
+                    Memory used: <span class="footerhighlight">${sickbeard.helpers.pretty_filesize(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span> |
+                    Load time: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
+                    Branch: <span class="footerhighlight">${sickbeard.BRANCH}</span>
+                </div>
                % endif
             </div>
         </footer>
