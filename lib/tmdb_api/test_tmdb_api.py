@@ -23,12 +23,11 @@ except ImportError:
 
 class TVCheck(unittest.TestCase):
     def testTVInfo(self):
-        id = 1396
-        name = 'UFC'
+        name = u'Game of Thrones'
         tmdb = TMDB(TMDB_API_KEY)
-        find = tmdb.Find(23281)
-        response = find.info({'external_source': 'tvrage_id'})
-        self.assertTrue(hasattr(response, name))
+        find = tmdb.Find(121361)
+        response = find.info({'external_source': 'tvdb_id'})
+        self.assertEqual(response['tv_results'][0]['name'], name)
 
     def testTVSearch(self):
         id = 1396

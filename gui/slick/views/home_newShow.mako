@@ -33,7 +33,7 @@
     <form id="addShowForm" method="post" action="${sbRoot}/home/addShows/addNewShow" accept-charset="utf-8">
 
     <fieldset class="sectionwrap">
-        <legend class="legendStep">Find a show on the TVDB or TVRAGE</legend>
+        <legend class="legendStep">Find a show on theTVDB</legend>
 
         <div class="stepDiv">
             <input type="hidden" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}" />
@@ -54,7 +54,7 @@
                     <option value="0" ${('', 'selected="selected"')[provided_indexer == 0]}>All Indexers</option>
                     % for indexer in indexers:
                         <option value="${indexer}" ${('', 'selected="selected"')[provided_indexer == indexer]}>
-                            ${(indexers[indexer], ''.join((indexers[indexer], ' **')))[indexers[indexer] == 'TVRage']}
+                            ${indexers[indexer]}
                         </option>
                     % endfor
                 </select>
@@ -63,9 +63,7 @@
 
                 <br /><br />
                 <b>*</b> This will only affect the language of the retrieved metadata file contents and episode filenames.<br />
-                This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!<br />
-                <b>** IMPORTANT: </b> TVRAGE indexer implementation doesn't currently support <b>specials</b> and <b>banners/posters</b>.<br />
-                <br />
+                This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!<br /><br />
                 <div id="searchResults" style="height: 100%;"><br/></div>
             % endif
 

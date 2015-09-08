@@ -36,7 +36,7 @@ from sickbeard import helpers
 from sickbeard import classes
 from sickbeard.exceptions import ex
 from requests.exceptions import RequestException
-from sickbeard.indexers.indexer_config import INDEXER_TVDB,INDEXER_TVRAGE
+from sickbeard.indexers.indexer_config import INDEXER_TVDB
 
 
 class GetOutOfLoop(Exception):
@@ -63,7 +63,6 @@ class RarbgProvider(generic.TorrentProvider):
                      'listing': u'http://torrentapi.org/pubapi_v2.php?mode=list&app_id=sickrage',
                      'search': u'http://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_string={search_string}',
                      'search_tvdb': u'http://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_tvdb={tvdb}&search_string={search_string}',
-                     'search_tvrage': u'http://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_tvrage={tvrage}&search_string={search_string}',
                      'api_spec': u'https://rarbg.com/pubapi/apidocs.txt',
                      }
 
@@ -200,15 +199,11 @@ class RarbgProvider(generic.TorrentProvider):
                 elif mode == 'Season':
                     if ep_indexer == INDEXER_TVDB:
                         searchURL = self.urls['search_tvdb'].format(search_string=search_string, tvdb=ep_indexerid) + self.defaultOptions
-                    elif ep_indexer == INDEXER_TVRAGE:
-                        searchURL = self.urls['search_tvrage'].format(search_string=search_string, tvrage=ep_indexerid) + self.defaultOptions
                     else:
                         searchURL = self.urls['search'].format(search_string=search_string) + self.defaultOptions
                 elif mode == 'Episode':
                     if ep_indexer == INDEXER_TVDB:
                         searchURL = self.urls['search_tvdb'].format(search_string=search_string, tvdb=ep_indexerid) + self.defaultOptions
-                    elif ep_indexer == INDEXER_TVRAGE:
-                        searchURL = self.urls['search_tvrage'].format(search_string=search_string, tvrage=ep_indexerid) + self.defaultOptions
                     else:
                         searchURL = self.urls['search'].format(search_string=search_string) + self.defaultOptions
                 else:
@@ -259,9 +254,6 @@ class RarbgProvider(generic.TorrentProvider):
                             continue
                         if re.search('Cant find search_tvdb in database. Are you sure this imdb exists?', data):
                             logger.log(u'{name} no results found. Search tvdb id do not exist on server.'.format(name=self.name), logger.DEBUG)
-                            raise GetOutOfLoop
-                        if re.search('Cant find search_tvrage in database. Are you sure this imdb exists?', data):
-                            logger.log(u'{name} no results found. Search tvrage id do not exist on server.'.format(name=self.name), logger.DEBUG)
                             raise GetOutOfLoop
                         if re.search('Invalid token. Use get_token for a new one!', data):
                             logger.log(u'{name} Invalid token, retrieving new token'.format(name=self.name), logger.DEBUG)

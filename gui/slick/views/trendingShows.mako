@@ -91,10 +91,10 @@ $(document).ready(function(){
             <p>${int(cur_show['show']['rating']*10)}% <img src="${sbRoot}/images/heart.png"></p>
             <i>${cur_show['show']['votes']} votes</i>
             <div class="traktShowTitleIcons">
-                <a href="${sbRoot}/home/addShows/addTraktShow?indexer_id=${cur_show['show']['ids']['tvdb'] or cur_show['show']['ids']['tvrage']}&amp;showName=${cur_show['show']['title']}" class="btn btn-xs">Add Show</a>
-% if blacklist:
+                <a href="${sbRoot}/home/addShows/addTraktShow?indexer_id=${cur_show['show']['ids']['tvdb']}&amp;showName=${cur_show['show']['title']}" class="btn btn-xs">Add Show</a>
+                % if blacklist:
                 <a href="${sbRoot}/home/addShows/addShowToBlacklist?indexer_id=${cur_show['show']['ids']['tvdb'] or cur_show['show']['ids']['tvrage']}" class="btn btn-xs">Remove Show</a>
-% endif
+                % endif
             </div>
         </div>
         </div>

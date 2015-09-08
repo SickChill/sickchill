@@ -91,7 +91,8 @@ class EMBYNotifier:
                 if show.indexer == 1:
                     provider = 'tvdb'
                 elif show.indexer == 2:
-                    provider = 'tvrage'
+                    logger.log(u'EMBY: TVRage Provider no longer valid', logger.WARNING)
+                    return False
                 else:
                     logger.log(u'EMBY: Provider unknown', logger.WARNING)
                     return False

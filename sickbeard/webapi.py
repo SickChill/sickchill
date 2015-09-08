@@ -67,7 +67,7 @@ except ImportError:
 
 from tornado.web import RequestHandler
 
-indexer_ids = ["indexerid", "tvdbid", "tvrageid"]
+indexer_ids = ["indexerid", "tvdbid"]
 
 dateFormat = "%Y-%m-%d"
 dateTimeFormat = "%Y-%m-%d %H:%M"
@@ -341,8 +341,6 @@ class ApiCall(ApiHandler):
         if key in indexer_ids:
             if "tvdbid" in kwargs:
                 key = "tvdbid"
-            elif "tvrageid" in kwargs:
-                key = "tvrageid"
 
             self.indexer = indexer_ids.index(key)
 
@@ -788,7 +786,6 @@ class CMD_Episode(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
                  "full_path": {
                      "desc": "show the full absolute path (if valid) instead of a relative path for the episode location"}
              }
@@ -854,7 +851,6 @@ class CMD_EpisodeSearch(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -907,7 +903,6 @@ class CMD_EpisodeSetStatus(ApiCall):
                  "episode": {"desc": "the episode number"},
                  "force": {"desc": "should we replace existing (downloaded) episodes or not"},
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
 
     }
@@ -1025,7 +1020,6 @@ class CMD_SubtitleSearch(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -1077,7 +1071,6 @@ class CMD_Exceptions(ApiCall):
              "optionalParameters": {
                  "indexerid": {"desc": "unique id of a show"},
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -1657,7 +1650,6 @@ class CMD_SickBeardSearchIndexers(ApiCall):
              "optionalParameters": {"name": {"desc": "name of the show you want to search for"},
                                     "indexerid": {"desc": "unique id of a show"},
                                     "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                                    "tvrageid": {"desc": "tvrage.com unique id of a show"},
                                     "lang": {"desc": "the 2 letter abbreviation lang id"}
              }
     }
@@ -1756,17 +1748,21 @@ class CMD_SickBeardSearchTVDB(CMD_SickBeardSearchIndexers):
 
 
 class CMD_SickBeardSearchTVRAGE(CMD_SickBeardSearchIndexers):
+    """
+    Deprecated, TVRage is no more.
+    """
+
     _help = {"desc": "search for show on TVRage with a given string and language",
              "optionalParameters": {"name": {"desc": "name of the show you want to search for"},
-                                    "tvrageid": {"desc": "tvrage.com unique id of a show"},
                                     "lang": {"desc": "the 2 letter abbreviation lang id"}
              }
     }
 
     def __init__(self, args, kwargs):
-        CMD_SickBeardSearchIndexers.__init__(self, args, kwargs)
-        self.indexerid, args = self.check_params(args, kwargs, "tvrageid", None, False, "int", [])
+        ApiCall.__init__(self, args, kwargs)
 
+    def run(self):
+        return _responds(RESULT_FAILURE, msg="TVRage is no more, invalid result")
 
 class CMD_SickBeardSetDefaults(ApiCall):
     _help = {"desc": "set sickrage user defaults",
@@ -1892,7 +1888,6 @@ class CMD_Show(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
 
     }
@@ -1958,8 +1953,6 @@ class CMD_Show(ApiCall):
 
         showDict["indexerid"] = showObj.indexerid
         showDict["tvdbid"] = helpers.mapIndexersToShow(showObj)[1]
-        showDict["tvrage_id"] = helpers.mapIndexersToShow(showObj)[2]
-        showDict["tvrage_name"] = showObj.name
         showDict["imdbid"] = showObj.imdbid
 
         showDict["network"] = showObj.network
@@ -1986,7 +1979,6 @@ class CMD_ShowAddExisting(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
                  "initial": {"desc": "initial quality for the show"},
                  "archive": {"desc": "archive quality for the show"},
                  "flatten_folders": {"desc": "flatten subfolders for the show"},
@@ -2077,7 +2069,6 @@ class CMD_ShowAddNew(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
                  "initial": {"desc": "initial quality for the show"},
                  "location": {"desc": "base path for where the show folder is to be created"},
                  "archive": {"desc": "archive quality for the show"},
@@ -2248,7 +2239,6 @@ class CMD_ShowCache(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -2288,7 +2278,6 @@ class CMD_ShowDelete(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
                  "removefiles":{"desc": "Deletes the files, there is no going back!"},
              }
     }
@@ -2322,7 +2311,6 @@ class CMD_ShowGetQuality(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -2352,7 +2340,6 @@ class CMD_ShowGetPoster(ApiCall):
         },
         "optionalParameters": {
             "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-            "tvrageid": {"desc": "tvrage.com unique id of a show"},
         }
     }
 
@@ -2379,7 +2366,6 @@ class CMD_ShowGetBanner(ApiCall):
         },
         "optionalParameters": {
             "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-            "tvrageid": {"desc": "tvrage.com unique id of a show"},
         }
     }
 
@@ -2410,9 +2396,6 @@ class CMD_ShowGetNetworkLogo(ApiCall):
             "tvdbid": {
                 "desc": "TheTVDB.com unique id of a show",
             },
-            "tvrageid": {
-                "desc": "TVRage.con unique id of a show",
-            },
         },
     }
 
@@ -2441,7 +2424,6 @@ class CMD_ShowGetFanArt(ApiCall):
         },
         "optionalParameters": {
             "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-            "tvrageid": {"desc": "tvrage.com unique id of a show"},
         },
     }
 
@@ -2467,7 +2449,6 @@ class CMD_ShowPause(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
                  "pause": {"desc": "set the pause state of the show"}
              }
     }
@@ -2502,7 +2483,6 @@ class CMD_ShowRefresh(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -2534,7 +2514,6 @@ class CMD_ShowSeasonList(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
                  "sort": {"desc": "change the sort order from descending to ascending"}
              }
     }
@@ -2576,7 +2555,6 @@ class CMD_ShowSeasons(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
                  "season": {"desc": "the season number"},
              }
     }
@@ -2648,7 +2626,6 @@ class CMD_ShowSetQuality(ApiCall):
         },
         "optionalParameters": {
             "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-            "tvrageid": {"desc": "tvrage.com unique id of a show"},
             "initial": {"desc": "initial quality for the show"},
             "archive": {"desc": "archive quality for the show"}
         }
@@ -2716,7 +2693,6 @@ class CMD_ShowStats(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -2825,7 +2801,6 @@ class CMD_ShowUpdate(ApiCall):
              },
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -2885,8 +2860,6 @@ class CMD_Shows(ApiCall):
                 "anime": curShow.anime,
                 "indexerid": curShow.indexerid,
                 "tvdbid": indexerShow[1],
-                "tvrage_id": indexerShow[2],
-                "tvrage_name": curShow.name,
                 "network": curShow.network,
                 "show_name": curShow.name,
                 "status": curShow.status,

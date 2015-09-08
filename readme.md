@@ -12,11 +12,10 @@ Automatic Video Library Manager for TV Shows. It watches for new episodes of you
  - Automatic torrent/nzb searching, downloading, and processing at the qualities you want
  - Largest list of supported torrent and nzb providers, both public and private
  - Can notify Kodi, XBMC, Growl, Trakt, Twitter, and more when new episodes are available
- - Searches TheTVDB.com, TVRage.com, and AniDB.net for shows, seasons, episodes, and metadata
+ - Searches TheTVDB.com and AniDB.net for shows, seasons, episodes, and metadata
  - Episode status management allows for mass failing seasons/episodes to force retrying
  - DVD Order numbering for returning the results in DVD order instead of Air-By-Date order
  - Allows you to choose which indexer to have SickRage search its show info from when importing
- - SickRage can easily tell if info for an existing show comes from TheTVDB or TVRage when importing
  - Automatic XEM Scene Numbering/Naming for seasons/episodes
  - Available for any platform, uses a simple HTTP interface
  - Specials and multi-episode torrent/nzb support

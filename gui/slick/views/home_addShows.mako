@@ -16,7 +16,7 @@
         <div class="button"><div class="icon-addnewshow"></div></div>
         <div class="buttontext">
             <h3>Add New Show</h3>
-            <p>For shows that you haven't downloaded yet, this option finds a show on theTVDB.com and TVRage.com, creates a directory for its episodes, and adds it to SickRage.</p>
+            <p>For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for it's episodes, and adds it to SickRage.</p>
         </div>
     </a>
 

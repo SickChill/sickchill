@@ -371,7 +371,7 @@ class GenericMetadata():
     def _get_episode_thumb_url(self, ep_obj):
         """
         Returns the URL to use for downloading an episode's thumbnail. Uses
-        theTVDB.com and TVRage.com data.
+        theTVDB.com data.
 
         ep_obj: a TVEpisode object for which to grab the thumb URL
         """
@@ -852,7 +852,7 @@ class GenericMetadata():
 
         result[season] = {}
 
-        # find the correct season in the TVDB and TVRAGE object and just copy the dict into our result dict
+        # find the correct season in the TVDB object and just copy the dict into our result dict
         for seasonArtID in seasonsArtObj.keys():
             if int(seasonsArtObj[seasonArtID]['season']) == season and seasonsArtObj[seasonArtID]['language'] == sickbeard.INDEXER_DEFAULT_LANGUAGE:
                 result[season][seasonArtID] = seasonsArtObj[seasonArtID]['_bannerpath']
@@ -907,7 +907,7 @@ class GenericMetadata():
 
         result[season] = {}
 
-        # find the correct season in the TVDB and TVRAGE object and just copy the dict into our result dict
+        # find the correct season in the TVDB object and just copy the dict into our result dict
         for seasonArtID in seasonsArtObj.keys():
             if int(seasonsArtObj[seasonArtID]['season']) == season and seasonsArtObj[seasonArtID]['language'] == sickbeard.INDEXER_DEFAULT_LANGUAGE:
                 result[season][seasonArtID] = seasonsArtObj[seasonArtID]['_bannerpath']
@@ -963,7 +963,8 @@ class GenericMetadata():
                     if 'thetvdb.com' in epg_url:
                         indexer = 1
                     elif 'tvrage' in epg_url:
-                        indexer = 2
+                        logger.log(u"Invalid Indexer ID (" + str(indexer_id) + "), not using metadata file because it has TVRage info", logger.WARNING)
+                        return empty_return
 
 
         except Exception, e:

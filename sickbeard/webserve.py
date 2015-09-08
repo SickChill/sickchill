@@ -2441,9 +2441,7 @@ class HomeAddShows(Home):
                 show = {}
                 show['show']=show_detail
                 try:
-                    tvdb_id = int(show['show']['ids']['tvdb'])
-                    tvrage_id = int(show['show']['ids']['tvrage'] or 0)
-                    if not helpers.findCertainShow(sickbeard.showList, [tvdb_id, tvrage_id]):
+                    if not helpers.findCertainShow(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
                         if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
                             if not_liked_show:
                                 if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
@@ -2497,9 +2495,7 @@ class HomeAddShows(Home):
             library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
             for show in shows:
                 try:
-                    tvdb_id = int(show['show']['ids']['tvdb'])
-                    tvrage_id = int(show['show']['ids']['tvrage'] or 0)
-                    if not helpers.findCertainShow(sickbeard.showList, [tvdb_id, tvrage_id]):
+                    if not helpers.findCertainShow(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
                         if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
                             if not_liked_show:
                                 if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
