@@ -1456,7 +1456,8 @@ class TVEpisode(object):
             vname = self.location
             video = None
             try:
-                video = subliminal.scan_video(vname, subtitles=not force, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL or not force)
+                # Never look for subtitles in the same path, as we specify the path later on
+                video = subliminal.scan_video(vname, subtitles=False, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL or not force)
             except Exception:
                 logger.log(u'%s: Exception caught in subliminal.scan_video for S%02dE%02d' %
                     (self.show.indexerid, self.season, self.episode), logger.DEBUG)
@@ -1471,15 +1472,26 @@ class TVEpisode(object):
                 logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
                 return
 
-            subs_new_path = sickbeard.SUBTITLES_DIR if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR) else None
+            # Select the correct subtitles path
+            if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+                subs_new_path = sickbeard.SUBTITLES_DIR
+            elif sickbeard.SUBTITLES_DIR:
+                subs_new_path = ek.ek(os.path.join, ek.ek(os.path.dirname, self.location), sickbeard.SUBTITLES_DIR)
+                dir_exists = helpers.makeDir(subs_new_path)
+                if not dir_exists:
+	                logger.log(u'Unable to create subtitles folder ' + subs_new_path, logger.ERROR)
+                else:
+	                helpers.chmodAsParent(subs_new_path)
+            else:
+                subs_new_path = ek.ek(os.path.join, ek.ek(os.path.dirname, self.location))
 
             subliminal.save_subtitles(foundSubs, directory=subs_new_path, single=not sickbeard.SUBTITLES_MULTI)
 
             for video, subs in foundSubs.iteritems():
                 for sub in subs:
-                    subpath = subliminal.subtitle.get_subtitle_path(video.name, sub.language if sickbeard.SUBTITLES_MULTI else None)
-                    if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
-                        subpath = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, subpath))
+                    # Get the file name out of video.name and use the path from above
+                    video_path = subs_new_path + "/" + video.name.rsplit("/", 1)[-1]
+                    subpath = subliminal.subtitle.get_subtitle_path(video_path, sub.language if sickbeard.SUBTITLES_MULTI else None)
                     helpers.chmodAsParent(subpath)
                     helpers.fixSetGroupID(subpath)
 
