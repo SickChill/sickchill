@@ -1380,7 +1380,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
         if not resp.ok:
             logger.log(u"Requested getURL " + url + " returned status code is " + str(
                 resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
-            return
+            return None
 
         if proxyGlypeProxySSLwarning is not None:
             if re.search('The site you are attempting to browse is on a secure connection', resp.text):
@@ -1389,25 +1389,25 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
                 if not resp.ok:
                     logger.log(u"GlypeProxySSLwarning: Requested getURL " + url + " returned status code is " + str(
                         resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
-                    return
+                    return None
 
     except requests.exceptions.HTTPError as e:
         logger.log(u"HTTP error in getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
-        return
+        return None
     except requests.exceptions.ConnectionError as e:
         logger.log(u"Connection error to getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
-        return
+        return None
     except requests.exceptions.Timeout as e:
         logger.log(u"Connection timed out accessing getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
-        return
+        return None
     except requests.exceptions.ContentDecodingError:
         logger.log(u"Content-Encoding was gzip, but content was not compressed. getURL: %s" % url, logger.DEBUG)
         logger.log(traceback.format_exc(), logger.DEBUG)
-        return
+        return None
     except Exception as e:
         logger.log(u"Unknown exception in getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
         logger.log(traceback.format_exc(), logger.WARNING)
-        return
+        return None
 
     attempts = 0
     while gzip and len(resp.content) > 1 and resp.content[0] == '\x1f' and resp.content[1] == '\x8b' and attempts < 3:

@@ -37,14 +37,13 @@ class TitansOfTVProvider(generic.TorrentProvider):
         self.cache = TitansOfTVCache(self)
         self.url = 'http://titansof.tv/api/torrents'
         self.download_url = 'http://titansof.tv/api/torrents/%s/download?apikey=%s'
-        self.session = requests.Session()
-        
+
     def isEnabled(self):
         return self.enabled
-        
+
     def imageName(self):
         return 'titansoftv.png'
-        
+
     def seedRatio(self):
         return self.ratio
 
@@ -76,7 +75,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
         search_url = self.url + '?' + urllib.urlencode(params)
         logger.log(u'Search url: %s' % search_url)
 
-        parsedJSON = self.getURL(search_url, json=True)  # do search
+        parsedJSON = self.getURL(search_url, headers=self.headers, json=True)  # do search
 
         if not parsedJSON:
             logger.log(u'No data returned from ' + self.name, logger.ERROR)

@@ -23,7 +23,6 @@ import datetime
 from requests.auth import AuthBase
 import sickbeard
 import generic
-import urllib
 import requests
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import Quality
@@ -52,14 +51,18 @@ class BLUETIGERSProvider(generic.TorrentProvider):
 
         self.cache = BLUETIGERSCache(self)
 
-        self.urls = {'base_url': 'https://www.bluetigers.ca/',
-                     'search': 'https://www.bluetigers.ca/torrents-search.php?search=%s%s',
-                     'login': 'https://www.bluetigers.ca/account-login.php',
-                     'download': 'https://www.bluetigers.ca/torrents-details.php?id=%s&hit=1',
-        }
+        self.urls = {
+            'base_url': 'https://www.bluetigers.ca/',
+            'search': 'https://www.bluetigers.ca/torrents-search.php',
+            'login': 'https://www.bluetigers.ca/account-login.php',
+            'download': 'https://www.bluetigers.ca/torrents-details.php?id=%s&hit=1',
+            }
+
+        self.search_params = {
+            "c16": 1, "c10": 1, "c130": 1, "c131": 1, "c17": 1, "c18": 1, "c19": 1
+            }
 
         self.url = self.urls['base_url']
-        self.categories = "&c16=1&c10=1&c130=1&c131=1&c17=1&c18=1&c19=1"
 
     def isEnabled(self):
         return self.enabled
@@ -72,32 +75,26 @@ class BLUETIGERSProvider(generic.TorrentProvider):
         return quality
 
     def _doLogin(self):
-
-
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-
-        login_params = {'username': self.username,
-                            'password': self.password,
-                            'take_login' : '1'
-        }
-
-        if not self.session:
-            self.session = requests.Session()
+        login_params = {
+            'username': self.username,
+            'password': self.password,
+            'take_login' : '1'
+            }
 
         logger.log('Performing authentication to BLUETIGERS', logger.DEBUG)
-        try:
-            response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
+        response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+        if not response:
+            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
             return False
 
-        if re.search('/account-logout.php', response.text):
-            logger.log(u'Login to ' + self.name + ' was successful.', logger.DEBUG)
+        if re.search('/account-logout.php', response):
+            logger.log(u'Login to %s was successful.' % self.name, logger.DEBUG)
             return True
         else:
-            logger.log(u'Login to ' + self.name + ' was unsuccessful.', logger.DEBUG)
+            logger.log(u'Login to %s was unsuccessful.' % self.name, logger.DEBUG)
             return False
 
         return True
@@ -150,26 +147,16 @@ class BLUETIGERSProvider(generic.TorrentProvider):
 
         return [search_string]
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
-
-        logger.log(u"_doSearch started with ..." + str(search_params), logger.DEBUG)
-
+    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        for mode in search_params.keys():
+        for mode in search_strings.keys():
+            for search_string in search_strings[mode]:
+                logger.log(u"Search string: " + search_string, logger.DEBUG)
+                self.search_params['search'] = search_string
 
-            for search_string in search_params[mode]:
-
-                if isinstance(search_string, unicode):
-                    search_string = unidecode(search_string)
-
-
-                searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories)
-
-                logger.log(u"Search string: " + searchURL, logger.DEBUG)
-
-                data = self.getURL(searchURL)
+                data = self.getURL(self.urls['search'], params=self.search_params)
                 if not data:
                     continue
 
@@ -267,8 +254,8 @@ class BLUETIGERSCache(tvcache.TVCache):
         self.minTime = 10
 
     def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        search_strings = {'RSS': ['']}
+        return {'entries': self.provider._doSearch(search_strings)}
 
 
 provider = BLUETIGERSProvider()

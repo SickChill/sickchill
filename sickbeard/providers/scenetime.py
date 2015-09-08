@@ -81,15 +81,12 @@ class SceneTimeProvider(generic.TorrentProvider):
                         'password': self.password
         }
 
-        self.session = requests.Session()
-
-        try:
-            response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
+        response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+        if not response:
+            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
             return False
 
-        if re.search('Username or password incorrect', response.text):
+        if re.search('Username or password incorrect', response):
             logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
             return False
 
@@ -175,7 +172,7 @@ class SceneTimeProvider(generic.TorrentProvider):
                             logger.log(u"The Data returned from %s does not contain any torrent links" % self.name,
                                        logger.DEBUG)
                             continue
-                       
+
                         # Scenetime apparently uses different number of cells in #torrenttable based
                         # on who you are. This works around that by extracting labels from the first
                         # <tr> and using their index to find the correct download/seeders/leechers td.
@@ -192,10 +189,10 @@ class SceneTimeProvider(generic.TorrentProvider):
                             try:
                                 title = link.contents[0].get_text()
 
-                                filename = "%s.torrent" % title.replace(" ", ".") 
-                                
+                                filename = "%s.torrent" % title.replace(" ", ".")
+
                                 download_url = self.urls['download'] % (torrent_id, filename)
-                              
+
                                 id = int(torrent_id)
                                 seeders = int(cells[labels.index('Seeders')].get_text())
                                 leechers = int(cells[labels.index('Leechers')].get_text())
