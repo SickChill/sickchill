@@ -141,8 +141,9 @@ $(document).ready(function(){
             % endif
             </span>
 
-        % endif
         </div>
+        % endif
+
 
     <div class="clearfix"></div>
 
