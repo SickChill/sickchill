@@ -17,7 +17,6 @@
 
 import re
 import datetime
-import urlparse
 import sickbeard
 import generic
 from sickbeard.common import Quality
@@ -28,9 +27,7 @@ from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex
-from sickbeard import clients
 import requests
-from requests import exceptions
 from sickbeard.helpers import sanitizeSceneName
 
 
@@ -97,7 +94,7 @@ class TorrentDayProvider(generic.TorrentProvider):
                 self.session = requests.Session()
 
             try:
-                response = self.session.post(self.urls['login'], data=login_params, timeout=30)
+                response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
             except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
                 logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
                 return False

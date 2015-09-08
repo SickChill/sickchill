@@ -1,4 +1,10 @@
 #!/usr/bin/env python2
+# DEPRECATION NOTICE: autoProcessTV is deprecated and will be removed
+# from SickRage at 31-10-2015.
+#
+# Please switch to nzbToMedia from Clinton Hall, which is included in
+# the contrib folder
+
 import sys
 import os
 import time
@@ -138,6 +144,9 @@ def blackhole():
 
 def main():
     scriptlogger.info(u'Starting external PostProcess script ' + __file__)
+    scriptlogger.info(u'DEPRECATION NOTICE: autoProcessTV is deprecated and will be removed from SickRage at 31-10-2015. ' + __file__)
+    scriptlogger.info(u'Please switch to nzbToMedia from Clinton Hall, which is included in the contrib folder' + __file__)
+
 
     host = config.get("General", "web_host")
     port = config.get("General", "web_port")

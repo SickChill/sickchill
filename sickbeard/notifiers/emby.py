@@ -22,7 +22,6 @@ import urllib2
 import sickbeard
 
 from sickbeard import logger
-from sickbeard import common
 from sickbeard.exceptions import ex
 
 
@@ -45,7 +44,7 @@ class EMBYNotifier:
         if not host:
             host = sickbeard.EMBY_HOST
         if not emby_apikey:
-            username = sickbeard.EMBY_APIKEY
+            emby_apikey = sickbeard.EMBY_APIKEY
 
         url = 'http://%s/emby/Notifications/Admin' % (host)
         values = {'Name': 'SickRage', 'Description': message, 'ImageUrl': 'https://raw.githubusercontent.com/SiCKRAGETV/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'}
@@ -92,7 +91,8 @@ class EMBYNotifier:
                 if show.indexer == 1:
                     provider = 'tvdb'
                 elif show.indexer == 2:
-                    provider = 'tvrage'
+                    logger.log(u'EMBY: TVRage Provider no longer valid', logger.WARNING)
+                    return False
                 else:
                     logger.log(u'EMBY: Provider unknown', logger.WARNING)
                     return False

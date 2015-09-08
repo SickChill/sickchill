@@ -21,7 +21,6 @@ from __future__ import with_statement
 import os
 import time
 import re
-import datetime
 import os.path
 import regexes
 import sickbeard

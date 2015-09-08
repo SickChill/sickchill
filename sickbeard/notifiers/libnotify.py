@@ -71,15 +71,15 @@ class LibnotifyNotifier:
             logger.log(u"Unable to import Notify from gi.repository. libnotify notifications won't work.", logger.ERROR)
             return False
         try:
-            import gobject
+            from gi.repository import GObject
         except ImportError:
-            logger.log(u"Unable to import gobject. We can't catch a GError in display.", logger.ERROR)
+            logger.log(u"Unable to import GObject from gi.repository. We can't catch a GError in display.", logger.ERROR)
             return False
         if not Notify.init('SickRage'):
             logger.log(u"Initialization of Notify failed. libnotify notifications won't work.", logger.ERROR)
             return False
         self.Notify = Notify
-        self.gobject = gobject
+        self.gobject = GObject
         return True
 
     def notify_snatch(self, ep_name):

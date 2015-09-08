@@ -23,15 +23,17 @@ import traceback
 import sickbeard
 
 from imdb import _exceptions as imdb_exceptions
-from sickbeard.common import SKIPPED, WANTED
+from sickbeard.common import WANTED
 from sickbeard.tv import TVShow
-from sickbeard import exceptions, logger, ui, db, notifiers
+from sickbeard import exceptions
+from sickbeard import logger
+from sickbeard import notifiers
+from sickbeard import ui
 from sickbeard import generic_queue
 from sickbeard import name_cache
 from sickbeard.exceptions import ex
-from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
+from sickbeard.blackandwhitelist import BlackAndWhiteList
 from libtrakt import TraktAPI
-from libtrakt.exceptions import traktException, traktServerBusy, traktAuthException
 
 class ShowQueue(generic_queue.GenericQueue):
     def __init__(self):
@@ -306,10 +308,10 @@ class QueueItemAdd(ShowQueueItem):
                                        self.indexer).name) + " using ID " + str(
                                        self.indexer_id) + ", not using the NFO. Delete .nfo and try adding manually again.")
 
-            if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+            if sickbeard.USE_TRAKT:
 
                 trakt_id = sickbeard.indexerApi(self.indexer).config['trakt_id']
-                trakt_api = TraktAPI(sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+                trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
                 title = self.showDir.split("/")[-1]
                 data = {
@@ -654,11 +656,10 @@ class QueueItemRemove(ShowQueueItem):
         logger.log(u"Removing %s" % self.show.name)
         self.show.deleteShow(full=self.full)
 
-        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC:
+        if sickbeard.USE_TRAKT:
             try:
                 sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
             except Exception as e:
-                logger.log(u"Unable to delete show from Trakt: %s. Error: %s" % (showObj.name, ex(e)),logger.WARNING)
-                pass
+                logger.log(u"Unable to delete show from Trakt: %s. Error: %s" % (self.show.name, ex(e)),logger.WARNING)
 
         self.finish()

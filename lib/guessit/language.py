@@ -175,7 +175,7 @@ LNG_COMMON_WORDS = frozenset([
     'fry', 'cop', 'zen', 'gay', 'fat', 'one', 'cherokee', 'got', 'an', 'as',
     'cat', 'her', 'be', 'hat', 'sun', 'may', 'my', 'mr', 'rum', 'pi', 'bb',
     'bt', 'tv', 'aw', 'by', 'md', 'mp', 'cd', 'lt', 'gt', 'in', 'ad', 'ice',
-    'ay', 'at', 'star',
+    'ay', 'at', 'star', 'so',
     # french words
     'bas', 'de', 'le', 'son', 'ne', 'ca', 'ce', 'et', 'que',
     'mal', 'est', 'vol', 'or', 'mon', 'se', 'je', 'tu', 'me',
@@ -209,6 +209,8 @@ LNG_COMMON_WORDS_STRICT = frozenset(['brazil'])
 subtitle_prefixes = ['sub', 'subs', 'st', 'vost', 'subforced', 'fansub', 'hardsub']
 subtitle_suffixes = ['subforced', 'fansub', 'hardsub', 'sub', 'subs']
 lang_prefixes = ['true']
+
+all_lang_prefixes_suffixes = subtitle_prefixes + subtitle_suffixes + lang_prefixes
 
 
 def find_possible_languages(string, allowed_languages=None):

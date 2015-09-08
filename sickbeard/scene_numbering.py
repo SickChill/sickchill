@@ -25,13 +25,8 @@
 import time
 import datetime
 import traceback
+
 import sickbeard
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
-
 from sickbeard import logger
 from sickbeard import db
 from sickbeard.exceptions import ex
@@ -40,15 +35,15 @@ from sickbeard import helpers
 def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=True):
     """
     Returns a tuple, (season, episode), with the scene numbering (if there is one),
-    otherwise returns the xem numbering (if fallback_to_xem is set), otherwise 
-    returns the TVDB and TVRAGE numbering.
+    otherwise returns the xem numbering (if fallback_to_xem is set), otherwise
+    returns the TVDB numbering.
     (so the return values will always be set)
-    
+
     @param indexer_id: int
     @param season: int
     @param episode: int
     @param fallback_to_xem: bool If set (the default), check xem for matches if there is no local scene numbering
-    @return: (int, int) a tuple with (season, episode)   
+    @return: (int, int) a tuple with (season, episode)
     """
     if indexer_id is None or season is None or episode is None:
         return (season, episode)
@@ -91,7 +86,7 @@ def get_scene_absolute_numbering(indexer_id, indexer, absolute_number, fallback_
     """
     Returns a tuple, (season, episode), with the scene numbering (if there is one),
     otherwise returns the xem numbering (if fallback_to_xem is set), otherwise
-    returns the TVDB and TVRAGE numbering.
+    returns the TVDB numbering.
     (so the return values will always be set)
 
     @param indexer_id: int
@@ -141,7 +136,7 @@ def find_scene_absolute_numbering(indexer_id, indexer, absolute_number):
 
 def get_indexer_numbering(indexer_id, indexer, sceneSeason, sceneEpisode, fallback_to_xem=True):
     """
-    Returns a tuple, (season, episode) with the TVDB and TVRAGE numbering for (sceneSeason, sceneEpisode)
+    Returns a tuple, (season, episode) with the TVDB numbering for (sceneSeason, sceneEpisode)
     (this works like the reverse of get_scene_numbering)
     """
     if indexer_id is None or sceneSeason is None or sceneEpisode is None:
@@ -165,7 +160,7 @@ def get_indexer_numbering(indexer_id, indexer, sceneSeason, sceneEpisode, fallba
 
 def get_indexer_absolute_numbering(indexer_id, indexer, sceneAbsoluteNumber, fallback_to_xem=True, scene_season=None):
     """
-    Returns a tuple, (season, episode, absolute_number) with the TVDB and TVRAGE numbering for (sceneAbsoluteNumber)
+    Returns a tuple, (season, episode, absolute_number) with the TVDB absolute numbering for (sceneAbsoluteNumber)
     (this works like the reverse of get_absolute_numbering)
     """
     if indexer_id is None or sceneAbsoluteNumber is None:
@@ -197,7 +192,7 @@ def set_scene_numbering(indexer_id, indexer, season=None, episode=None, absolute
     """
     Set scene numbering for a season/episode.
     To clear the scene numbering, leave both sceneSeason and sceneEpisode as None.
-    
+
     """
     if indexer_id is None:
         return
@@ -232,7 +227,7 @@ def find_xem_numbering(indexer_id, indexer, season, episode):
     """
     Returns the scene numbering, as retrieved from xem.
     Refreshes/Loads as needed.
-    
+
     @param indexer_id: int
     @param season: int
     @param episode: int
@@ -284,11 +279,11 @@ def find_xem_absolute_numbering(indexer_id, indexer, absolute_number):
 def get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode):
     """
     Reverse of find_xem_numbering: lookup a tvdb season and episode using scene numbering
-    
+
     @param indexer_id: int
     @param sceneSeason: int
     @param sceneEpisode: int
-    @return: (int, int) a tuple of (season, episode)   
+    @return: (int, int) a tuple of (season, episode)
     """
     if indexer_id is None or sceneSeason is None or sceneEpisode is None:
         return (sceneSeason, sceneEpisode)
@@ -460,7 +455,7 @@ def get_xem_absolute_numbering_for_show(indexer_id, indexer):
 def xem_refresh(indexer_id, indexer, force=False):
     """
     Refresh data from xem for a tv show
-    
+
     @param indexer_id: int
     """
     if not indexer_id or indexer_id < 1:
@@ -552,46 +547,6 @@ def fix_xem_numbering(indexer_id, indexer):
 
     indexer_id = int(indexer_id)
     indexer = int(indexer)
-
-    # query = [{
-    # "name": self.show.name,
-    # "seasons": [{
-    # "episodes": [{
-    # "episode_number": None,
-    # "name": None
-    # }],
-    # "season_number": None,
-    #                          }],
-    #              "/tv/tv_program/number_of_seasons": [],
-    #              "/tv/tv_program/number_of_episodes": [],
-    #              "/tv/tv_program/thetvdb_id": [],
-    #              "/tv/tv_program/tvrage_id": [],
-    #              "type": "/tv/tv_program",
-    #          }]
-    #
-    #
-    # url = 'https://www.googleapis.com/freebase/v1/mqlread'
-    # api_key = "AIzaSyCCHNp4dhVHxJYzbLiCE4y4a1rgTnX4fDE"
-    # params = {
-    #     'query': json.dumps(query),
-    #     'key': api_key
-    # }
-    #
-    #
-    # def get_from_api(url, params=None):
-    #     """Build request and return results
-    #     """
-    #     import xmltodict
-    #
-    #     response = requests.get(url, params=params)
-    #     if response.status_code == 200:
-    #         try:
-    #             return response.json()
-    #         except ValueError:
-    #             return xmltodict.parse(response.text)['Data']
-    #
-    # # Get query results
-    # tmp = get_from_api(url, params=params)['result']
 
     myDB = db.DBConnection()
     rows = myDB.select(

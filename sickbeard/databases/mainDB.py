@@ -43,6 +43,48 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_invalid_airdates()
         self.fix_subtitles_codes()
         self.fix_show_nfo_lang()
+        self.convert_tvrage_to_tvdb()
+
+    def convert_tvrage_to_tvdb(self):
+        logger.log(u'Checking for shows with tvrage id\'s, since tvrage is gone')
+        from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
+        from sickbeard.indexers.indexer_config import INDEXER_TVDB
+
+        sqlResults = self.connection.select(
+            "SELECT indexer_id, show_name FROM tv_shows WHERE indexer = %i" % INDEXER_TVRAGE)
+
+        if sqlResults:
+            logger.log(u'Found %i shows with TVRage ID\', FIXING!' % len(sqlResults), logger.WARNING)
+
+        for tvrage_show in sqlResults:
+            mapping = self.connection.select(
+                "SELECT mindexer_id FROM indexer_mapping WHERE indexer_id=%i AND indexer=%i AND mindexer=%i" %
+                    (tvrage_show['indexer_id'], INDEXER_TVRAGE, INDEXER_TVDB)
+            )
+
+            if len(mapping) != 1:
+                logger.log(
+                    u'Error mapping show from tvrage to tvdb for %s, found %i results. This show will no longer update!' %
+                        (tvrage_show['show_name'], len(mapping)), logger.WARNING
+                    )
+
+                continue
+
+            logger.log('Mapping %s to tvdb id %i' % (tvrage_show['show_name'], mapping[0]['mindexer_id']))
+
+            self.connection.action(
+                "UPDATE tv_shows SET indexer=%i, indexer_id=%i WHERE indexer_id=%i" %
+                    (INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
+                )
+
+            logger.log(u'Relinking episodes to show')
+            self.connection.action(
+                "UPDATE tv_episodes SET indexer=%i, showid=%i, indexerid=0 WHERE showid=%i" %
+                    (INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
+                )
+
+            logger.log('Please perform a full update on %s' % tvrage_show['show_name'], logger.WARNING)
+
 
     def fix_duplicate_shows(self, column='indexer_id'):
 

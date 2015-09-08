@@ -58,6 +58,7 @@ class OpenSubtitlesSubtitle(Subtitle):
             if video.episode and self.series_episode == video.episode:
                 matches.add('episode')
             # guess
+            logger.info('Trying to guess movie relese name: %r ', self.movie_release_name)
             matches |= compute_guess_matches(video, guessit.guess_episode_info(self.movie_release_name + '.mkv'))
         # movie
         elif isinstance(video, Movie) and self.movie_kind == 'movie':

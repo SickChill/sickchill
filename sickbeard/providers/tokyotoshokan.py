@@ -17,17 +17,15 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
-import re
 import traceback
 
-import sickbeard
 import generic
 
 from sickbeard import show_name_helpers
 from sickbeard import logger
 from sickbeard.common import Quality
 from sickbeard import tvcache
-from sickbeard import show_name_helpers, helpers
+from sickbeard import show_name_helpers
 from sickbeard.bs4_parser import BS4Parser
 
 
@@ -135,25 +133,6 @@ class TokyoToshokanCache(tvcache.TVCache):
 
         # only poll NyaaTorrents every 15 minutes max
         self.minTime = 15
-
-    def _get_title_and_url(self, item):
-        """
-        Retrieves the title and URL data from the item XML node
-
-        item: An elementtree.ElementTree element representing the <item> tag of the RSS feed
-
-        Returns: A tuple containing two strings representing title and URL respectively
-        """
-
-        title = item.title if item.title else None
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        url = item.link if item.link else None
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
 
     def _getRSSData(self):
         params = {

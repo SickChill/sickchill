@@ -145,13 +145,6 @@ class NewznabProvider(generic.NZBProvider):
         else:
             cur_params['season'] = str(ep_obj.scene_season)
 
-        # search
-        rid = helpers.mapIndexersToShow(ep_obj.show)[2]
-        if rid:
-            cur_params['rid'] = rid
-            cur_params['attrs'] = "rageid"
-            to_return.append(dict(cur_params))
-
         if 'rid' in cur_params:
             cur_params.pop('rid')
             cur_params.pop('attrs')
@@ -185,13 +178,6 @@ class NewznabProvider(generic.NZBProvider):
         else:
             params['season'] = ep_obj.scene_season
             params['ep'] = ep_obj.scene_episode
-
-        # search
-        rid = helpers.mapIndexersToShow(ep_obj.show)[2]
-        if rid:
-            params['rid'] = rid
-            params['attrs'] = "rageid"
-            to_return.append(dict(params))
 
         if 'rid' in params:
             params.pop('rid')
@@ -416,10 +402,6 @@ class NewznabCache(tvcache.TVCache):
             return None
 
         tvrageid = 0
-        for attr in item['newznab_attr'] if isinstance(item['newznab_attr'], list) else [item['newznab_attr']]:
-            if attr['name'] == 'tvrageid' or attr['name'] == 'rageid':
-                tvrageid = int(attr['value'] or 0)
-                break
 
         logger.log(u"Attempting to add item from RSS to cache: " + title, logger.DEBUG)
         return self._addCacheEntry(title, url, indexer_id=tvrageid)

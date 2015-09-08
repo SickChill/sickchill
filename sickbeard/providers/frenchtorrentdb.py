@@ -17,21 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
 import re
 import datetime
-import time
 from requests.auth import AuthBase
 import sickbeard
 import generic
 import urllib
 
 import urllib2
-import requests
 import json
 import cookielib
 
-from requests import exceptions
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import Quality
 from sickbeard import logger
@@ -42,7 +38,6 @@ from sickbeard import helpers
 from sickbeard import classes
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
-from sickbeard.exceptions import ex
 
 class FrenchTorrentDBProvider(generic.TorrentProvider):
 

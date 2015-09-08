@@ -30,7 +30,8 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.exceptions import ex, AuthException
-from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT, USER_AGENT
+from sickbeard.common import MULTI_EP_RESULT
+from sickbeard.common import SEASON_RESULT
 from sickbeard import db
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality, cpu_presets
@@ -148,7 +149,7 @@ class BTNProvider(generic.TorrentProvider):
 
         except jsonrpclib.jsonrpc.ProtocolError, error:
             if error.message == 'Call Limit Exceeded':
-                logger.log(u"You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account.", logger.WARNING)                
+                logger.log(u"You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account.", logger.WARNING)
             else:
                 logger.log(u"JSON-RPC protocol error while accessing " + self.name + ": " + ex(error), logger.ERROR)
             parsedJSON = {'api-error': ex(error)}
@@ -220,14 +221,11 @@ class BTNProvider(generic.TorrentProvider):
         if ep_obj.show.indexer == 1:
             current_params['tvdb'] = ep_obj.show.indexerid
             search_params.append(current_params)
-        elif ep_obj.show.indexer == 2:
-            current_params['tvrage'] = ep_obj.show.indexerid
-            search_params.append(current_params)
         else:
             name_exceptions = list(
                 set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
             for name in name_exceptions:
-                # Search by name if we don't have tvdb or tvrage id
+                # Search by name if we don't have tvdb id
                 current_params['series'] = sanitizeSceneName(name)
                 search_params.append(current_params)
 
@@ -257,9 +255,6 @@ class BTNProvider(generic.TorrentProvider):
         # search
         if ep_obj.show.indexer == 1:
             search_params['tvdb'] = ep_obj.show.indexerid
-            to_return.append(search_params)
-        elif ep_obj.show.indexer == 2:
-            search_params['tvrage'] = ep_obj.show.indexerid
             to_return.append(search_params)
         else:
             # add new query string for every exception
@@ -380,7 +375,7 @@ class BTNProvider(generic.TorrentProvider):
 
             addCacheEntry = False
             if not (showObj.air_by_date or showObj.sports):
-                if search_mode == 'sponly': 
+                if search_mode == 'sponly':
                     if len(parse_result.episode_numbers):
                         logger.log(
                             u"This is supposed to be a season pack search but the result " + title + " is not a valid season pack, skipping it",

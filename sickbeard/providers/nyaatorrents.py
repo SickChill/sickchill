@@ -19,7 +19,6 @@
 import urllib
 import re
 
-import sickbeard
 import generic
 
 from sickbeard import show_name_helpers

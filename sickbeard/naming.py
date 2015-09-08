@@ -24,7 +24,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard import tv
 from sickbeard import common
 from sickbeard import logger
-from sickbeard.name_parser.parser import NameParser, InvalidNameException
+from sickbeard.name_parser.parser import NameParser
 
 from common import Quality, DOWNLOADED
 

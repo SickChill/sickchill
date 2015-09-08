@@ -291,7 +291,6 @@ class Quality:
             parser = createParser(filename)
         except Exception:
             parser = None
-            pass
 
         if not parser:
             return Quality.UNKNOWN
@@ -300,7 +299,6 @@ class Quality:
             metadata = extractMetadata(parser)
         except Exception:
             metadata = None
-            pass
 
         try:
             parser.stream._input.close()
@@ -410,7 +408,7 @@ class StatusStrings:
                               SNATCHED_BEST: "Snatched (Best)"}
 
     def __getitem__(self, name):
-        if name in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+        if name in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.ARCHIVED:
             status, quality = Quality.splitCompositeStatus(name)
             if quality == Quality.NONE:
                 return self.statusStrings[status]

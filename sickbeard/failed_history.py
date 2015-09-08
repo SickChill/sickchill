@@ -23,16 +23,17 @@ import datetime
 from sickbeard import db
 from sickbeard import logger
 from sickbeard.exceptions import ex, EpisodeNotFoundException
-from sickbeard.history import dateFormat
 from sickbeard.common import Quality
 from sickbeard.common import WANTED, FAILED
 from sickbeard import encodingKludge as ek
+from sickrage.show.History import History
+
 
 def prepareFailedName(release):
     """Standardizes release name for failed DB"""
 
     fixed = urllib.unquote(release)
-    if (fixed.endswith(".nzb")):
+    if fixed.endswith(".nzb"):
         fixed = fixed.rpartition(".")[0]
 
     fixed = re.sub("[\.\-\+\ ]", "_", fixed)
@@ -151,7 +152,7 @@ def markFailed(epObj):
 
 
 def logSnatch(searchResult):
-    logDate = datetime.datetime.today().strftime(dateFormat)
+    logDate = datetime.datetime.today().strftime(History.date_format)
     release = prepareFailedName(searchResult.name)
 
     providerClass = searchResult.provider
@@ -182,7 +183,7 @@ def deleteLoggedSnatch(release, size, provider):
 def trimHistory():
     myDB = db.DBConnection('failed.db')
     myDB.action("DELETE FROM history WHERE date < " + str(
-        (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(dateFormat)))
+        (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(History.date_format)))
 
 
 def findRelease(epObj):

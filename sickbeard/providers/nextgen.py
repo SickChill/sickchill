@@ -17,26 +17,20 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import traceback
-import urllib2
 import urllib
 import time
 import re
 import datetime
-import urlparse
 import sickbeard
 import generic
-from sickbeard.common import Quality, cpu_presets
+from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.common import Overview
-from sickbeard.exceptions import ex
-from sickbeard import clients
 import requests
-from requests import exceptions
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.helpers import sanitizeSceneName
 
@@ -121,7 +115,7 @@ class NextGenProvider(generic.TorrentProvider):
             data = self.session.get(self.urls['login_page'])
             with BS4Parser(data.content.decode('iso-8859-1')) as bs:
                 csrfraw = bs.find('form', attrs={'id': 'login'})['action']
-                output = self.session.post(self.urls['base_url'] + csrfraw, data=login_params)
+                output = self.getURL(self.urls['base_url'] + csrfraw,  post_data=login_params)
 
                 if self.loginSuccess(output):
                     self.last_login_check = now

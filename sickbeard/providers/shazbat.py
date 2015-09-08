@@ -16,16 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-try:
-    import xml.etree.cElementTree as etree
-except ImportError:
-    import elementtree.ElementTree as etree
-
-import sickbeard
 import generic
 
-from sickbeard.exceptions import ex, AuthException
-from sickbeard import helpers
+from sickbeard.exceptions import AuthException
 from sickbeard import logger
 from sickbeard import tvcache
 

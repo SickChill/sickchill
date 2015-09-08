@@ -18,7 +18,6 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import socket
-import base64
 from httplib import HTTPSConnection, HTTPException
 import json
 from ssl import SSLError
@@ -98,7 +97,6 @@ class PushbulletNotifier:
                 data = json.dumps(data)
                 http_handler.request(method, uri, body=data,
                                      headers={'Content-Type': 'application/json', 'Authorization': 'Bearer %s' % pushbullet_api})
-                pass
             except (SSLError, HTTPException, socket.error):
                 return False
 

@@ -19,22 +19,18 @@
 import re
 import traceback
 import datetime
-import urlparse
 import sickbeard
 import generic
 import urllib
-from sickbeard.common import Quality, cpu_presets
+from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.common import Overview
 from sickbeard.exceptions import ex
-from sickbeard import clients
 import requests
-from requests import exceptions
 from sickbeard.bs4_parser import BS4Parser
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
@@ -89,7 +85,7 @@ class HoundDawgsProvider(generic.TorrentProvider):
 
         try:
             self.session.get(self.urls['base_url'], timeout=30)
-            response = self.session.post(self.urls['login'], data=login_params, timeout=30)
+            response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False

@@ -17,14 +17,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-import httplib
-import urllib, urllib2
-import time
+import urllib2
 
 import sickbeard
 from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT
-from sickbeard.exceptions import ex
 
 class FreeMobileNotifier:
     def test_notify(self, id=None, apiKey=None):

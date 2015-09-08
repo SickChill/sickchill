@@ -55,7 +55,6 @@ __all__ = ['womble',
 ]
 
 import sickbeard
-import generic
 
 from sickbeard import logger
 from os import sys

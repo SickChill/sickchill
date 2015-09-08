@@ -20,7 +20,6 @@ from __future__ import with_statement
 
 import datetime
 import threading
-import traceback
 
 import sickbeard
 from sickbeard import logger
@@ -29,9 +28,6 @@ from sickbeard import common
 from sickbeard import helpers
 from sickbeard import exceptions
 from sickbeard import network_timezones
-from sickbeard.exceptions import ex
-from sickbeard.common import SKIPPED
-from common import Quality, qualityPresetStrings, statusStrings
 
 
 class DailySearcher():

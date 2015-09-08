@@ -21,7 +21,6 @@ import json
 from base64 import b64encode
 
 import sickbeard
-from sickbeard import logger
 from .generic import GenericClient
 
 

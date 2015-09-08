@@ -19,15 +19,14 @@
 import urllib
 import datetime
 
-import sickbeard
 import generic
 
-from sickbeard import classes, show_name_helpers, helpers
+from sickbeard import classes
+from sickbeard import show_name_helpers
 
-from sickbeard import exceptions, logger
+from sickbeard import logger
 from sickbeard.common import *
 from sickbeard import tvcache
-from dateutil.parser import parse as parseDate
 
 
 class animenzb(generic.NZBProvider):

@@ -19,24 +19,14 @@
 import os
 import string
 
-from tornado.web import RequestHandler
 from sickbeard import encodingKludge as ek
 from sickbeard import logger
-
-# use the built-in if it's available (python 2.6), if not use the included library
-try:
-    import json
-except ImportError:
-    import simplejson as json
-
-# this is for the drive letter code, it only works on windows
-if os.name == 'nt':
-    from ctypes import windll
 
 # adapted from http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
 def getWinDrives():
     """ Return list of detected drives """
     assert os.name == 'nt'
+    from ctypes import windll
 
     drives = []
     bitmask = windll.kernel32.GetLogicalDrives()  #@UndefinedVariable
