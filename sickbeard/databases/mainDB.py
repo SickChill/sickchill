@@ -70,7 +70,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
                 continue
 
-            logger.log('Mapping %s to tvdb id %i' % tvrage_show['show_name'], mapping[0]['mindexer_id'])
+            logger.log('Mapping %s to tvdb id %i' % (tvrage_show['show_name'], mapping[0]['mindexer_id']))
 
             self.connection.action(
                 "UPDATE tv_shows SET indexer=%i, indexer_id=%i WHERE indexer_id=%i" %
