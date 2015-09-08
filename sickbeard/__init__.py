@@ -1576,7 +1576,7 @@ def halt():
 
 
 def sig_handler(signum=None, frame=None):
-    if isinstance(signum, None):
+    if not isinstance(signum, type(None)):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
         Shutdown.stop(PID)
 
