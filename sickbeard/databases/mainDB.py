@@ -58,7 +58,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
         for tvrage_show in sqlResults:
             mapping = self.connection.select(
-                "SELECT indexer_id FROM indexer_mapping WHERE mindexer_id=%i AND mindexer=%i AND indexer=%i" %
+                "SELECT mindexer_id FROM indexer_mapping WHERE indexer_id=%i AND indexer=%i AND mindexer=%i" %
                     (tvrage_show['indexer_id'], INDEXER_TVRAGE, INDEXER_TVDB)
             )
 
@@ -70,17 +70,17 @@ class MainSanityCheck(db.DBSanityCheck):
 
                 continue
 
-            logger.log('Mapping %s to tvdb id %i' % tvrage_show['show_name'], mapping[0]['indexer_id'])
+            logger.log('Mapping %s to tvdb id %i' % tvrage_show['show_name'], mapping[0]['mindexer_id'])
 
             self.connection.action(
                 "UPDATE tv_shows SET indexer=%i, indexer_id=%i WHERE indexer_id=%i" %
-                    (INDEXER_TVDB, mapping[0]['indexer_id'], tvrage_show['indexer_id'])
+                    (INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
                 )
 
             logger.log(u'Relinking episodes to show')
             self.connection.action(
                 "UPDATE tv_episodes SET indexer=%i, showid=%i, indexerid=0 WHERE showid=%i" %
-                    (INDEXER_TVDB, mapping[0]['indexer_id'], tvrage_show['indexer_id'])
+                    (INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
                 )
 
             logger.log('Please perform a full update on %s' % tvrage_show['show_name'], logger.WARNING)
