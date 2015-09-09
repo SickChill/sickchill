@@ -66,7 +66,7 @@ $(document).ready(function(){
     });
 });
 </script>
-<%block>
+</%block>
 <%block name="content">
 <div id="container">
 % if not trending_shows:
