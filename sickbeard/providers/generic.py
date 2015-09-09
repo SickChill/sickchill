@@ -135,10 +135,6 @@ class GenericProvider:
         for providers with special URL requirements (like cookies)
         """
 
-        # check for auth
-        if not self._doLogin():
-            return
-
         if self.proxy.isEnabled():
             self.headers.update({'Referer': self.proxy.getProxyURL()})
             self.proxyGlypeProxySSLwarning = self.proxy.getProxyURL() + 'includes/process.php?action=sslagree&submit=Continue anyway...'

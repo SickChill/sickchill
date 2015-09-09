@@ -1359,7 +1359,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
 
     session = _setUpSession(session, headers)
 
-    for param in params:
+    for param in params or {}:
         if isinstance(params[param], unicode):
             params[param] = params[param].encode('utf-8')
 
