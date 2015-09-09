@@ -1,5 +1,5 @@
 <%inherit file="/layouts/main.mako"/>
-<%
+<%!
     import sickbeard
     import re
     from sickbeard.helpers import anon_url

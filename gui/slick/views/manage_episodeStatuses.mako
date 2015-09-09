@@ -3,6 +3,11 @@
     from sickbeard import common
     import sickbeard
 %>
+<%block name="scripts">
+% if whichStatus or (whichStatus and ep_counts):
+<script type="text/javascript" src="${sbRoot}/js/manageEpisodeStatuses.js?${sbPID}"></script>
+% endif:
+</%block>
 <%block name="content">
 <div id="content960">
 % if not header is UNDEFINED:
@@ -28,8 +33,6 @@ Manage episodes with status <select name="whichStatus" class="form-control form-
 </form>
 
 % else:
-
-<script type="text/javascript" src="${sbRoot}/js/manageEpisodeStatuses.js?${sbPID}"></script>
 
 <form action="${sbRoot}/manage/changeEpisodeStatuses" method="post">
 <input type="hidden" id="oldStatus" name="oldStatus" value="${whichStatus}" />
