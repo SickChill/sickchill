@@ -425,6 +425,17 @@ class TNTVillageProvider(generic.TorrentProvider):
                                     logger.log(u"Subtitled, skipping "  + title + "(" + searchURL + ")", logger.DEBUG)
                                     continue
 
+				search_show = re.split(r'([Ss][\d{1,2}]+)', search_string)[0]
+                                show_title = search_show
+                                rindex = re.search(r'([Ss][\d{1,2}]+)', title)
+                                if rindex:
+                                    show_title = title[:rindex.start()]
+                                    ep_params = title[rindex.start():]
+                                if show_title.lower() != search_show.lower() and search_show.lower() in show_title.lower():
+                                    new_title = search_show + ep_params
+                                    logger.log(u"WARNING - Changing found title from: " + title + " to: " + new_title, logger.DEBUG)
+                                    title = new_title
+
                                 if self._is_season_pack(title):
                                     title = re.sub(r'([Ee][\d{1,2}\-?]+)', '', title)
 
