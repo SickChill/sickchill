@@ -2468,7 +2468,7 @@ class HomeAddShows(Home):
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, file="home_trendingShows.mako")
-        return t.render(submenu=self.HomeMenu(), enable_anime_options=False)
+        return t.render(title="Trending Shows", header="Trending Shows", submenu=self.HomeMenu(), enable_anime_options=False)
 
     def getTrendingShows(self):
         """
