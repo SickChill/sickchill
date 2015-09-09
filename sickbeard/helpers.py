@@ -1347,7 +1347,7 @@ def _setUpSession(session, headers):
         session.headers.update({'Referer': address})
 
     if 'Content-Type' in session.headers:
-       session.headers.pop('Content-Type')
+        session.headers.pop('Content-Type')
 
     return session
 
@@ -1358,12 +1358,17 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
     """
 
     session = _setUpSession(session, headers)
+
+    for param in params or {}:
+        if isinstance(params[param], unicode):
+            params[param] = params[param].encode('utf-8')
+
     session.params = params
 
     try:
         # decide if we get or post data to server
         if post_data:
-	    for param in post_data:
+            for param in post_data:
                 if isinstance(post_data[param], unicode):
                     post_data[param] = post_data[param].encode('utf-8')
 
@@ -1405,7 +1410,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
         return
 
     attempts = 0
-    while(gzip and len(resp.content) > 1 and resp.content[0] == '\x1f' and resp.content[1] == '\x8b' and attempts < 3):
+    while gzip and len(resp.content) > 1 and resp.content[0] == '\x1f' and resp.content[1] == '\x8b' and attempts < 3:
         attempts += 1
         resp._content = gzip.GzipFile(fileobj=_StringIO(resp.content)).read()
 
