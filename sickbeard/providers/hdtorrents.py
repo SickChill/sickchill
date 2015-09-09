@@ -162,10 +162,12 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
             empty = html.find('No torrents here')
             if empty:
+                logger.log(u"Could not find any torrents", logger.ERROR)
                 continue
 
             tables = html.find('table', attrs={'class': 'mainblockcontenttt'})
             if not tables:
+                logger.log(u"Could not find table of torrents mainblockcontenttt", logger.ERROR)
                 continue
 
             torrents = tables.findChildren('tr')
