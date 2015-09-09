@@ -52,15 +52,29 @@ class HoundDawgsProvider(generic.TorrentProvider):
         self.minleech = None
 
         self.cache = HoundDawgsCache(self)
-		
+
         self.urls = {'base_url': 'https://hounddawgs.org/',
-		        'search': 'https://hounddawgs.org/torrents.php?type=&userid=&searchstr=%s&searchimdb=&searchtags=&order_by=s3&order_way=desc&%s',
+		        'search': 'https://hounddawgs.org/torrents.php',
                 'login': 'https://hounddawgs.org/login.php',
         }
 
         self.url = self.urls['base_url']
 
-        self.categories = "&filter_cat[85]=1&filter_cat[58]=1&filter_cat[57]=1&filter_cat[74]=1&filter_cat[92]=1&filter_cat[93]=1"
+        self.search_params = {
+            "filter_cat[85]": 1,
+            "filter_cat[58]": 1,
+            "filter_cat[57]": 1,
+            "filter_cat[74]": 1,
+            "filter_cat[92]": 1,
+            "filter_cat[93]": 1,
+            "order_by": "s3",
+            "order_way": "desc",
+            "type": '',
+            "userid": '',
+            "searchstr": '',
+            "searchimdb": '',
+            "searchtags": ''
+        }
 
     def isEnabled(self):
         return self.enabled
@@ -81,20 +95,16 @@ class HoundDawgsProvider(generic.TorrentProvider):
                         'login': 'Login',
         }
 
-        self.session = requests.Session()
-
-        try:
-            self.session.get(self.urls['base_url'], timeout=30)
-            response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
+        self.getURL(self.urls['base_url'], timeout=30)
+        response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+        if not response:
+            logger.log(u'Unable to connect to provider.', logger.ERROR)
             return False
 
-        if re.search('Dit brugernavn eller kodeord er forkert.', response.text) \
-                or re.search('<title>Login :: HoundDawgs</title>', response.text) \
-                or re.search('Dine cookies er ikke aktiveret.', response.text) \
-                or response.status_code == 401:
-            logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
+        if re.search('Dit brugernavn eller kodeord er forkert.', response) \
+                or re.search('<title>Login :: HoundDawgs</title>', response) \
+                or re.search('Dine cookies er ikke aktiveret.', response):
+            logger.log(u'Invalid username or password, check your settings', logger.ERROR)
             return False
 
         return True
@@ -147,7 +157,7 @@ class HoundDawgsProvider(generic.TorrentProvider):
 
         return [search_string]
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -155,21 +165,13 @@ class HoundDawgsProvider(generic.TorrentProvider):
         if not self._doLogin():
             return results
 
-        for mode in search_params.keys():
-		
-            for search_string in search_params[mode]:
+        for mode in search_strings.keys():
+            for search_string in search_strings[mode]:
+                logger.log(u"Search string: " + search_string, logger.DEBUG)
+                self.search_params['searchstr'] = search_string
 
-                if isinstance(search_string, unicode):
-                    search_string = unidecode(search_string)
+                data = self.getURL(self.urls['search'], params=self.search_params)
 
-                #if mode == 'RSS':
-                    #searchURL = self.urls['index'] % self.categories
-                #else:
-                searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories)
-
-                logger.log(u"Search string: " + searchURL, logger.DEBUG)
-
-                data = self.getURL(searchURL)
                 strTableStart = "<table class=\"torrent_table"
                 startTableIndex=data.find(strTableStart)
                 trimmedData = data[startTableIndex:]
@@ -179,22 +181,22 @@ class HoundDawgsProvider(generic.TorrentProvider):
                 try:
                     with BS4Parser(trimmedData, features=["html5lib", "permissive"]) as html:
                         result_table = html.find('table', {'id': 'torrent_table'})
-        
+
                         if not result_table:
                             logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
                                        logger.DEBUG)
                             continue
-                        
+
                         result_tbody = result_table.find('tbody')
                         entries = result_tbody.contents
-                        del entries[1::2]   
+                        del entries[1::2]
 
                         for result in entries[1:]:
-                            
+
                             torrent = result.find_all('td')
                             if len(torrent) <= 1:
                                 break
-                            
+
                             allAs = (torrent[1]).find_all('a')
 
                             try:
@@ -211,10 +213,10 @@ class HoundDawgsProvider(generic.TorrentProvider):
                                 title = title.replace("subs.", "")
                                 title = title.replace("SUBS.", "")
                                 title = title.replace("Subs.", "")
-                                
+
                                 download_url = self.urls['base_url']+allAs[0].attrs['href']
                                 id = link.replace(self.urls['base_url']+'torrents.php?id=','')
-                                
+
                             except (AttributeError, TypeError):
                                 continue
 
@@ -288,8 +290,8 @@ class HoundDawgsCache(tvcache.TVCache):
         self.minTime = 20
 
     def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        search_strings = {'RSS': ['']}
+        return {'entries': self.provider._doSearch(search_strings)}
 
 
 provider = HoundDawgsProvider()

@@ -1,5 +1,5 @@
 # -*- coding: latin-1 -*-
-# Author: raver2046 <raver2046@gmail.com> from djoole <bobby.djoole@gmail.com>  
+# Author: raver2046 <raver2046@gmail.com> from djoole <bobby.djoole@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
 # This file is part of Sick Beard.
@@ -23,7 +23,6 @@ import datetime
 from requests.auth import AuthBase
 import sickbeard
 import generic
-import urllib
 import requests
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import Quality
@@ -33,7 +32,6 @@ from sickbeard import show_name_helpers
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
-from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.exceptions import ex
 
@@ -46,20 +44,24 @@ class FNTProvider(generic.TorrentProvider):
         self.enabled = False
         self.username = None
         self.password = None
-        self.ratio = None        
+        self.ratio = None
         self.minseed = None
         self.minleech = None
 
         self.cache = FNTCache(self)
 
         self.urls = {'base_url': 'https://fnt.nu',
-                     'search': 'https://www.fnt.nu/torrents/recherche/?afficher=1&recherche=%s%s',
+                     'search': 'https://www.fnt.nu/torrents/recherche/',
                      'login': 'https://fnt.nu/account-login.php',
-                     'download': 'https://fnt.nu/download.php?id=%s&dl=oui',
-        }
+                    }
 
         self.url = self.urls['base_url']
-        self.categories = "&afficher=1&c118=1&c129=1&c119=1&c120=1&c121=1&c126=1&c137=1&c138=1&c146=1&c122=1&c110=1&c109=1&c135=1&c148=1&c153=1&c149=1&c150=1&c154=1&c155=1&c156=1&c114=1&visible=1&freeleech=0&nuke=1&3D=0&sort=size&order=desc"
+        self.search_params = {
+            "afficher": 1, "c118": 1, "c129": 1, "c119": 1, "c120": 1, "c121": 1, "c126": 1,
+            "c137": 1, "c138": 1, "c146": 1, "c122": 1, "c110": 1, "c109": 1, "c135": 1, "c148": 1,
+            "c153": 1, "c149": 1, "c150": 1, "c154": 1, "c155": 1, "c156": 1, "c114": 1,
+            "visible": 1, "freeleech": 0, "nuke": 1, "3D": 0, "sort": "size", "order": "desc"
+            }
 
     def isEnabled(self):
         return self.enabled
@@ -71,32 +73,27 @@ class FNTProvider(generic.TorrentProvider):
         quality = Quality.sceneQuality(item[0], anime)
         return quality
 
-    def _doLogin(self):      
-
+    def _doLogin(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
         login_params = {'username': self.username,
-                            'password': self.password,
-                            'submit' : 'Se loguer'
-        }
-
-        if not self.session:
-            self.session = requests.Session()
+                        'password': self.password,
+                        'submit' : 'Se loguer'
+                       }
 
         logger.log('Performing authentication to FNT', logger.DEBUG)
-        try:
-            response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
+        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        if not response:
+            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
             return False
 
-        if re.search('/account-logout.php', response.text):
+        if re.search('/account-logout.php', response):
             logger.log(u'Login to ' + self.name + ' was successful.', logger.DEBUG)
-            return True                
+            return True
         else:
-            logger.log(u'Login to ' + self.name + ' was unsuccessful.', logger.DEBUG)                
+            logger.log(u'Login to ' + self.name + ' was unsuccessful.', logger.DEBUG)
             return False
 
         return True
@@ -142,85 +139,74 @@ class FNTProvider(generic.TorrentProvider):
         else:
             for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
                 ep_string = sanitizeSceneName(show_name) + '.' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
+                            sickbeard.config.naming_ep_type[2] % {
+                                'seasonnumber': ep_obj.scene_season,
+                                'episodenumber': ep_obj.scene_episode
+                                } + ' %s' % add_string
 
-                search_string['Episode'].append(re.sub('\s+', '.', ep_string))
+                search_string['Episode'].append(re.sub(r'\s+', '.', ep_string))
 
         return [search_string]
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
-
-        logger.log(u"_doSearch started with ..." + str(search_params), logger.DEBUG)
-
+    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        for mode in search_params.keys():
-            
-		
-            for search_string in search_params[mode]:
+        for mode in search_strings.keys():
+            for search_string in search_strings[mode]:
+                logger.log(u"Search string: " + search_string, logger.DEBUG)
+                self.search_params['recherche'] = search_string
 
-                if isinstance(search_string, unicode):
-                    search_string = unidecode(search_string)
-
-                
-                searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories)
-
-                logger.log(u"Search string: " + searchURL, logger.DEBUG)
-                   
-                
-                data = self.getURL(searchURL)
+                data = self.getURL(self.urls['search'], params=self.search_params)
                 if not data:
                     continue
 
                 try:
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                         result_table = html.find('table', {'id': 'tablealign3bis'})
-        
+
                         if not result_table:
-                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                       logger.DEBUG)
+                            logger.log(
+                                u"The Data returned from %s does not contain any torrents" % self.name, logger.DEBUG)
                             continue
-                        
+
                         if result_table:
-                            rows = result_table.findAll("tr" , {"class" : "ligntorrent"} )
-        
+                            rows = result_table.findAll("tr", {"class" : "ligntorrent"} )
+
                             for row in rows:
-                                link = row.findAll('td')[1].find("a" , href=re.compile("fiche_film") )                                                         
-                                  
-                                if link:               
-                                   
-                                   try:                                                                       
-                                      title = link.text
-                                      logger.log(u"FNT TITLE : " + title, logger.DEBUG)                                                                                               
-                                      download_url = self.urls['base_url'] + "/" + row.find("a",href=re.compile("download\.php"))['href']                                                                     
-                                   except (AttributeError, TypeError):
-                                      continue
+                                link = row.findAll('td')[1].find("a", href=re.compile("fiche_film") )
 
-                                   if not title or not download_url:
-                                      continue
-                                      
-                                   try:                                       
-                                      id = download_url.replace(self.urls['base_url'] + "/" + 'download.php?id=', '').replace('&amp;dl=oui', '').replace('&dl=oui', '')    
-                                      logger.log(u"FNT id du torrent  " + str(id), logger.DEBUG)            
-                                      defailseedleech = link['mtcontent']                                                                                                                
-                                      seeders =  int(defailseedleech.split("<font color='#00b72e'>")[1].split("</font>")[0]) 
-                                      logger.log(u"FNT seeders :  " + str(seeders), logger.DEBUG)
-                                      leechers = int(defailseedleech.split("<font color='red'>")[1].split("</font>")[0]) 
-                                      logger.log(u"FNT leechers :  " + str(leechers), logger.DEBUG)                                                                                                     
-                                   except:
-                                      logger.log(u"Unable to parse torrent id & seeders leechers  " + self.name + " Traceback: " + traceback.format_exc(), logger.DEBUG)
-                                      continue
-                                   
-                                   #Filter unseeded torrent
-                                   if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
-                                      continue
-                                 
-                                   item = title, download_url , id, seeders, leechers
-                                   logger.log(u"Found result: " + title.replace(' ','.') + " (" + download_url + ")", logger.DEBUG)
+                                if link:
+                                    try:
+                                        title = link.text
+                                        logger.log(u"FNT TITLE : " + title, logger.DEBUG)
+                                        download_url = self.urls['base_url'] + "/" + row.find("a", href=re.compile("download\.php"))['href']
+                                    except (AttributeError, TypeError):
+                                        continue
 
-                                   items[mode].append(item)
+                                    if not title or not download_url:
+                                        continue
+
+                                    try:
+                                        id = download_url.replace(self.urls['base_url'] + "/" + 'download.php?id=', '').replace('&amp;dl=oui', '').replace('&dl=oui', '')
+                                        logger.log(u"FNT id du torrent  " + str(id), logger.DEBUG)
+                                        defailseedleech = link['mtcontent']
+                                        seeders =  int(defailseedleech.split("<font color='#00b72e'>")[1].split("</font>")[0])
+                                        logger.log(u"FNT seeders :  " + str(seeders), logger.DEBUG)
+                                        leechers = int(defailseedleech.split("<font color='red'>")[1].split("</font>")[0])
+                                        logger.log(u"FNT leechers :  " + str(leechers), logger.DEBUG)
+                                    except:
+                                        logger.log(u"Unable to parse torrent id & seeders leechers  " + self.name + " Traceback: " + traceback.format_exc(), logger.DEBUG)
+                                        continue
+
+                                    #Filter unseeded torrent
+                                    if not seeders or seeders < self.minseed or leechers < self.minleech:
+                                        continue
+
+                                    item = title, download_url , id, seeders, leechers
+                                    logger.log(u"Found result: " + title.replace(' ','.') + " (" + download_url + ")", logger.DEBUG)
+
+                                    items[mode].append(item)
 
                 except Exception, e:
                     logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
@@ -230,7 +216,7 @@ class FNTProvider(generic.TorrentProvider):
         return results
 
     def _get_title_and_url(self, item):
-        
+
         title, url, id, seeders, leechers = item
 
         if title:
@@ -291,8 +277,8 @@ class FNTCache(tvcache.TVCache):
         self.minTime = 10
 
     def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        search_strings = {'RSS': ['']}
+        return {'entries': self.provider._doSearch(search_strings)}
 
 
 provider = FNTProvider()

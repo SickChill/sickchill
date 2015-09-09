@@ -82,17 +82,13 @@ class AlphaRatioProvider(generic.TorrentProvider):
                         'login': 'submit',
         }
 
-        self.session = requests.Session()
-
-        try:
-            response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
+        response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+        if not response:
+            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
             return False
 
-        if re.search('Invalid Username/password', response.text) \
-                or re.search('<title>Login :: AlphaRatio.cc</title>', response.text) \
-                or response.status_code == 401:
+        if re.search('Invalid Username/password', response) \
+                or re.search('<title>Login :: AlphaRatio.cc</title>', response):
             logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
             return False
 

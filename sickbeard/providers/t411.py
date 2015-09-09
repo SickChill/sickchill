@@ -62,8 +62,6 @@ class T411Provider(generic.TorrentProvider):
 
         self.subcategories = [433, 637, 455, 639]
 
-        self.session = requests.Session()
-
     def isEnabled(self):
         return self.enabled
 
@@ -86,10 +84,9 @@ class T411Provider(generic.TorrentProvider):
 
         logger.log('Performing authentication to T411', logger.DEBUG)
 
-        try:
-            response = helpers.getURL(self.urls['login_page'], post_data=login_params, timeout=30, session=self.session, json=True)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.WARNING)
+        response = helpers.getURL(self.urls['login_page'], post_data=login_params, timeout=30, json=True)
+        if not response:
+            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.WARNING)
             return False
 
         if response and 'token' in response:
