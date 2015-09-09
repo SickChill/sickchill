@@ -1,5 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
-<% from sickbeard.helpers import anon_url %>
+<%!
+    from sickbeard.helpers import anon_url
+%>
 <%block name="content">
 <h2>Popular Shows</h2>
 <br />
