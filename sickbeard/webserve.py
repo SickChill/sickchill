@@ -2529,7 +2529,7 @@ class HomeAddShows(Home):
         except Exception as e:
             popular_shows = None
 
-        return t.render(submenu = self.HomeMenu(), popular_shows=popular_shows, imdb_exception=e)
+        return t.render(title="Popular Shows", header="Popular Shows", submenu = self.HomeMenu(), popular_shows=popular_shows, imdb_exception=e)
 
 
     def addShowToBlacklist(self, indexer_id):
