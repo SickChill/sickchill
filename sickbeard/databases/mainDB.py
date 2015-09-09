@@ -46,34 +46,47 @@ class MainSanityCheck(db.DBSanityCheck):
         self.convert_tvrage_to_tvdb()
 
     def convert_tvrage_to_tvdb(self):
-        logger.log(u'Checking for shows with tvrage id\'s, since tvrage is gone')
+        logger.log(u"Checking for shows with tvrage id's, since tvrage is gone")
         from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
         from sickbeard.indexers.indexer_config import INDEXER_TVDB
 
-        sqlResults = self.connection.select(
-            "SELECT indexer_id, show_name FROM tv_shows WHERE indexer = %i" % INDEXER_TVRAGE)
+        sqlResults = self.connection.select("SELECT indexer_id, show_name, location FROM tv_shows WHERE indexer = %i" % INDEXER_TVRAGE)
 
         if sqlResults:
-            logger.log(u'Found %i shows with TVRage ID\', FIXING!' % len(sqlResults), logger.WARNING)
+            logger.log(u"Found %i shows with TVRage ID's, attempting automatic conversion..." % len(sqlResults), logger.WARNING)
 
         for tvrage_show in sqlResults:
-            mapping = self.connection.select(
-                "SELECT mindexer_id FROM indexer_mapping WHERE indexer_id=%i AND indexer=%i AND mindexer=%i" %
-                    (tvrage_show['indexer_id'], INDEXER_TVRAGE, INDEXER_TVDB)
-            )
+            logger.log(u"Processing %s at %s" % (tvrage_show['show_name'], tvrage_show['location']))
+            mapping = self.connection.select("SELECT mindexer_id FROM indexer_mapping WHERE indexer_id=%i AND indexer=%i AND mindexer=%i" %
+                    (tvrage_show['indexer_id'], INDEXER_TVRAGE, INDEXER_TVDB))
 
             if len(mapping) != 1:
-                logger.log(
-                    u'Error mapping show from tvrage to tvdb for %s, found %i results. This show will no longer update!' %
-                        (tvrage_show['show_name'], len(mapping)), logger.WARNING
-                    )
+                logger.log(u"Error mapping show from tvrage to tvdb for %s (%s), found %i mapping results. Cannot convert automatically!" %
+                        (tvrage_show['show_name'], tvrage_show['location'], len(mapping)), logger.WARNING)
+                logger.log(u"Removing the TVRage show and it's episodes from the DB, use 'addExistingShow'", logger.WARNING)
+                self.connection.action("DELETE FROM tv_shows WHERE indexer_id = %i AND indexer = %i" % (tvrage_show['indexer_id'], INDEXER_TVRAGE))
+                self.connection.action("DELETE FROM tv_episodes WHERE showid = %i" % tvrage_show['indexer_id'])
+                continue
 
+            logger.log(u'Checking if there is already a show with id:%i in the show list')
+            duplicate = self.connection.select("SELECT * FROM tv_shows WHERE indexer_id = %i AND indexer = %i" % (mapping[0]['mindexer_id'], INDEXER_TVDB))
+            if duplicate:
+                logger.log(u'Found %s which has the same id as %s, cannot convert automatically so I am pausing %s' %
+                    (duplicate[0]['show_name'], tvrage_show['show_name'], duplicate[0]['show_name']), logger.WARNING)
+                self.connection.action("UPDATE tv_shows SET paused=1 WHERE indexer=%i AND indexer_id=%i" %
+                        (INDEXER_TVDB, duplicate[0]['indexer_id']))
+
+                logger.log(u"Removing %s and it's episodes from the DB" % tvrage_show['show_name'], logger.WARNING)
+                self.connection.action("DELETE FROM tv_shows WHERE indexer_id = %i AND indexer = %i" % (tvrage_show['indexer_id'], INDEXER_TVRAGE))
+                self.connection.action("DELETE FROM tv_episodes WHERE showid = %i" % tvrage_show['indexer_id'])
+                logger.log(u'Manually move the season folders from %s into %s, and delete %s before rescanning %s and unpausing it' %
+                    (tvrage_show['location'], duplicate[0]['location'], tvrage_show['location'], duplicate[0]['show_name']), logger.WARNING)
                 continue
 
             logger.log('Mapping %s to tvdb id %i' % (tvrage_show['show_name'], mapping[0]['mindexer_id']))
 
             self.connection.action(
-                "UPDATE OR IGNORE tv_shows SET indexer=%i, indexer_id=%i WHERE indexer_id=%i" %
+                "UPDATE tv_shows SET indexer=%i, indexer_id=%i WHERE indexer_id=%i" %
                     (INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
                 )
 
