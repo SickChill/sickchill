@@ -6,13 +6,16 @@
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings
     from sickbeard import exceptions
 %>
-% if quality_value != None:
-    <% initial_quality = int(quality_value) %>
-% else:
-    <% initial_quality = common.SD %>
-% endif
-<% anyQualities, bestQualities = common.Quality.splitQuality(initial_quality) %>
 <%block name="scripts">
+<%
+    if quality_value != None:
+        initial_quality = int(quality_value)
+    else:
+        initial_quality = common.SD
+    endif
+
+    anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
+%>
 <script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/massEdit.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
@@ -20,6 +23,15 @@
 </script>
 </%block>
 <%block name="content">
+<%
+    if quality_value != None:
+        initial_quality = int(quality_value)
+    else:
+        initial_quality = common.SD
+    endif
+
+    anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
+%>
 <form action="massEditSubmit" method="post">
 <input type="hidden" name="toEdit" value="${showList}" />
 
