@@ -41,7 +41,7 @@ class GenericMedia:
         static_media_path = self.get_static_media_path()
 
         if ek(isfile, static_media_path):
-            with open(static_media_path, 'r') as content:
+            with open(static_media_path, 'rb') as content:
                 return content.read()
 
         return None
