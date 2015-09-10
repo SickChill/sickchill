@@ -387,6 +387,9 @@ $(document).ready(function(){
           % endif
         });
 
+        // Hides size column for now until we can fix it
+        $('[data-show-size]').hide();
+        $('[data-column="6"]').hide();
 });
 </script>
 </%block>
@@ -778,7 +781,7 @@ $(document).ready(function(){
 
         ## <% show_size = sickbeard.helpers.get_size(curShow._location) %>
         ## <td align="center" data-show-size="${show_size}">${sickbeard.helpers.pretty_filesize(show_size)}</td>
-        <td align="center" data-show-size="0">Disabled!</td>
+        <td align="center" data-show-size="0"></td>
 
         <td align="center">
             <% paused = int(curShow.paused) == 0 and curShow.status == 'Continuing' %>
