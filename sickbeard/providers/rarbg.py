@@ -85,8 +85,6 @@ class RarbgProvider(generic.TorrentProvider):
 
         self.cache = RarbgCache(self)
 
-        self.headers = {'User-Agent': USER_AGENT}
-
     def isEnabled(self):
         return self.enabled
 
@@ -99,7 +97,7 @@ class RarbgProvider(generic.TorrentProvider):
 
         resp_json = None
 
-        response = self.getURL(self.urls['token'], timeout=30, headers=self.headers, json=True)
+        response = self.getURL(self.urls['token'], timeout=30, json=True)
         if not response:
             logger.log(u'Unable to connect to %s provider.' % self.name, logger.WARNING)
             return False

@@ -130,8 +130,6 @@ class XthorProvider(generic.TorrentProvider):
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        self.headers.update({'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.8 (KHTML, like Gecko) Chrome/17.0.940.0 Safari/535.8'})
-
         login_params = {'username': self.username,
                         'password': self.password,
                         'submitme': 'X'
