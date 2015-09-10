@@ -381,19 +381,22 @@ class WebRoot(WebHandler):
         return t.render(title="Api Builder", header="Api Builder", sortedShowList=sortedShowList, seasonSQLResults=seasonSQLResults, episodeSQLResults=episodeSQLResults, apikey=apikey)
 
     def showPoster(self, show=None, which=None):
+        media = None
         media_format = ('normal', 'thumb')[which in ('banner_thumb', 'poster_thumb', 'small')]
 
         if which[0:6] == 'banner':
-            return ShowBanner(show, media_format).get_media()
+            media = ShowBanner(show, media_format)
+        elif which[0:6] == 'fanart':
+            media = ShowFanArt(show, media_format)
+        elif which[0:6] == 'poster':
+            media = ShowPoster(show, media_format)
+        elif which[0:7] == 'network':
+            media = ShowNetworkLogo(show, media_format)
 
-        if which[0:6] == 'fanart':
-            return ShowFanArt(show, media_format).get_media()
+        if media is not None:
+            self.set_header('Content-Type', media.get_media_type())
 
-        if which[0:6] == 'poster':
-            return ShowPoster(show, media_format).get_media()
-
-        if which[0:7] == 'network':
-            return ShowNetworkLogo(show).get_media()
+            return media.get_media()
 
         return None
 
