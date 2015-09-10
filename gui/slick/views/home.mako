@@ -104,11 +104,6 @@ $.tablesorter.addParser({
     type: 'numeric'
 });
 
-function aload(t){"use strict";t=t||window.document.querySelectorAll("[data-aload]"),void 0===t.length&&(t=[t]);var a,e=0,r=t.length;for(e;r>e;e+=1)a=t[e],a["LINK"!==a.tagName?"src":"href"]=a.getAttribute("data-aload"),a.removeAttribute("data-aload");return t}
-// Onload
-window.onload = function () {
-    aload();
-};
 $(document).ready(function(){
     // This needs to be refined to work a little faster.
     $('.progressbar').each(function(progressbar){
@@ -392,6 +387,9 @@ $(document).ready(function(){
           % endif
         });
 
+        // Hides size column for now until we can fix it
+        $('[data-show-size]').hide();
+        $('[data-column="6"]').hide();
 });
 </script>
 </%block>
@@ -455,7 +453,7 @@ $(document).ready(function(){
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
     % if curLoadingShow.show == None:
         <div class="show" data-name="0" data-date="010101" data-network="0" data-progress="101">
-            <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" data-aload="${sbRoot}/images/poster.png" />
+            <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="${sbRoot}/images/poster.png" />
             <div class="show-details">
                 <div class="show-add">Loading... (${curLoadingShow.show_name})</div>
             </div>
@@ -529,7 +527,7 @@ $(document).ready(function(){
 %>
     <div class="show" id="show${curShow.indexerid}" data-name="${curShow.name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
         <div class="show-image">
-            <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" data-aload="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
+            <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
         </div>
 
         <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}"></div>
@@ -574,9 +572,9 @@ $(document).ready(function(){
                 <td class="show-table">
                     % if layout != 'simple':
                         % if curShow.network:
-                            <span title="${curShow.network}"><img class="show-network-image" data-aload="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
+                            <span title="${curShow.network}"><img class="show-network-image" src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
                         % else:
-                            <span title="No Network"><img class="show-network-image" data-aload="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+                            <span title="No Network"><img class="show-network-image" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
                         % endif
                     % else:
                         <span title="${curShow.network}">${curShow.network}</span>
@@ -739,7 +737,7 @@ $(document).ready(function(){
         <td class="tvShow">
             <div class="imgsmallposter ${layout}">
                 <a href="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=${layout}" rel="dialog" title="${curShow.name}">
-                    <img data-aload="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="${layout}" alt="${curShow.indexerid}"/>
+                    <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="${layout}" alt="${curShow.indexerid}"/>
                 </a>
                 <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
             </div>
@@ -749,7 +747,7 @@ $(document).ready(function(){
             <span style="display: none;">${curShow.name}</span>
             <div class="imgbanner ${layout}">
                 <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">
-                <img data-aload="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
+                <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
             </div>
         </td>
     % elif layout == 'simple':
@@ -759,10 +757,10 @@ $(document).ready(function(){
     % if layout != 'simple':
         <td align="center">
         % if curShow.network:
-            <span title="${curShow.network}" class="hidden-print"><img id="network" width="54" height="27" data-aload="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
+            <span title="${curShow.network}" class="hidden-print"><img id="network" width="54" height="27" src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
             <span class="visible-print-inline">${curShow.network}</span>
         % else:
-            <span title="No Network" class="hidden-print"><img id="network" width="54" height="27" data-aload="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+            <span title="No Network" class="hidden-print"><img id="network" width="54" height="27" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
             <span class="visible-print-inline">No Network</span>
         % endif
         </td>
@@ -781,12 +779,13 @@ $(document).ready(function(){
             <span class="visible-print-inline">${download_stat}</span>
         </td>
 
-        <% show_size = sickbeard.helpers.get_size(curShow._location) %>
-        <td align="center" data-show-size="${show_size}">${sickbeard.helpers.pretty_filesize(show_size)}</td>
+        ## <% show_size = sickbeard.helpers.get_size(curShow._location) %>
+        ## <td align="center" data-show-size="${show_size}">${sickbeard.helpers.pretty_filesize(show_size)}</td>
+        <td align="center" data-show-size="0"></td>
 
         <td align="center">
             <% paused = int(curShow.paused) == 0 and curShow.status == 'Continuing' %>
-            <img data-aload="${sbRoot}/images/${('no16.png', 'yes16.png')[bool(paused)]}" alt="${('No', 'Yes')[bool(paused)]}" width="16" height="16" />
+            <img src="${sbRoot}/images/${('no16.png', 'yes16.png')[bool(paused)]}" alt="${('No', 'Yes')[bool(paused)]}" width="16" height="16" />
         </td>
 
         <td align="center">
