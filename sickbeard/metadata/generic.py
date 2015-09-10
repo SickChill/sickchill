@@ -1004,7 +1004,7 @@ class GenericMetadata():
         except Exception as e:
             pass
 
-        logger.log(u"Could not find any " + type + " images on TMDB for " + show.name, logger.DEBUG)
+        logger.log(u"Could not find any " + type + " images on TMDB for " + show.name, logger.INFO)
 
     def _retrieve_show_images_from_fanart(self, show, type, thumb=False):
         types = {'poster': fanart.TYPE.TV.POSTER,
@@ -1034,4 +1034,4 @@ class GenericMetadata():
         except Exception as e:
             pass
 
-        logger.log(u"Could not find any " + type + " images on Fanart.tv for " + show.name, logger.DEBUG)
+        logger.log(u"Could not find any " + type + " images on Fanart.tv for " + show.name, logger.INFO)
