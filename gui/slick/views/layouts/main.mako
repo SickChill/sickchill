@@ -272,7 +272,6 @@
                 | Daily Search: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span>
                 | Backlog Search: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span>
 
-                % if not sickbeard.BRANCH or sickbeard.BRANCH != 'master' and sickbeard.DEVELOPER and sbLogin:
                 <div>
                     % if has_resource_module:
                     Memory used: <span class="footerhighlight">${sickbeard.helpers.pretty_filesize(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span> |
@@ -280,7 +279,6 @@
                     Load time: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
                     Branch: <span class="footerhighlight">${sickbeard.BRANCH}</span>
                 </div>
-               % endif
             </div>
         </footer>
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>

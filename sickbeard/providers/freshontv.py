@@ -97,16 +97,12 @@ class FreshOnTVProvider(generic.TorrentProvider):
                             'login': 'submit'
             }
 
-            if not self.session:
-                self.session = requests.Session()
-
-            try:
-                response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
-            except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
-                logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
+            response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+            if not response:
+                logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
                 return False
 
-            if re.search('/logout.php', response.text):
+            if re.search('/logout.php', response):
                 logger.log(u'Login to ' + self.name + ' was successful.', logger.DEBUG)
 
                 try:
@@ -124,10 +120,10 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
             else:
                 logger.log(u'Login to ' + self.name + ' was unsuccessful.', logger.DEBUG)
-                if re.search('Username does not exist in the userbase or the account is not confirmed yet.', response.text):
+                if re.search('Username does not exist in the userbase or the account is not confirmed yet.', response):
                     logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
 
-                if re.search('DDoS protection by CloudFlare', response.text):
+                if re.search('DDoS protection by CloudFlare', response):
                     logger.log(u'Unable to login to ' + self.name + ' due to CloudFlare DDoS javascript check.', logger.ERROR)
 
                     return False

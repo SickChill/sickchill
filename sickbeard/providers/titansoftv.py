@@ -37,14 +37,13 @@ class TitansOfTVProvider(generic.TorrentProvider):
         self.cache = TitansOfTVCache(self)
         self.url = 'http://titansof.tv/api/torrents'
         self.download_url = 'http://titansof.tv/api/torrents/%s/download?apikey=%s'
-        self.session = requests.Session()
-        
+
     def isEnabled(self):
         return self.enabled
-        
+
     def imageName(self):
         return 'titansoftv.png'
-        
+
     def seedRatio(self):
         return self.ratio
 

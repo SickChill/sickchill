@@ -100,16 +100,12 @@ class MoreThanTVProvider(generic.TorrentProvider):
                             'login': 'submit'
             }
 
-            if not self.session:
-                self.session = requests.Session()
-
-            try:
-                response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
-            except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-                logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
+            response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+            if not response:
+                logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
                 return False
 
-            if re.search('Your username or password was incorrect.', response.text):
+            if re.search('Your username or password was incorrect.', response):
                 logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
                 return False
 
@@ -230,7 +226,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
                             except (AttributeError, TypeError):
                                 continue
 
- 
+
                             #Filter unseeded torrent
                             if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
                                 continue

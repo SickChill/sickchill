@@ -35,7 +35,6 @@ from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
 from sickbeard.exceptions import ex
-from requests.exceptions import RequestException
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
 
 
@@ -86,8 +85,6 @@ class RarbgProvider(generic.TorrentProvider):
 
         self.cache = RarbgCache(self)
 
-        self.headers = {'User-Agent': USER_AGENT}
-
     def isEnabled(self):
         return self.enabled
 
@@ -100,26 +97,19 @@ class RarbgProvider(generic.TorrentProvider):
 
         resp_json = None
 
-        try:
-            response = self.session.get(self.urls['token'], timeout=30, headers=self.headers)
-            response.raise_for_status()
-            resp_json = response.json()
-        except (RequestException) as e:
-            logger.log(u'Unable to connect to {name} provider: {error}'.format(name=self.name, error=ex(e)), logger.ERROR)
+        response = self.getURL(self.urls['token'], timeout=30, json=True)
+        if not response:
+            logger.log(u'Unable to connect to %s provider.' % self.name, logger.WARNING)
             return False
 
-        if not resp_json:
-            logger.log(u'{name} provider: empty json response'.format(name=self.name), logger.ERROR)
-            return False
-        else:
-            try:
-                if resp_json['token']:
-                    self.token = resp_json['token']
-                    self.tokenExpireDate = datetime.datetime.now() + datetime.timedelta(minutes=14)
-                    return True
-            except Exception as e:
-                logger.log(u'{name} provider: No token found'.format(name=self.name), logger.ERROR)
-                logger.log(u'{name} provider: No token found: {error}'.format(name=self.name, error=ex(e)), logger.DEBUG)
+        try:
+            if response['token']:
+                self.token = response['token']
+                self.tokenExpireDate = datetime.datetime.now() + datetime.timedelta(minutes=14)
+                return True
+        except Exception as e:
+            logger.log(u'%s provider: No token found' % self.name, logger.WARNING)
+            logger.log(u'%s provider: No token found: %s' % (self.name, ex(e)), logger.DEBUG)
 
         return False
 
