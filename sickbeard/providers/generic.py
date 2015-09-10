@@ -24,11 +24,13 @@ import os
 import re
 import itertools
 import urllib
-import random
+from random import shuffle
+from base64 import b16encode, b32decode
+
+import requests
+from hachoir_parser import createParser
 
 import sickbeard
-import requests
-
 from sickbeard import helpers, classes, logger, db
 from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT, USER_AGENT
 from sickbeard import tvcache
@@ -36,15 +38,16 @@ from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality
+from sickbeard.common import user_agents
 
-from hachoir_parser import createParser
-from base64 import b16encode, b32decode
+
 
 class GenericProvider:
     NZB = "nzb"
     TORRENT = "torrent"
 
     def __init__(self, name):
+
         # these need to be set in the subclass
         self.providerType = None
         self.name = name
@@ -71,7 +74,8 @@ class GenericProvider:
 
         self.session = requests.Session()
 
-        self.headers = {'User-Agent': USER_AGENT}
+        shuffle(user_agents)
+        self.headers = {'User-Agent': user_agents[0]}
 
         self.btCacheURLS = [
                 'http://torcache.net/torrent/{torrent_hash}.torrent',
@@ -81,7 +85,7 @@ class GenericProvider:
                 #'http://itorrents.org/torrent/{torrent_hash}.torrent',
             ]
 
-        random.shuffle(self.btCacheURLS)
+        shuffle(self.btCacheURLS)
 
     def getID(self):
         return GenericProvider.makeID(self.name)

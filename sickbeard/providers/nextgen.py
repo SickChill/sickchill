@@ -65,8 +65,6 @@ class NextGenProvider(generic.TorrentProvider):
         self.last_login_check = None
 
         self.login_opener = None
-        self.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20130519 Firefox/24.0)'}
-
 
     def isEnabled(self):
         return self.enabled
@@ -96,7 +94,7 @@ class NextGenProvider(generic.TorrentProvider):
         now = time.time()
         if self.login_opener and self.last_login_check < (now - 3600):
             try:
-                output = self.getURL(self.urls['test'], headers=self.headers)
+                output = self.getURL(self.urls['test'])
                 if self.loginSuccess(output):
                     self.last_login_check = now
                     return True
@@ -110,10 +108,10 @@ class NextGenProvider(generic.TorrentProvider):
 
         try:
             login_params = self.getLoginParams()
-            data = self.getURL(self.urls['login_page'], headers=self.headers)
+            data = self.getURL(self.urls['login_page'])
             with BS4Parser(data) as bs:
                 csrfraw = bs.find('form', attrs={'id': 'login'})['action']
-                output = self.getURL(self.urls['base_url'] + csrfraw,  headers=self.headers, post_data=login_params)
+                output = self.getURL(self.urls['base_url'] + csrfraw, post_data=login_params)
 
                 if self.loginSuccess(output):
                     self.last_login_check = now
@@ -192,7 +190,7 @@ class NextGenProvider(generic.TorrentProvider):
                 searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
                 logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
 
-                data = self.getURL(searchURL, headers=self.headers)
+                data = self.getURL(searchURL)
                 if not data:
                     continue
 
