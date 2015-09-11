@@ -470,7 +470,7 @@ class GitUpdateManager(UpdateManager):
         output, err, exit_status = self._run_git(self._git_path, 'fetch %s' % sickbeard.GIT_REMOTE)
 
         if not exit_status == 0:
-            logger.log(u"Unable to contact github, can't check for update", logger.ERROR)
+            logger.log(u"Unable to contact github, can't check for update", logger.WARNING)
             return
 
         # get latest commit_hash from remote
