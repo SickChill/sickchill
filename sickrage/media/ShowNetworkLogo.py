@@ -1,3 +1,5 @@
+from os.path import join
+from sickbeard.encodingKludge import ek
 from sickrage.media.GenericMedia import GenericMedia
 
 
@@ -7,12 +9,12 @@ class ShowNetworkLogo(GenericMedia):
     """
 
     def get_default_media_name(self):
-        return 'network/nonetwork.png'
+        return join('network', 'nonetwork.png')
 
     def get_media_path(self):
         show = self.get_show()
 
         if show:
-            return '%s/images/network/%s.png' % (self.get_media_root(), show.network_logo_name)
+            return ek(join, self.get_media_root(), 'images', 'network', show.network_logo_name + '.png')
 
         return ''

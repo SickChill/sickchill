@@ -84,26 +84,26 @@ class DelugeDAPI(GenericClient):
 
         if label:
             return self.drpc.set_torrent_label(result.hash, label)
-        return False
+        return True
 
 
     def _set_torrent_ratio(self, result):
         if result.ratio:
             ratio = float(result.ratio)
             return self.drpc.set_torrent_ratio(result.hash, ratio)
-        return False
+        return True
 
     def _set_torrent_priority(self, result):
         if result.priority == 1:
             return self.drpc.set_torrent_priority(result.hash, True)
-        return False
+        return True
 
     def _set_torrent_path(self, result):
 
         path = sickbeard.TORRENT_PATH
         if path:
             return self.drpc.set_torrent_path(result.hash, path)
-        return False
+        return True
 
     def _set_torrent_pause(self, result):
 

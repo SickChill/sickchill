@@ -381,19 +381,22 @@ class WebRoot(WebHandler):
         return t.render(title="Api Builder", header="Api Builder", sortedShowList=sortedShowList, seasonSQLResults=seasonSQLResults, episodeSQLResults=episodeSQLResults, apikey=apikey)
 
     def showPoster(self, show=None, which=None):
+        media = None
         media_format = ('normal', 'thumb')[which in ('banner_thumb', 'poster_thumb', 'small')]
 
         if which[0:6] == 'banner':
-            return ShowBanner(show, media_format).get_media()
+            media = ShowBanner(show, media_format)
+        elif which[0:6] == 'fanart':
+            media = ShowFanArt(show, media_format)
+        elif which[0:6] == 'poster':
+            media = ShowPoster(show, media_format)
+        elif which[0:7] == 'network':
+            media = ShowNetworkLogo(show, media_format)
 
-        if which[0:6] == 'fanart':
-            return ShowFanArt(show, media_format).get_media()
+        if media is not None:
+            self.set_header('Content-Type', media.get_media_type())
 
-        if which[0:6] == 'poster':
-            return ShowPoster(show, media_format).get_media()
-
-        if which[0:7] == 'network':
-            return ShowNetworkLogo(show).get_media()
+            return media.get_media()
 
         return None
 
@@ -1235,7 +1238,7 @@ class Home(WebRoot):
                 else:
                     submenu.append({'title': 'Pause', 'path': 'home/togglePause?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-pause'})
 
-                submenu.append({'title': 'Remove', 'path': 'home/deleteShow?show=%d' % showObj.indexerid, 'confirm': True, 'icon': 'ui-icon ui-icon-trash'})
+                submenu.append({'title': 'Remove', 'path': 'home/deleteShow?show=%d' % showObj.indexerid, 'class':'remove', 'confirm': True, 'icon': 'ui-icon ui-icon-trash'})
                 submenu.append({'title': 'Re-scan files', 'path': 'home/refreshShow?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-refresh'})
                 submenu.append({'title': 'Force Full Update', 'path': 'home/updateShow?show=%d&amp;force=1' % showObj.indexerid, 'icon': 'ui-icon ui-icon-transfer-e-w'})
                 submenu.append({'title': 'Update show in KODI','path': 'home/updateKODI?show=%d' % showObj.indexerid, 'requires': self.haveKODI(), 'icon': 'submenu-icon-kodi'})
@@ -3595,8 +3598,8 @@ class History(WebRoot):
 
         t = PageTemplate(rh=self, file="history.mako")
         submenu = [
-            {'title': 'Clear History', 'path': 'history/clearHistory', 'icon': 'ui-icon ui-icon-trash', 'class': 'clearhistory'},
-            {'title': 'Trim History', 'path': 'history/trimHistory', 'icon': 'ui-icon ui-icon-trash', 'class': 'trimhistory'},
+            {'title': 'Clear History', 'path': 'history/clearHistory', 'icon': 'ui-icon ui-icon-trash', 'class': 'clearhistory', 'confirm':True},
+            {'title': 'Trim History', 'path': 'history/trimHistory', 'icon': 'ui-icon ui-icon-trash', 'class': 'trimhistory', 'confirm':True},
         ]
 
         return t.render(historyResults=data, compactResults=compact, limit=limit, submenu=submenu, title='History', header='History', topmenu="history")
@@ -4949,7 +4952,7 @@ class ErrorLogs(WebRoot):
     def ErrorLogsMenu(self):
         menu = [
             {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/', 'icon': 'ui-icon ui-icon-trash'},
-            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors(), 'confirm': True, 'icon': 'ui-icon ui-icon-arrowreturnthick-1-n'},
+            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors(), 'class':'sumbiterrors', 'confirm': True, 'icon': 'ui-icon ui-icon-arrowreturnthick-1-n'},
         ]
 
         return menu

@@ -30,7 +30,7 @@ from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex, AuthException
 import requests
-from bs4 import BeautifulSoup as soup
+from BeautifulSoup import BeautifulSoup as soup
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
 from datetime import datetime
@@ -184,35 +184,39 @@ class HDTorrentsProvider(generic.TorrentProvider):
                     title = url = seeders = leechers = None
                     size = 0
                     for cell in cells:
-                        if None is title and cell.get('title') and cell.get('title') in 'Download':
-                            title = re.search('f=(.*).torrent', cell.a['href']).group(1).replace('+', '.')
-                            url = self.urls['home'] % cell.a['href']
-                        if None is seeders and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
-                            seeders = int(cell.text)
-                        elif None is leechers and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
-                            leechers = int(cell.text)
+                        try:
+                            if None is title and cell.get('title') and cell.get('title') in 'Download':
+                                title = re.search('f=(.*).torrent', cell.a['href']).group(1).replace('+', '.')
+                                url = self.urls['home'] % cell.a['href']
+                            if None is seeders and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
+                                seeders = int(cell.text)
+                            elif None is leechers and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
+                                leechers = int(cell.text)
+    
+                            # Skip torrents released before the episode aired (fakes)
+                            if re.match('..:..:..  ..:..:....', cells[6].text):
+                                if (datetime.strptime(cells[6].text, '%H:%M:%S  %m/%d/%Y') -
+                                    datetime.combine(epObj.airdate, datetime.min.time())).days < 0:
+                                    continue
+        
+                            # Need size for failed downloads handling
+                            if re.match('[0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+', cells[7].text):
+                                size = self._convertSize(cells[7].text)
+        
+                            if not title or not url or not seeders or leechers is None or not size or \
+                                    seeders < self.minseed or leechers < self.minleech:
+                                continue
+            
+                            item = title, url, seeders, leechers, size
+                            logger.log(u"Found result: " + title + " (" + searchURL + ")", logger.DEBUG)
+            
+                            results.append(item)
 
-                    # Skip torrents released before the episode aired (fakes)
-                    if re.match('..:..:..  ..:..:....', cells[6].text):
-                        if (datetime.strptime(cells[6].text, '%H:%M:%S  %m/%d/%Y') -
-                            datetime.combine(epObj.airdate, datetime.min.time())).days < 0:
-                            continue
-
-                    # Need size for failed downloads handling
-                    if re.match('[0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+', cells[7].text):
-                        size = self._convertSize(cells[7].text)
+                        except:
+                            raise
 
                 except (AttributeError, TypeError, KeyError, ValueError):
                     continue
-
-                if not title or not url or not seeders or leechers is None or not size or \
-                        seeders < self.minseed or leechers < self.minleech:
-                    continue
-
-                item = title, url, seeders, leechers, size
-                logger.log(u"Found result: " + title + " (" + searchURL + ")", logger.DEBUG)
-
-                results.append(item)
 
         results.sort(key=lambda tup: tup[3], reverse=True)
         return results

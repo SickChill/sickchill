@@ -1,6 +1,6 @@
 #  SR User Related   #
 ######################
-/cache/
+/cache*/
 /Logs/
 /restore/
 /backup/

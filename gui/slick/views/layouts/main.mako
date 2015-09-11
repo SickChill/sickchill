@@ -194,7 +194,7 @@
                               <% inner_first = False %>
                           % endfor
                       % else:
-                          <a href="${sbRoot}/${menuItem['path']}" class="btn${('', ' confirm')['confirm' in menuItem]}">${('', '<span class="pull-left ' + icon_class + '"></span> ')[bool(icon_class)]}${menuItem['title']}</a>
+                          <a href="${sbRoot}/${menuItem['path']}" class="btn${('', (' confirm ' + menuItem.get('class', '')))['confirm' in menuItem]}">${('', '<span class="pull-left ' + icon_class + '"></span> ')[bool(icon_class)]}${menuItem['title']}</a>
                           <% first = False %>
                       % endif
                 % endif

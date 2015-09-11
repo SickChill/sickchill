@@ -1,6 +1,7 @@
 import sickbeard
 
 from abc import abstractmethod
+from mimetypes import guess_type
 from os.path import isfile, join, normpath
 from sickbeard.encodingKludge import ek
 from sickbeard.exceptions import MultipleShowObjectsException
@@ -40,7 +41,7 @@ class GenericMedia:
         static_media_path = self.get_static_media_path()
 
         if ek(isfile, static_media_path):
-            with open(static_media_path, 'r') as content:
+            with open(static_media_path, 'rb') as content:
                 return content.read()
 
         return None
@@ -59,7 +60,19 @@ class GenericMedia:
         :return: The root folder containing the media
         """
 
-        return sickbeard.DATA_DIR + '/gui/slick'
+        return ek(join, sickbeard.PROG_DIR, 'gui', 'slick')
+
+    def get_media_type(self):
+        """
+        :return: The mime type of the current media
+        """
+
+        static_media_path = self.get_static_media_path()
+
+        if ek(isfile, static_media_path):
+            return guess_type(static_media_path)[0]
+
+        return ''
 
     def get_show(self):
         """
@@ -82,6 +95,6 @@ class GenericMedia:
             if ek(isfile, media_path):
                 return normpath(media_path)
 
-        image_path = join(self.get_media_root(), 'images', self.get_default_media_name())
+        image_path = ek(join, self.get_media_root(), 'images', self.get_default_media_name())
 
         return image_path.replace('\\', '/')
