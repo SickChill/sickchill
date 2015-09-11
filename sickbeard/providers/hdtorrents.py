@@ -30,7 +30,7 @@ from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex, AuthException
 import requests
-from lib.BeautifulSoup import BeautifulSoup as soup
+from BeautifulSoup import BeautifulSoup as soup
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
 from datetime import datetime
