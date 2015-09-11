@@ -605,7 +605,7 @@ $(document).ready(function(){
             <th>Network</th>
             <th>Quality</th>
             <th>Downloads</th>
-            <th>Size</th>
+            ## <th>Size</th>
             <th>Active</th>
             <th>Status</th>
         </tr>
@@ -619,7 +619,7 @@ $(document).ready(function(){
             <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
-            <th>&nbsp;</th>
+            ## <th>&nbsp;</th> // This is needed for size
             <th>&nbsp;</th>
             <th>&nbsp;</th>
         </tr>
