@@ -59,7 +59,7 @@ class CheckVersion():
                 self.updater = SourceUpdateManager()
 
     def run(self, force=False):
-        
+
         self.amActive = True
 
         if self.updater:
@@ -78,7 +78,7 @@ class CheckVersion():
                         else:
                             logger.log(u"Update failed!")
                             ui.notifications.message('Update failed!')
-                            
+
         self.amActive = False
 
     def run_backup_if_safe(self):
@@ -576,7 +576,7 @@ class GitUpdateManager(UpdateManager):
 
         if exit_status == 0:
             self._find_installed_version()
-            sickbeard.GIT_NEWVER = 1
+            sickbeard.GIT_NEWVER = True
 
             # Notify update successful
             if sickbeard.NOTIFY_ON_UPDATE:

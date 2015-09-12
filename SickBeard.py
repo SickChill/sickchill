@@ -357,7 +357,7 @@ class SickRage(object):
                     os.remove(os.path.join(root, name))
                 for name in dirs:
                     os.rmdir(os.path.join(root, name))
-            sickbeard.NEWVER = 0
+            sickbeard.GIT_NEWVER = False
 
         # Fire up all our threads
         sickbeard.start()
