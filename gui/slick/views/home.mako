@@ -386,10 +386,6 @@ $(document).ready(function(){
           $.tablesorter.columnSelector.attachTo( $('#showListTableAnime'), '#popover-target');
           % endif
         });
-
-        // Hides size column for now until we can fix it
-        $('[data-show-size]').hide();
-        $('[data-column="6"]').hide();
 });
 </script>
 </%block>
