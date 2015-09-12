@@ -83,7 +83,7 @@ class RarbgProvider(generic.TorrentProvider):
 
         self.next_request = datetime.datetime.now()
 
-        self.headers = {'User-Agent': USER_AGENT}
+        self.headers.update({'User-Agent': USER_AGENT})
 
         self.cache = RarbgCache(self)
 
