@@ -575,14 +575,21 @@ class GitUpdateManager(UpdateManager):
             output, err, exit_status = self._run_git(self._git_path, 'checkout -f ' + self.branch)  # @UnusedVariable
 
         if exit_status == 0:
-            self._find_installed_version()
-            sickbeard.GIT_NEWVER = True
+            output, err, exit_status = self._run_git(self._git_path, 'submodule update --init --recursive --force' + self.branch)
 
-            # Notify update successful
-            if sickbeard.NOTIFY_ON_UPDATE:
-                notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH if sickbeard.CUR_COMMIT_HASH else "")
+            if exit_status == 0:
+                self._find_installed_version()
+                sickbeard.GIT_NEWVER = True
 
-            return True
+                # Notify update successful
+                if sickbeard.NOTIFY_ON_UPDATE:
+                    notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH if sickbeard.CUR_COMMIT_HASH else "")
+
+                return True
+
+            else:
+                return False
+
         else:
             return False
 
