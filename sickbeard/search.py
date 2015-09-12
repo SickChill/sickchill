@@ -232,9 +232,9 @@ def pickBestResult(results, show):
 
         if not bestResult:
             bestResult = cur_result
-        elif cur_result.quality in bestQualities and (bestResult.quality < cur_result.quality or bestResult not in bestQualities):
+        elif cur_result.quality in bestQualities and (bestResult.quality < cur_result.quality or bestResult.quality not in bestQualities):
             bestResult = cur_result
-        elif cur_result.quality in anyQualities and bestResult not in bestQualities and bestResult.quality < cur_result.quality:
+        elif cur_result.quality in anyQualities and bestResult.quality not in bestQualities and bestResult.quality < cur_result.quality:
             bestResult = cur_result
         elif bestResult.quality == cur_result.quality:
             if "proper" in cur_result.name.lower() or "repack" in cur_result.name.lower():
