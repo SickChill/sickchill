@@ -349,6 +349,16 @@ class SickRage(object):
         if self.consoleLogging:
             print "Starting up SickRage " + sickbeard.BRANCH + " from " + sickbeard.CONFIG_FILE
 
+        # Clean up after update
+        if sickbeard.GIT_NEWVER:
+            toclean = os.path.join(sickbeard.CACHE_DIR, 'mako')
+            for root, dirs, files in os.walk(toclean, topdown=False):
+                for name in files:
+                    os.remove(os.path.join(root, name))
+                for name in dirs:
+                    os.rmdir(os.path.join(root, name))
+            sickbeard.NEWVER = 0
+
         # Fire up all our threads
         sickbeard.start()
 
