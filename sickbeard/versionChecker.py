@@ -575,7 +575,7 @@ class GitUpdateManager(UpdateManager):
             output, err, exit_status = self._run_git(self._git_path, 'checkout -f ' + self.branch)  # @UnusedVariable
 
         if exit_status == 0:
-            output, err, exit_status = self._run_git(self._git_path, 'submodule update --init --recursive --force' + self.branch)
+            output, err, exit_status = self._run_git(self._git_path, 'submodule update --init --recursive --force ' + self.branch)
 
             if exit_status == 0:
                 self._find_installed_version()
