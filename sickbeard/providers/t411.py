@@ -84,7 +84,7 @@ class T411Provider(generic.TorrentProvider):
 
         logger.log('Performing authentication to T411', logger.DEBUG)
 
-        response = helpers.getURL(self.urls['login_page'], post_data=login_params, timeout=30, json=True)
+        response = self.getURL(self.urls['login_page'], post_data=login_params, timeout=30, json=True)
         if not response:
             logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.WARNING)
             return False
