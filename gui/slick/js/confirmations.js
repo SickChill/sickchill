@@ -1,7 +1,7 @@
 $(document).ready(function () {
-	$('a.shutdown').bind("click",function(e) {
+	$('a.shutdown').bind('click', function(e) {
 		e.preventDefault();
-		var target = $( this ).attr('href');
+		var target = $(this).attr('href');
 		$.confirm({
 			'title'		: 'Shutdown',
 			'message'	: 'Are you sure you want to shutdown SickRage ?',
@@ -20,9 +20,9 @@ $(document).ready(function () {
 		});
 	});
 
-	$('a.restart').bind("click",function(e) {
+	$('a.restart').bind('click', function(e) {
 		e.preventDefault();
-		var target = $( this ).attr('href');
+		var target = $(this).attr('href');
 		$.confirm({
 			'title'		: 'Restart',
 			'message'	: 'Are you sure you want to restart SickRage ?',
@@ -41,9 +41,9 @@ $(document).ready(function () {
 		});
 	});
 
-	$('a.remove').bind("click",function(e) {
+	$('a[href^="/home/deleteShow"]').on('click', function(e) {
 		e.preventDefault();
-		var target = $( this ).attr('href');
+		var target = $(this).attr('href');
 		var showname = document.getElementById("showtitle").getAttribute('data-showname');
 		$.confirm({
 			'title'		: 'Remove Show',
@@ -64,9 +64,9 @@ $(document).ready(function () {
 		});
 	});
 
-	$('a.clearhistory').bind("click",function(e) {
+	$('a.clearhistory').bind('click', function(e) {
 		e.preventDefault();
-		var target = $( this ).attr('href');
+		var target = $(this).attr('href');
 		$.confirm({
 			'title'		: 'Clear History',
 			'message'	: 'Are you sure you want to clear all download history ?',
@@ -84,10 +84,10 @@ $(document).ready(function () {
 			}
 		});
 	});
-	
-	$('a.trimhistory').bind("click",function(e) {
+
+	$('a.trimhistory').bind('click', function(e) {
 		e.preventDefault();
-		var target = $( this ).attr('href');
+		var target = $(this).attr('href');
 		$.confirm({
 			'title'		: 'Trim History',
 			'message'	: 'Are you sure you want to trim all download history older than 30 days ?',
@@ -106,9 +106,9 @@ $(document).ready(function () {
 		});
 	});
 
-	$('a.submiterrors').bind("click",function(e) {
+	$('a.submiterrors').on('click', function(e) {
 		e.preventDefault();
-		var target = $( this ).attr('href');
+		var target = $(this).attr('href');
 		$.confirm({
 			'title'		: 'Submit Errors',
 			'message'	: 'Are you sure you want to submit these errors ?<br /><br /><span class="red-text">Make sure SickRage is updated and trigger<br /> this error with debug enabled before submitting</span>',
