@@ -59,7 +59,7 @@ class CheckVersion():
                 self.updater = SourceUpdateManager()
 
     def run(self, force=False):
-        
+
         self.amActive = True
 
         if self.updater:
@@ -78,7 +78,7 @@ class CheckVersion():
                         else:
                             logger.log(u"Update failed!")
                             ui.notifications.message('Update failed!')
-                            
+
         self.amActive = False
 
     def run_backup_if_safe(self):
@@ -470,7 +470,7 @@ class GitUpdateManager(UpdateManager):
         output, err, exit_status = self._run_git(self._git_path, 'fetch %s' % sickbeard.GIT_REMOTE)
 
         if not exit_status == 0:
-            logger.log(u"Unable to contact github, can't check for update", logger.ERROR)
+            logger.log(u"Unable to contact github, can't check for update", logger.WARNING)
             return
 
         # get latest commit_hash from remote
@@ -575,13 +575,21 @@ class GitUpdateManager(UpdateManager):
             output, err, exit_status = self._run_git(self._git_path, 'checkout -f ' + self.branch)  # @UnusedVariable
 
         if exit_status == 0:
-            self._find_installed_version()
+            output, err, exit_status = self._run_git(self._git_path, 'submodule update --init --recursive --force ' + self.branch)
 
-            # Notify update successful
-            if sickbeard.NOTIFY_ON_UPDATE:
-                notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH if sickbeard.CUR_COMMIT_HASH else "")
+            if exit_status == 0:
+                self._find_installed_version()
+                sickbeard.GIT_NEWVER = True
 
-            return True
+                # Notify update successful
+                if sickbeard.NOTIFY_ON_UPDATE:
+                    notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH if sickbeard.CUR_COMMIT_HASH else "")
+
+                return True
+
+            else:
+                return False
+
         else:
             return False
 
