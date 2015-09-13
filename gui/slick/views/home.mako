@@ -53,6 +53,7 @@
 <meta data-var="max_download_count" data-content="${max_download_count}">
 <meta data-var="layout" data-content="${layout}">
 <meta data-var="fuzzydate" data-content="${fuzzydate}">
+<script type="text/javascript" src="${sbRoot}/js/lib/jquery.timeago.js"></script>
 <script type="text/javascript" src="${sbRoot}/js/new/home.js"></script>
 </%block>
 <%block name="content">
@@ -244,7 +245,7 @@
                 </td>
 
                 <td class="show-table">
-		    ${renderQualityPill(curShow.quality, overrideClass="show-quality")}
+            ${renderQualityPill(curShow.quality, overrideClass="show-quality")}
                 </td>
             </tr>
         </table>
@@ -369,7 +370,9 @@
             <% temp_sbfdate_next = sbdatetime.sbdatetime.sbfdate(ldatetime) %>
             <% temp_timegm_next = calendar.timegm(ldatetime.timetuple()) %>
             <td align="center" class="nowrap">
-                <div class="${fuzzydate}">${temp_sbfdate_next}</div>
+                <div class="${fuzzydate}">
+                    <time datetime="${ldatetime.isoformat('T')}" class="date">${temp_sbfdate_next}</time>
+                </div>
                 <span class="sort_data">${temp_timegm_next}</span>
             </td>
         % except ValueError:
@@ -385,8 +388,10 @@
             <% temp_sbfdate_prev = sbdatetime.sbdatetime.sbfdate(pdatetime) %>
             <% temp_timegm_prev = calendar.timegm(pdatetime.timetuple()) %>
             <td align="center" class="nowrap">
-                <div class="${fuzzydate}">${temp_sbfdate_prev}</div>
-                <span class="sort_data">${temp_timegm_prev}</span>
+                <div class="${fuzzydate}">
+                    <time datetime="${pdatetime.isoformat('T')}" class="date">${temp_sbfdate_prev}</time>
+                </div>
+                <span class="sort_data">${temp_sbfdate_prev}</span>
             </td>
         % except ValueError:
             <td align="center" class="nowrap"></td>

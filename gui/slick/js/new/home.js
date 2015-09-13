@@ -290,14 +290,35 @@ $(document).ready(function(){
             $.tablesorter.filter.bindSearch( "#showListTableAnime", $('.search') );
 
     if($('meta[data-var="sickbeard.FUZZY_DATING"]').data('content') == 'True')
-        fuzzyMoment({
-            dtInline: ($('meta[data-var="layout"]').data('content') == 'poster' ? 'false' : 'true'),
-            containerClass: '.' + $('meta[data-var="fuzzydate"]').data('content'),
-            dateHasTime: false,
-            dateFormat: $('meta[data-var="sickbeard.DATE_PRESET"]').data('content'),
-            timeFormat: $('meta[data-var="sickbeard.TIME_PRESET"]').data('content'),
-            trimZero: $('meta[data-var="sickbeard.TRIM_ZERO"]').data('content')
-        });
+        $.timeago.settings.allowFuture = true;
+        $.timeago.settings.strings = {
+            prefixAgo: null,
+            prefixFromNow: 'In ',
+            suffixAgo: "ago",
+            suffixFromNow: "",
+            seconds: "less than a minute",
+            minute: "about a minute",
+            minutes: "%d minutes",
+            hour: "about an hour",
+            hours: "about %d hours",
+            day: "a day",
+            days: "%d days",
+            month: "about a month",
+            months: "%d months",
+            year: "about a year",
+            years: "%d years",
+            wordSeparator: " ",
+            numbers: []
+        };
+        $("[datetime]").timeago();
+        //     fuzzyMoment({
+        //         dtInline: ($('meta[data-var="layout"]').data('content') == 'poster' ? 'false' : 'true'),
+        //         containerClass: '.' + $('meta[data-var="fuzzydate"]').data('content'),
+        //         dateHasTime: false,
+        //         dateFormat: $('meta[data-var="sickbeard.DATE_PRESET"]').data('content'),
+        //         timeFormat: $('meta[data-var="sickbeard.TIME_PRESET"]').data('content'),
+        //         trimZero: $('meta[data-var="sickbeard.TRIM_ZERO"]').data('content')
+        //     });
 
     var $container = [$('#container'), $('#container-anime')];
 
