@@ -78,12 +78,12 @@ class GenericProvider:
         self.headers = {'User-Agent': user_agents[0]}
 
         self.btCacheURLS = [
-                'http://torcache.net/torrent/{torrent_hash}.torrent',
-                'http://thetorrent.org/torrent/{torrent_hash}.torrent',
-                'http://btdig.com/torrent/{torrent_hash}.torrent',
-                #'http://torrage.com/torrent/{torrent_hash}.torrent',
-                #'http://itorrents.org/torrent/{torrent_hash}.torrent',
-            ]
+            'http://torcache.net/torrent/{torrent_hash}.torrent',
+            'http://thetorrent.org/torrent/{torrent_hash}.torrent',
+            'http://btdig.com/torrent/{torrent_hash}.torrent',
+            # 'http://torrage.com/torrent/{torrent_hash}.torrent',
+            # 'http://itorrents.org/torrent/{torrent_hash}.torrent',
+        ]
 
         shuffle(self.btCacheURLS)
 
@@ -207,6 +207,10 @@ class GenericProvider:
         for url in urls:
             if 'NO_DOWNLOAD_NAME' in url:
                 continue
+
+            if not self.proxy.isEnabled() and url.startswith('http'):
+                # Let's just set a referer for every .torrent/.nzb, should work as a cover-all without side-effects
+                self.headers.update({'Referer': '/'.join(url.split('/')[:3]) + '/'})
 
             logger.log(u"Downloading a result from " + self.name + " at " + url)
             if helpers.download_file(self.proxy._buildURL(url), filename, session=self.session, headers=self.headers):
