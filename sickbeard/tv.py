@@ -1457,12 +1457,12 @@ class TVEpisode(object):
             video = None
             try:
                 # Never look for subtitles in the same path, as we specify the path later on
-                video = subliminal.scan_video(vname, subtitles=False, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL or not force)
+                video = subliminal.scan_video(vname, subtitles=False, embedded_subtitles=False)
             except Exception:
                 logger.log(u'%s: Exception caught in subliminal.scan_video for S%02dE%02d' %
                     (self.show.indexerid, self.season, self.episode), logger.DEBUG)
                 return
-
+            
             if not video:
                 return
 
