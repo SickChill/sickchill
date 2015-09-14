@@ -76,7 +76,7 @@ def isValidLanguage(language):
     return True
 
 def getLanguageName(language):
-    return fromietf(language ).name
+    return fromietf(language).name
 
 # TODO: Filter here for non-languages in sickbeard.SUBTITLES_LANGUAGES
 def wantedLanguages(sqlLike = False):
@@ -89,15 +89,19 @@ def subtitlesLanguages(video_path):
     """Return a list detected subtitles for the given video file"""
     resultList = []
 
+    # Serch for embedded subtitles
+    embedded_languages = subliminal.video.scan_video(video_path, subtitles=False, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL)
+
+    # Search subtitles in the absolute path
     if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
         video_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, video_path))
     # Search subtitles in the relative path
-    if sickbeard.SUBTITLES_DIR:
+    elif sickbeard.SUBTITLES_DIR:
         video_path = ek.ek(os.path.join, ek.ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, video_path))
 
     languages = subliminal.video.scan_subtitle_languages(video_path)
 
-    for language in languages:
+    for language in languages.union(embedded_languages.subtitle_languages):
         if hasattr(language, 'opensubtitles') and language.opensubtitles:
             resultList.append(language.opensubtitles)
         elif hasattr(language, 'alpha3') and language.alpha3:
