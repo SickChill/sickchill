@@ -43,8 +43,6 @@
     <br/><br/>
     % endif
 
-
-    % if sickbeard.USE_IMDB_POPULAR == True:
     <a href="${sbRoot}/home/addShows/popularShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addtrendingshow"></div></div>
         <div class="buttontext">
@@ -54,8 +52,6 @@
     </a>
 
     <br/><br/>
-    % endif
-
 
     <a href="${sbRoot}/home/addShows/existingShows/" id="btnExistingShow" class="btn btn-large">
         <div class="button"><div class="icon-addexistingshow"></div></div>
