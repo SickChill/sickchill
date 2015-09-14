@@ -20,7 +20,7 @@ import os
 import platform
 import subprocess
 import re
-import urllib
+
 import tarfile
 import stat
 import traceback
@@ -34,7 +34,6 @@ from sickbeard import logger, helpers
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
 import requests
-from requests.exceptions import RequestException
 
 import shutil
 import shutil_custom
@@ -57,6 +56,8 @@ class CheckVersion():
                 self.updater = GitUpdateManager()
             elif self.install_type == 'source':
                 self.updater = SourceUpdateManager()
+
+        self.session=requests.Session()
 
     def run(self, force=False):
 
@@ -198,9 +199,14 @@ class CheckVersion():
 
     def getDBcompare(self):
         try:
-            response = requests.get("http://cdn.rawgit.com/SICKRAGETV/SickRage/" + str(self.updater.get_newest_commit_hash()) +"/sickbeard/databases/mainDB.py")
-            response.raise_for_status()
-            match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})",response.text)
+            cur_hash = str(self.updater.get_newest_commit_hash())
+            assert len(cur_hash) is 40, "Commit hash wrong length: %s hash: %s" % (len(cur_hash), cur_hash)
+
+            check_url = "http://cdn.rawgit.com/%s/%s/%s/sickbeard/databases/mainDB.py" % (sickbeard.GIT_ORG, sickbeard.GIT_REPO, cur_hash)
+            response = helpers.getURL(check_url, session=self.session)
+            assert response, "Empty response from %s" % check_url
+
+            match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})", response)
             branchDestDBversion = int(match.group('version'))
             myDB = db.DBConnection()
             branchCurrDBversion = myDB.checkDBVersion()
@@ -210,9 +216,7 @@ class CheckVersion():
                 return 'equal'
             else:
                 return 'downgrade'
-        except RequestException as e:
-            return 'error'
-        except Exception as e:
+        except Exception:
             return 'error'
 
     def find_install_type(self):
@@ -624,6 +628,8 @@ class GitUpdateManager(UpdateManager):
 
     def update_remote_origin(self):
         self._run_git(self._git_path, 'config remote.%s.url %s' % (sickbeard.GIT_REMOTE, sickbeard.GIT_REMOTE_URL))
+        if sickbeard.GIT_USERNAME:
+            self._run_git(self._git_path, 'config remote.%s.pushurl %s' % (sickbeard.GIT_REMOTE, sickbeard.GIT_REMOTE_URL.replace(sickbeard.GIT_ORG, sickbeard.GIT_USERNAME)))
 
 class SourceUpdateManager(UpdateManager):
     def __init__(self):
@@ -637,6 +643,8 @@ class SourceUpdateManager(UpdateManager):
         self._cur_commit_hash = sickbeard.CUR_COMMIT_HASH
         self._newest_commit_hash = None
         self._num_commits_behind = 0
+
+        self.session=requests.Session()
 
     def _find_installed_branch(self):
         if sickbeard.CUR_COMMIT_BRANCH == "":
@@ -761,7 +769,7 @@ class SourceUpdateManager(UpdateManager):
             # retrieve file
             logger.log(u"Downloading update from " + repr(tar_download_url))
             tar_download_path = os.path.join(sr_update_dir, u'sr-update.tar')
-            urllib.urlretrieve(tar_download_url, tar_download_path)
+            helpers.download_file(tar_download_url, tar_download_path, session=self.session)
 
             if not ek.ek(os.path.isfile, tar_download_path):
                 logger.log(u"Unable to retrieve new version from " + tar_download_url + ", can't update", logger.WARNING)
