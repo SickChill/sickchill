@@ -59,6 +59,7 @@ from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
 from sickrage.show.ComingEpisodes import ComingEpisodes
 from sickrage.show.History import History as HistoryTool
+from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
 from versionChecker import CheckVersion
@@ -1499,34 +1500,28 @@ class Home(WebRoot):
 
         showObj.saveToDB()
 
-        ui.notifications.message('%s has been %s' % (showObj.name,('resumed', 'paused')[showObj.paused]))
+        ui.notifications.message('%s has been %s' % (showObj.name, ('resumed', 'paused')[showObj.paused]))
         return self.redirect("/home/displayShow?show=" + show)
 
     def deleteShow(self, show=None, full=0):
+        result = Show.delete(show, full)
 
-        if show is None:
-            return self._genericMessage("Error", "Invalid show ID")
+        if result[0] is not None:
+            return self._genericMessage('Error', result[0])
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
-
-        if showObj is None:
-            return self._genericMessage("Error", "Unable to find the specified show")
-
-        try:
-            sickbeard.showQueueScheduler.action.removeShow(showObj, bool(full))
-        except Exception as e:
-            logger.log(u"Unable to delete show: %s. Error: %s" % (showObj.name, ex(e)),logger.WARNING)
-            return self._genericMessage("Error", "Unable to delete show: %s" % showObj.name)
-
-        ui.notifications.message('%s has been %s %s' %
-                                 (showObj.name,
-                                  ('deleted', 'trashed')[bool(sickbeard.TRASH_REMOVE_SHOW)],
-                                  ('(media untouched)', '(with all related media)')[bool(full)]))
+        ui.notifications.message(
+            '%s has been %s %s' %
+            (
+                result[1].name,
+                ('deleted', 'trashed')[bool(sickbeard.TRASH_REMOVE_SHOW)],
+                ('(media untouched)', '(with all related media)')[bool(full)]
+            )
+        )
 
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-        #Dont redirect to default page so user can confirm show was deleted
-        return self.redirect('/home/')
 
+        # Don't redirect to the default page, so the user can confirm that the show was deleted
+        return self.redirect('/home/')
 
     def refreshShow(self, show=None):
 
