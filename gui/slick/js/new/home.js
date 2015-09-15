@@ -282,14 +282,17 @@ $(document).ready(function(){
         sortAppend: [[2,0]]
     });
 
-    if ($("#showListTableShows").find("tbody").find("tr").size() > 0)
+    if ($("#showListTableShows").find("tbody").find("tr").size() > 0){
         $.tablesorter.filter.bindSearch( "#showListTableShows", $('.search') );
+    }
 
-    if($('meta[data-var="sickbeard.ANIME_SPLIT_HOME"]').data('content') == 'True')
-        if ($("#showListTableAnime").find("tbody").find("tr").size() > 0)
+    if(['True', 1].indexOf($('meta[data-var="sickbeard.ANIME_SPLIT_HOME"]').data('content')) >= 0){
+        if($("#showListTableAnime").find("tbody").find("tr").size() > 0){
             $.tablesorter.filter.bindSearch( "#showListTableAnime", $('.search') );
+        }
+    }
 
-    if($('meta[data-var="sickbeard.FUZZY_DATING"]').data('content') == 'True')
+    if(['True', 1].indexOf($('meta[data-var="sickbeard.FUZZY_DATING"]').data('content')) >= 0){
         $.timeago.settings.allowFuture = true;
         $.timeago.settings.strings = {
             prefixAgo: null,
@@ -311,14 +314,7 @@ $(document).ready(function(){
             numbers: []
         };
         $("[datetime]").timeago();
-        //     fuzzyMoment({
-        //         dtInline: ($('meta[data-var="layout"]').data('content') == 'poster' ? 'false' : 'true'),
-        //         containerClass: '.' + $('meta[data-var="fuzzydate"]').data('content'),
-        //         dateHasTime: false,
-        //         dateFormat: $('meta[data-var="sickbeard.DATE_PRESET"]').data('content'),
-        //         timeFormat: $('meta[data-var="sickbeard.TIME_PRESET"]').data('content'),
-        //         trimZero: $('meta[data-var="sickbeard.TRIM_ZERO"]').data('content')
-        //     });
+    }
 
     var $container = [$('#container'), $('#container-anime')];
 
@@ -372,7 +368,9 @@ $(document).ready(function(){
     }).on('shown.bs.popover', function () { // bootstrap popover event triggered when the popover opens
         // call this function to copy the column selection code into the popover
         $.tablesorter.columnSelector.attachTo( $('#showListTableShows'), '#popover-target');
-        if($('meta[data-var="sickbeard.ANIME_SPLIT_HOME"]').data('content') == 'True')
+        if(['True', 1].indexOf($('meta[data-var="sickbeard.ANIME_SPLIT_HOME"]').data('content')) >= 0){
             $.tablesorter.columnSelector.attachTo( $('#showListTableAnime'), '#popover-target');
+        }
+
     });
 });
