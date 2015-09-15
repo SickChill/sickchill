@@ -671,7 +671,7 @@ class CMD_ComingEpisodes(ApiCall):
 
     def run(self):
         """ Display the coming episodes """
-        grouped_coming_episodes = ComingEpisodes.get_coming_episodes(self.type, self.sort, self.paused)
+        grouped_coming_episodes = ComingEpisodes.get_coming_episodes(self.type, self.sort, True, self.paused)
         data = {section: [] for section in grouped_coming_episodes.keys()}
 
         for section, coming_episodes in grouped_coming_episodes.iteritems():

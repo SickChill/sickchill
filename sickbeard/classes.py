@@ -60,11 +60,11 @@ class AuthURLOpener(SickBeardURLopener):
         # if this is the first try then provide a username/password
         if self.numTries == 0:
             self.numTries = 1
-            return (self.username, self.password)
+            return self.username, self.password
 
         # if we've tried before then return blank which cancels the request
         else:
-            return ('', '')
+            return '', ''
 
     # this is pretty much just a hack for convenience
     def openit(self, url):
@@ -189,7 +189,7 @@ class AllShowsListUI:
                         if searchterm.lower() in name.lower():
                             if 'firstaired' not in curShow:
                                 curShow['firstaired'] = str(datetime.date.fromordinal(1))
-                                curShow['firstaired'] = re.sub("([-]0{2}){1,}", "", curShow['firstaired'])
+                                curShow['firstaired'] = re.sub("([-]0{2})+", "", curShow['firstaired'])
                                 fixDate = parser.parse(curShow['firstaired'], fuzzy=True).date()
                                 curShow['firstaired'] = fixDate.strftime(dateFormat)
 
@@ -203,7 +203,7 @@ class ShowListUI:
     """
     This class is for tvdb-api. Instead of prompting with a UI to pick the
     desired result out of a list of shows it tries to be smart about it
-    based on what shows are in SB.
+    based on what shows are in SickRage.
     """
 
     def __init__(self, config, log=None):
@@ -246,7 +246,7 @@ class Proper:
             self.indexerid) + " from " + str(sickbeard.indexerApi(self.indexer).name)
 
 
-class ErrorViewer():
+class ErrorViewer:
     """
     Keeps a static list of UIErrors to be displayed on the UI and allows
     the list to be cleared.

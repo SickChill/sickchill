@@ -10,6 +10,12 @@ from sickrage.helper.quality import get_quality_string
 
 
 class ComingEpisodes:
+    """
+    Missed:   yesterday...(less than 1 week)
+    Today:    today
+    Soon:     tomorrow till next week
+    Later:    later than next week
+    """
     categories = ['later', 'missed', 'soon', 'today']
     sorts = {
         'date': (lambda a, b: cmp(a['localtime'], b['localtime'])),
@@ -21,7 +27,15 @@ class ComingEpisodes:
         pass
 
     @staticmethod
-    def get_coming_episodes(categories, sort, paused=sickbeard.COMING_EPS_DISPLAY_PAUSED):
+    def get_coming_episodes(categories, sort, group, paused=sickbeard.COMING_EPS_DISPLAY_PAUSED):
+        """
+        :param categories: The categories of coming episodes. See ``ComingEpisodes.categories``
+        :param sort: The sort to apply to the coming episodes. See ``ComingEpisodes.sorts``
+        :param group: ``True`` to group the coming episodes by category, ``False`` otherwise
+        :param paused: ``True`` to include paused shows, ``False`` otherwise
+        :return: The list of coming episodes
+        """
+
         if not isinstance(categories, list):
             categories = categories.split('|')
 
@@ -34,8 +48,8 @@ class ComingEpisodes:
         qualities_list = Quality.DOWNLOADED + Quality.SNATCHED + Quality.ARCHIVED + [IGNORED]
 
         fields_to_select = ', '.join(
-            ['airdate', 'airs', 'description', 'episode', 'indexer_id', 'name', 'network', 'paused', 'quality',
-             'season', 'show_name', 'showid', 's.status']
+            ['airdate', 'airs', 'description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id', 'name', 'network',
+             'paused', 'quality', 'runtime', 'season', 'show_name', 'showid', 's.status']
         )
         db = DBConnection(row_type='dict')
         results = db.select(
@@ -74,7 +88,8 @@ class ComingEpisodes:
             'FROM tv_episodes e, tv_shows s '
             'WHERE season != 0 '
             'AND s.indexer_id = e.showid '
-            'AND airdate < ? AND airdate >= ? '
+            'AND airdate < ? '
+            'AND airdate >= ? '
             'AND e.status = ? '
             'AND e.status NOT IN (' + ','.join(['?'] * len(qualities_list)) + ')',
             [today, recently, WANTED] + qualities_list
@@ -82,9 +97,12 @@ class ComingEpisodes:
 
         for index, item in enumerate(results):
             results[index]['localtime'] = sbdatetime.convert_to_setting(
-                parse_date_time(int(item['airdate']), item['airs'], item['network']))
+                parse_date_time(item['airdate'], item['airs'], item['network']))
 
         results.sort(ComingEpisodes.sorts[sort])
+
+        if not group:
+            return results
 
         grouped_results = {category: [] for category in categories}
 
