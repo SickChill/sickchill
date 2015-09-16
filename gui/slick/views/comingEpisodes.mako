@@ -202,7 +202,7 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
 
     <tbody style="text-shadow:none;">
 
-% for cur_result in sql_results:
+% for cur_result in results:
 <%
     cur_indexer = int(cur_result['indexer'])
     run_time = cur_result['runtime']
@@ -297,7 +297,7 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
     <br /><br />
 % endif
 
-% for cur_result in sql_results:
+% for cur_result in results:
 <%
     cur_indexer = int(cur_result['indexer'])
 
@@ -472,7 +472,7 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
         <thead><tr><th>${day.strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</th></tr></thead>
         <tbody>
         <% day_has_show = False %>
-        % for cur_result in sql_results:
+        % for cur_result in results:
             % if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                 <% continue %>
             % endif

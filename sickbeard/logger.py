@@ -28,6 +28,7 @@ import locale
 
 import sickbeard
 from sickbeard import classes, encodingKludge as ek
+from sickrage.helper.common import dateTimeFormat
 from github import Github, InputFileContent
 import codecs
 
@@ -118,16 +119,16 @@ class Logger(object):
         # rotating log file handler
         if self.fileLogging:
             rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=sickbeard.LOG_SIZE, backupCount=sickbeard.LOG_NR, encoding='utf-8')
-            rfh.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M:%S'))
+            rfh.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)-8s %(message)s', dateTimeFormat))
             rfh.setLevel(DEBUG)
 
             for logger in self.loggers:
                 logger.addHandler(rfh)
-                
+
     def shutdown(self):
-        
+
         logging.shutdown()
-        
+
     def log(self, msg, level=INFO, *args, **kwargs):
         meThread = threading.currentThread().getName()
         message = meThread + u" :: " + msg
@@ -155,7 +156,7 @@ class Logger(object):
         if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEBUG and len(classes.ErrorViewer.errors) > 0):
             self.log('Please set your GitHub username and password in the config and enable debug. Unable to submit issue ticket to GitHub!')
             return
-          
+
         try:
             from versionChecker import CheckVersion
             checkversion = CheckVersion()
@@ -167,7 +168,7 @@ class Logger(object):
 
         if commits_behind is None or commits_behind > 0:
             self.log('Please update SickRage, unable to submit issue ticket to GitHub with an outdated version!')
-            return          
+            return
 
         if self.submitter_running:
             return 'RUNNING'
@@ -186,7 +187,7 @@ class Logger(object):
             if os.path.isfile(self.logFile):
                 with ek.ek(codecs.open, *[self.logFile, 'r', 'utf-8']) as f:
                     log_data = f.readlines()
-                    
+
             for i in range (1 , int(sickbeard.LOG_NR)):
                 if os.path.isfile(self.logFile + "." + str(i)) and (len(log_data) <= 500):
                     with ek.ek(codecs.open, *[self.logFile + "." + str(i), 'r', 'utf-8']) as f:
@@ -230,7 +231,7 @@ class Logger(object):
                     try:
                         message += u"Locale: " + locale.getdefaultlocale()[1] + "\n"
                     except:
-                        message += u"Locale: unknown" + "\n"                        
+                        message += u"Locale: unknown" + "\n"
                 message += u"Branch: **" + sickbeard.BRANCH + "**\n"
                 message += u"Commit: SiCKRAGETV/SickRage@" + sickbeard.CUR_COMMIT_HASH + "\n"
                 if gist and gist != 'No ERROR found':

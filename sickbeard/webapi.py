@@ -27,10 +27,13 @@ import re
 import traceback
 
 import sickbeard
+from sickrage.helper.common import dateFormat, dateTimeFormat, timeFormat
+from sickrage.helper.quality import get_quality_string
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
 from sickrage.media.ShowBanner import ShowBanner
+from sickrage.show.ComingEpisodes import ComingEpisodes
 from sickrage.show.History import History
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
@@ -55,7 +58,6 @@ from sickbeard.common import SNATCHED_PROPER
 from sickbeard.common import UNAIRED
 from sickbeard.common import UNKNOWN
 from sickbeard.common import WANTED
-from sickbeard.common import qualityPresetStrings
 from sickbeard.common import statusStrings
 import codecs
 
@@ -68,10 +70,6 @@ except ImportError:
 from tornado.web import RequestHandler
 
 indexer_ids = ["indexerid", "tvdbid"]
-
-dateFormat = "%Y-%m-%d"
-dateTimeFormat = "%Y-%m-%d %H:%M"
-timeFormat = '%A %I:%M %p'
 
 RESULT_SUCCESS = 10  # only use inside the run methods
 RESULT_FAILURE = 20  # only use inside the run methods
@@ -517,15 +515,6 @@ def _responds(result_type, data=None, msg=""):
             "data": data}
 
 
-def _get_quality_string(q):
-    qualityString = "Custom"
-    if q in qualityPresetStrings:
-        qualityString = qualityPresetStrings[q]
-    elif q in Quality.qualityStrings:
-        qualityString = Quality.qualityStrings[q]
-    return qualityString
-
-
 def _get_status_Strings(s):
     return statusStrings[s]
 
@@ -622,12 +611,15 @@ def _getRootDirs():
 
 
 class ApiError(Exception):
-    "Generic API error"
+    """
+    Generic API error
+    """
 
 
 class IntParseError(Exception):
-    "A value could not be parsed into a int. But should be parsable to a int "
-
+    """
+    A value could not be parsed into an int, but should be parsable to an int
+    """
 
 # -------------------------------------------------------------------------------------#
 
@@ -655,126 +647,53 @@ class CMD_Help(ApiCall):
 
 
 class CMD_ComingEpisodes(ApiCall):
-    _help = {"desc": "display the coming episodes",
-             "optionalParameters": {"sort": {"desc": "change the sort order"},
-                                    "type": {"desc": "one or more of allowedValues separated by |"},
-                                    "paused": {
-                                        "desc": "0 to exclude paused shows, 1 to include them, or omitted to use the SR default"},
-             }
+    _help = {
+        "desc": "Display the coming episodes",
+        "optionalParameters": {
+            "sort": {"desc": "Change the sort order"},
+            "type": {"desc": "One or more of allowedValues separated by |"},
+            "paused": {
+                "desc": "0 to exclude paused shows, 1 to include them, or omitted to use SickRage default value"
+            },
+        }
     }
 
     def __init__(self, args, kwargs):
         # required
         # optional
-        self.sort, args = self.check_params(args, kwargs, "sort", "date", False, "string",
-                                            ["date", "show", "network"])
-        self.type, args = self.check_params(args, kwargs, "type", "today|missed|soon|later", False,
-                                            "list",
-                                            ["missed", "later", "today", "soon"])
-        self.paused, args = self.check_params(args, kwargs, "paused", sickbeard.COMING_EPS_DISPLAY_PAUSED,
-                                              False, "int",
+        self.sort, args = self.check_params(args, kwargs, "sort", "date", False, "string", ComingEpisodes.sorts.keys())
+        self.type, args = self.check_params(args, kwargs, "type", '|'.join(ComingEpisodes.categories), False, "list",
+                                            ComingEpisodes.categories)
+        self.paused, args = self.check_params(args, kwargs, "paused", sickbeard.COMING_EPS_DISPLAY_PAUSED, False, "int",
                                               [0, 1])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ display the coming episodes """
-        today = datetime.date.today().toordinal()
-        next_week = (datetime.date.today() + datetime.timedelta(days=7)).toordinal()
-        recently = (datetime.date.today() - datetime.timedelta(days=sickbeard.COMING_EPS_MISSED_RANGE)).toordinal()
+        """ Display the coming episodes """
+        grouped_coming_episodes = ComingEpisodes.get_coming_episodes(self.type, self.sort, True, self.paused)
+        data = {section: [] for section in grouped_coming_episodes.keys()}
 
-        done_show_list = []
-        qualList = Quality.DOWNLOADED + Quality.SNATCHED + Quality.ARCHIVED + [IGNORED]
+        for section, coming_episodes in grouped_coming_episodes.iteritems():
+            for coming_episode in coming_episodes:
+                data[section].append({
+                    'airdate': coming_episode['airdate'],
+                    'airs': coming_episode['airs'],
+                    'ep_name': coming_episode['name'],
+                    'ep_plot': coming_episode['description'],
+                    'episode': coming_episode['episode'],
+                    'indexerid': coming_episode['indexer_id'],
+                    'network': coming_episode['network'],
+                    'paused': coming_episode['paused'],
+                    'quality': coming_episode['quality'],
+                    'season': coming_episode['season'],
+                    'show_name': coming_episode['show_name'],
+                    'show_status': coming_episode['status'],
+                    'tvdbid': coming_episode['tvdbid'],
+                    'weekday': coming_episode['weekday']
+                })
 
-        myDB = db.DBConnection(row_type="dict")
-        sql_results = myDB.select(
-            "SELECT airdate, airs, episode, name AS 'ep_name', description AS 'ep_plot', network, season, showid AS 'indexerid', show_name, tv_shows.quality AS quality, tv_shows.status AS 'show_status', tv_shows.paused AS 'paused' FROM tv_episodes, tv_shows WHERE season != 0 AND airdate >= ? AND airdate < ? AND tv_shows.indexer_id = tv_episodes.showid AND tv_episodes.status NOT IN (" + ','.join(
-                ['?'] * len(qualList)) + ")", [today, next_week] + qualList)
-        for cur_result in sql_results:
-            done_show_list.append(int(cur_result["indexerid"]))
-
-        more_sql_results = myDB.select(
-            "SELECT airdate, airs, episode, name AS 'ep_name', description AS 'ep_plot', network, season, showid AS 'indexerid', show_name, tv_shows.quality AS quality, tv_shows.status AS 'show_status', tv_shows.paused AS 'paused' FROM tv_episodes outer_eps, tv_shows WHERE season != 0 AND showid NOT IN (" + ','.join(
-                ['?'] * len(
-                    done_show_list)) + ") AND tv_shows.indexer_id = outer_eps.showid AND airdate = (SELECT airdate FROM tv_episodes inner_eps WHERE inner_eps.season != 0 AND inner_eps.showid = outer_eps.showid AND inner_eps.airdate >= ? ORDER BY inner_eps.airdate ASC LIMIT 1) AND outer_eps.status NOT IN (" + ','.join(
-                ['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED)) + ")",
-            done_show_list + [next_week] + Quality.DOWNLOADED + Quality.SNATCHED)
-        sql_results += more_sql_results
-
-        more_sql_results = myDB.select(
-            "SELECT airdate, airs, episode, name AS 'ep_name', description AS 'ep_plot', network, season, showid AS 'indexerid', show_name, tv_shows.quality AS quality, tv_shows.status AS 'show_status', tv_shows.paused AS 'paused' FROM tv_episodes, tv_shows WHERE season != 0 AND tv_shows.indexer_id = tv_episodes.showid AND airdate < ? AND airdate >= ? AND tv_episodes.status = ? AND tv_episodes.status NOT IN (" + ','.join(
-                ['?'] * len(qualList)) + ")", [today, recently, WANTED] + qualList)
-        sql_results += more_sql_results
-
-        # sort by air date
-        sorts = {
-            'date': (lambda x, y: cmp(int(x["airdate"]), int(y["airdate"]))),
-            'show': (lambda a, b: cmp(a["show_name"], b["show_name"])),
-            'network': (lambda a, b: cmp(a["network"], b["network"])),
-        }
-
-        sql_results.sort(sorts[self.sort])
-        finalEpResults = {}
-
-        # add all requested types or all
-        for curType in self.type:
-            finalEpResults[curType] = []
-
-        # Safety Measure to convert rows in sql_results to dict.
-        # This should not be required as the DB connections should only be returning dict results not sqlite3.row_type
-        dict_results = [dict(row) for row in sql_results]
-
-        for ep in dict_results:
-            """
-                Missed:   yesterday... (less than 1week)
-                Today:    today
-                Soon:     tomorrow till next week
-                Later:    later than next week
-            """
-
-            if ep["paused"] and not self.paused:
-                continue
-
-            ep['airs'] = str(ep['airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
-            dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(
-                network_timezones.parse_date_time(int(ep['airdate']), ep['airs'], ep['network']))
-            ep['airdate'] = dtEpisodeAirs.toordinal()
-
-            status = "soon"
-            if ep["airdate"] < today:
-                status = "missed"
-            elif ep["airdate"] >= next_week:
-                status = "later"
-            elif ep["airdate"] >= today and ep["airdate"] < next_week:
-                if ep["airdate"] == today:
-                    status = "today"
-                else:
-                    status = "soon"
-
-            # skip unwanted
-            if self.type is not None and not status in self.type:
-                continue
-
-            if not ep["network"]:
-                ep["network"] = ""
-
-            ep["quality"] = _get_quality_string(ep["quality"])
-            # clean up tvdb horrible airs field
-            ep['airs'] = sbdatetime.sbdatetime.sbftime(dtEpisodeAirs, t_preset=timeFormat).lstrip('0').replace(' 0',
-                                                                                                               ' ')
-            # start day of the week on 1 (monday)
-            ep['weekday'] = 1 + datetime.date.fromordinal(dtEpisodeAirs.toordinal()).weekday()
-            # Add tvdbid for backward compability
-            ep["tvdbid"] = ep['indexerid']
-            ep['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
-
-            # TODO: check if this obsolete
-            if not status in finalEpResults:
-                finalEpResults[status] = []
-
-            finalEpResults[status].append(ep)
-
-        return _responds(RESULT_SUCCESS, finalEpResults)
+        return _responds(RESULT_SUCCESS, data)
 
 
 class CMD_Episode(ApiCall):
@@ -836,7 +755,7 @@ class CMD_Episode(ApiCall):
                                                            d_preset=dateFormat)
         status, quality = Quality.splitCompositeStatus(int(episode["status"]))
         episode["status"] = _get_status_Strings(status)
-        episode["quality"] = _get_quality_string(quality)
+        episode["quality"] = get_quality_string(quality)
         episode["file_size_human"] = _sizeof_fmt(episode["file_size"])
 
         return _responds(RESULT_SUCCESS, episode)
@@ -886,8 +805,8 @@ class CMD_EpisodeSearch(ApiCall):
         if ep_queue_item.success:
             status, quality = Quality.splitCompositeStatus(epObj.status)  # @UnusedVariable
             # TODO: split quality and status?
-            return _responds(RESULT_SUCCESS, {"quality": _get_quality_string(quality)},
-                             "Snatched (" + _get_quality_string(quality) + ")")
+            return _responds(RESULT_SUCCESS, {"quality": get_quality_string(quality)},
+                             "Snatched (" + get_quality_string(quality) + ")")
 
         return _responds(RESULT_FAILURE, msg='Unable to find episode')
 
@@ -1143,7 +1062,7 @@ class CMD_History(ApiCall):
                 continue
 
             row["status"] = status
-            row["quality"] = _get_quality_string(quality)
+            row["quality"] = get_quality_string(quality)
             row["date"] = _historyDate_to_dateTimeForm(str(row["date"]))
 
             del row["action"]
@@ -1917,7 +1836,7 @@ class CMD_Show(ApiCall):
                     genreList.append(genre)
 
         showDict["genre"] = genreList
-        showDict["quality"] = _get_quality_string(showObj.quality)
+        showDict["quality"] = get_quality_string(showObj.quality)
 
         anyQualities, bestQualities = _mapQuality(showObj.quality)
         showDict["quality_details"] = {"initial": anyQualities, "archive": bestQualities}
@@ -2583,7 +2502,7 @@ class CMD_ShowSeasons(ApiCall):
             for row in sqlResults:
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
                 row["status"] = _get_status_Strings(status)
-                row["quality"] = _get_quality_string(quality)
+                row["quality"] = get_quality_string(quality)
                 dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(
                     network_timezones.parse_date_time(row['airdate'], showObj.airs, showObj.network))
                 row['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
@@ -2607,7 +2526,7 @@ class CMD_ShowSeasons(ApiCall):
                 del row["episode"]
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
                 row["status"] = _get_status_Strings(status)
-                row["quality"] = _get_quality_string(quality)
+                row["quality"] = get_quality_string(quality)
                 dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(
                     network_timezones.parse_date_time(row['airdate'], showObj.airs, showObj.network))
                 row['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
@@ -2683,7 +2602,7 @@ class CMD_ShowSetQuality(ApiCall):
         showObj.quality = newQuality
 
         return _responds(RESULT_SUCCESS,
-                         msg=showObj.name + " quality has been changed to " + _get_quality_string(showObj.quality))
+                         msg=showObj.name + " quality has been changed to " + get_quality_string(showObj.quality))
 
 
 class CMD_ShowStats(ApiCall):
@@ -2853,7 +2772,7 @@ class CMD_Shows(ApiCall):
 
             showDict = {
                 "paused": curShow.paused,
-                "quality": _get_quality_string(curShow.quality),
+                "quality": get_quality_string(curShow.quality),
                 "language": curShow.lang,
                 "air_by_date": curShow.air_by_date,
                 "sports": curShow.sports,
