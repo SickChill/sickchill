@@ -41,7 +41,7 @@ $(document).ready(function () {
 		});
 	});
 
-	$('a[href^="/home/deleteShow"]').on('click', function(e) {
+	$('a.removeshow').on('click', function(e) {
 		e.preventDefault();
 		var target = $(this).attr('href');
 		var showname = document.getElementById("showtitle").getAttribute('data-showname');
