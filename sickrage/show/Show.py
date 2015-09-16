@@ -1,7 +1,7 @@
 import sickbeard
 
 from sickbeard import showQueueScheduler
-from sickbeard.exceptions import CantRemoveException, ex, MultipleShowObjectsException
+from sickbeard.exceptions import CantRefreshException, CantRemoveException, ex, MultipleShowObjectsException
 from sickbeard.helpers import findCertainShow
 
 
@@ -42,6 +42,7 @@ class Show:
          - an error message if the pause state could not be changed, ``None`` otherwise
          - the show object that was updated, if it exists, ``None`` otherwise
         """
+
         error, show = Show._validate_indexer_id(indexer_id)
 
         if error is not None:
@@ -57,6 +58,28 @@ class Show:
         return None, show
 
     @staticmethod
+    def refresh(indexer_id):
+        """
+        Try to refresh a show
+        :param indexer_id: The unique id of the show to refresh
+        :return: A tuple containing:
+         - an error message if the show could not be refreshed, ``None`` otherwise
+         - the show object that was refreshed, if it exists, ``None`` otherwise
+        """
+
+        error, show = Show._validate_indexer_id(indexer_id)
+
+        if error is not None:
+            return error, show
+
+        try:
+            showQueueScheduler.action.refreshShow(show)
+        except CantRefreshException as exception:
+            return ex(exception), show
+
+        return None, show
+
+    @staticmethod
     def _validate_indexer_id(indexer_id):
         """
         Check that the provided indexer_id is valid and corresponds with a known show
@@ -65,6 +88,7 @@ class Show:
          - an error message if the indexer id is not correct, ``None`` otherwise
          - the show object corresponding to ``indexer_id`` if it exists, ``None`` otherwise
         """
+
         if indexer_id is None:
             return 'Invalid show ID', None
 

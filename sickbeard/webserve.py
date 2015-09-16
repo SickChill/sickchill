@@ -1514,26 +1514,19 @@ class Home(WebRoot):
         return self.redirect('/home/')
 
     def refreshShow(self, show=None):
+        error, show = Show.refresh(show)
 
-        if show is None:
-            return self._genericMessage("Error", "Invalid show ID")
+        # This is a show validation error
+        if error is not None and show is None:
+            return self._genericMessage('Error', error)
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
-
-        if showObj is None:
-            return self._genericMessage("Error", "Unable to find the specified show")
-
-        # force the update from the DB
-        try:
-            sickbeard.showQueueScheduler.action.refreshShow(showObj)
-        except exceptions.CantRefreshException, e:
-            ui.notifications.error("Unable to refresh this show.",
-                                   ex(e))
+        # This is a refresh error
+        if error is not None:
+            ui.notifications.error('Unable to refresh this show.', ex(error))
 
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
-        return self.redirect("/home/displayShow?show=" + str(showObj.indexerid))
-
+        return self.redirect("/home/displayShow?show=" + str(show.indexerid))
 
     def updateShow(self, show=None, force=0):
 
