@@ -570,7 +570,7 @@ class GitUpdateManager(UpdateManager):
 
         # remove untracked files and performs a hard reset on git branch to avoid update issues
         if sickbeard.GIT_RESET:
-            self.clean()
+            #self.clean() # This is removing user data and backups
             self.reset()
 
         if self.branch == self._find_installed_branch():
