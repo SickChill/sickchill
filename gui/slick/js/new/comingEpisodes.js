@@ -29,7 +29,7 @@ if($('meta[data-var="sickbeard.COMING_EPS_LAYOUT"]').data('content') == 'list'){
             return false
         },
         format: function(s) {
-            return s
+            return new Date(s).getTime()
         },
         type: 'numeric'
     });
@@ -45,7 +45,7 @@ $(document).ready(function(){
             widgets: ['stickyHeaders'],
             sortList: sortList,
             textExtraction: {
-                0: function(node) { return $(node).find('span').text().toLowerCase() },
+                0: function(node) { return $(node).find('time').attr('datetime') },
                 5: function(node) { return $(node).find('span').text().toLowerCase() }
             },
             headers: {
