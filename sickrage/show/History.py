@@ -38,7 +38,7 @@ class History:
         else:
             actions = []
 
-        common_sql = 'SELECT h.*, show_name ' \
+        common_sql = 'SELECT action, date, episode, provider, h.quality, resource, season, show_name, showid ' \
                      'FROM history h, tv_shows s ' \
                      'WHERE h.showid = s.indexer_id '
         filter_sql = 'AND action in (' + ','.join(['?'] * len(actions)) + ') '
