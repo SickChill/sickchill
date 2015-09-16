@@ -35,6 +35,7 @@ from sickrage.media.ShowPoster import ShowPoster
 from sickrage.media.ShowBanner import ShowBanner
 from sickrage.show.ComingEpisodes import ComingEpisodes
 from sickrage.show.History import History
+from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
 
@@ -2191,36 +2192,33 @@ class CMD_ShowCache(ApiCall):
 
 
 class CMD_ShowDelete(ApiCall):
-    _help = {"desc": "delete a show in sickrage",
-             "requiredParameters": {
-                 "indexerid": {"desc": "unique id of a show"},
-             },
-             "optionalParameters": {
-                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "removefiles":{"desc": "Deletes the files, there is no going back!"},
-             }
+    _help = {
+        "desc": "Delete a show in SickRage",
+        "requiredParameters": {
+            "indexerid": {"desc": "Unique id of a show"},
+        },
+        "optionalParameters": {
+            "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+            "removefiles": {"desc": "Deletes the files, there is no going back! Default if false"},
+        }
     }
 
     def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
-        self.removefiles, args = self.check_params(args, kwargs, "removefiles", 0, False, "int", [0,1])
+        self.removefiles, args = self.check_params(args, kwargs, "removefiles", 0, False, "int", [0, 1])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ delete a show in sickrage """
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
-        if not showObj:
-            return _responds(RESULT_FAILURE, msg="Show not found")
+        """ Delete a show in SickRage """
+        result = Show.delete(self.indexerid, self.removefiles)
 
-        try:
-            sickbeard.showQueueScheduler.action.removeShow(showObj, bool(self.removefiles))
-        except sickbeard.exceptions.CantRemoveException as e:
-            return _responds(RESULT_FAILURE, msg=ex(e))
+        if result[0] is not None:
+            return _responds(RESULT_FAILURE, msg=result[0])
 
-        return _responds(RESULT_SUCCESS, msg=showObj.name + " has been queued to be deleted")
+        return _responds(RESULT_SUCCESS, msg=result[1].name + ' has been queued to be deleted')
 
 
 class CMD_ShowGetQuality(ApiCall):
