@@ -2213,12 +2213,12 @@ class CMD_ShowDelete(ApiCall):
 
     def run(self):
         """ Delete a show in SickRage """
-        result = Show.delete(self.indexerid, self.removefiles)
+        error, show = Show.delete(self.indexerid, self.removefiles)
 
-        if result[0] is not None:
-            return _responds(RESULT_FAILURE, msg=result[0])
+        if error is not None:
+            return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg=result[1].name + ' has been queued to be deleted')
+        return _responds(RESULT_SUCCESS, msg='%s has been queued to be deleted' % show.name)
 
 
 class CMD_ShowGetQuality(ApiCall):
@@ -2360,14 +2360,15 @@ class CMD_ShowGetFanArt(ApiCall):
 
 
 class CMD_ShowPause(ApiCall):
-    _help = {"desc": "set a show's paused state in sickrage",
-             "requiredParameters": {
-                 "indexerid": {"desc": "unique id of a show"},
-             },
-             "optionalParameters": {
-                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "pause": {"desc": "set the pause state of the show"}
-             }
+    _help = {
+        "desc": "Set a show's paused state in SickRage",
+        "requiredParameters": {
+            "indexerid": {"desc": "Unique id of a show"},
+        },
+        "optionalParameters": {
+            "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+            "pause": {"desc": "1 to pause the show, 0 to resume the show"}
+        }
     }
 
     def __init__(self, args, kwargs):
@@ -2379,19 +2380,14 @@ class CMD_ShowPause(ApiCall):
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ set a show's paused state in sickrage """
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
-        if not showObj:
-            return _responds(RESULT_FAILURE, msg="Show not found")
+        """ Set a show's paused state in SickRage """
+        error, show = Show.pause(self.indexerid, self.pause)
 
-        if self.pause:
-            showObj.paused = 1
-            showObj.saveToDB()
-            return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been paused")
-        else:
-            showObj.paused = 0
-            showObj.saveToDB()
-            return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been unpaused")
+        if error is not None:
+            return _responds(RESULT_FAILURE, msg=error)
+
+        return _responds(RESULT_SUCCESS, msg='%s has been %s' % (show.name, ('resumed', 'paused')[show.paused]))
+
 
 class CMD_ShowRefresh(ApiCall):
     _help = {"desc": "refresh a show in sickrage",

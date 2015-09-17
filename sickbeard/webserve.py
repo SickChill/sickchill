@@ -1483,36 +1483,26 @@ class Home(WebRoot):
 
         return self.redirect("/home/displayShow?show=" + show)
 
-
     def togglePause(self, show=None):
-        if show is None:
-            return self._genericMessage("Error", "Invalid show ID")
+        error, show = Show.pause(show)
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        if error is not None:
+            return self._genericMessage('Error', error)
 
-        if showObj is None:
-            return self._genericMessage("Error", "Unable to find the specified show")
+        ui.notifications.message('%s has been %s' % (show.name, ('resumed', 'paused')[show.paused]))
 
-        if showObj.paused:
-            showObj.paused = 0
-        else:
-            showObj.paused = 1
-
-        showObj.saveToDB()
-
-        ui.notifications.message('%s has been %s' % (showObj.name, ('resumed', 'paused')[showObj.paused]))
         return self.redirect("/home/displayShow?show=" + show)
 
     def deleteShow(self, show=None, full=0):
-        result = Show.delete(show, full)
+        error, show = Show.delete(show, full)
 
-        if result[0] is not None:
-            return self._genericMessage('Error', result[0])
+        if error is not None:
+            return self._genericMessage('Error', error)
 
         ui.notifications.message(
             '%s has been %s %s' %
             (
-                result[1].name,
+                show.name,
                 ('deleted', 'trashed')[bool(sickbeard.TRASH_REMOVE_SHOW)],
                 ('(media untouched)', '(with all related media)')[bool(full)]
             )
