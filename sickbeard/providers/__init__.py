@@ -52,7 +52,8 @@ __all__ = ['womble',
            'xthor',
            'scenetime',
            'btdigg',
-		   'strike',
+           'strike',
+           'transmitthenet',
 ]
 
 import sickbeard
