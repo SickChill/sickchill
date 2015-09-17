@@ -1,0 +1,253 @@
+# This file is part of SickRage.
+#
+# SickRage is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# SickRage is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+
+import re
+import traceback
+import datetime
+import sickbeard
+import generic
+
+from sickbeard.common import Quality
+from sickbeard import logger
+from sickbeard import tvcache
+from sickbeard import db
+from sickbeard import classes
+from sickbeard import helpers
+from sickbeard import show_name_helpers
+from sickbeard.exceptions import ex, AuthException
+from sickbeard.helpers import sanitizeSceneName
+from sickbeard.bs4_parser import BS4Parser
+
+from urllib import urlencode
+
+
+class TVChaosUKProvider(generic.TorrentProvider):
+    def __init__(self):
+        generic.TorrentProvider.__init__(self, 'TvChaosUK')
+
+        self.urls = {
+            'base_url': 'https://tvchaosuk.com/',
+            'login': 'https://tvchaosuk.com/takelogin.php',
+            'index': 'https://tvchaosuk.com/index.php',
+            'search': 'https://tvchaosuk.com/browse.php'
+            }
+
+        self.url = self.urls['base_url']
+
+        self.supportsBacklog = True
+        self.enabled = False
+        self.username = None
+        self.password = None
+        self.ratio = None
+        self.minseed = None
+        self.minleech = None
+
+        self.cache = TVChaosUKCache(self)
+
+        self.search_params = {
+            'do': 'search',
+            'keywords':  '',
+            'search_type': 't_name',
+            'category': 0,
+            'include_dead_torrents': 'no',
+        }
+
+    def isEnabled(self):
+        return self.enabled
+
+    def imageName(self):
+        return 'tvchaosuk.png'
+
+    def getQuality(self, item, anime=False):
+        return Quality.sceneQuality(item[0], anime)
+
+    def _checkAuth(self):
+        if self.username and self.password:
+            return True
+
+        raise AuthException('Your authentication credentials for ' + self.name + ' are missing, check your config.')
+
+    def _doLogin(self):
+
+        login_params = {'username': self.username, 'password': self.password}
+        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        if not response:
+            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
+            return False
+
+        if re.search('Error: Username or password incorrect!', response):
+            logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
+            return False
+
+        logger.log(u'Login successful for ' + self.name, logger.DEBUG)
+        return True
+
+    def _get_season_search_strings(self, ep_obj):
+
+        search_string = {'Season': []}
+        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
+            if ep_obj.show.air_by_date or ep_obj.show.sports:
+                season_string = show_name + ' ' + str(ep_obj.airdate).split('-')[0]
+            elif ep_obj.show.anime:
+                season_string = show_name + ' ' + '%d' % ep_obj.scene_absolute_number
+            else:
+                season_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName SXX
+
+            search_string['Season'].append(season_string.replace('.', ' ').strip())
+
+        return [search_string]
+
+    def _get_episode_search_strings(self, ep_obj, add_string=''):
+
+        search_string = {'Episode': []}
+
+        if not ep_obj:
+            return []
+
+        if self.show.air_by_date:
+            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
+                ep_string = sanitizeSceneName(show_name) + ' ' + \
+                            str(ep_obj.airdate).replace('-', '|')
+                search_string['Episode'].append(ep_string.replace('.', ' ').strip())
+        elif self.show.sports:
+            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
+                ep_string = sanitizeSceneName(show_name) + ' ' + \
+                            str(ep_obj.airdate).replace('-', '|') + '|' + \
+                            ep_obj.airdate.strftime('%b')
+                search_string['Episode'].append(ep_string.replace('.', ' ').strip())
+        elif self.show.anime:
+            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
+                ep_string = sanitizeSceneName(show_name) + ' ' + \
+                            '%i' % int(ep_obj.scene_absolute_number)
+                search_string['Episode'].append(ep_string.replace('.', ' ').strip())
+        else:
+            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
+                ep_string = sanitizeSceneName(show_name) + ' ' + \
+                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
+                                                                  'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
+
+                search_string['Episode'].append(re.sub(r'\s+', ' ', ep_string).replace('.', ' ').strip())
+
+        return [search_string]
+
+    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+
+        results = []
+        items = {'Season': [], 'Episode': [], 'RSS': []}
+
+        if not self._doLogin():
+            return results
+
+        for mode in search_strings.keys():
+            for search_string in search_strings[mode]:
+                self.search_params['keywords'] = search_string.strip()
+                logger.log(u'Search string: ' + self.search_params['keywords'] + ' for ' + self.name, logger.DEBUG)
+
+                data = self.getURL(self.urls['search'], params=self.search_params)
+                url_searched = self.urls['search'] + '?' + urlencode(self.search_params)
+
+                if not data:
+                    logger.log(u'The response from (' + url_searched + ') is empty.',logger.DEBUG)
+                    continue
+
+                logger.log(u'Search query from (' + url_searched + ') returned data.',logger.DEBUG)
+
+                with BS4Parser(data) as html:
+                    torrent_table = html.find(id='listtorrents').find_all('tr')
+                    for torrent in torrent_table:
+                        try:
+                            title = torrent.find(attrs={'class':'tooltip-content'}).text.strip()
+                            url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
+                            seeders = int(torrent.find(title='Seeders').text.strip())
+                            leechers = int(torrent.find(title='Leechers').text.strip())
+
+                            #Filter unseeded torrent
+                            if not seeders or seeders < self.minseed or leechers < self.minleech:
+                                continue
+
+                            if not title or not url:
+                                continue
+
+                            item = title, url, seeders, leechers
+                            logger.log(u'Found result: ' + title.replace(' ','.') + ' (' + url + ')', logger.DEBUG)
+
+                            items[mode].append(item)
+
+                        except:
+                            continue
+
+            #For each search mode sort all the items by seeders
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+
+            results += items[mode]
+
+        return results
+
+    def _get_title_and_url(self, item):
+
+        title, url, seeders, leechers = item
+
+        if title:
+            title = self._clean_title_from_provider(title)
+
+        if url:
+            url = str(url).replace('&amp;', '&')
+
+        return (title, url)
+
+    def findPropers(self, search_date=datetime.datetime.today()):
+
+        results = []
+
+        myDB = db.DBConnection()
+        sqlResults = myDB.select(
+            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
+            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
+            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
+            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
+            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
+        )
+
+        for sqlshow in sqlResults or []:
+            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow['showid']))
+            if self.show:
+                curEp = self.show.getEpisode(int(sqlshow['season']), int(sqlshow['episode']))
+
+                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
+
+                for item in self._doSearch(searchString[0]):
+                    title, url = self._get_title_and_url(item)
+                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
+
+        return results
+
+    def seedRatio(self):
+        return self.ratio
+
+
+class TVChaosUKCache(tvcache.TVCache):
+    def __init__(self, provider):
+
+        tvcache.TVCache.__init__(self, provider)
+
+        # only poll TVChaosUK every 20 minutes max
+        self.minTime = 20
+
+    def _getRSSData(self):
+        search_strings = {'RSS': ['']}
+        return {'entries': self.provider._doSearch(search_strings)}
+
+
+provider = TVChaosUKProvider()
