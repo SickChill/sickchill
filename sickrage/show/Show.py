@@ -1,7 +1,7 @@
 import sickbeard
 
 from sickbeard import showQueueScheduler
-from sickbeard.exceptions import CantRemoveException, MultipleShowObjectsException
+from sickbeard.exceptions import CantRemoveException, ex, MultipleShowObjectsException
 from sickbeard.helpers import findCertainShow
 
 
@@ -27,8 +27,8 @@ class Show:
 
         try:
             showQueueScheduler.action.removeShow(show, bool(remove_files))
-        except CantRemoveException:
-            return 'Unable to delete show: %s' % show.name, show
+        except CantRemoveException as exception:
+            return ex(exception), show
 
         return None, show
 
