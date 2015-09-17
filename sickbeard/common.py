@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv/
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -164,6 +165,12 @@ class Quality:
                       ARCHIVED: "Archived"}
     @staticmethod
     def _getStatusStrings(status):
+        """
+        Returns string values associated with Status prefix
+
+        :param status: Status prefix to resolve
+        :return: Human readable status value
+        """
         toReturn = {}
         for x in Quality.qualityStrings.keys():
             toReturn[Quality.compositeStatus(status, x)] = Quality.statusPrefixes[status] + " (" + \
@@ -197,6 +204,9 @@ class Quality:
         """
         Return The quality from an episode File renamed by SickRage
         If no quality is achieved it will try sceneQuality regex
+
+        :param anime: Boolean to indicate if the show we're resolving is Anime
+        :return: Quality prefix
         """
 
         #Try Scene names first
@@ -214,6 +224,10 @@ class Quality:
     def sceneQuality(name, anime=False):
         """
         Return The quality from the scene episode File
+
+        :param name: Episode filename to analyse
+        :param anime: Boolean to indicate if the show we're resolving is Anime
+        :return: Quality prefix
         """
         if not name:
             return Quality.UNKNOWN
@@ -273,6 +287,12 @@ class Quality:
 
     @staticmethod
     def assumeQuality(name):
+        """
+        Assume a quality from file extension if we cannot resolve it otherwise
+
+        :param name: File name of episode to analyse
+        :return: Quality prefix
+        """
         quality = Quality.qualityFromFileMeta(name)
         if quality != Quality.UNKNOWN:
             return quality
@@ -284,6 +304,12 @@ class Quality:
 
     @staticmethod
     def qualityFromFileMeta(filename):
+        """
+        Get quality file file metadata
+
+        :param filename: Filename to analyse
+        :return: Quality prefix
+        """
         from hachoir_parser import createParser
         from hachoir_metadata import extractMetadata
 
@@ -352,6 +378,14 @@ class Quality:
 
     @staticmethod
     def statusFromName(name, assume=True, anime=False):
+        """
+        Get a status object from filename
+
+        :param name: Filename to check
+        :param assume: boolean to assume quality by extension if we can't figure it out
+        :param anime: boolean to enable anime parsing
+        :return: Composite status/quality object
+        """
         quality = Quality.nameQuality(name, anime)
         if assume and quality == Quality.UNKNOWN:
             quality = Quality.assumeQuality(name)

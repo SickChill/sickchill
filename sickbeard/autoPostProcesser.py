@@ -31,7 +31,12 @@ class PostProcesser():
         self.amActive = False
 
     def run(self, force=False):
-
+        """
+        TODO: Rename class to PostProcessor (classname contains a typo)
+        Runs the postprocessor
+        :param force: Forces postprocessing run (reserved for future use)
+        :return: Returns when done without a return state/code
+        """
         self.amActive = True
         
         if not ek.ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):

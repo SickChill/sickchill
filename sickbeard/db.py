@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -79,6 +80,15 @@ class DBConnection(object):
             raise
 
     def execute(self, query, args=None, fetchall=False, fetchone=False):
+        """
+        Executes DB query
+
+        :param query: Query to execute
+        :param args: Arguments in query
+        :param fetchall: Boolean to indicate all results must be fetched
+        :param fetchone: Boolean to indicate one result must be fetched (to walk results for instance)
+        :return: query results
+        """
         try:
             if fetchall:
                 return self._execute(query, args).fetchall()
@@ -90,7 +100,11 @@ class DBConnection(object):
             raise
 
     def checkDBVersion(self):
+        """
+        Fetch database version
 
+        :return: Integer inidicating current DB version
+        """
         result = None
 
         try:
@@ -105,6 +119,14 @@ class DBConnection(object):
             return 0
 
     def mass_action(self, querylist=[], logTransaction=False, fetchall=False):
+        """
+        Execute multiple queries
+
+        :param querylist: list of queries
+        :param logTransaction: Boolean to wrap all in one transaction
+        :param fetchall: Boolean, when using a select query force returning all results
+        :return: list of results
+        """
         # remove None types
         querylist = [i for i in querylist if i is not None and len(i)]
 
@@ -151,6 +173,15 @@ class DBConnection(object):
             return sqlResult
 
     def action(self, query, args=None, fetchall=False, fetchone=False):
+        """
+        Execute single query
+
+        :param query: Query string
+        :param args: Arguments to query string
+        :param fetchall: Boolean to indicate all results must be fetched
+        :param fetchone: Boolean to indicate one result must be fetched (to walk results for instance)
+        :return: query results
+        """
         if query == None:
             return
 
@@ -187,6 +218,13 @@ class DBConnection(object):
             return sqlResult
 
     def select(self, query, args=None):
+        """
+        Perform single select query on database
+
+        :param query: query string
+        :param args:  arguments to query string
+        :return: query results
+        """
 
         sqlResults = self.action(query, args, fetchall=True)
 
@@ -196,7 +234,13 @@ class DBConnection(object):
         return sqlResults
 
     def selectOne(self, query, args=None):
+        """
+        Perform single select query on database, returning one result
 
+        :param query: query string
+        :param args: arguments to query string
+        :return: query results
+        """
         sqlResults = self.action(query, args, fetchone=True)
 
         if sqlResults == None:
@@ -205,6 +249,14 @@ class DBConnection(object):
         return sqlResults
 
     def upsert(self, tableName, valueDict, keyDict):
+        """
+        Update values, or if no updates done, insert values
+        TODO: Make this return true/false on success/error
+
+        :param tableName: table to update/insert
+        :param valueDict: values in table to update/insert
+        :param keyDict:  columns in table to update/insert
+        """
 
         changesBefore = self.connection.total_changes
 
@@ -221,6 +273,12 @@ class DBConnection(object):
             self.action(query, valueDict.values() + keyDict.values())
 
     def tableInfo(self, tableName):
+        """
+        Return information on a database table
+
+        :param tableName: name of table
+        :return: array of name/type info
+        """
         sqlResult = self.select("PRAGMA table_info(%s)" % tableName)
         columns = {}
         for column in sqlResult:
@@ -228,6 +286,12 @@ class DBConnection(object):
         return columns
 
     def _unicode_text_factory(self, x):
+        """
+        Convert text to unicode
+
+        :param x: text to parse
+        :return: unicode result
+        """
         try:
             # Just revert to the old code for now, until we can fix unicode
             return unicode(x, 'utf-8')
@@ -241,12 +305,34 @@ class DBConnection(object):
         return d
 
     def hasTable(self, tableName):
+        """
+        Check if a table exists in database
+
+        :param tableName: table name to check
+        :return: True if table exists, False if it does not
+        """
         return len(self.select("SELECT 1 FROM sqlite_master WHERE name = ?;", (tableName, ))) > 0
 
     def hasColumn(self, tableName, column):
+        """
+        Check if a table has a column
+
+        :param tableName: Table to check
+        :param column: Column to check for
+        :return: True if column exists, False if it does not
+        """
         return column in self.tableInfo(tableName)
 
     def addColumn(self, table, column, type="NUMERIC", default=0):
+        """
+        Adds a column to a table, default column type is NUMERIC
+        TODO: Make this return true/false on success/failure
+
+        :param table: Table to add column too
+        :param column: Column name to add
+        :param type: Column type to add
+        :param default: Default value for column
+        """
         self.action("ALTER TABLE %s ADD %s %s" % (table, column, type))
         self.action("UPDATE %s SET %s = ?" % (table, column), (default,))
 
@@ -266,6 +352,12 @@ class DBSanityCheck(object):
 # ===============
 
 def upgradeDatabase(connection, schema):
+    """
+    Perform database upgrade and provide logging
+
+    :param connection: Existing DB Connection to use
+    :param schema: New schema to upgrade to
+    """
     logger.log(u"Checking database structure..." + connection.filename, logger.DEBUG)
     _processUpgrade(connection, schema)
 
@@ -275,6 +367,12 @@ def prettyName(class_name):
 
 
 def restoreDatabase(version):
+    """
+    Restores a database to a previous version (backup file of version must still exist)
+
+    :param version: Version to restore to
+    :return: True if restore succeeds, False if it fails
+    """
     logger.log(u"Restoring database before trying upgrade again")
     if not sickbeard.helpers.restoreVersionedFile(dbFilename(suffix='v' + str(version)), version):
         logger.log_error_and_exit(u"Database restore failed, abort upgrading database")

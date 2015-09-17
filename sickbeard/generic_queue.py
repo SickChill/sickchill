@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -42,14 +43,22 @@ class GenericQueue(object):
         self.lock = threading.Lock()
 
     def pause(self):
+        """Pauses this queue"""
         logger.log(u"Pausing queue")
         self.min_priority = 999999999999
 
     def unpause(self):
+        """Unpauses this queue"""
         logger.log(u"Unpausing queue")
         self.min_priority = 0
 
     def add_item(self, item):
+        """
+        Adds an item to this queue
+
+        :param item: Queue object to add
+        :return: item
+        """
         with self.lock:
             item.added = datetime.datetime.now()
             self.queue.append(item)
@@ -57,6 +66,11 @@ class GenericQueue(object):
             return item
 
     def run(self, force=False):
+        """
+        Process items in this queue
+
+        :param force: Force queue processing (currently not implemented)
+        """
         with self.lock:
             # only start a new task if one isn't already going
             if self.currentItem is None or not self.currentItem.isAlive():

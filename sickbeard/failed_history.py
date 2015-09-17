@@ -1,5 +1,6 @@
 # Author: Tyler Fenby <tylerfenby@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -99,6 +100,11 @@ def hasFailed(release, size, provider="%"):
     If provider is given, return True only if the release is found
     with that specific provider. Otherwise, return True if the release
     is found with any provider.
+
+    :param release: Release name to record failure
+    :param size: Size of release
+    :param provider: Specific provider to search (defaults to all providers)
+    :return: True if a release has previously failed.
     """
 
     release = prepareFailedName(release)
@@ -137,6 +143,12 @@ def revertEpisode(epObj):
 
 
 def markFailed(epObj):
+    """
+    Mark an episode as failed
+
+    :param epObj: Episode object to mark as failed
+    :return: empty string
+    """
     log_str = u""
 
     try:
@@ -152,6 +164,11 @@ def markFailed(epObj):
 
 
 def logSnatch(searchResult):
+    """
+    Logs a successful snatch
+
+    :param searchResult: Search result that was successful
+    """
     logDate = datetime.datetime.today().strftime(History.date_format)
     release = prepareFailedName(searchResult.name)
 
@@ -173,6 +190,13 @@ def logSnatch(searchResult):
 
 
 def deleteLoggedSnatch(release, size, provider):
+    """
+    Remove a snatch from history
+
+    :param release: release to delete
+    :param size: Size of release
+    :param provider: Provider to delete it from
+    """
     release = prepareFailedName(release)
 
     myDB = db.DBConnection('failed.db')
@@ -181,6 +205,7 @@ def deleteLoggedSnatch(release, size, provider):
 
 
 def trimHistory():
+    """Trims history table to 1 month of history from today"""
     myDB = db.DBConnection('failed.db')
     myDB.action("DELETE FROM history WHERE date < " + str(
         (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(History.date_format)))

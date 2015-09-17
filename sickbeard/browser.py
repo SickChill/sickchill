@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv/
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -41,7 +42,11 @@ def getWinDrives():
 def foldersAtPath(path, includeParent=False, includeFiles=False):
     """ Returns a list of dictionaries with the folders contained at the given path
         Give the empty string as the path to list the contents of the root path
-        under Unix this means "/", on Windows this will be a list of drive letters)
+        (under Unix this means "/", on Windows this will be a list of drive letters)
+
+        :param includeParent: boolean, include parent dir in list as well
+        :param includeFiles: boolean, include files or only directories
+        :return: list of folders/files
     """
 
     # walk up the tree until we find a valid path
@@ -79,7 +84,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
     if not includeFiles:
         fileList = filter(lambda entry: ek.ek(os.path.isdir, entry['path']), fileList)
 
-    # prune out directories to proect the user from doing stupid things (already lower case the dir to reduce calls)
+    # prune out directories to protect the user from doing stupid things (already lower case the dir to reduce calls)
     hideList = ["boot", "bootmgr", "cache", "msocache", "recovery", "$recycle.bin", "recycler",
                 "system volume information", "temporary internet files"]  # windows specific
     hideList += [".fseventd", ".spotlight", ".trashes", ".vol", "cachedmessages", "caches", "trash"]  # osx specific

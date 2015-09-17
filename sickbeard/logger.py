@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -57,6 +58,7 @@ class CensoredFormatter(logging.Formatter, object):
         super(CensoredFormatter, self).__init__(*args, **kwargs)
 
     def format(self, record):
+        """Strips censored items from string"""
         msg = super(CensoredFormatter, self).format(record)
         for k, v in censoredItems.iteritems():
             if v and len(v) > 0 and v in msg:
