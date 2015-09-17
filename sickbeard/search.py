@@ -36,11 +36,12 @@ from sickbeard import history
 from sickbeard import notifiers
 from sickbeard import nzbSplitter
 from sickbeard import ui
-from sickbeard import encodingKludge as ek
 from sickbeard import failed_history
 from sickbeard.exceptions import ex
 from sickbeard.providers.generic import GenericProvider
 from sickbeard import common
+from sickrage.helper.encoding import ek
+
 
 def _downloadResult(result):
     """
@@ -63,7 +64,7 @@ def _downloadResult(result):
     elif result.resultType == "nzbdata":
 
         # get the final file path to the nzb
-        fileName = ek.ek(os.path.join, sickbeard.NZB_DIR, result.name + ".nzb")
+        fileName = ek(os.path.join, sickbeard.NZB_DIR, result.name + ".nzb")
 
         logger.log(u"Saving NZB to " + fileName)
 
@@ -71,7 +72,7 @@ def _downloadResult(result):
 
         # save the data to disk
         try:
-            with ek.ek(open, fileName, 'w') as fileOut:
+            with ek(open, fileName, 'w') as fileOut:
                 fileOut.write(result.extraInfo[0])
 
             helpers.chmodAsParent(fileName)

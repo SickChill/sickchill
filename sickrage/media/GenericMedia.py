@@ -3,9 +3,9 @@ import sickbeard
 from abc import abstractmethod
 from mimetypes import guess_type
 from os.path import isfile, join, normpath
-from sickbeard.encodingKludge import ek
 from sickbeard.exceptions import MultipleShowObjectsException
 from sickbeard.helpers import findCertainShow
+from sickrage.helper.encoding import ek
 
 
 class GenericMedia:

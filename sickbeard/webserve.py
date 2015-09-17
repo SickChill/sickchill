@@ -30,7 +30,6 @@ from sickbeard import clients
 from sickbeard import notifiers, processTV
 from sickbeard import ui
 from sickbeard import logger, helpers, exceptions, classes, db
-from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
 from sickbeard import naming
 from sickbeard import subtitles
@@ -53,6 +52,7 @@ from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
+from sickrage.helper.encoding import ek, ss
 from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
@@ -1430,7 +1430,7 @@ class Home(WebRoot):
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if os.path.normpath(showObj._location) != os.path.normpath(location):
                 logger.log(os.path.normpath(showObj._location) + " != " + os.path.normpath(location), logger.DEBUG)
-                if not ek.ek(os.path.isdir, location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
+                if not ek(os.path.isdir, location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
                     errors.append("New location <tt>%s</tt> does not exist" % location)
 
                 # don't bother if we're going to update anyway
@@ -1684,7 +1684,7 @@ class Home(WebRoot):
                         continue
 
                     if int(status) in Quality.DOWNLOADED and epObj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.DOWNLOADED + [
-                        IGNORED] and not ek.ek(os.path.isfile, epObj.location):
+                        IGNORED] and not ek(os.path.isfile, epObj.location):
                         logger.log(
                             u"Refusing to change status of " + curEp + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED",
                             logger.ERROR)
@@ -2253,22 +2253,22 @@ class HomeAddShows(Home):
         myDB = db.DBConnection()
         for root_dir in root_dirs:
             try:
-                file_list = ek.ek(os.listdir, root_dir)
+                file_list = ek(os.listdir, root_dir)
             except:
                 continue
 
             for cur_file in file_list:
 
                 try:
-                    cur_path = ek.ek(os.path.normpath, ek.ek(os.path.join, root_dir, cur_file))
-                    if not ek.ek(os.path.isdir, cur_path):
+                    cur_path = ek(os.path.normpath, ek(os.path.join, root_dir, cur_file))
+                    if not ek(os.path.isdir, cur_path):
                         continue
                 except:
                     continue
 
                 cur_dir = {
                     'dir': cur_path,
-                    'display_dir': '<b>' + ek.ek(os.path.dirname, cur_path) + os.sep + '</b>' + ek.ek(
+                    'display_dir': '<b>' + ek(os.path.dirname, cur_path) + os.sep + '</b>' + ek(
                         os.path.basename,
                         cur_path),
                 }
@@ -2331,7 +2331,7 @@ class HomeAddShows(Home):
 
         elif not show_name:
             default_show_name = re.sub(' \(\d{4}\)', '',
-                                         ek.ek(os.path.basename, ek.ek(os.path.normpath, show_dir)).replace('.', ' '))
+                                         ek(os.path.basename, ek(os.path.normpath, show_dir)).replace('.', ' '))
         else:
             default_show_name = show_name
 
@@ -2511,7 +2511,7 @@ class HomeAddShows(Home):
             location = None
 
         if location:
-            show_dir = ek.ek(os.path.join, location, helpers.sanitizeFileName(showName))
+            show_dir = ek(os.path.join, location, helpers.sanitizeFileName(showName))
             dir_exists = helpers.makeDir(show_dir)
             if not dir_exists:
                 logger.log(u"Unable to create the folder " + show_dir + ", can't add the show", logger.ERROR)
@@ -2599,12 +2599,12 @@ class HomeAddShows(Home):
 
         # use the whole path if it's given, or else append the show name to the root dir to get the full show path
         if fullShowPath:
-            show_dir = ek.ek(os.path.normpath, fullShowPath)
+            show_dir = ek(os.path.normpath, fullShowPath)
         else:
-            show_dir = ek.ek(os.path.join, rootDir, helpers.sanitizeFileName(show_name))
+            show_dir = ek(os.path.join, rootDir, helpers.sanitizeFileName(show_name))
 
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
-        if ek.ek(os.path.isdir, show_dir) and not fullShowPath:
+        if ek(os.path.isdir, show_dir) and not fullShowPath:
             ui.notifications.error("Unable to add show", "Folder " + show_dir + " exists already")
             return self.redirect('/home/addShows/existingShows/')
 
@@ -3066,7 +3066,7 @@ class Manage(Home, WebRoot):
 
         for curShow in showList:
 
-            cur_root_dir = ek.ek(os.path.dirname, curShow._location)
+            cur_root_dir = ek(os.path.dirname, curShow._location)
             if cur_root_dir not in root_dir_list:
                 root_dir_list.append(cur_root_dir)
 
@@ -3173,10 +3173,10 @@ class Manage(Home, WebRoot):
             if not showObj:
                 continue
 
-            cur_root_dir = ek.ek(os.path.dirname, showObj._location)
-            cur_show_dir = ek.ek(os.path.basename, showObj._location)
+            cur_root_dir = ek(os.path.dirname, showObj._location)
+            cur_show_dir = ek(os.path.basename, showObj._location)
             if cur_root_dir in dir_map and cur_root_dir != dir_map[cur_root_dir]:
-                new_show_dir = ek.ek(os.path.join, dir_map[cur_root_dir], cur_show_dir)
+                new_show_dir = ek(os.path.join, dir_map[cur_root_dir], cur_show_dir)
                 logger.log(
                     u"For show " + showObj.name + " changing dir from " + showObj._location + " to " + new_show_dir)
             else:
@@ -3737,7 +3737,7 @@ class ConfigGeneral(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/general/")
 
@@ -3894,7 +3894,7 @@ class ConfigSearch(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/search/")
 
@@ -4016,7 +4016,7 @@ class ConfigPostProcessing(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/postProcessing/")
 
@@ -4030,7 +4030,7 @@ class ConfigPostProcessing(Config):
 
         result = naming.test_name(pattern, multi, abd, sports, anime_type)
 
-        result = ek.ek(os.path.join, result['dir'], result['name'])
+        result = ek(os.path.join, result['dir'], result['name'])
 
         return result
 
@@ -4558,7 +4558,7 @@ class ConfigProviders(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/providers/")
 
@@ -4790,7 +4790,7 @@ class ConfigNotifications(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/notifications/")
 
@@ -4841,7 +4841,7 @@ class ConfigSubtitles(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/subtitles/")
 
@@ -4876,7 +4876,7 @@ class ConfigAnime(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/anime/")
 
@@ -4918,8 +4918,7 @@ class ErrorLogs(WebRoot):
             finalData = []
 
             for x in reversed(data_in):
-
-                x = ek.ss(x)
+                x = ss(x)
                 match = re.match(regex, x)
 
                 if match:
@@ -4984,12 +4983,12 @@ class ErrorLogs(WebRoot):
         data = []
 
         if os.path.isfile(logger.logFile):
-            with ek.ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
+            with ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
                 data = Get_Data(minLevel, f.readlines(), 0, regex, logFilter, logSearch, maxLines)
 
         for i in range (1 , int(sickbeard.LOG_NR)):
             if os.path.isfile(logger.logFile + "." + str(i)) and (len(data) <= maxLines):
-                with ek.ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
+                with ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
                         data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 
         return t.render(header="Log File", title="Logs", topmenu="errorlogs", submenu=self.ErrorLogsMenu(),

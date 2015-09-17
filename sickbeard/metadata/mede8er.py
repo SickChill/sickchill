@@ -25,8 +25,8 @@ import mediabrowser
 
 from sickbeard import logger, exceptions, helpers
 from sickbeard.exceptions import ex
-from sickbeard import encodingKludge as ek
 from sickrage.helper.common import dateFormat
+from sickrage.helper.encoding import ek
 
 try:
     import xml.etree.cElementTree as etree
@@ -379,17 +379,17 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             return False
 
         nfo_file_path = self.get_show_file_path(show_obj)
-        nfo_file_dir = ek.ek(os.path.dirname, nfo_file_path)
+        nfo_file_dir = ek(os.path.dirname, nfo_file_path)
 
         try:
-            if not ek.ek(os.path.isdir, nfo_file_dir):
+            if not ek(os.path.isdir, nfo_file_dir):
                 logger.log(u"Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
-                ek.ek(os.makedirs, nfo_file_dir)
+                ek(os.makedirs, nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.log(u"Writing show nfo file to " + nfo_file_path, logger.DEBUG)
 
-            nfo_file = ek.ek(open, nfo_file_path, 'w')
+            nfo_file = ek(open, nfo_file_path, 'w')
 
             data.write(nfo_file, encoding="UTF-8")
             nfo_file.close()
@@ -424,17 +424,17 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             return False
 
         nfo_file_path = self.get_episode_file_path(ep_obj)
-        nfo_file_dir = ek.ek(os.path.dirname, nfo_file_path)
+        nfo_file_dir = ek(os.path.dirname, nfo_file_path)
 
         try:
-            if not ek.ek(os.path.isdir, nfo_file_dir):
+            if not ek(os.path.isdir, nfo_file_dir):
                 logger.log(u"Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
-                ek.ek(os.makedirs, nfo_file_dir)
+                ek(os.makedirs, nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
 
-            nfo_file = ek.ek(open, nfo_file_path, 'w')
+            nfo_file = ek(open, nfo_file_path, 'w')
 
             data.write(nfo_file, encoding="UTF-8")
             nfo_file.close()

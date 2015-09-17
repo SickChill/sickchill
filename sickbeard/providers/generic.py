@@ -32,14 +32,13 @@ from hachoir_parser import createParser
 
 import sickbeard
 from sickbeard import helpers, classes, logger, db
-from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT, USER_AGENT
+from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT
 from sickbeard import tvcache
-from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality
 from sickbeard.common import user_agents
-
+from sickrage.helper.encoding import ek
 
 
 class GenericProvider:
@@ -168,25 +167,24 @@ class GenericProvider:
 
                 if not torrent_hash:
                     logger.log("Unable to extract torrent hash from magnet: " + ex(result.url), logger.ERROR)
-                    return (urls, filename)
+                    return urls, filename
 
                 urls = [x.format(torrent_hash=torrent_hash, torrent_name=torrent_name) for x in self.btCacheURLS]
             except:
                 logger.log("Unable to extract torrent hash or name from magnet: " + ex(result.url), logger.ERROR)
-                return (urls, filename)
+                return urls, filename
         else:
             urls = [result.url]
 
         if self.providerType == GenericProvider.TORRENT:
-            filename = ek.ek(os.path.join, sickbeard.TORRENT_DIR,
-                             helpers.sanitizeFileName(result.name) + '.' + self.providerType)
+            filename = ek(os.path.join, sickbeard.TORRENT_DIR,
+                          helpers.sanitizeFileName(result.name) + '.' + self.providerType)
 
         elif self.providerType == GenericProvider.NZB:
-            filename = ek.ek(os.path.join, sickbeard.NZB_DIR,
-                             helpers.sanitizeFileName(result.name) + '.' + self.providerType)
+            filename = ek(os.path.join, sickbeard.NZB_DIR,
+                          helpers.sanitizeFileName(result.name) + '.' + self.providerType)
 
-        return (urls, filename)
-
+        return urls, filename
 
     def downloadResult(self, result):
         """

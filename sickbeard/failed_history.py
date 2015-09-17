@@ -26,7 +26,7 @@ from sickbeard import logger
 from sickbeard.exceptions import ex, EpisodeNotFoundException
 from sickbeard.common import Quality
 from sickbeard.common import WANTED, FAILED
-from sickbeard import encodingKludge as ek
+from sickrage.helper.encoding import ss
 from sickrage.show.History import History
 
 
@@ -38,7 +38,7 @@ def prepareFailedName(release):
         fixed = fixed.rpartition(".")[0]
 
     fixed = re.sub("[\.\-\+\ ]", "_", fixed)
-    fixed = ek.ss(fixed)
+    fixed = ss(fixed)
 
     return fixed
 

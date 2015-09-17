@@ -28,6 +28,7 @@ import traceback
 
 import sickbeard
 from sickrage.helper.common import dateFormat, dateTimeFormat, timeFormat
+from sickrage.helper.encoding import ek
 from sickrage.helper.quality import get_quality_string
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
@@ -41,7 +42,6 @@ from sickrage.system.Shutdown import Shutdown
 
 from versionChecker import CheckVersion
 from sickbeard import db, logger, exceptions, ui, helpers
-from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
 from sickbeard import image_cache
 from sickbeard import classes
@@ -595,7 +595,7 @@ def _getRootDirs():
     for root_dir in root_dirs:
         valid = 1
         try:
-            ek.ek(os.listdir, root_dir)
+            ek(os.listdir, root_dir)
         except:
             valid = 0
         default = 0
@@ -1197,7 +1197,7 @@ class CMD_Logs(ApiCall):
 
         data = []
         if os.path.isfile(logger.logFile):
-            with ek.ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
+            with ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
                 data = f.readlines()
 
         regex = "^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
@@ -1323,7 +1323,7 @@ class CMD_SickBeardAddRootDir(ApiCall):
         index = 0
 
         # dissallow adding/setting an invalid dir
-        if not ek.ek(os.path.isdir, self.location):
+        if not ek(os.path.isdir, self.location):
             return _responds(RESULT_FAILURE, msg="Location is invalid")
 
         root_dirs = []
@@ -1933,7 +1933,7 @@ class CMD_ShowAddExisting(ApiCall):
         if showObj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in the database")
 
-        if not ek.ek(os.path.isdir, self.location):
+        if not ek(os.path.isdir, self.location):
             return _responds(RESULT_FAILURE, msg='Not a valid location')
 
         indexerName = None
@@ -2053,7 +2053,7 @@ class CMD_ShowAddNew(ApiCall):
             else:
                 return _responds(RESULT_FAILURE, msg="Root directory is not set, please provide a location")
 
-        if not ek.ek(os.path.isdir, self.location):
+        if not ek(os.path.isdir, self.location):
             return _responds(RESULT_FAILURE, msg="'" + self.location + "' is not a valid location")
 
         quality_map = {'sdtv': Quality.SDTV,
@@ -2130,7 +2130,7 @@ class CMD_ShowAddNew(ApiCall):
         indexer = indexerResult['data']['results'][0]['indexer']
 
         # moved the logic check to the end in an attempt to eliminate empty directory being created from previous errors
-        showPath = ek.ek(os.path.join, self.location, helpers.sanitizeFileName(indexerName))
+        showPath = ek(os.path.join, self.location, helpers.sanitizeFileName(indexerName))
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
@@ -2183,9 +2183,9 @@ class CMD_ShowCache(ApiCall):
         has_poster = 0
         has_banner = 0
 
-        if ek.ek(os.path.isfile, cache_obj.poster_path(showObj.indexerid)):
+        if ek(os.path.isfile, cache_obj.poster_path(showObj.indexerid)):
             has_poster = 1
-        if ek.ek(os.path.isfile, cache_obj.banner_path(showObj.indexerid)):
+        if ek(os.path.isfile, cache_obj.banner_path(showObj.indexerid)):
             has_banner = 1
 
         return _responds(RESULT_SUCCESS, {"poster": has_poster, "banner": has_banner})

@@ -26,12 +26,13 @@ import time
 import threading
 import sickbeard
 
-from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard.exceptions import ex
+from sickrage.helper.encoding import ek
 
 db_cons = {}
 db_locks = {}
+
 
 def dbFilename(filename="sickbeard.db", suffix=None):
     """
@@ -43,7 +44,8 @@ def dbFilename(filename="sickbeard.db", suffix=None):
     """
     if suffix:
         filename = "%s.%s" % (filename, suffix)
-    return ek.ek(os.path.join, sickbeard.DATA_DIR, filename)
+    return ek(os.path.join, sickbeard.DATA_DIR, filename)
+
 
 class DBConnection(object):
     def __init__(self, filename="sickbeard.db", suffix=None, row_type=None):

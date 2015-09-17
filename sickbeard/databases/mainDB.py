@@ -23,9 +23,9 @@ import os.path
 
 from sickbeard import db, common, helpers, logger
 
-from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickrage.helper.common import dateTimeFormat
+from sickrage.helper.encoding import ek
 
 from babelfish import language_converters
 
@@ -346,8 +346,8 @@ class AddSizeAndSceneNameFields(InitialSchema):
                 continue
 
             # if there is no size yet then populate it for us
-            if (not cur_ep["file_size"] or not int(cur_ep["file_size"])) and ek.ek(os.path.isfile, cur_ep["location"]):
-                cur_size = ek.ek(os.path.getsize, cur_ep["location"])
+            if (not cur_ep["file_size"] or not int(cur_ep["file_size"])) and ek(os.path.isfile, cur_ep["location"]):
+                cur_size = ek(os.path.getsize, cur_ep["location"])
                 self.connection.action("UPDATE tv_episodes SET file_size = ? WHERE episode_id = ?",
                                        [cur_size, int(cur_ep["episode_id"])])
 
@@ -366,7 +366,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
                 continue
 
             nzb_name = cur_result["resource"]
-            file_name = ek.ek(os.path.basename, download_results[0]["resource"])
+            file_name = ek(os.path.basename, download_results[0]["resource"])
 
             # take the extension off the filename, it's not needed
             if '.' in file_name:
@@ -411,7 +411,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
         logger.log(u"Adding release name to all episodes with obvious scene filenames")
         for cur_result in empty_results:
 
-            ep_file_name = ek.ek(os.path.basename, cur_result["location"])
+            ep_file_name = ek(os.path.basename, cur_result["location"])
             ep_file_name = os.path.splitext(ep_file_name)[0]
 
             # only want to find real scene names here so anything with a space in it is out

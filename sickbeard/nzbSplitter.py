@@ -26,10 +26,11 @@ import re
 
 from sickbeard import logger, classes, helpers
 from sickbeard.common import Quality
-from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
+from sickrage.helper.encoding import ek, ss
 
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+
 
 def getSeasonNZBs(name, urlData, season):
     try:
@@ -84,12 +85,12 @@ def createNZBString(fileElements, xmlns):
     for curFile in fileElements:
         rootElement.append(stripNS(curFile, xmlns))
 
-    return xml.etree.ElementTree.tostring(ek.ss(rootElement))
+    return xml.etree.ElementTree.tostring(ss(rootElement))
 
 
 def saveNZB(nzbName, nzbString):
     try:
-        with ek.ek(open, nzbName + ".nzb", 'w') as nzb_fh:
+        with ek(open, nzbName + ".nzb", 'w') as nzb_fh:
             nzb_fh.write(nzbString)
 
     except EnvironmentError, e:

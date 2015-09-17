@@ -36,10 +36,9 @@ from sickbeard import logger
 from sickbeard import notifiers
 from sickbeard import show_name_helpers
 from sickbeard import failed_history
-from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
-
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickrage.helper.encoding import ek
 
 import adba
 from sickbeard.helpers import verify_freespace
@@ -65,16 +64,16 @@ class PostProcessor(object):
         nzb_name: The name of the NZB which resulted in this file being downloaded (optional)
         """
         # absolute path to the folder that is being processed
-        self.folder_path = ek.ek(os.path.dirname, ek.ek(os.path.abspath, file_path))
+        self.folder_path = ek(os.path.dirname, ek(os.path.abspath, file_path))
 
         # full path to file
         self.file_path = file_path
 
         # file name only
-        self.file_name = ek.ek(os.path.basename, file_path)
+        self.file_name = ek(os.path.basename, file_path)
 
         # the name of the folder only
-        self.folder_name = ek.ek(os.path.basename, self.folder_path)
+        self.folder_name = ek(os.path.basename, self.folder_path)
 
         # name of the NZB that resulted in this folder
         self.nzb_name = nzb_name
@@ -124,14 +123,14 @@ class PostProcessor(object):
             return PostProcessor.DOESNT_EXIST
 
         # if the new file exists, return the appropriate code depending on the size
-        if ek.ek(os.path.isfile, existing_file):
+        if ek(os.path.isfile, existing_file):
 
             # see if it's bigger than our old file
-            if ek.ek(os.path.getsize, existing_file) > ek.ek(os.path.getsize, self.file_path):
+            if ek(os.path.getsize, existing_file) > ek(os.path.getsize, self.file_path):
                 self._log(u"File " + existing_file + " is larger than " + self.file_path, logger.DEBUG)
                 return PostProcessor.EXISTS_LARGER
 
-            elif ek.ek(os.path.getsize, existing_file) == ek.ek(os.path.getsize, self.file_path):
+            elif ek(os.path.getsize, existing_file) == ek(os.path.getsize, self.file_path):
                 self._log(u"File " + existing_file + " is the same size as " + self.file_path, logger.DEBUG)
                 return PostProcessor.EXISTS_SAME
 
@@ -167,7 +166,7 @@ class PostProcessor(object):
         file_path_list = []
 
         if subfolders:
-            base_name = ek.ek(os.path.basename, file_path).rpartition('.')[0]
+            base_name = ek(os.path.basename, file_path).rpartition('.')[0]
         else:
             base_name = file_path.rpartition('.')[0]
 
@@ -182,18 +181,17 @@ class PostProcessor(object):
         base_name = re.sub(r'[\[\]\*\?]', r'[\g<0>]', base_name)
 
         if subfolders: # subfolders are only checked in show folder, so names will always be exactly alike
-            filelist = ek.ek(recursive_glob, ek.ek(os.path.dirname, file_path), base_name + '*') # just create the list of all files starting with the basename
+            filelist = ek(recursive_glob, ek(os.path.dirname, file_path), base_name + '*') # just create the list of all files starting with the basename
         else: # this is called when PP, so we need to do the filename check case-insensitive
             filelist = []
 
-            checklist = ek.ek(glob.glob, helpers.fixGlob(ek.ek(os.path.join, ek.ek(os.path.dirname, file_path), '*'))) # get a list of all the files in the folder
+            checklist = ek(glob.glob, helpers.fixGlob(ek(os.path.join, ek(os.path.dirname, file_path), '*'))) # get a list of all the files in the folder
             for filefound in checklist: # loop through all the files in the folder, and check if they are the same name even when the cases don't match
                 file_name = filefound.rpartition('.')[0]
                 if not base_name_only:
                     file_name = file_name + '.'
                 if file_name.lower() == base_name.lower(): # if there's no difference in the filename add it to the filelist
                     filelist.append(filefound)
-
 
         for associated_file_path in filelist:
             # only add associated to list
@@ -207,7 +205,7 @@ class PostProcessor(object):
             if re.search('(^.+\.(rar|r\d+)$)', associated_file_path):
                 continue
 
-            if ek.ek(os.path.isfile, associated_file_path):
+            if ek(os.path.isfile, associated_file_path):
                 file_path_list.append(associated_file_path)
 
         if file_path_list:
@@ -239,19 +237,19 @@ class PostProcessor(object):
 
         # delete the file and any other files which we want to delete
         for cur_file in file_list:
-            if ek.ek(os.path.isfile, cur_file):
+            if ek(os.path.isfile, cur_file):
                 self._log(u"Deleting file " + cur_file, logger.DEBUG)
                 # check first the read-only attribute
-                file_attribute = ek.ek(os.stat, cur_file)[0]
-                if (not file_attribute & stat.S_IWRITE):
+                file_attribute = ek(os.stat, cur_file)[0]
+                if not file_attribute & stat.S_IWRITE:
                     # File is read-only, so make it writeable
                     self._log('Read only mode on file ' + cur_file + ' Will try to make it writeable', logger.DEBUG)
                     try:
-                        ek.ek(os.chmod, cur_file, stat.S_IWRITE)
+                        ek(os.chmod, cur_file, stat.S_IWRITE)
                     except:
                         self._log(u'Cannot change permissions of ' + cur_file, logger.WARNING)
 
-                ek.ek(os.remove, cur_file)
+                ek(os.remove, cur_file)
 
                 # do the library update for synoindex
                 notifiers.synoindex_notifier.deleteFile(cur_file)
@@ -290,7 +288,7 @@ class PostProcessor(object):
         # deal with all files
         for cur_file_path in file_list:
 
-            cur_file_name = ek.ek(os.path.basename, cur_file_path)
+            cur_file_name = ek(os.path.basename, cur_file_path)
 
             # get the extension without .
             cur_extension = cur_file_path[old_base_name_length + 1:]
@@ -313,15 +311,15 @@ class PostProcessor(object):
                 new_file_name = helpers.replaceExtension(cur_file_name, cur_extension)
 
             if sickbeard.SUBTITLES_DIR and cur_extension in common.subtitleExtensions:
-                subs_new_path = ek.ek(os.path.join, new_path, sickbeard.SUBTITLES_DIR)
+                subs_new_path = ek(os.path.join, new_path, sickbeard.SUBTITLES_DIR)
                 dir_exists = helpers.makeDir(subs_new_path)
                 if not dir_exists:
                     logger.log(u"Unable to create subtitles folder " + subs_new_path, logger.ERROR)
                 else:
                     helpers.chmodAsParent(subs_new_path)
-                new_file_path = ek.ek(os.path.join, subs_new_path, new_file_name)
+                new_file_path = ek(os.path.join, subs_new_path, new_file_name)
             else:
-                new_file_path = ek.ek(os.path.join, new_path, new_file_name)
+                new_file_path = ek(os.path.join, new_path, new_file_name)
 
             action(cur_file_path, new_file_path)
 
@@ -474,7 +472,7 @@ class PostProcessor(object):
                                          or parse_result.air_date) and parse_result.release_group:
 
             if not self.release_name:
-                self.release_name = helpers.remove_extension(ek.ek(os.path.basename, parse_result.original_name))
+                self.release_name = helpers.remove_extension(ek(os.path.basename, parse_result.original_name))
 
         else:
             logger.log(u"Parse result not sufficient (all following have to be set). will not save release name",
@@ -484,7 +482,6 @@ class PostProcessor(object):
             logger.log(u"Parse result(episode_numbers): " + str(parse_result.episode_numbers), logger.DEBUG)
             logger.log(u" or Parse result(air_date): " + str(parse_result.air_date), logger.DEBUG)
             logger.log(u"Parse result(release_group): " + str(parse_result.release_group), logger.DEBUG)
-
 
     def _analyze_name(self, name, file=True):
         """
@@ -750,7 +747,7 @@ class PostProcessor(object):
 
             # generate a safe command line string to execute the script and provide all the parameters
             script_cmd = [piece for piece in re.split("( |\\\".*?\\\"|'.*?')", curScriptName) if piece.strip()]
-            script_cmd[0] = ek.ek(os.path.abspath, script_cmd[0])
+            script_cmd[0] = ek(os.path.abspath, script_cmd[0])
             self._log(u"Absolute path to script: " + script_cmd[0], logger.DEBUG)
 
             script_cmd = script_cmd + [ep_obj.location, self.file_path, str(ep_obj.show.indexerid), str(ep_obj.season),
@@ -823,7 +820,7 @@ class PostProcessor(object):
 
         self._log(u"Processing " + self.file_path + " (" + str(self.nzb_name) + ")")
 
-        if ek.ek(os.path.isdir, self.file_path):
+        if ek(os.path.isdir, self.file_path):
             self._log(u"File " + self.file_path + " seems to be a directory")
             return False
 
@@ -924,8 +921,7 @@ class PostProcessor(object):
 
                 # clean up any left over folders
                 if cur_ep.location:
-                    helpers.delete_empty_folders(ek.ek(os.path.dirname, cur_ep.location),
-                                                 keep_dir=ep_obj.show._location)
+                    helpers.delete_empty_folders(ek(os.path.dirname, cur_ep.location), keep_dir=ep_obj.show._location)
             except (OSError, IOError):
                 raise exceptions.PostProcessingFailed("Unable to delete the existing files")
 
@@ -934,10 +930,10 @@ class PostProcessor(object):
             #    curEp.status = common.Quality.compositeStatus(common.SNATCHED, new_ep_quality)
 
         # if the show directory doesn't exist then make it if allowed
-        if not ek.ek(os.path.isdir, ep_obj.show._location) and sickbeard.CREATE_MISSING_SHOW_DIRS:
+        if not ek(os.path.isdir, ep_obj.show._location) and sickbeard.CREATE_MISSING_SHOW_DIRS:
             self._log(u"Show directory doesn't exist, creating it", logger.DEBUG)
             try:
-                ek.ek(os.mkdir, ep_obj.show._location)
+                ek(os.mkdir, ep_obj.show._location)
                 helpers.chmodAsParent(ep_obj.show._location)
 
                 # do the library update for synoindex
@@ -992,9 +988,9 @@ class PostProcessor(object):
         # find the destination folder
         try:
             proper_path = ep_obj.proper_path()
-            proper_absolute_path = ek.ek(os.path.join, ep_obj.show.location, proper_path)
+            proper_absolute_path = ek(os.path.join, ep_obj.show.location, proper_path)
 
-            dest_path = ek.ek(os.path.dirname, proper_absolute_path)
+            dest_path = ek(os.path.dirname, proper_absolute_path)
         except exceptions.ShowDirNotFoundException:
             raise exceptions.PostProcessingFailed(
                 u"Unable to post-process an episode if the show dir doesn't exist, quitting")
@@ -1007,7 +1003,7 @@ class PostProcessor(object):
         # figure out the base name of the resulting episode file
         if sickbeard.RENAME_EPISODES:
             orig_extension = self.file_name.rpartition('.')[-1]
-            new_base_name = ek.ek(os.path.basename, proper_path)
+            new_base_name = ek(os.path.basename, proper_path)
             new_file_name = new_base_name + '.' + orig_extension
 
         else:
@@ -1049,7 +1045,7 @@ class PostProcessor(object):
         if sickbeard.USE_SUBTITLES and ep_obj.show.subtitles:
             for cur_ep in [ep_obj] + ep_obj.relatedEps:
                 with cur_ep.lock:
-                    cur_ep.location = ek.ek(os.path.join, dest_path, new_file_name)
+                    cur_ep.location = ek(os.path.join, dest_path, new_file_name)
                     cur_ep.downloadSubtitles(force=True)
 
         # now that processing has finished, we can put the info in the DB. If we do it earlier, then when processing fails, it won't try again.
@@ -1061,7 +1057,7 @@ class PostProcessor(object):
         sql_l = []
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
             with cur_ep.lock:
-                cur_ep.location = ek.ek(os.path.join, dest_path, new_file_name)
+                cur_ep.location = ek(os.path.join, dest_path, new_file_name)
                 sql_l.append(cur_ep.get_sql())
 
         if len(sql_l) > 0:

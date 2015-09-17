@@ -20,8 +20,9 @@
 import os
 import string
 
-from sickbeard import encodingKludge as ek
 from sickbeard import logger
+from sickrage.helper.encoding import ek
+
 
 # adapted from http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
 def getWinDrives():
@@ -76,13 +77,13 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
         parentPath = ""
 
     try:
-        fileList = [{'name': filename, 'path': ek.ek(os.path.join, path, filename)} for filename in ek.ek(os.listdir, path)]
+        fileList = [{'name': filename, 'path': ek(os.path.join, path, filename)} for filename in ek(os.listdir, path)]
     except OSError, e:
         logger.log(u"Unable to open " + path + ": " + repr(e) + " / " + str(e), logger.WARNING)
-        fileList = [{'name': filename, 'path': ek.ek(os.path.join, parentPath, filename)} for filename in ek.ek(os.listdir, parentPath)]
+        fileList = [{'name': filename, 'path': ek(os.path.join, parentPath, filename)} for filename in ek(os.listdir, parentPath)]
 
     if not includeFiles:
-        fileList = filter(lambda entry: ek.ek(os.path.isdir, entry['path']), fileList)
+        fileList = filter(lambda entry: ek(os.path.isdir, entry['path']), fileList)
 
     # prune out directories to protect the user from doing stupid things (already lower case the dir to reduce calls)
     hideList = ["boot", "bootmgr", "cache", "msocache", "recovery", "$recycle.bin", "recycler",
