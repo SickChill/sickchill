@@ -209,10 +209,10 @@ $(document).ready(function(){
                     ${renderQualityPill(show.quality)}
                 % else:
                 % if anyQualities:
-                    <i>Initial:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "</br>")[bool(bestQualities)]}
+                    <i>Allowed:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "</br>")[bool(bestQualities)]}
                 % endif
                 % if bestQualities:
-                    <i>Replace with:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(bestQualities)])}
+                    <i>Preferred:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(bestQualities)])}
                 % endif
                 % endif
 
