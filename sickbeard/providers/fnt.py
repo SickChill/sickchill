@@ -33,7 +33,6 @@ from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
 from sickbeard.helpers import sanitizeSceneName
-from sickbeard.exceptions import ex
 
 
 class FNTProvider(generic.TorrentProvider):

@@ -20,7 +20,6 @@
 from __future__ import with_statement
 
 import unittest
-import sqlite3
 from configobj import ConfigObj
 
 import sys, os.path
@@ -209,7 +208,8 @@ def tearDown_test_db():
 #                os.remove(file_name)
 #            except Exception as e:
 #                print 'ERROR: Failed to remove ' + file_name
-#                print ex(e)
+#                print exception(e)
+
 
 def setUp_test_episode_file():
     if not os.path.exists(FILEDIR):

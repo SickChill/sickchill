@@ -19,7 +19,6 @@
 
 import traceback
 import re
-import datetime
 import generic
 import datetime
 import json
@@ -34,8 +33,8 @@ from sickbeard import show_name_helpers
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
-from sickbeard.exceptions import ex
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
+from sickrage.helper.common import ex
 
 
 class GetOutOfLoop(Exception):

@@ -30,16 +30,17 @@ import sickbeard
 
 from sickbeard import db
 from sickbeard import common
-from sickbeard import exceptions
 from sickbeard import helpers
 from sickbeard import history
 from sickbeard import logger
 from sickbeard import notifiers
 from sickbeard import show_name_helpers
 from sickbeard import failed_history
-from sickbeard.exceptions import ex
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException
+from sickrage.helper.exceptions import ShowDirectoryNotFoundException
 
 import adba
 from sickbeard.helpers import verify_freespace
@@ -688,10 +689,10 @@ class PostProcessor(object):
             try:
                 curEp = show.getEpisode(season, cur_episode)
                 if not curEp:
-                    raise exceptions.EpisodeNotFoundException()
-            except exceptions.EpisodeNotFoundException, e:
+                    raise EpisodeNotFoundException()
+            except EpisodeNotFoundException, e:
                 self._log(u"Unable to create episode: " + ex(e), logger.DEBUG)
-                raise exceptions.PostProcessingFailed()
+                raise EpisodePostProcessingFailedException()
 
             # associate all the episodes together under a single root episode
             if root_ep == None:
@@ -869,7 +870,7 @@ class PostProcessor(object):
         if not show:
             self._log(u"This show isn't in your list, you need to add it to SB before post-processing an episode",
                       logger.WARNING)
-            raise exceptions.PostProcessingFailed()
+            raise EpisodePostProcessingFailedException()
         elif season == None or not episodes:
             self._log(u"Not enough information to determine what episode this is", logger.DEBUG)
             self._log(u"Quitting post-processing", logger.DEBUG)
@@ -952,7 +953,7 @@ class PostProcessor(object):
                 if cur_ep.location:
                     helpers.delete_empty_folders(ek(os.path.dirname, cur_ep.location), keep_dir=ep_obj.show._location)
             except (OSError, IOError):
-                raise exceptions.PostProcessingFailed("Unable to delete the existing files")
+                raise EpisodePostProcessingFailedException("Unable to delete the existing files")
 
             # set the status of the episodes
             # for curEp in [ep_obj] + ep_obj.relatedEps:
@@ -968,7 +969,7 @@ class PostProcessor(object):
                 # do the library update for synoindex
                 notifiers.synoindex_notifier.addFolder(ep_obj.show._location)
             except (OSError, IOError):
-                raise exceptions.PostProcessingFailed("Unable to create the show directory: " + ep_obj.show._location)
+                raise EpisodePostProcessingFailedException("Unable to create the show directory: " + ep_obj.show._location)
 
             # get metadata for the show (but not episode because it hasn't been fully processed)
             ep_obj.show.writeMetadata(True)
@@ -1020,8 +1021,8 @@ class PostProcessor(object):
             proper_absolute_path = ek(os.path.join, ep_obj.show.location, proper_path)
 
             dest_path = ek(os.path.dirname, proper_absolute_path)
-        except exceptions.ShowDirNotFoundException:
-            raise exceptions.PostProcessingFailed(
+        except ShowDirectoryNotFoundException:
+            raise EpisodePostProcessingFailedException(
                 u"Unable to post-process an episode if the show dir doesn't exist, quitting")
 
         self._log(u"Destination folder for this episode: " + dest_path, logger.DEBUG)
@@ -1048,12 +1049,12 @@ class PostProcessor(object):
             # move the episode and associated files to the show dir
             if self.process_method == "copy":
                 if helpers.isFileLocked(self.file_path, False):
-                    raise exceptions.PostProcessingFailed("File is locked for reading")
+                    raise EpisodePostProcessingFailedException("File is locked for reading")
                 self._copy(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                            sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == "move":
                 if helpers.isFileLocked(self.file_path, True):
-                    raise exceptions.PostProcessingFailed("File is locked for reading/writing")
+                    raise EpisodePostProcessingFailedException("File is locked for reading/writing")
                 self._move(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                            sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == "hardlink":
@@ -1061,14 +1062,14 @@ class PostProcessor(object):
                                sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == "symlink":
                 if helpers.isFileLocked(self.file_path, True):
-                    raise exceptions.PostProcessingFailed("File is locked for reading/writing")
+                    raise EpisodePostProcessingFailedException("File is locked for reading/writing")
                 self._moveAndSymlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                                      sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             else:
                 logger.log(u"Unknown process method: " + str(self.process_method), logger.ERROR)
-                raise exceptions.PostProcessingFailed("Unable to move the files to their new home")
+                raise EpisodePostProcessingFailedException("Unable to move the files to their new home")
         except (OSError, IOError):
-            raise exceptions.PostProcessingFailed("Unable to move the files to their new home")
+            raise EpisodePostProcessingFailedException("Unable to move the files to their new home")
 
         # download subtitles
         if sickbeard.USE_SUBTITLES and ep_obj.show.subtitles:

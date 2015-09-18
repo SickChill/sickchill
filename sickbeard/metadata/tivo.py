@@ -24,10 +24,11 @@ import os
 
 import sickbeard
 
-from sickbeard import logger, exceptions, helpers
+from sickbeard import logger, helpers
 from sickbeard.metadata import generic
-from sickbeard.exceptions import ex
+from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ShowNotFoundException
 
 
 class TIVOMetadata(generic.GenericMetadata):
@@ -182,7 +183,7 @@ class TIVOMetadata(generic.GenericMetadata):
             t = sickbeard.indexerApi(ep_obj.show.indexer).indexer(**lINDEXER_API_PARMS)
             myShow = t[ep_obj.show.indexerid]
         except sickbeard.indexer_shownotfound, e:
-            raise exceptions.ShowNotFoundException(str(e))
+            raise ShowNotFoundException(str(e))
         except sickbeard.indexer_error, e:
             logger.log(u"Unable to connect to " + sickbeard.indexerApi(
                 ep_obj.show.indexer).name + " while creating meta files - skipping - " + str(e), logger.ERROR)

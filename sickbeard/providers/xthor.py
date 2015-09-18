@@ -33,7 +33,7 @@ from sickbeard import helpers
 from unidecode import unidecode
 from sickbeard import classes
 from sickbeard.helpers import sanitizeSceneName
-from sickbeard.exceptions import ex
+
 
 class XthorProvider(generic.TorrentProvider):
 

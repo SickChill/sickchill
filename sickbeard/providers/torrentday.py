@@ -26,7 +26,6 @@ from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.exceptions import ex
 import requests
 from sickbeard.helpers import sanitizeSceneName
 

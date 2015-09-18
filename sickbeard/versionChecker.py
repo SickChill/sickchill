@@ -31,7 +31,7 @@ import sickbeard
 from sickbeard import notifiers
 from sickbeard import ui
 from sickbeard import logger, helpers
-from sickbeard.exceptions import ex
+from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek
 import requests
 
@@ -103,7 +103,7 @@ class CheckVersion:
                 ui.notifications.message('Backup', 'Config backup failed, aborting update')
                 return False
         except Exception as e:
-            logger.log('Update: Config backup failed. Error: {0}'.format(ex(e)),logger.ERROR)
+            logger.log('Update: Config backup failed. Error: %s' % ex(e), logger.ERROR)
             ui.notifications.message('Backup', 'Config backup failed, aborting update')
             return False
 

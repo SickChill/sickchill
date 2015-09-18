@@ -29,7 +29,7 @@ import locale
 
 import sickbeard
 from sickbeard import classes
-from sickrage.helper.common import dateTimeFormat
+from sickrage.helper.common import ex, dateTimeFormat
 from sickrage.helper.encoding import ek, ss
 from github import Github, InputFileContent
 import codecs
@@ -212,7 +212,7 @@ class Logger(object):
                     if len(title_Error) > 1000:
                         title_Error = title_Error[0:1000]
                 except Exception as e:
-                    self.log("Unable to get error title : " + sickbeard.exceptions.ex(e), ERROR)
+                    self.log("Unable to get error title : " + ex(e), ERROR)
 
                 gist = None
                 regex = "^(%s)\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)$" % curError.time
@@ -276,9 +276,10 @@ class Logger(object):
                 self.submitter_running = False
                 return issue_id
         except Exception as e:
-            self.log(sickbeard.exceptions.ex(e), ERROR)
+            self.log(ex(e), ERROR)
 
         self.submitter_running = False
+
 
 class Wrapper(object):
     instance = Logger()

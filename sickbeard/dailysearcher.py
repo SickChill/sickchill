@@ -27,8 +27,8 @@ from sickbeard import logger
 from sickbeard import db
 from sickbeard import common
 from sickbeard import helpers
-from sickbeard import exceptions
 from sickbeard import network_timezones
+from sickrage.helper.exceptions import MultipleShowObjectsException
 
 
 class DailySearcher():
@@ -75,7 +75,7 @@ class DailySearcher():
                 if not show or show.paused:
                     continue
 
-            except exceptions.MultipleShowObjectsException:
+            except MultipleShowObjectsException:
                 logger.log(u"ERROR: expected to find a single show matching " + str(sqlEp['showid']))
                 continue
 

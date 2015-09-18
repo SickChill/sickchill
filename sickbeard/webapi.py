@@ -27,8 +27,9 @@ import re
 import traceback
 
 import sickbeard
-from sickrage.helper.common import dateFormat, dateTimeFormat, timeFormat
+from sickrage.helper.common import ex, dateFormat, dateTimeFormat, timeFormat
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
 from sickrage.helper.quality import get_quality_string
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
@@ -41,13 +42,12 @@ from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
 
 from versionChecker import CheckVersion
-from sickbeard import db, logger, exceptions, ui, helpers
+from sickbeard import db, logger, ui, helpers
 from sickbeard import search_queue
 from sickbeard import image_cache
 from sickbeard import classes
 from sickbeard import processTV
 from sickbeard import network_timezones, sbdatetime
-from sickbeard.exceptions import ex
 from sickbeard.common import DOWNLOADED
 from sickbeard.common import FAILED
 from sickbeard.common import IGNORED
@@ -739,7 +739,7 @@ class CMD_Episode(ApiCall):
         showPath = None
         try:
             showPath = showObj.location
-        except sickbeard.exceptions.ShowDirNotFoundException:
+        except ShowDirectoryNotFoundException:
             pass
 
         if bool(self.fullPath) == True and showPath:
@@ -1844,7 +1844,7 @@ class CMD_Show(ApiCall):
 
         try:
             showDict["location"] = showObj.location
-        except sickbeard.exceptions.ShowDirNotFoundException:
+        except ShowDirectoryNotFoundException:
             showDict["location"] = ""
 
         showDict["language"] = showObj.lang
@@ -2730,7 +2730,7 @@ class CMD_ShowUpdate(ApiCall):
         try:
             sickbeard.showQueueScheduler.action.updateShow(showObj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has queued to be updated")
-        except exceptions.CantUpdateException as e:
+        except CantUpdateShowException as e:
             logger.log("API::Unable to update show: {0}".format(str(e)),logger.DEBUG)
             return _responds(RESULT_FAILURE, msg="Unable to update " + str(showObj.name))
 

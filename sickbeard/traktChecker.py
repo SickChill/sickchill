@@ -21,7 +21,6 @@ import traceback
 import datetime
 
 import sickbeard
-from sickbeard.exceptions import ex
 from sickbeard import logger
 from sickbeard import helpers
 from sickbeard import search_queue
@@ -30,6 +29,7 @@ from sickbeard.common import ARCHIVED
 from sickbeard.common import SKIPPED
 from sickbeard.common import UNKNOWN
 from sickbeard.common import WANTED
+from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek
 from common import Quality
 from libtrakt import *

@@ -29,8 +29,8 @@ import sickbeard
 from sickbeard import helpers
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard import logger
-from sickbeard.exceptions import ex
 from sickbeard.show_name_helpers import allPossibleShowNames
+from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek, ss
 
 from tmdb_api.tmdb_api import TMDB
@@ -39,7 +39,7 @@ import fanart
 from fanart.core import Request as fanartRequest
 
 
-class GenericMetadata():
+class GenericMetadata:
     """
     Base class for all metadata providers. Default behavior is meant to mostly
     follow KODI 12+ metadata standards. Has support for:

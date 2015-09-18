@@ -24,7 +24,7 @@ import generic
 from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.exceptions import ex
+from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek
 
 import requests

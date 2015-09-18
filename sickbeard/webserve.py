@@ -29,7 +29,7 @@ from sickbeard import config, sab
 from sickbeard import clients
 from sickbeard import notifiers, processTV
 from sickbeard import ui
-from sickbeard import logger, helpers, exceptions, classes, db
+from sickbeard import logger, helpers, classes, db
 from sickbeard import search_queue
 from sickbeard import naming
 from sickbeard import subtitles
@@ -38,7 +38,6 @@ from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
 from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED, SKIPPED
 from sickbeard.common import SD, HD720p, HD1080p
-from sickbeard.exceptions import ex
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
 from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
@@ -52,7 +51,10 @@ from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
+from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek, ss
+from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, MultipleShowObjectsException
+from sickrage.helper.exceptions import NoNFOException, ShowDirectoryNotFoundException
 from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
@@ -1167,7 +1169,7 @@ class Home(WebRoot):
 
         try:
             showLoc = (showObj.location, True)
-        except sickbeard.exceptions.ShowDirNotFoundException:
+        except ShowDirectoryNotFoundException:
             showLoc = (showObj._location, False)
 
         show_message = ''
@@ -1410,7 +1412,7 @@ class Home(WebRoot):
                 showObj.flatten_folders = flatten_folders
                 try:
                     sickbeard.showQueueScheduler.action.refreshShow(showObj)
-                except exceptions.CantRefreshException, e:
+                except CantRefreshShowException, e:
                     errors.append("Unable to refresh this show: " + ex(e))
 
             showObj.paused = paused
@@ -1440,12 +1442,12 @@ class Home(WebRoot):
                         showObj.location = location
                         try:
                             sickbeard.showQueueScheduler.action.refreshShow(showObj)
-                        except exceptions.CantRefreshException, e:
+                        except CantRefreshShowException, e:
                             errors.append("Unable to refresh this show:" + ex(e))
                             # grab updated info from TVDB
                             # showObj.loadEpisodesFromIndexer()
                             # rescan the episodes in the new folder
-                    except exceptions.NoNFOException:
+                    except NoNFOException:
                         errors.append(
                             "The folder at <tt>%s</tt> doesn't contain a tvshow.nfo - copy your files to that folder before you change the directory in SickRage." % location)
 
@@ -1457,21 +1459,21 @@ class Home(WebRoot):
             try:
                 sickbeard.showQueueScheduler.action.updateShow(showObj, True)
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-            except exceptions.CantUpdateException as e:
+            except CantUpdateShowException as e:
                 errors.append("Unable to update show: {0}".format(str(e)))
 
         if do_update_exceptions:
             try:
                 sickbeard.scene_exceptions.update_scene_exceptions(showObj.indexerid, exceptions_list)  # @UndefinedVdexerid)
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-            except exceptions.CantUpdateException, e:
+            except CantUpdateShowException, e:
                 errors.append("Unable to force an update on scene exceptions of the show.")
 
         if do_update_scene_numbering:
             try:
                 sickbeard.scene_numbering.xem_refresh(showObj.indexerid, showObj.indexer)
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-            except exceptions.CantUpdateException, e:
+            except CantUpdateShowException, e:
                 errors.append("Unable to force an update on scene numbering of the show.")
 
         if directCall:
@@ -1541,7 +1543,7 @@ class Home(WebRoot):
         # force the update
         try:
             sickbeard.showQueueScheduler.action.updateShow(showObj, bool(force))
-        except exceptions.CantUpdateException, e:
+        except CantUpdateShowException, e:
             ui.notifications.error("Unable to update this show.", ex(e))
 
         # just give it some time
@@ -1778,7 +1780,7 @@ class Home(WebRoot):
 
         try:
             show_loc = showObj.location  # @UnusedVariable
-        except exceptions.ShowDirNotFoundException:
+        except ShowDirectoryNotFoundException:
             return self._genericMessage("Error", "Can't rename episodes when the show dir is missing.")
 
         ep_obj_rename_list = []
@@ -1824,7 +1826,7 @@ class Home(WebRoot):
 
         try:
             show_loc = show_obj.location  # @UnusedVariable
-        except exceptions.ShowDirNotFoundException:
+        except ShowDirectoryNotFoundException:
             return self._genericMessage("Error", "Can't rename episodes when the show dir is missing.")
 
         if eps is None:
@@ -2391,7 +2393,7 @@ class HomeAddShows(Home):
                             else:
                                 trending_shows += [show]
 
-                except exceptions.MultipleShowObjectsException:
+                except MultipleShowObjectsException:
                     continue
 
             if sickbeard.TRAKT_BLACKLIST_NAME != '':
@@ -2445,7 +2447,7 @@ class HomeAddShows(Home):
                             else:
                                 trending_shows += [show]
 
-                except exceptions.MultipleShowObjectsException:
+                except MultipleShowObjectsException:
                     continue
 
             if sickbeard.TRAKT_BLACKLIST_NAME != '':
@@ -3331,7 +3333,7 @@ class Manage(Home, WebRoot):
                 try:
                     sickbeard.showQueueScheduler.action.updateShow(showObj, True)
                     updates.append(showObj.name)
-                except exceptions.CantUpdateException, e:
+                except CantUpdateShowException, e:
                     errors.append("Unable to update show: {0}".format(str(e)))
 
             # don't bother refreshing shows that were updated anyway
@@ -3339,7 +3341,7 @@ class Manage(Home, WebRoot):
                 try:
                     sickbeard.showQueueScheduler.action.refreshShow(showObj)
                     refreshes.append(showObj.name)
-                except exceptions.CantRefreshException, e:
+                except CantRefreshShowException, e:
                     errors.append("Unable to refresh show " + showObj.name + ": " + ex(e))
 
             if curShowID in toRename:

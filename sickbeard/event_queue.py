@@ -2,7 +2,7 @@ import threading
 import traceback
 from Queue import Queue, Empty
 from sickbeard import logger
-from sickbeard.exceptions import ex
+from sickrage.helper.common import ex
 
 
 class Event:

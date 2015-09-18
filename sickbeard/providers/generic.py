@@ -34,10 +34,10 @@ import sickbeard
 from sickbeard import helpers, classes, logger, db
 from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT
 from sickbeard import tvcache
-from sickbeard.exceptions import ex
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality
 from sickbeard.common import user_agents
+from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek
 
 

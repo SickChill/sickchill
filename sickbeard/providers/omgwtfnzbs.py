@@ -24,9 +24,9 @@ import generic
 from sickbeard import tvcache
 from sickbeard import classes
 from sickbeard import logger
-from sickbeard.exceptions import AuthException
 from sickbeard import show_name_helpers
 from datetime import datetime
+from sickrage.helper.exceptions import AuthException
 
 
 class OmgwtfnzbsProvider(generic.NZBProvider):

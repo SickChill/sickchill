@@ -25,15 +25,18 @@ import sickbeard
 from imdb import _exceptions as imdb_exceptions
 from sickbeard.common import WANTED
 from sickbeard.tv import TVShow
-from sickbeard import exceptions
 from sickbeard import logger
 from sickbeard import notifiers
 from sickbeard import ui
 from sickbeard import generic_queue
 from sickbeard import name_cache
-from sickbeard.exceptions import ex
 from sickbeard.blackandwhitelist import BlackAndWhiteList
+from sickrage.helper.common import ex
+from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, CantUpdateShowException
+from sickrage.helper.exceptions import EpisodeDeletedException, MultipleShowObjectsException
+from sickrage.helper.exceptions import ShowDirectoryNotFoundException
 from libtrakt import TraktAPI
+
 
 class ShowQueue(generic_queue.GenericQueue):
     def __init__(self):
@@ -82,15 +85,15 @@ class ShowQueue(generic_queue.GenericQueue):
     def updateShow(self, show, force=False):
 
         if self.isBeingAdded(show):
-            raise exceptions.CantUpdateException(
+            raise CantUpdateShowException(
                 str(show.name) + u" is still being added, wait until it is finished before you update.")
 
         if self.isBeingUpdated(show):
-            raise exceptions.CantUpdateException(
+            raise CantUpdateShowException(
                 str(show.name) + u" is already being updated by Post-processor or manually started, can't update again until it's done.")
 
         if self.isInUpdateQueue(show):
-            raise exceptions.CantUpdateException(
+            raise CantUpdateShowException(
                 str(show.name) + u" is in process of being updated by Post-processor or manually started, can't update again until it's done.")
 
         if not force:
@@ -105,7 +108,7 @@ class ShowQueue(generic_queue.GenericQueue):
     def refreshShow(self, show, force=False):
 
         if self.isBeingRefreshed(show) and not force:
-            raise exceptions.CantRefreshException("This show is already being refreshed, not refreshing again.")
+            raise CantRefreshShowException("This show is already being refreshed, not refreshing again.")
 
         if (self.isBeingUpdated(show) or self.isInUpdateQueue(show)) and not force:
             logger.log(
@@ -152,7 +155,7 @@ class ShowQueue(generic_queue.GenericQueue):
 
     def removeShow(self, show, full=False):
         if self._isInQueue(show, ShowQueueActions.REMOVE):
-            raise sickbeard.exceptions.CantRemoveException("This show is already queued to be removed")
+            raise CantRemoveShowException("This show is already queued to be removed")
 
         # remove other queued actions for this show.
         for x in self.queue:
@@ -380,7 +383,7 @@ class QueueItemAdd(ShowQueueItem):
             self._finishEarly()
             return
 
-        except exceptions.MultipleShowObjectsException:
+        except MultipleShowObjectsException:
             logger.log(u"The show in " + self.showDir + " is already in your show list, skipping", logger.WARNING)
             ui.notifications.error('Show skipped', "The show in " + self.showDir + " is already in your show list")
             self._finishEarly()
@@ -510,7 +513,7 @@ class QueueItemRename(ShowQueueItem):
 
         try:
             show_loc = self.show.location
-        except exceptions.ShowDirNotFoundException:
+        except ShowDirectoryNotFoundException:
             logger.log(u"Can't perform rename on " + self.show.name + " when the show dir is missing.", logger.WARNING)
             return
 
@@ -623,7 +626,7 @@ class QueueItemUpdate(ShowQueueItem):
                     curEp = self.show.getEpisode(curSeason, curEpisode)
                     try:
                         curEp.deleteEpisode()
-                    except exceptions.EpisodeDeletedException:
+                    except EpisodeDeletedException:
                         pass
 
         # save show again, in case episodes have changed
@@ -638,10 +641,12 @@ class QueueItemUpdate(ShowQueueItem):
         sickbeard.showQueueScheduler.action.refreshShow(self.show, self.force)
         self.finish()
 
+
 class QueueItemForceUpdate(QueueItemUpdate):
     def __init__(self, show=None):
         ShowQueueItem.__init__(self, ShowQueueActions.FORCEUPDATE, show)
         self.force = True
+
 
 class QueueItemRemove(ShowQueueItem):
     def __init__(self, show=None, full=False):

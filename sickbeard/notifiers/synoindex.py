@@ -22,7 +22,7 @@ import subprocess
 import sickbeard
 
 from sickbeard import logger
-from sickbeard.exceptions import ex
+from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek
 
 

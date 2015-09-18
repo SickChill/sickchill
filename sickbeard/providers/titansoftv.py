@@ -19,12 +19,11 @@
 
 import urllib
 
-import requests
 import generic
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.helpers import mapIndexersToShow
-from sickbeard.exceptions import AuthException
+from sickrage.helper.exceptions import AuthException
 
 
 class TitansOfTVProvider(generic.TorrentProvider):

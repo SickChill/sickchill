@@ -26,7 +26,7 @@ import time
 import sickbeard
 from sickbeard import logger
 from sickbeard import common
-from sickbeard.exceptions import ex
+from sickrage.helper.common import ex
 from sickrage.helper.encoding import ss
 
 try:

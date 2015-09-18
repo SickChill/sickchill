@@ -18,10 +18,11 @@
 
 import sickbeard
 from sickbeard import logger
-from sickbeard.exceptions import ex
+from sickrage.helper.common import ex
 
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException, traktServerBusy, traktAuthException
+
 
 class TraktNotifier:
     """
