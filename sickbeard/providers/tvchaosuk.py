@@ -97,15 +97,18 @@ class TVChaosUKProvider(generic.TorrentProvider):
     def _get_season_search_strings(self, ep_obj):
 
         search_string = {'Season': []}
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                season_string = show_name + ' ' + str(ep_obj.airdate).split('-')[0]
-            elif ep_obj.show.anime:
-                season_string = show_name + ' ' + '%d' % ep_obj.scene_absolute_number
-            else:
-                season_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName SXX
 
-            search_string['Season'].append(season_string.replace('.', ' ').strip())
+        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
+            for sep in ' ', ' - ':
+                season_string = show_name + sep + 'Series '
+                if ep_obj.show.air_by_date or ep_obj.show.sports:
+                    season_string += str(ep_obj.airdate).split('-')[0]
+                elif ep_obj.show.anime:
+                    season_string += '%d' % ep_obj.scene_absolute_number
+                else:
+                    season_string += '%d' % int(ep_obj.scene_season)
+
+                search_string['Season'].append(re.sub(r'\s+', ' ', season_string.replace('.', ' ').strip()))
 
         return [search_string]
 
@@ -116,29 +119,22 @@ class TVChaosUKProvider(generic.TorrentProvider):
         if not ep_obj:
             return []
 
-        if self.show.air_by_date:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|')
-                search_string['Episode'].append(ep_string.replace('.', ' ').strip())
-        elif self.show.sports:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|') + '|' + \
-                            ep_obj.airdate.strftime('%b')
-                search_string['Episode'].append(ep_string.replace('.', ' ').strip())
-        elif self.show.anime:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            '%i' % int(ep_obj.scene_absolute_number)
-                search_string['Episode'].append(ep_string.replace('.', ' ').strip())
-        else:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
+        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
+            for sep in ' ', ' - ':
+                ep_string = sanitizeSceneName(show_name) + sep
+                if self.show.air_by_date:
+                    ep_string += str(ep_obj.airdate).replace('-', '|')
+                elif self.show.sports:
+                    ep_string += str(ep_obj.airdate).replace('-', '|') + '|' + ep_obj.airdate.strftime('%b')
+                elif self.show.anime:
+                    ep_string += '%i' % int(ep_obj.scene_absolute_number)
+                else:
+                    ep_string += sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season, 'episodenumber': ep_obj.scene_episode}
 
-                search_string['Episode'].append(re.sub(r'\s+', ' ', ep_string).replace('.', ' ').strip())
+                if add_string:
+                    ep_string += ' %s' % add_string
+
+                search_string['Episode'].append(re.sub(r'\s+', ' ', ep_string.replace('.', ' ').strip()))
 
         return [search_string]
 
@@ -180,8 +176,20 @@ class TVChaosUKProvider(generic.TorrentProvider):
                             if not title or not url:
                                 continue
 
+                            # Chop off tracker/channel prefix or we cant parse the result!
+                            show_name_first_word = re.search(r'^[^ .]+', self.search_params['keywords']).group()
+                            if not title.startswith(show_name_first_word):
+                                title = re.match(r'(.*)(' + show_name_first_word + '.*)', title).group(2)
+
+                            # Change title from Series to Season, or we can't parse
+                            if 'Series' in self.search_params['keywords']:
+                                title = re.sub(r'(?i)series', 'Season', title)
+
+                            # Strip year from the end or we can't parse it!
+                            title = re.sub(r' \(\d{4}\)$', '', title)
+
                             item = title, url, seeders, leechers
-                            logger.log(u'Found result: ' + title.replace(' ','.') + ' (' + url + ')', logger.DEBUG)
+                            logger.log(u'Found result: ' + title.replace(' ', '.') + ' (' + url + ')', logger.DEBUG)
 
                             items[mode].append(item)
 
