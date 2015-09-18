@@ -1,4 +1,5 @@
 # coding=utf-8
+
 import locale
 import unittest
 import sys, os.path
@@ -7,9 +8,10 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import sickbeard
-from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from sickbeard.helpers import sanitizeFileName
+from sickrage.helper.encoding import ek
+
 
 class EncodingTests(unittest.TestCase):
     def test_encoding(self):
@@ -30,7 +32,7 @@ class EncodingTests(unittest.TestCase):
 
         for s in strings:
             try:
-                show_dir = ek.ek(os.path.join, rootDir, sanitizeFileName(s))
+                show_dir = ek(os.path.join, rootDir, sanitizeFileName(s))
                 self.assertTrue(isinstance(show_dir, unicode))
             except Exception, e:
                 ex(e)

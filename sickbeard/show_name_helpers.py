@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+
 import fnmatch
 import os
 
@@ -28,12 +29,17 @@ from sickbeard.helpers import sanitizeSceneName
 from sickbeard.scene_exceptions import get_scene_exceptions
 from sickbeard import logger
 from sickbeard import db
-from sickbeard import encodingKludge as ek
+from sickrage.helper.encoding import ek, ss
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
-resultFilters = ["sub(bed|ed|pack|s)", "(dk|fin|heb|kor|nor|nordic|pl|swe)sub(bed|ed|s)?",
-                 "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras",
-                 "dub(bed)?"]
+resultFilters = [
+    "sub(bed|ed|pack|s)",
+    "(dk|fin|heb|kor|nor|nordic|pl|swe)sub(bed|ed|s)?",
+    "(dir|sample|sub|nfo)fix",
+    "sample",
+    "(dvd)?extras",
+    "dub(bed)?"
+]
 
 
 def containsAtLeastOneWord(name, words):
@@ -58,9 +64,9 @@ def filterBadReleases(name, parse=True):
     """
     Filters out non-english and just all-around stupid releases by comparing them
     to the resultFilters contents.
-    
+
     name: the release name to check
-    
+
     Returns: True if the release name is OK, False if it's bad.
     """
 
@@ -98,9 +104,9 @@ def filterBadReleases(name, parse=True):
 def sceneToNormalShowNames(name):
     """
         Takes a show name from a scene dirname and converts it to a more "human-readable" format.
-    
+
     name: The show name to convert
-    
+
     Returns: a list of all the possible "normal" names
     """
 
@@ -255,7 +261,7 @@ def isGoodResult(name, show, log=True, season=-1):
 
     all_show_names = allPossibleShowNames(show, season=season)
     showNames = map(sanitizeSceneName, all_show_names) + all_show_names
-    showNames += map(ek.ss, all_show_names)
+    showNames += map(ss, all_show_names)
 
     for curName in set(showNames):
         if not show.is_anime:
@@ -286,9 +292,9 @@ def allPossibleShowNames(show, season=-1):
     """
     Figures out every possible variation of the name for a particular show. Includes TVDB name, TVRage name,
     country codes on the end, eg. "Show Name (AU)", and any scene exception names.
-    
+
     show: a TVShow object that we should get the names of
-    
+
     Returns: a list of all the possible show names
     """
 
@@ -340,19 +346,19 @@ def determineReleaseName(dir_name=None, nzb_name=None):
     for search in file_types:
 
         reg_expr = re.compile(fnmatch.translate(search), re.IGNORECASE)
-        files = [file_name for file_name in ek.ek(os.listdir, dir_name) if
-                 ek.ek(os.path.isfile, ek.ek(os.path.join, dir_name, file_name))]
+        files = [file_name for file_name in ek(os.listdir, dir_name) if
+                 ek(os.path.isfile, ek(os.path.join, dir_name, file_name))]
         results = filter(reg_expr.search, files)
 
         if len(results) == 1:
-            found_file = ek.ek(os.path.basename, results[0])
+            found_file = ek(os.path.basename, results[0])
             found_file = found_file.rpartition('.')[0]
             if filterBadReleases(found_file):
                 logger.log(u"Release name (" + found_file + ") found from file (" + results[0] + ")")
                 return found_file.rpartition('.')[0]
 
     # If that fails, we try the folder
-    folder = ek.ek(os.path.basename, dir_name)
+    folder = ek(os.path.basename, dir_name)
     if filterBadReleases(folder):
         # NOTE: Multiple failed downloads will change the folder name.
         # (e.g., appending #s)

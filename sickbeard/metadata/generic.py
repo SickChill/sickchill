@@ -29,14 +29,15 @@ import sickbeard
 from sickbeard import helpers
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard import logger
-from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from sickbeard.show_name_helpers import allPossibleShowNames
+from sickrage.helper.encoding import ek, ss
 
 from tmdb_api.tmdb_api import TMDB
 
 import fanart
 from fanart.core import Request as fanartRequest
+
 
 class GenericMetadata():
     """
@@ -118,84 +119,84 @@ class GenericMetadata():
         self.season_all_banner = config_list[9]
 
     def _has_show_metadata(self, show_obj):
-        result = ek.ek(os.path.isfile, self.get_show_file_path(show_obj))
+        result = ek(os.path.isfile, self.get_show_file_path(show_obj))
         logger.log(u"Checking if " + self.get_show_file_path(show_obj) + " exists: " + str(result), logger.DEBUG)
         return result
 
     def _has_episode_metadata(self, ep_obj):
-        result = ek.ek(os.path.isfile, self.get_episode_file_path(ep_obj))
+        result = ek(os.path.isfile, self.get_episode_file_path(ep_obj))
         logger.log(u"Checking if " + self.get_episode_file_path(ep_obj) + " exists: " + str(result), logger.DEBUG)
         return result
 
     def _has_fanart(self, show_obj):
-        result = ek.ek(os.path.isfile, self.get_fanart_path(show_obj))
+        result = ek(os.path.isfile, self.get_fanart_path(show_obj))
         logger.log(u"Checking if " + self.get_fanart_path(show_obj) + " exists: " + str(result), logger.DEBUG)
         return result
 
     def _has_poster(self, show_obj):
-        result = ek.ek(os.path.isfile, self.get_poster_path(show_obj))
+        result = ek(os.path.isfile, self.get_poster_path(show_obj))
         logger.log(u"Checking if " + self.get_poster_path(show_obj) + " exists: " + str(result), logger.DEBUG)
         return result
 
     def _has_banner(self, show_obj):
-        result = ek.ek(os.path.isfile, self.get_banner_path(show_obj))
+        result = ek(os.path.isfile, self.get_banner_path(show_obj))
         logger.log(u"Checking if " + self.get_banner_path(show_obj) + " exists: " + str(result), logger.DEBUG)
         return result
 
     def _has_episode_thumb(self, ep_obj):
         location = self.get_episode_thumb_path(ep_obj)
-        result = location != None and ek.ek(os.path.isfile, location)
+        result = location != None and ek(os.path.isfile, location)
         if location:
             logger.log(u"Checking if " + location + " exists: " + str(result), logger.DEBUG)
         return result
 
     def _has_season_poster(self, show_obj, season):
         location = self.get_season_poster_path(show_obj, season)
-        result = location != None and ek.ek(os.path.isfile, location)
+        result = location != None and ek(os.path.isfile, location)
         if location:
             logger.log(u"Checking if " + location + " exists: " + str(result), logger.DEBUG)
         return result
 
     def _has_season_banner(self, show_obj, season):
         location = self.get_season_banner_path(show_obj, season)
-        result = location != None and ek.ek(os.path.isfile, location)
+        result = location != None and ek(os.path.isfile, location)
         if location:
             logger.log(u"Checking if " + location + " exists: " + str(result), logger.DEBUG)
         return result
 
     def _has_season_all_poster(self, show_obj):
-        result = ek.ek(os.path.isfile, self.get_season_all_poster_path(show_obj))
+        result = ek(os.path.isfile, self.get_season_all_poster_path(show_obj))
         logger.log(u"Checking if " + self.get_season_all_poster_path(show_obj) + " exists: " + str(result),
                    logger.DEBUG)
         return result
 
     def _has_season_all_banner(self, show_obj):
-        result = ek.ek(os.path.isfile, self.get_season_all_banner_path(show_obj))
+        result = ek(os.path.isfile, self.get_season_all_banner_path(show_obj))
         logger.log(u"Checking if " + self.get_season_all_banner_path(show_obj) + " exists: " + str(result),
                    logger.DEBUG)
         return result
 
     def get_show_file_path(self, show_obj):
-        return ek.ek(os.path.join, show_obj.location, self._show_metadata_filename)
+        return ek(os.path.join, show_obj.location, self._show_metadata_filename)
 
     def get_episode_file_path(self, ep_obj):
         return helpers.replaceExtension(ep_obj.location, self._ep_nfo_extension)
 
     def get_fanart_path(self, show_obj):
-        return ek.ek(os.path.join, show_obj.location, self.fanart_name)
+        return ek(os.path.join, show_obj.location, self.fanart_name)
 
     def get_poster_path(self, show_obj):
-        return ek.ek(os.path.join, show_obj.location, self.poster_name)
+        return ek(os.path.join, show_obj.location, self.poster_name)
 
     def get_banner_path(self, show_obj):
-        return ek.ek(os.path.join, show_obj.location, self.banner_name)
+        return ek(os.path.join, show_obj.location, self.banner_name)
 
     def get_episode_thumb_path(self, ep_obj):
         """
         Returns the path where the episode thumbnail should be stored.
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
-        if ek.ek(os.path.isfile, ep_obj.location):
+        if ek(os.path.isfile, ep_obj.location):
 
             tbn_filename = ep_obj.location.rpartition(".")
 
@@ -223,7 +224,7 @@ class GenericMetadata():
         else:
             season_poster_filename = 'season' + str(season).zfill(2)
 
-        return ek.ek(os.path.join, show_obj.location, season_poster_filename + '-poster.jpg')
+        return ek(os.path.join, show_obj.location, season_poster_filename + '-poster.jpg')
 
     def get_season_banner_path(self, show_obj, season):
         """
@@ -240,13 +241,13 @@ class GenericMetadata():
         else:
             season_banner_filename = 'season' + str(season).zfill(2)
 
-        return ek.ek(os.path.join, show_obj.location, season_banner_filename + '-banner.jpg')
+        return ek(os.path.join, show_obj.location, season_banner_filename + '-banner.jpg')
 
     def get_season_all_poster_path(self, show_obj):
-        return ek.ek(os.path.join, show_obj.location, self.season_all_poster_name)
+        return ek(os.path.join, show_obj.location, self.season_all_poster_name)
 
     def get_season_all_banner_path(self, show_obj):
-        return ek.ek(os.path.join, show_obj.location, self.season_all_banner_name)
+        return ek(os.path.join, show_obj.location, self.season_all_banner_name)
 
     def _show_data(self, show_obj):
         """
@@ -283,7 +284,7 @@ class GenericMetadata():
 
             nfo_file_path = self.get_show_file_path(show_obj)
             try:
-                with ek.ek(open, nfo_file_path, 'r') as xmlFileObj:
+                with ek(open, nfo_file_path, 'r') as xmlFileObj:
                     showXML = etree.ElementTree(file=xmlFileObj)
 
                 indexerid = showXML.find('id')
@@ -414,17 +415,17 @@ class GenericMetadata():
             return False
 
         nfo_file_path = self.get_show_file_path(show_obj)
-        nfo_file_dir = ek.ek(os.path.dirname, nfo_file_path)
+        nfo_file_dir = ek(os.path.dirname, nfo_file_path)
 
         try:
-            if not ek.ek(os.path.isdir, nfo_file_dir):
+            if not ek(os.path.isdir, nfo_file_dir):
                 logger.log(u"Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
-                ek.ek(os.makedirs, nfo_file_dir)
+                ek(os.makedirs, nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.log(u"Writing show nfo file to " + nfo_file_path, logger.DEBUG)
 
-            nfo_file = ek.ek(open, nfo_file_path, 'w')
+            nfo_file = ek(open, nfo_file_path, 'w')
 
             data.write(nfo_file, encoding="utf-8")
             nfo_file.close()
@@ -459,17 +460,17 @@ class GenericMetadata():
             return False
 
         nfo_file_path = self.get_episode_file_path(ep_obj)
-        nfo_file_dir = ek.ek(os.path.dirname, nfo_file_path)
+        nfo_file_dir = ek(os.path.dirname, nfo_file_path)
 
         try:
-            if not ek.ek(os.path.isdir, nfo_file_dir):
+            if not ek(os.path.isdir, nfo_file_dir):
                 logger.log(u"Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
-                ek.ek(os.makedirs, nfo_file_dir)
+                ek(os.makedirs, nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
 
-            nfo_file = ek.ek(open, nfo_file_path, 'w')
+            nfo_file = ek(open, nfo_file_path, 'w')
 
             data.write(nfo_file, encoding="utf-8")
             nfo_file.close()
@@ -704,23 +705,23 @@ class GenericMetadata():
         """
 
         # don't bother overwriting it
-        if ek.ek(os.path.isfile, image_path):
+        if ek(os.path.isfile, image_path):
             logger.log(u"Image already exists, not downloading", logger.DEBUG)
             return False
 
-        image_dir = ek.ek(os.path.dirname, image_path)
+        image_dir = ek(os.path.dirname, image_path)
 
         if not image_data:
-            logger.log(u"Unable to retrieve image to save in %s, skipping" % (ek.ss(image_path)), logger.DEBUG)
+            logger.log(u"Unable to retrieve image to save in %s, skipping" % (ss(image_path)), logger.DEBUG)
             return False
 
         try:
-            if not ek.ek(os.path.isdir, image_dir):
+            if not ek(os.path.isdir, image_dir):
                 logger.log(u"Metadata dir didn't exist, creating it at " + image_dir, logger.DEBUG)
-                ek.ek(os.makedirs, image_dir)
+                ek(os.makedirs, image_dir)
                 helpers.chmodAsParent(image_dir)
 
-            outFile = ek.ek(open, image_path, 'wb')
+            outFile = ek(open, image_path, 'wb')
             outFile.write(image_data)
             outFile.close()
             helpers.chmodAsParent(image_path)
@@ -921,16 +922,16 @@ class GenericMetadata():
 
         empty_return = (None, None, None)
 
-        metadata_path = ek.ek(os.path.join, folder, self._show_metadata_filename)
+        metadata_path = ek(os.path.join, folder, self._show_metadata_filename)
 
-        if not ek.ek(os.path.isdir, folder) or not ek.ek(os.path.isfile, metadata_path):
+        if not ek(os.path.isdir, folder) or not ek(os.path.isfile, metadata_path):
             logger.log(u"Can't load the metadata file from " + repr(metadata_path) + ", it doesn't exist", logger.DEBUG)
             return empty_return
 
         logger.log(u"Loading show info from metadata file in " + folder, logger.DEBUG)
 
         try:
-            with ek.ek(open, metadata_path, 'r') as xmlFileObj:
+            with ek(open, metadata_path, 'r') as xmlFileObj:
                 showXML = etree.ElementTree(file=xmlFileObj)
 
             if showXML.findtext('title') == None \

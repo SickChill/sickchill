@@ -6,9 +6,10 @@ from datetime import date
 
 import sickbeard
 from sickbeard import helpers
-from sickbeard import encodingKludge as ek
+from sickrage.helper.encoding import ek
 
-class imdbPopular():
+
+class imdbPopular:
     def __init__(self):
 
         self.url = "http://www.imdb.com/search/title?at=0&sort=moviemeter&title_type=tv_series&year=%s,%s" % \
@@ -89,7 +90,7 @@ class imdbPopular():
         Store cache of image in cache dir
         :param image_url: Source URL
         """
-        path = ek.ek(os.path.abspath, ek.ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'imdb_popular'))
+        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'imdb_popular'))
 
         if not os.path.exists(path):
             os.makedirs(path)

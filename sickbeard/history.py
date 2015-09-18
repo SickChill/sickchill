@@ -21,7 +21,7 @@ import db
 import datetime
 
 from sickbeard.common import SNATCHED, SUBTITLED, FAILED, Quality
-from sickbeard import encodingKludge as ek
+from sickrage.helper.encoding import ss
 from sickrage.show.History import History
 
 
@@ -39,7 +39,7 @@ def _logHistoryItem(action, showid, season, episode, quality, resource, provider
     :param version: tracked version of file (defaults to -1)
     """
     logDate = datetime.datetime.today().strftime(History.date_format)
-    resource = ek.ss(resource)
+    resource = ss(resource)
 
     myDB = db.DBConnection()
     myDB.action(

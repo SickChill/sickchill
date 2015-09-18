@@ -22,7 +22,7 @@ from dateutil import zoneinfo
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import logger
-from sickbeard import encodingKludge as ek
+from sickrage.helper.encoding import ek
 from os.path import basename, join, isfile
 import os
 import re
@@ -42,7 +42,7 @@ sb_timezone = tz.tzlocal()
 # helper to remove failed temp download
 def _remove_zoneinfo_failed(filename):
     try:
-        ek.ek(os.remove, filename)
+        ek(os.remove, filename)
     except:
         pass
 
@@ -50,18 +50,18 @@ def _remove_zoneinfo_failed(filename):
 # helper to remove old unneeded zoneinfo files
 def _remove_old_zoneinfo():
     if zoneinfo.ZONEINFOFILE is not None:
-        cur_zoneinfo = ek.ek(basename, zoneinfo.ZONEINFOFILE)
+        cur_zoneinfo = ek(basename, zoneinfo.ZONEINFOFILE)
     else:
         return
 
-    cur_file = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, zoneinfo.__file__), cur_zoneinfo))
-    for (path, dirs, files) in ek.ek(os.walk, helpers.real_path(ek.ek(os.path.dirname, zoneinfo.__file__))):
+    cur_file = helpers.real_path(ek(join, ek(os.path.dirname, zoneinfo.__file__), cur_zoneinfo))
+    for (path, dirs, files) in ek(os.walk, helpers.real_path(ek(os.path.dirname, zoneinfo.__file__))):
         for filename in files:
             if filename.endswith('.tar.gz'):
-                file_w_path = ek.ek(join, path, filename)
-                if file_w_path != cur_file and ek.ek(isfile, file_w_path):
+                file_w_path = ek(join, path, filename)
+                if file_w_path != cur_file and ek(isfile, file_w_path):
                     try:
-                        ek.ek(os.remove, file_w_path)
+                        ek(os.remove, file_w_path)
                         logger.log(u'Delete unneeded old zoneinfo File: %s' % file_w_path)
                     except:
                         logger.log(u'Unable to delete: %s' % file_w_path, logger.WARNING)
@@ -79,7 +79,7 @@ def _update_zoneinfo():
 
         # Filename of existing zoneinfo
         if zoneinfo.ZONEINFOFILE is not None:
-            cur_zoneinfo = ek.ek(basename, zoneinfo.ZONEINFOFILE)
+            cur_zoneinfo = ek(basename, zoneinfo.ZONEINFOFILE)
         else:
             cur_zoneinfo = None
 
@@ -96,12 +96,12 @@ def _update_zoneinfo():
     # now load the new zoneinfo
     url_tar = u'http://sickragetv.github.io/sb_network_timezones/%s' % new_zoneinfo
 
-    zonefile = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, zoneinfo.__file__), new_zoneinfo))
+    zonefile = helpers.real_path(ek(join, ek(os.path.dirname, zoneinfo.__file__), new_zoneinfo))
     zonefile_tmp = re.sub(r'\.tar\.gz$', '.tmp', zonefile)
 
-    if ek.ek(os.path.exists, zonefile_tmp):
+    if ek(os.path.exists, zonefile_tmp):
         try:
-            ek.ek(os.remove, zonefile_tmp)
+            ekk(os.remove, zonefile_tmp)
         except:
             logger.log(u'Unable to delete: %s' % zonefile_tmp, logger.WARNING)
             return
@@ -109,7 +109,7 @@ def _update_zoneinfo():
     if not helpers.download_file(url_tar, zonefile_tmp, session=requests.Session()):
         return
 
-    if not ek.ek(os.path.exists, zonefile_tmp):
+    if not ek(os.path.exists, zonefile_tmp):
         logger.log(u'Download of %s failed.' % zonefile_tmp, logger.WARNING)
         return
 
@@ -121,11 +121,11 @@ def _update_zoneinfo():
             # remove the old zoneinfo file
             if cur_zoneinfo is not None:
                 old_file = helpers.real_path(
-                    ek.ek(join, ek.ek(os.path.dirname, zoneinfo.__file__), cur_zoneinfo))
-                if ek.ek(os.path.exists, old_file):
-                    ek.ek(os.remove, old_file)
+                    ek(join, ek(os.path.dirname, zoneinfo.__file__), cur_zoneinfo))
+                if ek(os.path.exists, old_file):
+                    ek(os.remove, old_file)
             # rename downloaded file
-            ek.ek(os.rename, zonefile_tmp, zonefile)
+            ek(os.rename, zonefile_tmp, zonefile)
             # load the new zoneinfo
             reload(zoneinfo)
             sb_timezone = tz.tzlocal()

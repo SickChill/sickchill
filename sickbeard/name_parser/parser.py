@@ -25,8 +25,9 @@ import os.path
 import regexes
 import sickbeard
 
-from sickbeard import logger, helpers, scene_numbering, common, scene_exceptions, encodingKludge as ek, db
+from sickbeard import logger, helpers, scene_numbering, common, scene_exceptions, db
 from sickbeard.exceptions import ex
+from sickrage.helper.encoding import ek
 from dateutil import parser
 
 
@@ -225,7 +226,7 @@ class NameParser(object):
                 if sql_result:
                     season_number = int(sql_result[0][0])
                     episode_numbers = [int(sql_result[0][1])]
-                
+
                 if not season_number or not len(episode_numbers):
                     try:
                         lINDEXER_API_PARMS = sickbeard.indexerApi(bestResult.show.indexer).api_params.copy()
@@ -401,7 +402,7 @@ class NameParser(object):
             return cached
 
         # break it into parts if there are any (dirname, file name, extension)
-        dir_name, file_name = ek.ek(os.path.split, name)
+        dir_name, file_name = ek(os.path.split, name)
 
         if self.file_name:
             base_file_name = helpers.remove_extension(file_name)

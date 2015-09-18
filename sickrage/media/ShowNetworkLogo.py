@@ -1,5 +1,5 @@
 from os.path import join
-from sickbeard.encodingKludge import ek
+from sickrage.helper.encoding import ek
 from sickrage.media.GenericMedia import GenericMedia
 
 

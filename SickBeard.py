@@ -18,9 +18,11 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 # Check needed software dependencies to nudge users to fix their setup
+
 from __future__ import with_statement
 
 import codecs
+
 codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else None)
 
 import time
@@ -56,7 +58,7 @@ from sickbeard.tv import TVShow
 from sickbeard.webserveInit import SRWebServer
 from sickbeard.event_queue import Events
 from configobj import ConfigObj
-from sickbeard import encodingKludge as ek
+from sickrage.helper.encoding import ek
 
 throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 
@@ -112,25 +114,26 @@ class SickRage(object):
 
     def fix_clients_nonsense(self):
 
-        files = ["sickbeard/clients/download_station.py",
-                 "sickbeard/clients/utorrent.py",
-                 "sickbeard/clients/qbittorrent.py",
-                 "sickbeard/clients/transmission.py",
-                 "sickbeard/clients/deluge.py",
-                 "sickbeard/clients/deluged.py",
-                 "sickbeard/clients/rtorrent.py"
-                ]
+        files = [
+            "sickbeard/clients/download_station.py",
+            "sickbeard/clients/utorrent.py",
+            "sickbeard/clients/qbittorrent.py",
+            "sickbeard/clients/transmission.py",
+            "sickbeard/clients/deluge.py",
+            "sickbeard/clients/deluged.py",
+            "sickbeard/clients/rtorrent.py"
+        ]
 
         for file in files:
-            file = ek.ek(os.path.join, sickbeard.PROG_DIR, file)
+            file = ek(os.path.join, sickbeard.PROG_DIR, file)
             try:
-                if ek.ek(os.path.exists, file):
-                    ek.ek(os.remove, file)
+                if ek(os.path.exists, file):
+                    ek(os.remove, file)
             except:
                 pass
             try:
-                if ek.ek(os.path.exists, file + "c"):
-                    ek.ek(os.remove, file + "c")
+                if ek(os.path.exists, file + "c"):
+                    ek(os.remove, file + "c")
             except:
                 pass
 

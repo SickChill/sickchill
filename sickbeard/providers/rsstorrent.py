@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import os
 import re
 
@@ -23,10 +22,10 @@ import sickbeard
 import generic
 
 from sickbeard import helpers
-from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.exceptions import ex
+from sickrage.helper.encoding import ek
 
 import requests
 from bencode import bdecode
@@ -65,8 +64,8 @@ class TorrentRssProvider(generic.TorrentProvider):
                                             self.enable_backlog)
 
     def imageName(self):
-        if ek.ek(os.path.isfile,
-                 ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
+        if ek(os.path.isfile,
+                 ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
                        self.getID() + '.png')):
             return self.getID() + '.png'
         return 'torrentrss.png'
@@ -137,8 +136,7 @@ class TorrentRssProvider(generic.TorrentProvider):
             return (False, 'Error when trying to load RSS: ' + ex(e))
 
     def dumpHTML(self, data):
-
-        dumpName = ek.ek(os.path.join, sickbeard.CACHE_DIR, 'custom_torrent.html')
+        dumpName = ek(os.path.join, sickbeard.CACHE_DIR, 'custom_torrent.html')
 
         try:
             fileOut = open(dumpName, 'wb')

@@ -22,7 +22,7 @@ import kodi_12plus
 import os
 
 from sickbeard import helpers
-from sickbeard import encodingKludge as ek
+from sickrage.helper.encoding import ek
 
 
 class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):
@@ -97,7 +97,7 @@ class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):
 
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
-        if ek.ek(os.path.isfile, ep_obj.location):
+        if ek(os.path.isfile, ep_obj.location):
             tbn_filename = helpers.replaceExtension(ep_obj.location, 'tbn')
         else:
             return None
@@ -119,7 +119,7 @@ class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):
         else:
             season_poster_filename = 'season' + str(season).zfill(2)
 
-        return ek.ek(os.path.join, show_obj.location, season_poster_filename + '.tbn')
+        return ek(os.path.join, show_obj.location, season_poster_filename + '.tbn')
 
 
 # present a standard "interface" from the module
