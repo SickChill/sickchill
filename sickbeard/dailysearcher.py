@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -36,6 +37,11 @@ class DailySearcher():
         self.amActive = False
 
     def run(self, force=False):
+        """
+        Runs the daily searcher, queuing selected episodes for search
+
+        :param force: Force search
+        """
         if self.amActive:
             return
 

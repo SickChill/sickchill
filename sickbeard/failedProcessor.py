@@ -1,5 +1,6 @@
 # Author: Tyler Fenby <tylerfenby@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -30,8 +31,8 @@ class FailedProcessor(object):
 
     def __init__(self, dirName, nzbName):
         """
-        dirName: Full path to the folder of the failed download
-        nzbName: Full name of the nzb file that failed
+        :param dirName: Full path to the folder of the failed download
+        :param nzbName: Full name of the nzb file that failed
         """
         self.dir_name = dirName
         self.nzb_name = nzbName
@@ -39,6 +40,11 @@ class FailedProcessor(object):
         self.log = ""
 
     def process(self):
+        """
+        Do the actual work
+
+        :return: True
+        """
         self._log(u"Failed download detected: (" + str(self.nzb_name) + ", " + str(self.dir_name) + ")")
 
         releaseName = show_name_helpers.determineReleaseName(self.dir_name, self.nzb_name)

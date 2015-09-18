@@ -17,6 +17,8 @@ class imdbPopular():
         self.session = requests.Session()
 
     def fetch_popular_shows(self):
+        """Get popular show information from IMDB"""
+
         popular_shows = []
 
         data = helpers.getURL(self.url, session=self.session)
@@ -83,6 +85,10 @@ class imdbPopular():
             return image_url
 
     def cache_image(self, image_url):
+        """
+        Store cache of image in cache dir
+        :param image_url: Source URL
+        """
         path = ek.ek(os.path.abspath, ek.ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'imdb_popular'))
 
         if not os.path.exists(path):

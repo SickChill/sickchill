@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -21,6 +22,12 @@ import chardet
 import sickbeard
 
 def _toUnicode(x):
+    """
+    Converts string to Unicode, using in order: UTF-8, Latin-1, System encoding or finally what chardet wants
+
+    :param x: String to convert
+    :return: Converted string as unicode, fallback is System encoding
+    """
     if isinstance(x, str):
         try:
             x = unicode(x)
@@ -42,6 +49,12 @@ def _toUnicode(x):
     return x
 
 def ss(x):
+    """
+    Converts string to Unicode, fallback encoding is forced UTF-8
+
+    :param x: String to convert
+    :return: Converted string
+    """
     x = _toUnicode(x)
 
     try:
@@ -57,6 +70,12 @@ def ss(x):
     return x
 
 def fixListEncodings(x):
+    """
+    Converts each item in a list to Unicode
+
+    :param x: List or tuple to convert to Unicode
+    :return: Unicode converted input
+    """
     if not isinstance(x, (list, tuple)):
         return x
     else:
@@ -64,6 +83,13 @@ def fixListEncodings(x):
 
 
 def ek(func, *args, **kwargs):
+    """
+    Encoding Kludge: Call function with arguments and unicode-encode output
+
+    :param func:  Function to call
+    :param args:  Arguments for function
+    :return: Unicode-converted function output (string, list or tuple, depends on input)
+    """
     if os.name == 'nt':
         result = func(*args, **kwargs)
     else:

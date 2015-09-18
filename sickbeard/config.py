@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -54,6 +55,12 @@ naming_sep_type_text = (" - ", "space")
 
 
 def change_HTTPS_CERT(https_cert):
+    """
+    Replace HTTPS Certificate file path
+
+    :param https_cert: path to the new certificate file
+    :return: True on success, False on failure
+    """
     if https_cert == '':
         sickbeard.HTTPS_CERT = ''
         return True
@@ -69,6 +76,12 @@ def change_HTTPS_CERT(https_cert):
 
 
 def change_HTTPS_KEY(https_key):
+    """
+    Replace HTTPS Key file path
+
+    :param https_key: path to the new key file
+    :return: True on success, False on failure
+    """
     if https_key == '':
         sickbeard.HTTPS_KEY = ''
         return True
@@ -84,6 +97,13 @@ def change_HTTPS_KEY(https_key):
 
 
 def change_LOG_DIR(log_dir, web_log):
+    """
+    Change logging directory for application and webserver
+
+    :param log_dir: Path to new logging directory
+    :param web_log: Enable/disable web logging
+    :return: True on success, False on failure
+    """
     log_dir_changed = False
     abs_log_dir = os.path.normpath(os.path.join(sickbeard.DATA_DIR, log_dir))
     web_log_value = checkbox_to_value(web_log)
@@ -107,6 +127,12 @@ def change_LOG_DIR(log_dir, web_log):
 
 
 def change_NZB_DIR(nzb_dir):
+    """
+    Change NZB Folder
+
+    :param nzb_dir: New NZB Folder location
+    :return: True on success, False on failure
+    """
     if nzb_dir == '':
         sickbeard.NZB_DIR = ''
         return True
@@ -122,6 +148,12 @@ def change_NZB_DIR(nzb_dir):
 
 
 def change_TORRENT_DIR(torrent_dir):
+    """
+    Change torrent directory
+
+    :param torrent_dir: New torrent directory
+    :return: True on success, False on failure
+    """
     if torrent_dir == '':
         sickbeard.TORRENT_DIR = ''
         return True
@@ -137,6 +169,12 @@ def change_TORRENT_DIR(torrent_dir):
 
 
 def change_TV_DOWNLOAD_DIR(tv_download_dir):
+    """
+    Change TV_DOWNLOAD directory (used by postprocessor)
+
+    :param tv_download_dir: New tv download directory
+    :return: True on success, False on failure
+    """
     if tv_download_dir == '':
         sickbeard.TV_DOWNLOAD_DIR = ''
         return True
@@ -152,6 +190,12 @@ def change_TV_DOWNLOAD_DIR(tv_download_dir):
 
 
 def change_AUTOPOSTPROCESSER_FREQUENCY(freq):
+    """
+    Change frequency of automatic postprocessing thread
+    TODO: Make all thread frequency changers in config.py return True/False status
+
+    :param freq: New frequency
+    """
     sickbeard.AUTOPOSTPROCESSER_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_AUTOPOSTPROCESSER_FREQUENCY)
 
     if sickbeard.AUTOPOSTPROCESSER_FREQUENCY < sickbeard.MIN_AUTOPOSTPROCESSER_FREQUENCY:
@@ -160,6 +204,11 @@ def change_AUTOPOSTPROCESSER_FREQUENCY(freq):
     sickbeard.autoPostProcesserScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSER_FREQUENCY)
 
 def change_DAILYSEARCH_FREQUENCY(freq):
+    """
+    Change frequency of daily search thread
+
+    :param freq: New frequency
+    """
     sickbeard.DAILYSEARCH_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
 
     if sickbeard.DAILYSEARCH_FREQUENCY < sickbeard.MIN_DAILYSEARCH_FREQUENCY:
@@ -168,6 +217,11 @@ def change_DAILYSEARCH_FREQUENCY(freq):
     sickbeard.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
 
 def change_BACKLOG_FREQUENCY(freq):
+    """
+    Change frequency of backlog thread
+
+    :param freq: New frequency
+    """
     sickbeard.BACKLOG_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_BACKLOG_FREQUENCY)
 
     sickbeard.MIN_BACKLOG_FREQUENCY = sickbeard.get_backlog_cycle_time()
@@ -177,6 +231,11 @@ def change_BACKLOG_FREQUENCY(freq):
     sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
 
 def change_UPDATE_FREQUENCY(freq):
+    """
+    Change frequency of daily updater thread
+
+    :param freq: New frequency
+    """
     sickbeard.UPDATE_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_UPDATE_FREQUENCY)
 
     if sickbeard.UPDATE_FREQUENCY < sickbeard.MIN_UPDATE_FREQUENCY:
@@ -185,6 +244,11 @@ def change_UPDATE_FREQUENCY(freq):
     sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
 
 def change_SHOWUPDATE_HOUR(freq):
+    """
+    Change frequency of show updater thread
+
+    :param freq: New frequency
+    """
     sickbeard.SHOWUPDATE_HOUR = to_int(freq, default=sickbeard.DEFAULT_SHOWUPDATE_HOUR)
 
     if sickbeard.SHOWUPDATE_HOUR > 23:
@@ -195,13 +259,22 @@ def change_SHOWUPDATE_HOUR(freq):
     sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
 
 def change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency):
+    """
+    Change frequency of subtitle thread
 
+    :param subtitles_finder_frequency: New frequency
+    """
     if subtitles_finder_frequency == '' or subtitles_finder_frequency is None:
             subtitles_finder_frequency = 1
 
     sickbeard.SUBTITLES_FINDER_FREQUENCY = to_int(subtitles_finder_frequency, 1)
 
 def change_VERSION_NOTIFY(version_notify):
+    """
+    Change frequency of versioncheck thread
+
+    :param version_notify: New frequency
+    """
     oldSetting = sickbeard.VERSION_NOTIFY
 
     sickbeard.VERSION_NOTIFY = version_notify
@@ -213,6 +286,12 @@ def change_VERSION_NOTIFY(version_notify):
         sickbeard.versionCheckScheduler.forceRun()
 
 def change_DOWNLOAD_PROPERS(download_propers):
+    """
+    Enable/Disable proper download thread
+    TODO: Make this return True/False on success/failure
+
+    :param download_propers: New desired state
+    """
     download_propers = checkbox_to_value(download_propers)
 
     if sickbeard.DOWNLOAD_PROPERS == download_propers:
@@ -232,6 +311,12 @@ def change_DOWNLOAD_PROPERS(download_propers):
         logger.log(u"Stopping PROPERFINDER thread", logger.INFO)
 
 def change_USE_TRAKT(use_trakt):
+    """
+    Enable/disable trakt thread
+    TODO: Make this return true/false on success/failure
+
+    :param use_trakt: New desired state
+    """
     use_trakt = checkbox_to_value(use_trakt)
 
     if sickbeard.USE_TRAKT == use_trakt:
@@ -252,6 +337,12 @@ def change_USE_TRAKT(use_trakt):
 
 
 def change_USE_SUBTITLES(use_subtitles):
+    """
+    Enable/Disable subtitle searcher
+    TODO: Make this return true/false on success/failure
+
+    :param use_subtitles: New desired state
+    """
     use_subtitles = checkbox_to_value(use_subtitles)
 
     if sickbeard.USE_SUBTITLES == use_subtitles:
@@ -271,6 +362,12 @@ def change_USE_SUBTITLES(use_subtitles):
         logger.log(u"Stopping SUBTITLESFINDER thread", logger.INFO)
 
 def change_PROCESS_AUTOMATICALLY(process_automatically):
+    """
+    Enable/Disable postprocessor thread
+    TODO: Make this return True/False on success/failure
+
+    :param process_automatically: New desired state
+    """
     process_automatically = checkbox_to_value(process_automatically)
 
     if sickbeard.PROCESS_AUTOMATICALLY == process_automatically:
@@ -347,6 +444,13 @@ def clean_host(host, default_port=None):
 
 
 def clean_hosts(hosts, default_port=None):
+    """
+    Returns list of cleaned hosts by clean_host
+
+    :param hosts: list of hosts
+    :param default_port: default port to use
+    :return: list of cleaned hosts
+    """
     cleaned_hosts = []
 
     for cur_host in [x.strip() for x in hosts.split(",")]:
