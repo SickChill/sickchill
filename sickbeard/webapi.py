@@ -2390,13 +2390,14 @@ class CMD_ShowPause(ApiCall):
 
 
 class CMD_ShowRefresh(ApiCall):
-    _help = {"desc": "refresh a show in sickrage",
-             "requiredParameters": {
-                 "indexerid": {"desc": "unique id of a show"},
-             },
-             "optionalParameters": {
-                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-             }
+    _help = {
+        "desc": "Refresh a show in SickRage",
+        "requiredParameters": {
+            "indexerid": {"desc": "Unique id of a show"},
+        },
+        "optionalParameters": {
+            "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+        }
     }
 
     def __init__(self, args, kwargs):
@@ -2407,17 +2408,13 @@ class CMD_ShowRefresh(ApiCall):
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ refresh a show in sickrage """
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
-        if not showObj:
-            return _responds(RESULT_FAILURE, msg="Show not found")
+        """ Refresh a show in SickRage """
+        error, show = Show.refresh(self.indexerid)
 
-        try:
-            sickbeard.showQueueScheduler.action.refreshShow(showObj)  # @UndefinedVariable
-            return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has queued to be refreshed")
-        except exceptions.CantRefreshException:
-            # TODO: log the excption
-            return _responds(RESULT_FAILURE, msg="Unable to refresh " + str(showObj.name))
+        if error is not None:
+            return _responds(RESULT_FAILURE, msg=error)
+
+        return _responds(RESULT_SUCCESS, msg='%s has queued to be refreshed' % show.name)
 
 
 class CMD_ShowSeasonList(ApiCall):
