@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -44,6 +45,11 @@ class ProperFinder():
         self.amActive = False
 
     def run(self, force=False):
+        """
+        Start looking for new propers
+
+        :param force: Start even if already running (currently not used, defaults to False)
+        """
         logger.log(u"Beginning the search for new propers")
 
         self.amActive = True
@@ -68,6 +74,9 @@ class ProperFinder():
         self.amActive = False
 
     def _getProperList(self):
+        """
+        Walk providers for propers
+        """
         propers = {}
 
         search_date = datetime.datetime.today() - datetime.timedelta(days=2)
@@ -201,6 +210,11 @@ class ProperFinder():
         return finalPropers
 
     def _downloadPropers(self, properList):
+        """
+        Download proper (snatch it)
+
+        :param properList:
+        """
 
         for curProper in properList:
 
@@ -256,6 +270,11 @@ class ProperFinder():
         return name.replace(".", " ").replace("-", " ").replace("_", " ").lower()
 
     def _set_lastProperSearch(self, when):
+        """
+        Record last propersearch in DB
+
+        :param when: When was the last proper search
+        """
 
         logger.log(u"Setting the last Proper search in the DB to " + str(when), logger.DEBUG)
 
@@ -269,6 +288,9 @@ class ProperFinder():
             myDB.action("UPDATE info SET last_proper_search=" + str(when))
 
     def _get_lastProperSearch(self):
+        """
+        Find last propersearch from DB
+        """
 
         myDB = db.DBConnection()
         sqlResults = myDB.select("SELECT * FROM info")

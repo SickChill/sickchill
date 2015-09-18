@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -39,11 +40,11 @@ def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=Tr
     returns the TVDB numbering.
     (so the return values will always be set)
 
-    @param indexer_id: int
-    @param season: int
-    @param episode: int
-    @param fallback_to_xem: bool If set (the default), check xem for matches if there is no local scene numbering
-    @return: (int, int) a tuple with (season, episode)
+    :param indexer_id: int
+    :param season: int
+    :param episode: int
+    :param fallback_to_xem: bool If set (the default), check xem for matches if there is no local scene numbering
+    :return: (int, int) a tuple with (season, episode)
     """
     if indexer_id is None or season is None or episode is None:
         return (season, episode)
@@ -89,10 +90,10 @@ def get_scene_absolute_numbering(indexer_id, indexer, absolute_number, fallback_
     returns the TVDB numbering.
     (so the return values will always be set)
 
-    @param indexer_id: int
-    @param absolute_number: int
-    @param fallback_to_xem: bool If set (the default), check xem for matches if there is no local scene numbering
-    @return: (int, int) a tuple with (season, episode)
+    :param indexer_id: int
+    ;param absolute_number: int
+    :param fallback_to_xem: bool If set (the default), check xem for matches if there is no local scene numbering
+    :return: (int, int) a tuple with (season, episode)
     """
     if indexer_id is None or absolute_number is None:
         return absolute_number
@@ -192,7 +193,6 @@ def set_scene_numbering(indexer_id, indexer, season=None, episode=None, absolute
     """
     Set scene numbering for a season/episode.
     To clear the scene numbering, leave both sceneSeason and sceneEpisode as None.
-
     """
     if indexer_id is None:
         return
@@ -228,10 +228,10 @@ def find_xem_numbering(indexer_id, indexer, season, episode):
     Returns the scene numbering, as retrieved from xem.
     Refreshes/Loads as needed.
 
-    @param indexer_id: int
-    @param season: int
-    @param episode: int
-    @return: (int, int) a tuple of scene_season, scene_episode, or None if there is no special mapping.
+    :param indexer_id: int
+    :param season: int
+    :param episode: int
+    :return: (int, int) a tuple of scene_season, scene_episode, or None if there is no special mapping.
     """
     if indexer_id is None or season is None or episode is None:
         return (season, episode)
@@ -255,9 +255,9 @@ def find_xem_absolute_numbering(indexer_id, indexer, absolute_number):
     Returns the scene numbering, as retrieved from xem.
     Refreshes/Loads as needed.
 
-    @param indexer_id: int
-    @param absolute_number: int
-    @return: int
+    :param indexer_id: int
+    :param absolute_number: int
+    :return: int
     """
     if indexer_id is None or absolute_number is None:
         return absolute_number
@@ -280,10 +280,10 @@ def get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode
     """
     Reverse of find_xem_numbering: lookup a tvdb season and episode using scene numbering
 
-    @param indexer_id: int
-    @param sceneSeason: int
-    @param sceneEpisode: int
-    @return: (int, int) a tuple of (season, episode)
+    :param indexer_id: int
+    :param sceneSeason: int
+    :param sceneEpisode: int
+    :return: (int, int) a tuple of (season, episode)
     """
     if indexer_id is None or sceneSeason is None or sceneEpisode is None:
         return (sceneSeason, sceneEpisode)
@@ -308,9 +308,9 @@ def get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNum
     """
     Reverse of find_xem_numbering: lookup a tvdb season and episode using scene numbering
 
-    @param indexer_id: int
-    @param sceneAbsoluteNumber: int
-    @return: int
+    :param indexer_id: int
+    :param sceneAbsoluteNumber: int
+    :return: int
     """
     if indexer_id is None or sceneAbsoluteNumber is None:
         return sceneAbsoluteNumber
@@ -456,7 +456,7 @@ def xem_refresh(indexer_id, indexer, force=False):
     """
     Refresh data from xem for a tv show
 
-    @param indexer_id: int
+    :param indexer_id: int
     """
     if not indexer_id or indexer_id < 1:
         return

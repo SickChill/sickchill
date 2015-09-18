@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -48,6 +49,10 @@ class Scheduler(threading.Thread):
         self.enable = False
 
     def timeLeft(self):
+        """
+        Check how long we have until we run again
+        :return: timedelta
+        """
         if self.isAlive():
             if self.start_time is None:
                 return self.cycleTime - (datetime.datetime.now() - self.lastRun)
@@ -69,6 +74,9 @@ class Scheduler(threading.Thread):
         return False
 
     def run(self):
+        """
+        Runs the thread
+        """
         try:
             while not self.stop.is_set():
                 if self.enable:

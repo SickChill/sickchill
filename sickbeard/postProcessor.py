@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -99,8 +100,8 @@ class PostProcessor(object):
         """
         A wrapper for the internal logger which also keeps track of messages and saves them to a string for later.
 
-        message: The string to log (unicode)
-        level: The log level to use (optional)
+        :param message: The string to log (unicode)
+        :param level: The log level to use (optional)
         """
         logger.log(message, level)
         self.log += message + '\n'
@@ -110,9 +111,9 @@ class PostProcessor(object):
         Checks if a file exists already and if it does whether it's bigger or smaller than
         the file we are post processing
 
-        existing_file: The file to compare to
+        ;param existing_file: The file to compare to
 
-        Returns:
+        :return:
             DOESNT_EXIST if the file doesn't exist
             EXISTS_LARGER if the file exists and is larger than the file we are post processing
             EXISTS_SMALLER if the file exists and is smaller than the file we are post processing
@@ -148,11 +149,11 @@ class PostProcessor(object):
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
 
-        file_path: The file to check for associated files
+        :param file_path: The file to check for associated files
 
-        base_name_only: False add extra '.' (conservative search) to file_path minus extension
+        :param base_name_only: False add extra '.' (conservative search) to file_path minus extension
 
-        Returns: A list containing all files which are associated to the given file
+        :return: A list containing all files which are associated to the given file
         """
         def recursive_glob(treeroot, pattern):
             results = []
@@ -221,8 +222,8 @@ class PostProcessor(object):
         """
         Deletes the file and optionally all associated files.
 
-        file_path: The file to delete
-        associated_files: True to delete all files which differ only by extension, False to leave them
+        :param file_path: The file to delete
+        :param associated_files: True to delete all files which differ only by extension, False to leave them
         """
 
         if not file_path:
@@ -262,11 +263,12 @@ class PostProcessor(object):
         Performs a generic operation (move or copy) on a file. Can rename the file as well as change its location,
         and optionally move associated files too.
 
-        file_path: The full path of the media file to act on
-        new_path: Destination path where we want to move/copy the file to
-        new_base_name: The base filename (no extension) to use during the copy. Use None to keep the same name.
-        associated_files: Boolean, whether we should copy similarly-named files too
-        action: function that takes an old path and new path and does an operation with them (move/copy)
+        :param file_path: The full path of the media file to act on
+        :param new_path: Destination path where we want to move/copy the file to
+        :param new_base_name: The base filename (no extension) to use during the copy. Use None to keep the same name.
+        :param associated_files: Boolean, whether we should copy similarly-named files too
+        :param action: function that takes an old path and new path and does an operation with them (move/copy)
+        :param subtitles: Boolean, whether we should process subtitles too
         """
 
         if not action:
@@ -327,10 +329,12 @@ class PostProcessor(object):
 
     def _move(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
         """
-        file_path: The full path of the media file to move
-        new_path: Destination path where we want to move the file to
-        new_base_name: The base filename (no extension) to use during the move. Use None to keep the same name.
-        associated_files: Boolean, whether we should move similarly-named files too
+        Move file and set proper permissions
+
+        :param file_path: The full path of the media file to move
+        :param new_path: Destination path where we want to move the file to
+        :param new_base_name: The base filename (no extension) to use during the move. Use None to keep the same name.
+        :param associated_files: Boolean, whether we should move similarly-named files too
         """
 
         def _int_move(cur_file_path, new_file_path):
@@ -348,10 +352,12 @@ class PostProcessor(object):
 
     def _copy(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
         """
-        file_path: The full path of the media file to copy
-        new_path: Destination path where we want to copy the file to
-        new_base_name: The base filename (no extension) to use during the copy. Use None to keep the same name.
-        associated_files: Boolean, whether we should copy similarly-named files too
+        Copy file and set proper permissions
+
+        :param file_path: The full path of the media file to copy
+        :param new_path: Destination path where we want to copy the file to
+        :param new_base_name: The base filename (no extension) to use during the copy. Use None to keep the same name.
+        :param associated_files: Boolean, whether we should copy similarly-named files too
         """
 
         def _int_copy(cur_file_path, new_file_path):
@@ -370,10 +376,12 @@ class PostProcessor(object):
 
     def _hardlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
         """
-        file_path: The full path of the media file to move
-        new_path: Destination path where we want to create a hard linked file
-        new_base_name: The base filename (no extension) to use during the link. Use None to keep the same name.
-        associated_files: Boolean, whether we should move similarly-named files too
+        Hardlink file and set proper permissions
+
+        :param file_path: The full path of the media file to move
+        :param new_path: Destination path where we want to create a hard linked file
+        :param new_base_name: The base filename (no extension) to use during the link. Use None to keep the same name.
+        :param associated_files: Boolean, whether we should move similarly-named files too
         """
 
         def _int_hard_link(cur_file_path, new_file_path):
@@ -390,10 +398,12 @@ class PostProcessor(object):
 
     def _moveAndSymlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
         """
-        file_path: The full path of the media file to move
-        new_path: Destination path where we want to move the file to create a symbolic link to
-        new_base_name: The base filename (no extension) to use during the link. Use None to keep the same name.
-        associated_files: Boolean, whether we should move similarly-named files too
+        Move file, symlink source location back to destination, and set proper permissions
+
+        :param file_path: The full path of the media file to move
+        :param new_path: Destination path where we want to move the file to create a symbolic link to
+        :param new_base_name: The base filename (no extension) to use during the link. Use None to keep the same name.
+        :param associated_files: Boolean, whether we should move similarly-named files too
         """
 
         def _int_move_and_sym_link(cur_file_path, new_file_path):
@@ -413,7 +423,7 @@ class PostProcessor(object):
         """
         Look up the NZB name in the history and see if it contains a record for self.nzb_name
 
-        Returns a (indexer_id, season, [], quality, version) tuple. The first two may be None if none were found.
+        :return: A (indexer_id, season, [], quality, version) tuple. The first two may be None if none were found.
         """
 
         to_return = (None, None, [], None, None)
@@ -462,6 +472,11 @@ class PostProcessor(object):
         return to_return
 
     def _finalize(self, parse_result):
+        """
+        Store parse result if it is complete and final
+
+        :param parse_result: Result of parsers
+        """
         self.release_group = parse_result.release_group
 
         # remember whether it's a proper
@@ -490,9 +505,9 @@ class PostProcessor(object):
         """
         Takes a name and tries to figure out a show, season, and episode from it.
 
-        name: A string which we want to analyze to determine show info from (unicode)
+        :param name: A string which we want to analyze to determine show info from (unicode)
 
-        Returns a (indexer_id, season, [episodes]) tuple. The first two may be None and episodes may be []
+        :return: A (indexer_id, season, [episodes]) tuple. The first two may be None and episodes may be []
         if none were found.
         """
 
@@ -525,6 +540,13 @@ class PostProcessor(object):
         return to_return
 
     def _build_anidb_episode(self, connection, filePath):
+        """
+        Look up anidb properties for an episode
+
+        :param connection: anidb connection handler
+        :param filePath: file to check
+        :return: episode object
+        """
         ep = adba.Episode(connection, filePath=filePath,
                           paramsF=["quality", "anidb_file_name", "crc32"],
                           paramsA=["epno", "english_name", "short_name_list", "other_name", "synonym_list"])
@@ -532,8 +554,13 @@ class PostProcessor(object):
         return ep
 
     def _add_to_anidb_mylist(self, filePath):
+        """
+        Adds an episode to anidb mylist
+
+        :param filePath: file to add to mylist
+        """
         if helpers.set_up_anidb_connection():
-            if not self.anidbEpisode:  # seams like we could parse the name before, now lets build the anidb object
+            if not self.anidbEpisode:  # seems like we could parse the name before, now lets build the anidb object
                 self.anidbEpisode = self._build_anidb_episode(sickbeard.ADBA_CONNECTION, filePath)
 
             self._log(u"Adding the file to the anidb mylist", logger.DEBUG)
@@ -545,6 +572,8 @@ class PostProcessor(object):
     def _find_info(self):
         """
         For a given file try to find the showid, season, and episode.
+
+        :return: A (show, season, episodes, quality, version) tuple
         """
 
         show = season = quality = version = None
@@ -646,11 +675,11 @@ class PostProcessor(object):
         """
         Retrieve the TVEpisode object requested.
 
-        show: The show object belonging to the show we want to process
-        season: The season of the episode (int)
-        episodes: A list of episodes to find (list of ints)
+        :param show: The show object belonging to the show we want to process
+        :param season: The season of the episode (int)
+        :param episodes: A list of episodes to find (list of ints)
 
-        If the episode(s) can be found then a TVEpisode object with the correct related eps will
+        :return: If the episode(s) can be found then a TVEpisode object with the correct related eps will
         be instantiated and returned. If the episode can't be found then None will be returned.
         """
 
@@ -681,9 +710,8 @@ class PostProcessor(object):
         Determines the quality of the file that is being post processed, first by checking if it is directly
         available in the TVEpisode's status or otherwise by parsing through the data available.
 
-        ep_obj: The TVEpisode object related to the file we are post processing
-
-        Returns: A quality value found in common.Quality
+        :param ep_obj: The TVEpisode object related to the file we are post processing
+        :return: A quality value found in common.Quality
         """
 
         ep_quality = common.Quality.UNKNOWN
@@ -744,7 +772,7 @@ class PostProcessor(object):
         """
         Executes any extra scripts defined in the config.
 
-        ep_obj: The object to use when calling the extra script
+        :param ep_obj: The object to use when calling the extra script
         """
         for curScriptName in sickbeard.EXTRA_SCRIPTS:
 
@@ -775,10 +803,9 @@ class PostProcessor(object):
         Determines if the episode is a priority download or not (if it is expected). Episodes which are expected
         (snatched) or larger than the existing episode are priority, others are not.
 
-        ep_obj: The TVEpisode object in question
-        new_ep_quality: The quality of the episode that is being processed
-
-        Returns: True if the episode is priority, False otherwise.
+        :param ep_obj: The TVEpisode object in question
+        :param new_ep_quality: The quality of the episode that is being processed
+        :return: True if the episode is priority, False otherwise.
         """
 
         if self.is_priority:
@@ -819,6 +846,8 @@ class PostProcessor(object):
     def process(self):
         """
         Post-process a given file
+
+        :return: True on success, False on failure
         """
 
         self._log(u"Processing " + self.file_path + " (" + str(self.nzb_name) + ")")

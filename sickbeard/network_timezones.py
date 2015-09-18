@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -49,6 +50,9 @@ def _remove_zoneinfo_failed(filename):
 
 # helper to remove old unneeded zoneinfo files
 def _remove_old_zoneinfo():
+    """
+    Removes zoneinfo tar.gz file from repository, as we do not need it
+    """
     if zoneinfo.ZONEINFOFILE is not None:
         cur_zoneinfo = ek.ek(basename, zoneinfo.ZONEINFOFILE)
     else:
@@ -69,6 +73,9 @@ def _remove_old_zoneinfo():
 
 # update the dateutil zoneinfo
 def _update_zoneinfo():
+    """
+    Request new zoneinfo directly from repository
+    """
     global sb_timezone
     sb_timezone = tz.tzlocal()
     url_zv = 'http://sickragetv.github.io/sb_network_timezones/zoneinfo.txt'
@@ -140,6 +147,7 @@ def _update_zoneinfo():
 
 # update the network timezone table
 def update_network_dict():
+    """Update timezone information from SR repositories"""
     _remove_old_zoneinfo()
     _update_zoneinfo()
 
@@ -186,6 +194,9 @@ def update_network_dict():
 
 # load network timezones from db into dict
 def load_network_dict():
+    """
+    Load network timezones from db into dict network_dict (global dict)
+    """
     try:
         my_db = db.DBConnection('cache.db')
         cur_network_list = my_db.select('SELECT * FROM network_timezones;')
@@ -201,6 +212,13 @@ def load_network_dict():
 
 # get timezone of a network or return default timezone
 def get_network_timezone(network, network_dict):
+    """
+    Get a timezone of a network from a given network dict
+
+    :param network: network to look up (needle)
+    :param network_dict: dict to look up in (haystack)
+    :return:
+    """
     if network is None:
         return sb_timezone
 
@@ -223,6 +241,14 @@ def get_network_timezone(network, network_dict):
 
 # parse date and time string into local time
 def parse_date_time(d, t, network):
+    """
+    Parse date and time string into local time
+
+    :param d: date string
+    :param t: time string
+    :param network: network to use as base
+    :return: datetime object containing local time
+    """
     if network_dict is None:
         load_network_dict()
     mo = time_regex.search(t)

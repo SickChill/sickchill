@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -125,6 +126,15 @@ class sbdatetime(datetime.datetime):
     # display Time in SickRage Format
     @static_or_instance
     def sbftime(self, dt=None, show_seconds=False, t_preset=None):
+        """
+        Display time in SR format
+        TODO: Rename this to srftime
+
+        :param dt: datetime object
+        :param show_seconds: Boolean, show seconds
+        :param t_preset: Preset time format
+        :return: time string
+        """
 
         try:locale.setlocale(locale.LC_TIME, '')
         except:pass
@@ -168,6 +178,14 @@ class sbdatetime(datetime.datetime):
     # display Date in SickRage Format
     @static_or_instance
     def sbfdate(self, dt=None, d_preset=None):
+        """
+        Display date in SR format
+        TODO: Rename this to srfdate
+
+        :param dt: datetime object
+        :param d_preset: Preset date format
+        :return: date string
+        """
 
         try:
             locale.setlocale(locale.LC_TIME, '')
@@ -199,6 +217,16 @@ class sbdatetime(datetime.datetime):
     # display Datetime in SickRage Format
     @static_or_instance
     def sbfdatetime(self, dt=None, show_seconds=False, d_preset=None, t_preset=None):
+        """
+        Show datetime in SR format
+        TODO: Rename this to srfdatetime
+
+        :param dt: datetime object
+        :param show_seconds: Boolean, show seconds as well
+        :param d_preset: Preset date format
+        :param t_preset: Preset time format
+        :return: datetime string
+        """
 
         try:
             locale.setlocale(locale.LC_TIME, '')

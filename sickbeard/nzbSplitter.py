@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -32,6 +33,14 @@ from sickbeard.exceptions import ex
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 def getSeasonNZBs(name, urlData, season):
+    """
+    Split a season NZB into episodes
+
+    :param name: NZB name
+    :param urlData: URL to get data from
+    :param season: Season to check
+    :return: dict of (episode files, xml matches)
+    """
     try:
         showXML = etree.ElementTree(etree.XML(urlData))
     except SyntaxError:
@@ -88,6 +97,12 @@ def createNZBString(fileElements, xmlns):
 
 
 def saveNZB(nzbName, nzbString):
+    """
+    Save NZB to disk
+
+    :param nzbName: Filename/path to write to
+    :param nzbString: Content to write in file
+    """
     try:
         with ek.ek(open, nzbName + ".nzb", 'w') as nzb_fh:
             nzb_fh.write(nzbString)
@@ -105,6 +120,12 @@ def stripNS(element, ns):
 
 
 def splitResult(result):
+    """
+    Split result into seperate episodes
+
+    :param result: search result object
+    :return: False upon failure, a list of episode objects otherwise
+    """
     urlData = helpers.getURL(result.url, session=requests.Session())
     if urlData is None:
         logger.log(u"Unable to load url " + result.url + ", can't download season NZB", logger.ERROR)

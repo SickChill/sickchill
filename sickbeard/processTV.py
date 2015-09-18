@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv/
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -49,6 +50,13 @@ class ProcessResult:
         self.aggresult = True
 
 def delete_folder(folder, check_empty=True):
+    """
+    Removes a folder from the filesystem
+
+    :param folder: Path to folder to remove
+    :param check_empty: Boolean, check if the folder is empty before removing it, defaults to True
+    :return: True on success, False on failure
+    """
 
     # check if it's a folder
     if not ek.ek(os.path.isdir, folder):
@@ -83,6 +91,14 @@ def delete_folder(folder, check_empty=True):
     return True
 
 def delete_files(processPath, notwantedFiles, result, force=False):
+    """
+    Remove files from filesystem
+
+    :param processPath: path to process
+    :param notwantedFiles: files we do not want
+    :param result: Processor results
+    :param force: Boolean, force deletion, defaults to false
+    """
 
     if not result.result and force:
         result.output += logHelper(u"Forcing deletion of files, even though last result was not success", logger.DEBUG)
@@ -123,11 +139,11 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     """
     Scans through the files in dirName and processes whatever media files it finds
 
-    dirName: The folder name to look in
-    nzbName: The NZB name which resulted in this folder being downloaded
-    force: True to postprocess already postprocessed files
-    failed: Boolean for whether or not the download failed
-    type: Type of postprocessing auto or manual
+    :param dirName: The folder name to look in
+    :param nzbName: The NZB name which resulted in this folder being downloaded
+    :param force: True to postprocess already postprocessed files
+    :param failed: Boolean for whether or not the download failed
+    :param type: Type of postprocessing auto or manual
     """
 
     result = ProcessResult()
@@ -282,6 +298,16 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
 
 def validateDir(path, dirName, nzbNameOriginal, failed, result):
+    """
+    Check if directory is valid for processing
+
+    :param path: Path to use
+    :param dirName: Directory to check
+    :param nzbNameOriginal: Original NZB name
+    :param failed: Previously failed objects
+    :param result: Previous results
+    :return: True if dir is valid for processing, False if not
+    """
 
     result.output += logHelper(u"Processing folder " + dirName, logger.DEBUG)
 
@@ -361,6 +387,15 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
     return False
 
 def unRAR(path, rarFiles, force, result):
+    """
+    Extracts RAR files
+
+    :param path: Path to look for files in
+    :param rarFiles: Names of RAR files
+    :param force: process currently processing items
+    :param result: Previous results
+    :return: List of unpacked file names
+    """
 
     unpacked_files = []
 
@@ -433,7 +468,15 @@ def unRAR(path, rarFiles, force, result):
 
 
 def already_postprocessed(dirName, videofile, force, result):
+    """
+    Check if we already post processed a file
 
+    :param dirName: Directory a file resides in
+    :param videofile: File name
+    :param force: Force checking when already checking (currently unused)
+    :param result: True if file is already postprocessed, False if not
+    :return:
+    """
     if force:
         return False
 
@@ -476,6 +519,17 @@ def already_postprocessed(dirName, videofile, force, result):
 
 
 def process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result):
+    """
+    Postprocess mediafiles
+
+    :param processPath: Path to postprocess in
+    :param videoFiles: Filenames to look for and postprocess
+    :param nzbName: Name of NZB file related
+    :param process_method: auto/manual
+    :param force: Postprocess currently postprocessing file
+    :param is_priority: Boolean, is this a priority download
+    :param result: Previous results
+    """
 
     processor = None
     for cur_video_file in videoFiles:
@@ -506,6 +560,14 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
 
 
 def get_path_dir_files(dirName, nzbName, type):
+    """
+    Get files in a path
+
+    :param dirName: Directory to start in
+    :param nzbName: NZB file, if present
+    :param type: auto/manual
+    :return: a tuple of (path,dirs,files)
+    """
     path = ""
     dirs = []
     files = []
