@@ -150,7 +150,7 @@
             </td>
 
             <td align="center">
-            ${renderQualityPill(cur_result['quality'])}
+                ${renderQualityPill(cur_result['quality'], showTitle=True)}
             </td>
 
             <td align="center" style="vertical-align: middle;">
@@ -323,7 +323,7 @@
 
                 <div class="clearfix">
                     <span class="title">Quality:</span>
-                ${renderQualityPill(cur_result['quality'])}
+                    ${renderQualityPill(cur_result['quality'], showTitle=True)}
                 </div>
             </td>
         </tr>
