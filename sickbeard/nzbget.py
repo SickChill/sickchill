@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -34,6 +35,12 @@ from common import Quality
 
 
 def sendNZB(nzb, proper=False):
+    """
+    Sends NZB to NZBGet client
+
+    :param nzb: nzb object
+    :param proper: True if this is a Proper download, False if not. Defaults to False
+    """
     addToTop = False
     nzbgetprio = 0
     category = sickbeard.NZBGET_CATEGORY
