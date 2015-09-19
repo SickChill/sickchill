@@ -245,7 +245,7 @@
                 </td>
 
                 <td class="show-table">
-            ${renderQualityPill(curShow.quality, overrideClass="show-quality")}
+                    ${renderQualityPill(curShow.quality, showTitle=True, overrideClass="show-quality")}
                 </td>
             </tr>
         </table>
@@ -437,7 +437,7 @@
         </td>
     % endif
 
-        <td align="center">${renderQualityPill(curShow.quality)}</td>
+        <td align="center">${renderQualityPill(curShow.quality, showTitle=True)}</td>
 
         <td align="center">
             ## This first span is used for sorting and is never displayed to user

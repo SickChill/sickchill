@@ -163,7 +163,7 @@ $(document).ready(function(){
         <tr>
             <td align="center"><input type="checkbox" class="editCheck" id="edit-${curShow.indexerid}" /></td>
             <td class="tvShow"><a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
-            <td align="center">${renderQualityPill(curShow.quality)}</td>
+            <td align="center">${renderQualityPill(curShow.quality, showTitle=True)}</td>
             <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_sports) == 1]} width="16" height="16" /></td>
             <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_scene) == 1]} width="16" height="16" /></td>
             <td align="center"><img src="${sbRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_anime) == 1]} width="16" height="16" /></td>
