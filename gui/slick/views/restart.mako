@@ -25,6 +25,13 @@ sbDefaultPage = "${sbDefaultPage}";
 <script type="text/javascript" src="${sbRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/restart.js?${sbPID}&amp;${sbDefaultPage}"></script>
 </%block>
+<%block name="css">
+<style>
+.upgrade-notification {
+    display: none;
+}
+</style>
+</%block>
 <%block name="content">
 <%
     try:

@@ -433,8 +433,6 @@ SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH = False
 SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD = False
 SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = False
 
-USE_IMDB_POPULAR = True
-
 USE_TRAKT = False
 TRAKT_USERNAME = None
 TRAKT_ACCESS_TOKEN = None
@@ -566,7 +564,7 @@ def initialize(consoleLogging=True):
             TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH, TORRENT_LABEL, TORRENT_LABEL_ANIME, TORRENT_VERIFY_CERT, TORRENT_RPCURL, TORRENT_AUTH_TYPE, \
             USE_KODI, KODI_ALWAYS_ON, KODI_NOTIFY_ONSNATCH, KODI_NOTIFY_ONDOWNLOAD, KODI_NOTIFY_ONSUBTITLEDOWNLOAD, KODI_UPDATE_FULL, KODI_UPDATE_ONLYFIRST, \
             KODI_UPDATE_LIBRARY, KODI_HOST, KODI_USERNAME, KODI_PASSWORD, BACKLOG_FREQUENCY, \
-            USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, TRAKT_SYNC_WATCHLIST, TRAKT_REMOVE_SHOW_FROM_SICKRAGE, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, TRAKT_USE_RECOMMENDED, TRAKT_SYNC, TRAKT_SYNC_REMOVE, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_TIMEOUT, TRAKT_BLACKLIST_NAME, USE_IMDB_POPULAR, \
+            USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, TRAKT_SYNC_WATCHLIST, TRAKT_REMOVE_SHOW_FROM_SICKRAGE, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, TRAKT_USE_RECOMMENDED, TRAKT_SYNC, TRAKT_SYNC_REMOVE, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_TIMEOUT, TRAKT_BLACKLIST_NAME, \
             USE_PLEX, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
             PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, DEFAULT_BACKLOG_FREQUENCY, MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, \
             USE_EMBY, EMBY_HOST, EMBY_APIKEY, \
@@ -676,7 +674,7 @@ def initialize(consoleLogging=True):
         # git_remote
         GIT_REMOTE = check_setting_str(CFG, 'General', 'git_remote', 'origin')
         GIT_REMOTE_URL = check_setting_str(CFG, 'General', 'git_remote_url',
-                                           'https://github.com/SiCKRAGETV/SickRage.git')
+                                           'https://github.com/%s/%s.git' % (GIT_ORG, GIT_REPO))
 
         # current commit hash
         CUR_COMMIT_HASH = check_setting_str(CFG, 'General', 'cur_commit_hash', '')
@@ -991,7 +989,7 @@ def initialize(consoleLogging=True):
             check_setting_int(CFG, 'Twitter', 'twitter_notify_onsubtitledownload', 0))
         TWITTER_USERNAME = check_setting_str(CFG, 'Twitter', 'twitter_username', '', censor_log=True)
         TWITTER_PASSWORD = check_setting_str(CFG, 'Twitter', 'twitter_password', '', censor_log=True)
-        TWITTER_PREFIX = check_setting_str(CFG, 'Twitter', 'twitter_prefix', 'SickRage')
+        TWITTER_PREFIX = check_setting_str(CFG, 'Twitter', 'twitter_prefix', GIT_REPO)
         TWITTER_DMTO = check_setting_str(CFG, 'Twitter', 'twitter_dmto', '')
         TWITTER_USEDM = bool(check_setting_int(CFG, 'Twitter', 'twitter_usedm', 0))
 
@@ -1057,8 +1055,6 @@ def initialize(consoleLogging=True):
         TRAKT_DEFAULT_INDEXER = check_setting_int(CFG, 'Trakt', 'trakt_default_indexer', 1)
         TRAKT_TIMEOUT = check_setting_int(CFG, 'Trakt', 'trakt_timeout', 30)
         TRAKT_BLACKLIST_NAME = check_setting_str(CFG, 'Trakt', 'trakt_blacklist_name', '')
-
-        USE_IMDB_POPULAR = bool(check_setting_int(CFG, 'IMDB', 'use_imdb_popular', 1))
 
         USE_PYTIVO = bool(check_setting_int(CFG, 'pyTivo', 'use_pytivo', 0))
         PYTIVO_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'pyTivo', 'pytivo_notify_onsnatch', 0))
@@ -2011,9 +2007,6 @@ def save_config():
     new_config['Trakt']['trakt_default_indexer'] = int(TRAKT_DEFAULT_INDEXER)
     new_config['Trakt']['trakt_timeout'] = int(TRAKT_TIMEOUT)
     new_config['Trakt']['trakt_blacklist_name'] = TRAKT_BLACKLIST_NAME
-
-    new_config['IMDB'] = {}
-    new_config['IMDB']['use_imdb_popular'] = int(USE_IMDB_POPULAR)
 
     new_config['pyTivo'] = {}
     new_config['pyTivo']['use_pytivo'] = int(USE_PYTIVO)

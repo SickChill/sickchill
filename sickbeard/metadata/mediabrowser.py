@@ -28,6 +28,7 @@ from sickbeard import logger, exceptions, helpers
 from sickbeard import encodingKludge as ek
 
 from sickbeard.exceptions import ex
+from sickrage.helper.common import dateFormat
 
 import xml.etree.cElementTree as etree
 
@@ -316,7 +317,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         ProductionYear = etree.SubElement(tv_node, "ProductionYear")
         if getattr(myShow, 'firstaired', None) is not None:
             try:
-                year_text = str(datetime.datetime.strptime(myShow['firstaired'], '%Y-%m-%d').year)
+                year_text = str(datetime.datetime.strptime(myShow['firstaired'], dateFormat).year)
                 if year_text:
                     ProductionYear.text = year_text
             except:

@@ -7,124 +7,14 @@
     import time
     import re
 %>
+<%block name="metas">
+<meta data-var="sickbeard.COMING_EPS_SORT" data-content="${sickbeard.COMING_EPS_SORT}">
+<meta data-var="sickbeard.COMING_EPS_LAYOUT" data-content="${sickbeard.COMING_EPS_LAYOUT}">
+</%block>
 <%block name="scripts">
-<% fuzzydate = 'airdate' %>
-<% sort = sickbeard.COMING_EPS_SORT %>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
-% if 'list' == layout:
 <script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
-<script type="text/javascript" charset="utf-8">
-$.tablesorter.addParser({
-    id: 'loadingNames',
-    is: function(s) {
-        return false
-    },
-    format: function(s) {
-        if (0 == s.indexOf('Loading...'))
-            return s.replace('Loading...', '000')
-% if not sickbeard.SORT_ARTICLE:
-            return (s || '').replace(/^(The|A|An)\s/i, '')
-% else:
-            return (s || '')
-% endif
-    },
-    type: 'text'
-});
-$.tablesorter.addParser({
-    id: 'quality',
-    is: function(s) {
-        return false
-    },
-    format: function(s) {
-        return s.replace('hd1080p', 5).replace('hd720p', 4).replace('hd', 3).replace('sd', 2).replace('any', 1).replace('best', 0).replace('custom', 7)
-    },
-    type: 'numeric'
-});
-$.tablesorter.addParser({
-    id: 'cDate',
-    is: function(s) {
-        return false
-    },
-    format: function(s) {
-        return s
-    },
-    type: 'numeric'
-});
-
-$(document).ready(function(){
-<% sort_codes = {'date': 0, 'show': 1, 'network': 4} %>
-% if sort not in sort_codes:
-    <% sort = 'date' %>
-% endif
-
-    sortList = [[${sort_codes[sort]}, 0]];
-
-    $('#showListTable:has(tbody tr)').tablesorter({
-        widgets: ['stickyHeaders'],
-        sortList: sortList,
-        textExtraction: {
-            0: function(node) { return $(node).find('span').text().toLowerCase() },
-            5: function(node) { return $(node).find('span').text().toLowerCase() }
-        },
-        headers: {
-            0: { sorter: 'cDate' },
-            1: { sorter: 'loadingNames' },
-            2: { sorter: false },
-            3: { sorter: false },
-            4: { sorter: 'loadingNames' },
-            5: { sorter: 'quality' },
-            6: { sorter: false },
-            7: { sorter: false },
-            8: { sorter: false }
-        }
-    });
-
-    $('#sbRoot').ajaxEpSearch();
-
-    <% fuzzydate = 'airdate' %>
-    % if sickbeard.FUZZY_DATING:
-    fuzzyMoment({
-        containerClass : '.${fuzzydate}',
-        dateHasTime : true,
-        dateFormat : '${sickbeard.DATE_PRESET}',
-        timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('false', 'true')[bool(sickbeard.TRIM_ZERO)]}
-    });
-    % endif
-
-});
-</script>
-% elif layout in ['banner', 'poster']:
-<script type="text/javascript" charset="utf-8">
-$(document).ready(function(){
-    $('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
-    $('.ep_summary').hide();
-    $('.ep_summaryTrigger').click(function() {
-        $(this).next('.ep_summary').slideToggle('normal', function() {
-            $(this).prev('.ep_summaryTrigger').attr('src', function(i, src) {
-                return $(this).next('.ep_summary').is(':visible') ? src.replace('plus','minus') : src.replace('minus','plus')
-            });
-        });
-    });
-
-    % if sickbeard.FUZZY_DATING:
-    fuzzyMoment({
-        dtInline : true,
-        dtGlue : ' at ',
-        containerClass : '.${fuzzydate}',
-        dateHasTime : true,
-        dateFormat : '${sickbeard.DATE_PRESET}',
-        timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('false', 'true')[bool(sickbeard.TRIM_ZERO)]}
-    });
-    % endif
-
-});
-</script>
-% endif
-<script type="text/javascript" charset="utf-8">
-window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
-</script>
+<script type="text/javascript" src="${sbRoot}/js/new/comingEpisodes.js"></script>
 </%block>
 <%block name="css">
 <style type="text/css">
@@ -202,7 +92,7 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
 
     <tbody style="text-shadow:none;">
 
-% for cur_result in sql_results:
+% for cur_result in results:
 <%
     cur_indexer = int(cur_result['indexer'])
     run_time = cur_result['runtime']
@@ -225,11 +115,15 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
                 show_div = 'listing-default'
 %>
 
-        <!-- start ${cur_result['show_name']} //-->
         <tr class="${show_div}">
             ## forced to use a div to wrap airdate, the column sort went crazy with a span
             <td align="center" nowrap="nowrap">
-                <div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING)}</div><span class="sort_data">${time.mktime(cur_result['localtime'].timetuple())}</span>
+                <% airDate = sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING) %>
+                <% isoDate = sbdatetime.sbdatetime.convert_to_setting(cur_result['localtime']).isoformat('T') %>
+                <span class="${fuzzydate}">
+                    <time datetime="${isoDate}" class="date">${airDate}</time>
+                </span>
+                <span class="sort_data">${time.mktime(cur_result['localtime'].timetuple())}</span>
             </td>
 
             <td class="tvShow" nowrap="nowrap"><a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>
@@ -256,7 +150,7 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
             </td>
 
             <td align="center">
-	        ${renderQualityPill(cur_result['quality'])}
+            ${renderQualityPill(cur_result['quality'])}
             </td>
 
             <td align="center" style="vertical-align: middle;">
@@ -270,7 +164,6 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
                 <a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
             </td>
         </tr>
-        <!-- end ${cur_result['show_name']} //-->
 % endfor
     </tbody>
 
@@ -297,7 +190,7 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
     <br /><br />
 % endif
 
-% for cur_result in sql_results:
+% for cur_result in results:
 <%
     cur_indexer = int(cur_result['indexer'])
 
@@ -430,7 +323,7 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
 
                 <div class="clearfix">
                     <span class="title">Quality:</span>
-	            ${renderQualityPill(cur_result['quality'])}
+                ${renderQualityPill(cur_result['quality'])}
                 </div>
             </td>
         </tr>
@@ -472,7 +365,7 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
         <thead><tr><th>${day.strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</th></tr></thead>
         <tbody>
         <% day_has_show = False %>
-        % for cur_result in sql_results:
+        % for cur_result in results:
             % if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                 <% continue %>
             % endif

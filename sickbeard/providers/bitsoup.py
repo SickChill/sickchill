@@ -202,7 +202,7 @@ class BitSoupProvider(generic.TorrentProvider):
                                 continue
 
                             item = title, download_url, id, seeders, leechers
-                            logger.log(u"Found result: " + title.replace(' ','.') + " (" + searchURL + ")", logger.DEBUG)
+                            logger.log(u"Found result: " + title.replace(' ','.') + " (" + search_string + ")", logger.DEBUG)
 
                             items[mode].append(item)
 

@@ -25,11 +25,13 @@ from sickbeard import db, common, helpers, logger
 
 from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickrage.helper.common import dateTimeFormat
 
 from babelfish import language_converters
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
 MAX_DB_VERSION = 42
+
 
 class MainSanityCheck(db.DBSanityCheck):
     def check(self):
@@ -237,7 +239,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
         sqlResults = self.connection.select(
             "SELECT subtitles, episode_id FROM tv_episodes WHERE subtitles != '' AND subtitles_lastsearch < ?;",
-                [datetime.datetime(2015, 7, 15, 17, 20, 44, 326380).strftime("%Y-%m-%d %H:%M:%S")])
+                [datetime.datetime(2015, 7, 15, 17, 20, 44, 326380).strftime(dateTimeFormat)])
 
         if not sqlResults:
             return
@@ -257,10 +259,11 @@ class MainSanityCheck(db.DBSanityCheck):
                 langs.append(subcode)
 
             self.connection.action("UPDATE tv_episodes SET subtitles = ?, subtitles_lastsearch = ? WHERE episode_id = ?;",
-                [','.join(langs), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), sqlResult['episode_id']])
+                [','.join(langs), datetime.datetime.now().strftime(dateTimeFormat), sqlResult['episode_id']])
 
     def fix_show_nfo_lang(self):
         self.connection.action("UPDATE tv_shows SET lang = '' WHERE lang = 0 or lang = '0'")
+
 
 def backupDatabase(version):
     logger.log(u"Backing up database before upgrade")

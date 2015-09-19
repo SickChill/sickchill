@@ -729,7 +729,7 @@
                             </label>
                         </div>
 
-                        <div class="field-pair">
+                        <div class="field-pair" hidden>
                             <label for="git_reset">
                                 <span class="component-title">Git reset</span>
                                 <span class="component-desc">

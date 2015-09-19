@@ -23,6 +23,7 @@ from sickbeard.exceptions import ex
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
 from sickbeard import db
+from sickrage.helper.common import dateTimeFormat
 import subliminal
 import babelfish
 import subprocess
@@ -76,7 +77,7 @@ def isValidLanguage(language):
     return True
 
 def getLanguageName(language):
-    return fromietf(language ).name
+    return fromietf(language).name
 
 # TODO: Filter here for non-languages in sickbeard.SUBTITLES_LANGUAGES
 def wantedLanguages(sqlLike = False):
@@ -89,15 +90,19 @@ def subtitlesLanguages(video_path):
     """Return a list detected subtitles for the given video file"""
     resultList = []
 
+    # Serch for embedded subtitles
+    embedded_languages = subliminal.video.scan_video(video_path, subtitles=False, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL)
+
+    # Search subtitles in the absolute path
     if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
         video_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, video_path))
     # Search subtitles in the relative path
-    if sickbeard.SUBTITLES_DIR:
+    elif sickbeard.SUBTITLES_DIR:
         video_path = ek.ek(os.path.join, ek.ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, video_path))
 
     languages = subliminal.video.scan_subtitle_languages(video_path)
 
-    for language in languages:
+    for language in languages.union(embedded_languages.subtitle_languages):
         if hasattr(language, 'opensubtitles') and language.opensubtitles:
             resultList.append(language.opensubtitles)
         elif hasattr(language, 'alpha3') and language.alpha3:
@@ -171,9 +176,9 @@ class SubtitlesFinder():
 
             # Old shows rule
             throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
-            if ((epToSub['airdate_daydiff'] > 7 and epToSub['searchcount'] < 2 and now - datetime.datetime.strptime(epToSub['lastsearch'], '%Y-%m-%d %H:%M:%S') > datetime.timedelta(hours=rules['old'][epToSub['searchcount']])) or
+            if ((epToSub['airdate_daydiff'] > 7 and epToSub['searchcount'] < 2 and now - datetime.datetime.strptime(epToSub['lastsearch'], dateTimeFormat) > datetime.timedelta(hours=rules['old'][epToSub['searchcount']])) or
                 # Recent shows rule
-                (epToSub['airdate_daydiff'] <= 7 and epToSub['searchcount'] < 7 and now - datetime.datetime.strptime(epToSub['lastsearch'], '%Y-%m-%d %H:%M:%S') > datetime.timedelta(hours=rules['new'][epToSub['searchcount']]))):
+                (epToSub['airdate_daydiff'] <= 7 and epToSub['searchcount'] < 7 and now - datetime.datetime.strptime(epToSub['lastsearch'], dateTimeFormat) > datetime.timedelta(hours=rules['new'][epToSub['searchcount']]))):
                 logger.log('Downloading subtitles for episode %dx%d of show %s' % (epToSub['season'], epToSub['episode'], epToSub['show_name']), logger.DEBUG)
 
                 showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(epToSub['showid']))

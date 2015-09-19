@@ -26,6 +26,7 @@ import mediabrowser
 from sickbeard import logger, exceptions, helpers
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
+from sickrage.helper.common import dateFormat
 
 try:
     import xml.etree.cElementTree as etree
@@ -142,7 +143,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         SeriesName = etree.SubElement(tv_node, "title")
         SeriesName.text = myShow['seriesname']
-        
+
         Genres = etree.SubElement(tv_node, "genres")
         if getattr(myShow, "genre", None) != None:
             for genre in myShow['genre'].split('|'):
@@ -157,7 +158,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
         year = etree.SubElement(tv_node, "year")
         if getattr(myShow, "firstaired", None) != None:
             try:
-                year_text = str(datetime.datetime.strptime(myShow["firstaired"], '%Y-%m-%d').year)
+                year_text = str(datetime.datetime.strptime(myShow["firstaired"], dateFormat).year)
                 if year_text:
                     year.text = year_text
             except:
@@ -286,7 +287,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                 year = etree.SubElement(episode, "year")
                 if getattr(myShow, "firstaired", None) != None:
                     try:
-                        year_text = str(datetime.datetime.strptime(myShow["firstaired"], '%Y-%m-%d').year)
+                        year_text = str(datetime.datetime.strptime(myShow["firstaired"], dateFormat).year)
                         if year_text:
                             year.text = year_text
                     except:
@@ -399,7 +400,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             return False
 
         return True
-    
+
     def write_ep_file(self, ep_obj):
         """
         Generates and writes ep_obj's metadata under the given path with the

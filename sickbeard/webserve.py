@@ -35,7 +35,6 @@ from sickbeard import search_queue
 from sickbeard import naming
 from sickbeard import subtitles
 from sickbeard import network_timezones
-from sickbeard import sbdatetime
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
 from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED, SKIPPED
@@ -58,6 +57,7 @@ from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
+from sickrage.show.ComingEpisodes import ComingEpisodes
 from sickrage.show.History import History as HistoryTool
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
@@ -466,79 +466,39 @@ class WebRoot(WebHandler):
 
         return self.redirect("/comingEpisodes/")
 
-    def comingEpisodes(self, layout="None"):
-
-        today1 = datetime.date.today()
-        today = today1.toordinal()
-        next_week1 = (datetime.date.today() + datetime.timedelta(days=7))
-        next_week = next_week1.toordinal()
-        recently = (datetime.date.today() - datetime.timedelta(days=sickbeard.COMING_EPS_MISSED_RANGE)).toordinal()
-
-        done_show_list = []
-        qualList = Quality.DOWNLOADED + Quality.SNATCHED + [ARCHIVED, IGNORED]
-
-        myDB = db.DBConnection()
-        sql_results = myDB.select(
-            "SELECT *, tv_shows.status AS show_status FROM tv_episodes, tv_shows WHERE season != 0 AND airdate >= ? AND airdate < ? AND tv_shows.indexer_id = tv_episodes.showid AND tv_episodes.status NOT IN (" + ','.join(
-                ['?'] * len(qualList)) + ")", [today, next_week] + qualList)
-
-        for cur_result in sql_results:
-            done_show_list.append(int(cur_result["showid"]))
-
-        more_sql_results = myDB.select(
-            "SELECT *, tv_shows.status AS show_status FROM tv_episodes outer_eps, tv_shows WHERE season != 0 AND showid NOT IN (" + ','.join(
-                ['?'] * len(
-                    done_show_list)) + ") AND tv_shows.indexer_id = outer_eps.showid AND airdate = (SELECT airdate FROM tv_episodes inner_eps WHERE inner_eps.season != 0 AND inner_eps.showid = outer_eps.showid AND inner_eps.airdate >= ? ORDER BY inner_eps.airdate ASC LIMIT 1) AND outer_eps.status NOT IN (" + ','.join(
-                ['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED)) + ")",
-            done_show_list + [next_week] + Quality.DOWNLOADED + Quality.SNATCHED)
-        sql_results += more_sql_results
-
-        more_sql_results = myDB.select(
-            "SELECT *, tv_shows.status AS show_status FROM tv_episodes, tv_shows WHERE season != 0 AND tv_shows.indexer_id = tv_episodes.showid AND airdate < ? AND airdate >= ? AND tv_episodes.status = ? AND tv_episodes.status NOT IN (" + ','.join(
-                ['?'] * len(qualList)) + ")", [today, recently, WANTED] + qualList)
-        sql_results += more_sql_results
-
-        # sort by localtime
-        sorts = {
-            'date': (lambda x, y: cmp(x["localtime"], y["localtime"])),
-            'show': (lambda a, b: cmp((a["show_name"], a["localtime"]), (b["show_name"], b["localtime"]))),
-            'network': (lambda a, b: cmp((a["network"], a["localtime"]), (b["network"], b["localtime"]))),
-        }
-
-        # make a dict out of the sql results
-        sql_results = [dict(row) for row in sql_results]
-
-        # add localtime to the dict
-        for index, item in enumerate(sql_results):
-            sql_results[index]['localtime'] = sbdatetime.sbdatetime.convert_to_setting(
-                network_timezones.parse_date_time(item['airdate'],
-                                                  item['airs'], item['network']))
-
-        sql_results.sort(sorts[sickbeard.COMING_EPS_SORT])
-
-        t = PageTemplate(rh=self, file="comingEpisodes.mako")
-        # paused_item = { 'title': '', 'path': 'toggleComingEpsDisplayPaused' }
-        # paused_item['title'] = 'Hide Paused' if sickbeard.COMING_EPS_DISPLAY_PAUSED else 'Show Paused'
-        paused_item = {'title': 'View Paused:', 'path': {'': ''}}
-        paused_item['path'] = {'Hide': 'toggleComingEpsDisplayPaused'} if sickbeard.COMING_EPS_DISPLAY_PAUSED else {
-            'Show': 'toggleComingEpsDisplayPaused'}
-        submenu = [
-            {'title': 'Sort by:', 'path': {'Date': 'setComingEpsSort/?sort=date',
-                                           'Show': 'setComingEpsSort/?sort=show',
-                                           'Network': 'setComingEpsSort/?sort=network',
-            }},
-
-            {'title': 'Layout:', 'path': {'Banner': 'setComingEpsLayout/?layout=banner',
-                                          'Poster': 'setComingEpsLayout/?layout=poster',
-                                          'List': 'setComingEpsLayout/?layout=list',
-                                          'Calendar': 'setComingEpsLayout/?layout=calendar',
-            }},
-            paused_item,
-        ]
-
-        next_week = datetime.datetime.combine(next_week1, datetime.time(tzinfo=network_timezones.sb_timezone))
+    def comingEpisodes(self, layout=None):
+        next_week = datetime.date.today() + datetime.timedelta(days=7)
+        next_week1 = datetime.datetime.combine(next_week, datetime.time(tzinfo=network_timezones.sb_timezone))
+        results = ComingEpisodes.get_coming_episodes(ComingEpisodes.categories, sickbeard.COMING_EPS_SORT, False)
         today = datetime.datetime.now().replace(tzinfo=network_timezones.sb_timezone)
-        sql_results = sql_results
+
+        submenu = [
+            {
+                'title': 'Sort by:',
+                'path': {
+                    'Date': 'setComingEpsSort/?sort=date',
+                    'Show': 'setComingEpsSort/?sort=show',
+                    'Network': 'setComingEpsSort/?sort=network',
+                }
+            },
+            {
+                'title': 'Layout:',
+                'path': {
+                    'Banner': 'setComingEpsLayout/?layout=banner',
+                    'Poster': 'setComingEpsLayout/?layout=poster',
+                    'List': 'setComingEpsLayout/?layout=list',
+                    'Calendar': 'setComingEpsLayout/?layout=calendar',
+                }
+            },
+            {
+                'title': 'View Paused:',
+                'path': {
+                    'Hide': 'toggleComingEpsDisplayPaused'
+                } if sickbeard.COMING_EPS_DISPLAY_PAUSED else {
+                    'Show': 'toggleComingEpsDisplayPaused'
+                }
+            },
+        ]
 
         # Allow local overriding of layout parameter
         if layout and layout in ('poster', 'banner', 'list', 'calendar'):
@@ -546,8 +506,9 @@ class WebRoot(WebHandler):
         else:
             layout = sickbeard.COMING_EPS_LAYOUT
 
-        return t.render(submenu=submenu, next_week=next_week, today=today, sql_results=sql_results, layout=layout,
-                title='Coming Episodes', header='Coming Episodes', topmenu='comingEpisodes')
+        t = PageTemplate(rh=self, file='comingEpisodes.mako')
+        return t.render(submenu=submenu, next_week=next_week1, today=today, results=results, layout=layout,
+                        title='Coming Episodes', header='Coming Episodes', topmenu='comingEpisodes')
 
 
 class CalendarHandler(BaseHandler):
@@ -4666,7 +4627,7 @@ class ConfigNotifications(Config):
                           trakt_remove_watchlist=None, trakt_sync_watchlist=None, trakt_remove_show_from_sickrage=None, trakt_method_add=None,
                           trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None, trakt_sync_remove=None,
                           trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_timeout=None, trakt_blacklist_name=None,
-                          use_synologynotifier=None, synologynotifier_notify_onsnatch=None, use_imdb_popular=None,
+                          use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
                           synologynotifier_notify_ondownload=None, synologynotifier_notify_onsubtitledownload=None,
                           use_pytivo=None, pytivo_notify_onsnatch=None, pytivo_notify_ondownload=None,
                           pytivo_notify_onsubtitledownload=None, pytivo_update_library=None,
@@ -4801,8 +4762,6 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_DEFAULT_INDEXER = int(trakt_default_indexer)
         sickbeard.TRAKT_TIMEOUT = int(trakt_timeout)
         sickbeard.TRAKT_BLACKLIST_NAME = trakt_blacklist_name
-
-        sickbeard.USE_IMDB_POPULAR = config.checkbox_to_value(use_imdb_popular)
 
         sickbeard.USE_EMAIL = config.checkbox_to_value(use_email)
         sickbeard.EMAIL_NOTIFY_ONSNATCH = config.checkbox_to_value(email_notify_onsnatch)

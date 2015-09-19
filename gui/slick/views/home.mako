@@ -41,353 +41,20 @@
     max_download_count = max_download_count * 100
 %>
 <%block name="scripts">
-<script type="text/javascript" charset="utf-8">
-$.tablesorter.addParser({
-    id: 'loadingNames',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        if (s.indexOf('Loading...') == 0)
-          return s.replace('Loading...','000');
-        else
-        % if not sickbeard.SORT_ARTICLE:
-            return (s || '').replace(/^(The|A|An)\s/i,'');
-        % else:
-            return (s || '');
-        % endif
-    },
-    type: 'text'
-});
-
-$.tablesorter.addParser({
-    id: 'quality',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        return s.replace('hd1080p',5).replace('hd720p',4).replace('hd',3).replace('sd',2).replace('any',1).replace('custom',7);
-    },
-    type: 'numeric'
-});
-
-$.tablesorter.addParser({
-    id: 'eps',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        match = s.match(/^(.*)/);
-
-        if (match == null || match[1] == "?")
-          return -10;
-
-        var nums = match[1].split(" / ");
-        if (nums[0].indexOf("+") != -1) {
-            var num_parts = nums[0].split("+");
-            nums[0] = num_parts[0];
-        }
-
-        nums[0] = parseInt(nums[0])
-        nums[1] = parseInt(nums[1])
-
-        if (nums[0] === 0)
-          return nums[1];
-
-        var finalNum = parseInt(${max_download_count}*nums[0]/nums[1]);
-        var pct = Math.round((nums[0]/nums[1])*100) / 1000
-        if (finalNum > 0)
-          finalNum += nums[0];
-
-        return finalNum + pct;
-    },
-    type: 'numeric'
-});
-
-$(document).ready(function(){
-    // This needs to be refined to work a little faster.
-    $('.progressbar').each(function(progressbar){
-        var showId = $(this).data('show-id');
-        var percentage = $(this).data('progress-percentage');
-        var classToAdd = percentage == 100 ? 100 : percentage > 80 ? 80 : percentage > 60 ? 60 : percentage > 40 ? 40 : 20;
-        $(this).progressbar({ value:  percentage });
-        $(this).data('progress-text') ? $(this).append('<div class="progressbarText" title="' + $(this).data('progress-tip') + '">' + $(this).data('progress-text') + '</div>') : '';
-        $(this).find('.ui-progressbar-value').addClass('progress-' + classToAdd);
-    });
-
-    $("img#network").on('error', function(){
-        $(this).parent().text($(this).attr('alt'));
-        $(this).remove();
-    });
-
-    $("#showListTableShows:has(tbody tr)").tablesorter({
-        sortList: [[7,1],[2,0]],
-        textExtraction: {
-            0: function(node) { return $(node).find("span").text().toLowerCase(); },
-            1: function(node) { return $(node).find("span").text().toLowerCase(); },
-            3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
-            4: function(node) { return $(node).find("span").text().toLowerCase(); },
-            5: function(node) { return $(node).find("span:first").text(); },
-            6: function(node) { return $(node).data('show-size'); },
-            7: function(node) { return $(node).find("img").attr("alt"); }
-        },
-        widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
-        headers: {
-            0: { sorter: 'isoDate' },
-            1: { columnSelector: false },
-            2: { sorter: 'loadingNames' },
-            4: { sorter: 'quality' },
-            5: { sorter: 'eps' },
-            % if sickbeard.FILTER_ROW:
-                7: { filter : 'parsed' }
-            % endif
-        },
-        widgetOptions : {
-            % if sickbeard.FILTER_ROW:
-                filter_columnFilters: true,
-                filter_hideFilters : true,
-                filter_saveFilters : true,
-                filter_functions : {
-                   5:function(e, n, f, i, r, c) {
-                        var test = false;
-                        var pct = Math.floor((n % 1) * 1000);
-                        if (f === '') {
-                           test = true;
-                        } else {
-                            var result = f.match(/(<|<=|>=|>)\s(\d+)/i);
-                            if (result) {
-                                if (result[1] === "<") {
-                                    if (pct < parseInt(result[2])) {
-                                        test = true;
-                                    }
-                                } else if (result[1] === "<=") {
-                                    if (pct <= parseInt(result[2])) {
-                                        test = true;
-                                    }
-                                } else if (result[1] === ">=") {
-                                    if (pct >= parseInt(result[2])) {
-                                        test = true;
-                                    }
-                                } else if (result[1] === ">") {
-                                    if (pct > parseInt(result[2])) {
-                                        test = true;
-                                    }
-                                }
-                            }
-
-                            var result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
-                            if (result) {
-                                if ((result[2] === "-") || (result[2] === "to")) {
-                                    if ((pct >= parseInt(result[1])) && (pct <= parseInt(result[3]))) {
-                                        test = true;
-                                    }
-                                }
-                            }
-
-                            var result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
-                            if (result) {
-                                if ((result[1] === "=") || (result[3] === "=")) {
-                                    if (parseInt(result[2]) === pct) {
-                                        test = true;
-                                    }
-                                }
-                            }
-
-                            if (!isNaN(parseFloat(f)) && isFinite(f)) {
-                                if (parseInt(f) === pct) {
-                                    test = true;
-                                }
-                            }
-                        }
-                        return test;
-                    },
-                },
-            % else:
-                filter_columnFilters: false,
-            % endif
-            filter_reset: '.resetshows',
-            columnSelector_mediaquery: false,
-        },
-        sortStable: true,
-        sortAppend: [[2,0]]
-    });
-
-    $("#showListTableAnime:has(tbody tr)").tablesorter({
-        sortList: [[7,1],[2,0]],
-        textExtraction: {
-            0: function(node) { return $(node).find("span").text().toLowerCase(); },
-            1: function(node) { return $(node).find("span").text().toLowerCase(); },
-            3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
-            4: function(node) { return $(node).find("span").text().toLowerCase(); },
-            5: function(node) { return $(node).find("span:first").text(); },
-            6: function(node) { return $(node).data('show-size'); },
-            7: function(node) { return $(node).find("img").attr("alt"); }
-        },
-        widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
-        headers: {
-            0: { sorter: 'isoDate' },
-            1: { columnSelector: false },
-            2: { sorter: 'loadingNames' },
-            4: { sorter: 'quality' },
-            5: { sorter: 'eps' },
-            % if sickbeard.FILTER_ROW:
-                7: { filter : 'parsed' }
-            % endif
-        },
-        widgetOptions : {
-            % if sickbeard.FILTER_ROW:
-                filter_columnFilters: true,
-                filter_hideFilters : true,
-                filter_saveFilters : true,
-                filter_functions : {
-                   5:function(e, n, f, i, r, c) {
-                        var test = false;
-                        var pct = Math.floor((n % 1) * 1000);
-                        if (f === '') {
-                           test = true;
-                        } else {
-                            var result = f.match(/(<|<=|>=|>)\s(\d+)/i);
-                            if (result) {
-                                if (result[1] === "<") {
-                                    if (pct < parseInt(result[2])) {
-                                        test = true;
-                                    }
-                                } else if (result[1] === "<=") {
-                                    if (pct <= parseInt(result[2])) {
-                                        test = true;
-                                    }
-                                } else if (result[1] === ">=") {
-                                    if (pct >= parseInt(result[2])) {
-                                        test = true;
-                                    }
-                                } else if (result[1] === ">") {
-                                    if (pct > parseInt(result[2])) {
-                                        test = true;
-                                    }
-                                }
-                            }
-
-                            var result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
-                            if (result) {
-                                if ((result[2] === "-") || (result[2] === "to")) {
-                                    if ((pct >= parseInt(result[1])) && (pct <= parseInt(result[3]))) {
-                                        test = true;
-                                    }
-                                }
-                            }
-
-                            var result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
-                            if (result) {
-                                if ((result[1] === "=") || (result[3] === "=")) {
-                                    if (parseInt(result[2]) === pct) {
-                                        test = true;
-                                    }
-                                }
-                            }
-
-                            if (!isNaN(parseFloat(f)) && isFinite(f)) {
-                                if (parseInt(f) === pct) {
-                                    test = true;
-                                }
-                            }
-                        }
-                        return test;
-                    },
-                },
-            % else:
-                filter_columnFilters: false,
-            % endif
-            filter_reset: '.resetanime',
-            columnSelector_mediaquery: false,
-        },
-        sortStable: true,
-        sortAppend: [[2,0]]
-    });
-
-    if ($("#showListTableShows").find("tbody").find("tr").size() > 0)
-        $.tablesorter.filter.bindSearch( "#showListTableShows", $('.search') );
-
-    % if sickbeard.ANIME_SPLIT_HOME:
-        if ($("#showListTableAnime").find("tbody").find("tr").size() > 0)
-            $.tablesorter.filter.bindSearch( "#showListTableAnime", $('.search') );
-    % endif
-
-    % if sickbeard.FUZZY_DATING:
-    fuzzyMoment({
-        dtInline : ${('true', 'false')[layout == 'poster']},
-        containerClass : '.${fuzzydate}',
-        dateHasTime : false,
-        dateFormat : '${sickbeard.DATE_PRESET}',
-        timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('false', 'true')[bool(sickbeard.TRIM_ZERO)]}
-    });
-    % endif
-
-    var $container = [$('#container'), $('#container-anime')];
-
-    $.each($container, function (j) {
-        this.isotope({
-            itemSelector: '.show',
-            sortBy : '${sickbeard.POSTER_SORTBY}',
-            sortAscending: ${sickbeard.POSTER_SORTDIR},
-            layoutMode: 'masonry',
-            masonry: {
-                columnWidth: 13,
-                isFitWidth: true
-            },
-            getSortData: {
-                name: function( itemElem ) {
-                    var name = $( itemElem ).attr('data-name');
-                    % if not sickbeard.SORT_ARTICLE:
-                        return (name || '').replace(/^(The|A|An)\s/i,'');
-                    % else:
-                        return (name || '');
-                    % endif
-                },
-                network: '[data-network]',
-                date: function( itemElem ) {
-                    var date = $( itemElem ).attr('data-date');
-                    return date.length && parseInt( date, 10 ) || Number.POSITIVE_INFINITY;
-                },
-                progress: function( itemElem ) {
-                    var progress = $( itemElem ).attr('data-progress');
-                    return progress.length && parseInt( progress, 10 ) || Number.NEGATIVE_INFINITY;
-                }
-            }
-        });
-    });
-
-    $('#postersort').on( 'change', function() {
-        var sortValue = this.value;
-        $('#container').isotope({ sortBy: sortValue });
-        $('#container-anime').isotope({ sortBy: sortValue });
-        $.get(this.options[this.selectedIndex].getAttribute('data-sort'));
-    });
-
-    $('#postersortdirection').on( 'change', function() {
-        var sortDirection = this.value;
-        sortDirection = sortDirection == 'true';
-        $('#container').isotope({ sortAscending: sortDirection });
-        $('#container-anime').isotope({ sortAscending: sortDirection });
-        $.get(this.options[this.selectedIndex].getAttribute('data-sort'));
-    });
-
-    $('#popover')
-        .popover({
-          placement: 'bottom',
-          html: true, // required if content has HTML
-          content: '<div id="popover-target"></div>'
-        })
-        // bootstrap popover event triggered when the popover opens
-        .on('shown.bs.popover', function () {
-          // call this function to copy the column selection code into the popover
-          $.tablesorter.columnSelector.attachTo( $('#showListTableShows'), '#popover-target');
-          % if sickbeard.ANIME_SPLIT_HOME:
-          $.tablesorter.columnSelector.attachTo( $('#showListTableAnime'), '#popover-target');
-          % endif
-        });
-});
-</script>
+<meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
+<meta data-var="sickbeard.FILTER_ROW" data-content="${sickbeard.FILTER_ROW}">
+<meta data-var="sickbeard.ANIME_SPLIT_HOME" data-content="${sickbeard.ANIME_SPLIT_HOME}">
+<meta data-var="sickbeard.POSTER_SORTBY" data-content="${sickbeard.POSTER_SORTBY}">
+<meta data-var="sickbeard.POSTER_SORTDIR" data-content="${sickbeard.POSTER_SORTDIR}">
+<meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
+<meta data-var="sickbeard.DATE_PRESET" data-content="${sickbeard.DATE_PRESET}">
+<meta data-var="sickbeard.TIME_PRESET" data-content="${sickbeard.TIME_PRESET}">
+<meta data-var="sickbeard.TRIM_ZERO" data-content="${sickbeard.TRIM_ZERO}">
+<meta data-var="max_download_count" data-content="${max_download_count}">
+<meta data-var="layout" data-content="${layout}">
+<meta data-var="fuzzydate" data-content="${fuzzydate}">
+<script type="text/javascript" src="${sbRoot}/js/lib/jquery.timeago.js"></script>
+<script type="text/javascript" src="${sbRoot}/js/new/home.js"></script>
 </%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
@@ -578,7 +245,7 @@ $(document).ready(function(){
                 </td>
 
                 <td class="show-table">
-		    ${renderQualityPill(curShow.quality, overrideClass="show-quality")}
+            ${renderQualityPill(curShow.quality, overrideClass="show-quality")}
                 </td>
             </tr>
         </table>
@@ -703,7 +370,9 @@ $(document).ready(function(){
             <% temp_sbfdate_next = sbdatetime.sbdatetime.sbfdate(ldatetime) %>
             <% temp_timegm_next = calendar.timegm(ldatetime.timetuple()) %>
             <td align="center" class="nowrap">
-                <div class="${fuzzydate}">${temp_sbfdate_next}</div>
+                <div class="${fuzzydate}">
+                    <time datetime="${ldatetime.isoformat('T')}" class="date">${temp_sbfdate_next}</time>
+                </div>
                 <span class="sort_data">${temp_timegm_next}</span>
             </td>
         % except ValueError:
@@ -719,8 +388,10 @@ $(document).ready(function(){
             <% temp_sbfdate_prev = sbdatetime.sbdatetime.sbfdate(pdatetime) %>
             <% temp_timegm_prev = calendar.timegm(pdatetime.timetuple()) %>
             <td align="center" class="nowrap">
-                <div class="${fuzzydate}">${temp_sbfdate_prev}</div>
-                <span class="sort_data">${temp_timegm_prev}</span>
+                <div class="${fuzzydate}">
+                    <time datetime="${pdatetime.isoformat('T')}" class="date">${temp_sbfdate_prev}</time>
+                </div>
+                <span class="sort_data">${temp_sbfdate_prev}</span>
             </td>
         % except ValueError:
             <td align="center" class="nowrap"></td>
@@ -777,7 +448,6 @@ $(document).ready(function(){
 
         ## <% show_size = sickbeard.helpers.get_size(curShow._location) %>
         ## <td align="center" data-show-size="${show_size}">${sickbeard.helpers.pretty_filesize(show_size)}</td>
-        <td align="center" data-show-size="0"></td>
 
         <td align="center">
             <% paused = int(curShow.paused) == 0 and curShow.status == 'Continuing' %>
