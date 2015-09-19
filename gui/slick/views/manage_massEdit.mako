@@ -64,7 +64,7 @@
 
     <div id="customQuality">
         <div class="manageCustom pull-left">
-        <h4>Inital</h4>
+        <h5>Allowed</h5>
             <% anyQualityList = filter(lambda x: x > common.Quality.NONE, common.Quality.qualityStrings) %>
             <select id="anyQualities" name="anyQualities" multiple="multiple" size="${len(anyQualityList)}">
             % for curQuality in sorted(anyQualityList):
@@ -73,9 +73,9 @@
             </select>
         </div>
         <div class="manageCustom pull-left">
-        <h4>Archive</h4>
+        <h5>Preferred</h5>
             <% bestQualityList = filter(lambda x: x >= common.Quality.SDTV, common.Quality.qualityStrings) %>
-            <select id="bestQualities" name="bestQualities" multiple="multiple" size="len(${bestQualityList})">
+            <select id="bestQualities" name="bestQualities" multiple="multiple" size="${len(bestQualityList)}">
             % for curQuality in sorted(bestQualityList):
             <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in bestQualities]}>${common.Quality.qualityStrings[curQuality]}</option>
             % endfor
