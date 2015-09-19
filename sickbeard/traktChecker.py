@@ -101,7 +101,7 @@ class TraktChecker():
             library = self.trakt_api.traktRequest("sync/collection/shows") or []
 
             if not library:
-                logger.log(u"Could not connect to trakt service, aborting library check", logger.ERROR)
+                logger.log(u"Could not connect to trakt service, aborting library check", logger.WARNING)
                 return
 
             if not len(library):
