@@ -123,7 +123,7 @@ $(document).ready(function(){
                 <select id="seasonJump" class="form-control input-sm" style="position: relative; top: -4px;">
                     <option value="jump">Jump to Season</option>
                 % for seasonNum in seasonResults:
-                    <option value="#season-${seasonNum["season"]}">${('Specials', 'Season ' + str(seasonNum["season"]))[int(seasonNum["season"]) == 0]}</option>
+                    <option value="#season-${seasonNum["season"]}">${('Specials', 'Season ' + str(seasonNum["season"]))[int(seasonNum["season"]) > 0]}</option>
                 % endfor
                 </select>
             % else:
