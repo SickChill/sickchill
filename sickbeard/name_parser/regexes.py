@@ -22,7 +22,7 @@ normal_regexes = [
     ('standard_repeat',
      # Show.Name.S01E02.S01E03.Source.Quality.Etc-Group
      # Show Name - S01E02 - S01E03 - S01E04 - Ep Name
-     '''
+     r'''
      ^(?P<series_name>.+?)[. _-]+                # Show_Name and separator
      s(?P<season_num>\d+)[. _-]*                 # S01 and optional separator
      e(?P<ep_num>\d+)                            # E02 and separator
@@ -36,7 +36,7 @@ normal_regexes = [
     ('fov_repeat',
      # Show.Name.1x02.1x03.Source.Quality.Etc-Group
      # Show Name - 1x02 - 1x03 - 1x04 - Ep Name
-     '''
+     r'''
      ^(?P<series_name>.+?)[. _-]+                # Show_Name and separator
      (?P<season_num>\d+)x                        # 1x
      (?P<ep_num>\d+)                             # 02 and separator
@@ -54,7 +54,7 @@ normal_regexes = [
      # Show.Name.S01E02E03.Source.Quality.Etc-Group
      # Show Name - S01E02-03 - My Ep Name
      # Show.Name.S01.E02.E03
-     '''
+     r'''
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
      (\()?s(?P<season_num>\d+)[. _-]*            # S01 and optional separator
      e(?P<ep_num>\d+)(\))?                       # E02 and separator
@@ -70,7 +70,7 @@ normal_regexes = [
      # Show Name - 1x02 - My Ep Name
      # Show_Name.1x02x03x04.Source_Quality_Etc-Group
      # Show Name - 1x02-03-04 - My Ep Name
-     '''
+     r'''
      ^((?P<series_name>.+?)[\[. _-]+)?           # Show_Name and separator
      (?P<season_num>\d+)x                        # 1x
      (?P<ep_num>\d+)                             # 02 and separator
@@ -86,7 +86,7 @@ normal_regexes = [
     ('scene_date_format',
      # Show.Name.2010.11.23.Source.Quality.Etc-Group
      # Show Name - 2010-11-23 - Ep Name
-     '''
+     r'''
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
      (?P<air_date>(\d+[. _-]\d+[. _-]\d+)|(\d+\w+[. _-]\w+[. _-]\d+))
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
@@ -98,7 +98,7 @@ normal_regexes = [
      # Show.Name.100.Event.2010.11.23.Source.Quality.Etc-Group
      # Show.Name.2010.11.23.Source.Quality.Etc-Group
      # Show Name - 2010-11-23 - Ep Name
-     '''
+     r'''
      ^(?P<series_name>.*?(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP).*?)[. _-]+
      ((?P<series_num>\d{1,3})[. _-]+)?
      (?P<air_date>(\d+[. _-]\d+[. _-]\d+)|(\d+\w+[. _-]\w+[. _-]\d+))[. _-]+
@@ -108,7 +108,7 @@ normal_regexes = [
 
     ('stupid',
      # tpz-abc102
-     '''
+     r'''
      (?P<release_group>.+?)-\w+?[\. ]?           # tpz-abc
      (?!264)                                     # don't count x264
      (?P<season_num>\d{1,2})                     # 1
@@ -117,7 +117,7 @@ normal_regexes = [
 
     ('verbose',
      # Show Name Season 1 Episode 2 Ep Name
-     '''
+     r'''
      ^(?P<series_name>.+?)[. _-]+                # Show Name and separator
      season[. _-]+                               # season and separator
      (?P<season_num>\d+)[. _-]+                  # 1
@@ -128,7 +128,7 @@ normal_regexes = [
 
     ('season_only',
      # Show.Name.S01.Source.Quality.Etc-Group
-     '''
+     r'''
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
      s(eason[. _-])?                             # S01/Season 01
      (?P<season_num>\d+)[. _-]*                  # S01 and optional separator
@@ -141,7 +141,7 @@ normal_regexes = [
     ('no_season_multi_ep',
      # Show.Name.E02-03
      # Show.Name.E02.2010
-     '''
+     r'''
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
      (e(p(isode)?)?|part|pt)[. _-]?              # e, ep, episode, or part
      (?P<ep_num>(\d+|[ivx]+))                    # first ep num
@@ -157,7 +157,7 @@ normal_regexes = [
      # Show.Name.E23.Test
      # Show.Name.Part.3.Source.Quality.Etc-Group
      # Show.Name.Part.1.and.Part.2.Blah-Group
-     '''
+     r'''
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
      (e(p(isode)?)?|part|pt)[. _-]?              # e, ep, episode, or part
      (?P<ep_num>(\d+|([ivx]+(?=[. _-]))))                    # first ep num
@@ -175,7 +175,7 @@ normal_regexes = [
      # Show Name - 01 - Ep Name
      # 01 - Ep Name
      # 01 - Ep Name
-     '''
+     r'''
      ^((?P<series_name>.+?)(?:[. _-]{2,}|[. _]))?    # Show_Name and separator
      (?P<ep_num>\d{1,3})                             # 02
      (?:-(?P<extra_ep_num>\d{1,3}))*                 # -03-04-05 etc
@@ -188,7 +188,7 @@ normal_regexes = [
 
     ('bare',
      # Show.Name.102.Source.Quality.Etc-Group
-     '''
+     r'''
      ^(?P<series_name>.+?)[. _-]+                # Show_Name and separator
      (?P<season_num>\d{1,2})                     # 1
      (?P<ep_num>\d{2})                           # 02 and separator
@@ -200,7 +200,7 @@ normal_regexes = [
 anime_regexes = [
     ('anime_horriblesubs',
      # [HorribleSubs] Maria the Virgin Witch - 01 [720p].mkv
-     '''
+     r'''
      ^(?:\[(?P<release_group>HorribleSubs)\][\s\.])
      (?:(?P<series_name>.+?)[\s\.]-[\s\.])
      (?P<ep_ab_num>((?!(1080|720|480)[pi]))\d{1,3})
@@ -211,7 +211,7 @@ anime_regexes = [
      .*?
      '''),
     ('anime_ultimate',
-     """
+     r'''
      ^(?:\[(?P<release_group>.+?)\][ ._-]*)
      (?P<series_name>.+?)[ ._-]+
      (?P<ep_ab_num>((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3})
@@ -221,12 +221,12 @@ anime_regexes = [
      (?:(?:(?:[\[\(])(?P<extra_info>\d{3,4}[xp]?\d{0,4}[\.\w\s-]*)(?:[\]\)]))|(?:\d{3,4}[xp]))
      (?:[ ._]?\[(?P<crc>\w+)\])?
      .*?
-     """),
+     '''),
 
     ('anime_ISLAND',
      # [ISLAND]One_Piece_679_[VOSTFR]_[V1]_[8bit]_[720p]_[EB7838FC].mp4
      # [ISLAND]One_Piece_679_[VOSTFR]_[8bit]_[720p]_[EB7838FC].mp4
-     '''
+     r'''
      ^\[(?P<release_group>ISLAND?)\]                                          # Release Group
 	 (?P<series_name>.+?)[ ._-]+                                              # Show_Name and separator
 	 (?P<ep_ab_num>\d{1,3})[ ._-]+                                            # Episode number
@@ -243,7 +243,7 @@ anime_regexes = [
      # [Kaerizaki-Fansub]_One_Piece_681_[VOSTFR][HD_1280x720]_V2.mp4
      # [Kaerizaki-Fansub] High School DxD New 04 VOSTFR HD (1280x720) V2.mp4
      # [Kaerizaki-Fansub] One Piece 603 VOSTFR PS VITA (960x544) V2.mp4
-     '''
+     r'''
      ^\[(?P<release_group>Kaerizaki-Fansub?)\][ ._-]*                         # Release Group and separator
      (?P<series_name>.+?)[ ._-]+                                              # Show_Name and separator
      (?P<ep_ab_num>((?!\[VOSTFR|VOSTFR))\d{1,3})                              # Episode number
@@ -261,7 +261,7 @@ anime_regexes = [
      # [Group Name] Show Name.13
      # [Group Name] Show Name - 13
      # Show Name 13
-     '''
+     r'''
      ^(\[(?P<release_group>.+?)\][ ._-]*)?                        # Release Group and separator
      (?P<series_name>.+?)[ ._-]+                                 # Show_Name and separator
      (?P<ep_ab_num>((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3})                                       # E01
@@ -273,10 +273,9 @@ anime_regexes = [
      '''),
 
     ('anime_standard_round',
-     # TODO examples
      # [Stratos-Subs]_Infinite_Stratos_-_12_(1280x720_H.264_AAC)_[379759DB]
      # [ShinBunBu-Subs] Bleach - 02-03 (CX 1280x720 x264 AAC)
-     '''
+     r'''
      ^(\[(?P<release_group>.+?)\][ ._-]*)?                                    # Release Group and separator
      (?P<series_name>.+?)[ ._-]+                                              # Show_Name and separator
      (?P<ep_ab_num>((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3})                                                   # E01
@@ -289,7 +288,7 @@ anime_regexes = [
 
     ('anime_slash',
      # [SGKK] Bleach 312v1 [720p/MKV]
-     '''
+     r'''
      ^(\[(?P<release_group>.+?)\][ ._-]*)? # Release Group and separator
      (?P<series_name>.+?)[ ._-]+           # Show_Name and separator
      (?P<ep_ab_num>((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3})                # E01
@@ -304,7 +303,7 @@ anime_regexes = [
      # [Ayako]_Infinite_Stratos_-_IS_-_07_[H264][720p][EB7838FC]
      # [Ayako] Infinite Stratos - IS - 07v2 [H264][720p][44419534]
      # [Ayako-Shikkaku] Oniichan no Koto Nanka Zenzen Suki Janain Dakara ne - 10 [LQ][h264][720p] [8853B21C]
-     '''
+     r'''
      ^(\[(?P<release_group>.+?)\][ ._-]*)?                        # Release Group and separator
      (?P<series_name>.+?)[ ._]*                                   # Show_Name and separator
      ([ ._-]+-[ ._-]+[A-Z]+[ ._-]+)?[ ._-]+                       # funny stuff, this is sooo nuts ! this will kick me in the butt one day
@@ -318,7 +317,7 @@ anime_regexes = [
      '''),
 
     ('anime_codec_crc',
-     '''
+     r'''
     ^(?:\[(?P<release_group>.*?)\][ ._-]*)?
     (?:(?P<series_name>.*?)[ ._-]*)?
     (?:(?P<ep_ab_num>(((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3}))[ ._-]*).+?
@@ -331,7 +330,7 @@ anime_regexes = [
      # Bleach - s16e03-04 - 313-314
      # Bleach.s16e03-04.313-314
      # Bleach s16e03e04 313-314
-     '''
+     r'''
      ^(?P<series_name>.+?)[ ._-]+                 # start of string and series name and non optinal separator
      [sS](?P<season_num>\d+)[. _-]*               # S01 and optional separator
      [eE](?P<ep_num>\d+)                          # epipisode E02
@@ -350,7 +349,7 @@ anime_regexes = [
      # Bleach - s16e03-04 - 313-314
      # Bleach.s16e03-04.313-314
      # Bleach s16e03e04 313-314
-     '''
+     r'''
      ^(?P<series_name>.+?)[ ._-]+                 # start of string and series name and non optinal separator
      (?P<season_num>\d+)[. _-]*               # S01 and optional separator
      [xX](?P<ep_num>\d+)                          # epipisode E02
@@ -367,7 +366,7 @@ anime_regexes = [
 
     ('anime_and_normal_reverse',
      # Bleach - 313-314 - s16e03-04
-     '''
+     r'''
      ^(?P<series_name>.+?)[ ._-]+                 # start of string and series name and non optinal separator
      (?P<ep_ab_num>((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3})                       # absolute number
      (-(?P<extra_ab_ep_num>((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3}))?             # "-" as separator and anditional absolute number, all optinal
@@ -383,7 +382,7 @@ anime_regexes = [
 
     ('anime_and_normal_front',
      # 165.Naruto Shippuuden.s08e014
-     '''
+     r'''
      ^(?P<ep_ab_num>((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3})                       # start of string and absolute number
      (-(?P<extra_ab_ep_num>((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3}))?              # "-" as separator and anditional absolute number, all optinal
      (v(?P<version>[0-9]))?[ ._-]+                 # the version e.g. "v2"
@@ -397,7 +396,7 @@ anime_regexes = [
     ),
 
     ('anime_ep_name',
-     '''
+     r'''
     ^(?:\[(?P<release_group>.+?)\][ ._-]*)
     (?P<series_name>.+?)[ ._-]+
     (?P<ep_ab_num>((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3})
@@ -413,14 +412,14 @@ anime_regexes = [
     ('anime_WarB3asT',
      # 003. Show Name - Ep Name.ext
      # 003-004. Show Name - Ep Name.ext
-     '''
+     r'''
      ^(?P<ep_ab_num>\d{3,4})(-(?P<extra_ab_ep_num>\d{3,4}))?\.\s+(?P<series_name>.+?)\s-\s.*
      '''),
 
     ('anime_bare',
      # One Piece - 102
      # [ACX]_Wolf's_Spirit_001.mkv
-     '''
+     r'''
      ^(\[(?P<release_group>.+?)\][ ._-]*)?
      (?P<series_name>.+?)[ ._-]+                         # Show_Name and separator
      (?P<ep_ab_num>((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3})                                      # E01
