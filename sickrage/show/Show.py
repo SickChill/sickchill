@@ -18,7 +18,6 @@
 
 import sickbeard
 
-from sickbeard import showQueueScheduler
 from sickbeard.exceptions import CantRefreshException, CantRemoveException, ex, MultipleShowObjectsException
 from sickbeard.helpers import findCertainShow
 
@@ -44,7 +43,7 @@ class Show:
             return error, show
 
         try:
-            showQueueScheduler.action.removeShow(show, bool(remove_files))
+            sickbeard.showQueueScheduler.action.removeShow(show, bool(remove_files))
         except CantRemoveException as exception:
             return ex(exception), show
 
@@ -91,7 +90,7 @@ class Show:
             return error, show
 
         try:
-            showQueueScheduler.action.refreshShow(show)
+            sickbeard.showQueueScheduler.action.refreshShow(show)
         except CantRefreshException as exception:
             return ex(exception), show
 
