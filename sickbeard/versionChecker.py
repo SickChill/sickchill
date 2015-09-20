@@ -217,6 +217,7 @@ class CheckVersion:
             else:
                 return 'downgrade'
         except Exception:
+            raise
             return 'error'
 
     def find_install_type(self):
