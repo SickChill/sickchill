@@ -28,6 +28,7 @@ import traceback
 
 import sickbeard
 from sickrage.helper.common import dateFormat, dateTimeFormat, timeFormat
+from sickrage.helper.encoding import ek
 from sickrage.helper.quality import get_quality_string
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
@@ -35,12 +36,12 @@ from sickrage.media.ShowPoster import ShowPoster
 from sickrage.media.ShowBanner import ShowBanner
 from sickrage.show.ComingEpisodes import ComingEpisodes
 from sickrage.show.History import History
+from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
 
 from versionChecker import CheckVersion
 from sickbeard import db, logger, exceptions, ui, helpers
-from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
 from sickbeard import image_cache
 from sickbeard import classes
@@ -594,7 +595,7 @@ def _getRootDirs():
     for root_dir in root_dirs:
         valid = 1
         try:
-            ek.ek(os.listdir, root_dir)
+            ek(os.listdir, root_dir)
         except:
             valid = 0
         default = 0
@@ -1196,7 +1197,7 @@ class CMD_Logs(ApiCall):
 
         data = []
         if os.path.isfile(logger.logFile):
-            with ek.ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
+            with ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
                 data = f.readlines()
 
         regex = "^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
@@ -1322,7 +1323,7 @@ class CMD_SickBeardAddRootDir(ApiCall):
         index = 0
 
         # dissallow adding/setting an invalid dir
-        if not ek.ek(os.path.isdir, self.location):
+        if not ek(os.path.isdir, self.location):
             return _responds(RESULT_FAILURE, msg="Location is invalid")
 
         root_dirs = []
@@ -1932,7 +1933,7 @@ class CMD_ShowAddExisting(ApiCall):
         if showObj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in the database")
 
-        if not ek.ek(os.path.isdir, self.location):
+        if not ek(os.path.isdir, self.location):
             return _responds(RESULT_FAILURE, msg='Not a valid location')
 
         indexerName = None
@@ -2052,7 +2053,7 @@ class CMD_ShowAddNew(ApiCall):
             else:
                 return _responds(RESULT_FAILURE, msg="Root directory is not set, please provide a location")
 
-        if not ek.ek(os.path.isdir, self.location):
+        if not ek(os.path.isdir, self.location):
             return _responds(RESULT_FAILURE, msg="'" + self.location + "' is not a valid location")
 
         quality_map = {'sdtv': Quality.SDTV,
@@ -2129,7 +2130,7 @@ class CMD_ShowAddNew(ApiCall):
         indexer = indexerResult['data']['results'][0]['indexer']
 
         # moved the logic check to the end in an attempt to eliminate empty directory being created from previous errors
-        showPath = ek.ek(os.path.join, self.location, helpers.sanitizeFileName(indexerName))
+        showPath = ek(os.path.join, self.location, helpers.sanitizeFileName(indexerName))
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
@@ -2182,45 +2183,42 @@ class CMD_ShowCache(ApiCall):
         has_poster = 0
         has_banner = 0
 
-        if ek.ek(os.path.isfile, cache_obj.poster_path(showObj.indexerid)):
+        if ek(os.path.isfile, cache_obj.poster_path(showObj.indexerid)):
             has_poster = 1
-        if ek.ek(os.path.isfile, cache_obj.banner_path(showObj.indexerid)):
+        if ek(os.path.isfile, cache_obj.banner_path(showObj.indexerid)):
             has_banner = 1
 
         return _responds(RESULT_SUCCESS, {"poster": has_poster, "banner": has_banner})
 
 
 class CMD_ShowDelete(ApiCall):
-    _help = {"desc": "delete a show in sickrage",
-             "requiredParameters": {
-                 "indexerid": {"desc": "unique id of a show"},
-             },
-             "optionalParameters": {
-                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "removefiles":{"desc": "Deletes the files, there is no going back!"},
-             }
+    _help = {
+        "desc": "Delete a show in SickRage",
+        "requiredParameters": {
+            "indexerid": {"desc": "Unique id of a show"},
+        },
+        "optionalParameters": {
+            "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+            "removefiles": {"desc": "Deletes the files, there is no going back! Default if false"},
+        }
     }
 
     def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
-        self.removefiles, args = self.check_params(args, kwargs, "removefiles", 0, False, "int", [0,1])
+        self.removefiles, args = self.check_params(args, kwargs, "removefiles", 0, False, "int", [0, 1])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ delete a show in sickrage """
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
-        if not showObj:
-            return _responds(RESULT_FAILURE, msg="Show not found")
+        """ Delete a show in SickRage """
+        error, show = Show.delete(self.indexerid, self.removefiles)
 
-        try:
-            sickbeard.showQueueScheduler.action.removeShow(showObj, bool(self.removefiles))
-        except sickbeard.exceptions.CantRemoveException as e:
-            return _responds(RESULT_FAILURE, msg=ex(e))
+        if error is not None:
+            return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg=showObj.name + " has been queued to be deleted")
+        return _responds(RESULT_SUCCESS, msg='%s has been queued to be deleted' % show.name)
 
 
 class CMD_ShowGetQuality(ApiCall):
@@ -2362,14 +2360,15 @@ class CMD_ShowGetFanArt(ApiCall):
 
 
 class CMD_ShowPause(ApiCall):
-    _help = {"desc": "set a show's paused state in sickrage",
-             "requiredParameters": {
-                 "indexerid": {"desc": "unique id of a show"},
-             },
-             "optionalParameters": {
-                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                 "pause": {"desc": "set the pause state of the show"}
-             }
+    _help = {
+        "desc": "Set a show's paused state in SickRage",
+        "requiredParameters": {
+            "indexerid": {"desc": "Unique id of a show"},
+        },
+        "optionalParameters": {
+            "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+            "pause": {"desc": "1 to pause the show, 0 to resume the show"}
+        }
     }
 
     def __init__(self, args, kwargs):
@@ -2381,28 +2380,24 @@ class CMD_ShowPause(ApiCall):
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ set a show's paused state in sickrage """
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
-        if not showObj:
-            return _responds(RESULT_FAILURE, msg="Show not found")
+        """ Set a show's paused state in SickRage """
+        error, show = Show.pause(self.indexerid, self.pause)
 
-        if self.pause:
-            showObj.paused = 1
-            showObj.saveToDB()
-            return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been paused")
-        else:
-            showObj.paused = 0
-            showObj.saveToDB()
-            return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been unpaused")
+        if error is not None:
+            return _responds(RESULT_FAILURE, msg=error)
+
+        return _responds(RESULT_SUCCESS, msg='%s has been %s' % (show.name, ('resumed', 'paused')[show.paused]))
+
 
 class CMD_ShowRefresh(ApiCall):
-    _help = {"desc": "refresh a show in sickrage",
-             "requiredParameters": {
-                 "indexerid": {"desc": "unique id of a show"},
-             },
-             "optionalParameters": {
-                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
-             }
+    _help = {
+        "desc": "Refresh a show in SickRage",
+        "requiredParameters": {
+            "indexerid": {"desc": "Unique id of a show"},
+        },
+        "optionalParameters": {
+            "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+        }
     }
 
     def __init__(self, args, kwargs):
@@ -2413,17 +2408,13 @@ class CMD_ShowRefresh(ApiCall):
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
-        """ refresh a show in sickrage """
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
-        if not showObj:
-            return _responds(RESULT_FAILURE, msg="Show not found")
+        """ Refresh a show in SickRage """
+        error, show = Show.refresh(self.indexerid)
 
-        try:
-            sickbeard.showQueueScheduler.action.refreshShow(showObj)  # @UndefinedVariable
-            return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has queued to be refreshed")
-        except exceptions.CantRefreshException:
-            # TODO: log the excption
-            return _responds(RESULT_FAILURE, msg="Unable to refresh " + str(showObj.name))
+        if error is not None:
+            return _responds(RESULT_FAILURE, msg=error)
+
+        return _responds(RESULT_SUCCESS, msg='%s has queued to be refreshed' % show.name)
 
 
 class CMD_ShowSeasonList(ApiCall):

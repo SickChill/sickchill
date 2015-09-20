@@ -28,11 +28,12 @@ from sickbeard.common import Quality
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import scene_exceptions
-from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
 from sickbeard.exceptions import AuthException
+from sickrage.helper.encoding import ek
+
 
 class NewznabProvider(generic.NZBProvider):
     def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly', search_fallback=False,
@@ -76,8 +77,8 @@ class NewznabProvider(generic.NZBProvider):
             int(self.enable_daily)) + '|' + str(int(self.enable_backlog))
 
     def imageName(self):
-        if ek.ek(os.path.isfile,
-                 ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
+        if ek(os.path.isfile,
+                 ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
                        self.getID() + '.png')):
             return self.getID() + '.png'
         return 'newznab.png'

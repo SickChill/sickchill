@@ -31,7 +31,7 @@ import sickbeard
 
 from sickbeard import logger
 from sickbeard import db
-from sickbeard import encodingKludge as ek
+from sickrage.helper.encoding import ss
 
 
 class EmailNotifier:
@@ -53,7 +53,7 @@ class EmailNotifier:
         ep_name: The name of the episode that was snatched
         title: The title of the notification (optional)
         """
-        ep_name = ek.ss(ep_name)
+        ep_name = ss(ep_name)
 
         if sickbeard.EMAIL_NOTIFY_ONSNATCH:
             show = self._parseEp(ep_name)
@@ -88,11 +88,11 @@ class EmailNotifier:
     def notify_download(self, ep_name, title="Completed:"):
         """
         Send a notification that an episode was downloaded
-        
+
         ep_name: The name of the episode that was downloaded
         title: The title of the notification (optional)
         """
-        ep_name = ek.ss(ep_name)
+        ep_name = ss(ep_name)
 
         if sickbeard.EMAIL_NOTIFY_ONDOWNLOAD:
             show = self._parseEp(ep_name)
@@ -127,11 +127,11 @@ class EmailNotifier:
     def notify_subtitle_download(self, ep_name, lang, title="Downloaded subtitle:"):
         """
         Send a notification that an subtitle was downloaded
-        
+
         ep_name: The name of the episode that was downloaded
         lang: Subtitle language wanted
         """
-        ep_name = ek.ss(ep_name)
+        ep_name = ss(ep_name)
 
         if sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD:
             show = self._parseEp(ep_name)
@@ -196,7 +196,7 @@ class EmailNotifier:
             logger.log(u"Exception generated while sending e-mail: " + str(e), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
             return False
-            
+
         if smtpDebug:
             srv.set_debuglevel(1)
         try:
@@ -217,7 +217,7 @@ class EmailNotifier:
             return False
 
     def _parseEp(self, ep_name):
-        ep_name = ek.ss(ep_name)
+        ep_name = ss(ep_name)
 
         sep = " - "
         titles = ep_name.split(sep)

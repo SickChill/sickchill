@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -21,9 +22,8 @@ import os.path
 import sickbeard
 
 from sickbeard import helpers, logger, exceptions
-from sickbeard import encodingKludge as ek
-
 from sickbeard.metadata.generic import GenericMetadata
+from sickrage.helper.encoding import ek
 
 from hachoir_parser import createParser
 from hachoir_metadata import extractMetadata
@@ -40,76 +40,71 @@ class ImageCache:
         """
         Builds up the full path to the image cache directory
         """
-        return ek.ek(os.path.abspath, ek.ek(os.path.join, sickbeard.CACHE_DIR, 'images'))
+        return ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images'))
 
     def _thumbnails_dir(self):
         """
         Builds up the full path to the thumbnails image cache directory
         """
-        return ek.ek(os.path.abspath, ek.ek(os.path.join, self._cache_dir(), 'thumbnails'))
+        return ek(os.path.abspath, ek(os.path.join, self._cache_dir(), 'thumbnails'))
 
     def poster_path(self, indexer_id):
         """
         Builds up the path to a poster cache for a given Indexer ID
 
-        returns: a full path to the cached poster file for the given Indexer ID
-        
-        indexer_id: ID of the show to use in the file name
+        :param indexer_id: ID of the show to use in the file name
+        :return: a full path to the cached poster file for the given Indexer ID
         """
         poster_file_name = str(indexer_id) + '.poster.jpg'
-        return ek.ek(os.path.join, self._cache_dir(), poster_file_name)
+        return ek(os.path.join, self._cache_dir(), poster_file_name)
 
     def banner_path(self, indexer_id):
         """
         Builds up the path to a banner cache for a given Indexer ID
 
-        returns: a full path to the cached banner file for the given Indexer ID
-        
-        indexer_id: ID of the show to use in the file name
+        :param indexer_id: ID of the show to use in the file name
+        :return: a full path to the cached banner file for the given Indexer ID
         """
         banner_file_name = str(indexer_id) + '.banner.jpg'
-        return ek.ek(os.path.join, self._cache_dir(), banner_file_name)
+        return ek(os.path.join, self._cache_dir(), banner_file_name)
 
     def fanart_path(self, indexer_id):
         """
         Builds up the path to a fanart cache for a given Indexer ID
 
-        returns: a full path to the cached fanart file for the given Indexer ID
-        
-        indexer_id: ID of the show to use in the file name
+        :param indexer_id: ID of the show to use in the file name
+        :return: a full path to the cached fanart file for the given Indexer ID
         """
         fanart_file_name = str(indexer_id) + '.fanart.jpg'
-        return ek.ek(os.path.join, self._cache_dir(), fanart_file_name)
-        
+        return ek(os.path.join, self._cache_dir(), fanart_file_name)
+
     def poster_thumb_path(self, indexer_id):
         """
         Builds up the path to a poster thumb cache for a given Indexer ID
 
-        returns: a full path to the cached poster thumb file for the given Indexer ID
-        
-        indexer_id: ID of the show to use in the file name
+        :param indexer_id: ID of the show to use in the file name
+        :return: a full path to the cached poster thumb file for the given Indexer ID
         """
         posterthumb_file_name = str(indexer_id) + '.poster.jpg'
-        return ek.ek(os.path.join, self._thumbnails_dir(), posterthumb_file_name)
+        return ek(os.path.join, self._thumbnails_dir(), posterthumb_file_name)
 
     def banner_thumb_path(self, indexer_id):
         """
         Builds up the path to a banner thumb cache for a given Indexer ID
 
-        returns: a full path to the cached banner thumb file for the given Indexer ID
-        
-        indexer_id: ID of the show to use in the file name
+        :param indexer_id: ID of the show to use in the file name
+        :return: a full path to the cached banner thumb file for the given Indexer ID
         """
         bannerthumb_file_name = str(indexer_id) + '.banner.jpg'
-        return ek.ek(os.path.join, self._thumbnails_dir(), bannerthumb_file_name)     
-        
+        return ek(os.path.join, self._thumbnails_dir(), bannerthumb_file_name)
+
     def has_poster(self, indexer_id):
         """
         Returns true if a cached poster exists for the given Indexer ID
         """
         poster_path = self.poster_path(indexer_id)
         logger.log(u"Checking if file " + str(poster_path) + " exists", logger.DEBUG)
-        return ek.ek(os.path.isfile, poster_path)
+        return ek(os.path.isfile, poster_path)
 
     def has_banner(self, indexer_id):
         """
@@ -117,7 +112,7 @@ class ImageCache:
         """
         banner_path = self.banner_path(indexer_id)
         logger.log(u"Checking if file " + str(banner_path) + " exists", logger.DEBUG)
-        return ek.ek(os.path.isfile, banner_path)
+        return ek(os.path.isfile, banner_path)
 
     def has_fanart(self, indexer_id):
         """
@@ -125,15 +120,15 @@ class ImageCache:
         """
         fanart_path = self.fanart_path(indexer_id)
         logger.log(u"Checking if file " + str(fanart_path) + " exists", logger.DEBUG)
-        return ek.ek(os.path.isfile, fanart_path)
-        
+        return ek(os.path.isfile, fanart_path)
+
     def has_poster_thumbnail(self, indexer_id):
         """
         Returns true if a cached poster thumbnail exists for the given Indexer ID
         """
         poster_thumb_path = self.poster_thumb_path(indexer_id)
         logger.log(u"Checking if file " + str(poster_thumb_path) + " exists", logger.DEBUG)
-        return ek.ek(os.path.isfile, poster_thumb_path)
+        return ek(os.path.isfile, poster_thumb_path)
 
     def has_banner_thumbnail(self, indexer_id):
         """
@@ -141,7 +136,7 @@ class ImageCache:
         """
         banner_thumb_path = self.banner_thumb_path(indexer_id)
         logger.log(u"Checking if file " + str(banner_thumb_path) + " exists", logger.DEBUG)
-        return ek.ek(os.path.isfile, banner_thumb_path)
+        return ek(os.path.isfile, banner_thumb_path)
 
     BANNER = 1
     POSTER = 2
@@ -152,13 +147,12 @@ class ImageCache:
     def which_type(self, path):
         """
         Analyzes the image provided and attempts to determine whether it is a poster or banner.
-        
-        returns: BANNER, POSTER if it concluded one or the other, or None if the image was neither (or didn't exist)
-        
-        path: full path to the image
+
+        :param path: full path to the image
+        :return: BANNER, POSTER if it concluded one or the other, or None if the image was neither (or didn't exist)
         """
 
-        if not ek.ek(os.path.isfile, path):
+        if not ek(os.path.isfile, path):
             logger.log(u"Couldn't check the type of " + str(path) + " cause it doesn't exist", logger.WARNING)
             return None
 
@@ -181,7 +175,7 @@ class ImageCache:
         # most banners are around 5.4 width/height ratio (eg. 758/140)
         elif 5 < img_ratio < 6:
             return self.BANNER
-        
+
         # most fanart are around 1.77777 width/height ratio (eg. 1280/720 and 1920/1080)
         elif 1.7 < img_ratio < 1.8:
             return self.FANART
@@ -192,12 +186,11 @@ class ImageCache:
     def _cache_image_from_file(self, image_path, img_type, indexer_id):
         """
         Takes the image provided and copies it to the cache folder
-        
-        returns: bool representing success
-        
-        image_path: path to the image we're caching
-        img_type: BANNER or POSTER or FANART
-        indexer_id: id of the show this image belongs to
+
+        :param image_path: path to the image we're caching
+        :param img_type: BANNER or POSTER or FANART
+        :param indexer_id: id of the show this image belongs to
+        :return: bool representing success
         """
 
         # generate the path based on the type & indexer_id
@@ -206,19 +199,19 @@ class ImageCache:
         elif img_type == self.BANNER:
             dest_path = self.banner_path(indexer_id)
         elif img_type == self.FANART:
-            dest_path = self.fanart_path(indexer_id)            
+            dest_path = self.fanart_path(indexer_id)
         else:
             logger.log(u"Invalid cache image type: " + str(img_type), logger.ERROR)
             return False
 
         # make sure the cache folder exists before we try copying to it
-        if not ek.ek(os.path.isdir, self._cache_dir()):
+        if not ek(os.path.isdir, self._cache_dir()):
             logger.log(u"Image cache dir didn't exist, creating it at " + str(self._cache_dir()))
-            ek.ek(os.makedirs, self._cache_dir())
+            ek(os.makedirs, self._cache_dir())
 
-        if not ek.ek(os.path.isdir, self._thumbnails_dir()):
+        if not ek(os.path.isdir, self._thumbnails_dir()):
             logger.log(u"Thumbnails cache dir didn't exist, creating it at " + str(self._thumbnails_dir()))
-            ek.ek(os.makedirs, self._thumbnails_dir())
+            ek(os.makedirs, self._thumbnails_dir())
 
         logger.log(u"Copying from " + image_path + " to " + dest_path)
         helpers.copyFile(image_path, dest_path)
@@ -228,11 +221,10 @@ class ImageCache:
     def _cache_image_from_indexer(self, show_obj, img_type):
         """
         Retrieves an image of the type specified from indexer and saves it to the cache folder
-        
-        returns: bool representing success
-        
-        show_obj: TVShow object that we want to cache an image for
-        img_type: BANNER or POSTER or FANART
+
+        :param show_obj: TVShow object that we want to cache an image for
+        :param img_type: BANNER or POSTER or FANART
+        :return: bool representing success
         """
 
         # generate the path based on the type & indexer_id
@@ -250,7 +242,7 @@ class ImageCache:
             dest_path = self.banner_thumb_path(show_obj.indexerid)
         elif img_type == self.FANART:
             img_type_name = 'fanart'
-            dest_path = self.fanart_path(show_obj.indexerid)           
+            dest_path = self.fanart_path(show_obj.indexerid)
         else:
             logger.log(u"Invalid cache image type: " + str(img_type), logger.ERROR)
             return False
@@ -267,8 +259,8 @@ class ImageCache:
         """
         Caches all images for the given show. Copies them from the show dir if possible, or
         downloads them from indexer if they aren't in the show dir.
-        
-        show_obj: TVShow object to cache images for
+
+        :param show_obj: TVShow object to cache images for
         """
 
         logger.log(u"Checking if we need any cache images for show " + str(show_obj.indexerid), logger.DEBUG)
@@ -291,7 +283,7 @@ class ImageCache:
                 for cur_provider in sickbeard.metadata_provider_dict.values():
                     logger.log(u"Checking if we can use the show image from the " + cur_provider.name + " metadata",
                                logger.DEBUG)
-                    if ek.ek(os.path.isfile, cur_provider.get_poster_path(show_obj)):
+                    if ek(os.path.isfile, cur_provider.get_poster_path(show_obj)):
                         cur_file_name = os.path.abspath(cur_provider.get_poster_path(show_obj))
                         cur_file_type = self.which_type(cur_file_name)
 

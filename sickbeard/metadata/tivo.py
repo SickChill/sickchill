@@ -26,8 +26,8 @@ import sickbeard
 
 from sickbeard import logger, exceptions, helpers
 from sickbeard.metadata import generic
-from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
+from sickrage.helper.encoding import ek
 
 
 class TIVOMetadata(generic.GenericMetadata):
@@ -135,10 +135,10 @@ class TIVOMetadata(generic.GenericMetadata):
 
         ep_obj: a TVEpisode object to get the path for
         """
-        if ek.ek(os.path.isfile, ep_obj.location):
-            metadata_file_name = ek.ek(os.path.basename, ep_obj.location) + "." + self._ep_nfo_extension
-            metadata_dir_name = ek.ek(os.path.join, ek.ek(os.path.dirname, ep_obj.location), '.meta')
-            metadata_file_path = ek.ek(os.path.join, metadata_dir_name, metadata_file_name)
+        if ek(os.path.isfile, ep_obj.location):
+            metadata_file_name = ek(os.path.basename, ep_obj.location) + "." + self._ep_nfo_extension
+            metadata_dir_name = ek(os.path.join, ek(os.path.dirname, ep_obj.location), '.meta')
+            metadata_file_path = ek(os.path.join, metadata_dir_name, metadata_file_name)
         else:
             logger.log(u"Episode location doesn't exist: " + str(ep_obj.location), logger.DEBUG)
             return ''
@@ -311,17 +311,17 @@ class TIVOMetadata(generic.GenericMetadata):
             return False
 
         nfo_file_path = self.get_episode_file_path(ep_obj)
-        nfo_file_dir = ek.ek(os.path.dirname, nfo_file_path)
+        nfo_file_dir = ek(os.path.dirname, nfo_file_path)
 
         try:
-            if not ek.ek(os.path.isdir, nfo_file_dir):
+            if not ek(os.path.isdir, nfo_file_dir):
                 logger.log(u"Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
-                ek.ek(os.makedirs, nfo_file_dir)
+                ek(os.makedirs, nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
 
-            with ek.ek(open, nfo_file_path, 'w') as nfo_file:
+            with ek(open, nfo_file_path, 'w') as nfo_file:
                 # Calling encode directly, b/c often descriptions have wonky characters.
                 nfo_file.write(data.encode("utf-8"))
 

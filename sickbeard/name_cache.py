@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -27,8 +28,8 @@ def addNameToCache(name, indexer_id=0):
     """
     Adds the show & tvdb id to the scene_names table in cache.db.
 
-    name: The show name to cache
-    indexer_id: the TVDB id that this show should be cached with (can be None/0 for unknown)
+    :param name: The show name to cache
+    :param indexer_id: the TVDB id that this show should be cached with (can be None/0 for unknown)
     """
 
     global nameCache
@@ -46,9 +47,8 @@ def retrieveNameFromCache(name):
     """
     Looks up the given name in the scene_names table in cache.db.
 
-    name: The show name to look up.
-
-    Returns: the TVDB id that resulted from the cache lookup or None if the show wasn't found in the cache
+    :param name: The show name to look up.
+    :return: the TVDB id that resulted from the cache lookup or None if the show wasn't found in the cache
     """
     global nameCache
 
@@ -75,6 +75,7 @@ def clearCache(indexerid=0):
 
 
 def saveNameCacheToDb():
+    """Commit cache to database file"""
     cacheDB = db.DBConnection('cache.db')
 
     for name, indexer_id in nameCache.iteritems():
@@ -82,6 +83,10 @@ def saveNameCacheToDb():
 
 
 def buildNameCache(show=None):
+    """Build internal name cache
+
+    :param show: Specify show to build name cache for, if None, just do all shows
+    """
     global nameCache
     with nameCacheLock:
         sickbeard.scene_exceptions.retrieve_exceptions()

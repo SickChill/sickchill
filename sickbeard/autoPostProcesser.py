@@ -21,8 +21,8 @@ import threading
 import sickbeard
 
 from sickbeard import logger
-from sickbeard import encodingKludge as ek
 from sickbeard import processTV
+from sickrage.helper.encoding import ek
 
 
 class PostProcesser():
@@ -31,24 +31,29 @@ class PostProcesser():
         self.amActive = False
 
     def run(self, force=False):
-
+        """
+        TODO: Rename class to PostProcessor (classname contains a typo)
+        Runs the postprocessor
+        :param force: Forces postprocessing run (reserved for future use)
+        :return: Returns when done without a return state/code
+        """
         self.amActive = True
-        
-        if not ek.ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
+
+        if not ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
             logger.log(u"Automatic post-processing attempted but dir " + sickbeard.TV_DOWNLOAD_DIR + " doesn't exist",
                        logger.ERROR)
             self.amActive = False
             return
 
-        if not ek.ek(os.path.isabs, sickbeard.TV_DOWNLOAD_DIR):
+        if not ek(os.path.isabs, sickbeard.TV_DOWNLOAD_DIR):
             logger.log(
                 u"Automatic post-processing attempted but dir " + sickbeard.TV_DOWNLOAD_DIR + " is relative (and probably not what you really want to process)",
                 logger.ERROR)
-            self.amActive = False   
+            self.amActive = False
             return
 
         processTV.processDir(sickbeard.TV_DOWNLOAD_DIR)
-        
+
         self.amActive = False
 
     def __del__(self):

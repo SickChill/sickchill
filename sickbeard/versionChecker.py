@@ -32,7 +32,7 @@ from sickbeard import notifiers
 from sickbeard import ui
 from sickbeard import logger, helpers
 from sickbeard.exceptions import ex
-from sickbeard import encodingKludge as ek
+from sickrage.helper.encoding import ek
 import requests
 
 import shutil
@@ -41,7 +41,7 @@ import shutil_custom
 shutil.copyfile = shutil_custom.copyfile_custom
 
 
-class CheckVersion():
+class CheckVersion:
     """
     Version check class meant to run as a thread object with the sr scheduler.
     """
@@ -232,7 +232,7 @@ class CheckVersion():
         # check if we're a windows build
         if sickbeard.BRANCH.startswith('build '):
             install_type = 'win'
-        elif os.path.isdir(ek.ek(os.path.join, sickbeard.PROG_DIR, u'.git')):
+        elif os.path.isdir(ek(os.path.join, sickbeard.PROG_DIR, u'.git')):
             install_type = 'git'
         else:
             install_type = 'source'
@@ -757,7 +757,7 @@ class SourceUpdateManager(UpdateManager):
 
         try:
             # prepare the update dir
-            sr_update_dir = ek.ek(os.path.join, sickbeard.PROG_DIR, u'sr-update')
+            sr_update_dir = ek(os.path.join, sickbeard.PROG_DIR, u'sr-update')
 
             if os.path.isdir(sr_update_dir):
                 logger.log(u"Clearing out update folder " + sr_update_dir + " before extracting")
@@ -771,11 +771,11 @@ class SourceUpdateManager(UpdateManager):
             tar_download_path = os.path.join(sr_update_dir, u'sr-update.tar')
             helpers.download_file(tar_download_url, tar_download_path, session=self.session)
 
-            if not ek.ek(os.path.isfile, tar_download_path):
+            if not ek(os.path.isfile, tar_download_path):
                 logger.log(u"Unable to retrieve new version from " + tar_download_url + ", can't update", logger.WARNING)
                 return False
 
-            if not ek.ek(tarfile.is_tarfile, tar_download_path):
+            if not ek(tarfile.is_tarfile, tar_download_path):
                 logger.log(u"Retrieved version from " + tar_download_url + " is corrupt, can't update", logger.ERROR)
                 return False
 

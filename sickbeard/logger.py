@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -27,8 +28,9 @@ import platform
 import locale
 
 import sickbeard
-from sickbeard import classes, encodingKludge as ek
+from sickbeard import classes
 from sickrage.helper.common import dateTimeFormat
+from sickrage.helper.encoding import ek, ss
 from github import Github, InputFileContent
 import codecs
 
@@ -39,11 +41,13 @@ INFO = logging.INFO
 DEBUG = logging.DEBUG
 DB = 5
 
-reverseNames = {u'ERROR': ERROR,
-                u'WARNING': WARNING,
-                u'INFO': INFO,
-                u'DEBUG': DEBUG,
-                u'DB': DB}
+reverseNames = {
+    u'ERROR': ERROR,
+    u'WARNING': WARNING,
+    u'INFO': INFO,
+    u'DEBUG': DEBUG,
+    u'DB': DB
+}
 
 censoredItems = {}
 
@@ -58,6 +62,7 @@ class CensoredFormatter(logging.Formatter, object):
         super(CensoredFormatter, self).__init__(*args, **kwargs)
 
     def format(self, record):
+        """Strips censored items from string"""
         msg = super(CensoredFormatter, self).format(record)
         for k, v in censoredItems.iteritems():
             if v and len(v) > 0 and v in msg:
@@ -185,12 +190,12 @@ class Logger(object):
             log_data = None
 
             if os.path.isfile(self.logFile):
-                with ek.ek(codecs.open, *[self.logFile, 'r', 'utf-8']) as f:
+                with ek(codecs.open, *[self.logFile, 'r', 'utf-8']) as f:
                     log_data = f.readlines()
 
             for i in range (1 , int(sickbeard.LOG_NR)):
                 if os.path.isfile(self.logFile + "." + str(i)) and (len(log_data) <= 500):
-                    with ek.ek(codecs.open, *[self.logFile + "." + str(i), 'r', 'utf-8']) as f:
+                    with ek(codecs.open, *[self.logFile + "." + str(i), 'r', 'utf-8']) as f:
                             log_data += f.readlines()
 
             log_data = [line for line in reversed(log_data)]
@@ -200,7 +205,7 @@ class Logger(object):
                 try:
                     title_Error = str(curError.title)
                     if not len(title_Error) or title_Error == 'None':
-                        title_Error = re.match("^[A-Z0-9\-\[\] :]+::\s*(.*)$", ek.ss(str(curError.message))).group(1)
+                        title_Error = re.match("^[A-Z0-9\-\[\] :]+::\s*(.*)$", ss(str(curError.message))).group(1)
 
                     # if len(title_Error) > (1024 - len(u"[APP SUBMITTED]: ")):
                     # 1000 just looks better than 1007 and adds some buffer
@@ -212,7 +217,7 @@ class Logger(object):
                 gist = None
                 regex = "^(%s)\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)$" % curError.time
                 for i, x in enumerate(log_data):
-                    x = ek.ss(x)
+                    x = ss(x)
                     match = re.match(regex, x)
                     if match:
                         level = match.group(2)

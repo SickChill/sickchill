@@ -1,1 +1,1 @@
-__all__ = ['ComingEpisodes', 'History']
+__all__ = ['ComingEpisodes', 'History', 'Show']

@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage
 #
 # This file is part of SickRage.
 #
@@ -39,7 +40,7 @@ def sendNZB(nzb):
     """
     Sends an NZB to SABnzbd via the API.
     
-    nzb: The NZBSearchResult object to send to SAB
+    :param nzb: The NZBSearchResult object to send to SAB
     """
 
     # set up a dict with the URL params in it
@@ -146,6 +147,12 @@ def sendNZB(nzb):
 
 
 def _checkSabResponse(f):
+    """
+    Check response from SAB
+
+    :param f: Response from SAV
+    :return: a list of (Boolean, string) which is True if SAB is not reporting an error
+    """
     try:
         result = f.readlines()
     except Exception, e:
@@ -174,6 +181,12 @@ def _checkSabResponse(f):
 
 
 def _sabURLOpenSimple(url):
+    """
+    Open a connection to SAB
+
+    :param url: URL where SAB is at
+    :return: (boolean, string) list, True if connection can be made
+    """
     try:
         f = urllib.urlopen(url)
     except (EOFError, IOError), e:
@@ -190,6 +203,15 @@ def _sabURLOpenSimple(url):
 
 
 def getSabAccesMethod(host=None, username=None, password=None, apikey=None):
+    """
+    Find out how we should connect to SAB
+
+    :param host: hostname where SAB lives
+    :param username: username to use
+    :param password: password to use
+    :param apikey: apikey to use
+    :return: (boolean, string) with True if method was successful
+    """
     url = host + "api?mode=auth"
 
     result, f = _sabURLOpenSimple(url)
@@ -207,12 +229,11 @@ def testAuthentication(host=None, username=None, password=None, apikey=None):
     """
     Sends a simple API request to SAB to determine if the given connection information is connect
     
-    host: The host where SAB is running (incl port)
-    username: The username to use for the HTTP request
-    password: The password to use for the HTTP request
-    apikey: The API key to provide to SAB
-    
-    Returns: A tuple containing the success boolean and a message
+    :param host: The host where SAB is running (incl port)
+    :param username: The username to use for the HTTP request
+    :param password: The password to use for the HTTP request
+    :param apikey: The API key to provide to SAB
+    :return: A tuple containing the success boolean and a message
     """
 
     # build up the URL parameters

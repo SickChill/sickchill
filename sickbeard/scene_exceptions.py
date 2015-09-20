@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -38,6 +39,12 @@ exceptionsSeasonCache = {}
 exceptionLock = threading.Lock()
 
 def shouldRefresh(list):
+    """
+    Check if we should refresh cache for items in list
+
+    :param list: list to check
+    :return: True if refresh is needed
+    """
     MAX_REFRESH_AGE_SECS = 86400  # 1 day
 
     myDB = db.DBConnection('cache.db')
@@ -49,6 +56,11 @@ def shouldRefresh(list):
         return True
 
 def setLastRefresh(list):
+    """
+    Update last cache update time for shows in list
+
+    :param list: list to check
+    """
     myDB = db.DBConnection('cache.db')
     myDB.upsert("scene_exceptions_refresh",
                 {'last_refreshed': int(time.mktime(datetime.datetime.today().timetuple()))},
@@ -81,6 +93,12 @@ def get_scene_exceptions(indexer_id, season=-1):
 
 
 def get_all_scene_exceptions(indexer_id):
+    """
+    Get all scene exceptions for a show ID
+
+    :param indexer_id: ID to check
+    :return: dict of exceptions
+    """
     exceptionsDict = {}
 
     myDB = db.DBConnection('cache.db')
@@ -316,8 +334,7 @@ def _xem_exceptions_fetcher():
 
 
 def getSceneSeasons(indexer_id):
-    """get a list of season numbers that have scene exceptions
-    """
+    """get a list of season numbers that have scene exceptions"""
     myDB = db.DBConnection('cache.db')
     seasons = myDB.select("SELECT DISTINCT season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
     return [cur_exception["season"] for cur_exception in seasons]

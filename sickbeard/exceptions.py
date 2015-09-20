@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -16,7 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-from sickbeard import encodingKludge as ek
+from sickrage.helper.encoding import ss
+
 
 def ex(e):
     """
@@ -32,10 +34,10 @@ def ex(e):
 
         if arg is not None:
             if isinstance(arg, (str, unicode)):
-                fixed_arg = ek.ss(arg)
+                fixed_arg = ss(arg)
             else:
                 try:
-                    fixed_arg = u"error " + ek.ss(str(arg))
+                    fixed_arg = u"error " + ss(str(arg))
                 except:
                     fixed_arg = None
 

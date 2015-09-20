@@ -1,7 +1,34 @@
 <%!
+    import cgi
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
 %>
-<%def name="renderQualityPill(quality, overrideClass=None)"><%
+<%def name="renderQualityPill(quality, showTitle=False, overrideClass=None)"><%
+    iQuality = quality & 0xFFFF
+    pQuality = quality >> 16
+
+    # If initial and preferred qualities are the same, show pill as initial quality
+    if iQuality == pQuality:
+        quality = iQuality
+
+    # Build a string of quality names to use as title attribute
+    if showTitle:
+        iQuality, pQuality = Quality.splitQuality(quality)
+        title = 'Initial Quality:\n'
+        if iQuality:
+            for curQual in iQuality:
+                title += "  " + Quality.qualityStrings[curQual] + "\n"
+        else:
+            title += "  None\n"
+        title += "\nPreferred Quality:\n"
+        if pQuality:
+            for curQual in pQuality:
+                title += "  " + Quality.qualityStrings[curQual] + "\n"
+        else:
+            title += "  None\n"
+        title = ' title="' + cgi.escape(title.rstrip(), True) + '"'
+    else:
+        title = ""
+
     if quality in qualityPresets:
         cssClass = qualityPresetStrings[quality]
         qualityString = qualityPresetStrings[quality]
@@ -20,4 +47,4 @@
     else:
         cssClass = overrideClass
 
-%><span class="${cssClass}">${qualityString}</span></%def>
+%><span${title} class="${cssClass}">${qualityString}</span></%def>

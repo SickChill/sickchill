@@ -27,6 +27,9 @@ class Events(threading.Thread):
         self.queue.put(type)
 
     def run(self):
+        """
+        Actually runs the thread to process events
+        """
         try:
             while (not self.stop.is_set()):
                 try:

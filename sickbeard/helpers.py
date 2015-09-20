@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -68,10 +69,10 @@ from sickbeard.common import USER_AGENT
 from sickbeard.common import mediaExtensions
 from sickbeard.common import subtitleExtensions
 from sickbeard import db
-from sickbeard import encodingKludge as ek
 from sickbeard import notifiers
 from sickbeard import clients
 from sickbeard.subtitles import isValidLanguage
+from sickrage.helper.encoding import ek
 from cachecontrol import CacheControl, caches
 
 from itertools import izip, cycle
@@ -199,9 +200,23 @@ def replaceExtension(filename, newExt):
 
 
 def notTorNZBFile(filename):
+    """
+    Returns true if filename is not a NZB nor Torrent file
+
+    :param filename: Filename to check
+    :return: True if filename is not a NZB nor Torrent
+    """
+
     return not (filename.endswith(".torrent") or filename.endswith(".nzb"))
 
 def isSyncFile(filename):
+    """
+    Returns true if filename is a syncfile, indicating filesystem may be in flux
+
+    :param filename: Filename to check
+    :return: True if this file is a syncfile, False otherwise
+    """
+
     extension = filename.rpartition(".")[2].lower()
     #if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
     syncfiles = sickbeard.SYNC_FILES
@@ -212,6 +227,13 @@ def isSyncFile(filename):
 
 
 def isMediaFile(filename):
+    """
+    Check if named file may contain media
+
+    :param filename: Filename to check
+    :return: True if this is a known media file, False if not
+    """
+
     # ignore samples
     if re.search('(^|[\W_])(sample\d*)[\W_]', filename, re.I):
         return False
@@ -232,6 +254,13 @@ def isMediaFile(filename):
 
 
 def isRarFile(filename):
+    """
+    Check if file is a RAR file, or part of a RAR set
+
+    :param filename: Filename to check
+    :return: True if this is RAR/Part file, False if not
+    """
+
     archive_regex = '(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)'
 
     if re.search(archive_regex, filename):
@@ -241,8 +270,15 @@ def isRarFile(filename):
 
 
 def isBeingWritten(filepath):
+    """
+    Check if file has been written in last 60 seconds
+
+    :param filepath: Filename to check
+    :return: True if file has been written recently, False if none
+    """
+
     # Return True if file was modified within 60 seconds. it might still be being written to.
-    ctime = max(ek.ek(os.path.getctime, filepath), ek.ek(os.path.getmtime, filepath))
+    ctime = max(ek(os.path.getctime, filepath), ek(os.path.getmtime, filepath))
     if ctime > time.time() - 60:
         return True
 
@@ -273,12 +309,26 @@ def sanitizeFileName(name):
 
 
 def _remove_file_failed(file):
+    """
+    Remove file from filesystem
+
+    :param file: File to remove
+    """
+
     try:
-        ek.ek(os.remove, file)
+        ek(os.remove, file)
     except:
         pass
 
+
 def findCertainShow(showList, indexerid):
+    """
+    Find a show by indexer ID in the show list
+
+    :param showList: List of shows to search in (needle)
+    :param indexerid: Show to look for
+    :return: result list
+    """
 
     results = []
 
@@ -294,9 +344,16 @@ def findCertainShow(showList, indexerid):
         raise MultipleShowObjectsException()
 
 def makeDir(path):
-    if not ek.ek(os.path.isdir, path):
+    """
+    Make a directory on the filesystem
+
+    :param path: directory to make
+    :return: True if success, False if failure
+    """
+
+    if not ek(os.path.isdir, path):
         try:
-            ek.ek(os.makedirs, path)
+            ek(os.makedirs, path)
             # do the library update for synoindex
             notifiers.synoindex_notifier.addFolder(path)
         except OSError:
@@ -305,6 +362,14 @@ def makeDir(path):
 
 
 def searchDBForShow(regShowName, log=False):
+    """
+    Searches if show names are present in the DB
+
+    :param regShowName: list of show names to look for
+    :param log: Boolean, log debug results of search (defaults to False)
+    :return: Indexer ID of found show
+    """
+
     showNames = [re.sub('[. -]', ' ', regShowName)]
 
     yearRegex = "([^()]+?)\s*(\()?(\d{4})(?(2)\))$"
@@ -342,6 +407,16 @@ def searchDBForShow(regShowName, log=False):
 
 
 def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
+    """
+    Contacts indexer to check for information on shows by showid
+
+    :param regShowName: Name of show
+    :param indexer: Which indexer to use
+    :param indexer_id: Which indexer ID to look for
+    :param ui: Custom UI for indexer use
+    :return:
+    """
+
     showNames = [re.sub('[. -]', ' ', regShowName)]
 
     # Query Indexers for each search term and build the list of results
@@ -404,15 +479,22 @@ def sizeof_fmt(num):
 
 
 def listMediaFiles(path):
-    if not dir or not ek.ek(os.path.isdir, path):
+    """
+    Get a list of files possibly containing media in a path
+
+    :param path: Path to check for files
+    :return: list of files
+    """
+
+    if not dir or not ek(os.path.isdir, path):
         return []
 
     files = []
-    for curFile in ek.ek(os.listdir, path):
-        fullCurFile = ek.ek(os.path.join, path, curFile)
+    for curFile in ek(os.listdir, path):
+        fullCurFile = ek(os.path.join, path, curFile)
 
         # if it's a folder do it recursively
-        if ek.ek(os.path.isdir, fullCurFile) and not curFile.startswith('.') and not curFile == 'Extras':
+        if ek(os.path.isdir, fullCurFile) and not curFile.startswith('.') and not curFile == 'Extras':
             files += listMediaFiles(fullCurFile)
 
         elif isMediaFile(curFile):
@@ -422,23 +504,45 @@ def listMediaFiles(path):
 
 
 def copyFile(srcFile, destFile):
-    ek.ek(shutil.copyfile, srcFile, destFile)
+    """
+    Copy a file from source to destination
+
+    :param srcFile: Path of source file
+    :param destFile: Path of destination file
+    """
+
+    ek(shutil.copyfile, srcFile, destFile)
     try:
-        ek.ek(shutil.copymode, srcFile, destFile)
+        ek(shutil.copymode, srcFile, destFile)
     except OSError:
         pass
 
 
 def moveFile(srcFile, destFile):
+    """
+    Move a file from source to destination
+
+    :param srcFile: Path of source file
+    :param destFile: Path of destination file
+    """
+
     try:
-        ek.ek(shutil.move, srcFile, destFile)
+        ek(shutil.move, srcFile, destFile)
         fixSetGroupID(destFile)
     except OSError:
         copyFile(srcFile, destFile)
-        ek.ek(os.unlink, srcFile)
+        ek(os.unlink, srcFile)
 
 
 def link(src, dst):
+    """
+    Create a file link from source to destination.
+    TODO: Make this unicode proof
+
+    :param src: Source file
+    :param dst: Destination file
+    """
+
     if os.name == 'nt':
         import ctypes
 
@@ -448,8 +552,15 @@ def link(src, dst):
 
 
 def hardlinkFile(srcFile, destFile):
+    """
+    Create a hard-link (inside filesystem link) between source and destination
+
+    :param srcFile: Source file
+    :param destFile: Destination file
+    """
+
     try:
-        ek.ek(link, srcFile, destFile)
+        ek(link, srcFile, destFile)
         fixSetGroupID(destFile)
     except Exception as e:
         logger.log(u"Failed to create hardlink of " + srcFile + " at " + destFile + ": " + ex(e) + ". Copying instead",
@@ -458,6 +569,13 @@ def hardlinkFile(srcFile, destFile):
 
 
 def symlink(src, dst):
+    """
+    Create a soft/symlink between source and destination
+
+    :param src: Source file
+    :param dst: Destination file
+    """
+
     if os.name == 'nt':
         import ctypes
 
@@ -468,10 +586,18 @@ def symlink(src, dst):
 
 
 def moveAndSymlinkFile(srcFile, destFile):
+    """
+    Move a file from source to destination, then create a symlink back from destination from source. If this fails, copy
+    the file from source to destination
+
+    :param srcFile: Source file
+    :param destFile: Destination file
+    """
+
     try:
-        ek.ek(shutil.move, srcFile, destFile)
+        ek(shutil.move, srcFile, destFile)
         fixSetGroupID(destFile)
-        ek.ek(symlink, destFile, srcFile)
+        ek(symlink, destFile, srcFile)
     except:
         logger.log(u"Failed to create symlink of " + srcFile + " at " + destFile + ". Copying instead", logger.ERROR)
         copyFile(srcFile, destFile)
@@ -485,12 +611,12 @@ def make_dirs(path):
 
     logger.log(u"Checking if the path %s already exists" % path, logger.DEBUG)
 
-    if not ek.ek(os.path.isdir, path):
+    if not ek(os.path.isdir, path):
         # Windows, create all missing folders
         if os.name == 'nt' or os.name == 'ce':
             try:
                 logger.log(u"Folder %s didn't exist, creating it" % path, logger.DEBUG)
-                ek.ek(os.makedirs, path)
+                ek(os.makedirs, path)
             except (OSError, IOError) as e:
                 logger.log(u"Failed creating %s : %s" % (path, ex(e)), logger.ERROR)
                 return False
@@ -505,14 +631,14 @@ def make_dirs(path):
                 sofar += cur_folder + os.path.sep
 
                 # if it exists then just keep walking down the line
-                if ek.ek(os.path.isdir, sofar):
+                if ek(os.path.isdir, sofar):
                     continue
 
                 try:
                     logger.log(u"Folder %s didn't exist, creating it" % sofar, logger.DEBUG)
-                    ek.ek(os.mkdir, sofar)
+                    ek(os.mkdir, sofar)
                     # use normpath to remove end separator, otherwise checks permissions against itself
-                    chmodAsParent(ek.ek(os.path.normpath, sofar))
+                    chmodAsParent(ek(os.path.normpath, sofar))
                     # do the library update for synoindex
                     notifiers.synoindex_notifier.addFolder(sofar)
                 except (OSError, IOError) as e:
@@ -527,9 +653,9 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
     Creates all folders needed to move a file to its new location, renames it, then cleans up any folders
     left that are now empty.
 
-    cur_path: The absolute path to the file you want to move/rename
-    new_path: The absolute path to the destination for the file WITHOUT THE EXTENSION
-    old_path_length: The length of media file path (old name) WITHOUT THE EXTENSION
+    :param  cur_path: The absolute path to the file you want to move/rename
+    :param new_path: The absolute path to the destination for the file WITHOUT THE EXTENSION
+    :param old_path_length: The length of media file path (old name) WITHOUT THE EXTENSION
     """
 
     new_dest_dir, new_dest_name = os.path.split(new_path)  # @UnusedVariable
@@ -558,13 +684,13 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
     # move the file
     try:
         logger.log(u"Renaming file from %s to %s" % (cur_path, new_path))
-        ek.ek(shutil.move, cur_path, new_path)
+        ek(shutil.move, cur_path, new_path)
     except (OSError, IOError) as e:
         logger.log(u"Failed renaming %s to %s : %s" % (cur_path, new_path, ex(e)), logger.ERROR)
         return False
 
     # clean up any old folders that are empty
-    delete_empty_folders(ek.ek(os.path.dirname, cur_path))
+    delete_empty_folders(ek(os.path.dirname, cur_path))
 
     return True
 
@@ -573,8 +699,8 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
     """
     Walks backwards up the path and deletes any empty folders found.
 
-    check_empty_dir: The path to clean (absolute path to a folder)
-    keep_dir: Clean until this path is reached
+    :param check_empty_dir: The path to clean (absolute path to a folder)
+    :param keep_dir: Clean until this path is reached
     """
 
     # treat check_empty_dir as empty when it only contains these items
@@ -583,8 +709,8 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
     logger.log(u"Trying to clean any empty folders under " + check_empty_dir)
 
     # as long as the folder exists and doesn't contain any files, delete it
-    while ek.ek(os.path.isdir, check_empty_dir) and check_empty_dir != keep_dir:
-        check_files = ek.ek(os.listdir, check_empty_dir)
+    while ek(os.path.isdir, check_empty_dir) and check_empty_dir != keep_dir:
+        check_files = ek(os.listdir, check_empty_dir)
 
         if not check_files or (len(check_files) <= len(ignore_items) and all(
                 [check_file in ignore_items for check_file in check_files])):
@@ -592,18 +718,25 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
             try:
                 logger.log(u"Deleting empty folder: " + check_empty_dir)
                 # need shutil.rmtree when ignore_items is really implemented
-                ek.ek(os.rmdir, check_empty_dir)
+                ek(os.rmdir, check_empty_dir)
                 # do the library update for synoindex
                 notifiers.synoindex_notifier.deleteFolder(check_empty_dir)
             except OSError as e:
                 logger.log(u"Unable to delete " + check_empty_dir + ": " + repr(e) + " / " + str(e), logger.WARNING)
                 break
-            check_empty_dir = ek.ek(os.path.dirname, check_empty_dir)
+            check_empty_dir = ek(os.path.dirname, check_empty_dir)
         else:
             break
 
 
 def fileBitFilter(mode):
+    """
+    Strip special filesystem bits from file
+
+    :param mode: mode to check and strip
+    :return: required mode for media file
+    """
+
     for bit in [stat.S_IXUSR, stat.S_IXGRP, stat.S_IXOTH, stat.S_ISUID, stat.S_ISGID]:
         if mode & bit:
             mode -= bit
@@ -612,22 +745,29 @@ def fileBitFilter(mode):
 
 
 def chmodAsParent(childPath):
+    """
+    Retain permissions of parent for childs
+    (Does not work for Windows hosts)
+
+    :param childPath: Child Path to change permissions to sync from parent
+    """
+
     if os.name == 'nt' or os.name == 'ce':
         return
 
-    parentPath = ek.ek(os.path.dirname, childPath)
+    parentPath = ek(os.path.dirname, childPath)
 
     if not parentPath:
         logger.log(u"No parent path provided in " + childPath + ", unable to get permissions from it", logger.DEBUG)
         return
 
-    parentPathStat = ek.ek(os.stat, parentPath)
+    parentPathStat = ek(os.stat, parentPath)
     parentMode = stat.S_IMODE(parentPathStat[stat.ST_MODE])
 
-    childPathStat = ek.ek(os.stat, childPath)
+    childPathStat = ek(os.stat, childPath)
     childPath_mode = stat.S_IMODE(childPathStat[stat.ST_MODE])
 
-    if ek.ek(os.path.isfile, childPath):
+    if ek(os.path.isfile, childPath):
         childMode = fileBitFilter(parentMode)
     else:
         childMode = parentMode
@@ -643,7 +783,7 @@ def chmodAsParent(childPath):
         return
 
     try:
-        ek.ek(os.chmod, childPath, childMode)
+        ek(os.chmod, childPath, childMode)
         logger.log(u"Setting permissions for %s to %o as parent directory has %o" % (childPath, childMode, parentMode),
                    logger.DEBUG)
     except OSError:
@@ -651,16 +791,23 @@ def chmodAsParent(childPath):
 
 
 def fixSetGroupID(childPath):
+    """
+    Inherid SGID from parent
+    (does not work on Windows hosts)
+
+    :param childPath: Path to inherit SGID permissions from parent
+    """
+
     if os.name == 'nt' or os.name == 'ce':
         return
 
-    parentPath = ek.ek(os.path.dirname, childPath)
-    parentStat = ek.ek(os.stat, parentPath)
+    parentPath = ek(os.path.dirname, childPath)
+    parentStat = ek(os.stat, parentPath)
     parentMode = stat.S_IMODE(parentStat[stat.ST_MODE])
 
     if parentMode & stat.S_ISGID:
         parentGID = parentStat[stat.ST_GID]
-        childStat = ek.ek(os.stat, childPath)
+        childStat = ek(os.stat, childPath)
         childGID = childStat[stat.ST_GID]
 
         if childGID == parentGID:
@@ -675,7 +822,7 @@ def fixSetGroupID(childPath):
             return
 
         try:
-            ek.ek(os.chown, childPath, -1, parentGID)  # @UndefinedVariable - only available on UNIX
+            ek(os.chown, childPath, -1, parentGID)  # @UndefinedVariable - only available on UNIX
             logger.log(u"Respecting the set-group-ID bit on the parent directory for %s" % (childPath), logger.DEBUG)
         except OSError:
             logger.log(
@@ -684,6 +831,12 @@ def fixSetGroupID(childPath):
 
 
 def is_anime_in_show_list():
+    """
+    Check if any shows in list contain anime
+
+    :return: True if global showlist contains Anime, False if not
+    """
+
     for show in sickbeard.showList:
         if show.is_anime:
             return True
@@ -691,10 +844,21 @@ def is_anime_in_show_list():
 
 
 def update_anime_support():
+    """Check if we need to support anime, and if we do, enable the feature"""
+
     sickbeard.ANIMESUPPORT = is_anime_in_show_list()
 
 
 def get_absolute_number_from_season_and_episode(show, season, episode):
+    """
+    Find the absolute number for a show episode
+
+    :param show: Show object
+    :param season: Season number
+    :param episode: Episode number
+    :return: The absolute number
+    """
+
     absolute_number = None
 
     if season and episode:
@@ -728,7 +892,7 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
             ep = show.getEpisode(None, None, absolute_number=absolute_number)
             if ep:
                 episodes.append(ep.episode)
-                season = ep.season  # this will always take the last found seson so eps that cross the season border are not handeled well
+                season = ep.season  # this will always take the last found season so eps that cross the season border are not handeled well
 
     return (season, episodes)
 
@@ -737,9 +901,8 @@ def sanitizeSceneName(name, anime=False):
     """
     Takes a show name and returns the "scenified" version of it.
 
-    anime: Some show have a ' in their name(Kuroko's Basketball) and is needed for search.
-
-    Returns: A string containing the scene version of the show name given.
+    :param anime: Some show have a ' in their name(Kuroko's Basketball) and is needed for search.
+    :return: A string containing the scene version of the show name given.
     """
 
     if not name:
@@ -798,7 +961,12 @@ def arithmeticEval(s):
 def create_https_certificates(ssl_cert, ssl_key):
     """
     Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key'
+
+    :param ssl_cert: Path of SSL certificate file to write
+    :param ssl_key: Path of SSL keyfile to write
+    :return: True on success, False on failure
     """
+
     try:
         from OpenSSL import crypto  # @UnresolvedImport
         from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
@@ -827,13 +995,22 @@ def create_https_certificates(ssl_cert, ssl_key):
 
     return True
 
+
 def backupVersionedFile(old_file, version):
+    """
+    Back up an old version of a file
+
+    :param old_file: Original file, to take a backup from
+    :param version: Version of file to store in backup
+    :return: True if success, False if failure
+    """
+
     numTries = 0
 
     new_file = old_file + '.' + 'v' + str(version)
 
-    while not ek.ek(os.path.isfile, new_file):
-        if not ek.ek(os.path.isfile, old_file):
+    while not ek(os.path.isfile, new_file):
+        if not ek(os.path.isfile, old_file):
             logger.log(u"Not creating backup, %s doesn't exist" % old_file, logger.DEBUG)
             break
 
@@ -856,12 +1033,20 @@ def backupVersionedFile(old_file, version):
 
 
 def restoreVersionedFile(backup_file, version):
+    """
+    Restore a file version to original state
+
+    :param backup_file: File to restore
+    :param version: Version of file to restore
+    :return: True on success, False on failure
+    """
+
     numTries = 0
 
     new_file, backup_version = os.path.splitext(backup_file)
     restore_file = new_file + '.' + 'v' + str(version)
 
-    if not ek.ek(os.path.isfile, new_file):
+    if not ek(os.path.isfile, new_file):
         logger.log(u"Not restoring, %s doesn't exist" % new_file, logger.DEBUG)
         return False
 
@@ -876,8 +1061,8 @@ def restoreVersionedFile(backup_file, version):
             logger.WARNING)
         return False
 
-    while not ek.ek(os.path.isfile, new_file):
-        if not ek.ek(os.path.isfile, restore_file):
+    while not ek(os.path.isfile, new_file):
+        if not ek(os.path.isfile, restore_file):
             logger.log(u"Not restoring, " + restore_file + " doesn't exist", logger.DEBUG)
             break
 
@@ -902,6 +1087,14 @@ def restoreVersionedFile(backup_file, version):
 
 # try to convert to int, if it fails the default will be returned
 def tryInt(s, s_default=0):
+    """
+    Try to convert to int, if it fails, the default will be returned
+
+    :param s: Value to attempt to convert to int
+    :param s_default: Default value to return on failure (defaults to 0)
+    :return: integer, or default value on failure
+    """
+
     try:
         return int(s)
     except:
@@ -910,6 +1103,13 @@ def tryInt(s, s_default=0):
 
 # generates a md5 hash of a file
 def md5_for_file(filename, block_size=2 ** 16):
+    """
+    Generate an md5 hash for a file
+    :param filename: File to generate md5 hash for
+    :param block_size: Block size to use (defaults to 2^16)
+    :return MD5 hexdigest on success, or None on failure
+    """
+
     try:
         with open(filename, 'rb') as f:
             md5 = hashlib.md5()
@@ -925,6 +1125,8 @@ def md5_for_file(filename, block_size=2 ** 16):
 
 
 def get_lan_ip():
+    """Returns IP of system"""
+
     try:return [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][0]
     except:return socket.gethostname()
 
@@ -1055,7 +1257,7 @@ def is_hidden_folder(folder):
     """
     Returns True if folder is hidden.
     On Linux based systems hidden folders start with . (dot)
-    folder: Full path of folder to check
+    :param folder: Full path of folder to check
     """
     def is_hidden(filepath):
         name = os.path.basename(os.path.abspath(filepath))
@@ -1070,7 +1272,7 @@ def is_hidden_folder(folder):
             result = False
         return result
 
-    if ek.ek(os.path.isdir, folder):
+    if ek(os.path.isdir, folder):
         if is_hidden(folder):
             return True
 
@@ -1081,7 +1283,7 @@ def real_path(path):
     """
     Returns: the canonicalized absolute pathname. The resulting path will have no symbolic link, '/./' or '/../' components.
     """
-    return ek.ek(os.path.normpath, ek.ek(os.path.normcase, ek.ek(os.path.realpath, path)))
+    return ek(os.path.normpath, ek(os.path.normcase, ek(os.path.realpath, path)))
 
 
 def validateShow(show, season=None, episode=None):
@@ -1106,6 +1308,8 @@ def validateShow(show, season=None, episode=None):
 
 
 def set_up_anidb_connection():
+    """Connect to anidb"""
+
     if not sickbeard.USE_ANIDB:
         logger.log(u"Usage of anidb disabled. Skiping", logger.DEBUG)
         return False
@@ -1136,9 +1340,12 @@ def set_up_anidb_connection():
 
 def makeZip(fileList, archive):
     """
-    'fileList' is a list of file names - full path each name
-    'archive' is the file name for the archive with a full path
+    Create a ZIP of files
+
+    :param fileList: A list of file names - full path each name
+    :param archive: File name for the archive with a full path
     """
+
     try:
         a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, allowZip64=True)
         for f in fileList:
@@ -1152,9 +1359,12 @@ def makeZip(fileList, archive):
 
 def extractZip(archive, targetDir):
     """
-    'fileList' is a list of file names - full path each name
-    'archive' is the file name for the archive with a full path
+    Unzip a file to a directory
+
+    :param fileList: A list of file names - full path each name
+    :param archive: The file name for the archive with a full path
     """
+
     try:
         if not os.path.exists(targetDir):
             os.mkdir(targetDir)
@@ -1180,6 +1390,15 @@ def extractZip(archive, targetDir):
 
 
 def backupConfigZip(fileList, archive, arcname = None):
+    """
+    Store the config file as a ZIP
+
+    :param fileList: List of files to store
+    :param archive: ZIP file name
+    :param arcname: Archive path
+    :return: True on success, False on failure
+    """
+
     try:
         a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, allowZip64=True)
         for f in fileList:
@@ -1192,6 +1411,14 @@ def backupConfigZip(fileList, archive, arcname = None):
 
 
 def restoreConfigZip(archive, targetDir):
+    """
+    Restores a Config ZIP file back in place
+
+    :param archive: ZIP filename
+    :param targetDir: Directory to restore to
+    :return: True on success, False on failure
+    """
+
     import ntpath
     try:
         if not os.path.exists(targetDir):
@@ -1272,6 +1499,14 @@ def mapIndexersToShow(showObj):
 
 
 def touchFile(fname, atime=None):
+    """
+    Touch a file (change modification date)
+
+    :param fname: Filename to touch
+    :param atime: Specific access time (defaults to None)
+    :return: True on success, False on failure
+    """
+
     if None != atime:
         try:
             with file(fname, 'a'):
@@ -1289,11 +1524,13 @@ def touchFile(fname, atime=None):
 
 
 def _getTempDir():
-    import getpass
-
-    """Returns the [system temp dir]/tvdb_api-u501 (or
+    """
+    Returns the [system temp dir]/tvdb_api-u501 (or
     tvdb_api-myuser)
     """
+
+    import getpass
+
     if hasattr(os, 'getuid'):
         uid = "u%d" % (os.getuid())
     else:
@@ -1319,7 +1556,12 @@ def codeDescription(status_code):
 def _setUpSession(session, headers):
     """
     Returns a session initialized with default cache and parameter settings
+
+    :param session: session object to (re)use
+    :param headers: Headers to pass to session
+    :return: session object
     """
+
     # request session
     cache_dir = sickbeard.CACHE_DIR or _getTempDir()
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')), cache_etags=False)
@@ -1420,6 +1662,15 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
 
 
 def download_file(url, filename, session=None, headers={}):
+    """
+    Downloads a file specified
+
+    :param url: Source URL
+    :param filename: Target file on filesystem
+    :param session: request session to use
+    :param headers: override existing headers in request session
+    :return: True on success, False on failure
+    """
 
     session = _setUpSession(session, headers)
     session.stream = True
@@ -1467,23 +1718,30 @@ def download_file(url, filename, session=None, headers={}):
 
 
 def get_size(start_path='.'):
-    if not ek.ek(os.path.isdir, start_path):
+    """
+    Find the total dir and filesize of a path
+
+    :param start_path: Path to recursively count size
+    :return: total filesize
+    """
+
+    if not ek(os.path.isdir, start_path):
         return -1
 
     total_size = 0
-    for dirpath, dirnames, filenames in ek.ek(os.walk, start_path):
+    for dirpath, dirnames, filenames in ek(os.walk, start_path):
         for f in filenames:
-            fp = ek.ek(os.path.join, dirpath, f)
+            fp = ek(os.path.join, dirpath, f)
             try:
-                total_size += ek.ek(os.path.getsize, fp)
+                total_size += ek(os.path.getsize, fp)
             except OSError as e:
                 logger.log('Unable to get size for file %s Error: %s' % (fp, ex(e)), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
     return total_size
 
+
 def generateApiKey():
-    """ Return a new randomized API_KEY
-    """
+    """ Return a new randomized API_KEY"""
 
     try:
         from hashlib import md5
@@ -1505,6 +1763,8 @@ def generateApiKey():
     return m.hexdigest()
 
 def pretty_filesize(file_bytes):
+    """Return humanly formatted sizes from bytes"""
+
     file_bytes = float(file_bytes)
     if file_bytes >= 1099511627776:
         terabytes = file_bytes / 1099511627776
@@ -1528,17 +1788,25 @@ if __name__ == '__main__':
     doctest.testmod()
 
 def remove_article(text=''):
+    """Remove the english articles from a text string"""
+
     return re.sub(r'(?i)^(?:(?:A(?!\s+to)n?)|The)\s(\w)', r'\1', text)
 
 def generateCookieSecret():
+    """Generate a new cookie secret"""
 
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
 
 def verify_freespace(src, dest, oldfile=None):
-    """ Checks if the target system has enough free space to copy or move a file,
-    Returns true if there is, False if there isn't.
-    Also returns True if the OS doesn't support this option
     """
+    Checks if the target system has enough free space to copy or move a file.
+
+    :param src: Source filename
+    :param dest: Destination path
+    :param oldfile: File to be replaced (defaults to None)
+    :return: True if there is enough space for the file, False if there isn't. Also returns True if the OS doesn't support this option
+    """
+
     if not isinstance(oldfile, list):
         oldfile = [oldfile]
 
@@ -1569,7 +1837,7 @@ def verify_freespace(src, dest, oldfile=None):
         logger.log("Unable to determine free space on your OS")
         return True
 
-    if not ek.ek(os.path.isfile, src):
+    if not ek(os.path.isfile, src):
         logger.log("A path to a file is required for the source. " + src + " is not a file.", logger.WARNING)
         return True
 
@@ -1579,12 +1847,12 @@ def verify_freespace(src, dest, oldfile=None):
         logger.log("Unable to determine free space, so I will assume there is enough.", logger.WARNING)
         return True
 
-    neededspace = ek.ek(os.path.getsize, src)
+    neededspace = ek(os.path.getsize, src)
 
     if oldfile:
         for file in oldfile:
-            if ek.ek(os.path.isfile, file.location):
-                diskfree += ek.ek(os.path.getsize, file.location)
+            if ek(os.path.isfile, file.location):
+                diskfree += ek(os.path.getsize, file.location)
 
     if diskfree > neededspace:
         return True
@@ -1621,25 +1889,25 @@ def isFileLocked(file, writeLockCheck=False):
         3. If the readLockCheck parameter is True, attempts to rename the file. If this fails the
             file is open by some other process for reading. The file can be read, but not written to
             or deleted.
-    @param file: the file being checked
-    @param writeLockCheck: when true will check if the file is locked for writing (prevents move operations)
+    :param file: the file being checked
+    :param writeLockCheck: when true will check if the file is locked for writing (prevents move operations)
     '''
-    if not ek.ek(os.path.exists, file):
+    if not ek(os.path.exists, file):
         return True
     try:
-        f = ek.ek(open, file, 'r')
+        f = ek(open, file, 'r')
         f.close()
     except IOError:
         return True
 
-    if(writeLockCheck):
+    if writeLockCheck:
         lockFile = file + ".lckchk"
-        if ek.ek(os.path.exists, lockFile):
-            ek.ek(os.remove, lockFile)
+        if ek(os.path.exists, lockFile):
+            ek(os.remove, lockFile)
         try:
-            ek.ek(os.rename, file, lockFile)
+            ek(os.rename, file, lockFile)
             time.sleep(1)
-            ek.ek(os.rename, lockFile, file)
+            ek(os.rename, lockFile, file)
         except (OSError, IOError):
             return True
 
@@ -1648,7 +1916,7 @@ def isFileLocked(file, writeLockCheck=False):
 def getDiskSpaceUsage(diskPath=None):
     '''
     returns the free space in MB for a given path or False if no path given
-    @param diskPath: the filesystem path being checked
+    :param diskPath: the filesystem path being checked
     '''
 
     if diskPath:

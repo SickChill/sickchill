@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -20,13 +21,25 @@ import db
 import datetime
 
 from sickbeard.common import SNATCHED, SUBTITLED, FAILED, Quality
-from sickbeard import encodingKludge as ek
+from sickrage.helper.encoding import ss
 from sickrage.show.History import History
 
 
 def _logHistoryItem(action, showid, season, episode, quality, resource, provider, version=-1):
+    """
+    Insert a history item in DB
+
+    :param action: action taken (snatch, download, etc)
+    :param showid: showid this entry is about
+    :param season: show season
+    :param episode: show episode
+    :param quality: media quality
+    :param resource: resource used
+    :param provider: provider used
+    :param version: tracked version of file (defaults to -1)
+    """
     logDate = datetime.datetime.today().strftime(History.date_format)
-    resource = ek.ss(resource)
+    resource = ss(resource)
 
     myDB = db.DBConnection()
     myDB.action(
@@ -35,6 +48,11 @@ def _logHistoryItem(action, showid, season, episode, quality, resource, provider
 
 
 def logSnatch(searchResult):
+    """
+    Log history of snatch
+
+    :param searchResult: search result object
+    """
     for curEpObj in searchResult.episodes:
 
         showid = int(curEpObj.show.indexerid)
@@ -57,6 +75,15 @@ def logSnatch(searchResult):
 
 
 def logDownload(episode, filename, new_ep_quality, release_group=None, version=-1):
+    """
+    Log history of download
+
+    :param episode: episode of show
+    :param filename: file on disk where the download is
+    :param new_ep_quality: Quality of download
+    :param release_group: Release group
+    :param version: Version of file (defaults to -1)
+    """
     showid = int(episode.show.indexerid)
     season = int(episode.season)
     epNum = int(episode.episode)
@@ -75,6 +102,15 @@ def logDownload(episode, filename, new_ep_quality, release_group=None, version=-
 
 
 def logSubtitle(showid, season, episode, status, subtitleResult):
+    """
+    Log download of subtitle
+
+    :param showid: Showid of download
+    :param season: Show season
+    :param episode: Show episode
+    :param status: Status of download
+    :param subtitleResult: Result object
+    """
     resource = subtitleResult.language.opensubtitles
     provider = subtitleResult.provider_name
 
@@ -85,6 +121,13 @@ def logSubtitle(showid, season, episode, status, subtitleResult):
 
 
 def logFailed(epObj, release, provider=None):
+    """
+    Log a failed download
+
+    :param epObj: Episode object
+    :param release: Release group
+    :param provider: Provider used for snatch
+    """
     showid = int(epObj.show.indexerid)
     season = int(epObj.season)
     epNum = int(epObj.episode)

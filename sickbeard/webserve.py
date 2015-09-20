@@ -30,7 +30,6 @@ from sickbeard import clients
 from sickbeard import notifiers, processTV
 from sickbeard import ui
 from sickbeard import logger, helpers, exceptions, classes, db
-from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
 from sickbeard import naming
 from sickbeard import subtitles
@@ -53,12 +52,14 @@ from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
+from sickrage.helper.encoding import ek, ss
 from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
 from sickrage.show.ComingEpisodes import ComingEpisodes
 from sickrage.show.History import History as HistoryTool
+from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
 from versionChecker import CheckVersion
@@ -1199,7 +1200,7 @@ class Home(WebRoot):
                 else:
                     submenu.append({'title': 'Pause', 'path': 'home/togglePause?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-pause'})
 
-                submenu.append({'title': 'Remove', 'path': 'home/deleteShow?show=%d' % showObj.indexerid, 'class':'remove', 'confirm': True, 'icon': 'ui-icon ui-icon-trash'})
+                submenu.append({'title': 'Remove', 'path': 'home/deleteShow?show=%d' % showObj.indexerid, 'class':'removeshow', 'confirm': True, 'icon': 'ui-icon ui-icon-trash'})
                 submenu.append({'title': 'Re-scan files', 'path': 'home/refreshShow?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-refresh'})
                 submenu.append({'title': 'Force Full Update', 'path': 'home/updateShow?show=%d&amp;force=1' % showObj.indexerid, 'icon': 'ui-icon ui-icon-transfer-e-w'})
                 submenu.append({'title': 'Update show in KODI','path': 'home/updateKODI?show=%d' % showObj.indexerid, 'requires': self.haveKODI(), 'icon': 'submenu-icon-kodi'})
@@ -1429,7 +1430,7 @@ class Home(WebRoot):
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if os.path.normpath(showObj._location) != os.path.normpath(location):
                 logger.log(os.path.normpath(showObj._location) + " != " + os.path.normpath(location), logger.DEBUG)
-                if not ek.ek(os.path.isdir, location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
+                if not ek(os.path.isdir, location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
                     errors.append("New location <tt>%s</tt> does not exist" % location)
 
                 # don't bother if we're going to update anyway
@@ -1482,73 +1483,50 @@ class Home(WebRoot):
 
         return self.redirect("/home/displayShow?show=" + show)
 
-
     def togglePause(self, show=None):
-        if show is None:
-            return self._genericMessage("Error", "Invalid show ID")
+        error, show = Show.pause(show)
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        if error is not None:
+            return self._genericMessage('Error', error)
 
-        if showObj is None:
-            return self._genericMessage("Error", "Unable to find the specified show")
+        ui.notifications.message('%s has been %s' % (show.name, ('resumed', 'paused')[show.paused]))
 
-        if showObj.paused:
-            showObj.paused = 0
-        else:
-            showObj.paused = 1
-
-        showObj.saveToDB()
-
-        ui.notifications.message('%s has been %s' % (showObj.name,('resumed', 'paused')[showObj.paused]))
         return self.redirect("/home/displayShow?show=" + show)
 
     def deleteShow(self, show=None, full=0):
+        error, show = Show.delete(show, full)
 
-        if show is None:
-            return self._genericMessage("Error", "Invalid show ID")
+        if error is not None:
+            return self._genericMessage('Error', error)
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
-
-        if showObj is None:
-            return self._genericMessage("Error", "Unable to find the specified show")
-
-        try:
-            sickbeard.showQueueScheduler.action.removeShow(showObj, bool(full))
-        except Exception as e:
-            logger.log(u"Unable to delete show: %s. Error: %s" % (showObj.name, ex(e)),logger.WARNING)
-            return self._genericMessage("Error", "Unable to delete show: %s" % showObj.name)
-
-        ui.notifications.message('%s has been %s %s' %
-                                 (showObj.name,
-                                  ('deleted', 'trashed')[bool(sickbeard.TRASH_REMOVE_SHOW)],
-                                  ('(media untouched)', '(with all related media)')[bool(full)]))
+        ui.notifications.message(
+            '%s has been %s %s' %
+            (
+                show.name,
+                ('deleted', 'trashed')[bool(sickbeard.TRASH_REMOVE_SHOW)],
+                ('(media untouched)', '(with all related media)')[bool(full)]
+            )
+        )
 
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-        #Dont redirect to default page so user can confirm show was deleted
+
+        # Don't redirect to the default page, so the user can confirm that the show was deleted
         return self.redirect('/home/')
 
-
     def refreshShow(self, show=None):
+        error, show = Show.refresh(show)
 
-        if show is None:
-            return self._genericMessage("Error", "Invalid show ID")
+        # This is a show validation error
+        if error is not None and show is None:
+            return self._genericMessage('Error', error)
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
-
-        if showObj is None:
-            return self._genericMessage("Error", "Unable to find the specified show")
-
-        # force the update from the DB
-        try:
-            sickbeard.showQueueScheduler.action.refreshShow(showObj)
-        except exceptions.CantRefreshException, e:
-            ui.notifications.error("Unable to refresh this show.",
-                                   ex(e))
+        # This is a refresh error
+        if error is not None:
+            ui.notifications.error('Unable to refresh this show.', ex(error))
 
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
-        return self.redirect("/home/displayShow?show=" + str(showObj.indexerid))
-
+        return self.redirect("/home/displayShow?show=" + str(show.indexerid))
 
     def updateShow(self, show=None, force=0):
 
@@ -1706,7 +1684,7 @@ class Home(WebRoot):
                         continue
 
                     if int(status) in Quality.DOWNLOADED and epObj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.DOWNLOADED + [
-                        IGNORED] and not ek.ek(os.path.isfile, epObj.location):
+                        IGNORED] and not ek(os.path.isfile, epObj.location):
                         logger.log(
                             u"Refusing to change status of " + curEp + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED",
                             logger.ERROR)
@@ -2275,22 +2253,22 @@ class HomeAddShows(Home):
         myDB = db.DBConnection()
         for root_dir in root_dirs:
             try:
-                file_list = ek.ek(os.listdir, root_dir)
+                file_list = ek(os.listdir, root_dir)
             except:
                 continue
 
             for cur_file in file_list:
 
                 try:
-                    cur_path = ek.ek(os.path.normpath, ek.ek(os.path.join, root_dir, cur_file))
-                    if not ek.ek(os.path.isdir, cur_path):
+                    cur_path = ek(os.path.normpath, ek(os.path.join, root_dir, cur_file))
+                    if not ek(os.path.isdir, cur_path):
                         continue
                 except:
                     continue
 
                 cur_dir = {
                     'dir': cur_path,
-                    'display_dir': '<b>' + ek.ek(os.path.dirname, cur_path) + os.sep + '</b>' + ek.ek(
+                    'display_dir': '<b>' + ek(os.path.dirname, cur_path) + os.sep + '</b>' + ek(
                         os.path.basename,
                         cur_path),
                 }
@@ -2353,7 +2331,7 @@ class HomeAddShows(Home):
 
         elif not show_name:
             default_show_name = re.sub(' \(\d{4}\)', '',
-                                         ek.ek(os.path.basename, ek.ek(os.path.normpath, show_dir)).replace('.', ' '))
+                                         ek(os.path.basename, ek(os.path.normpath, show_dir)).replace('.', ' '))
         else:
             default_show_name = show_name
 
@@ -2533,7 +2511,7 @@ class HomeAddShows(Home):
             location = None
 
         if location:
-            show_dir = ek.ek(os.path.join, location, helpers.sanitizeFileName(showName))
+            show_dir = ek(os.path.join, location, helpers.sanitizeFileName(showName))
             dir_exists = helpers.makeDir(show_dir)
             if not dir_exists:
                 logger.log(u"Unable to create the folder " + show_dir + ", can't add the show", logger.ERROR)
@@ -2621,12 +2599,12 @@ class HomeAddShows(Home):
 
         # use the whole path if it's given, or else append the show name to the root dir to get the full show path
         if fullShowPath:
-            show_dir = ek.ek(os.path.normpath, fullShowPath)
+            show_dir = ek(os.path.normpath, fullShowPath)
         else:
-            show_dir = ek.ek(os.path.join, rootDir, helpers.sanitizeFileName(show_name))
+            show_dir = ek(os.path.join, rootDir, helpers.sanitizeFileName(show_name))
 
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
-        if ek.ek(os.path.isdir, show_dir) and not fullShowPath:
+        if ek(os.path.isdir, show_dir) and not fullShowPath:
             ui.notifications.error("Unable to add show", "Folder " + show_dir + " exists already")
             return self.redirect('/home/addShows/existingShows/')
 
@@ -3088,7 +3066,7 @@ class Manage(Home, WebRoot):
 
         for curShow in showList:
 
-            cur_root_dir = ek.ek(os.path.dirname, curShow._location)
+            cur_root_dir = ek(os.path.dirname, curShow._location)
             if cur_root_dir not in root_dir_list:
                 root_dir_list.append(cur_root_dir)
 
@@ -3195,10 +3173,10 @@ class Manage(Home, WebRoot):
             if not showObj:
                 continue
 
-            cur_root_dir = ek.ek(os.path.dirname, showObj._location)
-            cur_show_dir = ek.ek(os.path.basename, showObj._location)
+            cur_root_dir = ek(os.path.dirname, showObj._location)
+            cur_show_dir = ek(os.path.basename, showObj._location)
             if cur_root_dir in dir_map and cur_root_dir != dir_map[cur_root_dir]:
-                new_show_dir = ek.ek(os.path.join, dir_map[cur_root_dir], cur_show_dir)
+                new_show_dir = ek(os.path.join, dir_map[cur_root_dir], cur_show_dir)
                 logger.log(
                     u"For show " + showObj.name + " changing dir from " + showObj._location + " to " + new_show_dir)
             else:
@@ -3759,7 +3737,7 @@ class ConfigGeneral(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/general/")
 
@@ -3916,7 +3894,7 @@ class ConfigSearch(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/search/")
 
@@ -4038,7 +4016,7 @@ class ConfigPostProcessing(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/postProcessing/")
 
@@ -4052,7 +4030,7 @@ class ConfigPostProcessing(Config):
 
         result = naming.test_name(pattern, multi, abd, sports, anime_type)
 
-        result = ek.ek(os.path.join, result['dir'], result['name'])
+        result = ek(os.path.join, result['dir'], result['name'])
 
         return result
 
@@ -4580,7 +4558,7 @@ class ConfigProviders(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/providers/")
 
@@ -4812,7 +4790,7 @@ class ConfigNotifications(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/notifications/")
 
@@ -4863,7 +4841,7 @@ class ConfigSubtitles(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/subtitles/")
 
@@ -4898,7 +4876,7 @@ class ConfigAnime(Config):
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
-            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/anime/")
 
@@ -4940,8 +4918,7 @@ class ErrorLogs(WebRoot):
             finalData = []
 
             for x in reversed(data_in):
-
-                x = ek.ss(x)
+                x = ss(x)
                 match = re.match(regex, x)
 
                 if match:
@@ -5006,12 +4983,12 @@ class ErrorLogs(WebRoot):
         data = []
 
         if os.path.isfile(logger.logFile):
-            with ek.ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
+            with ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
                 data = Get_Data(minLevel, f.readlines(), 0, regex, logFilter, logSearch, maxLines)
 
         for i in range (1 , int(sickbeard.LOG_NR)):
             if os.path.isfile(logger.logFile + "." + str(i)) and (len(data) <= maxLines):
-                with ek.ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
+                with ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
                         data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 
         return t.render(header="Log File", title="Logs", topmenu="errorlogs", submenu=self.ErrorLogsMenu(),

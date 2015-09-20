@@ -1,5 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.tv
+# Git: https://github.com/SiCKRAGETV/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -20,34 +21,38 @@ import datetime
 import os
 
 import sickbeard
-from sickbeard import encodingKludge as ek
 from sickbeard import tv
 from sickbeard import common
 from sickbeard import logger
 from sickbeard.name_parser.parser import NameParser
+from sickrage.helper.encoding import ek
 
 from common import Quality, DOWNLOADED
 
-name_presets = ('%SN - %Sx%0E - %EN',
-                '%S.N.S%0SE%0E.%E.N',
-                '%Sx%0E - %EN',
-                'S%0SE%0E - %EN',
-                'Season %0S/%S.N.S%0SE%0E.%Q.N-%RG'
+name_presets = (
+    '%SN - %Sx%0E - %EN',
+    '%S.N.S%0SE%0E.%E.N',
+    '%Sx%0E - %EN',
+    'S%0SE%0E - %EN',
+    'Season %0S/%S.N.S%0SE%0E.%Q.N-%RG'
 )
 
 name_anime_presets = name_presets
 
-name_abd_presets = ('%SN - %A-D - %EN',
-                    '%S.N.%A.D.%E.N.%Q.N',
-                    '%Y/%0M/%S.N.%A.D.%E.N-%RG'
+name_abd_presets = (
+    '%SN - %A-D - %EN',
+    '%S.N.%A.D.%E.N.%Q.N',
+    '%Y/%0M/%S.N.%A.D.%E.N-%RG'
 )
 
-name_sports_presets = ('%SN - %A-D - %EN',
-                    '%S.N.%A.D.%E.N.%Q.N',
-                    '%Y/%0M/%S.N.%A.D.%E.N-%RG'
+name_sports_presets = (
+    '%SN - %A-D - %EN',
+    '%S.N.%A.D.%E.N.%Q.N',
+    '%Y/%0M/%S.N.%A.D.%E.N-%RG'
 )
 
-class TVShow():
+
+class TVShow:
     def __init__(self):
         self.name = "Show Name"
         self.genre = "Comedy"
@@ -58,7 +63,11 @@ class TVShow():
         self.scene = 0
 
     def _is_anime(self):
-        if (self.anime > 0):
+        """
+        Find out if show is anime
+        :return: True if show is anime, False if not
+        """
+        if self.anime > 0:
             return True
         else:
             return False
@@ -66,7 +75,11 @@ class TVShow():
     is_anime = property(_is_anime)
 
     def _is_sports(self):
-        if (self.sports > 0):
+        """
+        Find out if show is sports
+        :return: True if show is sports, False if not
+        """
+        if self.sports > 0:
             return True
         else:
             return False
@@ -74,7 +87,11 @@ class TVShow():
     is_sports = property(_is_sports)
 
     def _is_scene(self):
-        if (self.scene > 0):
+        """
+        Find out if show is scene numbering
+        :return: True if show is scene numbering, False if not
+        """
+        if self.scene > 0:
             return True
         else:
             return False
@@ -103,8 +120,8 @@ def check_force_season_folders(pattern=None, multi=None, anime_type=None):
     """
     Checks if the name can still be parsed if you strip off the folders to determine if we need to force season folders
     to be enabled or not.
-    
-    Returns true if season folders need to be forced on or false otherwise.
+
+    :return: true if season folders need to be forced on or false otherwise.
     """
     if pattern == None:
         pattern = sickbeard.NAMING_PATTERN
@@ -123,8 +140,8 @@ def check_force_season_folders(pattern=None, multi=None, anime_type=None):
 def check_valid_naming(pattern=None, multi=None, anime_type=None):
     """
     Checks if the name is can be parsed back to its original form for both single and multi episodes.
-    
-    Returns true if the naming is valid, false if not.
+
+    :return: true if the naming is valid, false if not.
     """
     if pattern == None:
         pattern = sickbeard.NAMING_PATTERN
@@ -145,8 +162,8 @@ def check_valid_naming(pattern=None, multi=None, anime_type=None):
 def check_valid_abd_naming(pattern=None):
     """
     Checks if the name is can be parsed back to its original form for an air-by-date format.
-    
-    Returns true if the naming is valid, false if not.
+
+    :return: true if the naming is valid, false if not.
     """
     if pattern == None:
         pattern = sickbeard.NAMING_PATTERN
@@ -156,11 +173,12 @@ def check_valid_abd_naming(pattern=None):
 
     return valid
 
+
 def check_valid_sports_naming(pattern=None):
     """
     Checks if the name is can be parsed back to its original form for an sports format.
 
-    Returns true if the naming is valid, false if not.
+    :return: true if the naming is valid, false if not.
     """
     if pattern == None:
         pattern = sickbeard.NAMING_PATTERN
@@ -170,13 +188,25 @@ def check_valid_sports_naming(pattern=None):
 
     return valid
 
+
 def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=False, sports=False):
+    """
+    See if we understand a name
+
+    :param pattern: Name to analyse
+    :param multi: Is this a multi-episode name
+    :param anime_type: Is this anime
+    :param file_only: Is this just a file or a dir
+    :param abd: Is air-by-date enabled
+    :param sports: Is this sports
+    :return: True if valid name, False if not
+    """
     ep = generate_sample_ep(multi, abd, sports, anime_type)
 
     new_name = ep.formatted_filename(pattern, multi, anime_type) + '.ext'
     new_path = ep.formatted_dir(pattern, multi)
     if not file_only:
-        new_name = ek.ek(os.path.join, new_path, new_name)
+        new_name = ek(os.path.join, new_path, new_name)
 
     if not new_name:
         logger.log(u"Unable to create a name out of " + pattern, logger.DEBUG)

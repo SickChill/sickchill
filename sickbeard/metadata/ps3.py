@@ -20,7 +20,7 @@ import os
 
 import generic
 
-from sickbeard import encodingKludge as ek
+from sickrage.helper.encoding import ek
 
 
 class PS3Metadata(generic.GenericMetadata):
@@ -116,7 +116,7 @@ class PS3Metadata(generic.GenericMetadata):
 
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
-        if ek.ek(os.path.isfile, ep_obj.location):
+        if ek(os.path.isfile, ep_obj.location):
             tbn_filename = ep_obj.location + ".cover.jpg"
         else:
             return None

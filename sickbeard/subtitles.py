@@ -21,23 +21,26 @@ import sickbeard
 from sickbeard.common import *
 from sickbeard.exceptions import ex
 from sickbeard import logger
-from sickbeard import encodingKludge as ek
 from sickbeard import db
 from sickrage.helper.common import dateTimeFormat
+from sickrage.helper.encoding import ek
 import subliminal
 import babelfish
 import subprocess
 
 subliminal.cache_region.configure('dogpile.cache.memory')
 
-provider_urls = {'addic7ed': 'http://www.addic7ed.com',
-                 'opensubtitles': 'http://www.opensubtitles.org',
-                 'podnapisi': 'http://www.podnapisi.net',
-                 'thesubdb': 'http://www.thesubdb.com',
-                 'tvsubtitles': 'http://www.tvsubtitles.net'
-                }
+provider_urls = {
+    'addic7ed': 'http://www.addic7ed.com',
+    'opensubtitles': 'http://www.opensubtitles.org',
+    'podnapisi': 'http://www.podnapisi.net',
+    'thesubdb': 'http://www.thesubdb.com',
+    'tvsubtitles': 'http://www.tvsubtitles.net'
+}
 
 SINGLE = 'und'
+
+
 def sortedServiceList():
     newList = []
     lmgtfy = 'http://lmgtfy.com/?q=%s'
@@ -94,11 +97,11 @@ def subtitlesLanguages(video_path):
     embedded_languages = subliminal.video.scan_video(video_path, subtitles=False, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL)
 
     # Search subtitles in the absolute path
-    if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
-        video_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, video_path))
+    if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+        video_path = ek(os.path.join, sickbeard.SUBTITLES_DIR, ek(os.path.basename, video_path))
     # Search subtitles in the relative path
     elif sickbeard.SUBTITLES_DIR:
-        video_path = ek.ek(os.path.join, ek.ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, video_path))
+        video_path = ek(os.path.join, ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR, ek(os.path.basename, video_path))
 
     languages = subliminal.video.scan_subtitle_languages(video_path)
 
@@ -170,7 +173,7 @@ class SubtitlesFinder():
         now = datetime.datetime.now()
         for epToSub in sqlResults:
 
-            if not ek.ek(os.path.isfile, epToSub['location']):
+            if not ek(os.path.isfile, epToSub['location']):
                 logger.log('Episode file does not exist, cannot download subtitles for episode %dx%d of show %s' % (epToSub['season'], epToSub['episode'], epToSub['show_name']), logger.DEBUG)
                 continue
 
@@ -219,17 +222,17 @@ def run_subs_extra_scripts(epObj, foundSubs):
 
     for curScriptName in sickbeard.SUBTITLES_EXTRA_SCRIPTS:
         script_cmd = [piece for piece in re.split("( |\\\".*?\\\"|'.*?')", curScriptName) if piece.strip()]
-        script_cmd[0] = ek.ek(os.path.abspath, script_cmd[0])
+        script_cmd[0] = ek(os.path.abspath, script_cmd[0])
         logger.log(u"Absolute path to script: " + script_cmd[0], logger.DEBUG)
 
         for video, subs in foundSubs.iteritems():
             subpaths = []
             for sub in subs:
                 subpath = subliminal.subtitle.get_subtitle_path(video.name, sub.language)
-                if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
-                    subpath = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, subpath))
+                if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+                    subpath = ek(os.path.join, sickbeard.SUBTITLES_DIR, ek(os.path.basename, subpath))
                 elif sickbeard.SUBTITLES_DIR:
-                    subpath = ek.ek(os.path.join, ek.ek(os.path.dirname, subpath), sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, subpath))
+                    subpath = ek(os.path.join, ek(os.path.dirname, subpath), sickbeard.SUBTITLES_DIR, ek(os.path.basename, subpath))
 
                 inner_cmd = script_cmd + [video.name, subpath, sub.language.opensubtitles, epObj.show.name,
                                          str(epObj.season), str(epObj.episode), epObj.name, str(epObj.show.indexerid)]
