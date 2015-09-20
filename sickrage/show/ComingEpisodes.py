@@ -65,11 +65,11 @@ class ComingEpisodes:
         recently = (date.today() - timedelta(days=sickbeard.COMING_EPS_MISSED_RANGE)).toordinal()
         qualities_list = Quality.DOWNLOADED + Quality.SNATCHED + Quality.ARCHIVED + [IGNORED]
 
+        db = DBConnection()
         fields_to_select = ', '.join(
             ['airdate', 'airs', 'description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id', 'name', 'network',
              'paused', 'quality', 'runtime', 'season', 'show_name', 'showid', 's.status']
         )
-        db = DBConnection(row_type='dict')
         results = db.select(
             'SELECT %s ' % fields_to_select +
             'FROM tv_episodes e, tv_shows s '
@@ -112,6 +112,8 @@ class ComingEpisodes:
             'AND e.status NOT IN (' + ','.join(['?'] * len(qualities_list)) + ')',
             [today, recently, WANTED] + qualities_list
         )
+
+        results = [dict(result) for result in results]
 
         for index, item in enumerate(results):
             results[index]['localtime'] = sbdatetime.convert_to_setting(
