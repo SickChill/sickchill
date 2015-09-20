@@ -31,9 +31,8 @@ from sickbeard import ui
 from sickbeard import generic_queue
 from sickbeard import name_cache
 from sickbeard.blackandwhitelist import BlackAndWhiteList
-from sickrage.helper.common import ex
 from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, CantUpdateShowException
-from sickrage.helper.exceptions import EpisodeDeletedException, MultipleShowObjectsException
+from sickrage.helper.exceptions import EpisodeDeletedException, ex, MultipleShowObjectsException
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
 from libtrakt import TraktAPI
 

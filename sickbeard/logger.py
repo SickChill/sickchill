@@ -29,8 +29,9 @@ import locale
 
 import sickbeard
 from sickbeard import classes
-from sickrage.helper.common import ex, dateTimeFormat
+from sickrage.helper.common import dateTimeFormat
 from sickrage.helper.encoding import ek, ss
+from sickrage.helper.exceptions import ex
 from github import Github, InputFileContent
 import codecs
 

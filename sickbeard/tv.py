@@ -51,9 +51,9 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import sbdatetime
 from sickbeard import network_timezones
 from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
-from sickrage.helper.common import ex, dateTimeFormat
+from sickrage.helper.common import dateTimeFormat
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import EpisodeDeletedException, EpisodeNotFoundException
+from sickrage.helper.exceptions import EpisodeDeletedException, EpisodeNotFoundException, ex
 from sickrage.helper.exceptions import MultipleEpisodesInDatabaseException, MultipleShowsInDatabaseException
 from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOException, ShowDirectoryNotFoundException
 from sickrage.helper.exceptions import ShowNotFoundException

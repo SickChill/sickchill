@@ -34,8 +34,7 @@ from sickbeard.common import SEASON_RESULT
 from sickbeard import db
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality, cpu_presets
-from sickrage.helper.common import ex
-from sickrage.helper.exceptions import AuthException
+from sickrage.helper.exceptions import AuthException, ex
 
 import jsonrpclib
 from datetime import datetime

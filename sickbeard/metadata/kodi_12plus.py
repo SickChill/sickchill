@@ -21,8 +21,8 @@ import datetime
 import sickbeard
 
 from sickbeard import logger, helpers
-from sickrage.helper.common import ex, dateFormat
-from sickrage.helper.exceptions import ShowNotFoundException
+from sickrage.helper.common import dateFormat
+from sickrage.helper.exceptions import ex, ShowNotFoundException
 
 import xml.etree.cElementTree as etree
 

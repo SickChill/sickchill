@@ -21,8 +21,9 @@ import sickbeard
 from sickbeard.common import *
 from sickbeard import logger
 from sickbeard import db
-from sickrage.helper.common import ex, dateTimeFormat
+from sickrage.helper.common import dateTimeFormat
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ex
 import subliminal
 import babelfish
 import subprocess

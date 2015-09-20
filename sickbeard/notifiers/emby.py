@@ -22,7 +22,7 @@ import urllib2
 import sickbeard
 
 from sickbeard import logger
-from sickrage.helper.common import ex
+from sickrage.helper.exceptions import ex
 
 try:
     import json

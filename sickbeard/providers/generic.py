@@ -37,8 +37,8 @@ from sickbeard import tvcache
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality
 from sickbeard.common import user_agents
-from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ex
 
 
 class GenericProvider:

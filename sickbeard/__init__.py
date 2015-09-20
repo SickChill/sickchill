@@ -60,7 +60,7 @@ from sickbeard.common import SD
 from sickbeard.common import SKIPPED
 from sickbeard.common import WANTED
 from sickbeard.databases import mainDB, cache_db, failed_db
-from sickrage.helper.common import ex
+from sickrage.helper.exceptions import ex
 from sickrage.system.Shutdown import Shutdown
 
 from configobj import ConfigObj

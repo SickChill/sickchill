@@ -24,7 +24,7 @@ import sickbeard
 
 from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT
-from sickrage.helper.common import ex
+from sickrage.helper.exceptions import ex
 
 API_URL = "https://new.boxcar.io/api/notifications"
 

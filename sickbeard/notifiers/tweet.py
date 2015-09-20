@@ -19,7 +19,7 @@
 import sickbeard
 
 from sickbeard import logger, common
-from sickrage.helper.common import ex
+from sickrage.helper.exceptions import ex
 
 # parse_qsl moved to urlparse module in v2.6
 try:

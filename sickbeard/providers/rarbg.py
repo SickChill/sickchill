@@ -34,7 +34,7 @@ from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
-from sickrage.helper.common import ex
+from sickrage.helper.exceptions import ex
 
 
 class GetOutOfLoop(Exception):

@@ -25,9 +25,8 @@ from sickbeard import db
 from sickbeard import logger
 from sickbeard.common import Quality
 from sickbeard.common import WANTED, FAILED
-from sickrage.helper.common import ex
 from sickrage.helper.encoding import ss
-from sickrage.helper.exceptions import EpisodeNotFoundException
+from sickrage.helper.exceptions import EpisodeNotFoundException, ex
 from sickrage.show.History import History
 
 

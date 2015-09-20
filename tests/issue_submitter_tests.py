@@ -23,7 +23,7 @@ import unittest
 import sys, os.path
 
 from sickbeard import logger
-from sickrage.helper.common import ex
+from sickrage.helper.exceptions import ex
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

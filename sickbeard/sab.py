@@ -31,7 +31,7 @@ except ImportError:
 
 from sickbeard.common import USER_AGENT
 from sickbeard import logger
-from sickrage.helper.common import ex
+from sickrage.helper.exceptions import ex
 
 
 def sendNZB(nzb):

@@ -37,9 +37,8 @@ from sickbeard import notifiers
 from sickbeard import show_name_helpers
 from sickbeard import failed_history
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException
+from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
 
 import adba

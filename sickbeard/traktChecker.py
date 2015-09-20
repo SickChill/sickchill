@@ -29,8 +29,8 @@ from sickbeard.common import ARCHIVED
 from sickbeard.common import SKIPPED
 from sickbeard.common import UNKNOWN
 from sickbeard.common import WANTED
-from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ex
 from common import Quality
 from libtrakt import *
 from libtrakt.exceptions import traktException

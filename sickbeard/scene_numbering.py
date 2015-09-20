@@ -30,7 +30,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import db
 from sickbeard import helpers
-from sickrage.helper.common import ex
+from sickrage.helper.exceptions import ex
 
 
 def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=True):

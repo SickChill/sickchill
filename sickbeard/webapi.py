@@ -27,9 +27,9 @@ import re
 import traceback
 
 import sickbeard
-from sickrage.helper.common import ex, dateFormat, dateTimeFormat, timeFormat
+from sickrage.helper.common import dateFormat, dateTimeFormat, timeFormat
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
+from sickrage.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
 from sickrage.helper.quality import get_quality_string
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo

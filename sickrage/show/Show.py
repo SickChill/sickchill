@@ -19,8 +19,8 @@
 import sickbeard
 
 from sickbeard.helpers import findCertainShow
-from sickrage.helper.common import ex
-from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, MultipleShowObjectsException
+from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, ex
+from sickrage.helper.exceptions import MultipleShowObjectsException
 
 
 class Show:

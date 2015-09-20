@@ -22,7 +22,7 @@ import telnetlib
 import re
 
 from sickbeard import logger
-from sickrage.helper.common import ex
+from sickrage.helper.exceptions import ex
 
 try:
     import xml.etree.cElementTree as etree

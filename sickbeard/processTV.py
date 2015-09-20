@@ -29,9 +29,8 @@ from sickbeard import logger
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import common
 from sickbeard import failedProcessor
-from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException
+from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
 from unrar2 import RarFile
 from unrar2.rar_exceptions import *

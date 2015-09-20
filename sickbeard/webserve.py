@@ -51,10 +51,9 @@ from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
-from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek, ss
-from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, MultipleShowObjectsException
-from sickrage.helper.exceptions import NoNFOException, ShowDirectoryNotFoundException
+from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
+from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOException, ShowDirectoryNotFoundException
 from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo

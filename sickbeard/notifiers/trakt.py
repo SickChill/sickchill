@@ -18,7 +18,7 @@
 
 import sickbeard
 from sickbeard import logger
-from sickrage.helper.common import ex
+from sickrage.helper.exceptions import ex
 
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException, traktServerBusy, traktAuthException

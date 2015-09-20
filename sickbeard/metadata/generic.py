@@ -30,8 +30,8 @@ from sickbeard import helpers
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard import logger
 from sickbeard.show_name_helpers import allPossibleShowNames
-from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek, ss
+from sickrage.helper.exceptions import ex
 
 from tmdb_api.tmdb_api import TMDB
 

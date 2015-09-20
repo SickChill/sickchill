@@ -31,8 +31,8 @@ import sickbeard
 from sickbeard import notifiers
 from sickbeard import ui
 from sickbeard import logger, helpers
-from sickrage.helper.common import ex
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ex
 import requests
 
 import shutil

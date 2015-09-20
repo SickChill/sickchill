@@ -25,7 +25,7 @@ import sickbeard
 
 from sickbeard import logger
 from sickbeard import common
-from sickrage.helper.common import ex
+from sickrage.helper.exceptions import ex
 
 try:
     import xml.etree.cElementTree as etree

@@ -24,9 +24,9 @@ import sickbeard
 import mediabrowser
 
 from sickbeard import logger, helpers
-from sickrage.helper.common import ex, dateFormat
+from sickrage.helper.common import dateFormat
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ShowNotFoundException
+from sickrage.helper.exceptions import ex, ShowNotFoundException
 
 try:
     import xml.etree.cElementTree as etree

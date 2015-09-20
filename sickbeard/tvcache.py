@@ -32,9 +32,8 @@ from sickbeard import helpers
 from sickbeard.rssfeeds import RSSFeeds
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import show_name_helpers
-from sickrage.helper.common import ex
 from sickrage.helper.encoding import ss
-from sickrage.helper.exceptions import AuthException
+from sickrage.helper.exceptions import AuthException, ex
 
 
 class CacheDBConnection(db.DBConnection):

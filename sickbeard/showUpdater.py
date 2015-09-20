@@ -25,8 +25,7 @@ from sickbeard import ui
 from sickbeard import db
 from sickbeard import network_timezones
 from sickbeard import failed_history
-from sickrage.helper.common import ex
-from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException
+from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 
 
 class ShowUpdater:
