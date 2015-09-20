@@ -53,11 +53,11 @@ class AlphaRatioProvider(generic.TorrentProvider):
 
         self.cache = AlphaRatioCache(self)
 
-        self.urls = {'base_url': 'https://alpharatio.cc/',
-                'login': 'https://alpharatio.cc/login.php',
-                'detail': 'https://alpharatio.cc/torrents.php?torrentid=%s',
-                'search': 'https://alpharatio.cc/torrents.php?searchstr=%s%s',
-                'download': 'https://alpharatio.cc/%s',
+        self.urls = {'base_url': 'http://alpharatio.cc/',
+                'login': 'http://alpharatio.cc/login.php',
+                'detail': 'http://alpharatio.cc/torrents.php?torrentid=%s',
+                'search': 'http://alpharatio.cc/torrents.php?searchstr=%s%s',
+                'download': 'http://alpharatio.cc/%s',
                 }
 
         self.catagories = "&filter_cat[1]=1&filter_cat[2]=1&filter_cat[3]=1&filter_cat[4]=1&filter_cat[5]=1"
