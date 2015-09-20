@@ -274,9 +274,9 @@ class Quality:
             return Quality.RAWHDTV
         elif checkName(["1080p", "hdtv", "x26[45]"], all):
             return Quality.FULLHDTV
-        elif checkName(["720p", "web.dl|webrip"], all) or checkName(["720p", "itunes", "h.?26[45]"], all):
+        elif checkName(["720p", "web.?dl|webrip"], all) or checkName(["720p", "itunes", "h.?26[45]"], all):
             return Quality.HDWEBDL
-        elif checkName(["1080p", "web.dl|webrip"], all) or checkName(["1080p", "itunes", "h.?26[45]"], all):
+        elif checkName(["1080p", "web.?dl|webrip"], all) or checkName(["1080p", "itunes", "h.?26[45]"], all):
             return Quality.FULLHDWEBDL
         elif checkName(["720p", "blue?-?ray|hddvd|b[rd]rip", "x26[45]"], all):
             return Quality.HDBLURAY
@@ -347,14 +347,19 @@ class Quality:
         if not height:
             return Quality.UNKNOWN
 
-        if height > 1040:
-            return Quality.FULLHDTV
-        elif height > 680 and height < 760:
-            return Quality.HDTV
-        elif height < 680:
-            return Quality.SDTV
+        base_filename = os.path.basename(filename)
+        bluray = re.search(r'blue?-?ray', base_filename, re.I) is not None
+        webdl = re.search(r'web-?dl', base_filename, re.I) is not None
 
-        return Quality.UNKNOWN
+        ret = Quality.UNKNOWN
+        if height > 1000:
+            ret = ((Quality.FULLHDTV, Quality.FULLHDBLURAY)[bluray], FULLHDWEBDL)[webdl]
+        elif height > 680 and height < 800:
+            ret = ((Quality.HDTV, Quality.HDBLURAY)[bluray], Quality.HDWEBDL)[webdl]
+        elif height < 680:
+            ret = (Quality.SDTV, Quality.SDDVD)[re.search(r'dvd', base_filename, re.I) is not None]
+
+        return ret
 
     @staticmethod
     def compositeStatus(status, quality):
