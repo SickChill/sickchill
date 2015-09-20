@@ -7,7 +7,7 @@ $.tablesorter.addParser({
         if (s.indexOf('Loading...') == 0)
           return s.replace('Loading...','000');
         else
-        return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'False' ? (s || '') : (s || '').replace(/^(The|A|An)\s/i,''));
+        return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'True' ? (s || '') : (s || '').replace(/^(The|A|An)\s/i,''));
     },
     type: 'text'
 });
@@ -331,7 +331,7 @@ $(document).ready(function(){
             getSortData: {
                 name: function( itemElem ) {
                     var name = $( itemElem ).attr('data-name');
-                    return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'False' ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
+                    return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'True' ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
                 },
                 network: '[data-network]',
                 date: function( itemElem ) {
