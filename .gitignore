@@ -1,14 +1,14 @@
 #  SR User Related   #
 ######################
-/cache*/
-/Logs/
-/restore/
-/backup/
+cache*/
+Logs/
+restore/
+backup*/
 cache.db*
 config.ini*
 sickbeard.db*
 failed.db*
-/autoProcessTV/autoProcessTV.cfg
+autoProcessTV.cfg
 server.crt
 server.key
 
