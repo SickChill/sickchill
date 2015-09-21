@@ -40,6 +40,7 @@ class T411Provider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "T411")
 
         self.supportsBacklog = True
+        self.public = False
         self.enabled = False
         self.username = None
         self.password = None

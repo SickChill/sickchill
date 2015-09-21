@@ -40,6 +40,7 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "FrenchTorrentDB")
 
         self.supportsBacklog = True
+        self.public = False
 
         self.urls = {
             'base_url': 'http://www.frenchtorrentdb.com',

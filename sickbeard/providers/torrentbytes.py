@@ -41,6 +41,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "TorrentBytes")
 
         self.supportsBacklog = True
+        self.public = False
 
         self.enabled = False
         self.username = None

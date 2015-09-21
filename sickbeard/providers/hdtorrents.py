@@ -42,6 +42,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "HDTorrents")
 
         self.supportsBacklog = True
+        self.public = False
 
         self.username = None
         self.password = None

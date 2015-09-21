@@ -48,6 +48,7 @@ class RarbgProvider(generic.TorrentProvider):
 
         self.enabled = False
         self.supportsBacklog = True
+        self.public = True
         self.ratio = None
         self.minseed = None
         self.ranked = None

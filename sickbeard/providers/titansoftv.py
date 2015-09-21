@@ -30,6 +30,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, 'TitansOfTV')
         self.supportsBacklog = True
+        self.public = False
         self.supportsAbsoluteNumbering = True
         self.api_key = None
         self.ratio = None
