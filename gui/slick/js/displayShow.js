@@ -7,7 +7,9 @@ $(document).ready(function () {
     $('#seasonJump').change(function () {
         var id = $('#seasonJump option:selected').val();
         if (id && id != 'jump') {
-        	$('html,body').animate({scrollTop: $('[name ="' + id.substring(1) + '"]').offset().top - 50}, 'slow');
+            var season = $('#seasonJump option:selected').data('season');
+            $('html,body').animate({scrollTop: $('[name ="' + id.substring(1) + '"]').offset().top - 50}, 'slow');
+            $('#collapseSeason-' + season).collapse('show');
             location.hash = id;
         }
         $(this).val('jump');
@@ -260,5 +262,5 @@ $(document).ready(function () {
             sceneAbsolute = m[1];
         }
         setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute);
-    });   
+    });
 });
