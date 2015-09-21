@@ -1661,7 +1661,7 @@ select .selected {
 }
 
 #provider_order_list .ui-state-default.nzb-provider {
-	background-color: #AAA !important;
+	background-color: #DDD !important;
 }
 
 #provider_order_list input,
