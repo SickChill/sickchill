@@ -1,6 +1,7 @@
 #  SR User Related   #
 ######################
 cache*/
+data*/
 Logs/
 restore/
 backup*/
@@ -16,6 +17,7 @@ server.key
 ######################
 /tests/Logs/*
 /tests/cache/*
+/tests/data*/
 /tests/sickbeard.db*
 /tests/cache.db*
 /tests/failed.db
