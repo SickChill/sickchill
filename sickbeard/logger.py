@@ -16,6 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# pylint: disable=W0703
 
 from __future__ import with_statement
 import os
@@ -65,11 +66,12 @@ class CensoredFormatter(logging.Formatter, object):
     def format(self, record):
         """Strips censored items from string"""
         msg = super(CensoredFormatter, self).format(record)
+        # pylint: disable=W0612
         for k, v in censoredItems.iteritems():
             if v and len(v) > 0 and v in msg:
                 msg = msg.replace(v, len(v) * '*')
         # Needed because Newznab apikey isn't stored as key=value in a section.
-        msg = re.sub(r'([&?]r|[&?]apikey|[&?]api_key)=[^&]*([&\w]?)',r'\1=**********\2', msg)
+        msg = re.sub(r'([&?]r|[&?]apikey|[&?]api_key)=[^&]*([&\w]?)', r'\1=**********\2', msg)
         return msg
 
 
@@ -131,8 +133,8 @@ class Logger(object):
             for logger in self.loggers:
                 logger.addHandler(rfh)
 
-    def shutdown(self):
-
+    @staticmethod
+    def shutdown():
         logging.shutdown()
 
     def log(self, msg, level=INFO, *args, **kwargs):
@@ -159,16 +161,17 @@ class Logger(object):
             sys.exit(1)
 
     def submit_errors(self):
+        # pylint: disable=R0912,R0914,R0915
         if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEBUG and len(classes.ErrorViewer.errors) > 0):
             self.log('Please set your GitHub username and password in the config and enable debug. Unable to submit issue ticket to GitHub!')
             return
 
         try:
-            from versionChecker import CheckVersion
+            from sickbeard.versionChecker import CheckVersion
             checkversion = CheckVersion()
-            needs_update = checkversion.check_for_new_version()
+            checkversion.check_for_new_version()
             commits_behind = checkversion.updater.get_num_commits_behind()
-        except:
+        except Exception:
             self.log('Could not check if your SickRage is updated, unable to submit issue ticket to GitHub!')
             return
 
@@ -194,10 +197,10 @@ class Logger(object):
                 with ek(codecs.open, *[self.logFile, 'r', 'utf-8']) as f:
                     log_data = f.readlines()
 
-            for i in range (1 , int(sickbeard.LOG_NR)):
+            for i in range(1, int(sickbeard.LOG_NR)):
                 if os.path.isfile(self.logFile + "." + str(i)) and (len(log_data) <= 500):
                     with ek(codecs.open, *[self.logFile + "." + str(i), 'r', 'utf-8']) as f:
-                            log_data += f.readlines()
+                        log_data += f.readlines()
 
             log_data = [line for line in reversed(log_data)]
 
@@ -206,7 +209,7 @@ class Logger(object):
                 try:
                     title_Error = str(curError.title)
                     if not len(title_Error) or title_Error == 'None':
-                        title_Error = re.match("^[A-Z0-9\-\[\] :]+::\s*(.*)$", ss(str(curError.message))).group(1)
+                        title_Error = re.match(r"^[A-Z0-9\-\[\] :]+::\s*(.*)$", ss(str(curError.message))).group(1)
 
                     # if len(title_Error) > (1024 - len(u"[APP SUBMITTED]: ")):
                     # 1000 just looks better than 1007 and adds some buffer
@@ -216,7 +219,7 @@ class Logger(object):
                     self.log("Unable to get error title : " + ex(e), ERROR)
 
                 gist = None
-                regex = "^(%s)\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)$" % curError.time
+                regex = r"^(%s)\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)$" % curError.time
                 for i, x in enumerate(log_data):
                     x = ss(x)
                     match = re.match(regex, x)
@@ -231,12 +234,12 @@ class Logger(object):
                         gist = 'No ERROR found'
 
                 message = u"### INFO\n"
-                message += u"Python Version: **" + sys.version[:120].replace('\n','') + "**\n"
+                message += u"Python Version: **" + sys.version[:120].replace('\n', '') + "**\n"
                 message += u"Operating System: **" + platform.platform() + "**\n"
                 if not 'Windows' in platform.platform():
                     try:
                         message += u"Locale: " + locale.getdefaultlocale()[1] + "\n"
-                    except:
+                    except Exception:
                         message += u"Locale: unknown" + "\n"
                 message += u"Branch: **" + sickbeard.BRANCH + "**\n"
                 message += u"Commit: SiCKRAGETV/SickRage@" + sickbeard.CUR_COMMIT_HASH + "\n"
@@ -261,7 +264,7 @@ class Logger(object):
                         comment = report.create_comment(message)
                         if comment:
                             issue_id = report.number
-                            self.log('Commented on existing issue #%s successfully!'  % issue_id )
+                            self.log('Commented on existing issue #%s successfully!' % issue_id)
                             issue_found = True
                         break
 
@@ -269,7 +272,7 @@ class Logger(object):
                     issue = gh.get_organization(gh_org).get_repo(gh_repo).create_issue(title_Error, message)
                     if issue:
                         issue_id = issue.number
-                        self.log('Your issue ticket #%s was submitted successfully!'  % issue_id )
+                        self.log('Your issue ticket #%s was submitted successfully!' % issue_id)
 
                 # clear error from error list
                 classes.ErrorViewer.errors.remove(curError)
@@ -282,6 +285,7 @@ class Logger(object):
         self.submitter_running = False
 
 
+# pylint: disable=R0903
 class Wrapper(object):
     instance = Logger()
 
