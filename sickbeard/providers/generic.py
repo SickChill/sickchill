@@ -55,6 +55,7 @@ class GenericProvider:
         self.proxyGlypeProxySSLwarning = None
         self.urls = {}
         self.url = ''
+        self.public = True
 
         self.show = None
 
