@@ -973,7 +973,7 @@ class AddAnimeBlacklistWhitelist(AddSceneAbsoluteNumbering):
 
         self.incDBVersion()
 
-class AddSceneAbsoluteNumbering(AddAnimeBlacklistWhitelist):
+class AddSceneAbsoluteNumbering2(AddAnimeBlacklistWhitelist):
     def test(self):
         return self.checkDBVersion() >= 36
 
@@ -985,7 +985,7 @@ class AddSceneAbsoluteNumbering(AddAnimeBlacklistWhitelist):
 
         self.incDBVersion()
 
-class AddXemRefresh(AddSceneAbsoluteNumbering):
+class AddXemRefresh(AddSceneAbsoluteNumbering2):
     def test(self):
         return self.checkDBVersion() >= 37
 
