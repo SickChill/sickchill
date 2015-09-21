@@ -139,7 +139,7 @@ class SickRage(object):
         ]
 
         for filename in filenames:
-            filename = ek(os.path.join, sickbeard.PROG_DIR, file)
+            filename = ek(os.path.join, sickbeard.PROG_DIR, filename)
             try:
                 if ek(os.path.exists, filename):
                     ek(os.remove, filename)
