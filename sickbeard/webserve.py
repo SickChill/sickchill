@@ -1492,7 +1492,7 @@ class Home(WebRoot):
 
         ui.notifications.message('%s has been %s' % (show.name, ('resumed', 'paused')[show.paused]))
 
-        return self.redirect("/home/displayShow?show=" + show)
+        return self.redirect("/home/displayShow?show=%i" % show.indexerid)
 
     def deleteShow(self, show=None, full=0):
         error, show = Show.delete(show, full)
