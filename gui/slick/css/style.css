@@ -1657,7 +1657,7 @@ select .selected {
 }
 
 #provider_order_list .ui-state-default.torrent-provider {
-	background-color: #DDD !important;
+	background-color: #FFFFFF !important;
 }
 
 #provider_order_list .ui-state-default.nzb-provider {
