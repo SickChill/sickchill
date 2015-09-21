@@ -28,7 +28,10 @@ import traceback
 
 import sickbeard
 
-import xml.etree.cElementTree as etree
+try:
+    import xml.etree.cElementTree as etree
+except ImportError:
+    import xml.etree.ElementTree as etree
 
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 

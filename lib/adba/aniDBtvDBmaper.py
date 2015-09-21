@@ -16,22 +16,27 @@
 # along with aDBa.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import xml.etree.cElementTree as etree
+
+try:
+    import xml.etree.cElementTree as etree
+except ImportError:
+    import xml.etree.ElementTree as etree
+
 import aniDBfileInfo as fileInfo
 
 
 
 class TvDBMap():
-    
+
     def __init__(self,filePath=None):
         self.xmlMap = fileInfo.read_tvdb_map_xml(filePath)
-        
+
     def get_tvdb_for_anidb(self,anidb_id):
         return self._get_x_for_y(anidb_id,"anidbid","tvdbid")
-            
+
     def get_anidb_for_tvdb(self,tvdb_id):
         return self._get_x_for_y(tvdb_id,"tvdbid","anidbid")
-        
+
 
     def _get_x_for_y(self,xValue,x,y):
         #print("searching "+x+" with the value "+str(xValue)+" and want to give back "+y)
@@ -43,21 +48,21 @@ class TvDBMap():
             except ValueError, e:
                 continue
         return 0
-            
-            
+
+
     def get_season_episode_for_anidb_absoluteNumber(self,anidb_id,absoluteNumber):
         # NOTE: this cant be done without the length of each season from thetvdb
         #TODO: implement
         season = 0
         episode = 0
-        
+
         for anime in self.xmlMap.findall("anime"):
             if int(anime.get("anidbid",False)) == anidb_id:
                 defaultSeason = int(anime.get("defaulttvdbseason",1))
-        
-        
+
+
         return (season,episode)
-            
+
     def get_season_episode_for_tvdb_absoluteNumber(self,anidb_id,absoluteNumber):
         #TODO: implement
         season = 0
