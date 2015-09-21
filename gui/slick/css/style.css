@@ -1656,6 +1656,14 @@ select .selected {
 	font-size: 14px;
 }
 
+#provider_order_list .ui-state-default.torrent-provider {
+	background-color: #DDD !important;
+}
+
+#provider_order_list .ui-state-default.nzb-provider {
+	background-color: #AAA !important;
+}
+
 #provider_order_list input,
 #service_order_list input {
 	margin: 0px 2px;
