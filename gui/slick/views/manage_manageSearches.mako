@@ -35,7 +35,9 @@ ${('Not in progress', 'In Progress')[dailySearchStatus]}<br />
 
 <h3>Find Propers Search:</h3>
 <a class="btn ${('disabled', '')[bool(sickbeard.DOWNLOAD_PROPERS)]}" href="${sbRoot}/manage/manageSearches/forceFindPropers"><i class="icon-exclamation-sign"></i> Force</a>
-% if not findPropersStatus:
+% if not sickbeard.DOWNLOAD_PROPERS:
+    Propers search disabled <br />
+% elif not findPropersStatus:
     Not in progress<br />
 % else:
     In Progress<br />
