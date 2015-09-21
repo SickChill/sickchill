@@ -40,6 +40,7 @@ class BLUETIGERSProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "BLUETIGERS")
 
         self.supportsBacklog = True
+        self.public = False
         self.enabled = False
         self.username = None
         self.password = None

@@ -35,6 +35,7 @@ class BTDIGGProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "BTDigg")
 
         self.supportsBacklog = True
+        self.public = True
         self.url = 'https://api.btdigg.org/'
 
         self.cache = BTDiggCache(self)

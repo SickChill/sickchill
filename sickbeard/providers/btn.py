@@ -45,6 +45,7 @@ class BTNProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "BTN")
 
         self.supportsBacklog = True
+        self.public = False
         self.supportsAbsoluteNumbering = True
 
         self.enabled = False
