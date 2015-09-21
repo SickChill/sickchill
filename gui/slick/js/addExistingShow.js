@@ -11,16 +11,16 @@ $(document).ready(function() {
 
     $('#submitShowDirs').click(function() {
 
-        var dirArr = new Array();
+        var dirArr = [];
         $('.dirCheck').each(function(i,w) {
-            if (this.checked == true) {
+            if (this.checked === true) {
                 var show = $(this).attr('id');
                 var indexer = $(this).closest('tr').find('select').val();
                 dirArr.push(encodeURIComponent(indexer + '|' + show));
             }
         });
 
-        if (dirArr.length == 0) {
+        if (dirArr.length === 0) {
             return false;
         }
 

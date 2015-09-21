@@ -1,20 +1,17 @@
-$(document).ready(function() { 
+$(document).ready(function() {
 
     function make_row(indexer_id, season, episode, name, checked) {
-        if (checked)
-            var checked = ' checked';
-        else
-            var checked = '';
-        
+        checked = checked ? ' checked' : '';
+
         var row_class = $('#row_class').val();
-        
+
         var row = '';
         row += ' <tr class="'+row_class+' show-'+indexer_id+'">';
         row += '  <td class="tableleft" align="center"><input type="checkbox" class="'+indexer_id+'-epcheck" name="'+indexer_id+'-'+season+'x'+episode+'"'+checked+'></td>';
         row += '  <td>'+season+'x'+episode+'</td>';
         row += '  <td class="tableright" style="width: 100%">'+name+'</td>';
-        row += ' </tr>'
-        
+        row += ' </tr>';
+
         return row;
     }
 
@@ -29,7 +26,7 @@ $(document).ready(function() {
         var last_row = $('tr#'+cur_indexer_id);
         var clicked = $(this).attr('data-clicked');
         var action = $(this).attr('value');
-        
+
         if (!clicked)  {
             $.getJSON(sbRoot+'/manage/showEpisodeStatuses',
                       {
@@ -44,7 +41,7 @@ $(document).ready(function() {
                               });
                           });
                       });
-            $(this).attr('data-clicked',1);   
+            $(this).attr('data-clicked',1);
             $(this).prop('value', 'Collapse');
         } else {
             if (action === 'Collapse') {
@@ -53,9 +50,9 @@ $(document).ready(function() {
             }
             else if (action === 'Expand') {
                 $('table tr').filter('.show-'+cur_indexer_id).show();
-                $(this).prop('value', 'Collapse');         
+                $(this).prop('value', 'Collapse');
             }
-            
+
         }
     });
 

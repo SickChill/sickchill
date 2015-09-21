@@ -63,9 +63,9 @@ $(document).ready(function() {
         refreshRootDirs();
         $.get(sbRoot+'/config/general/saveRootDirs', {rootDirString: $('#rootDirText').val()});
     }
-    
-    $('#addRootDir').click(function(){$(this).nFileBrowser(addRootDir)});
-    $('#editRootDir').click(function(){$(this).nFileBrowser(editRootDir, {initialDir: $("#rootDirs option:selected").val()})});
+
+    $('#addRootDir').click(function(){$(this).nFileBrowser(addRootDir);});
+    $('#editRootDir').click(function(){$(this).nFileBrowser(editRootDir, {initialDir: $("#rootDirs option:selected").val()});});
 
     $('#deleteRootDir').click(function() {
         if ($("#rootDirs option:selected").length) {
@@ -91,8 +91,7 @@ $(document).ready(function() {
 
             } else if ($("#whichDefaultRootDir").val().length) {
                 var old_default_num = $("#whichDefaultRootDir").val().substr(3);
-                if (old_default_num > deleted_num)
-                    $("#whichDefaultRootDir").val('rd-'+(old_default_num-1))
+                if (old_default_num > deleted_num) $("#whichDefaultRootDir").val('rd-'+(old_default_num-1));
             }
 
         }
@@ -108,21 +107,17 @@ $(document).ready(function() {
     });
 
     function setDefault(which, force){
-
         console.log('setting default to '+which);
 
-        if (which != undefined && !which.length)
-            return
+        if (which !== undefined && !which.length) return;
 
-        if ($('#whichDefaultRootDir').val() == which && force != true)
-            return
+        if ($('#whichDefaultRootDir').val() == which && force !== true) return;
 
         // put an asterisk on the text
-        if ($('#'+which).text().charAt(0) != '*')
-            $('#'+which).text('*'+$('#'+which).text());
+        if ($('#'+which).text().charAt(0) != '*') $('#'+which).text('*'+$('#'+which).text());
 
         // if there's an existing one then take the asterisk off
-        if ($('#whichDefaultRootDir').val() && force != true) {
+        if ($('#whichDefaultRootDir').val() && force !== true) {
             var old_default = $('#'+$('#whichDefaultRootDir').val());
             old_default.text(old_default.text().substring(1));
         }
@@ -140,8 +135,7 @@ $(document).ready(function() {
 
     function refreshRootDirs() {
 
-        if (!$("#rootDirs").length)
-            return
+        if (!$("#rootDirs").length) return;
 
         var do_disable = 'true';
 
@@ -149,8 +143,7 @@ $(document).ready(function() {
         syncOptionIDs();
 
         // if nothing's selected then select the default
-        if (!$("#rootDirs option:selected").length && $('#whichDefaultRootDir').val().length)
-            $('#'+$('#whichDefaultRootDir').val()).prop("selected", true)
+        if (!$("#rootDirs option:selected").length && $('#whichDefaultRootDir').val().length) $('#'+$('#whichDefaultRootDir').val()).prop("selected", true);
 
         // if something's selected then we have some behavior to figure out
         if ($("#rootDirs option:selected").length) {
@@ -164,16 +157,16 @@ $(document).ready(function() {
 
         var log_str = '';
         var dir_text = '';
-        if ($('#whichDefaultRootDir').val().length >= 4)
-            var dir_text = $('#whichDefaultRootDir').val().substr(3);
+        if ($('#whichDefaultRootDir').val().length >= 4){
+            dir_text = $('#whichDefaultRootDir').val().substr(3);
+        }
         $('#rootDirs option').each(function() {
             log_str += $(this).val()+'='+$(this).text()+'->'+$(this).attr('id')+'\n';
-            if (dir_text.length)
-                dir_text += '|' + $(this).val()
+            if (dir_text.length) dir_text += '|' + $(this).val();
         });
         log_str += 'def: '+ $('#whichDefaultRootDir').val();
         console.log(log_str);
-        
+
         $('#rootDirText').val(dir_text);
         $('#rootDirText').change();
         console.log('rootDirText: '+$('#rootDirText').val());
@@ -183,7 +176,6 @@ $(document).ready(function() {
 
     // set up buttons on page load
     syncOptionIDs();
-    setDefault($('#whichDefaultRootDir').val(), true)
+    setDefault($('#whichDefaultRootDir').val(), true);
     refreshRootDirs();
-
 });

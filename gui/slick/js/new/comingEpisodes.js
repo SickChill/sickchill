@@ -2,11 +2,11 @@ if($('meta[data-var="sickbeard.COMING_EPS_LAYOUT"]').data('content') == 'list'){
     $.tablesorter.addParser({
         id: 'loadingNames',
         is: function(s) {
-            return false
+            return false;
         },
         format: function(s) {
-            if (0 == s.indexOf('Loading...')){
-                return s.replace('Loading...', '000')
+            if (0 === s.indexOf('Loading...')){
+                return s.replace('Loading...', '000');
             } else {
                 return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'False' ? (s || '') : (s || '').replace(/^(The|A|An)\s/i,''));
             }
@@ -16,20 +16,20 @@ if($('meta[data-var="sickbeard.COMING_EPS_LAYOUT"]').data('content') == 'list'){
     $.tablesorter.addParser({
         id: 'quality',
         is: function(s) {
-            return false
+            return false;
         },
         format: function(s) {
-            return s.replace('hd1080p', 5).replace('hd720p', 4).replace('hd', 3).replace('sd', 2).replace('any', 1).replace('best', 0).replace('custom', 7)
+            return s.replace('hd1080p', 5).replace('hd720p', 4).replace('hd', 3).replace('sd', 2).replace('any', 1).replace('best', 0).replace('custom', 7);
         },
         type: 'numeric'
     });
     $.tablesorter.addParser({
         id: 'cDate',
         is: function(s) {
-            return false
+            return false;
         },
         format: function(s) {
-            return new Date(s).getTime()
+            return new Date(s).getTime();
         },
         type: 'numeric'
     });
@@ -45,8 +45,8 @@ $(document).ready(function(){
             widgets: ['stickyHeaders'],
             sortList: sortList,
             textExtraction: {
-                0: function(node) { return $(node).find('time').attr('datetime') },
-                5: function(node) { return $(node).find('span').text().toLowerCase() }
+                0: function(node) { return $(node).find('time').attr('datetime'); },
+                5: function(node) { return $(node).find('span').text().toLowerCase(); }
             },
             headers: {
                 0: { sorter: 'cDate' },
@@ -69,11 +69,14 @@ $(document).ready(function(){
         $('.ep_summaryTrigger').click(function() {
             $(this).next('.ep_summary').slideToggle('normal', function() {
                 $(this).prev('.ep_summaryTrigger').attr('src', function(i, src) {
-                    return $(this).next('.ep_summary').is(':visible') ? src.replace('plus','minus') : src.replace('minus','plus')
+                    return $(this).next('.ep_summary').is(':visible') ? src.replace('plus','minus') : src.replace('minus','plus');
                 });
             });
         });
     }
 });
 
-window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
+setTimeout(function () {
+    "use strict";
+    location.reload(true);
+}, 60000);

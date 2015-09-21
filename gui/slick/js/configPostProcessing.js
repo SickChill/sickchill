@@ -9,23 +9,23 @@ $(document).ready(function () {
         };
     })();
 
-	function israr_supported() {
-		var pattern = $('#naming_pattern').val();
-		$.get(sbRoot + '/config/postProcessing/isRarSupported', 
-        	function (data) {
+    function israr_supported() {
+        var pattern = $('#naming_pattern').val();
+        $.get(sbRoot + '/config/postProcessing/isRarSupported',
+            function (data) {
                 if (data == "supported") {
                 } else {
                     $('#unpack').qtip('option', {
                         'content.text': 'Unrar Executable not found.',
                         'style.classes': 'qtip-rounded qtip-shadow qtip-red'
-				    });
-					$('#unpack').qtip('toggle', true);
+                    });
+                    $('#unpack').qtip('toggle', true);
                     $('#unpack').css('background-color', '#FFFFDD');
-					
+
                 }
             });
-	}
-	
+    }
+
     function fill_examples() {
         var pattern = $('#naming_pattern').val();
         var multi = $('#naming_multi_ep :selected').val();
@@ -115,47 +115,6 @@ $(document).ready(function () {
                     });
                     $('#naming_abd_pattern').qtip('toggle', false);
                     $('#naming_abd_pattern').css('background-color', '#FFFFFF');
-                }
-            });
-
-    }
-
-    function fill_sports_examples() {
-        var pattern = $('#naming_sports_pattern').val();
-
-        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, sports: 'True'},
-            function (data) {
-                if (data) {
-                    $('#naming_sports_example').text(data + '.ext');
-                    $('#naming_sports_example_div').show();
-                } else {
-                    $('#naming_sports_example_div').hide();
-                }
-            });
-
-        $.get(sbRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, sports: 'True'},
-            function (data) {
-                if (data == "invalid") {
-                    $('#naming_sports_pattern').qtip('option', {
-                        'content.text': 'This pattern is invalid.',
-                        'style.classes': 'qtip-rounded qtip-shadow qtip-red'
-                    });
-                    $('#naming_sports_pattern').qtip('toggle', true);
-                    $('#naming_sports_pattern').css('background-color', '#FFDDDD');
-                } else if (data == "seasonfolders") {
-                    $('#naming_sports_pattern').qtip('option', {
-                        'content.text': 'This pattern would be invalid without the folders, using it will force "Flatten" off for all shows.',
-                        'style.classes': 'qtip-rounded qtip-shadow qtip-red'
-                    });
-                    $('#naming_sports_pattern').qtip('toggle', true);
-                    $('#naming_sports_pattern').css('background-color', '#FFFFDD');
-                } else {
-                    $('#naming_sports_pattern').qtip('option', {
-                        'content.text': 'This pattern is valid.',
-                        'style.classes': 'qtip-rounded qtip-shadow qtip-green'
-                    });
-                    $('#naming_sports_pattern').qtip('toggle', false);
-                    $('#naming_sports_pattern').css('background-color', '#FFFFFF');
                 }
             });
 
@@ -299,11 +258,11 @@ $(document).ready(function () {
     }
 
     $('#unpack').change(function () {
-    	if(this.checked) {
-        	israr_supported();
+        if(this.checked) {
+            israr_supported();
         } else {
-        	$('#unpack').qtip('toggle', false);
-		}
+            $('#unpack').qtip('toggle', false);
+        }
     });
 
     $('#name_presets').change(function () {
@@ -446,8 +405,8 @@ $(document).ready(function () {
             config_arr.push(show_metadata ? '1' : '0');
             config_arr.push(episode_metadata ? '1' : '0');
             config_arr.push(fanart ? '1' : '0');
-			config_arr.push(poster ? '1' : '0');
-			config_arr.push(banner ? '1' : '0');
+            config_arr.push(poster ? '1' : '0');
+            config_arr.push(banner ? '1' : '0');
             config_arr.push(episode_thumbnails ? '1' : '0');
             config_arr.push(season_posters ? '1' : '0');
             config_arr.push(season_banners ? '1' : '0');
@@ -477,12 +436,12 @@ $(document).ready(function () {
 
         });
 
-        if (cur_most_provider != '' && first) {
+        if (cur_most_provider !== '' && first) {
             $('#metadataType option[value=' + cur_most_provider + ']').attr('selected', 'selected');
             $(this).showHideMetadata();
         }
 
-    }
+    };
 
     $(this).refreshMetadataConfig(true);
     $('img[title]').qtip( {
