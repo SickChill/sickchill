@@ -28,12 +28,13 @@ from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.exceptions import ex, AuthException
+from sickrage.helper.exceptions import AuthException
 import requests
 from BeautifulSoup import BeautifulSoup as soup
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
 from datetime import datetime
+
 
 class HDTorrentsProvider(generic.TorrentProvider):
     def __init__(self):
@@ -41,6 +42,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "HDTorrents")
 
         self.supportsBacklog = True
+        self.public = False
 
         self.username = None
         self.password = None
@@ -192,24 +194,24 @@ class HDTorrentsProvider(generic.TorrentProvider):
                                 seeders = int(cell.text)
                             elif None is leechers and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
                                 leechers = int(cell.text)
-    
+
                             # Skip torrents released before the episode aired (fakes)
                             if re.match('..:..:..  ..:..:....', cells[6].text):
                                 if (datetime.strptime(cells[6].text, '%H:%M:%S  %m/%d/%Y') -
                                     datetime.combine(epObj.airdate, datetime.min.time())).days < 0:
                                     continue
-        
+
                             # Need size for failed downloads handling
                             if re.match('[0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+', cells[7].text):
                                 size = self._convertSize(cells[7].text)
-        
+
                             if not title or not url or not seeders or leechers is None or not size or \
                                     seeders < self.minseed or leechers < self.minleech:
                                 continue
-            
+
                             item = title, url, seeders, leechers, size
                             logger.log(u"Found result: " + title + " (" + searchURL + ")", logger.DEBUG)
-            
+
                             results.append(item)
 
                         except:

@@ -29,7 +29,7 @@ from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.exceptions import ex, AuthException
+from sickrage.helper.exceptions import AuthException
 import requests
 from sickbeard.bs4_parser import BS4Parser
 from unidecode import unidecode
@@ -43,6 +43,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "FreshOnTV")
 
         self.supportsBacklog = True
+        self.public = False
 
         self.enabled = False
         self._uid = None

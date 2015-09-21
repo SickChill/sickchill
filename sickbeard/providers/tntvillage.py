@@ -28,12 +28,11 @@ from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.exceptions import ex, AuthException
-from requests.exceptions import RequestException
 from sickbeard.bs4_parser import BS4Parser
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickrage.helper.exceptions import AuthException
 
 category_excluded = {
               'Sport' : 22,
@@ -69,6 +68,7 @@ class TNTVillageProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "TNTVillage")
 
         self.supportsBacklog = True
+        self.public = False
 
         self.enabled = False
         self._uid = None

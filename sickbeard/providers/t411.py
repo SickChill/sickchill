@@ -25,8 +25,6 @@ from requests.auth import AuthBase
 import sickbeard
 import generic
 
-import requests
-
 from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
@@ -35,7 +33,6 @@ from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
 from sickbeard.helpers import sanitizeSceneName
-from sickbeard.exceptions import ex
 
 
 class T411Provider(generic.TorrentProvider):
@@ -43,6 +40,7 @@ class T411Provider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "T411")
 
         self.supportsBacklog = True
+        self.public = False
         self.enabled = False
         self.username = None
         self.password = None
@@ -52,10 +50,10 @@ class T411Provider(generic.TorrentProvider):
 
         self.cache = T411Cache(self)
 
-        self.urls = {'base_url': 'http://www.t411.io/',
-                     'search': 'https://api.t411.io/torrents/search/%s?cid=%s&limit=100',
-                     'login_page': 'https://api.t411.io/auth',
-                     'download': 'https://api.t411.io/torrents/download/%s',
+        self.urls = {'base_url': 'http://www.t411.in/',
+                     'search': 'https://api.t411.in/torrents/search/%s?cid=%s&limit=100',
+                     'login_page': 'https://api.t411.in/auth',
+                     'download': 'https://api.t411.in/torrents/download/%s',
         }
 
         self.url = self.urls['base_url']

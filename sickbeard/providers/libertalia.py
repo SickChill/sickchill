@@ -37,7 +37,7 @@ from sickbeard import helpers
 from sickbeard import classes
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
-from sickbeard.exceptions import ex
+
 
 class LibertaliaProvider(generic.TorrentProvider):
 
@@ -46,6 +46,7 @@ class LibertaliaProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "Libertalia")
 
         self.supportsBacklog = True
+        self.public = False
 
         self.cj = cookielib.CookieJar()
 

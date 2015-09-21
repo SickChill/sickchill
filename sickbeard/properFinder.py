@@ -29,18 +29,17 @@ from search import pickBestResult
 import sickbeard
 
 from sickbeard import db
-from sickbeard import exceptions
-from sickbeard.exceptions import ex
 from sickbeard import helpers, logger
 from sickbeard import search
 
 from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, Quality, cpu_presets
+from sickrage.helper.exceptions import AuthException, ex
 from sickrage.show.History import History
 
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 
-class ProperFinder():
+class ProperFinder:
     def __init__(self):
         self.amActive = False
 
@@ -91,7 +90,7 @@ class ProperFinder():
 
             try:
                 curPropers = curProvider.findPropers(search_date)
-            except exceptions.AuthException, e:
+            except AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
                 continue
             except Exception, e:

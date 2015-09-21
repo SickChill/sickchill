@@ -25,7 +25,8 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import requests
 import sickbeard.providers as providers
 import certifi
-from sickbeard.exceptions import ex
+from sickrage.helper.exceptions import ex
+
 
 class SNI_Tests(unittest.TestCase):
     def test_SNI_URLS(self):

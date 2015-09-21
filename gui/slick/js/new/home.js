@@ -4,7 +4,7 @@ $.tablesorter.addParser({
         return false;
     },
     format: function(s) {
-        if (s.indexOf('Loading...') == 0)
+        if (s.indexOf('Loading...') === 0)
           return s.replace('Loading...','000');
         else
         return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'True' ? (s || '') : (s || '').replace(/^(The|A|An)\s/i,''));
@@ -31,8 +31,7 @@ $.tablesorter.addParser({
     format: function(s) {
         match = s.match(/^(.*)/);
 
-        if (match == null || match[1] == "?")
-          return -10;
+        if (match === null || match[1] == "?") return -10;
 
         var nums = match[1].split(" / ");
         if (nums[0].indexOf("+") != -1) {
@@ -40,14 +39,14 @@ $.tablesorter.addParser({
             nums[0] = num_parts[0];
         }
 
-        nums[0] = parseInt(nums[0])
-        nums[1] = parseInt(nums[1])
+        nums[0] = parseInt(nums[0]);
+        nums[1] = parseInt(nums[1]);
 
         if (nums[0] === 0)
           return nums[1];
 
         var finalNum = parseInt(($('meta[data-var="max_download_count"]').data('content'))*nums[0]/nums[1]);
-        var pct = Math.round((nums[0]/nums[1])*100) / 1000
+        var pct = Math.round((nums[0]/nums[1])*100) / 1000;
         if (finalNum > 0)
           finalNum += nums[0];
 
@@ -92,7 +91,7 @@ $(document).ready(function(){
                     4: { sorter: 'quality' },
                     5: { sorter: 'eps' },
                     6: { filter : 'parsed' }
-                }
+                };
             } else {
                 return {
                     0: { sorter: 'isoDate' },
@@ -100,7 +99,7 @@ $(document).ready(function(){
                     2: { sorter: 'loadingNames' },
                     4: { sorter: 'quality' },
                     5: { sorter: 'eps' }
-                }
+                };
             }
         }()),
         widgetOptions: (function(){
@@ -166,11 +165,11 @@ $(document).ready(function(){
                     },
                     filter_reset: '.resetshows',
                     columnSelector_mediaquery: false
-                }
+                };
             } else {
                 return {
                     filter_columnFilters: false
-                }
+                };
             }
         }()),
         sortStable: true,
@@ -197,7 +196,7 @@ $(document).ready(function(){
                     4: { sorter: 'quality' },
                     5: { sorter: 'eps' },
                     6: { filter : 'parsed' }
-                }
+                };
             } else {
                 return {
                     0: { sorter: 'isoDate' },
@@ -205,7 +204,7 @@ $(document).ready(function(){
                     2: { sorter: 'loadingNames' },
                     4: { sorter: 'quality' },
                     5: { sorter: 'eps' }
-                }
+                };
             }
         }()),
         widgetOptions: (function(){
@@ -271,11 +270,11 @@ $(document).ready(function(){
                     },
                     filter_reset: '.resetanime',
                     columnSelector_mediaquery: false
-                }
+                };
             } else {
                 return {
                     filter_columnFilters: false
-                }
+                };
             }
         }()),
         sortStable: true,

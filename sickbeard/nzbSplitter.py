@@ -20,15 +20,17 @@
 from __future__ import with_statement
 
 import requests
-
-import xml.etree.cElementTree as etree
-import xml.etree
 import re
+
+try:
+    import xml.etree.cElementTree as etree
+except ImportError:
+    import xml.etree.ElementTree as etree
 
 from sickbeard import logger, classes, helpers
 from sickbeard.common import Quality
-from sickbeard.exceptions import ex
 from sickrage.helper.encoding import ek, ss
+from sickrage.helper.exceptions import ex
 
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
@@ -94,7 +96,7 @@ def createNZBString(fileElements, xmlns):
     for curFile in fileElements:
         rootElement.append(stripNS(curFile, xmlns))
 
-    return xml.etree.ElementTree.tostring(ss(rootElement))
+    return etree.tostring(ss(rootElement))
 
 
 def saveNZB(nzbName, nzbString):

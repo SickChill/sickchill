@@ -9,7 +9,7 @@
 
 var _disable_empty_list=false;
 var _hide_empty_list=false;
-var _image_commands=['?cmd=show.getbanner', '?cmd=show.getfanart', '?cmd=show.getnetworklogo', '?cmd=show.getposter']
+var _image_commands=['?cmd=show.getbanner', '?cmd=show.getfanart', '?cmd=show.getnetworklogo', '?cmd=show.getposter'];
 
 function goListGroup(apikey, L7, L6, L5, L4, L3, L2, L1){
     var html, GlobalOptions = "";
@@ -40,8 +40,7 @@ function goListGroup(apikey, L7, L6, L5, L4, L3, L2, L1){
             $('#imgcache').attr('src', imgcache);
           }
         });
-    }
-    else {
+    } else {
         html = sbRoot + "/api/" + apikey + "/" + L1 + L2 + L3 + L4 + L5 + L6 + L7 + GlobalOptions + "<br/><pre>";
         html += $.ajax({
           url: sbRoot + "/api/" + apikey + "/" + L1 + L2 + L3 + L4 + L5 + L6 + L7 + GlobalOptions,
@@ -59,7 +58,7 @@ if (typeof(disable_empty_list)=="undefined") { disable_empty_list=_disable_empty
 if (typeof(hide_empty_list)=="undefined") { hide_empty_list=_hide_empty_list; }
 
 var cs_goodContent=true, cs_M="M", cs_L="L", cs_G="G", cs_EG="EG";
-var cs_names=new Array();
+var cs_names = [];
 var cs_supportDOM=document.createElement;
 var cs_nav=navigator.userAgent.toLowerCase();
 var cs_isIE7=(cs_nav.indexOf("msie 7")!=-1 || cs_nav.indexOf("msie 8")!=-1);
@@ -82,7 +81,7 @@ function cs_findM(m,n) {
   for (var i=0; i<m.items.length; i++) {
     if (m.items[i].type==cs_M) {
       sm=cs_findM(m.items[i],n);
-      if (sm!=null) { break; }
+      if (sm !== null) break;
     }
   }
   return sm;
@@ -93,51 +92,52 @@ function cs_subContentOBJ(n,list) {
   this.list=list;
 
   this.ifm=document.createElement("IFRAME");
-  with (this.ifm.style) {
-    position="absolute"; left="-200px"; top="-200px"; visibility="hidden"; width="100px"; height="100px";
-  }
+  this.ifm.style.position="absolute"; left="-200px"; top="-200px"; visibility="hidden"; width="100px"; height="100px";
   document.body.appendChild(this.ifm);
   this.ifm.src=n;
-}; cs_subContent=new Array();
+}
+
+cs_subContent = [];
 
 function cs_contentOBJ(n,obj){
   this.name=n;
   this.menu=obj;
-  this.lists=new Array();
+  this.lists = [];
   this.cookie="";
   this.callback=null;
   this.count=1;
-}; cs_content=new Array();
+}
+
+cs_subContent = [];
 
 function cs_topmenuOBJ(tm) {
   this.name=tm;
   this.type=cs_M;
-  this.items=new Array();
+  this.items = [];
   this.df=",";
   this.oidx=0;
 
-  this.addM=cs_addM; this.addL=cs_addL; this.addG=cs_addG, this.endG=cs_endG;
+  this.addM=cs_addM; this.addL=cs_addL; this.addG=cs_addG; this.endG=cs_endG;
 }
+
 function cs_submenuOBJ(dis,link,sub,label,css) {
-  this.name=sub;
-  this.type=cs_M;
-  this.dis=dis;
-  this.link=link;
-  this.label=label;
-  this.css=css;
-  this.df=",";
-  this.oidx=0;
+    this.name=sub;
+    this.type=cs_M;
+    this.dis=dis;
+    this.link=link;
+    this.label=label;
+    this.css=css;
+    this.df=",";
+    this.oidx=0;
 
-  this.addM=cs_addM; this.addL=cs_addL; this.addG=cs_addG, this.endG=cs_endG;
+    this.addM=cs_addM; this.addL=cs_addL; this.addG=cs_addG; this.endG=cs_endG;
 
-  if (typeof(cs_names[sub])=="undefined") {
-      this.items=new Array();
-      cs_names[sub] = this;
-  }
-  else
-  {
-      this.items = cs_names[sub].items;
-  }
+    if (typeof(cs_names[sub])=="undefined") {
+        this.items = [];
+        cs_names[sub] = this;
+    } else {
+        this.items = cs_names[sub].items;
+    }
 }
 function cs_linkOBJ(dis,link,label,css) {
   this.type=cs_L;
@@ -194,7 +194,7 @@ function cs_getOptions(menu,list) {
   for (var i=0; i<menu.items.length; i++) {
     opt[i]=new cs_optionOBJ(menu.items[i].type, menu.items[i].dis, menu.items[i].link, menu.items[i].label, menu.items[i].css);
   }
-  if (opt.length==0 && menu.name!="") {
+  if (opt.length===0 && menu.name !== '') {
     cs_getSubList(menu.name,list);
     //opt[0]=new cs_optionOBJ(cs_L, "loading ...", "", "", "");
   }
@@ -229,10 +229,10 @@ function cs_refreshList(list,opt,df,key) {
         list.options[iCount].idx=i;
         list.options[iCount].key=key;
 
-        if (opt[i].label!="") {
+        if (opt[i].label !== '') {
           list.options[iCount].label=opt[i].label;
         }
-        if (opt[i].css!="") {
+        if (opt[i].css !== '') {
           list.options[iCount].className=opt[i].css;
         }
 
@@ -247,7 +247,7 @@ function cs_refreshList(list,opt,df,key) {
     if (opt[i].type==cs_G) {
       optGroup=document.createElement("optgroup");
       optGroup.setAttribute("label", opt[i].label);
-      if (opt[i].css!="") {
+      if (opt[i].css !== '') {
         optGroup.setAttribute("className", opt[i].css);
       }
       list.appendChild(optGroup);
@@ -279,10 +279,10 @@ function cs_refreshList(list,opt,df,key) {
       if (df.indexOf(","+optCount+",")!=-1) {
         newOpt.selected=true;
       }
-      if (opt[i].label!="") {
+      if (opt[i].label !== '') {
         newOpt.label=opt[i].label;
       }
-      if (opt[i].css!="") {
+      if (opt[i].css !== '') {
         newOpt.className=opt[i].css;
       }
 
@@ -309,7 +309,7 @@ function cs_getKey(key,idx) {
 function cs_getSelected(mode,name,idx,key,df) {
   if (mode) {
     var cookies=cs_getCookie(name+"_"+idx);
-    if (cookies!="") {
+    if (cookies !== '') {
       var mc=cookies.split("-");
       for (var i=0; i<mc.length; i++) {
         if (mc[i].indexOf(key)!=-1) {
@@ -333,7 +333,7 @@ function cs_updateListGroup(content,idx,mode) {
   for (var i=0; i<options.length; i++) {
     if (options[i].selected) {
       if (key!=options[i].key) {
-        cookies+=key==""?"":((cookies==""?"":"-")+key+option);
+        cookies+=key === '' ? '' : ((cookies === '' ? '' : '-')+key+option);
 
         key=options[i].key;
         option=",";
@@ -355,8 +355,8 @@ function cs_updateListGroup(content,idx,mode) {
     }
   }
 
-  if (key!="") {
-    cookies+=(cookies==""?"":"-")+key+option;
+  if (key !== '') {
+    cookies+=(cookies === '' ? '' : '-')+key+option;
   }
 
   if (content.cookie) {
@@ -408,16 +408,16 @@ function cs_updateList() {
         var opt="";
         for (var j=0; j<this.options.length; j++) {
           if (this.options[j].selected) {
-            if (opt!="") {
+            if (opt !== '') {
               opt+=",";
             }
-            if (this.options[j].value!="") {
+            if (this.options[j].value !== '') {
               opt+=this.options[j].value;
             }
-            else if (this.options[j].text!="") {
+            else if (this.options[j].text !== '') {
               opt+=this.options[j].text;
             }
-            else if (this.options[j].label!="") {
+            else if (this.options[j].label !== '') {
               opt+=this.options[j].label;
             }
           }
@@ -437,7 +437,7 @@ function cs_updateList() {
 function cs_getSubList(n,list) {
   if (cs_goodContent && cs_supportDOM) {
     var cs_subList=cs_findSubContent(n);
-    if (cs_subList==null) {
+    if (cs_subList===null) {
       cs_subContent[cs_subContent.length]=new cs_subContentOBJ(n,list);
     }
   }
@@ -445,9 +445,9 @@ function cs_getSubList(n,list) {
 
 function cs_updateSubList(cn,sn) {
   var cc=cs_findContent(cn), sc=cs_findContent(sn);
-  if (cc!=null && sc!=null) {
+  if (cc!==null && sc!==null) {
     var cs_sub=cs_findM(cc.menu,sn);
-    if (cs_sub!=null) {
+    if (cs_sub!==null) {
       cs_sub.df=sc.menu.df;
       cs_sub.oidx=sc.menu.oidx;
       cs_sub.items=sc.menu.items;
@@ -455,7 +455,7 @@ function cs_updateSubList(cn,sn) {
   }
 
   var cs_subList=cs_findSubContent(sn);
-  if (cs_subList!=null) {
+  if (cs_subList!==null) {
     cs_subList.list.onchange();
 
     cs_subList.ifm.src="";
@@ -470,7 +470,7 @@ function addListGroup(n,tm) {
     cs_names[tm]=new cs_topmenuOBJ(tm);
 
     var c=cs_findContent(n);
-    if (c==null) {
+    if (c===null) {
       cs_content[cs_content.length]=new cs_contentOBJ(n,cs_names[tm]);
     }
     else {
@@ -480,7 +480,7 @@ function addListGroup(n,tm) {
 }
 
 function addList(n,dis,link,sub,df,label,css) {
-  if (typeof(sub)=="undefined" || sub=="") {
+  if (typeof(sub)=="undefined" || sub === '') {
     addOption(n,dis,link||"",df||"",label||"",css||"");
   }
   else if (cs_goodContent) {
@@ -536,7 +536,7 @@ function endOptGroup(n) {
 
 function initListGroup(n) {
   var _content=cs_findContent(n), count=0;
-  if (_content!=null) {
+  if (_content!==null) {
     var content=new cs_contentOBJ("cs_"+_content.count+"_"+n,_content.menu);
     content.count=_content.count++;
     cs_content[cs_content.length]=content;
@@ -571,14 +571,14 @@ function initListGroups(n) {
   for (var i=1; i<initListGroups.arguments.length; i++) {
     // opera takes select array as function
     if ((typeof(arguments[i])=="object" || typeof(arguments[i])=="function") && arguments[i].length && typeof(arguments[i][0])!="undefined" && arguments[i][0].tagName && arguments[i][0].tagName=="SELECT") {
-      if (listCount>arguments[i].length || listCount==0) {
+      if (listCount>arguments[i].length || listCount===0) {
         listCount=arguments[i].length;
       }
     }
   }
 
   var _content=cs_findContent(n), count=0, content=null;
-  if (_content!=null) {
+  if (_content!==null) {
     for (var l=0; l<listCount; l++) {
       count=0;
       content=new cs_contentOBJ("cs_"+_content.count+"_"+n,_content.menu);
@@ -613,20 +613,20 @@ function initListGroups(n) {
 
 function resetListGroup(n,count) {
   var content=cs_findContent("cs_"+(count||1)+"_"+n);
-  if (content!=null && content.lists.length>0) {
+  if (content!==null && content.lists.length>0) {
     cs_initListGroup(content,"");
   }
 }
 
 function selectOptions(n,opts,mode) {
   var content=cs_findContent(n);
-  if (content!=null) {
+  if (content!==null) {
     var optss=opts.split(":"), menu=content.menu, path=true;
     for (var i=0; i<optss.length; i+=2) {
       if (menu.type==cs_M && path) {
         path=false;
         for (var o=0; o<menu.items.length; o++) {
-          if (mode==0 && menu.items[o].dis==optss[i] || mode==1 && menu.items[o].link==optss[i] || mode==2 && o==optss[i]) {
+          if (mode===0 && menu.items[o].dis==optss[i] || mode==1 && menu.items[o].link==optss[i] || mode==2 && o==optss[i]) {
             path=true;
             if (optss[i+1]!="-") {
               menu.df=","+o+",";
@@ -637,6 +637,5 @@ function selectOptions(n,opts,mode) {
         }
       }
     }
-  }  
+  }
 }
-// ------

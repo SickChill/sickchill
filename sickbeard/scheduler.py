@@ -23,7 +23,7 @@ import threading
 import traceback
 
 from sickbeard import logger
-from sickbeard.exceptions import ex
+from sickrage.helper.exceptions import ex
 
 
 class Scheduler(threading.Thread):

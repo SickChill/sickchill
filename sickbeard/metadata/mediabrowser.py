@@ -24,12 +24,16 @@ import sickbeard
 
 import generic
 
-from sickbeard import logger, exceptions, helpers
-from sickbeard.exceptions import ex
+from sickbeard import logger, helpers
+
 from sickrage.helper.common import dateFormat
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ex, ShowNotFoundException
 
-import xml.etree.cElementTree as etree
+try:
+    import xml.etree.cElementTree as etree
+except ImportError:
+    import xml.etree.ElementTree as etree
 
 
 class MediaBrowserMetadata(generic.GenericMetadata):
@@ -409,7 +413,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
             myShow = t[ep_obj.show.indexerid]
         except sickbeard.indexer_shownotfound, e:
-            raise exceptions.ShowNotFoundException(e.message)
+            raise ShowNotFoundException(e.message)
         except sickbeard.indexer_error, e:
             logger.log(u"Unable to connect to " + sickbeard.indexerApi(
                 ep_obj.show.indexer).name + " while creating meta files - skipping - " + ex(e), logger.ERROR)

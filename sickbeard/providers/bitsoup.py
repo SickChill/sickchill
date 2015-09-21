@@ -21,7 +21,6 @@ import traceback
 import datetime
 import sickbeard
 import generic
-import requests
 
 from sickbeard.common import Quality
 from sickbeard import logger
@@ -30,10 +29,9 @@ from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.exceptions import ex, AuthException
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.bs4_parser import BS4Parser
-from unidecode import unidecode
+from sickrage.helper.exceptions import AuthException
 
 
 class BitSoupProvider(generic.TorrentProvider):
@@ -51,6 +49,7 @@ class BitSoupProvider(generic.TorrentProvider):
         self.url = self.urls['base_url']
 
         self.supportsBacklog = True
+        self.public = False
         self.enabled = False
         self.username = None
         self.password = None

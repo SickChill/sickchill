@@ -3,9 +3,7 @@ $(document).ready(function () {
     var searchRequestXhr = null;
 
     function searchIndexers() {
-        if (!$('#nameToSearch').val().length) {
-            return;
-        }
+        if (!$('#nameToSearch').val().length) return;
 
         if (searchRequestXhr) searchRequestXhr.abort();
 
@@ -40,7 +38,7 @@ $(document).ready(function () {
 
 
                         resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries.replace(/"/g, "")  + '"' + checked + ' /> ';
-                        if (data.langid && data.langid != "") {
+                        if (data.langid && data.langid !== "") {
                             resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '&lid=' + data.langid + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
                         } else {
                             resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
@@ -84,7 +82,7 @@ $(document).ready(function () {
             alert('You must choose a show to continue');
             return false;
         }
-        generate_bwlist()
+        generate_bwlist();
         $('#addShowForm').submit();
     });
 
@@ -208,7 +206,7 @@ $(document).ready(function () {
             $('#blackwhitelist').show();
             if (show_name) {
                 $.getJSON(sbRoot + '/home/fetch_releasegroups', {'show_name': show_name}, function (data) {
-                if (data['result'] == 'success') {
+                if (data.result == 'success') {
                     $.each(data.groups, function(i, group) {
                         var option = $("<option>");
                         option.attr("value", group.name);
@@ -221,5 +219,5 @@ $(document).ready(function () {
         } else {
             $('#blackwhitelist').hide();
         }
-    };
+    }
 });

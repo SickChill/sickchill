@@ -23,15 +23,15 @@ import sickbeard
 
 import mediabrowser
 
-from sickbeard import logger, exceptions, helpers
-from sickbeard.exceptions import ex
+from sickbeard import logger, helpers
 from sickrage.helper.common import dateFormat
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ex, ShowNotFoundException
 
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
-    import elementtree.ElementTree as etree
+    import xml.etree.ElementTree as etree
 
 
 class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
@@ -239,7 +239,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             t = sickbeard.indexerApi(ep_obj.show.indexer).indexer(**lINDEXER_API_PARMS)
             myShow = t[ep_obj.show.indexerid]
         except sickbeard.indexer_shownotfound, e:
-            raise exceptions.ShowNotFoundException(e.message)
+            raise ShowNotFoundException(e.message)
         except sickbeard.indexer_error, e:
             logger.log(u"Unable to connect to TVDB while creating meta files - skipping - " + ex(e), logger.ERROR)
             return False

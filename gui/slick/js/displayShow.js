@@ -7,7 +7,9 @@ $(document).ready(function () {
     $('#seasonJump').change(function () {
         var id = $('#seasonJump option:selected').val();
         if (id && id != 'jump') {
-        	$('html,body').animate({scrollTop: $('[name ="' + id.substring(1) + '"]').offset().top - 50}, 'slow');
+            var season = $('#seasonJump option:selected').data('season');
+            $('html,body').animate({scrollTop: $('[name ="' + id.substring(1) + '"]').offset().top - 50}, 'slow');
+            $('#collapseSeason-' + season).collapse('show');
             location.hash = id;
         }
         $(this).val('jump');
@@ -25,21 +27,16 @@ $(document).ready(function () {
 
     $('#changeStatus').click(function () {
         var sbRoot = $('#sbRoot').val();
-        var epArr = new Array()
+        var epArr = [];
 
         $('.epCheck').each(function () {
-
-            if (this.checked == true) {
-                epArr.push($(this).attr('id'))
-            }
-
+            if (this.checked === true) epArr.push($(this).attr('id'));
         });
 
-        if (epArr.length == 0)
-            return false;
+        if (epArr.length === 0) return false;
 
         url = sbRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
-        window.location.href = url
+        window.location.href = url;
 
     });
 
@@ -50,10 +47,7 @@ $(document).ready(function () {
         $('#collapseSeason-' + seasNo).collapse('show');
         $('.epCheck:visible').each(function () {
             var epParts = $(this).attr('id').split('x');
-
-            if (epParts[0] == seasNo) {
-                this.checked = seasCheck.checked
-            }
+            if (epParts[0] == seasNo) this.checked = seasCheck.checked;
         });
     });
 
@@ -86,20 +80,20 @@ $(document).ready(function () {
     // selects all visible episode checkboxes.
     $('.seriesCheck').click(function () {
         $('.epCheck:visible').each(function () {
-            this.checked = true
+            this.checked = true;
         });
         $('.seasonCheck:visible').each(function () {
-            this.checked = true
-        })
+            this.checked = true;
+        });
     });
 
     // clears all visible episode checkboxes and the season selectors
     $('.clearAll').click(function () {
         $('.epCheck:visible').each(function () {
-            this.checked = false
+            this.checked = false;
         });
         $('.seasonCheck:visible').each(function () {
-            this.checked = false
+            this.checked = false;
         });
     });
 
@@ -107,10 +101,9 @@ $(document).ready(function () {
     $('#pickShow').change(function () {
         var sbRoot = $('#sbRoot').val();
         var val = $(this).val();
-        if (val == 0)
-            return;
+        if (val === 0) return;
         url = sbRoot + '/home/displayShow?show=' + val;
-        window.location.href = url
+        window.location.href = url;
     });
 
     // show/hide different types of rows when the checkboxes are changed
@@ -147,16 +140,15 @@ $(document).ready(function () {
             var numRows = 0;
             var seasonNo = $(this).attr('id');
             $('tr.' + seasonNo + ' :visible').each(function () {
-                numRows++
+                numRows++;
             });
-            if (numRows == 0) {
+            if (numRows === 0) {
                 $(this).hide();
-                $('#' + seasonNo + '-cols').hide()
+                $('#' + seasonNo + '-cols').hide();
             } else {
                 $(this).show();
-                $('#' + seasonNo + '-cols').show()
+                $('#' + seasonNo + '-cols').show();
             }
-
         });
     };
 
@@ -260,5 +252,5 @@ $(document).ready(function () {
             sceneAbsolute = m[1];
         }
         setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute);
-    });   
+    });
 });

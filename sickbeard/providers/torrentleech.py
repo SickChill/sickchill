@@ -30,7 +30,6 @@ from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.exceptions import ex
 from sickbeard.bs4_parser import BS4Parser
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
@@ -43,6 +42,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "TorrentLeech")
 
         self.supportsBacklog = True
+        self.public = False
 
         self.enabled = False
         self.username = None

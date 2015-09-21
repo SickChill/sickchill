@@ -22,7 +22,6 @@
 # @copyright: Dermot Buckley
 #
 
-
 import time
 import datetime
 import traceback
@@ -30,8 +29,9 @@ import traceback
 import sickbeard
 from sickbeard import logger
 from sickbeard import db
-from sickbeard.exceptions import ex
 from sickbeard import helpers
+from sickrage.helper.exceptions import ex
+
 
 def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=True):
     """
@@ -535,6 +535,7 @@ def xem_refresh(indexer_id, indexer, force=False):
                 u"Exception while refreshing XEM data for show " + str(indexer_id) + " on " + sickbeard.indexerApi(
                     indexer).name + ": " + ex(e), logger.WARNING)
             logger.log(traceback.format_exc(), logger.DEBUG)
+
 
 def fix_xem_numbering(indexer_id, indexer):
     """

@@ -24,9 +24,9 @@ import generic
 from sickbeard import tvcache
 from sickbeard import classes
 from sickbeard import logger
-from sickbeard.exceptions import AuthException
 from sickbeard import show_name_helpers
 from datetime import datetime
+from sickrage.helper.exceptions import AuthException
 
 
 class OmgwtfnzbsProvider(generic.NZBProvider):
@@ -41,6 +41,7 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
         self.url = self.urls['base_url']
 
         self.supportsBacklog = True
+        self.public = False
 
     def isEnabled(self):
         return self.enabled

@@ -26,6 +26,7 @@ class WombleProvider(generic.NZBProvider):
     def __init__(self):
         generic.NZBProvider.__init__(self, "Womble's Index")
         self.enabled = False
+        self.public = True
         self.cache = WombleCache(self)
         self.urls = {'base_url': 'https://newshost.co.za/'}
         self.url = self.urls['base_url']

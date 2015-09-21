@@ -24,13 +24,13 @@ import stat
 
 import sickbeard
 from sickbeard import postProcessor
-from sickbeard import db, helpers, exceptions
-from sickbeard.exceptions import ex
+from sickbeard import db, helpers
 from sickbeard import logger
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import common
 from sickbeard import failedProcessor
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
 from unrar2 import RarFile
 from unrar2.rar_exceptions import *
@@ -545,7 +545,7 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
             processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority)
             result.result = processor.process()
             process_fail_message = ""
-        except exceptions.PostProcessingFailed, e:
+        except EpisodePostProcessingFailedException, e:
             result.result = False
             process_fail_message = ex(e)
 
@@ -601,7 +601,7 @@ def process_failed(dirName, nzbName, result):
             processor = failedProcessor.FailedProcessor(dirName, nzbName)
             result.result = processor.process()
             process_fail_message = ""
-        except exceptions.FailedProcessingFailed, e:
+        except FailedPostProcessingFailedException, e:
             result.result = False
             process_fail_message = ex(e)
 

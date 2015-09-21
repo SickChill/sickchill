@@ -20,7 +20,7 @@ import generic
 
 from sickbeard import classes
 from sickbeard import logger, tvcache
-from sickbeard.exceptions import AuthException
+from sickrage.helper.exceptions import AuthException
 
 try:
     import json
@@ -34,6 +34,7 @@ class HDBitsProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "HDBits")
 
         self.supportsBacklog = True
+        self.public = False
 
         self.enabled = False
         self.username = None

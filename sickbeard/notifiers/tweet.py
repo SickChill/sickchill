@@ -19,7 +19,7 @@
 import sickbeard
 
 from sickbeard import logger, common
-from sickbeard.exceptions import ex
+from sickrage.helper.exceptions import ex
 
 # parse_qsl moved to urlparse module in v2.6
 try:
@@ -51,7 +51,7 @@ class TwitterNotifier:
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyTwitter(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ": " + lang)
-            
+
     def notify_git_update(self, new_version = "??"):
         if sickbeard.USE_TWITTER:
             update_text=common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]

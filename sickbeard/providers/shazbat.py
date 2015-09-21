@@ -18,9 +18,9 @@
 
 import generic
 
-from sickbeard.exceptions import AuthException
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.exceptions import AuthException
 
 
 class ShazbatProvider(generic.TorrentProvider):
@@ -29,6 +29,7 @@ class ShazbatProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "Shazbat.tv")
 
         self.supportsBacklog = False
+        self.public = False
 
         self.enabled = False
         self.passkey = None

@@ -31,10 +31,8 @@ from sickbeard import tvcache
 from sickbeard import show_name_helpers
 from sickbeard import db
 from sickbeard import helpers
-from unidecode import unidecode
 from sickbeard import classes
 from sickbeard.helpers import sanitizeSceneName
-from sickbeard.exceptions import ex
 
 
 class BLUETIGERSProvider(generic.TorrentProvider):
@@ -42,6 +40,7 @@ class BLUETIGERSProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "BLUETIGERS")
 
         self.supportsBacklog = True
+        self.public = False
         self.enabled = False
         self.username = None
         self.password = None

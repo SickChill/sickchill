@@ -42,6 +42,7 @@ class CpasbienProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "Cpasbien")
 
         self.supportsBacklog = True
+        self.public = True
         self.ratio = None
         
         self.url = "http://www.cpasbien.pw"

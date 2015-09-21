@@ -60,7 +60,7 @@ from sickbeard.common import SD
 from sickbeard.common import SKIPPED
 from sickbeard.common import WANTED
 from sickbeard.databases import mainDB, cache_db, failed_db
-from sickbeard.exceptions import ex
+from sickrage.helper.exceptions import ex
 from sickrage.system.Shutdown import Shutdown
 
 from configobj import ConfigObj
@@ -664,7 +664,7 @@ def initialize(consoleLogging=True):
             gh = Github(user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
         except Exception as e:
             gh = None
-            logger.log('Unable to setup github properly, github will not be available. Error: {0}'.format(ex(e)),logger.WARNING)
+            logger.log('Unable to setup GitHub properly. GitHub will not be available. Error: %s' % ex(e), logger.WARNING)
 
         # git reset on update
         GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 1))

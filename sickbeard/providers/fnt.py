@@ -33,7 +33,6 @@ from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
 from sickbeard.helpers import sanitizeSceneName
-from sickbeard.exceptions import ex
 
 
 class FNTProvider(generic.TorrentProvider):
@@ -41,6 +40,7 @@ class FNTProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "FNT")
 
         self.supportsBacklog = True
+        self.public = False
         self.enabled = False
         self.username = None
         self.password = None

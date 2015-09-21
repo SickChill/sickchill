@@ -23,10 +23,10 @@ import datetime
 
 from sickbeard import db
 from sickbeard import logger
-from sickbeard.exceptions import ex, EpisodeNotFoundException
 from sickbeard.common import Quality
 from sickbeard.common import WANTED, FAILED
 from sickrage.helper.encoding import ss
+from sickrage.helper.exceptions import EpisodeNotFoundException, ex
 from sickrage.show.History import History
 
 

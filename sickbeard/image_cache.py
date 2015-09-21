@@ -21,9 +21,10 @@ import os.path
 
 import sickbeard
 
-from sickbeard import helpers, logger, exceptions
+from sickbeard import helpers, logger
 from sickbeard.metadata.generic import GenericMetadata
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ShowDirectoryNotFoundException
 
 from hachoir_parser import createParser
 from hachoir_metadata import extractMetadata
@@ -301,7 +302,7 @@ class ImageCache:
                                     cur_file_type), logger.DEBUG)
                             self._cache_image_from_file(cur_file_name, cur_file_type, show_obj.indexerid)
                             need_images[cur_file_type] = False
-            except exceptions.ShowDirNotFoundException:
+            except ShowDirectoryNotFoundException:
                 logger.log(u"Unable to search for images in show dir because it doesn't exist", logger.WARNING)
 
         # download from indexer for missing ones

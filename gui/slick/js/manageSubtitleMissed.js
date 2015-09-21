@@ -1,24 +1,20 @@
-$(document).ready(function() { 
+$(document).ready(function() {
 
     function make_row(indexer_id, season, episode, name, subtitles, checked) {
-        if (checked)
-            var checked = ' checked';
-        else
-            var checked = '';
+        checked = checked ? ' checked' : '';
 
         var row = '';
         row += ' <tr class="good show-' + indexer_id + '">';
         row += '  <td align="center"><input type="checkbox" class="'+indexer_id+'-epcheck" name="'+indexer_id+'-'+season+'x'+episode+'"'+checked+'></td>';
         row += '  <td style="width: 1%;">'+season+'x'+episode+'</td>';
         row += '  <td>'+name+'</td>';
-        row += '  <td style="float: right;">'; 
-        	subtitles = subtitles.split(',')
-        	for (var i in subtitles)
-        	{
-        		row += '   <img src="/images/subtitles/flags/'+subtitles[i]+'.png" width="16" height="11" alt="'+subtitles[i]+'" />&nbsp;';
-        	}
+        row += '  <td style="float: right;">';
+            subtitles = subtitles.split(',');
+            for (var i in subtitles) {
+                row += '   <img src="/images/subtitles/flags/'+subtitles[i]+'.png" width="16" height="11" alt="'+subtitles[i]+'" />&nbsp;';
+            }
         row += '  </td>';
-        row += ' </tr>'
+        row += ' </tr>';
 
         return row;
     }

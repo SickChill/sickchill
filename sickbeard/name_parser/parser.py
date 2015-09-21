@@ -26,8 +26,8 @@ import regexes
 import sickbeard
 
 from sickbeard import logger, helpers, scene_numbering, common, scene_exceptions, db
-from sickbeard.exceptions import ex
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ex
 from dateutil import parser
 
 
@@ -51,7 +51,8 @@ class NameParser(object):
         else:
             self._compile_regexes(self.ALL_REGEX)
 
-    def clean_series_name(self, series_name):
+    @staticmethod
+    def clean_series_name(series_name):
         """Cleans up series name by removing any . and _
         characters, along with any trailing hyphens.
 
@@ -66,13 +67,13 @@ class NameParser(object):
         Stolen from dbr's tvnamer
         """
 
-        series_name = re.sub("(\D)\.(?!\s)(\D)", "\\1 \\2", series_name)
-        series_name = re.sub("(\d)\.(\d{4})", "\\1 \\2", series_name)  # if it ends in a year then don't keep the dot
-        series_name = re.sub("(\D)\.(?!\s)", "\\1 ", series_name)
-        series_name = re.sub("\.(?!\s)(\D)", " \\1", series_name)
+        series_name = re.sub(r"(\D)\.(?!\s)(\D)", "\\1 \\2", series_name)
+        series_name = re.sub(r"(\d)\.(\d{4})", "\\1 \\2", series_name)  # if it ends in a year then don't keep the dot
+        series_name = re.sub(r"(\D)\.(?!\s)", "\\1 ", series_name)
+        series_name = re.sub(r"\.(?!\s)(\D)", " \\1", series_name)
         series_name = series_name.replace("_", " ")
-        series_name = re.sub("-$", "", series_name)
-        series_name = re.sub("^\[.*\]", "", series_name)
+        series_name = re.sub(r"-$", "", series_name)
+        series_name = re.sub(r"^\[.*\]", "", series_name)
         return series_name.strip()
 
     def _compile_regexes(self, regexMode):
@@ -155,7 +156,7 @@ class NameParser(object):
                 try:
                     result.air_date = parser.parse(air_date, fuzzy=True).date()
                     result.score += 1
-                except:
+                except Exception:
                     continue
 
             if 'extra_info' in named_groups:
@@ -346,19 +347,21 @@ class NameParser(object):
         b = getattr(second, attr)
 
         # if a is good use it
-        if a != None or (type(a) == list and len(a)):
+        if a != None or (isinstance(a, list) and a):
             return a
         # if not use b (if b isn't set it'll just be default)
         else:
             return b
 
-    def _unicodify(self, obj, encoding="utf-8"):
+    @staticmethod
+    def _unicodify(obj, encoding="utf-8"):
         if isinstance(obj, basestring):
             if not isinstance(obj, unicode):
                 obj = unicode(obj, encoding, 'replace')
         return obj
 
-    def _convert_number(self, org_number):
+    @staticmethod
+    def _convert_number(org_number):
         """
          Convert org_number into an integer
          org_number: integer or representation of a number: string or unicode
@@ -373,11 +376,12 @@ class NameParser(object):
             else:
                 number = 0
 
-        except:
+        except Exception:
             # on error try converting from Roman numerals
-            roman_to_int_map = (('M', 1000), ('CM', 900), ('D', 500), ('CD', 400), ('C', 100),
-                                ('XC', 90), ('L', 50), ('XL', 40), ('X', 10),
-                                ('IX', 9), ('V', 5), ('IV', 4), ('I', 1)
+            roman_to_int_map = (
+                ('M', 1000), ('CM', 900), ('D', 500), ('CD', 400), ('C', 100),
+                ('XC', 90), ('L', 50), ('XL', 40), ('X', 10),
+                ('IX', 9), ('V', 5), ('IV', 4), ('I', 1)
             )
 
             roman_numeral = str(org_number).upper()
@@ -480,7 +484,7 @@ class ParseResult(object):
                  score=None,
                  quality=None,
                  version=None
-    ):
+                ):
 
         self.original_name = original_name
 
@@ -587,10 +591,8 @@ class NameParserCache(object):
 
     def add(self, name, parse_result):
         self._previous_parsed[name] = parse_result
-        _current_cache_size = len(self._previous_parsed)
-        if _current_cache_size > self._cache_size:
-            for i in range(_current_cache_size - self._cache_size):
-                del self._previous_parsed[self._previous_parsed.keys()[0]]
+        while len(self._previous_parsed) > self._cache_size:
+            del self._previous_parsed[self._previous_parsed.keys()[0]]
 
     def get(self, name):
         if name in self._previous_parsed:

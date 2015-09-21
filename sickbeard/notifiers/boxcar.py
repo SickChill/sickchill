@@ -24,7 +24,7 @@ import sickbeard
 
 from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT
-from sickbeard.exceptions import ex
+from sickrage.helper.exceptions import ex
 
 API_URL = "https://boxcar.io/devices/providers/fWc4sgSmpcN6JujtBmR6/notifications"
 
@@ -36,12 +36,12 @@ class BoxcarNotifier:
     def _sendBoxcar(self, msg, title, email, subscribe=False):
         """
         Sends a boxcar notification to the address provided
-        
+
         msg: The message to send (unicode)
         title: The title of the message
         email: The email address to send the message to (or to subscribe with)
         subscribe: If true then instead of sending a message this function will send a subscription notification (optional, default is False)
-        
+
         returns: True if the message succeeded, False otherwise
         """
 
@@ -122,7 +122,7 @@ class BoxcarNotifier:
     def notify_subtitle_download(self, ep_name, lang, title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
         if sickbeard.BOXCAR_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyBoxcar(title, ep_name + ": " + lang)
-            
+
     def notify_git_update(self, new_version = "??"):
         if sickbeard.USE_BOXCAR:
             update_text=notifyStrings[NOTIFY_GIT_UPDATE_TEXT]

@@ -31,8 +31,8 @@ import sickbeard
 from sickbeard import notifiers
 from sickbeard import ui
 from sickbeard import logger, helpers
-from sickbeard.exceptions import ex
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ex
 import requests
 
 import shutil
@@ -103,7 +103,7 @@ class CheckVersion:
                 ui.notifications.message('Backup', 'Config backup failed, aborting update')
                 return False
         except Exception as e:
-            logger.log('Update: Config backup failed. Error: {0}'.format(ex(e)),logger.ERROR)
+            logger.log('Update: Config backup failed. Error: %s' % ex(e), logger.ERROR)
             ui.notifications.message('Backup', 'Config backup failed, aborting update')
             return False
 
@@ -217,6 +217,7 @@ class CheckVersion:
             else:
                 return 'downgrade'
         except Exception:
+            raise
             return 'error'
 
     def find_install_type(self):
@@ -579,7 +580,7 @@ class GitUpdateManager(UpdateManager):
             output, err, exit_status = self._run_git(self._git_path, 'checkout -f ' + self.branch)  # @UnusedVariable
 
         if exit_status == 0:
-            output, err, exit_status = self._run_git(self._git_path, 'submodule update --init --recursive --force')
+            output, err, exit_status = self._run_git(self._git_path, 'submodule update --init --recursive')
 
             if exit_status == 0:
                 self._find_installed_version()
