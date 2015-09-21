@@ -79,7 +79,7 @@ $('#config-components').tabs();
 
                                 curName = curProvider.getID()
                             %>
-                            <li class="ui-state-default" id="${curName}">
+                            <li class="ui-state-default ${('private', 'public')[bool(curProvider.public)]}" id="${curName}">
                                 <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.isEnabled() == True]}/>
                                 <a href="${anon_url(curProvider.url)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${sbRoot}/images/providers/${curProvider.imageName()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
                                 <span style="vertical-align:middle;">${curProvider.name}</span>
