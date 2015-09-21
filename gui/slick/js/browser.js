@@ -32,7 +32,7 @@
             var i = 0;
             var list, link = null;
             data = $.grep(data, function (value) {
-                return i++ != 0;
+                return i++ !== 0;
             });
             $('<h2>').text(first_val.current_path).appendTo(fileBrowserDialog);
             list = $('<ul>').appendTo(fileBrowserDialog);
@@ -152,7 +152,7 @@
         if (ls && options.key) {
             path = localStorage['fileBrowser-' + options.key];
         }
-        if (options.key && options.field.val().length == 0 && (path)) {
+        if (options.key && options.field.val().length === 0 && (path)) {
             options.field.val(path);
         }
 
