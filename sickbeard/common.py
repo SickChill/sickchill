@@ -220,6 +220,7 @@ class Quality:
 
         return Quality.UNKNOWN
 
+
     @staticmethod
     def sceneQuality(name, anime=False):
         """
@@ -229,6 +230,9 @@ class Quality:
         :param anime: Boolean to indicate if the show we're resolving is Anime
         :return: Quality prefix
         """
+
+        # pylint: disable=R0912
+
         ret = Quality.UNKNOWN
         if not name:
             return ret
@@ -238,11 +242,11 @@ class Quality:
         checkName = lambda list, func: func([re.search(x, name, re.I) for x in list])
 
         if anime:
-            dvdOptions = checkName(["dvd", "dvdrip"], any)
-            blueRayOptions = checkName(["BD", "blue?-?ray"], any)
-            sdOptions = checkName(["360p", "480p", "848x480", "XviD"], any)
-            hdOptions = checkName(["720p", "1280x720", "960x720"], any)
-            fullHD = checkName(["1080p", "1920x1080"], any)
+            dvdOptions = checkName([r"dvd", r"dvdrip"], any)
+            blueRayOptions = checkName([r"BD", r"blue?-?ray"], any)
+            sdOptions = checkName([r"360p", r"480p", r"848x480", r"XviD"], any)
+            hdOptions = checkName([r"720p", r"1280x720", r"960x720"], any)
+            fullHD = checkName([r"1080p", r"1920x1080"], any)
 
             if sdOptions and not blueRayOptions and not dvdOptions:
                 ret = Quality.SDTV
@@ -261,27 +265,27 @@ class Quality:
 
             return ret
 
-        if checkName(["(pdtv|hdtv|dsr|tvrip).(xvid|x26[45]|h.?26[45])"], all) and not checkName(["(720|1080)[pi]"], all) and\
-                not checkName(["hr.ws.pdtv.x26[45]"], any):
+        if checkName([r"(pdtv|hd.?tv|dsr|tvrip).(xvid|x26[45]|h.?26[45])"], all) and not checkName([r"(720|1080)[pi]"], all) and\
+                not checkName([r"hr.ws.pdtv.x26[45]"], any):
             ret = Quality.SDTV
-        elif checkName(["web.dl|webrip", "xvid|x26[45]|h.?26[45]"], all) and not checkName(["(720|1080)[pi]"], all):
+        elif checkName([r"web.dl|webrip", r"xvid|x26[45]|h.?26[45]"], all) and not checkName([r"(720|1080)[pi]"], all):
             ret = Quality.SDTV
-        elif checkName(["(dvdrip|b[rd]rip|blue?-?ray)(.ws)?.(xvid|divx|x26[45])"], any) and not checkName(["(720|1080)[pi]"], all):
+        elif checkName([r"(dvdrip|b[rd]rip|blue?-?ray)(.ws)?.(xvid|divx|x26[45])"], any) and not checkName([r"(720|1080)[pi]"], all):
             ret = Quality.SDDVD
-        elif checkName(["720p", "hdtv", "x26[45]"], all) or checkName(["hr.ws.pdtv.x26[45]"], any) and not checkName(
-                ["1080[pi]"], all):
+        elif checkName([r"720p", r"hd.?tv", r"x26[45]"], all) or checkName([r"hr.ws.pdtv.x26[45]"], any) and not checkName(
+                [r"1080[pi]"], all):
             ret = Quality.HDTV
-        elif checkName(["720p|1080i", "hdtv", "mpeg-?2"], all) or checkName(["1080[pi].hdtv", "h.?26[45]"], all):
+        elif checkName([r"720p|1080i", r"hd.?tv", r"mpeg-?2"], all) or checkName([r"1080[pi].hdtv", r"h.?26[45]"], all):
             ret = Quality.RAWHDTV
-        elif checkName(["1080p", "hdtv", "x26[45]"], all):
+        elif checkName([r"1080p", r"hd.?tv", r"x26[45]"], all):
             ret = Quality.FULLHDTV
-        elif checkName(["720p", "web.?dl|webrip"], all) or checkName(["720p", "itunes", "h.?26[45]"], all):
+        elif checkName([r"720p", r"web.?dl|webrip"], all) or checkName([r"720p", r"itunes", r"h.?26[45]"], all):
             ret = Quality.HDWEBDL
-        elif checkName(["1080p", "web.?dl|webrip"], all) or checkName(["1080p", "itunes", "h.?26[45]"], all):
+        elif checkName([r"1080p", r"web.?dl|webrip"], all) or checkName([r"1080p", r"itunes", r"h.?26[45]"], all):
             ret = Quality.FULLHDWEBDL
-        elif checkName(["720p", "blue?-?ray|hddvd|b[rd]rip", "x26[45]"], all):
+        elif checkName([r"720p", r"blue?-?ray|hddvd|b[rd]rip", r"x26[45]"], all):
             ret = Quality.HDBLURAY
-        elif checkName(["1080p", "blue?-?ray|hddvd|b[rd]rip", "x26[45]"], all):
+        elif checkName([r"1080p", r"blue?-?ray|hddvd|b[rd]rip", r"x26[45]"], all):
             ret = Quality.FULLHDBLURAY
 
         return ret
@@ -311,6 +315,9 @@ class Quality:
         :param filename: Filename to analyse
         :return: Quality prefix
         """
+
+        # pylint: disable=R0912
+
         from hachoir_parser import createParser
         from hachoir_metadata import extractMetadata
 
