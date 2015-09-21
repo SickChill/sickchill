@@ -37,7 +37,7 @@ from sickbeard import helpers
 from sickbeard import classes
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
-from sickbeard.exceptions import ex
+
 
 class LibertaliaProvider(generic.TorrentProvider):
 

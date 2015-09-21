@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
 import urllib, httplib
 
 import sickbeard
@@ -33,13 +31,13 @@ except ImportError:
 
 from sickbeard.common import USER_AGENT
 from sickbeard import logger
-from sickbeard.exceptions import ex
+from sickrage.helper.exceptions import ex
 
 
 def sendNZB(nzb):
     """
     Sends an NZB to SABnzbd via the API.
-    
+
     :param nzb: The NZBSearchResult object to send to SAB
     """
 
@@ -89,7 +87,7 @@ def sendNZB(nzb):
     logger.log(u"URL: " + url, logger.DEBUG)
 
     try:
-        # if we have the URL to an NZB then we've built up the SAB API URL already so just call it 
+        # if we have the URL to an NZB then we've built up the SAB API URL already so just call it
         if nzb.resultType == "nzb":
             f = urllib.urlopen(url)
 
@@ -228,7 +226,7 @@ def getSabAccesMethod(host=None, username=None, password=None, apikey=None):
 def testAuthentication(host=None, username=None, password=None, apikey=None):
     """
     Sends a simple API request to SAB to determine if the given connection information is connect
-    
+
     :param host: The host where SAB is running (incl port)
     :param username: The username to use for the HTTP request
     :param password: The password to use for the HTTP request
@@ -257,4 +255,4 @@ def testAuthentication(host=None, username=None, password=None, apikey=None):
         return False, sabText
 
     return True, "Success"
-    
+

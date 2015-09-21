@@ -24,7 +24,7 @@ import sickbeard
 
 from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT
-from sickbeard.exceptions import ex
+from sickrage.helper.exceptions import ex
 
 API_URL = "https://new.boxcar.io/api/notifications"
 
@@ -36,11 +36,11 @@ class Boxcar2Notifier:
     def _sendBoxcar2(self, msg, title, accesstoken):
         """
         Sends a boxcar2 notification to the address provided
-        
+
         msg: The message to send
         title: The title of the message
-        accesstoken: to send to this device	
-			
+        accesstoken: to send to this device
+
         returns: True if the message succeeded, False otherwise
         """
 
@@ -95,7 +95,7 @@ class Boxcar2Notifier:
     def notify_subtitle_download(self, ep_name, lang, title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
         if sickbeard.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyBoxcar2(title, ep_name + ": " + lang)
-            
+
     def notify_git_update(self, new_version = "??"):
         if sickbeard.USE_BOXCAR2:
             update_text=notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
@@ -108,7 +108,7 @@ class Boxcar2Notifier:
 
         title: The title of the notification to send
         message: The message string to send
-        accesstoken: to send to this device	
+        accesstoken: to send to this device
         """
 
         if not sickbeard.USE_BOXCAR2:

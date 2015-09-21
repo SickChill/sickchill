@@ -29,7 +29,7 @@ import sickbeard
 
 from common import SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Quality, SEASON_RESULT, MULTI_EP_RESULT
 
-from sickbeard import logger, db, show_name_helpers, exceptions, helpers
+from sickbeard import logger, db, show_name_helpers, helpers
 from sickbeard import sab
 from sickbeard import nzbget
 from sickbeard import clients
@@ -38,10 +38,10 @@ from sickbeard import notifiers
 from sickbeard import nzbSplitter
 from sickbeard import ui
 from sickbeard import failed_history
-from sickbeard.exceptions import ex
 from sickbeard.providers.generic import GenericProvider
 from sickbeard import common
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import AuthException, ex
 
 
 def _downloadResult(result):
@@ -387,7 +387,7 @@ def searchForNeededEpisodes():
         curFoundResults = {}
         try:
             curFoundResults = curProvider.searchRSS(episodes)
-        except exceptions.AuthException, e:
+        except AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
             continue
         except Exception, e:
@@ -486,7 +486,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
             try:
                 searchResults = curProvider.findSearchResults(show, episodes, search_mode, manualSearch, downCurQuality)
-            except exceptions.AuthException, e:
+            except AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
                 break
             except Exception, e:

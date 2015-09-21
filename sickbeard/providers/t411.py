@@ -25,8 +25,6 @@ from requests.auth import AuthBase
 import sickbeard
 import generic
 
-import requests
-
 from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
@@ -35,7 +33,6 @@ from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
 from sickbeard.helpers import sanitizeSceneName
-from sickbeard.exceptions import ex
 
 
 class T411Provider(generic.TorrentProvider):

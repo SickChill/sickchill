@@ -27,8 +27,8 @@ import re
 
 from sickbeard import logger, classes, helpers
 from sickbeard.common import Quality
-from sickbeard.exceptions import ex
 from sickrage.helper.encoding import ek, ss
+from sickrage.helper.exceptions import ex
 
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 

@@ -22,8 +22,8 @@ import subprocess
 import sickbeard
 
 from sickbeard import logger
-from sickbeard.exceptions import ex
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ex
 
 
 class synoIndexNotifier:

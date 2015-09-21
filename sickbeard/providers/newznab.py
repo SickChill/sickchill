@@ -31,8 +31,8 @@ from sickbeard import scene_exceptions
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
-from sickbeard.exceptions import AuthException
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import AuthException
 
 
 class NewznabProvider(generic.NZBProvider):

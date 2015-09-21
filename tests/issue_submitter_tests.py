@@ -21,20 +21,20 @@ from __future__ import with_statement
 
 import unittest
 import sys, os.path
-from configobj import ConfigObj
+
+from sickbeard import logger
+from sickrage.helper.exceptions import ex
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import sickbeard
-import test_lib as test
 
 def error():
     try:
         raise Exception('FAKE EXCEPTION')
     except Exception as e:
-        sickbeard.logger.log("FAKE ERROR: " + sickbeard.exceptions.ex(e), sickbeard.logger.ERROR)
-        sickbeard.logger.submit_errors()
+        logger.log("FAKE ERROR: " + ex(e), logger.ERROR)
+        logger.submit_errors()
         raise
 
 

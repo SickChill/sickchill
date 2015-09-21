@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+
 import httplib
 import urllib, urllib2
 import time
@@ -24,7 +25,7 @@ import time
 import sickbeard
 from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT
-from sickbeard.exceptions import ex
+from sickrage.helper.exceptions import ex
 
 API_URL = "https://api.pushover.net/1/messages.json"
 
@@ -36,12 +37,12 @@ class PushoverNotifier:
     def _sendPushover(self, msg, title, sound=None, userKey=None, apiKey=None):
         """
         Sends a pushover notification to the address provided
-        
+
         msg: The message to send (unicode)
         title: The title of the message
         userKey: The pushover user id to send the message to (or to subscribe with)
         sound: The notification sound to use
-        
+
         returns: True if the message succeeded, False otherwise
         """
 
@@ -141,12 +142,12 @@ class PushoverNotifier:
     def notify_subtitle_download(self, ep_name, lang, title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
         if sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyPushover(title, ep_name + ": " + lang)
-            
+
     def notify_git_update(self, new_version = "??"):
         if sickbeard.USE_PUSHOVER:
             update_text=notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
             title=notifyStrings[NOTIFY_GIT_UPDATE]
-            self._notifyPushover(title, update_text + new_version) 
+            self._notifyPushover(title, update_text + new_version)
 
     def _notifyPushover(self, title, message, sound=None, userKey=None, apiKey=None, force=False):
         """
@@ -154,7 +155,7 @@ class PushoverNotifier:
 
         title: The title of the notification to send
         message: The message string to send
-        userKey: The userKey to send the notification to 
+        userKey: The userKey to send the notification to
         sound: The notification sound to use
         force: Enforce sending, for instance for testing
         """

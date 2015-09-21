@@ -22,7 +22,7 @@ import telnetlib
 import re
 
 from sickbeard import logger
-from sickbeard.exceptions import ex
+from sickrage.helper.exceptions import ex
 
 try:
     import xml.etree.cElementTree as etree
@@ -34,9 +34,9 @@ class NMJNotifier:
     def notify_settings(self, host):
         """
         Retrieves the settings from a NMJ/Popcorn hour
-        
+
         host: The hostname/IP of the Popcorn Hour server
-        
+
         Returns: True if the settings were retrieved successfully, False otherwise
         """
 
@@ -96,7 +96,7 @@ class NMJNotifier:
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.USE_NMJ:
             self._notifyNMJ()
-            
+
     def notify_git_update(self, new_version):
         return False
         # Not implemented, no reason to start scanner.
@@ -107,11 +107,11 @@ class NMJNotifier:
     def _sendNMJ(self, host, database, mount=None):
         """
         Sends a NMJ update command to the specified machine
-        
+
         host: The hostname/IP to send the request to (no port)
         database: The database to send the requst to
         mount: The mount URL to use (optional)
-        
+
         Returns: True if the request succeeded, False otherwise
         """
 
@@ -177,7 +177,7 @@ class NMJNotifier:
     def _notifyNMJ(self, host=None, database=None, mount=None, force=False):
         """
         Sends a NMJ update command based on the SB config settings
-        
+
         host: The host to send the command to (optional, defaults to the host in the config)
         database: The database to use (optional, defaults to the database in the config)
         mount: The mount URL (optional, defaults to the mount URL in the config)
