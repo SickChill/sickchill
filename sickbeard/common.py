@@ -58,7 +58,7 @@ subtitleExtensions = ['srt', 'sub', 'ass', 'idx', 'ssa']
 cpu_presets = {'HIGH': 5,
                'NORMAL': 2,
                'LOW': 1
-}
+              }
 
 ### Other constants
 MULTI_EP_RESULT = -1
@@ -107,7 +107,7 @@ multiEpStrings[NAMING_EXTEND] = "Extend"
 multiEpStrings[NAMING_LIMITED_EXTEND] = "Extend (Limited)"
 multiEpStrings[NAMING_LIMITED_EXTEND_E_PREFIXED] = "Extend (Limited, E-prefixed)"
 
-
+# pylint: disable=W0232,C1001
 class Quality:
     NONE = 0  # 0
     SDTV = 1  # 1
@@ -172,9 +172,9 @@ class Quality:
         :return: Human readable status value
         """
         toReturn = {}
-        for x in Quality.qualityStrings.keys():
-            toReturn[Quality.compositeStatus(status, x)] = Quality.statusPrefixes[status] + " (" + \
-                                                           Quality.qualityStrings[x] + ")"
+        for q in Quality.qualityStrings.keys():
+            toReturn[Quality.compositeStatus(status, q)] = Quality.statusPrefixes[status] + " (" + \
+                                                           Quality.qualityStrings[q] + ")"
         return toReturn
 
     @staticmethod
@@ -229,8 +229,9 @@ class Quality:
         :param anime: Boolean to indicate if the show we're resolving is Anime
         :return: Quality prefix
         """
+        ret = Quality.UNKNOWN
         if not name:
-            return Quality.UNKNOWN
+            return ret
 
         name = os.path.basename(name)
 
@@ -244,46 +245,46 @@ class Quality:
             fullHD = checkName(["1080p", "1920x1080"], any)
 
             if sdOptions and not blueRayOptions and not dvdOptions:
-                return Quality.SDTV
+                ret = Quality.SDTV
             elif dvdOptions:
-                return Quality.SDDVD
+                ret = Quality.SDDVD
             elif hdOptions and not blueRayOptions and not fullHD:
-                return Quality.HDTV
+                ret = Quality.HDTV
             elif fullHD and not blueRayOptions and not hdOptions:
-                return Quality.FULLHDTV
+                ret = Quality.FULLHDTV
             elif hdOptions and not blueRayOptions and not fullHD:
-                return Quality.HDWEBDL
+                ret = Quality.HDWEBDL
             elif blueRayOptions and hdOptions and not fullHD:
-                return Quality.HDBLURAY
+                ret = Quality.HDBLURAY
             elif blueRayOptions and fullHD and not hdOptions:
-                return Quality.FULLHDBLURAY
-            else:
-                return Quality.UNKNOWN
+                ret = Quality.FULLHDBLURAY
+
+            return ret
 
         if checkName(["(pdtv|hdtv|dsr|tvrip).(xvid|x26[45]|h.?26[45])"], all) and not checkName(["(720|1080)[pi]"], all) and\
                 not checkName(["hr.ws.pdtv.x26[45]"], any):
-            return Quality.SDTV
+            ret = Quality.SDTV
         elif checkName(["web.dl|webrip", "xvid|x26[45]|h.?26[45]"], all) and not checkName(["(720|1080)[pi]"], all):
-            return Quality.SDTV
+            ret = Quality.SDTV
         elif checkName(["(dvdrip|b[rd]rip|blue?-?ray)(.ws)?.(xvid|divx|x26[45])"], any) and not checkName(["(720|1080)[pi]"], all):
-            return Quality.SDDVD
+            ret = Quality.SDDVD
         elif checkName(["720p", "hdtv", "x26[45]"], all) or checkName(["hr.ws.pdtv.x26[45]"], any) and not checkName(
                 ["1080[pi]"], all):
-            return Quality.HDTV
+            ret = Quality.HDTV
         elif checkName(["720p|1080i", "hdtv", "mpeg-?2"], all) or checkName(["1080[pi].hdtv", "h.?26[45]"], all):
-            return Quality.RAWHDTV
+            ret = Quality.RAWHDTV
         elif checkName(["1080p", "hdtv", "x26[45]"], all):
-            return Quality.FULLHDTV
+            ret = Quality.FULLHDTV
         elif checkName(["720p", "web.?dl|webrip"], all) or checkName(["720p", "itunes", "h.?26[45]"], all):
-            return Quality.HDWEBDL
+            ret = Quality.HDWEBDL
         elif checkName(["1080p", "web.?dl|webrip"], all) or checkName(["1080p", "itunes", "h.?26[45]"], all):
-            return Quality.FULLHDWEBDL
+            ret = Quality.FULLHDWEBDL
         elif checkName(["720p", "blue?-?ray|hddvd|b[rd]rip", "x26[45]"], all):
-            return Quality.HDBLURAY
+            ret = Quality.HDBLURAY
         elif checkName(["1080p", "blue?-?ray|hddvd|b[rd]rip", "x26[45]"], all):
-            return Quality.FULLHDBLURAY
-        else:
-            return Quality.UNKNOWN
+            ret = Quality.FULLHDBLURAY
+
+        return ret
 
     @staticmethod
     def assumeQuality(name):
@@ -315,6 +316,7 @@ class Quality:
 
         try:
             parser = createParser(filename)
+        # pylint: disable=W0703
         except Exception:
             parser = None
 
@@ -323,12 +325,15 @@ class Quality:
 
         try:
             metadata = extractMetadata(parser)
+        # pylint: disable=W0703
         except Exception:
             metadata = None
 
         try:
+            # pylint: disable=W0212
             parser.stream._input.close()
-        except:
+        # pylint: disable=W0703
+        except Exception:
             pass
 
         if not metadata:
@@ -353,7 +358,7 @@ class Quality:
 
         ret = Quality.UNKNOWN
         if height > 1000:
-            ret = ((Quality.FULLHDTV, Quality.FULLHDBLURAY)[bluray], FULLHDWEBDL)[webdl]
+            ret = ((Quality.FULLHDTV, Quality.FULLHDBLURAY)[bluray], Quality.FULLHDWEBDL)[webdl]
         elif height > 680 and height < 800:
             ret = ((Quality.HDTV, Quality.HDBLURAY)[bluray], Quality.HDWEBDL)[webdl]
         elif height < 680:
@@ -375,9 +380,9 @@ class Quality:
         if status == UNKNOWN:
             return (UNKNOWN, Quality.UNKNOWN)
 
-        for x in sorted(Quality.qualityStrings.keys(), reverse=True):
-            if status > x * 100:
-                return (status - x * 100, x)
+        for q in sorted(Quality.qualityStrings.keys(), reverse=True):
+            if status > q * 100:
+                return (status - q * 100, q)
 
         return (status, Quality.NONE)
 
@@ -431,6 +436,7 @@ qualityPresetStrings = {SD: "SD",
                         ANY: "Any"}
 
 
+# pylint: disable=R0903,C1001
 class StatusStrings:
     def __init__(self):
         self.statusStrings = {UNKNOWN: "Unknown",
@@ -463,7 +469,9 @@ class StatusStrings:
 statusStrings = StatusStrings()
 
 
+# pylint: disable=R0903,C1001
 class Overview:
+
     UNAIRED = UNAIRED  # 1
     QUAL = 2
     WANTED = WANTED  # 3
@@ -480,6 +488,7 @@ class Overview:
                        UNAIRED: "unaired",
                        SNATCHED: "snatched"}
 
+
 # Get our xml namespaces correct for lxml
 XML_NSMAP = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
              'xsd': 'http://www.w3.org/2001/XMLSchema'}
@@ -487,4 +496,4 @@ XML_NSMAP = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
 countryList = {'Australia': 'AU',
                'Canada': 'CA',
                'USA': 'US'
-}
+              }
