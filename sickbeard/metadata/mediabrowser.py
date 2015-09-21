@@ -30,7 +30,10 @@ from sickrage.helper.common import dateFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, ShowNotFoundException
 
-import xml.etree.cElementTree as etree
+try:
+    import xml.etree.cElementTree as etree
+except ImportError:
+    import xml.etree.ElementTree as etree
 
 
 class MediaBrowserMetadata(generic.GenericMetadata):

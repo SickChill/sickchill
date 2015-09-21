@@ -17,15 +17,19 @@
 
 from __future__ import with_statement
 
-from time import time, sleep
-import aniDBfileInfo as fileInfo
-import xml.etree.cElementTree as etree
 import os, re, string
+from time import time, sleep
+
+import aniDBfileInfo as fileInfo
 from aniDBmaper import AniDBMaper
 from aniDBtvDBmaper import TvDBMap
 from aniDBerrors import *
 from aniDBfileInfo import read_anidb_xml, read_tvdb_map_xml
 
+try:
+    import xml.etree.cElementTree as etree
+except ImportError:
+    import xml.etree.ElementTree as etree
 
 class aniDBabstractObject(object):
     def __init__(self, aniDB, load=False):
@@ -97,7 +101,7 @@ class aniDBabstractObject(object):
         """
         type - Type of notification: type=>  0=all, 1=new, 2=group, 3=complete
         priority - low = 0, medium = 1, high = 2 (unconfirmed)
-        
+
         """
         if self.aid:
             self.aniDB.notifyadd(aid=self.aid, type=1, priority=1)
@@ -267,7 +271,7 @@ class Episode(aniDBabstractObject):
         1    on hdd    - the file is stored on hdd
         2    on cd    - the file is stored on cd
         3    deleted    - the file has been deleted or is not available for other reasons (i.e. reencoded)
-        
+
         """
         if self.filePath and not (self.ed2k or self.size):
             (self.ed2k, self.size) = self._calculate_file_stuff(self.filePath)
@@ -288,4 +292,3 @@ class Episode(aniDBabstractObject):
         ed2k = fileInfo.get_file_hash(filePath)
         size = fileInfo.get_file_size(filePath)
         return (ed2k, size)
-
