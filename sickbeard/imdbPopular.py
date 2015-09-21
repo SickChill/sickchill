@@ -74,7 +74,12 @@ class imdbPopular:
                     show['rating'] = None
                     show['votes'] = None
 
-                show['outline'] = td.find("span", {"class": "outline"}).contents[0]
+                outline = td.find("span", {"class": "outline"})
+                if outline:
+                    show['outline'] = outline.contents[0]
+                else:
+                    show['outline'] = u''
+
                 popular_shows.append(show)
 
         return popular_shows
