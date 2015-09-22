@@ -12,11 +12,7 @@
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/configBackupRestore.js?${sbPID}"></script>
-<script type="text/javascript" charset="utf-8">
-    $('#backupDir').fileBrowser({ title: 'Select backup folder to save to', key: 'backupPath' });
-    $('#backupFile').fileBrowser({ title: 'Select backup files to restore', key: 'backupFile', includeFiles: 1 });
-    $('#config-components').tabs();
-</script>
+<script type="text/javascript" src="${sbRoot}/js/new/config_backuprestore.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:

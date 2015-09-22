@@ -15,26 +15,7 @@
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        if ($("input[name='proxy_setting']").val().length == 0) {
-            $("input[id='proxy_indexers']").prop('checked', false);
-            $("label[for='proxy_indexers']").hide();
-        }
-
-        $("input[name='proxy_setting']").on('input', function() {
-            if( $(this).val().length === 0 ) {
-                $("input[id='proxy_indexers']").prop('checked', false);
-                $("label[for='proxy_indexers']").hide();
-            } else {
-                $("label[for='proxy_indexers']").show();
-            }
-        });
-    });
-
-    $('#log_dir').fileBrowser({ title: 'Select log file folder location' });
-    $('#config-components').tabs();
-</script>
+<script type="text/javascript" src="${sbRoot}/js/new/config_general.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
