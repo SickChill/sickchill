@@ -62,7 +62,7 @@ $(document).ready(function(){
         var percentage = $(this).data('progress-percentage');
         var classToAdd = percentage == 100 ? 100 : percentage > 80 ? 80 : percentage > 60 ? 60 : percentage > 40 ? 40 : 20;
         $(this).progressbar({ value:  percentage });
-        $(this).data('progress-text') ? $(this).append('<div class="progressbarText" title="' + $(this).data('progress-tip') + '">' + $(this).data('progress-text') + '</div>') : '';
+        if($(this).data('progress-text')) $(this).append('<div class="progressbarText" title="' + $(this).data('progress-tip') + '">' + $(this).data('progress-text') + '</div>');
         $(this).find('.ui-progressbar-value').addClass('progress-' + classToAdd);
     });
 
@@ -136,7 +136,7 @@ $(document).ready(function(){
                                     }
                                 }
 
-                                var result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
+                                result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
                                 if (result) {
                                     if ((result[2] === "-") || (result[2] === "to")) {
                                         if ((pct >= parseInt(result[1])) && (pct <= parseInt(result[3]))) {
@@ -145,7 +145,7 @@ $(document).ready(function(){
                                     }
                                 }
 
-                                var result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
+                                result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
                                 if (result) {
                                     if ((result[1] === "=") || (result[3] === "=")) {
                                         if (parseInt(result[2]) === pct) {
@@ -241,7 +241,7 @@ $(document).ready(function(){
                                     }
                                 }
 
-                                var result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
+                                result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
                                 if (result) {
                                     if ((result[2] === "-") || (result[2] === "to")) {
                                         if ((pct >= parseInt(result[1])) && (pct <= parseInt(result[3]))) {
@@ -250,7 +250,7 @@ $(document).ready(function(){
                                     }
                                 }
 
-                                var result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
+                                result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
                                 if (result) {
                                     if ((result[1] === "=") || (result[3] === "=")) {
                                         if (parseInt(result[2]) === pct) {
