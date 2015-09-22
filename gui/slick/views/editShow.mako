@@ -8,8 +8,10 @@
     from sickrage.helper import exceptions
     from sickbeard import scene_exceptions
 %>
-<%block name="scripts">
+<%block name="metas">
 <meta data-var="show.is_anime" data-content="${show.is_anime}">
+</%block>
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/new/editShow.js"></script>
