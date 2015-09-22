@@ -186,7 +186,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
                                 title = re.sub(r'(?i)series', 'Season', title)
 
                             # Strip year from the end or we can't parse it!
-                            title = re.sub(r' \(\d{4}\)$', '', title)
+                            title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
 
                             item = title, url, seeders, leechers
                             logger.log(u'Found result: ' + title.replace(' ', '.') + ' (' + url + ')', logger.DEBUG)
