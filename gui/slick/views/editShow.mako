@@ -8,69 +8,13 @@
     from sickrage.helper import exceptions
     from sickbeard import scene_exceptions
 %>
+<%block name="metas">
+<meta data-var="show.is_anime" data-content="${show.is_anime}">
+</%block>
 <%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
-<script type="text/javascript" charset="utf-8">
-    var all_exceptions = new Array;
-
-    $('#location').fileBrowser({ title: 'Select Show Location' });
-
-    $('#submit').click(function(){
-        all_exceptions = []
-
-        $("#exceptions_list option").each  ( function() {
-            all_exceptions.push( $(this).val() );
-        });
-
-        $("#exceptions_list").val(all_exceptions);
-
-        % if show.is_anime:
-            generate_bwlist()
-        % endif
-        });
-    $('#addSceneName').click(function() {
-        var scene_ex = $('#SceneName').val()
-        var option = $("<option>")
-        all_exceptions = []
-
-        $("#exceptions_list option").each  ( function() {
-           all_exceptions.push( $(this).val() )
-        });
-
-        $('#SceneName').val('')
-
-        if ($.inArray(scene_ex, all_exceptions) > -1 || (scene_ex == ''))
-            return
-
-        $("#SceneException").show()
-
-        option.attr("value",scene_ex)
-        option.html(scene_ex)
-        return option.appendTo('#exceptions_list');
-    });
-
-    $('#removeSceneName').click(function() {
-        $('#exceptions_list option:selected').remove();
-
-        $(this).toggle_SceneException()
-    });
-
-   $.fn.toggle_SceneException = function() {
-        all_exceptions = []
-
-        $("#exceptions_list option").each  ( function() {
-            all_exceptions.push( $(this).val() );
-        });
-
-        if (all_exceptions == '')
-            $("#SceneException").hide();
-        else
-            $("#SceneException").show();
-    }
-
-    $(this).toggle_SceneException();
-</script>
+<script type="text/javascript" src="${sbRoot}/js/new/editShow.js"></script>
 % if show.is_anime:
     <script type="text/javascript" src="${sbRoot}/js/blackwhite.js?${sbPID}"></script>
 % endif

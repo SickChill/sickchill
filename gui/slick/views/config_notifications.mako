@@ -10,9 +10,7 @@
 <%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/configNotifications.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
-<script type="text/javascript" charset="utf-8">
-    $('#config-components').tabs();
-</script>
+<script type="text/javascript" src="${sbRoot}/js/new/config_notifications.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
