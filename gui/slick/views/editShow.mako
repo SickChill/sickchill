@@ -71,6 +71,9 @@
 
     $(this).toggle_SceneException();
 </script>
+% if show.is_anime:
+    <script type="text/javascript" src="${sbRoot}/js/blackwhite.js?${sbPID}"></script>
+% endif
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -189,7 +192,6 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 
 % if show.is_anime:
     <%include file="/inc_blackwhitelist.mako"/>
-    <script type="text/javascript" src="${sbRoot}/js/blackwhite.js?${sbPID}"></script>
 % endif
 
 <input type="submit" id="submit" value="Submit" class="btn btn-primary" />

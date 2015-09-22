@@ -27,6 +27,7 @@ class BinSearchProvider(generic.NZBProvider):
     def __init__(self):
         generic.NZBProvider.__init__(self, "BinSearch")
         self.enabled = False
+        self.public = True
         self.cache = BinSearchCache(self)
         self.urls = {'base_url': 'https://www.binsearch.info/'}
         self.url = self.urls['base_url']

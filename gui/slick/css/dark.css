@@ -574,6 +574,14 @@ config*.mako
 	color: #fff;
 }
 
+#provider_order_list .ui-state-default.torrent-provider {
+	background-color: #555 !important;
+}
+
+#provider_order_list .ui-state-default.nzb-provider {
+	background-color: #222 !important;
+}
+
 [class^="icon16-"], [class*=" icon16-"] {
 	background-image: url("../images/glyphicons-config-white.png");
 	background-position: -40px 0;

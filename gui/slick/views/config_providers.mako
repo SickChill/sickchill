@@ -79,12 +79,13 @@ $('#config-components').tabs();
 
                                 curName = curProvider.getID()
                             %>
-                            <li class="ui-state-default ${('private', 'public')[bool(curProvider.public)]}" id="${curName}">
+                            <li class="ui-state-default ${('nzb-provider', 'torrent-provider')[bool(curProvider.providerType == "torrent")]}" id="${curName}">
                                 <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.isEnabled() == True]}/>
                                 <a href="${anon_url(curProvider.url)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${sbRoot}/images/providers/${curProvider.imageName()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
                                 <span style="vertical-align:middle;">${curProvider.name}</span>
                                 ${('*', '')[bool(curProvider.supportsBacklog)]}
                                 <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
+                                <span class="ui-icon ${('ui-icon-locked','ui-icon-unlocked')[bool(curProvider.public)]} pull-right" style="vertical-align:middle;"></span>
                             </li>
                         % endfor
                         </ul>

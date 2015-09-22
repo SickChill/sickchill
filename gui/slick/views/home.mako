@@ -391,7 +391,7 @@
                 <div class="${fuzzydate}">
                     <time datetime="${pdatetime.isoformat('T')}" class="date">${temp_sbfdate_prev}</time>
                 </div>
-                <span class="sort_data">${temp_sbfdate_prev}</span>
+                <span class="sort_data">${temp_timegm_prev}</span>
             </td>
         % except ValueError:
             <td align="center" class="nowrap"></td>
