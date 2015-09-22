@@ -25,64 +25,14 @@
 .sort_data {display:none;}
 </style>
 </%block>
+<%block name="metas">
+<meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
+<meta data-var="layout" data-content="${layout}">
+<meta data-var="fuzzydate" data-content="${fuzzydate}">
+</%block>
 <%block name="scripts">
-<script type="text/javascript">
-$.tablesorter.addParser({
-    id: 'cDate',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        return s;
-    },
-    type: 'numeric'
-});
-
-$(document).ready(function(){
-    $("#historyTable:has(tbody tr)").tablesorter({
-        widgets: ['zebra', 'filter'],
-        sortList: [[0,1]],
-      textExtraction: {
-        % if ( layout == 'detailed'):
-            0: function(node) { return $(node).find("span").text().toLowerCase(); },
-            4: function(node) { return $(node).find("span").text().toLowerCase(); }
-        % else:
-            0: function(node) { return $(node).find("span").text().toLowerCase(); },
-            1: function(node) { return $(node).find("span").text().toLowerCase(); },
-            2: function(node) { return $(node).attr("provider").toLowerCase(); },
-            5: function(node) { return $(node).attr("quality").toLowerCase(); }
-        % endif
-      },
-        headers: {
-        % if ( layout == 'detailed'):
-          0: { sorter: 'cDate' },
-          4: { sorter: 'quality' }
-        % else:
-          0: { sorter: 'cDate' },
-          4: { sorter: false },
-          5: { sorter: 'quality' }
-        % endif
-      }
-
-    });
-    $('#history_limit').on('change', function() {
-        var url = '${sbRoot}/history/?limit=' + $(this).val()
-        window.location.href = url
-    });
-
-    % if sickbeard.FUZZY_DATING:
-    fuzzyMoment({
-        containerClass : '.${fuzzydate}',
-        dateHasTime : true,
-        dateFormat : '${sickbeard.DATE_PRESET}',
-        timeFormat : '${sickbeard.TIME_PRESET_W_SECONDS}',
-        trimZero : ${('false', 'true')[bool(sickbeard.TRIM_ZERO)]},
-        dtGlue : ', ',
-    });
-    % endif
-
-});
-</script>
+<script type="text/javascript" src="${sbRoot}/js/lib/jquery.timeago.js"></script>
+<script type="text/javascript" src="${sbRoot}/js/new/history.js"></script>
 </%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
