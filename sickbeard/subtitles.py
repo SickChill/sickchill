@@ -94,7 +94,7 @@ def subtitlesLanguages(video_path):
     resultList = []
 
     # Serch for embedded subtitles
-    embedded_languages = subliminal.video.scan_video(video_path, subtitles=False, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL)
+    embedded_languages = subliminal.scan_video(video_path, subtitles=False, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL)
 
     # Search subtitles in the absolute path
     if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
