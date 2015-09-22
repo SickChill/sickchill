@@ -80,7 +80,7 @@
         % if layout != 'poster':
         Search:
             <input class="search form-control form-control-inline input-sm input200" type="search" data-column="2" placeholder="Search Show Name">
-            <button type="button" class="resetshows resetanime btn btn-inline">Reset Search</button>
+            <button type="button" class="resetsorting btn btn-inline">Reset Search</button>
         % endif
     </span>
 
