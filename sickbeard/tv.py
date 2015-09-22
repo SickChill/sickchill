@@ -1433,6 +1433,13 @@ class TVEpisode(object):
         """Look for subtitles files and refresh the subtitles property"""
         self.subtitles = subtitles.subtitlesLanguages(self.location)
 
+    def getWantedLanguages(self):
+        languages = set()
+        for language in frozenset(subtitles.wantedLanguages()).difference(subtitles.subtitlesLanguages(self.location)):
+            languages.add(subtitles.fromietf(language))
+        self.refreshSubtitles()
+        return languages
+
     def downloadSubtitles(self, force=False):
         if not ek(os.path.isfile, self.location):
             logger.log(u"%s: Episode file doesn't exist, can't download subtitles for S%02dE%02d" %
@@ -1449,15 +1456,11 @@ class TVEpisode(object):
         #logging.getLogger('subliminal').setLevel(logging.DEBUG)
 
         try:
-            languages = set()
-            for language in frozenset(subtitles.wantedLanguages()).difference(self.subtitles):
-                languages.add(subtitles.fromietf(language))
-
+            providers = sickbeard.subtitles.getEnabledServiceList()
+            languages = self.getWantedLanguages();
             if not languages:
                 logger.log(u'%s: No missing subtitles for S%02dE%02d' % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
                 return
-
-            providers = sickbeard.subtitles.getEnabledServiceList()
             vname = self.location
             video = None
             try:
