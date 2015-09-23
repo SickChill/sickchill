@@ -1076,7 +1076,7 @@ jquery.confirm.css
 }
 
 /* =======================================================================
-bootstarp modal
+bootstrap modal
 ========================================================================== */
 
 .modal-content {
@@ -1097,4 +1097,18 @@ bootstarp modal
 	-moz-border-radius-topright: 5px;
 	 border-top-left-radius: 5px;
 	 border-top-right-radius: 5px;
+}
+
+/* =======================================================================
+bootstrap panel
+========================================================================== */
+
+.panel-default {
+	background-color: #3D3D3D;
+	border-color: #111111;
+}
+
+.panel-heading {
+	background-color: #3D3D3D !important;
+	color: #FFFFFF !important;
 }

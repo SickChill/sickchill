@@ -399,7 +399,10 @@
                                 <span class="component-desc">
                                     <input type="text" name="api_key" id="api_key" value="${sickbeard.API_KEY}" class="form-control input-sm input300" readonly="readonly" />
                                     <input class="btn btn-inline" type="button" id="generate_new_apikey" value="Generate">
-                                    <div class="clear-left"><p>used to give 3rd party programs limited access to SickRage</p></div>
+                                    <div class="clear-left">
+                                        <p>used to give 3rd party programs limited access to SickRage</p>
+                                        <p>you can try all the features of the API <a href="${sbRoot}/apibuilder/">here</a></p>
+                                    </div>
                                 </span>
                             </label>
                         </div>
