@@ -356,7 +356,12 @@
                                 <label for="network">
                                     <input type="radio" name="timezone_display" id="network" value="network" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "network"]} />Network
                                 </label>
-                                <div class="clear-left"><p>display dates and times in either your timezone or the shows network timezone</p></div>
+                                <div class="clear-left">
+                                <p>display dates and times in either your timezone or the shows network timezone</p>
+                                </div>
+                                <div class="clear-left">
+                                <p> <b>Note:</b> Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)</p>
+                                </div>
                             </span>
                         </div>
 
