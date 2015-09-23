@@ -54,10 +54,10 @@ class BTNProvider(generic.TorrentProvider):
 
         self.cache = BTNCache(self)
 
-        self.urls = {'base_url': "http://api.btnapps.net"}
+        self.urls = {'base_url': u'http://api.btnapps.net',
+                     'website': u'http://broadcasthe.net/',}
 
-
-        self.url = self.urls['base_url']
+        self.url = self.urls['website']
 
     def isEnabled(self):
         return self.enabled
@@ -141,7 +141,7 @@ class BTNProvider(generic.TorrentProvider):
 
     def _api_call(self, apikey, params={}, results_per_page=1000, offset=0):
 
-        server = jsonrpclib.Server(self.url)
+        server = jsonrpclib.Server(self.urls['base_url'])
         parsedJSON = {}
 
         try:
