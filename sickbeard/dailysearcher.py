@@ -27,7 +27,7 @@ from sickbeard import logger
 from sickbeard import db
 from sickbeard import common
 from sickbeard import helpers
-from sickbeard import network_timezones
+from sickbeard import sbdatetime, network_timezones
 from sickrage.helper.exceptions import MultipleShowObjectsException
 
 
@@ -80,9 +80,12 @@ class DailySearcher():
                 continue
 
             try:
-                end_time = network_timezones.parse_date_time(sqlEp['airdate'], show.airs,
-                                                             show.network) + datetime.timedelta(
+                end_time = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(sqlEp['airdate'], show.airs,
+                                                             show.network)) + datetime.timedelta(
                     minutes=helpers.tryInt(show.runtime, 60))
+                #Keep this for future debug
+                #logger.log(u"Show %s ends at %s and now it is %s. Runtime is %s and airs %s" % (show.name, end_time, curTime, show.runtime, show.airs),logger.DEBUG )
+
                 # filter out any episodes that haven't aried yet
                 if end_time > curTime:
                     continue
