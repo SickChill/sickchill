@@ -38,8 +38,9 @@ class ShazbatProvider(generic.TorrentProvider):
 
         self.cache = ShazbatCache(self)
 
-        self.urls = {'base_url': 'http://www.shazbat.tv/'}
-        self.url = self.urls['base_url']
+        self.urls = {'base_url': u'http://www.shazbat.tv/',
+                     'website': u'http://www.shazbat.tv/login',}
+        self.url = self.urls['website']
 
     def isEnabled(self):
         return self.enabled
@@ -76,7 +77,7 @@ class ShazbatCache(tvcache.TVCache):
 
     def _getRSSData(self):
 
-        rss_url = self.provider.url + 'rss/recent?passkey=' + provider.passkey + '&fname=true'
+        rss_url = self.provider.urls['base_url'] + 'rss/recent?passkey=' + provider.passkey + '&fname=true'
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
         return self.getRSSFeed(rss_url, items=['entries', 'feed'])
