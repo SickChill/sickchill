@@ -43,9 +43,9 @@ $(document).ready(function(){
             }
         })
     });
-    
+
     $('#history_limit').on('change', function() {
-        var url = '${sbRoot}/history/?limit=' + $(this).val();
+        var url = sbRoot + '/history/?limit=' + $(this).val();
         window.location.href = url;
     });
 
