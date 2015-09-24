@@ -92,7 +92,6 @@ result_type_map = {
 class ApiHandler(RequestHandler):
     """ api class that returns json results """
     version = 5  # use an int since float-point is unpredictable
-    intent = 4
 
     def __init__(self, *args, **kwargs):
         super(ApiHandler, self).__init__(*args, **kwargs)
@@ -152,16 +151,15 @@ class ApiHandler(RequestHandler):
     def _out_as_json(self, dict):
         self.set_header("Content-Type", "application/json;charset=UTF-8")
         try:
-            out = json.dumps(dict, indent=self.intent, ensure_ascii=False, sort_keys=True)
+            out = json.dumps(dict, ensure_ascii=False, sort_keys=True)
             callback = self.get_query_argument('callback', None) or self.get_query_argument('jsonp', None)
-            if callback != None:
+            if callback is not None:
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception, e:  # if we fail to generate the output fake an error
             logger.log(u"API :: " + traceback.format_exc(), logger.DEBUG)
-            out = '{"result":"' + result_type_map[RESULT_ERROR] + '", "message": "error while composing output: "' + ex(
-                e) + '"}'
+            out = '{"result": "%s", "message": "error while composing output: %s"}' %\
+                  (result_type_map[RESULT_ERROR], ex(e))
         return out
-
 
     def call_dispatcher(self, args, kwargs):
         """ calls the appropriate CMD class
