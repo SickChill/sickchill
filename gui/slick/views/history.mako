@@ -43,6 +43,9 @@
 % endif
 <div class="h2footer pull-right"><b>Limit:</b>
     <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm">
+        <option value="10" ${('', 'selected="selected"')[limit == 10]}>10</option>
+        <option value="25" ${('', 'selected="selected"')[limit == 25]}>25</option>
+        <option value="50" ${('', 'selected="selected"')[limit == 50]}>50</option>
         <option value="100" ${('', 'selected="selected"')[limit == 100]}>100</option>
         <option value="250" ${('', 'selected="selected"')[limit == 250]}>250</option>
         <option value="500" ${('', 'selected="selected"')[limit == 500]}>500</option>
