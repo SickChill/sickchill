@@ -176,6 +176,7 @@ class SpeedCDProvider(generic.TorrentProvider):
                     leechers = int(torrent['leech'])
 
                     if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
+                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
                     if not title or not url:

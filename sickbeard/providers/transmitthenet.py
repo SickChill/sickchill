@@ -195,6 +195,7 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
                             #Filter unseeded torrent
                             if seeders < self.minseed:
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders: {0} (S:{1})".format(name, seeders), logger.DEBUG)
                                 continue
 
                             if not title or not download_href:
