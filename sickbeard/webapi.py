@@ -111,7 +111,7 @@ class ApiHandler(RequestHandler):
         # default json
         outputCallbackDict = {
             'default': self._out_as_json,
-            'image': self.out_as_image,
+            'image': self._out_as_image,
         }
 
         accessMsg = u"API :: " + self.request.remote_ip + " - gave correct API KEY. ACCESS GRANTED"
