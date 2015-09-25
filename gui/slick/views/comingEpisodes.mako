@@ -79,7 +79,7 @@
 
     <thead>
         <tr>
-            <th>Airdate</th>
+            <th>Airdate (${('local', 'network')[sickbeard.TIMEZONE_DISPLAY == 'network']})</th>
             <th>Show</th>
             <th nowrap="nowrap">Next Ep</th>
             <th>Next Ep Name</th>

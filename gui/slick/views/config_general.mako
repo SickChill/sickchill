@@ -15,26 +15,7 @@
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        if ($("input[name='proxy_setting']").val().length == 0) {
-            $("input[id='proxy_indexers']").prop('checked', false);
-            $("label[for='proxy_indexers']").hide();
-        }
-
-        $("input[name='proxy_setting']").on('input', function() {
-            if( $(this).val().length === 0 ) {
-                $("input[id='proxy_indexers']").prop('checked', false);
-                $("label[for='proxy_indexers']").hide();
-            } else {
-                $("label[for='proxy_indexers']").show();
-            }
-        });
-    });
-
-    $('#log_dir').fileBrowser({ title: 'Select log file folder location' });
-    $('#config-components').tabs();
-</script>
+<script type="text/javascript" src="${sbRoot}/js/new/config_general.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -95,10 +76,10 @@
                                 <span class="component-desc">
                                     <select id="default_page" name="default_page" class="form-control input-sm">
                                         <option value="news" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'news']}>News</option>
-                                        <option value="home" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'home']}>Home</option>
+                                        <option value="IRC" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'IRC']}>IRC</option>
+                                        <option value="home" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'home']}>Shows</option>
                                         <option value="comingEpisodes" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'comingEpisodes']}>Coming Episodes</option>
                                         <option value="history" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'history']}>History</option>
-                                        <option value="IRC" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'IRC']}>IRC</option>
                                     </select>
                                     <span>when launching SickRage interface</span>
                                 </span>
@@ -375,7 +356,12 @@
                                 <label for="network">
                                     <input type="radio" name="timezone_display" id="network" value="network" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "network"]} />Network
                                 </label>
-                                <div class="clear-left"><p>display dates and times in either your timezone or the shows network timezone</p></div>
+                                <div class="clear-left">
+                                <p>display dates and times in either your timezone or the shows network timezone</p>
+                                </div>
+                                <div class="clear-left">
+                                <p> <b>Note:</b> Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)</p>
+                                </div>
                             </span>
                         </div>
 

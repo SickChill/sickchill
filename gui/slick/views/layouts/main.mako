@@ -1,7 +1,7 @@
 <%!
     import sickbeard
     import datetime
-    from sickbeard import db
+    from sickbeard import db, network_timezones
     from sickbeard.common import Quality, SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import qualityPresets, qualityPresetStrings
     import calendar
@@ -280,7 +280,8 @@
                     Memory used: <span class="footerhighlight">${sickbeard.helpers.pretty_filesize(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span> |
                     % endif
                     Load time: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
-                    Branch: <span class="footerhighlight">${sickbeard.BRANCH}</span>
+                    Branch: <span class="footerhighlight">${sickbeard.BRANCH}</span> |
+                    Now: <span class="footerhighlight">${datetime.datetime.now(network_timezones.sb_timezone)}</span>
                 </div>
             </div>
         </footer>

@@ -36,8 +36,12 @@ class BTDIGGProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
         self.public = True
-        self.url = 'https://api.btdigg.org/'
-
+        
+        self.urls = {'url': u'https://btdigg.org/',
+                     'api': u'https://api.btdigg.org/',
+                     }
+        self.url = self.urls['url']
+        
         self.cache = BTDiggCache(self)
 
     def isEnabled(self):
@@ -131,7 +135,7 @@ class BTDIGGProvider(generic.TorrentProvider):
         logger.log("Performing Search: {0}".format(search_params))
 
         # TODO: Make order configurable. 0: weight, 1: req, 2: added, 3: size, 4: files, 5
-        searchUrl = self.url + "api/private-341ada3245790954/s02?q=" + search_params + "&p=0&order=1"
+        searchUrl = self.urls['api'] + "api/private-341ada3245790954/s02?q=" + search_params + "&p=0&order=1"
 
         jdata = self.getURL(searchUrl, json=True)
         if not jdata:

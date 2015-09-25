@@ -40,7 +40,7 @@
 
     max_download_count = max_download_count * 100
 %>
-<%block name="scripts">
+<%block name="metas">
 <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 <meta data-var="sickbeard.FILTER_ROW" data-content="${sickbeard.FILTER_ROW}">
 <meta data-var="sickbeard.ANIME_SPLIT_HOME" data-content="${sickbeard.ANIME_SPLIT_HOME}">
@@ -53,6 +53,8 @@
 <meta data-var="max_download_count" data-content="${max_download_count}">
 <meta data-var="layout" data-content="${layout}">
 <meta data-var="fuzzydate" data-content="${fuzzydate}">
+</%block>
+<%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/lib/jquery.timeago.js"></script>
 <script type="text/javascript" src="${sbRoot}/js/new/home.js"></script>
 </%block>
@@ -78,7 +80,7 @@
         % if layout != 'poster':
         Search:
             <input class="search form-control form-control-inline input-sm input200" type="search" data-column="2" placeholder="Search Show Name">
-            <button type="button" class="resetshows resetanime btn btn-inline">Reset Search</button>
+            <button type="button" class="resetsorting btn btn-inline">Reset Search</button>
         % endif
     </span>
 

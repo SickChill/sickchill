@@ -143,9 +143,10 @@ class STRIKEProvider(generic.TorrentProvider):
         for item in jdata['torrents']:
             seeders = ('seeds' in item and item['seeds']) or 0
             leechers = ('leeches' in item and item['leeches']) or 0
-            if seeders < self.minseed or leechers < self.minleech:
-                continue
             name = ('torrent_title' in item and item['torrent_title']) or ''
+            if seeders < self.minseed or leechers < self.minleech:
+                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(name, seeders, leechers), logger.DEBUG)
+                continue
             magnet = ('magnet_uri' in item and item['magnet_uri']) or ''
             if name and magnet:
                 results.append((name, magnet, seeders))
