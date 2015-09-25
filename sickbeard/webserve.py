@@ -3496,9 +3496,19 @@ class History(WebRoot):
 
         self.history = HistoryTool()
 
-    def index(self, limit=100):
-        limit = int(limit)
+    def index(self, limit=None):
+    
+        if limit is None:
+            if sickbeard.HISTORY_LIMIT:
+                limit = int(sickbeard.HISTORY_LIMIT)
+            else:
+                limit = 100
+        else:
+            limit = int(limit)
+            
         sickbeard.HISTORY_LIMIT = limit
+        
+        sickbeard.save_config()
 
         compact = []
         data = self.history.get(limit)
