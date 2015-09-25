@@ -2,7 +2,7 @@
 <%!
     import datetime
     import urllib
-    import ntpath
+    from os.path import basename
     import sickbeard
     from sickbeard import subtitles, sbdatetime, network_timezones
     import sickbeard.helpers
@@ -530,10 +530,8 @@ $(document).ready(function(){
                     for rootDir in sickbeard.ROOT_DIRS.split('|'):
                         if not rootDir.startswith('/'):
                             filename = filename.replace('\\','\\\\')
-
-                        filename = ntpath.basename(filename)
                     %>
-                    ${filename}
+                    ${basename(filename)}
                 % endif
             </td>
             <td class="col-ep">

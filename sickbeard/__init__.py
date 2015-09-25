@@ -704,16 +704,14 @@ def initialize(consoleLogging=True):
             restoreDir = os.path.join(DATA_DIR, 'restore')
             if os.path.exists(restoreDir) and os.path.exists(os.path.join(restoreDir, 'cache')):
                 def restoreCache(srcDir, dstDir):
-                    import ntpath
-
                     def path_leaf(path):
-                        head, tail = ntpath.split(path)
-                        return tail or ntpath.basename(head)
+                        head, tail = os.path.split(path)
+                        return tail or os.path.basename(head)
 
                     try:
                         if os.path.isdir(dstDir):
                             bakFilename = '{0}-{1}'.format(path_leaf(dstDir), datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S'))
-                            shutil.move(dstDir, os.path.join(ntpath.dirname(dstDir), bakFilename))
+                            shutil.move(dstDir, os.path.join(os.path.dirname(dstDir), bakFilename))
 
                         shutil.move(srcDir, dstDir)
                         logger.log(u"Restore: restoring cache successful", logger.INFO)
