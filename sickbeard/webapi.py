@@ -109,8 +109,9 @@ class ApiHandler(RequestHandler):
 
         # set the output callback
         # default json
-        outputCallbackDict = {'default': self._out_as_json,
-                              'image': lambda x: x['image'],
+        outputCallbackDict = {
+            'default': self._out_as_json,
+            'image': self.out_as_image,
         }
 
         accessMsg = u"API :: " + self.request.remote_ip + " - gave correct API KEY. ACCESS GRANTED"
@@ -147,6 +148,10 @@ class ApiHandler(RequestHandler):
 
         try:self.finish(outputCallback(outDict))
         except:pass
+
+    def _out_as_image(self, dict):
+        self.set_header('Content-Type', dict['image'].get_media_type())
+        return dict['image'].get_media()
 
     def _out_as_json(self, dict):
         self.set_header("Content-Type", "application/json;charset=UTF-8")
@@ -2304,7 +2309,7 @@ class CMD_ShowGetPoster(ApiCall):
         """ Get the poster a show """
         return {
             'outputType': 'image',
-            'image': ShowPoster(self.indexerid).get_media()
+            'image': ShowPoster(self.indexerid),
         }
 
 
@@ -2330,7 +2335,7 @@ class CMD_ShowGetBanner(ApiCall):
         """ Get the banner of a show """
         return {
             'outputType': 'image',
-            'image': ShowBanner(self.indexerid).get_media()
+            'image': ShowBanner(self.indexerid),
         }
 
 
@@ -2358,7 +2363,7 @@ class CMD_ShowGetNetworkLogo(ApiCall):
         """
         return {
             'outputType': 'image',
-            'image': ShowNetworkLogo(self.indexerid).get_media()
+            'image': ShowNetworkLogo(self.indexerid),
         }
 
 
@@ -2384,7 +2389,7 @@ class CMD_ShowGetFanArt(ApiCall):
         """ Get the fan art of a show """
         return {
             'outputType': 'image',
-            'image': ShowFanArt(self.indexerid).get_media()
+            'image': ShowFanArt(self.indexerid),
         }
 
 
