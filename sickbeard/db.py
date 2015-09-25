@@ -264,13 +264,13 @@ class DBConnection(object):
 
         genParams = lambda myDict: [x + " = ?" for x in myDict.keys()]
 
-        query = "UPDATE " + tableName + " SET " + ", ".join(genParams(valueDict)) + " WHERE " + " AND ".join(
+        query = "UPDATE [" + tableName + "] SET " + ", ".join(genParams(valueDict)) + " WHERE " + " AND ".join(
             genParams(keyDict))
 
         self.action(query, valueDict.values() + keyDict.values())
 
         if self.connection.total_changes == changesBefore:
-            query = "INSERT INTO " + tableName + " (" + ", ".join(valueDict.keys() + keyDict.keys()) + ")" + \
+            query = "INSERT INTO [" + tableName + "] (" + ", ".join(valueDict.keys() + keyDict.keys()) + ")" + \
                     " VALUES (" + ", ".join(["?"] * len(valueDict.keys() + keyDict.keys())) + ")"
             self.action(query, valueDict.values() + keyDict.values())
 
@@ -281,7 +281,7 @@ class DBConnection(object):
         :param tableName: name of table
         :return: array of name/type info
         """
-        sqlResult = self.select("PRAGMA table_info(%s)" % tableName)
+        sqlResult = self.select("PRAGMA table_info(`%s`)" % tableName)
         columns = {}
         for column in sqlResult:
             columns[column['name']] = {'type': column['type']}
@@ -335,8 +335,8 @@ class DBConnection(object):
         :param type: Column type to add
         :param default: Default value for column
         """
-        self.action("ALTER TABLE %s ADD %s %s" % (table, column, type))
-        self.action("UPDATE %s SET %s = ?" % (table, column), (default,))
+        self.action("ALTER TABLE [%s] ADD %s %s" % (table, column, type))
+        self.action("UPDATE [%s] SET %s = ?" % (table, column), (default,))
 
 def sanityCheckDatabase(connection, sanity_check):
     sanity_check(connection).check()
@@ -431,8 +431,8 @@ class SchemaUpgrade(object):
         return column in self.connection.tableInfo(tableName)
 
     def addColumn(self, table, column, type="NUMERIC", default=0):
-        self.connection.action("ALTER TABLE %s ADD %s %s" % (table, column, type))
-        self.connection.action("UPDATE %s SET %s = ?" % (table, column), (default,))
+        self.connection.action("ALTER TABLE [%s] ADD %s %s" % (table, column, type))
+        self.connection.action("UPDATE [%s] SET %s = ?" % (table, column), (default,))
 
     def checkDBVersion(self):
         return self.connection.checkDBVersion()
