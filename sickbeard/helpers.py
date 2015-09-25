@@ -1419,16 +1419,15 @@ def restoreConfigZip(archive, targetDir):
     :return: True on success, False on failure
     """
 
-    import ntpath
     try:
         if not os.path.exists(targetDir):
             os.mkdir(targetDir)
         else:
             def path_leaf(path):
-                head, tail = ntpath.split(path)
-                return tail or ntpath.basename(head)
+                head, tail = os.path.split(path)
+                return tail or os.path.basename(head)
             bakFilename = '{0}-{1}'.format(path_leaf(targetDir), datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S'))
-            shutil.move(targetDir, os.path.join(ntpath.dirname(targetDir), bakFilename))
+            shutil.move(targetDir, os.path.join(os.path.dirname(targetDir), bakFilename))
 
         zip_file = zipfile.ZipFile(archive, 'r', allowZip64=True)
         for member in zip_file.namelist():
