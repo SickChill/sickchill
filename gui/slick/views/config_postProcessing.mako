@@ -410,17 +410,17 @@
                                           <td>720p_BluRay</td>
                                         </tr>
                                         <tr class="even">
-                                          <td class="align-right"><i class="icon-info-sign" title="Multi-EP style is ignored"></i> <b>Release Name:</b></td>
+                                          <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="Multi-EP style is ignored"></i> <b>Release Name:</b></td>
                                           <td>%RN</td>
                                           <td>Show.Name.S02E03.HDTV.XviD-RLSGROUP</td>
                                         </tr>
                                         <tr>
-                                          <td class="align-right"><i class="icon-info-sign" title="'SiCKRAGE' is used in place of RLSGROUP if it could not be properly detected"></i> <b>Release Group:</b></td>
+                                          <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="'SiCKRAGE' is used in place of RLSGROUP if it could not be properly detected"></i> <b>Release Group:</b></td>
                                           <td>%RG</td>
                                           <td>RLSGROUP</td>
                                         </tr>
                                         <tr class="even">
-                                          <td class="align-right"><i class="icon-info-sign" title="If episode is proper/repack add 'proper' to name."></i> <b>Release Type:</b></td>
+                                          <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="If episode is proper/repack add 'proper' to name."></i> <b>Release Type:</b></td>
                                           <td>%RT</td>
                                           <td>PROPER</td>
                                         </tr>
@@ -618,17 +618,17 @@
                                               <td>09</td>
                                             </tr>
                                             <tr>
-                                              <td class="align-right"><i class="icon-info-sign" title="Multi-EP style is ignored"></i> <b>Release Name:</b></td>
+                                              <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="Multi-EP style is ignored"></i> <b>Release Name:</b></td>
                                               <td>%RN</td>
                                               <td>Show.Name.2010.03.09.HDTV.XviD-RLSGROUP</td>
                                             </tr>
                                             <tr class="even">
-                                              <td class="align-right"><i class="icon-info-sign" title="'SiCKRAGE' is used in place of RLSGROUP if it could not be properly detected"></i> <b>Release Group:</b></td>
+                                              <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="'SiCKRAGE' is used in place of RLSGROUP if it could not be properly detected"></i> <b>Release Group:</b></td>
                                               <td>%RG</td>
                                               <td>RLSGROUP</td>
                                             </tr>
                                             <tr>
-                                              <td class="align-right"><i class="icon-info-sign" title="If episode is proper/repack add 'proper' to name."></i> <b>Release Type:</b></td>
+                                              <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="If episode is proper/repack add 'proper' to name."></i> <b>Release Type:</b></td>
                                               <td>%RT</td>
                                               <td>PROPER</td>
                                             </tr>
@@ -795,17 +795,17 @@
                                               <td>09</td>
                                             </tr>
                                             <tr>
-                                              <td class="align-right"><i class="icon-info-sign" title="Multi-EP style is ignored"></i> <b>Release Name:</b></td>
+                                              <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="Multi-EP style is ignored"></i> <b>Release Name:</b></td>
                                               <td>%RN</td>
                                               <td>Show.Name.9th.Mar.2011.HDTV.XviD-RLSGROUP</td>
                                             </tr>
                                             <tr class="even">
-                                              <td class="align-right"><i class="icon-info-sign" title="'SiCKRAGE' is used in place of RLSGROUP if it could not be properly detected"></i> <b>Release Group:</b></td>
+                                              <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="'SiCKRAGE' is used in place of RLSGROUP if it could not be properly detected"></i> <b>Release Group:</b></td>
                                               <td>%RG</td>
                                               <td>RLSGROUP</td>
                                             </tr>
                                             <tr>
-                                              <td class="align-right"><i class="icon-info-sign" title="If episode is proper/repack add 'proper' to name."></i> <b>Release Type:</b></td>
+                                              <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="If episode is proper/repack add 'proper' to name."></i> <b>Release Type:</b></td>
                                               <td>%RT</td>
                                               <td>PROPER</td>
                                             </tr>
@@ -968,17 +968,17 @@
                                               <td>720p_BluRay</td>
                                             </tr>
                                             <tr class="even">
-                                              <td class="align-right"><i class="icon-info-sign" title="Multi-EP style is ignored"></i> <b>Release Name:</b></td>
+                                              <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="Multi-EP style is ignored"></i> <b>Release Name:</b></td>
                                               <td>%RN</td>
                                               <td>Show.Name.S02E03.HDTV.XviD-RLSGROUP</td>
                                             </tr>
                                             <tr>
-                                              <td class="align-right"><i class="icon-info-sign" title="'SiCKRAGE' is used in place of RLSGROUP if it could not be properly detected"></i> <b>Release Group:</b></td>
+                                              <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="'SiCKRAGE' is used in place of RLSGROUP if it could not be properly detected"></i> <b>Release Group:</b></td>
                                               <td>%RG</td>
                                               <td>RLSGROUP</td>
                                             </tr>
                                             <tr class="even">
-                                              <td class="align-right"><i class="icon-info-sign" title="If episode is proper/repack add 'proper' to name."></i> <b>Release Type:</b></td>
+                                              <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="If episode is proper/repack add 'proper' to name."></i> <b>Release Type:</b></td>
                                               <td>%RT</td>
                                               <td>PROPER</td>
                                             </tr>
