@@ -133,7 +133,7 @@
     <div class="selectChoices">
       <select id="edit_default_ep_status" name="default_ep_status" class="form-control form-control-inline input-sm">
           <option value="keep">&lt; keep &gt;</option>
-          % for curStatus in [WANTED, SKIPPED, ARCHIVED, IGNORED]:
+          % for curStatus in [WANTED, SKIPPED, IGNORED]:
           <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == default_ep_status_value]}>${statusStrings[curStatus]}</option>
           % endfor
       </select>

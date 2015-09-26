@@ -21,7 +21,7 @@
                 <span class="component-title">Status for previously aired episodes</span>
                 <span class="component-desc">
                     <select name="defaultStatus" id="statusSelect" class="form-control form-control-inline input-sm">
-                    % for curStatus in [SKIPPED, WANTED, ARCHIVED, IGNORED]:
+                    % for curStatus in [SKIPPED, WANTED, IGNORED]:
                         <option value="${curStatus}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT == curStatus]}>${statusStrings[curStatus]}</option>
                     % endfor
                     </select>
@@ -33,7 +33,7 @@
                 <span class="component-title">Status for all future episodes</span>
                 <span class="component-desc">
                     <select name="defaultStatusAfter" id="statusSelectAfter" class="form-control form-control-inline input-sm">
-                    % for curStatus in [SKIPPED, WANTED, ARCHIVED, IGNORED]:
+                    % for curStatus in [SKIPPED, WANTED, IGNORED]:
                         <option value="${curStatus}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT_AFTER == curStatus]}>${statusStrings[curStatus]}</option>
                     % endfor
                     </select>

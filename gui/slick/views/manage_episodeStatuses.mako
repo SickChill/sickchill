@@ -25,7 +25,7 @@
 
 <form action="${sbRoot}/manage/episodeStatuses" method="get">
 Manage episodes with status <select name="whichStatus" class="form-control form-control-inline input-sm">
-% for curStatus in [common.SKIPPED, common.SNATCHED, common.WANTED, common.ARCHIVED, common.IGNORED] + common.Quality.ARCHIVED:
+% for curStatus in [common.SKIPPED, common.SNATCHED, common.WANTED, common.IGNORED] + common.Quality.ARCHIVED:
 <option value="${curStatus}">${common.statusStrings[curStatus]}</option>
 % endfor
 </select>
@@ -56,7 +56,7 @@ Set checked shows/episodes to <select name="newStatus" class="form-control form-
     if int(whichStatus) in statusList:
         statusList.remove(int(whichStatus))
 
-    if int(whichStatus) in [common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST] + common.Quality.DOWNLOADED and sickbeard.USE_FAILED_DOWNLOADS:
+    if int(whichStatus) in [common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST] + common.Quality.ARCHIVED + common.Quality.DOWNLOADED and sickbeard.USE_FAILED_DOWNLOADS:
         statusList.append(common.FAILED)
 %>
 

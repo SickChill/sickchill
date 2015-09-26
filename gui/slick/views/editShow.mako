@@ -68,7 +68,7 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
 <b>Default Episode Status:</b><br />
 (this will set the status for future episodes)<br />
 <select name="defaultEpStatus" id="defaultEpStatusSelect" class="form-control form-control-inline input-sm">
-    % for curStatus in [WANTED, SKIPPED, ARCHIVED, IGNORED]:
+    % for curStatus in [WANTED, SKIPPED, IGNORED]:
     <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == show.default_ep_status]}>${statusStrings[curStatus]}</option>
     % endfor
 </select><br />

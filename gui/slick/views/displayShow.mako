@@ -286,7 +286,7 @@ $(document).ready(function(){
         <% availableStatus.remove(FAILED) %>
         % endif
         % for curStatus in availableStatus + sorted(Quality.DOWNLOADED) + sorted(Quality.ARCHIVED):
-            % if curStatus != DOWNLOADED:
+            % if curStatus not in [DOWNLOADED, ARCHIVED]:
             <option value="${curStatus}">${statusStrings[curStatus]}</option>
             % endif
         % endfor
