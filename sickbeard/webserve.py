@@ -1691,13 +1691,13 @@ class Home(WebRoot):
                             logger.ERROR)
                         continue
 
-                    if int(status) == FAILED and epObj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.DOWNLOADED:
+                    if int(status) == FAILED and epObj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.DOWNLOADED + Quality.ARCHIVED:
                         logger.log(
                             u"Refusing to change status of " + curEp + " to FAILED because it's not SNATCHED/DOWNLOADED",
                             logger.ERROR)
                         continue
 
-                    if epObj.status in Quality.DOWNLOADED and int(status) == WANTED:
+                    if epObj.status in Quality.DOWNLOADED + Quality.ARCHIVED and int(status) == WANTED:
                         logger.log(u"Removing release_name for episode as you want to set a downloaded episode back to wanted, so obviously you want it replaced")
                         epObj.release_name = ""
 
@@ -1714,7 +1714,7 @@ class Home(WebRoot):
                 if int(status) in [WANTED, FAILED]:
                     logger.log(u"Add episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " to Watchlist", logger.DEBUG)
                     upd = "add"
-                elif int(status) in [ARCHIVED, IGNORED, SKIPPED ] + Quality.DOWNLOADED:
+                elif int(status) in [IGNORED, SKIPPED] + Quality.DOWNLOADED + Quality.ARCHIVED:
                     logger.log(u"Remove episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " from Watchlist", logger.DEBUG)
                     upd = "remove"
 
@@ -3497,7 +3497,7 @@ class History(WebRoot):
         self.history = HistoryTool()
 
     def index(self, limit=None):
-    
+
         if limit is None:
             if sickbeard.HISTORY_LIMIT:
                 limit = int(sickbeard.HISTORY_LIMIT)
@@ -3505,9 +3505,9 @@ class History(WebRoot):
                 limit = 100
         else:
             limit = int(limit)
-            
+
         sickbeard.HISTORY_LIMIT = limit
-        
+
         sickbeard.save_config()
 
         compact = []

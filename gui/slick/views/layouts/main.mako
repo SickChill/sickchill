@@ -230,7 +230,7 @@
                 myDB = db.DBConnection()
                 today = str(datetime.date.today().toordinal())
                 status_quality = '(%s)' % ','.join([str(quality) for quality in Quality.SNATCHED + Quality.SNATCHED_PROPER])
-                status_download = '(%s)' % ','.join([str(quality) for quality in Quality.DOWNLOADED + [ARCHIVED]])
+                status_download = '(%s)' % ','.join([str(quality) for quality in Quality.DOWNLOADED + Quality.ARCHIVED])
 
                 sql_statement = 'SELECT ' \
                 + '(SELECT COUNT(*) FROM tv_episodes WHERE season > 0 AND episode > 0 AND airdate > 1 AND status IN %s) AS ep_snatched, ' % status_quality \
