@@ -115,6 +115,7 @@ class PageTemplate(MakoTemplate):
         super(PageTemplate, self).__init__(*args, **kwargs)
 
         self.arguments['sbRoot'] = sickbeard.WEB_ROOT
+        self.arguments['srRoot'] = sickbeard.WEB_ROOT
         self.arguments['sbHttpPort'] = sickbeard.WEB_PORT
         self.arguments['sbHttpsPort'] = sickbeard.WEB_PORT
         self.arguments['sbHttpsEnabled'] = sickbeard.ENABLE_HTTPS
