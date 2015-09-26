@@ -496,10 +496,15 @@
             ## <% date = (sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network))), 'never')[int(epResult['airdate']) == 1] %>
             <% date = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
             <td class="col-airdate">
-                <div class="${fuzzydate}">
-                    <time datetime="${date.isoformat('T')}" class="date">${date}</time>
-                </div>
+                % if int(epResult['airdate']) != 1:
+                    <div class="${fuzzydate}">
+                        <time datetime="${date.isoformat('T')}" class="date">${date}</time>
+                    </div>
+                % else:
+                    <div class="${fuzzydate}">Never</div>
+                % endif
                 <span class="sort_data">${date.isoformat('T')}</span>
+
             </td>
             <td>
                 % if sickbeard.DOWNLOAD_URL and epResult['location']:

@@ -83,10 +83,14 @@ Jump to Show
             </td>
             <% date = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
             <td>
+            % if int(curResult['airdate']) != 1:
                 <div class="${fuzzydate}">
                     <time datetime="${date.isoformat('T')}" class="date">${date}</time>
                 </div>
-                <span class="sort_data">${date.isoformat('T')}</span>
+            % else:
+                <div class="${fuzzydate}">Never</div>
+            % endif
+            <span class="sort_data">${date.isoformat('T')}</span>
             </td>
         </tr>
     % endfor
