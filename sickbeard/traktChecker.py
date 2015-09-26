@@ -430,7 +430,8 @@ class TraktChecker():
                                                             quality=int(sickbeard.QUALITY_DEFAULT),
                                                             flatten_folders=int(sickbeard.FLATTEN_FOLDERS_DEFAULT),
                                                             paused=sickbeard.TRAKT_START_PAUSED,
-                                                            default_status_after=status)
+                                                            default_status_after=status,
+                                                            archive=sickbeard.ARCHIVE_DEFAULT)
             else:
                 logger.log(u"There was an error creating the show, no root directory setting found", logger.ERROR)
                 return

@@ -140,13 +140,13 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def addShow(self, indexer, indexer_id, showDir, default_status=None, quality=None, flatten_folders=None,
-                lang=None, subtitles=None, anime=None, scene=None, paused=None, blacklist=None, whitelist=None, default_status_after=None):
+                lang=None, subtitles=None, anime=None, scene=None, paused=None, blacklist=None, whitelist=None, default_status_after=None, archive=None):
 
         if lang is None:
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
         queueItemObj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang,
-                                    subtitles, anime, scene, paused, blacklist, whitelist, default_status_after)
+                                    subtitles, anime, scene, paused, blacklist, whitelist, default_status_after, archive)
 
         self.add_item(queueItemObj)
 
@@ -218,7 +218,7 @@ class ShowQueueItem(generic_queue.QueueItem):
 
 class QueueItemAdd(ShowQueueItem):
     def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles, anime,
-                 scene, paused, blacklist, whitelist, default_status_after):
+                 scene, paused, blacklist, whitelist, default_status_after, archive):
 
         self.indexer = indexer
         self.indexer_id = indexer_id
@@ -234,6 +234,7 @@ class QueueItemAdd(ShowQueueItem):
         self.blacklist = blacklist
         self.whitelist = whitelist
         self.default_status_after = default_status_after
+        self.archive = archive
 
         self.show = None
 
@@ -347,6 +348,7 @@ class QueueItemAdd(ShowQueueItem):
             self.show.flatten_folders = self.flatten_folders if self.flatten_folders != None else sickbeard.FLATTEN_FOLDERS_DEFAULT
             self.show.anime = self.anime if self.anime != None else sickbeard.ANIME_DEFAULT
             self.show.scene = self.scene if self.scene != None else sickbeard.SCENE_DEFAULT
+            self.show.archive_firstmatch = self.archive if self.archive != None else sickbeard.ARCHIVE_DEFAULT
             self.show.paused = self.paused if self.paused != None else False
 
             # set up default new/missing episode status
