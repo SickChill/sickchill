@@ -1427,9 +1427,19 @@ class TVEpisode(object):
 
     location = property(lambda self: self._location, _set_location)
 
-    def refreshSubtitles(self):
-        """Look for subtitles files and refresh the subtitles property"""
-        self.subtitles = subtitles.subtitlesLanguages(self.location)
+    def getSubtitlesPath(self):
+        if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+            subs_new_path = sickbeard.SUBTITLES_DIR
+        elif sickbeard.SUBTITLES_DIR:
+            subs_new_path = ek(os.path.join, ek(os.path.dirname, self.location), sickbeard.SUBTITLES_DIR)
+            dir_exists = helpers.makeDir(subs_new_path)
+            if not dir_exists:
+                logger.log(u'Unable to create subtitles folder ' + subs_new_path, logger.ERROR)
+            else:
+                helpers.chmodAsParent(subs_new_path)
+        else:
+            subs_new_path = ek(os.path.join, ek(os.path.dirname, self.location))
+        return subs_new_path
 
     def getWantedLanguages(self):
         languages = set()
@@ -1437,6 +1447,10 @@ class TVEpisode(object):
             languages.add(subtitles.fromietf(language))
         self.refreshSubtitles()
         return languages
+
+    def refreshSubtitles(self):
+        """Look for subtitles files and refresh the subtitles property"""
+        self.subtitles = subtitles.subtitlesLanguages(self.location)
 
     def downloadSubtitles(self, force=False):
         if not ek(os.path.isfile, self.location):
@@ -1454,11 +1468,12 @@ class TVEpisode(object):
         #logging.getLogger('subliminal').setLevel(logging.DEBUG)
 
         try:
-            providers = sickbeard.subtitles.getEnabledServiceList()
+            subs_path = self.getSubtitlesPath();
             languages = self.getWantedLanguages();
             if not languages:
                 logger.log(u'%s: No missing subtitles for S%02dE%02d' % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
                 return
+            providers = sickbeard.subtitles.getEnabledServiceList()
             vname = self.location
             video = None
             try:
@@ -1478,25 +1493,12 @@ class TVEpisode(object):
                 logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
                 return
 
-            # Select the correct subtitles path
-            if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
-                subs_new_path = sickbeard.SUBTITLES_DIR
-            elif sickbeard.SUBTITLES_DIR:
-                subs_new_path = ek(os.path.join, ek(os.path.dirname, self.location), sickbeard.SUBTITLES_DIR)
-                dir_exists = helpers.makeDir(subs_new_path)
-                if not dir_exists:
-	                logger.log(u'Unable to create subtitles folder ' + subs_new_path, logger.ERROR)
-                else:
-	                helpers.chmodAsParent(subs_new_path)
-            else:
-                subs_new_path = ek(os.path.join, ek(os.path.dirname, self.location))
-
-            subliminal.save_subtitles(foundSubs, directory=subs_new_path, single=not sickbeard.SUBTITLES_MULTI)
+            subliminal.save_subtitles(foundSubs, directory=subs_path, single=not sickbeard.SUBTITLES_MULTI)
 
             for video, subs in foundSubs.iteritems():
                 for sub in subs:
                     # Get the file name out of video.name and use the path from above
-                    video_path = subs_new_path + "/" + video.name.rsplit("/", 1)[-1]
+                    video_path = subs_path + "/" + video.name.rsplit("/", 1)[-1]
                     subpath = subliminal.subtitle.get_subtitle_path(video_path, sub.language if sickbeard.SUBTITLES_MULTI else None)
                     helpers.chmodAsParent(subpath)
                     helpers.fixSetGroupID(subpath)
@@ -1533,7 +1535,6 @@ class TVEpisode(object):
                     history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, sub)
 
         return self.subtitles
-
 
     def checkForMetaFiles(self):
 
