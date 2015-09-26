@@ -114,8 +114,6 @@ def subtitlesLanguages(video_path):
             resultList.append(language.alpha2)
 
     defaultLang = wantedLanguages()
-    if len(resultList) is 1 and len(defaultLang) is 1:
-        return defaultLang
 
     if ('pob' in defaultLang or 'pb' in defaultLang) and ('pt' not in defaultLang and 'por' not in defaultLang):
             resultList = [x if not x in ['por', 'pt'] else u'pob' for x in resultList]
