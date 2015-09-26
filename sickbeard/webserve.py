@@ -2528,7 +2528,8 @@ class HomeAddShows(Home):
                                                         subtitles=sickbeard.SUBTITLES_DEFAULT,
                                                         anime=sickbeard.ANIME_DEFAULT,
                                                         scene=sickbeard.SCENE_DEFAULT,
-                                                        default_status_after=sickbeard.STATUS_DEFAULT_AFTER)
+                                                        default_status_after=sickbeard.STATUS_DEFAULT_AFTER,
+                                                        archive=sickbeard.ARCHIVE_DEFAULT)
 
             ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
         else:
@@ -2541,7 +2542,7 @@ class HomeAddShows(Home):
     def addNewShow(self, whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
                    anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
                    fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
-                   scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None):
+                   scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None, archive=False):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
         provided then it forwards back to newShow, if not it goes to /home.
@@ -2629,6 +2630,7 @@ class HomeAddShows(Home):
         anime = config.checkbox_to_value(anime)
         flatten_folders = config.checkbox_to_value(flatten_folders)
         subtitles = config.checkbox_to_value(subtitles)
+        archive = config.checkbox_to_value(archive)
 
         if whitelist:
             whitelist = short_group_names(whitelist)
@@ -2648,7 +2650,7 @@ class HomeAddShows(Home):
         # add the show
         sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir, int(defaultStatus), newQuality,
                                                     flatten_folders, indexerLang, subtitles, anime,
-                                                    scene, None, blacklist, whitelist, int(defaultStatusAfter))
+                                                    scene, None, blacklist, whitelist, int(defaultStatusAfter), archive)
         ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
 
         return finishAddShow()
@@ -2722,7 +2724,8 @@ class HomeAddShows(Home):
                                                             subtitles=sickbeard.SUBTITLES_DEFAULT,
                                                             anime=sickbeard.ANIME_DEFAULT,
                                                             scene=sickbeard.SCENE_DEFAULT,
-                                                            default_status_after=sickbeard.STATUS_DEFAULT_AFTER)
+                                                            default_status_after=sickbeard.STATUS_DEFAULT_AFTER,
+                                                            archive=sickbeard.ARCHIVE_DEFAULT)
                 num_added += 1
 
         if num_added:
@@ -3612,7 +3615,7 @@ class ConfigGeneral(Config):
         sickbeard.ROOT_DIRS = rootDirString
 
     def saveAddShowDefaults(self, defaultStatus, anyQualities, bestQualities, defaultFlattenFolders, subtitles=False,
-                            anime=False, scene=False, defaultStatusAfter=WANTED):
+                            anime=False, scene=False, defaultStatusAfter=WANTED, archive=False):
 
         if anyQualities:
             anyQualities = anyQualities.split(',')
@@ -3635,6 +3638,7 @@ class ConfigGeneral(Config):
 
         sickbeard.ANIME_DEFAULT = config.checkbox_to_value(anime)
         sickbeard.SCENE_DEFAULT = config.checkbox_to_value(scene)
+        sickbeard.ARCHIVE_DEFAULT = config.checkbox_to_value(archive)
 
         sickbeard.save_config()
 

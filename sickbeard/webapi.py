@@ -2039,6 +2039,7 @@ class CMD_ShowAddNew(ApiCall):
             "anime": {"desc": "True to mark the show as an anime, False otherwise"},
             "scene": {"desc": "True if episodes search should be made by scene numbering, False otherwise"},
             "future_status": {"desc": "The status of future episodes"},
+            "archive_firstmatch": {"desc": "True if episodes should be archived when first match is downloaded, False otherwise"},
         }
     }
 
@@ -2068,6 +2069,9 @@ class CMD_ShowAddNew(ApiCall):
                                              "bool", [])
         self.future_status, args = self.check_params(args, kwargs, "future_status", None, False, "string",
                                                      ["wanted", "skipped", "ignored"])
+
+        self.archive_firstmatch, args = self.check_params(args, kwargs, "archive_firstmatch",
+                                             int(sickbeard.ARCHIVE_DEFAULT), False, "bool", [])
 
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
@@ -2181,7 +2185,7 @@ class CMD_ShowAddNew(ApiCall):
         sickbeard.showQueueScheduler.action.addShow(int(indexer), int(self.indexerid), showPath, newStatus,
                                                     newQuality,
                                                     int(self.flatten_folders), self.lang, self.subtitles, self.anime,
-                                                    self.scene, default_status_after=default_ep_status_after)  # @UndefinedVariable
+                                                    self.scene, default_status_after=default_ep_status_after, archive=self.archive_firstmatch)  # @UndefinedVariable
 
         return _responds(RESULT_SUCCESS, {"name": indexerName}, indexerName + " has been queued to be added")
 
