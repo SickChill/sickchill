@@ -10,25 +10,6 @@
 %>
 <%block name="scripts">
 <script type="text/javascript">
-$(document).ready(function(){
-    $('#pickShow').change(function(){
-        var id = $(this).val();
-        if (id) {
-            $('html,body').animate({scrollTop: $('#show-' + id).offset().top -25},'slow');
-        }
-    });
-
-    % if sickbeard.FUZZY_DATING:
-    fuzzyMoment({
-        containerClass : '.${fuzzydate}',
-        dateHasTime : false,
-        dateFormat : '${sickbeard.DATE_PRESET}',
-        timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('False', 'True')[bool(sickbeard.TRIM_ZERO)]}
-    });
-    % endif
-
-});
 </script>
 </%block>
 <%block name="content">
@@ -100,7 +81,13 @@ Jump to Show
             <td class="tableright" align="center" class="nowrap">
                 <div class="${fuzzydate}">${curResult["name"]}</div>
             </td>
-            <td><div>${(sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network))), 'never')[int(curResult['airdate']) == 1]}</div></td>
+            <% date = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
+            <td>
+                <div class="${fuzzydate}">
+                    <time datetime="${date.isoformat('T')}" class="date">${date}</time>
+                </div>
+                <span class="sort_data">${date.isoformat('T')}</span>
+            </td>
         </tr>
     % endfor
 % endfor

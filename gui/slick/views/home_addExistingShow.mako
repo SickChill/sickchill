@@ -2,19 +2,15 @@
 <%!
     import sickbeard
 %>
+<%block name="metas">
+<meta data-var="sickbeard.ROOT_DIRS" data-content="${sickbeard.ROOT_DIRS}">
+</%block>
 <%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/addExistingShow.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/addShowOptions.js?${sbPID}"></script>
-<script type="text/javascript" charset="utf-8">
-$(document).ready(function(){
-    $( "#tabs" ).tabs({
-        collapsible: true,
-        selected: '${('0', '-1')[bool(sickbeard.ROOT_DIRS)]}'
-    });
-});
-</script>
+<script type="text/javascript" src="${sbRoot}/js/new/home_addExistingShow.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:

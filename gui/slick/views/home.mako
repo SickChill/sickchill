@@ -55,7 +55,6 @@
 <meta data-var="fuzzydate" data-content="${fuzzydate}">
 </%block>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/lib/jquery.timeago.js"></script>
 <script type="text/javascript" src="${sbRoot}/js/new/home.js"></script>
 </%block>
 <%block name="content">
