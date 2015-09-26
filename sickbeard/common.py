@@ -268,7 +268,7 @@ class Quality:
         if checkName([r"(pdtv|hd.?tv|dsr|tvrip).(xvid|x26[45]|h.?26[45])"], all) and not checkName([r"(720|1080)[pi]"], all) and\
                 not checkName([r"hr.ws.pdtv.x26[45]"], any):
             ret = Quality.SDTV
-        elif checkName([r"web.dl|webrip", r"xvid|x26[45]|h.?26[45]"], all) and not checkName([r"(720|1080)[pi]"], all):
+        elif checkName([r"web.?dl|webrip", r"xvid|x26[45]|h.?26[45]"], all) and not checkName([r"(720|1080)[pi]"], all):
             ret = Quality.SDTV
         elif checkName([r"(dvdrip|b[rd]rip|blue?-?ray)(.ws)?.(xvid|divx|x26[45])"], any) and not checkName([r"(720|1080)[pi]"], all):
             ret = Quality.SDDVD
@@ -360,8 +360,8 @@ class Quality:
             return Quality.UNKNOWN
 
         base_filename = os.path.basename(filename)
-        bluray = re.search(r'blue?-?ray', base_filename, re.I) is not None
-        webdl = re.search(r'web-?dl', base_filename, re.I) is not None
+        bluray = re.search(r'b[rd]rip|blue?-?ray', base_filename, re.I) is not None
+        webdl = re.search(r'web.?dl|webrip', base_filename, re.I) is not None
 
         ret = Quality.UNKNOWN
         if height > 1000:
@@ -369,7 +369,7 @@ class Quality:
         elif height > 680 and height < 800:
             ret = ((Quality.HDTV, Quality.HDBLURAY)[bluray], Quality.HDWEBDL)[webdl]
         elif height < 680:
-            ret = (Quality.SDTV, Quality.SDDVD)[re.search(r'dvd', base_filename, re.I) is not None]
+            ret = (Quality.SDTV, Quality.SDDVD)[re.search(r'dvd|b[rd]rip|blue?-?ray', base_filename, re.I) is not None]
 
         return ret
 
