@@ -303,6 +303,7 @@
         <script type="text/javascript" src="${sbRoot}/js/lib/isotope.pkgd.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery.confirm.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery.timeago.js?${sbPID}"></script>
+        <script type="text/javascript" src="${sbRoot}/js/new/parsers.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/script.js?${sbPID}"></script>
         <script type="text/javascript">
             sbRoot = '${sbRoot}'; // needed for browser.js & ajaxNotifications.js
