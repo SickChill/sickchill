@@ -13,10 +13,7 @@
 <%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/configPostProcessing.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
-<script type="text/javascript">
-    $('#config-components').tabs();
-    $('#tv_download_dir').fileBrowser({ title: 'Select TV Download Directory' });
-</script>
+<script type="text/javascript" src="${sbRoot}/js/new/home.js"></script>
 </%block>
 <%block name="content">
 <div id="content960">

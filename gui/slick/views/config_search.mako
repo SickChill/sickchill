@@ -6,13 +6,7 @@
 <%block name="scripts">
 <script type="text/javascript" src="${sbRoot}/js/configSearch.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
-<script type="text/javascript" charset="utf-8">
-    $('#config-components').tabs();
-    $('#nzb_dir').fileBrowser({ title: 'Select .nzb black hole/watch location' });
-    $('#torrent_dir').fileBrowser({ title: 'Select .torrent black hole/watch location' });
-    $('#torrent_path').fileBrowser({ title: 'Select .torrent download location' });
-    $('#tv_download_dir').fileBrowser({ title: 'Select TV download location' });
-</script>
+<script type="text/javascript" src="${sbRoot}/js/new/config_search.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:

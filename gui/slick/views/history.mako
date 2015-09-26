@@ -31,7 +31,6 @@
 <meta data-var="fuzzydate" data-content="${fuzzydate}">
 </%block>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/lib/jquery.timeago.js"></script>
 <script type="text/javascript" src="${sbRoot}/js/new/history.js"></script>
 </%block>
 <%block name="content">
@@ -83,8 +82,11 @@
         % for hItem in historyResults:
             <% curStatus, curQuality = Quality.splitCompositeStatus(int(hItem["action"])) %>
             <tr>
-                <% curdatetime = datetime.datetime.strptime(str(hItem["date"]), History.date_format) %>
-                <td align="center"><div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(curdatetime, show_seconds=True)}</div><span class="sort_data">${time.mktime(curdatetime.timetuple())}</span></td>
+                <td align="center">
+                    <% airDate = sbdatetime.sbdatetime.sbfdatetime(datetime.datetime.strptime(str(hItem["date"]), History.date_format), show_seconds=True) %>
+                    <% isoDate = datetime.datetime.strptime(str(hItem["date"]), History.date_format).isoformat('T') %>
+                    <time datetime="${isoDate}" class="date">${airDate}</time>
+                </td>
                 <td class="tvShow" width="35%"><a href="${sbRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem["resource"].lower() or "repack" in hItem["resource"].lower()]}</a></td>
                 <td align="center" ${('', 'class="subtitles_column"')[curStatus == SUBTITLED]}>
                 % if curStatus == SUBTITLED:
@@ -143,8 +145,11 @@
         <tbody>
         % for hItem in compactResults:
             <tr>
-                <% curdatetime = datetime.datetime.strptime(str(hItem["actions"][0]["time"]), History.date_format) %>
-                <td align="center"><div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(curdatetime, show_seconds=True)}</div><span class="sort_data">${time.mktime(curdatetime.timetuple())}</span></td>
+                <td align="center">
+                    <% airDate = sbdatetime.sbdatetime.sbfdatetime(datetime.datetime.strptime(str(hItem["actions"][0]["time"]), History.date_format), show_seconds=True) %>
+                    <% isoDate = datetime.datetime.strptime(str(hItem["actions"][0]["time"]), History.date_format).isoformat('T') %>
+                    <time datetime="${isoDate}" class="date">${airDate}</time>
+                </td>
                 <td class="tvShow" width="25%">
                     <span><a href="${sbRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])}${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}</a></span>
                 </td>

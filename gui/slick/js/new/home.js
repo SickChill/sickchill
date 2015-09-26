@@ -190,30 +190,6 @@ $(document).ready(function(){
         }
     }
 
-    if(['True', 1].indexOf($('meta[data-var="sickbeard.FUZZY_DATING"]').data('content')) >= 0){
-        $.timeago.settings.allowFuture = true;
-        $.timeago.settings.strings = {
-            prefixAgo: null,
-            prefixFromNow: 'In ',
-            suffixAgo: "ago",
-            suffixFromNow: "",
-            seconds: "less than a minute",
-            minute: "about a minute",
-            minutes: "%d minutes",
-            hour: "about an hour",
-            hours: "about %d hours",
-            day: "a day",
-            days: "%d days",
-            month: "about a month",
-            months: "%d months",
-            year: "about a year",
-            years: "%d years",
-            wordSeparator: " ",
-            numbers: []
-        };
-        $("[datetime]").timeago();
-    }
-
     var $container = [$('#container'), $('#container-anime')];
 
     $.each($container, function (j) {

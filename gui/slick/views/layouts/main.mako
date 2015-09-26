@@ -302,12 +302,9 @@
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery.ui.touch-punch-0.2.2.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/lib/isotope.pkgd.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery.confirm.js?${sbPID}"></script>
+        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.timeago.js?${sbPID}"></script>
+        <script type="text/javascript" src="${sbRoot}/js/new/parsers.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/script.js?${sbPID}"></script>
-
-        % if sickbeard.FUZZY_DATING:
-        <script type="text/javascript" src="${sbRoot}/js/moment/moment.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/fuzzyMoment.js?${sbPID}"></script>
-        % endif
         <script type="text/javascript">
             sbRoot = '${sbRoot}'; // needed for browser.js & ajaxNotifications.js
             //HTML for scrolltopcontrol, which is auto wrapped in DIV w/ ID="topcontrol"
@@ -320,11 +317,6 @@
         <script type="text/javascript" src="${sbRoot}/js/ajaxNotifications.js"></script>
         <script type="text/javascript" src="${sbRoot}/js/confirmations.js?${sbPID}"></script>
     % endif
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('.dropdown-toggle').dropdownHover();
-            });
-        </script>
         <%block name="scripts" />
     </body>
 </html>

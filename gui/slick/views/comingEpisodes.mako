@@ -116,14 +116,12 @@
 %>
 
         <tr class="${show_div}">
-            ## forced to use a div to wrap airdate, the column sort went crazy with a span
             <td align="center" nowrap="nowrap">
                 <% airDate = sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING) %>
                 <% isoDate = sbdatetime.sbdatetime.convert_to_setting(cur_result['localtime']).isoformat('T') %>
                 <span class="${fuzzydate}">
                     <time datetime="${isoDate}" class="date">${airDate}</time>
                 </span>
-                <span class="sort_data">${time.mktime(cur_result['localtime'].timetuple())}</span>
             </td>
 
             <td class="tvShow" nowrap="nowrap"><a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>
