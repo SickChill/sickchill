@@ -117,6 +117,7 @@ def remove_extension(name):
     """
 
     if name and "." in name:
+        # pylint: disable=W0612
         base_name, sep, extension = name.rpartition('.')  # @UnusedVariable
         if base_name and extension.lower() in ['nzb', 'torrent'] + mediaExtensions:
             name = base_name
@@ -136,37 +137,37 @@ def remove_non_release_groups(name):
     # Check your database for funky release_names and add them here, to improve failed handling, archiving, and history.
     # select release_name from tv_episodes WHERE LENGTH(release_name);
     # [eSc], [SSG], [GWC] are valid release groups for non-anime
-    removeWordsList = {'\[rartv\]$':       'searchre',
-                       '\[rarbg\]$':       'searchre',
-                       '\[eztv\]$':        'searchre',
-                       '\[ettv\]$':        'searchre',
-                       '\[vtv\]$':         'searchre',
-                       '\[GloDLS\]$':      'searchre',
-                       '\[silv4\]$':       'searchre',
-                       '\[Seedbox\]$':     'searchre',
-                       '\[AndroidTwoU\]$': 'searchre',
-                       '\.\[BT\]$': 'searchre',
-                       ' \[1044\]$':       'searchre',
-                       '\.RiPSaLoT$':      'searchre',
-                       '\.GiuseppeTnT$':   'searchre',
-                       '\.Renc$':   'searchre',
-                       '-NZBGEEK$':        'searchre',
-                       '-Siklopentan$':        'searchre',
-                       '-RP$':             'searchre',
-                       '-20-40$':          'searchre',
-                       '\.\[www\.usabit\.com\]$': 'searchre',
-                       '\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
-                       '- \[ www\.torrentday\.com \]$': 'searchre',
-                       '- \{ www\.SceneTime\.com \}$': 'searchre',
-                       '^\{ www\.SceneTime\.com \} - ': 'searchre',
-                       '^\[ www\.TorrentDay\.com \] - ': 'searchre',
-                       '^\]\.\[ www\.tensiontorrent.com \] - ': 'searchre',
-                       '^\]\.\[www\.tensiontorrent.com\] - ': 'searchre',
-                       '^\[ www\.Cpasbien\.pw \] ': 'searchre',
-                       '^\[ www\.Cpasbien\.com \] ': 'searchre',
-                       '^\[www\.Cpasbien\.com\] ': 'searchre',
-                       '^\[www\.Cpasbien\.pe\] ': 'searchre',
-                       '^\[www\.frenchtorrentdb\.com\] ': 'searchre',
+    removeWordsList = {r'\[rartv\]$':       'searchre',
+                       r'\[rarbg\]$':       'searchre',
+                       r'\[eztv\]$':        'searchre',
+                       r'\[ettv\]$':        'searchre',
+                       r'\[vtv\]$':         'searchre',
+                       r'\[GloDLS\]$':      'searchre',
+                       r'\[silv4\]$':       'searchre',
+                       r'\[Seedbox\]$':     'searchre',
+                       r'\[AndroidTwoU\]$': 'searchre',
+                       r'\.\[BT\]$':        'searchre',
+                       r' \[1044\]$':       'searchre',
+                       r'\.RiPSaLoT$':      'searchre',
+                       r'\.GiuseppeTnT$':   'searchre',
+                       r'\.Renc$':          'searchre',
+                       r'-NZBGEEK$':        'searchre',
+                       r'-Siklopentan$':    'searchre',
+                       r'-RP$':                             'searchre',
+                       r'-20-40$':                          'searchre',
+                       r'\.\[www\.usabit\.com\]$':          'searchre',
+                       r'^\[www\.Cpasbien\.pe\] ':          'searchre',
+                       r'^\[www\.Cpasbien\.com\] ':         'searchre',
+                       r'^\[ www\.Cpasbien\.pw \] ':        'searchre',
+                       r'^\[ www\.Cpasbien\.com \] ':       'searchre',
+                       r'- \{ www\.SceneTime\.com \}$':     'searchre',
+                       r'^\{ www\.SceneTime\.com \} - ':    'searchre',
+                       r'- \[ www\.torrentday\.com \]$':    'searchre',
+                       r'^\[ www\.TorrentDay\.com \] - ':   'searchre',
+                       r'^\[www\.frenchtorrentdb\.com\] ':  'searchre',
+                       r'^\]\.\[www\.tensiontorrent.com\] - ':      'searchre',
+                       r'^\]\.\[ www\.tensiontorrent.com \] - ':    'searchre',
+                       r'\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
                       }
 
     _name = name
@@ -235,7 +236,7 @@ def isMediaFile(filename):
     """
 
     # ignore samples
-    if re.search('(^|[\W_])(sample\d*)[\W_]', filename, re.I):
+    if re.search(r'(^|[\W_])(sample\d*)[\W_]', filename, re.I):
         return False
 
     # ignore MAC OS's retarded "resource fork" files
@@ -261,7 +262,7 @@ def isRarFile(filename):
     :return: True if this is RAR/Part file, False if not
     """
 
-    archive_regex = '(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)'
+    archive_regex = r'(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)'
 
     if re.search(archive_regex, filename):
         return True
@@ -308,7 +309,7 @@ def sanitizeFileName(name):
     return name
 
 
-def _remove_file_failed(file):
+def _remove_file_failed(failed_file):
     """
     Remove file from filesystem
 
@@ -316,8 +317,8 @@ def _remove_file_failed(file):
     """
 
     try:
-        ek(os.remove, file)
-    except:
+        ek(os.remove, failed_file)
+    except Exception:
         pass
 
 
@@ -372,7 +373,7 @@ def searchDBForShow(regShowName, log=False):
 
     showNames = [re.sub('[. -]', ' ', regShowName)]
 
-    yearRegex = "([^()]+?)\s*(\()?(\d{4})(?(2)\))$"
+    yearRegex = r"([^()]+?)\s*(\()?(\d{4})(?(2)\))$"
 
     myDB = db.DBConnection()
     for showName in showNames:
@@ -423,7 +424,8 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
     for i in sickbeard.indexerApi().indexers if not indexer else int(indexer or []):
         # Query Indexers for each search term and build the list of results
         lINDEXER_API_PARMS = sickbeard.indexerApi(i).api_params.copy()
-        if ui is not None: lINDEXER_API_PARMS['custom_ui'] = ui
+        if ui is not None:
+            lINDEXER_API_PARMS['custom_ui'] = ui
         t = sickbeard.indexerApi(i).indexer(**lINDEXER_API_PARMS)
 
         for name in showNames:
@@ -431,17 +433,17 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
 
             try:
                 search = t[indexer_id] if indexer_id else t[name]
-            except:
+            except Exception:
                 continue
 
             try:
                 seriesname = search[0]['seriesname']
-            except:
+            except Exception:
                 seriesname = None
 
             try:
                 series_id = search[0]['id']
-            except:
+            except Exception:
                 series_id = None
 
             if not (seriesname and series_id):
@@ -544,9 +546,8 @@ def link(src, dst):
     """
 
     if os.name == 'nt':
-        import ctypes
-
-        if ctypes.windll.kernel32.CreateHardLinkW(unicode(dst), unicode(src), 0) == 0: raise ctypes.WinError()
+        if ctypes.windll.kernel32.CreateHardLinkW(unicode(dst), unicode(src), 0) == 0:
+            raise ctypes.WinError()
     else:
         os.link(src, dst)
 
@@ -577,10 +578,8 @@ def symlink(src, dst):
     """
 
     if os.name == 'nt':
-        import ctypes
-
-        if ctypes.windll.kernel32.CreateSymbolicLinkW(unicode(dst), unicode(src), 1 if os.path.isdir(src) else 0) in [0,
-                                                                                                                      1280]: raise ctypes.WinError()
+        if ctypes.windll.kernel32.CreateSymbolicLinkW(unicode(dst), unicode(src), 1 if os.path.isdir(src) else 0) in [0, 1280]:
+            raise ctypes.WinError()
     else:
         os.symlink(src, dst)
 
@@ -598,7 +597,7 @@ def moveAndSymlinkFile(srcFile, destFile):
         ek(shutil.move, srcFile, destFile)
         fixSetGroupID(destFile)
         ek(symlink, destFile, srcFile)
-    except:
+    except Exception:
         logger.log(u"Failed to create symlink of " + srcFile + " at " + destFile + ". Copying instead", logger.ERROR)
         copyFile(srcFile, destFile)
 
@@ -918,7 +917,7 @@ def sanitizeSceneName(name, anime=False):
 
     # tidy up stuff that doesn't belong in scene names
     name = name.replace("- ", ".").replace(" ", ".").replace("&", "and").replace('/', '.')
-    name = re.sub("\.\.*", ".", name)
+    name = re.sub(r"\.\.*", ".", name)
 
     if name.endswith('.'):
         name = name[:-1]
@@ -971,7 +970,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         from OpenSSL import crypto  # @UnresolvedImport
         from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
             serial  # @UnresolvedImport
-    except Exception as e:
+    except Exception:
         logger.log(u"pyopenssl module missing, please install for https access", logger.WARNING)
         return False
 
@@ -989,7 +988,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
-    except:
+    except Exception:
         logger.log(u"Error creating SSL key and certificate", logger.ERROR)
         return False
 
@@ -1097,7 +1096,7 @@ def tryInt(s, s_default=0):
 
     try:
         return int(s)
-    except:
+    except Exception:
         return s_default
 
 
@@ -1127,8 +1126,10 @@ def md5_for_file(filename, block_size=2 ** 16):
 def get_lan_ip():
     """Returns IP of system"""
 
-    try:return [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][0]
-    except:return socket.gethostname()
+    try:
+        return [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][0]
+    except Exception:
+        return socket.gethostname()
 
 def check_url(url):
     """
@@ -1389,7 +1390,7 @@ def extractZip(archive, targetDir):
         return False
 
 
-def backupConfigZip(fileList, archive, arcname = None):
+def backupConfigZip(fileList, archive, arcname=None):
     """
     Store the config file as a ZIP
 
@@ -1689,7 +1690,7 @@ def download_file(url, filename, session=None, headers={}):
                             fp.flush()
 
                 chmodAsParent(filename)
-            except:
+            except Exception:
                 logger.log(u"Problem setting permissions or writing file to: %s" % filename, logger.WARNING)
 
     except requests.exceptions.HTTPError as e:
@@ -1842,16 +1843,16 @@ def verify_freespace(src, dest, oldfile=None):
 
     try:
         diskfree = disk_usage(dest)
-    except:
+    except Exception:
         logger.log("Unable to determine free space, so I will assume there is enough.", logger.WARNING)
         return True
 
     neededspace = ek(os.path.getsize, src)
 
     if oldfile:
-        for file in oldfile:
-            if ek(os.path.isfile, file.location):
-                diskfree += ek(os.path.getsize, file.location)
+        for f in oldfile:
+            if ek(os.path.isfile, f.location):
+                diskfree += ek(os.path.getsize, f.location)
 
     if diskfree > neededspace:
         return True
@@ -1879,7 +1880,7 @@ def pretty_time_delta(seconds):
 
     return time_delta
 
-def isFileLocked(file, writeLockCheck=False):
+def isFileLocked(checkfile, writeLockCheck=False):
     '''
     Checks to see if a file is locked. Performs three checks
         1. Checks if the file even exists
@@ -1891,22 +1892,22 @@ def isFileLocked(file, writeLockCheck=False):
     :param file: the file being checked
     :param writeLockCheck: when true will check if the file is locked for writing (prevents move operations)
     '''
-    if not ek(os.path.exists, file):
+    if not ek(os.path.exists, checkfile):
         return True
     try:
-        f = ek(open, file, 'r')
+        f = ek(open, checkfile, 'r')
         f.close()
     except IOError:
         return True
 
     if writeLockCheck:
-        lockFile = file + ".lckchk"
+        lockFile = checkfile + ".lckchk"
         if ek(os.path.exists, lockFile):
             ek(os.remove, lockFile)
         try:
-            ek(os.rename, file, lockFile)
+            ek(os.rename, checkfile, lockFile)
             time.sleep(1)
-            ek(os.rename, lockFile, file)
+            ek(os.rename, lockFile, checkfile)
         except (OSError, IOError):
             return True
 
