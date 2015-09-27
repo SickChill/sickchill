@@ -24,7 +24,6 @@
 </%block>
 <%block name="content">
 <% sort = sickbeard.COMING_EPS_SORT %>
-<% fuzzydate = 'airdate' %>
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <h1 class="header">${header}</h1>
 <div class="h2footer pull-right">
@@ -119,9 +118,7 @@
             <td align="center" nowrap="nowrap">
                 <% airDate = sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING) %>
                 <% isoDate = sbdatetime.sbdatetime.convert_to_setting(cur_result['localtime']).isoformat('T') %>
-                <span class="${fuzzydate}">
-                    <time datetime="${isoDate}" class="date">${airDate}</time>
-                </span>
+                <time datetime="${isoDate}" class="date">${airDate}</time>
             </td>
 
             <td class="tvShow" nowrap="nowrap"><a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>
@@ -316,7 +313,7 @@
 
                 <div class="clearfix">
 
-                    <span class="title">Airs: </span><span class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING)}</span>${('', '<span> on %s</span>' % str(cur_result['network']))[bool(cur_result['network'])]}
+                    <span class="title">Airs: </span><span class="airdate">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING)}</span>${('', '<span> on %s</span>' % str(cur_result['network']))[bool(cur_result['network'])]}
                 </div>
 
                 <div class="clearfix">

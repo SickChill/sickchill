@@ -11,7 +11,6 @@
     myDB = db.DBConnection()
     today = str(datetime.date.today().toordinal())
     layout = sickbeard.HOME_LAYOUT
-    fuzzydate = 'airdate'
 
     status_quality  = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ')'
     status_download = '(' + ','.join([str(x) for x in Quality.DOWNLOADED + Quality.ARCHIVED]) + ')'
@@ -52,7 +51,6 @@
 <meta data-var="sickbeard.TRIM_ZERO" data-content="${sickbeard.TRIM_ZERO}">
 <meta data-var="max_download_count" data-content="${max_download_count}">
 <meta data-var="layout" data-content="${layout}">
-<meta data-var="fuzzydate" data-content="${fuzzydate}">
 </%block>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/new/home.js"></script>
@@ -203,7 +201,6 @@
         <div class="show-date">
 % if cur_airs_next:
     <% ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
-    <span class="${fuzzydate}">
     <%
         try:
             out = str(sbdatetime.sbdatetime.sbfdate(ldatetime))
@@ -212,7 +209,6 @@
             pass
     %>
         ${out}
-    </span>
 % else:
     <%
     output_html = '?'
@@ -371,9 +367,7 @@
             <% temp_sbfdate_next = sbdatetime.sbdatetime.sbfdate(ldatetime) %>
             <% temp_timegm_next = calendar.timegm(ldatetime.timetuple()) %>
             <td align="center" class="nowrap">
-                <div class="${fuzzydate}">
-                    <time datetime="${ldatetime.isoformat('T')}" class="date">${temp_sbfdate_next}</time>
-                </div>
+                <time datetime="${ldatetime.isoformat('T')}" class="date">${temp_sbfdate_next}</time>
                 <span class="sort_data">${temp_timegm_next}</span>
             </td>
         % except ValueError:
@@ -389,9 +383,7 @@
             <% temp_sbfdate_prev = sbdatetime.sbdatetime.sbfdate(pdatetime) %>
             <% temp_timegm_prev = calendar.timegm(pdatetime.timetuple()) %>
             <td align="center" class="nowrap">
-                <div class="${fuzzydate}">
-                    <time datetime="${pdatetime.isoformat('T')}" class="date">${temp_sbfdate_prev}</time>
-                </div>
+                <time datetime="${pdatetime.isoformat('T')}" class="date">${temp_sbfdate_prev}</time>
                 <span class="sort_data">${temp_timegm_prev}</span>
             </td>
         % except ValueError:

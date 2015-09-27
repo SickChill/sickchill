@@ -11,8 +11,6 @@
     from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
 
     from sickbeard.helpers import anon_url
-
-    fuzzydate = 'airdate'
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/lib/jquery.bookmarkscroll.js?${sbPID}"></script>
@@ -493,15 +491,12 @@
                     ${file_size}
                 % endif
             </td>
-            ## <% date = (sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network))), 'never')[int(epResult['airdate']) == 1] %>
             <% date = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
             <td class="col-airdate">
                 % if int(epResult['airdate']) != 1:
-                    <div class="${fuzzydate}">
-                        <time datetime="${date.isoformat('T')}" class="date">${date}</time>
-                    </div>
+                    <time datetime="${date.isoformat('T')}" class="date">${date}</time>
                 % else:
-                    <div class="${fuzzydate}">Never</div>
+                    Never
                 % endif
                 <span class="sort_data">${date.isoformat('T')}</span>
 

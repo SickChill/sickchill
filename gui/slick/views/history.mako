@@ -17,8 +17,6 @@
 
     layout = sickbeard.HISTORY_LAYOUT
     history_limit = sickbeard.HISTORY_LIMIT
-
-    fuzzydate = 'airdate'
 %>
 <%block name="css">
 <style type="text/css">
@@ -28,7 +26,6 @@
 <%block name="metas">
 <meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
 <meta data-var="layout" data-content="${layout}">
-<meta data-var="fuzzydate" data-content="${fuzzydate}">
 </%block>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/new/history.js"></script>
