@@ -18,9 +18,7 @@
 %>
 <script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/massEdit.js?${sbPID}"></script>
-<script type="text/javascript" charset="utf-8">
-    $('#location').fileBrowser({ title: 'Select Show Location' });
-</script>
+<script type="text/javascript" src="${sbRoot}/js/new/manage_massEdit.js"></script>
 </%block>
 <%block name="content">
 <%

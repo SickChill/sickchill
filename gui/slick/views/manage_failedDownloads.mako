@@ -10,19 +10,7 @@
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings, Overview
 %>
 <%block name="scripts">
-<script type="text/javascript">
-$(document).ready(function(){
-    $("#failedTable:has(tbody tr)").tablesorter({
-        widgets: ['zebra'],
-        sortList: [[0,0]],
-        headers: { 3: { sorter: false } }
-    });
-    $('#limit').change(function(){
-        url = '${sbRoot}/manage/failedDownloads/?limit='+$(this).val()
-        window.location.href = url
-    });
-});
-</script>
+<script type="text/javascript" src="${sbRoot}/js/new/manage_failedDownloads.js"></script>
 <script type="text/javascript" src="${sbRoot}/js/failedDownloads.js?${sbPID}"></script>
 </%block>
 <%block name="content">
