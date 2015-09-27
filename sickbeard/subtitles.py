@@ -84,7 +84,7 @@ def getLanguageName(language):
 
 # TODO: Filter here for non-languages in sickbeard.SUBTITLES_LANGUAGES
 def wantedLanguages(sqlLike = False):
-    wantedLanguages = [x for x in sorted(sickbeard.SUBTITLES_LANGUAGES) if x in babelfish.language_converters['opensubtitles'].codes]
+    wantedLanguages = [x for x in sorted(sickbeard.SUBTITLES_LANGUAGES) if x in subtitleCodeFilter()]
     if sqlLike:
         return '%' + ','.join(wantedLanguages) + '%'
     return wantedLanguages
@@ -123,6 +123,9 @@ def subtitlesLanguages(video_path):
 # TODO: Return only languages our providers allow
 def subtitleLanguageFilter():
     return [babelfish.Language.fromopensubtitles(language) for language in babelfish.language_converters['opensubtitles'].codes if len(language) == 3]
+
+def subtitleCodeFilter():
+    return [babelfish.Language.fromopensubtitles(language).opensubtitles for language in babelfish.language_converters['opensubtitles'].codes if len(language) == 3]
 
 class SubtitlesFinder():
     """
