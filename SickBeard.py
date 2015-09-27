@@ -142,7 +142,7 @@ class SickRage(object):
         sickbeard.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
         sickbeard.MY_NAME = os.path.basename(sickbeard.MY_FULLNAME)
         sickbeard.PROG_DIR = os.path.dirname(sickbeard.MY_FULLNAME)
-        sickbeard.DATA_DIR = sickbeard.PROG_DIR + os.sep + "data"
+        sickbeard.DATA_DIR = os.path.join(sickbeard.PROG_DIR, 'data')
         sickbeard.MY_ARGS = sys.argv[1:]
         sickbeard.SYS_ENCODING = None
 
