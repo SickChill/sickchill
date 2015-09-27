@@ -5,14 +5,26 @@
     from sickbeard.helpers import anon_url
 %>
 <%block name="metas">
-<meta data-var="subtitles.subtitleLanguageFilter" data-content="${','.join("{id: " + lang.opensubtitles + ", name: " + lang.name + "}" for lang in subtitles.subtitleLanguageFilter())}">
-<meta data-var="prePopulate" data-content="${','.join("{id: " + subtitles.fromietf(lang).opensubtitles + ", name: " + subtitles.fromietf(lang).name + "}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''}">
+## <meta data-var="subtitles.subtitleLanguageFilter" data-content="${','.join("{id: " + lang.opensubtitles + ", name: " + lang.name + "}" for lang in subtitles.subtitleLanguageFilter())}">
+## <meta data-var="prePopulate" data-content="${','.join("{id: " + subtitles.fromietf(lang).opensubtitles + ", name: " + subtitles.fromietf(lang).name + "}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''}">
 </%block>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/configSubtitles.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/config.js"></script>
 <script type="text/javascript" src="${srRoot}/js/lib/jquery.tokeninput.js"></script>
-<script type="text/javascript" src="${srRoot}/js/new/config_subtitles.js"></script>
+## <script type="text/javascript" src="${srRoot}/js/new/config_subtitles.js"></script>
+<script>
+$(document).ready(function() {
+    $("#subtitles_languages").tokenInput([${','.join("{\"id\": \"" + lang.opensubtitles + "\", name: \"" + lang.name + "\"}" for lang in subtitles.subtitleLanguageFilter())}], {
+        method: "POST",
+        hintText: "Write to search a language and select it",
+        preventDuplicates: true,
+        prePopulate: [${','.join("{\"id\": \"" + subtitles.fromietf(lang).opensubtitles + "\", name: \"" + subtitles.fromietf(lang).name + "\"}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''}]
+    });
+});
+$('#config-components').tabs();
+$('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' });
+</script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
