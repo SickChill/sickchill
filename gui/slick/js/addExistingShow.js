@@ -1,16 +1,13 @@
 $(document).ready(function() {
 
     $('#tableDiv').on('click', '#checkAll', function() {
-
         var seasCheck = this;
         $('.dirCheck').each(function() {
             this.checked = seasCheck.checked;
         });
-
     });
 
     $('#submitShowDirs').click(function() {
-
         var dirArr = [];
         $('.dirCheck').each(function(i,w) {
             if (this.checked === true) {
@@ -28,7 +25,6 @@ $(document).ready(function() {
         url += '&shows_to_add=' + dirArr.join('&shows_to_add=');
 
         window.location.href = url;
-
     });
 
 
@@ -54,7 +50,6 @@ $(document).ready(function() {
                 }
             });
         });
-
     }
 
     var last_txt = '';
@@ -78,5 +73,4 @@ $(document).ready(function() {
         $("#tabs").tabs('option', 'active', 0);
         $('html,body').animate({scrollTop:0}, 1000);
     });
-
 });

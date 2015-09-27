@@ -5,11 +5,11 @@ $(document).ready(function(){
             var serviceName = $(this).attr('id');
             var selectedService = $('#editAService :selected').val();
 
-            if (selectedService+'Div' == serviceName)
+            if (selectedService+'Div' == serviceName){
                 $(this).show();
-            else
+            } else {
                 $(this).hide();
-
+            }
         });
     };
 
@@ -24,7 +24,6 @@ $(document).ready(function(){
             $('#service_order_list').append(toAdd);
             $('#service_order_list').sortable("refresh");
         }
-
     };
 
     $.fn.deleteService = function (id) {
@@ -32,14 +31,14 @@ $(document).ready(function(){
     };
 
     $.fn.refreshServiceList = function() {
-            var idArr = $("#service_order_list").sortable('toArray');
-            var finalArr = [];
-            $.each(idArr, function(key, val) {
-                    var checked = + $('#enable_'+val).prop('checked') ? '1' : '0';
-                    finalArr.push(val + ':' + checked);
-            });
+        var idArr = $("#service_order_list").sortable('toArray');
+        var finalArr = [];
+        $.each(idArr, function(key, val) {
+                var checked = + $('#enable_'+val).prop('checked') ? '1' : '0';
+                finalArr.push(val + ':' + checked);
+        });
 
-            $("#service_order").val(finalArr.join(' '));
+        $("#service_order").val(finalArr.join(' '));
     };
 
     $('#editAService').change(function(){
@@ -63,5 +62,4 @@ $(document).ready(function(){
     });
 
     $("#service_order_list").disableSelection();
-
 });

@@ -1,5 +1,4 @@
 $(document).ready(function(){
-
     $.fn.showHideProviders = function() {
         $('.providerDiv').each(function(){
             var providerName = $(this).attr('id');
@@ -467,14 +466,12 @@ $(document).ready(function(){
         var params = {name: name};
 
         // send to the form with ajax, get a return value
-        $.getJSON(sbRoot + '/config/providers/canAddNewznabProvider', params,
-            function(data){
-                if (data.error !== undefined) {
-                    alert(data.error);
-                    return;
-                }
-
-                $(this).addProvider(data.success, name, url, key, cat, 0);
+        $.getJSON(sbRoot + '/config/providers/canAddNewznabProvider', params, function(data){
+            if (data.error !== undefined) {
+                alert(data.error);
+                return;
+            }
+            $(this).addProvider(data.success, name, url, key, cat, 0);
         });
 
     });

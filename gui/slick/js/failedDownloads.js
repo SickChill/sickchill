@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $('#submitMassRemove').click(function(){
+    $('#submitMassRemove').on('click', function(){
         var removeArr = [];
 
         $('.removeCheck').each(function() {
@@ -14,7 +14,7 @@ $(document).ready(function(){
         window.location.href = url;
     });
 
-    $('.bulkCheck').click(function(){
+    $('.bulkCheck').on('click', function(){
         var bulkCheck = this;
         var whichBulkCheck = $(bulkCheck).attr('id');
 

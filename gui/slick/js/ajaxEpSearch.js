@@ -46,6 +46,7 @@ function updateImages(data) {
         img=el.children('img');
         parent=el.parent();
         if (el) {
+            var rSearchTerm = '';
             if (ep.searchstatus == 'searching') {
                 //el=$('td#' + ep.season + 'x' + ep.episode + '.search img');
                 img.prop('title','Searching');
@@ -53,19 +54,17 @@ function updateImages(data) {
                 img.prop('src',sbRoot+'/images/' + loadingImage);
                 disableLink(el);
                 // Update Status and Quality
-                var rSearchTerm = /(\w+)\s\((.+?)\)/;
+                rSearchTerm = /(\w+)\s\((.+?)\)/;
                 HtmlContent = ep.searchstatus;
 
-            }
-            else if (ep.searchstatus == 'queued') {
+            } else if (ep.searchstatus == 'queued') {
                 //el=$('td#' + ep.season + 'x' + ep.episode + '.search img');
                 img.prop('title','Queued');
                 img.prop('alt','queued');
                 img.prop('src',sbRoot+'/images/' + queuedImage );
                 disableLink(el);
                 HtmlContent = ep.searchstatus;
-            }
-            else if (ep.searchstatus == 'finished') {
+            } else if (ep.searchstatus == 'finished') {
                 //el=$('td#' + ep.season + 'x' + ep.episode + '.search img');
                 img.prop('title','Searching');
                 img.prop('alt','searching');
@@ -74,10 +73,9 @@ function updateImages(data) {
                 enableLink(el);
 
                 // Update Status and Quality
-                var rSearchTerm = /(\w+)\s\((.+?)\)/;
+                rSearchTerm = /(\w+)\s\((.+?)\)/;
                 HtmlContent = ep.status.replace(rSearchTerm,"$1"+' <span class="quality '+ep.quality+'">'+"$2"+'</span>');
                 parent.closest('tr').prop("class", ep.overview + " season-" + ep.season + " seasonstyle");
-
             }
             // update the status column if it exists
             parent.siblings('.col-status').html(HtmlContent);
@@ -167,22 +165,12 @@ function disableLink(el) {
         });
 
         $('#manualSearchModalFailed .btn').click(function(){
-            val=$(this).text();
-            if(val=='Yes'){
-                failedDownload = true;
-            } else {
-                failedDownload = false;
-            }
+            failedDownload = ($(this).text() == 'Yes');
             $("#manualSearchModalQuality").modal('show');
         });
 
         $('#manualSearchModalQuality .btn').click(function(){
-            val=$(this).text();
-            if(val=='Yes'){
-                qualityDownload = true;
-            } else {
-                qualityDownload = false;
-            }
+            qualityDownload = ($(this).text() == 'Yes');
             manualSearch();
         });
 
@@ -204,11 +192,7 @@ function disableLink(el) {
                 url = url.replace("retryEpisode", "searchEpisode");
             }
 
-            if (qualityDownload === true) {
-                url = url + "&downCurQuality=1";
-            } else {
-                url = url + "&downCurQuality=0";
-            }
+            url = url + "&downCurQuality=" + (qualityDownload ? '1' : '0');
 
             $.getJSON(url, function(data){
 
@@ -239,7 +223,6 @@ function disableLink(el) {
                 img.prop('height', options.size);
                 img.prop('src',sbRoot+"/images/"+img_name);
             });
-            //
 
             // don't follow the link
             return false;
