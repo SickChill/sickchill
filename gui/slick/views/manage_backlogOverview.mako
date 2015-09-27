@@ -5,8 +5,6 @@
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import Overview, Quality, qualityPresets, qualityPresetStrings
     from sickbeard import sbdatetime, network_timezones
-
-    fuzzydate = 'airdate'
 %>
 <%block name="scripts">
 <script type="text/javascript">
@@ -79,16 +77,14 @@ Jump to Show
         <tr class="seasonstyle ${Overview.overviewStrings[showCats[curShow.indexerid][whichStr]]}">
             <td class="tableleft" align="center">${whichStr}</td>
             <td class="tableright" align="center" class="nowrap">
-                <div class="${fuzzydate}">${curResult["name"]}</div>
+                ${curResult["name"]}
             </td>
             <% date = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
             <td>
             % if int(curResult['airdate']) != 1:
-                <div class="${fuzzydate}">
-                    <time datetime="${date.isoformat('T')}" class="date">${date}</time>
-                </div>
+                <time datetime="${date.isoformat('T')}" class="date">${date}</time>
             % else:
-                <div class="${fuzzydate}">Never</div>
+                Never
             % endif
             <span class="sort_data">${date.isoformat('T')}</span>
             </td>
