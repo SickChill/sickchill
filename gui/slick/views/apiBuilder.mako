@@ -1,7 +1,6 @@
 <%!
     import sickbeard
 %>
-
 <!DOCTYPE html>
 <html>
 <head>
