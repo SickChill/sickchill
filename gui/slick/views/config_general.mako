@@ -401,7 +401,7 @@
                                     <input class="btn btn-inline" type="button" id="generate_new_apikey" value="Generate">
                                     <div class="clear-left">
                                         <p>used to give 3rd party programs limited access to SickRage</p>
-                                        <p>you can try all the features of the API <a href="${sbRoot}/apibuilder/">here</a></p>
+                                        <p>you can try all the features of the API <a href="${srRoot}/apibuilder/">here</a></p>
                                     </div>
                                 </span>
                             </label>
