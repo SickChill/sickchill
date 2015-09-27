@@ -4,8 +4,8 @@
     $.Browser = {
         defaults: {
             title:             'Choose Directory',
-            url:               sbRoot + '/browser/',
-            autocompleteURL:   sbRoot + '/browser/complete',
+            url:               srRoot + '/browser/',
+            autocompleteURL:   srRoot + '/browser/complete',
             includeFiles:      0
         }
     };

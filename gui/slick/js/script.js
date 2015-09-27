@@ -61,8 +61,8 @@ function resetFilters(text) {
 
 function initFancybox() {
     if ($("a[rel=dialog]").length > 0) {
-        $.getScript(sbRoot + '/js/fancybox/jquery.fancybox.pack.js', function () {
-            $("head").append("<link rel='stylesheet' href='" + sbRoot + "/js/fancybox/jquery.fancybox.css'>");
+        $.getScript(srRoot + '/js/fancybox/jquery.fancybox.pack.js', function () {
+            $("head").append("<link rel='stylesheet' href='" + srRoot + "/js/fancybox/jquery.fancybox.css'>");
             $("a[rel=dialog]").fancybox({
                 type: "image",
                 padding: 0,

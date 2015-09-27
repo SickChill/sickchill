@@ -1,10 +1,10 @@
 $(document).ready(function () {
 
-    $('#sbRoot').ajaxEpSearch({'colorRow': true});
+    $('#srRoot').ajaxEpSearch({'colorRow': true});
 
-    $('#sbRoot').ajaxEpSubtitlesSearch();
+    $('#srRoot').ajaxEpSubtitlesSearch();
 
-    $('#seasonJump').change(function () {
+    $('#seasonJump').on('change', function(){
         var id = $('#seasonJump option:selected').val();
         if (id && id != 'jump') {
             var season = $('#seasonJump option:selected').data('season');
@@ -15,18 +15,18 @@ $(document).ready(function () {
         $(this).val('jump');
     });
 
-    $("#prevShow").click(function () {
+    $("#prevShow").on('click', function(){
         $('#pickShow option:selected').prev('option').prop('selected', 'selected');
         $("#pickShow").change();
     });
 
-    $("#nextShow").click(function () {
+    $("#nextShow").on('click', function(){
         $('#pickShow option:selected').next('option').prop('selected', 'selected');
         $("#pickShow").change();
     });
 
-    $('#changeStatus').click(function () {
-        var sbRoot = $('#sbRoot').val();
+    $('#changeStatus').on('click', function(){
+        var srRoot = $('#srRoot').val();
         var epArr = [];
 
         $('.epCheck').each(function () {
@@ -35,12 +35,11 @@ $(document).ready(function () {
 
         if (epArr.length === 0) return false;
 
-        url = sbRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
+        url = srRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
         window.location.href = url;
-
     });
 
-    $('.seasonCheck').click(function () {
+    $('.seasonCheck').on('click', function(){
         var seasCheck = this;
         var seasNo = $(seasCheck).attr('id');
 
@@ -52,7 +51,7 @@ $(document).ready(function () {
     });
 
     var lastCheck = null;
-    $('.epCheck').click(function (event) {
+    $('.epCheck').on('click', function (event) {
 
         if (!lastCheck || !event.shiftKey) {
             lastCheck = this;
@@ -62,7 +61,7 @@ $(document).ready(function () {
         var check = this;
         var found = 0;
 
-        $('.epCheck').each(function () {
+        $('.epCheck').each(function() {
             switch (found) {
                 case 2:
                     return false;
@@ -78,7 +77,7 @@ $(document).ready(function () {
     });
 
     // selects all visible episode checkboxes.
-    $('.seriesCheck').click(function () {
+    $('.seriesCheck').on('click', function () {
         $('.epCheck:visible').each(function () {
             this.checked = true;
         });
@@ -88,7 +87,7 @@ $(document).ready(function () {
     });
 
     // clears all visible episode checkboxes and the season selectors
-    $('.clearAll').click(function () {
+    $('.clearAll').on('click', function () {
         $('.epCheck:visible').each(function () {
             this.checked = false;
         });
@@ -98,11 +97,11 @@ $(document).ready(function () {
     });
 
     // handle the show selection dropbox
-    $('#pickShow').change(function () {
-        var sbRoot = $('#sbRoot').val();
+    $('#pickShow').on('change', function () {
+        var srRoot = $('#srRoot').val();
         var val = $(this).val();
         if (val === 0) return;
-        url = sbRoot + '/home/displayShow?show=' + val;
+        url = srRoot + '/home/displayShow?show=' + val;
         window.location.href = url;
     });
 
@@ -124,8 +123,7 @@ $(document).ready(function () {
         });
     });
 
-    $.fn.showHideRows = function (whichClass) {
-
+    $.fn.showHideRows = function(whichClass) {
         var status = $('#checkboxControls > input, #' + whichClass).prop('checked');
         $("tr." + whichClass).each(function (e) {
             if (status) {
@@ -153,75 +151,68 @@ $(document).ready(function () {
     };
 
     function setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode) {
-        var sbRoot = $('#sbRoot').val();
+        var srRoot = $('#srRoot').val();
         var showId = $('#showID').val();
         var indexer = $('#indexer').val();
 
         if (sceneSeason === '') sceneSeason = null;
         if (sceneEpisode === '') sceneEpisode = null;
 
-        $.getJSON(sbRoot + '/home/setSceneNumbering',
-            {
-                'show': showId,
-                'indexer': indexer,
-                'forSeason': forSeason,
-                'forEpisode': forEpisode,
-                'sceneSeason': sceneSeason,
-                'sceneEpisode': sceneEpisode
-            },
-            function (data) {
-                //	Set the values we get back
-                if (data.sceneSeason === null || data.sceneEpisode === null) {
-                    $('#sceneSeasonXEpisode_' + showId + '_' + forSeason + '_' + forEpisode).val('');
-                }
-                else {
-                    $('#sceneSeasonXEpisode_' + showId + '_' + forSeason + '_' + forEpisode).val(data.sceneSeason + 'x' + data.sceneEpisode);
-                }
-                if (!data.success) {
-                    if (data.errorMessage) {
-                        alert(data.errorMessage);
-                    } else {
-                        alert('Update failed.');
-                    }
+        $.getJSON(srRoot + '/home/setSceneNumbering',{
+            'show': showId,
+            'indexer': indexer,
+            'forSeason': forSeason,
+            'forEpisode': forEpisode,
+            'sceneSeason': sceneSeason,
+            'sceneEpisode': sceneEpisode
+        }, function(data) {
+            //	Set the values we get back
+            if (data.sceneSeason === null || data.sceneEpisode === null) {
+                $('#sceneSeasonXEpisode_' + showId + '_' + forSeason + '_' + forEpisode).val('');
+            } else {
+                $('#sceneSeasonXEpisode_' + showId + '_' + forSeason + '_' + forEpisode).val(data.sceneSeason + 'x' + data.sceneEpisode);
+            }
+            if (!data.success) {
+                if (data.errorMessage) {
+                    alert(data.errorMessage);
+                } else {
+                    alert('Update failed.');
                 }
             }
-        );
+        });
     }
 
     function setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute) {
-        var sbRoot = $('#sbRoot').val();
+        var srRoot = $('#srRoot').val();
         var showId = $('#showID').val();
         var indexer = $('#indexer').val();
 
         if (sceneAbsolute === '') sceneAbsolute = null;
 
-        $.getJSON(sbRoot + '/home/setSceneNumbering',
-            {
-                'show': showId,
-                'indexer': indexer,
-                'forAbsolute': forAbsolute,
-                'sceneAbsolute': sceneAbsolute
-            },
-            function (data) {
-                //	Set the values we get back
-                if (data.sceneAbsolute === null) {
-                    $('#sceneAbsolute_' + showId + '_' + forAbsolute).val('');
-                }
-                else {
-                    $('#sceneAbsolute_' + showId + '_' + forAbsolute).val(data.sceneAbsolute);
-                }
-                if (!data.success) {
-                    if (data.errorMessage) {
-                        alert(data.errorMessage);
-                    } else {
-                        alert('Update failed.');
-                    }
+        $.getJSON(srRoot + '/home/setSceneNumbering', {
+            'show': showId,
+            'indexer': indexer,
+            'forAbsolute': forAbsolute,
+            'sceneAbsolute': sceneAbsolute
+        },
+        function(data) {
+            //	Set the values we get back
+            if (data.sceneAbsolute === null) {
+                $('#sceneAbsolute_' + showId + '_' + forAbsolute).val('');
+            } else {
+                $('#sceneAbsolute_' + showId + '_' + forAbsolute).val(data.sceneAbsolute);
+            }
+            if (!data.success) {
+                if (data.errorMessage) {
+                    alert(data.errorMessage);
+                } else {
+                    alert('Update failed.');
                 }
             }
-        );
+        });
     }
 
-    $('.sceneSeasonXEpisode').change(function () {
+    $('.sceneSeasonXEpisode').on('change', function() {
         //	Strip non-numeric characters
         $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
         var forSeason = $(this).attr('data-for-season');
@@ -239,7 +230,7 @@ $(document).ready(function () {
         setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode);
     });
 
-    $('.sceneAbsolute').change(function () {
+    $('.sceneAbsolute').on('change', function() {
         //	Strip non-numeric characters
         $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
         var forAbsolute = $(this).attr('data-for-absolute');

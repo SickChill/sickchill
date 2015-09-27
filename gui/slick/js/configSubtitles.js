@@ -5,11 +5,11 @@ $(document).ready(function(){
             var serviceName = $(this).attr('id');
             var selectedService = $('#editAService :selected').val();
 
-            if (selectedService+'Div' == serviceName)
+            if (selectedService+'Div' == serviceName){
                 $(this).show();
-            else
+            } else {
                 $(this).hide();
-
+            }
         });
     };
 
@@ -19,12 +19,11 @@ $(document).ready(function(){
         var newData = [isDefault, [name, url, key]];
 
         if ($('#service_order_list > #'+id).length === 0 && showService !== false) {
-            var toAdd = '<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="service_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + sbRoot + '/images/services/newznab.gif" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>';
+            var toAdd = '<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="service_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/services/newznab.gif" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>';
 
             $('#service_order_list').append(toAdd);
             $('#service_order_list').sortable("refresh");
         }
-
     };
 
     $.fn.deleteService = function (id) {
@@ -32,14 +31,14 @@ $(document).ready(function(){
     };
 
     $.fn.refreshServiceList = function() {
-            var idArr = $("#service_order_list").sortable('toArray');
-            var finalArr = [];
-            $.each(idArr, function(key, val) {
-                    var checked = + $('#enable_'+val).prop('checked') ? '1' : '0';
-                    finalArr.push(val + ':' + checked);
-            });
+        var idArr = $("#service_order_list").sortable('toArray');
+        var finalArr = [];
+        $.each(idArr, function(key, val) {
+                var checked = + $('#enable_'+val).prop('checked') ? '1' : '0';
+                finalArr.push(val + ':' + checked);
+        });
 
-            $("#service_order").val(finalArr.join(' '));
+        $("#service_order").val(finalArr.join(' '));
     };
 
     $('#editAService').change(function(){
@@ -63,5 +62,4 @@ $(document).ready(function(){
     });
 
     $("#service_order_list").disableSelection();
-
 });

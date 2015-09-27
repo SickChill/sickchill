@@ -11,9 +11,9 @@
 %>
 
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/configPostProcessing.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/new/home.js"></script>
+<script type="text/javascript" src="${srRoot}/js/configPostProcessing.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/config.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/home.js"></script>
 </%block>
 <%block name="content">
 <div id="content960">
@@ -297,7 +297,7 @@
                                     </span>
                                     <span class="component-desc">
                                         <input type="text" name="naming_pattern" id="naming_pattern" value="${sickbeard.NAMING_PATTERN}" class="form-control input-sm input350" />
-                                        <img src="${sbRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_key" title="Toggle Naming Legend" class="legend" class="legend" />
+                                        <img src="${srRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_key" title="Toggle Naming Legend" class="legend" class="legend" />
                                     </span>
                                 </label>
                                 <label class="nocheck">
@@ -504,7 +504,7 @@
                                         </span>
                                         <span class="component-desc">
                                             <input type="text" name="naming_abd_pattern" id="naming_abd_pattern" value="${sickbeard.NAMING_ABD_PATTERN}" class="form-control input-sm input350" />
-                                            <img src="${sbRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_abd_key" title="Toggle ABD Naming Legend" class="legend" />
+                                            <img src="${srRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_abd_key" title="Toggle ABD Naming Legend" class="legend" />
                                         </span>
                                     </label>
                                 </div>
@@ -681,7 +681,7 @@
                                         </span>
                                         <span class="component-desc">
                                             <input type="text" name="naming_sports_pattern" id="naming_sports_pattern" value="${sickbeard.NAMING_SPORTS_PATTERN}" class="form-control input-sm input350" />
-                                            <img src="${sbRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_sports_key" title="Toggle Sports Naming Legend" class="legend" />
+                                            <img src="${srRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_sports_key" title="Toggle Sports Naming Legend" class="legend" />
                                         </span>
                                     </label>
                                 </div>
@@ -859,7 +859,7 @@
                                         </span>
                                         <span class="component-desc">
                                             <input type="text" name="naming_anime_pattern" id="naming_anime_pattern" value="${sickbeard.NAMING_ANIME_PATTERN}" class="form-control input-sm input350" />
-                                            <img src="${sbRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_anime_key" title="Toggle Anime Naming Legend" class="legend" />
+                                            <img src="${srRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_anime_key" title="Toggle Anime Naming Legend" class="legend" />
                                         </span>
                                     </label>
                                 </div>

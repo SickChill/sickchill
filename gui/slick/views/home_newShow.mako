@@ -4,13 +4,13 @@
     from sickbeard.helpers import anon_url
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/formwizard.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/newShow.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/addShowOptions.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/blackwhite.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/formwizard.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/newShow.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/addShowOptions.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/blackwhite.js?${sbPID}"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -30,7 +30,7 @@
     <div id="displayText">aoeu</div>
     <br />
 
-    <form id="addShowForm" method="post" action="${sbRoot}/home/addShows/addNewShow" accept-charset="utf-8">
+    <form id="addShowForm" method="post" action="${srRoot}/home/addShows/addNewShow" accept-charset="utf-8">
 
     <fieldset class="sectionwrap">
         <legend class="legendStep">Find a show on theTVDB</legend>

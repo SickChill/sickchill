@@ -28,11 +28,11 @@ function goListGroup(apikey, L7, L6, L5, L4, L3, L2, L1){
 
     // Some commands return an image instead of JSON
     if ($.inArray(L1, _image_commands) > -1) {
-        var imgcache = sbRoot + "/api/" + apikey + "/" + L1 + L2 + GlobalOptions;
-        html = imgcache + '<br/><br/><img src="' + sbRoot + '/images/loading16.gif" id="imgcache">';
+        var imgcache = srRoot + "/api/" + apikey + "/" + L1 + L2 + GlobalOptions;
+        html = imgcache + '<br/><br/><img src="' + srRoot + '/images/loading16.gif" id="imgcache">';
         $('#apiResponse').html(html);
         $.ajax({
-          url: sbRoot + "/api/" + apikey + "/" + L1 + L2 + GlobalOptions,
+          url: srRoot + "/api/" + apikey + "/" + L1 + L2 + GlobalOptions,
           async: false,
           cache: false,
           dataType: "html",
@@ -41,9 +41,9 @@ function goListGroup(apikey, L7, L6, L5, L4, L3, L2, L1){
           }
         });
     } else {
-        html = sbRoot + "/api/" + apikey + "/" + L1 + L2 + L3 + L4 + L5 + L6 + L7 + GlobalOptions + "<br/><pre>";
+        html = srRoot + "/api/" + apikey + "/" + L1 + L2 + L3 + L4 + L5 + L6 + L7 + GlobalOptions + "<br/><pre>";
         html += $.ajax({
-          url: sbRoot + "/api/" + apikey + "/" + L1 + L2 + L3 + L4 + L5 + L6 + L7 + GlobalOptions,
+          url: srRoot + "/api/" + apikey + "/" + L1 + L2 + L3 + L4 + L5 + L6 + L7 + GlobalOptions,
           async: false,
           dataType: "html"
         }).responseText;

@@ -5,7 +5,7 @@
     from sickbeard.logger import reverseNames
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/new/errorlogs.js"></script>
+<script type="text/javascript" src="${srRoot}/js/new/errorlogs.js"></script>
 </%block>
 <%block name="content">
 <h1 class="header">${title}</h1>

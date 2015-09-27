@@ -1,15 +1,15 @@
 $(document).ready(function(){
-    var loading = '<img src="' + sbRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
+    var loading = '<img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
 
     function toggle_torrent_title(){
-        if ($('#use_torrents').prop('checked'))
+        if ($('#use_torrents').prop('checked')){
             $('#no_torrents').show();
-        else
+        } else {
             $('#no_torrents').hide();
+        }
     }
 
     $.fn.nzb_method_handler = function() {
-
         var selectedProvider = $('#nzb_method :selected').val(),
             blackhole_settings = '#blackhole_settings',
             sabnzbd_settings = '#sabnzbd_settings',
@@ -188,8 +188,10 @@ $(document).ready(function(){
         var sab_password = $('#sab_password').val();
         var sab_apiKey = $('#sab_apikey').val();
 
-        $.get(sbRoot + '/home/testSABnzbd', {'host': sab_host, 'username': sab_username, 'password': sab_password, 'apikey': sab_apiKey},
-        function (data){ $('#testSABnzbd_result').html(data); });
+        $.get(srRoot + '/home/testSABnzbd', {'host': sab_host, 'username': sab_username, 'password': sab_password, 'apikey': sab_apiKey},
+        function(data){
+            $('#testSABnzbd_result').html(data);
+        });
     });
 
 
@@ -208,8 +210,8 @@ $(document).ready(function(){
         var torrent_username = $('#torrent_username').val();
         var torrent_password = $('#torrent_password').val();
 
-        $.get(sbRoot + '/home/testTorrent', {'torrent_method': torrent_method, 'host': torrent_host, 'username': torrent_username, 'password': torrent_password},
-        function (data){ $('#test_torrent_result').html(data); });
+        $.get(srRoot + '/home/testTorrent', {'torrent_method': torrent_method, 'host': torrent_host, 'username': torrent_username, 'password': torrent_password},
+        function(data){ $('#test_torrent_result').html(data); });
     });
 
     $('#torrent_host').change($(this).rtorrent_scgi);

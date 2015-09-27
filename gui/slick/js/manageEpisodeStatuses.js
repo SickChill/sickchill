@@ -28,31 +28,27 @@ $(document).ready(function() {
         var action = $(this).attr('value');
 
         if (!clicked)  {
-            $.getJSON(sbRoot+'/manage/showEpisodeStatuses',
-                      {
-                       indexer_id: cur_indexer_id,
-                       whichStatus: $('#oldStatus').val()
-                      },
-                      function (data) {
-                          $.each(data, function(season,eps){
-                              $.each(eps, function(episode, name) {
-                                  //alert(season+'x'+episode+': '+name);
-                                  last_row.after(make_row(cur_indexer_id, season, episode, name, checked));
-                              });
-                          });
-                      });
+            $.getJSON(srRoot+'/manage/showEpisodeStatuses',{
+                indexer_id: cur_indexer_id,
+                whichStatus: $('#oldStatus').val()
+            }, function (data) {
+                $.each(data, function(season,eps){
+                    $.each(eps, function(episode, name) {
+                        //alert(season+'x'+episode+': '+name);
+                        last_row.after(make_row(cur_indexer_id, season, episode, name, checked));
+                    });
+                });
+            });
             $(this).attr('data-clicked',1);
             $(this).prop('value', 'Collapse');
         } else {
             if (action === 'Collapse') {
                 $('table tr').filter('.show-'+cur_indexer_id).hide();
                 $(this).prop('value', 'Expand');
-            }
-            else if (action === 'Expand') {
+            } else if (action === 'Expand') {
                 $('table tr').filter('.show-'+cur_indexer_id).show();
                 $(this).prop('value', 'Collapse');
             }
-
         }
     });
 

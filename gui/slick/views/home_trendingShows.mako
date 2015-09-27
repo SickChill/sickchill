@@ -12,10 +12,10 @@
 <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 </%block>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/addTrendingShow.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/new/home_trendingShows.js"></script>
+<script type="text/javascript" src="${srRoot}/js/addTrendingShow.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/home_trendingShows.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:

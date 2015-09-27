@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $('a.shutdown').bind('click', function(e) {
+    $('a.shutdown').on('click', function(e) {
         e.preventDefault();
         var target = $(this).attr('href');
         $.confirm({
@@ -20,7 +20,7 @@ $(document).ready(function () {
         });
     });
 
-    $('a.restart').bind('click', function(e) {
+    $('a.restart').on('click', function(e) {
         e.preventDefault();
         var target = $(this).attr('href');
         $.confirm({
@@ -64,7 +64,7 @@ $(document).ready(function () {
         });
     });
 
-    $('a.clearhistory').bind('click', function(e) {
+    $('a.clearhistory').on('click', function(e) {
         e.preventDefault();
         var target = $(this).attr('href');
         $.confirm({
@@ -85,7 +85,7 @@ $(document).ready(function () {
         });
     });
 
-    $('a.trimhistory').bind('click', function(e) {
+    $('a.trimhistory').on('click', function(e) {
         e.preventDefault();
         var target = $(this).attr('href');
         $.confirm({

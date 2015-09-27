@@ -6,11 +6,11 @@
 <meta data-var="sickbeard.ROOT_DIRS" data-content="${sickbeard.ROOT_DIRS}">
 </%block>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/addExistingShow.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/addShowOptions.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/new/home_addExistingShow.js"></script>
+<script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/addExistingShow.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/addShowOptions.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/home_addExistingShow.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -25,7 +25,7 @@
 
     <div id="core-component-group1" class="tab-pane active component-group">
 
-    <form id="addShowForm" method="post" action="${sbRoot}/home/addShows/addNewShow" accept-charset="utf-8">
+    <form id="addShowForm" method="post" action="${srRoot}/home/addShows/addNewShow" accept-charset="utf-8">
 
     <div id="tabs">
         <ul>

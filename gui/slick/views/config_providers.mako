@@ -7,8 +7,8 @@
 
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/configProviders.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/configProviders.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/config.js?${sbPID}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
     % if sickbeard.USE_NZBS:
@@ -57,7 +57,7 @@ $('#config-components').tabs();
                         <p>At least one provider is required but two are recommended.</p>
 
                         % if not sickbeard.USE_NZBS or not sickbeard.USE_TORRENTS:
-                        <blockquote style="margin: 20px 0;">NZB/Torrent providers can be toggled in <b><a href="${sbRoot}/config/search">Search Settings</a></b></blockquote>
+                        <blockquote style="margin: 20px 0;">NZB/Torrent providers can be toggled in <b><a href="${srRoot}/config/search">Search Settings</a></b></blockquote>
                         % else:
                         <br/>
                         % endif
@@ -81,7 +81,7 @@ $('#config-components').tabs();
                             %>
                             <li class="ui-state-default ${('nzb-provider', 'torrent-provider')[bool(curProvider.providerType == "torrent")]}" id="${curName}">
                                 <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.isEnabled() == True]}/>
-                                <a href="${anon_url(curProvider.url)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${sbRoot}/images/providers/${curProvider.imageName()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
+                                <a href="${anon_url(curProvider.url)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${srRoot}/images/providers/${curProvider.imageName()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
                                 <span style="vertical-align:middle;">${curProvider.name}</span>
                                 ${('*', '')[bool(curProvider.supportsBacklog)]}
                                 <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>

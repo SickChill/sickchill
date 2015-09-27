@@ -9,7 +9,7 @@
     import re
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/testRename.js"></script>
+<script type="text/javascript" src="${srRoot}/js/testRename.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
