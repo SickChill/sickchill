@@ -4,6 +4,10 @@
     import sickbeard
     from sickbeard.helpers import anon_url
 %>
+<%block name="metas">
+<meta data-var="subtitles.subtitleLanguageFilter" data-content="${','.join("{id: " + lang.opensubtitles + ", name: " + lang.name + "}" for lang in subtitles.subtitleLanguageFilter())}">
+<meta data-var="prePopulate" data-content="${','.join("{id: " + subtitles.fromietf(lang).opensubtitles + ", name: " + subtitles.fromietf(lang).name + "}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''}">
+</%block>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/configSubtitles.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/config.js"></script>
