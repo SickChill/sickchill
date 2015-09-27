@@ -2109,7 +2109,7 @@ class HomeNews(Home):
             news = 'Could not load news from the repo. [Click here for news.md](http://sickragetv.github.io/sickrage-news/news.md)'
 
         t = PageTemplate(rh=self, file="markdown.mako")
-        data = markdown2.markdown(news if news else "The was a problem connecting to github, please refresh and try again")
+        data = markdown2.markdown(news if news else "The was a problem connecting to github, please refresh and try again", extras=['header-ids'])
 
         return t.render(title="News", header="News", topmenu="news", data=data, submenu=self.HomeMenu())
 
@@ -2127,7 +2127,7 @@ class HomeChangeLog(Home):
             changes = 'Could not load changes from the repo. [Click here for CHANGES.md](http://sickragetv.github.io/sickrage-news/CHANGES.md)'
 
         t = PageTemplate(rh=self, file="markdown.mako")
-        data = markdown2.markdown(changes if changes else "The was a problem connecting to github, please refresh and try again")
+        data = markdown2.markdown(changes if changes else "The was a problem connecting to github, please refresh and try again", extras=['header-ids'])
 
         return t.render(title="Changelog", header="Changelog", topmenu="system", data=data, submenu=self.HomeMenu())
 
