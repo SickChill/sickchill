@@ -16,9 +16,9 @@
 
     anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
 %>
-<script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/massEdit.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/new/manage_massEdit.js"></script>
+<script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/massEdit.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/manage_massEdit.js"></script>
 </%block>
 <%block name="content">
 <%

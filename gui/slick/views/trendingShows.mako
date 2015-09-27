@@ -12,7 +12,7 @@
 <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 </%block>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/new/trendingShows.js"></script>
+<script type="text/javascript" src="${srRoot}/js/new/trendingShows.js"></script>
 </%block>
 <%block name="content">
 <div id="container">
@@ -35,12 +35,12 @@
             </div>
 
         <div class="clearfix">
-            <p>${int(cur_show['show']['rating']*10)}% <img src="${sbRoot}/images/heart.png"></p>
+            <p>${int(cur_show['show']['rating']*10)}% <img src="${srRoot}/images/heart.png"></p>
             <i>${cur_show['show']['votes']} votes</i>
             <div class="traktShowTitleIcons">
-                <a href="${sbRoot}/home/addShows/addTraktShow?indexer_id=${cur_show['show']['ids']['tvdb']}&amp;showName=${cur_show['show']['title']}" class="btn btn-xs">Add Show</a>
+                <a href="${srRoot}/home/addShows/addTraktShow?indexer_id=${cur_show['show']['ids']['tvdb']}&amp;showName=${cur_show['show']['title']}" class="btn btn-xs">Add Show</a>
                 % if blacklist:
-                <a href="${sbRoot}/home/addShows/addShowToBlacklist?indexer_id=${cur_show['show']['ids']['tvdb'] or cur_show['show']['ids']['tvrage']}" class="btn btn-xs">Remove Show</a>
+                <a href="${srRoot}/home/addShows/addShowToBlacklist?indexer_id=${cur_show['show']['ids']['tvdb'] or cur_show['show']['ids']['tvrage']}" class="btn btn-xs">Remove Show</a>
                 % endif
             </div>
         </div>

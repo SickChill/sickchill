@@ -35,7 +35,7 @@ $(document).ready(function(){
 
         if (epArr.length === 0) return false;
 
-        url = sbRoot+'/home/doRename?show='+$('#showID').attr('value')+'&eps='+epArr.join('|');
+        url = srRoot+'/home/doRename?show='+$('#showID').attr('value')+'&eps='+epArr.join('|');
         window.location.href = url;
     });
 

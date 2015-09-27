@@ -24,10 +24,10 @@ $(document).ready(function(){
             }
         });
 
-        $('#sbRoot').ajaxEpSearch();
+        $('#srRoot').ajaxEpSearch();
     }
     if($('meta[data-var="sickbeard.COMING_EPS_LAYOUT"]').data('content') == 'banner' || $('meta[data-var="sickbeard.COMING_EPS_LAYOUT"]').data('content') == 'poster'){
-        $('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
+        $('#srRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
         $('.ep_summary').hide();
         $('.ep_summaryTrigger').click(function() {
             $(this).next('.ep_summary').slideToggle('normal', function() {

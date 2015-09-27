@@ -28,7 +28,7 @@ $(document).ready(function() {
         var action = $(this).attr('value');
 
         if (!clicked)  {
-            $.getJSON(sbRoot+'/manage/showEpisodeStatuses',{
+            $.getJSON(srRoot+'/manage/showEpisodeStatuses',{
                 indexer_id: cur_indexer_id,
                 whichStatus: $('#oldStatus').val()
             }, function (data) {

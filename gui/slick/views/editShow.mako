@@ -12,11 +12,11 @@
 <meta data-var="show.is_anime" data-content="${show.is_anime}">
 </%block>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/new/editShow.js"></script>
+<script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/editShow.js"></script>
 % if show.is_anime:
-    <script type="text/javascript" src="${sbRoot}/js/blackwhite.js?${sbPID}"></script>
+    <script type="text/javascript" src="${srRoot}/js/blackwhite.js?${sbPID}"></script>
 % endif
 </%block>
 <%block name="content">

@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var loading = '<img src="' + sbRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
+    var loading = '<img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
 
     $('#testGrowl').click(function () {
         var growl_host = $.trim($('#growl_host').val());
@@ -12,7 +12,7 @@ $(document).ready(function(){
         $('#growl_host').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testGrowl-result').html(loading);
-        $.get(sbRoot + '/home/testGrowl', {'host': growl_host, 'password': growl_password})
+        $.get(srRoot + '/home/testGrowl', {'host': growl_host, 'password': growl_password})
             .done(function (data) {
                 $('#testGrowl-result').html(data);
                 $('#testGrowl').prop('disabled', false);
@@ -30,7 +30,7 @@ $(document).ready(function(){
         $('#prowl_api').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testProwl-result').html(loading);
-        $.get(sbRoot + '/home/testProwl', {'prowl_api': prowl_api, 'prowl_priority': prowl_priority}).done(function (data) {
+        $.get(srRoot + '/home/testProwl', {'prowl_api': prowl_api, 'prowl_priority': prowl_priority}).done(function (data) {
             $('#testProwl-result').html(data);
             $('#testProwl').prop('disabled', false);
         });
@@ -48,7 +48,7 @@ $(document).ready(function(){
         $('#kodi_host').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testKODI-result').html(loading);
-        $.get(sbRoot + '/home/testKODI', {'host': kodi_host, 'username': kodi_username, 'password': kodi_password}).done(function (data) {
+        $.get(srRoot + '/home/testKODI', {'host': kodi_host, 'username': kodi_username, 'password': kodi_password}).done(function (data) {
             $('#testKODI-result').html(data);
             $('#testKODI').prop('disabled', false);
         });
@@ -66,7 +66,7 @@ $(document).ready(function(){
         $('#plex_host').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testPMC-result').html(loading);
-        $.get(sbRoot + '/home/testPMC', {'host': plex_host, 'username': plex_client_username, 'password': plex_client_password}).done(function (data) {
+        $.get(srRoot + '/home/testPMC', {'host': plex_host, 'username': plex_client_username, 'password': plex_client_password}).done(function (data) {
             $('#testPMC-result').html(data);
             $('#testPMC').prop('disabled', false);
         });
@@ -85,7 +85,7 @@ $(document).ready(function(){
         $('#plex_server_host').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testPMS-result').html(loading);
-        $.get(sbRoot + '/home/testPMS', {'host': plex_server_host, 'username': plex_username, 'password': plex_password, 'plex_server_token': plex_server_token}).done(function (data) {
+        $.get(srRoot + '/home/testPMS', {'host': plex_server_host, 'username': plex_username, 'password': plex_password, 'plex_server_token': plex_server_token}).done(function (data) {
             $('#testPMS-result').html(data);
             $('#testPMS').prop('disabled', false);
         });
@@ -111,7 +111,7 @@ $(document).ready(function(){
         $('#emby_host,#emby_apikey').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testEMBY-result').html(loading);
-        $.get(sbRoot + '/home/testEMBY', {'host': emby_host, 'emby_apikey': emby_apikey}).done(function (data) {
+        $.get(srRoot + '/home/testEMBY', {'host': emby_host, 'emby_apikey': emby_apikey}).done(function (data) {
             $('#testEMBY-result').html(data);
             $('#testEMBY').prop('disabled', false);
         });
@@ -127,7 +127,7 @@ $(document).ready(function(){
         $('#boxcar_username').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testBoxcar-result').html(loading);
-        $.get(sbRoot + '/home/testBoxcar', {'username': boxcar_username}).done(function (data) {
+        $.get(srRoot + '/home/testBoxcar', {'username': boxcar_username}).done(function (data) {
             $('#testBoxcar-result').html(data);
             $('#testBoxcar').prop('disabled', false);
         });
@@ -143,7 +143,7 @@ $(document).ready(function(){
         $('#boxcar2_accesstoken').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testBoxcar2-result').html(loading);
-        $.get(sbRoot + '/home/testBoxcar2', {'accesstoken': boxcar2_accesstoken}).done(function (data) {
+        $.get(srRoot + '/home/testBoxcar2', {'accesstoken': boxcar2_accesstoken}).done(function (data) {
             $('#testBoxcar2-result').html(data);
             $('#testBoxcar2').prop('disabled', false);
         });
@@ -169,7 +169,7 @@ $(document).ready(function(){
         $('#pushover_userkey,#pushover_apikey').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testPushover-result').html(loading);
-        $.get(sbRoot + '/home/testPushover', {'userKey': pushover_userkey, 'apiKey': pushover_apikey}).done(function (data) {
+        $.get(srRoot + '/home/testPushover', {'userKey': pushover_userkey, 'apiKey': pushover_apikey}).done(function (data) {
             $('#testPushover-result').html(data);
             $('#testPushover').prop('disabled', false);
         });
@@ -177,14 +177,14 @@ $(document).ready(function(){
 
     $('#testLibnotify').click(function() {
         $('#testLibnotify-result').html(loading);
-        $.get(sbRoot + '/home/testLibnotify', function (data) {
+        $.get(srRoot + '/home/testLibnotify', function (data) {
             $('#testLibnotify-result').html(data);
         });
     });
 
     $('#twitterStep1').click(function() {
         $('#testTwitter-result').html(loading);
-        $.get(sbRoot + '/home/twitterStep1', function (data) {
+        $.get(srRoot + '/home/twitterStep1', function (data) {
             window.open(data);
         }).done(function() {
             $('#testTwitter-result').html('<b>Step1:</b> Confirm Authorization');
@@ -200,13 +200,13 @@ $(document).ready(function(){
         }
         $('#twitter_key').removeClass('warning');
         $('#testTwitter-result').html(loading);
-        $.get(sbRoot + '/home/twitterStep2', {'key': twitter_key}, function(data) {
+        $.get(srRoot + '/home/twitterStep2', {'key': twitter_key}, function(data) {
             $('#testTwitter-result').html(data);
         });
     });
 
     $('#testTwitter').click(function() {
-        $.get(sbRoot + '/home/testTwitter', function(data) {
+        $.get(srRoot + '/home/testTwitter', function(data) {
             $('#testTwitter-result').html(data);
         });
     });
@@ -220,7 +220,7 @@ $(document).ready(function(){
         $('#testNMJ-result').html(loading);
         var nmj_host = $('#nmj_host').val();
 
-        $.get(sbRoot + '/home/settingsNMJ', {'host': nmj_host}, function (data) {
+        $.get(srRoot + '/home/settingsNMJ', {'host': nmj_host}, function (data) {
             if (data === null) {
                 $('#nmj_database').removeAttr('readonly');
                 $('#nmj_mount').removeAttr('readonly');
@@ -255,7 +255,7 @@ $(document).ready(function(){
         $('#nmj_host').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testNMJ-result').html(loading);
-        $.get(sbRoot + '/home/testNMJ', {'host': nmj_host, 'database': nmj_database, 'mount': nmj_mount}).done(function (data) {
+        $.get(srRoot + '/home/testNMJ', {'host': nmj_host, 'database': nmj_database, 'mount': nmj_mount}).done(function (data) {
             $('#testNMJ-result').html(data);
             $('#testNMJ').prop('disabled', false);
         });
@@ -279,7 +279,7 @@ $(document).ready(function(){
         }
 
         var nmjv2_dbinstance=$('#NMJv2db_instance').val();
-        $.get(sbRoot + '/home/settingsNMJv2', {'host': nmjv2_host,'dbloc': nmjv2_dbloc,'instance': nmjv2_dbinstance}, function (data){
+        $.get(srRoot + '/home/settingsNMJv2', {'host': nmjv2_host,'dbloc': nmjv2_dbloc,'instance': nmjv2_dbinstance}, function (data){
             if (data === null) {
                 $('#nmjv2_database').removeAttr('readonly');
             }
@@ -305,7 +305,7 @@ $(document).ready(function(){
         $('#nmjv2_host').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testNMJv2-result').html(loading);
-        $.get(sbRoot + '/home/testNMJv2', {'host': nmjv2_host}) .done(function (data) {
+        $.get(srRoot + '/home/testNMJv2', {'host': nmjv2_host}) .done(function (data) {
             $('#testNMJv2-result').html(data);
             $('#testNMJv2').prop('disabled', false);
         });
@@ -331,7 +331,7 @@ $(document).ready(function(){
         $('#freemobile_id,#freemobile_apikey').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testFreeMobile-result').html(loading);
-        $.get(sbRoot + '/home/testFreeMobile', {'freemobile_id': freemobile_id, 'freemobile_apikey': freemobile_apikey}).done(function (data) {
+        $.get(srRoot + '/home/testFreeMobile', {'freemobile_id': freemobile_id, 'freemobile_apikey': freemobile_apikey}).done(function (data) {
             $('#testFreeMobile-result').html(data);
             $('#testFreeMobile').prop('disabled', false);
         });
@@ -359,7 +359,7 @@ $(document).ready(function(){
     $('#authTrakt').click(function() {
         var trakt_pin = $('#trakt_pin').val();
         if (trakt_pin.length !== 0) {
-            $.get(sbRoot + '/home/getTraktToken', { "trakt_pin": trakt_pin }).done(function (data) {
+            $.get(srRoot + '/home/getTraktToken', { "trakt_pin": trakt_pin }).done(function (data) {
                 $('#testTrakt-result').html(data);
                 $('#authTrakt').addClass('hide');
                 $('#trakt_pin').addClass('hide');
@@ -390,7 +390,7 @@ $(document).ready(function(){
         $('#trakt_blacklist_name').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testTrakt-result').html(loading);
-        $.get(sbRoot + '/home/testTrakt', {'username': trakt_username, 'blacklist_name': trakt_trending_blacklist}).done(function (data) {
+        $.get(srRoot + '/home/testTrakt', {'username': trakt_username, 'blacklist_name': trakt_trending_blacklist}).done(function (data) {
             $('#testTrakt-result').html(data);
             $('#testTrakt').prop('disabled', false);
         });
@@ -426,7 +426,7 @@ $(document).ready(function(){
             if (to === null || to.length === 0 || to.match(/.*@.*/) === null) {
                 status.html('<p style="color: red;">You must provide a recipient email address!</p>');
             } else {
-                $.get(sbRoot + '/home/testEmail', {host: host, port: port, smtp_from: from, use_tls: tls, user: user, pwd: pwd, to: to}, function (msg) {
+                $.get(srRoot + '/home/testEmail', {host: host, port: port, smtp_from: from, use_tls: tls, user: user, pwd: pwd, to: to}, function (msg) {
                     $('#testEmail-result').html(msg);
                 });
             }
@@ -444,7 +444,7 @@ $(document).ready(function(){
         $('#nma_api').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testNMA-result').html(loading);
-        $.get(sbRoot + '/home/testNMA', {'nma_api': nma_api, 'nma_priority': nma_priority}).done(function (data) {
+        $.get(srRoot + '/home/testNMA', {'nma_api': nma_api, 'nma_priority': nma_priority}).done(function (data) {
             $('#testNMA-result').html(data);
             $('#testNMA').prop('disabled', false);
         });
@@ -460,7 +460,7 @@ $(document).ready(function(){
         $('#pushalot_authorizationtoken').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testPushalot-result').html(loading);
-        $.get(sbRoot + '/home/testPushalot', {'authorizationToken': pushalot_authorizationtoken}).done(function (data) {
+        $.get(srRoot + '/home/testPushalot', {'authorizationToken': pushalot_authorizationtoken}).done(function (data) {
             $('#testPushalot-result').html(data);
             $('#testPushalot').prop('disabled', false);
         });
@@ -476,7 +476,7 @@ $(document).ready(function(){
         $('#pushbullet_api').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testPushbullet-result').html(loading);
-        $.get(sbRoot + '/home/testPushbullet', {'api': pushbullet_api}).done(function (data) {
+        $.get(srRoot + '/home/testPushbullet', {'api': pushbullet_api}).done(function (data) {
             $('#testPushbullet-result').html(data);
             $('#testPushbullet').prop('disabled', false);
         });
@@ -494,7 +494,7 @@ $(document).ready(function(){
             return false;
         }
 
-        $.get(sbRoot + "/home/getPushbulletDevices", {'api': pushbullet_api}, function (data) {
+        $.get(srRoot + "/home/getPushbulletDevices", {'api': pushbullet_api}, function (data) {
             var devices = jQuery.parseJSON(data).devices;
             var current_pushbullet_device = $("#pushbullet_device").val();
             $("#pushbullet_device_list").html('');
@@ -539,7 +539,7 @@ $(document).ready(function(){
     });
 
     function load_show_notify_lists() {
-        $.get(sbRoot + "/home/loadShowNotifyLists", function(data) {
+        $.get(srRoot + "/home/loadShowNotifyLists", function(data) {
             var list, html, s;
             list = $.parseJSON(data);
             notify_data = list;
@@ -558,7 +558,7 @@ $(document).ready(function(){
     load_show_notify_lists();
 
     $('#email_show_save').click(function() {
-        $.post(sbRoot + "/home/saveShowNotifyList", { show: $('#email_show').val(), emails: $('#email_show_list').val()}, function (data) {
+        $.post(srRoot + "/home/saveShowNotifyList", { show: $('#email_show').val(), emails: $('#email_show_list').val()}, function (data) {
             // Reload the per show notify lists to reflect changes
             load_show_notify_lists();
         });

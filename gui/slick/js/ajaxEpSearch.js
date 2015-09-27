@@ -1,4 +1,4 @@
-var search_status_url = sbRoot + '/home/getManualSearchStatus';
+var search_status_url = srRoot + '/home/getManualSearchStatus';
 var failedDownload = false;
 var qualityDownload = false;
 var selectedEpisode = '';
@@ -51,7 +51,7 @@ function updateImages(data) {
                 //el=$('td#' + ep.season + 'x' + ep.episode + '.search img');
                 img.prop('title','Searching');
                 img.prop('alt','Searching');
-                img.prop('src',sbRoot+'/images/' + loadingImage);
+                img.prop('src',srRoot+'/images/' + loadingImage);
                 disableLink(el);
                 // Update Status and Quality
                 rSearchTerm = /(\w+)\s\((.+?)\)/;
@@ -61,7 +61,7 @@ function updateImages(data) {
                 //el=$('td#' + ep.season + 'x' + ep.episode + '.search img');
                 img.prop('title','Queued');
                 img.prop('alt','queued');
-                img.prop('src',sbRoot+'/images/' + queuedImage );
+                img.prop('src',srRoot+'/images/' + queuedImage );
                 disableLink(el);
                 HtmlContent = ep.searchstatus;
             } else if (ep.searchstatus == 'finished') {
@@ -69,7 +69,7 @@ function updateImages(data) {
                 img.prop('title','Searching');
                 img.prop('alt','searching');
                 img.parent().prop('class','epRetry');
-                img.prop('src',sbRoot+'/images/' + searchImage);
+                img.prop('src',srRoot+'/images/' + searchImage);
                 enableLink(el);
 
                 // Update Status and Quality
@@ -87,16 +87,16 @@ function updateImages(data) {
             if (ep.searchstatus == 'searching') {
                 img_comEps.prop('title','Searching');
                 img_comEps.prop('alt','Searching');
-                img_comEps.prop('src',sbRoot+'/images/' + loadingImage);
+                img_comEps.prop('src',srRoot+'/images/' + loadingImage);
                 disableLink(el_comEps);
             } else if (ep.searchstatus == 'queued') {
                 img_comEps.prop('title','Queued');
                 img_comEps.prop('alt','queued');
-                img_comEps.prop('src',sbRoot+'/images/' + queuedImage );
+                img_comEps.prop('src',srRoot+'/images/' + queuedImage );
             } else if (ep.searchstatus == 'finished') {
                 img_comEps.prop('title','Manual Search');
                 img_comEps.prop('alt','[search]');
-                img_comEps.prop('src',sbRoot+'/images/' + searchImage);
+                img_comEps.prop('src',srRoot+'/images/' + searchImage);
                 if (ep.overview == 'snatched') {
                     el_comEps.closest('tr').remove();
                 } else {
@@ -184,7 +184,7 @@ function disableLink(el) {
             img=selectedEpisode.children('img');
             img.prop('title','loading');
             img.prop('alt','');
-            img.prop('src',sbRoot+'/images/' + options.loadingImage);
+            img.prop('src',srRoot+'/images/' + options.loadingImage);
 
             var url = selectedEpisode.prop('href');
 
@@ -221,7 +221,7 @@ function disableLink(el) {
                 img.prop('title',img_result);
                 img.prop('alt',img_result);
                 img.prop('height', options.size);
-                img.prop('src',sbRoot+"/images/"+img_name);
+                img.prop('src',srRoot+"/images/"+img_name);
             });
 
             // don't follow the link

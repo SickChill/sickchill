@@ -47,7 +47,7 @@ $(document).ready(function(){
         beforeSubmit: function(){
             $('.config_submitter .config_submitter_refresh').each(function(){
                 $(this).attr("disabled", "disabled");
-                $(this).after('<span><img src="' + sbRoot + '/images/loading16' + themeSpinner + '.gif"> Saving...</span>');
+                $(this).after('<span><img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif"> Saving...</span>');
                 $(this).hide();
             });
         },
@@ -64,7 +64,7 @@ $(document).ready(function(){
     });
 
     $("#generate_new_apikey").click(function(){
-        $.get(sbRoot + '/config/general/generateApiKey',
+        $.get(srRoot + '/config/general/generateApiKey',
             function(data){
                 if (data.error !== undefined) {
                     alert(data.error);
@@ -75,8 +75,8 @@ $(document).ready(function(){
     });
 
     $('#branchCheckout').click(function() {
-        var url = sbRoot+'/home/branchCheckout?branch='+$("#branchVersion").val();
-        var  checkDBversion = sbRoot + "/home/getDBcompare";
+        var url = srRoot+'/home/branchCheckout?branch='+$("#branchVersion").val();
+        var  checkDBversion = srRoot + "/home/getDBcompare";
         $.getJSON(checkDBversion, function(data){
             if (data.status == "success") {
                 if (data.message == "equal") {
@@ -108,7 +108,7 @@ function config_success(){
         $(this).removeAttr("disabled");
         $(this).next().remove();
         $(this).show();
-        url = sbRoot+'/config/providers/';
+        url = srRoot+'/config/providers/';
         window.location.href = url;
     });
     $('#email_show').trigger('notify');

@@ -32,7 +32,7 @@ $(document).ready(function() {
         var action = $(this).attr('value');
 
         if (!clicked) {
-            $.getJSON(sbRoot + '/manage/showSubtitleMissed', {
+            $.getJSON(srRoot + '/manage/showSubtitleMissed', {
                 indexer_id: cur_indexer_id,
                 whichSubs: $('#selectSubLang').val()
             }, function(data) {

@@ -21,7 +21,7 @@ $(document).ready(function() {
             return false;
         }
 
-        url = sbRoot + '/home/addShows/addExistingShows?promptForSettings=' + ($('#promptForSettings').prop('checked') ? 'on' : 'off');
+        url = srRoot + '/home/addShows/addExistingShows?promptForSettings=' + ($('#promptForSettings').prop('checked') ? 'on' : 'off');
         url += '&shows_to_add=' + dirArr.join('&shows_to_add=');
 
         window.location.href = url;
@@ -39,8 +39,8 @@ $(document).ready(function() {
             }
         });
 
-        $('#tableDiv').html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32.gif" height="32" width="32" /> loading folders...');
-        $.get(sbRoot + '/home/addShows/massAddTable/', url, function(data) {
+        $('#tableDiv').html('<img id="searchingAnim" src="' + srRoot + '/images/loading32.gif" height="32" width="32" /> loading folders...');
+        $.get(srRoot + '/home/addShows/massAddTable/', url, function(data) {
             $('#tableDiv').html(data);
             $("#addRootDirTable").tablesorter({
                 //sortList: [[1,0]],

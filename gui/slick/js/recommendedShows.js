@@ -4,9 +4,9 @@ $(document).ready(function() {
     function loadContent() {
         if (trendingRequestXhr) trendingRequestXhr.abort();
 
-        $('#trendingShows').html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> Loading Recommended Shows...');
+        $('#trendingShows').html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> Loading Recommended Shows...');
         trendingRequestXhr = $.ajax({
-            url: sbRoot + '/home/addShows/getRecommendedShows/',
+            url: srRoot + '/home/addShows/getRecommendedShows/',
             timeout: 60 * 1000,
             error: function () {
                 $('#trendingShows').empty().html('Trakt timed out, refresh page to try again');

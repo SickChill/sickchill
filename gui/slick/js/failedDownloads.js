@@ -10,7 +10,7 @@ $(document).ready(function(){
 
         if (removeArr.length === 0) return false;
 
-        url = sbRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|');
+        url = srRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|');
         window.location.href = url;
     });
 

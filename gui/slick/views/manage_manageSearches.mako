@@ -6,7 +6,7 @@
     from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
 </%block>
 <%block name="content">
 <div id="content800">
@@ -18,8 +18,8 @@
 
 <div id="summary2" class="align-left">
 <h3>Backlog Search:</h3>
-<a class="btn" href="${sbRoot}/manage/manageSearches/forceBacklog"><i class="icon-exclamation-sign"></i> Force</a>
-<a class="btn" href="${sbRoot}/manage/manageSearches/pauseBacklog?paused=${('1', '0')[bool(backlogPaused)]}"><i class="icon-${('paused', 'play')[bool(backlogPaused)]}"></i> ${('pause', 'Unpause')[bool(backlogPaused)]}</a>
+<a class="btn" href="${srRoot}/manage/manageSearches/forceBacklog"><i class="icon-exclamation-sign"></i> Force</a>
+<a class="btn" href="${srRoot}/manage/manageSearches/pauseBacklog?paused=${('1', '0')[bool(backlogPaused)]}"><i class="icon-${('paused', 'play')[bool(backlogPaused)]}"></i> ${('pause', 'Unpause')[bool(backlogPaused)]}</a>
 % if not backlogRunning:
     Not in progress<br />
 % else:
@@ -29,12 +29,12 @@
 <br />
 
 <h3>Daily Search:</h3>
-<a class="btn" href="${sbRoot}/manage/manageSearches/forceSearch"><i class="icon-exclamation-sign"></i> Force</a>
+<a class="btn" href="${srRoot}/manage/manageSearches/forceSearch"><i class="icon-exclamation-sign"></i> Force</a>
 ${('Not in progress', 'In Progress')[dailySearchStatus]}<br />
 <br />
 
 <h3>Find Propers Search:</h3>
-<a class="btn ${('disabled', '')[bool(sickbeard.DOWNLOAD_PROPERS)]}" href="${sbRoot}/manage/manageSearches/forceFindPropers"><i class="icon-exclamation-sign"></i> Force</a>
+<a class="btn ${('disabled', '')[bool(sickbeard.DOWNLOAD_PROPERS)]}" href="${srRoot}/manage/manageSearches/forceFindPropers"><i class="icon-exclamation-sign"></i> Force</a>
 % if not sickbeard.DOWNLOAD_PROPERS:
     Propers search disabled <br />
 % elif not findPropersStatus:

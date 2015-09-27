@@ -1,8 +1,8 @@
 $(document).ready(function () {
 
-    $('#sbRoot').ajaxEpSearch({'colorRow': true});
+    $('#srRoot').ajaxEpSearch({'colorRow': true});
 
-    $('#sbRoot').ajaxEpSubtitlesSearch();
+    $('#srRoot').ajaxEpSubtitlesSearch();
 
     $('#seasonJump').on('change', function(){
         var id = $('#seasonJump option:selected').val();
@@ -26,7 +26,7 @@ $(document).ready(function () {
     });
 
     $('#changeStatus').on('click', function(){
-        var sbRoot = $('#sbRoot').val();
+        var srRoot = $('#srRoot').val();
         var epArr = [];
 
         $('.epCheck').each(function () {
@@ -35,7 +35,7 @@ $(document).ready(function () {
 
         if (epArr.length === 0) return false;
 
-        url = sbRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
+        url = srRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
         window.location.href = url;
     });
 
@@ -98,10 +98,10 @@ $(document).ready(function () {
 
     // handle the show selection dropbox
     $('#pickShow').on('change', function () {
-        var sbRoot = $('#sbRoot').val();
+        var srRoot = $('#srRoot').val();
         var val = $(this).val();
         if (val === 0) return;
-        url = sbRoot + '/home/displayShow?show=' + val;
+        url = srRoot + '/home/displayShow?show=' + val;
         window.location.href = url;
     });
 
@@ -151,14 +151,14 @@ $(document).ready(function () {
     };
 
     function setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode) {
-        var sbRoot = $('#sbRoot').val();
+        var srRoot = $('#srRoot').val();
         var showId = $('#showID').val();
         var indexer = $('#indexer').val();
 
         if (sceneSeason === '') sceneSeason = null;
         if (sceneEpisode === '') sceneEpisode = null;
 
-        $.getJSON(sbRoot + '/home/setSceneNumbering',{
+        $.getJSON(srRoot + '/home/setSceneNumbering',{
             'show': showId,
             'indexer': indexer,
             'forSeason': forSeason,
@@ -183,13 +183,13 @@ $(document).ready(function () {
     }
 
     function setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute) {
-        var sbRoot = $('#sbRoot').val();
+        var srRoot = $('#srRoot').val();
         var showId = $('#showID').val();
         var indexer = $('#indexer').val();
 
         if (sceneAbsolute === '') sceneAbsolute = null;
 
-        $.getJSON(sbRoot + '/home/setSceneNumbering', {
+        $.getJSON(srRoot + '/home/setSceneNumbering', {
             'show': showId,
             'indexer': indexer,
             'forAbsolute': forAbsolute,

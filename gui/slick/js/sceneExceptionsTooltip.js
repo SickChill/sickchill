@@ -5,7 +5,7 @@ $(function () {
             content: {
                 text: 'Loading...',
                 ajax: {
-                    url: $("#sbRoot").val() + '/home/sceneExceptions',
+                    url: $("#srRoot").val() + '/home/sceneExceptions',
                     type: 'GET',
                     data: {
                         show: match[1]

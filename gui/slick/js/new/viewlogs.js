@@ -8,7 +8,7 @@ $(document).ready(function(){
         $('#minLevel').prop('disabled', true);
         $('#logFilter').prop('disabled', true);
         $('#logSearch').prop('disabled', true);
-        url = sbRoot + '/errorlogs/viewlog/?minLevel='+$('select[name=minLevel]').val()+'&logFilter='+$('select[name=logFilter]').val()+'&logSearch='+$('#logSearch').val();
+        url = srRoot + '/errorlogs/viewlog/?minLevel='+$('select[name=minLevel]').val()+'&logFilter='+$('select[name=logFilter]').val()+'&logSearch='+$('#logSearch').val();
         $.get(url, function(data){
             history.pushState('data', '', url);
             $('pre').html($(data).find('pre').html());
@@ -38,7 +38,7 @@ $(document).ready(function(){
             $('#minLevel option[value=20]').prop('selected', true);
             $('#minLevel').prop('disabled', false);
             $('#logFilter').prop('disabled', false);
-            url = sbRoot + '/errorlogs/viewlog/?minLevel='+$('select[name=minLevel]').val()+'&logFilter='+$('select[name=logFilter]').val()+'&logSearch='+$('#logSearch').val();
+            url = srRoot + '/errorlogs/viewlog/?minLevel='+$('select[name=minLevel]').val()+'&logFilter='+$('select[name=logFilter]').val()+'&logSearch='+$('#logSearch').val();
             $.get(url, function(data){
                 history.pushState('data', '', url);
                 $('pre').html($(data).find('pre').html());

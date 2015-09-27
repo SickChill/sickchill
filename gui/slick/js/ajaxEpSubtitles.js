@@ -5,7 +5,7 @@
             var subtitles_search_link = $(this);
             // fill with the ajax loading gif
             subtitles_search_link.empty();
-            subtitles_search_link.append($("<img/>").attr({"src": sbRoot+"/images/loading16.gif", "alt": "", "title": "loading"}));
+            subtitles_search_link.append($("<img/>").attr({"src": srRoot+"/images/loading16.gif", "alt": "", "title": "loading"}));
             $.getJSON($(this).attr('href'), function(data){
                 if (data.result != "failure" && data.result != "No subtitles downloaded") {
                 // clear and update the subtitles column with new informations
@@ -14,9 +14,9 @@
                 $.each(subtitles,function(index, language){
                     if (language !== "" && language != "und") {
                         if (index != subtitles.length - 1) {
-                            subtitles_td.append($("<img/>").attr({"src": sbRoot+"/images/subtitles/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
+                            subtitles_td.append($("<img/>").attr({"src": srRoot+"/images/subtitles/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
                         } else {
-                            subtitles_td.append($("<img/>").attr({"src": sbRoot+"/images/subtitles/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
+                            subtitles_td.append($("<img/>").attr({"src": srRoot+"/images/subtitles/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
                         }
                     }
                 });
@@ -37,7 +37,7 @@
             var subtitles_merge_link = $(this);
             // fill with the ajax loading gif
             subtitles_merge_link.empty();
-            subtitles_merge_link.append($("<img/>").attr({"src": sbRoot+"/images/loading16.gif", "alt": "", "title": "loading"}));
+            subtitles_merge_link.append($("<img/>").attr({"src": srRoot+"/images/loading16.gif", "alt": "", "title": "loading"}));
             $.getJSON($(this).attr('href'), function(data){
                 // don't allow other merges
                 subtitles_merge_link.remove();

@@ -10,7 +10,7 @@ $(document).ready(function () {
 
     function israr_supported() {
         var pattern = $('#naming_pattern').val();
-        $.get(sbRoot + '/config/postProcessing/isRarSupported', function (data) {
+        $.get(srRoot + '/config/postProcessing/isRarSupported', function (data) {
             if (data !== "supported") {
                 $('#unpack').qtip('option', {
                     'content.text': 'Unrar Executable not found.',
@@ -27,7 +27,7 @@ $(document).ready(function () {
         var multi = $('#naming_multi_ep :selected').val();
         var anime_type = $('input[name="naming_anime"]:checked').val();
 
-        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, anime_type: 3}, function (data) {
+        $.get(srRoot + '/config/postProcessing/testNaming', {pattern: pattern, anime_type: 3}, function (data) {
             if (data) {
                 $('#naming_example').text(data + '.ext');
                 $('#naming_example_div').show();
@@ -36,7 +36,7 @@ $(document).ready(function () {
             }
         });
 
-        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, multi: multi, anime_type: 3}, function (data) {
+        $.get(srRoot + '/config/postProcessing/testNaming', {pattern: pattern, multi: multi, anime_type: 3}, function (data) {
             if (data) {
                 $('#naming_example_multi').text(data + '.ext');
                 $('#naming_example_multi_div').show();
@@ -45,7 +45,7 @@ $(document).ready(function () {
             }
         });
 
-        $.get(sbRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, multi: multi, anime_type: anime_type}, function (data) {
+        $.get(srRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, multi: multi, anime_type: anime_type}, function (data) {
             if (data == "invalid") {
                 $('#naming_pattern').qtip('option', {
                     'content.text': 'This pattern is invalid.',
@@ -74,7 +74,7 @@ $(document).ready(function () {
     function fill_abd_examples() {
         var pattern = $('#naming_abd_pattern').val();
 
-        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, abd: 'True'}, function (data) {
+        $.get(srRoot + '/config/postProcessing/testNaming', {pattern: pattern, abd: 'True'}, function (data) {
             if (data) {
                 $('#naming_abd_example').text(data + '.ext');
                 $('#naming_abd_example_div').show();
@@ -83,7 +83,7 @@ $(document).ready(function () {
             }
         });
 
-        $.get(sbRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, abd: 'True'}, function (data) {
+        $.get(srRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, abd: 'True'}, function (data) {
             if (data == "invalid") {
                 $('#naming_abd_pattern').qtip('option', {
                     'content.text': 'This pattern is invalid.',
@@ -112,7 +112,7 @@ $(document).ready(function () {
     function fill_sports_examples() {
         var pattern = $('#naming_sports_pattern').val();
 
-        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, sports: 'True'}, function (data) {
+        $.get(srRoot + '/config/postProcessing/testNaming', {pattern: pattern, sports: 'True'}, function (data) {
             if (data) {
                 $('#naming_sports_example').text(data + '.ext');
                 $('#naming_sports_example_div').show();
@@ -121,7 +121,7 @@ $(document).ready(function () {
             }
         });
 
-        $.get(sbRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, sports: 'True'}, function (data) {
+        $.get(srRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, sports: 'True'}, function (data) {
             if (data == "invalid") {
                 $('#naming_sports_pattern').qtip('option', {
                     'content.text': 'This pattern is invalid.',
@@ -152,7 +152,7 @@ $(document).ready(function () {
         var multi = $('#naming_anime_multi_ep :selected').val();
         var anime_type = $('input[name="naming_anime"]:checked').val();
 
-        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, anime_type: anime_type}, function (data) {
+        $.get(srRoot + '/config/postProcessing/testNaming', {pattern: pattern, anime_type: anime_type}, function (data) {
             if (data) {
                 $('#naming_example_anime').text(data + '.ext');
                 $('#naming_example_anime_div').show();
@@ -161,7 +161,7 @@ $(document).ready(function () {
             }
         });
 
-        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, multi: multi, anime_type: anime_type}, function (data) {
+        $.get(srRoot + '/config/postProcessing/testNaming', {pattern: pattern, multi: multi, anime_type: anime_type}, function (data) {
             if (data) {
                 $('#naming_example_multi_anime').text(data + '.ext');
                 $('#naming_example_multi_anime_div').show();
@@ -170,7 +170,7 @@ $(document).ready(function () {
             }
         });
 
-        $.get(sbRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, multi: multi, anime_type: anime_type}, function (data) {
+        $.get(srRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, multi: multi, anime_type: anime_type}, function (data) {
             if (data == "invalid") {
                 $('#naming_pattern').qtip('option', {
                     'content.text': 'This pattern is invalid.',

@@ -8,10 +8,10 @@
         <meta name="robots" content="noindex">
 
         <script type="text/javascript" charset="utf-8">
-            sbRoot = '${sbRoot}';
+            srRoot = '${srRoot}';
         </script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/apibuilder.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/apibuilder.js?${sbPID}"></script>
 
         <style type="text/css">
             #apibuilder select { padding: 2px 2px 2px 6px; display: block; float: left; margin: auto 8px 4px auto; }
