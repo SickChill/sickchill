@@ -70,7 +70,7 @@ class PIDLockFile(LockBase):
         the lock could not be acquired.
         """
 
-        timeout = timeout is not None and timeout or self.timeout
+        timeout = timeout if timeout is not None else self.timeout
         end_time = time.time()
         if timeout is not None and timeout > 0:
             end_time += timeout
@@ -81,8 +81,8 @@ class PIDLockFile(LockBase):
             except OSError as exc:
                 if exc.errno == errno.EEXIST:
                     # The lock creation failed.  Maybe sleep a bit.
-                    if timeout is not None and time.time() > end_time:
-                        if timeout > 0:
+                    if time.time() > end_time:
+                        if timeout is not None and timeout > 0:
                             raise LockTimeout("Timeout waiting to acquire"
                                               " lock for %s" %
                                               self.path)
