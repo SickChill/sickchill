@@ -148,9 +148,11 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                 continue
             hash = torrents[i]["torrent_hash"]
             size = torrents[i]["torrent_size"]
-			
-            magnet = "magnet:?xt=urn:btih:" + hash + "&tr=udp://open.demonii.com:1337/announce&tr=udp://tracker.openbittorrent.com:80/announce&tr=udp://tracker.leechers-paradise.org:6969/announce&tr=http://tracker.dler.org:6969/announce&tr=http://bt.careland.com.cn:6969/announce&tr=http://tracker.tfile.me/announce&tr=http://mgtracker.org:2710/announce&tr=http://tracker1.wasabii.com.tw:6969/announce"
-            #logger.log(u'magnet : ' + magnet, logger.DEBUG)
+            trackerUrl = self.urls['api'] + "" + hash + "/trackers_json"
+            logger.log(u'The tracker list is: ' + trackerUrl, logger.DEBUG)
+            jdata = self.getURL(trackerUrl, json=True)
+            magnet = "magnet:?xt=urn:btih:" + hash + "&dn=" + name + "".join(["&tr=" + s for s in jdata])
+            logger.log(u'Magnet URL is: ' + magnet, logger.DEBUG)
             results.append((name, magnet, size))
 
         logger.log("URL to be parsed: " + searchUrl, logger.DEBUG)
