@@ -24,7 +24,7 @@ class MkdirLockFile(LockBase):
                                                       self.pid))
 
     def acquire(self, timeout=None):
-        timeout = timeout is not None and timeout or self.timeout
+        timeout = timeout if timeout is not None else self.timeout
         end_time = time.time()
         if timeout is not None and timeout > 0:
             end_time += timeout
