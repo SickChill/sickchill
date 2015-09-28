@@ -12,11 +12,11 @@
 <meta data-var="show.is_anime" data-content="${show.is_anime}">
 </%block>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/new/editShow.js"></script>
+<script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/editShow.js"></script>
 % if show.is_anime:
-    <script type="text/javascript" src="${sbRoot}/js/blackwhite.js?${sbPID}"></script>
+    <script type="text/javascript" src="${srRoot}/js/blackwhite.js?${sbPID}"></script>
 % endif
 </%block>
 <%block name="content">
@@ -68,7 +68,7 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
 <b>Default Episode Status:</b><br />
 (this will set the status for future episodes)<br />
 <select name="defaultEpStatus" id="defaultEpStatusSelect" class="form-control form-control-inline input-sm">
-    % for curStatus in [WANTED, SKIPPED, ARCHIVED, IGNORED]:
+    % for curStatus in [WANTED, SKIPPED, IGNORED]:
     <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == show.default_ep_status]}>${statusStrings[curStatus]}</option>
     % endfor
 </select><br />

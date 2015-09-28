@@ -61,8 +61,8 @@ function resetFilters(text) {
 
 function initFancybox() {
     if ($("a[rel=dialog]").length > 0) {
-        $.getScript(sbRoot + '/js/fancybox/jquery.fancybox.pack.js', function () {
-            $("head").append("<link rel='stylesheet' href='" + sbRoot + "/js/fancybox/jquery.fancybox.css'>");
+        $.getScript(srRoot + '/js/fancybox/jquery.fancybox.pack.js', function () {
+            $("head").append("<link rel='stylesheet' href='" + srRoot + "/js/fancybox/jquery.fancybox.css'>");
             $("a[rel=dialog]").fancybox({
                 type: "image",
                 padding: 0,
@@ -131,4 +131,30 @@ function init() {
 
 $(document).ready(function () {
     init();
+    $(document).ready(function() {
+        $('.dropdown-toggle').dropdownHover();
+        if(['True', 1].indexOf($('meta[data-var="sickbeard.FUZZY_DATING"]').data('content')) >= 0){
+            $.timeago.settings.allowFuture = true;
+            $.timeago.settings.strings = {
+                prefixAgo: null,
+                prefixFromNow: 'In ',
+                suffixAgo: "ago",
+                suffixFromNow: "",
+                seconds: "less than a minute",
+                minute: "about a minute",
+                minutes: "%d minutes",
+                hour: "about an hour",
+                hours: "about %d hours",
+                day: "a day",
+                days: "%d days",
+                month: "about a month",
+                months: "%d months",
+                year: "about a year",
+                years: "%d years",
+                wordSeparator: " ",
+                numbers: []
+            };
+            $("[datetime]").timeago();
+        }
+    });
 });

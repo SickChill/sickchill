@@ -218,8 +218,12 @@ def get_build_platform():
     XXX Currently this is the same as ``distutils.util.get_platform()``, but it
     needs some hacks for Linux and Mac OS X.
     """
-    from distutils.util import get_platform
-    plat = get_platform()
+    try:
+        from distutils.util import get_platform
+        plat = get_platform()
+    except ImportError:
+        import platform
+        plat = platform.platform()
     if sys.platform == "darwin" and not plat.startswith('macosx-'):
         try:
             version = _macosx_vers()

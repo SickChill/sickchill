@@ -16,7 +16,7 @@
         has_resource_module = False
 %>
 <%
-    sbRoot = sickbeard.WEB_ROOT
+    srRoot = sickbeard.WEB_ROOT
 %>
 <!DOCTYPE html>
 <html>
@@ -40,38 +40,38 @@
             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
         <meta name="msapplication-TileColor" content="#FFFFFF">
-        <meta name="msapplication-TileImage" content="${sbRoot}/images/ico/favicon-144.png">
-        <meta name="msapplication-config" content="${sbRoot}/css/browserconfig.xml">
+        <meta name="msapplication-TileImage" content="${srRoot}/images/ico/favicon-144.png">
+        <meta name="msapplication-config" content="${srRoot}/css/browserconfig.xml">
 
         <meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
         <%block name="metas" />
 
-        <link rel="shortcut icon" href="${sbRoot}/images/ico/favicon.ico">
-        <link rel="icon" sizes="16x16 32x32 64x64" href="${sbRoot}/images/ico/favicon.ico">
-        <link rel="icon" type="image/png" sizes="196x196" href="${sbRoot}/images/ico/favicon-196.png">
-        <link rel="icon" type="image/png" sizes="160x160" href="${sbRoot}/images/ico/favicon-160.png">
-        <link rel="icon" type="image/png" sizes="96x96" href="${sbRoot}/images/ico/favicon-96.png">
-        <link rel="icon" type="image/png" sizes="64x64" href="${sbRoot}/images/ico/favicon-64.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="${sbRoot}/images/ico/favicon-32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="${sbRoot}/images/ico/favicon-16.png">
-        <link rel="apple-touch-icon" sizes="152x152" href="${sbRoot}/images/ico/favicon-152.png">
-        <link rel="apple-touch-icon" sizes="144x144" href="${sbRoot}/images/ico/favicon-144.png">
-        <link rel="apple-touch-icon" sizes="120x120" href="${sbRoot}/images/ico/favicon-120.png">
-        <link rel="apple-touch-icon" sizes="114x114" href="${sbRoot}/images/ico/favicon-114.png">
-        <link rel="apple-touch-icon" sizes="76x76" href="${sbRoot}/images/ico/favicon-76.png">
-        <link rel="apple-touch-icon" sizes="72x72" href="${sbRoot}/images/ico/favicon-72.png">
-        <link rel="apple-touch-icon" href="${sbRoot}/images/ico/favicon-57.png">
+        <link rel="shortcut icon" href="${srRoot}/images/ico/favicon.ico">
+        <link rel="icon" sizes="16x16 32x32 64x64" href="${srRoot}/images/ico/favicon.ico">
+        <link rel="icon" type="image/png" sizes="196x196" href="${srRoot}/images/ico/favicon-196.png">
+        <link rel="icon" type="image/png" sizes="160x160" href="${srRoot}/images/ico/favicon-160.png">
+        <link rel="icon" type="image/png" sizes="96x96" href="${srRoot}/images/ico/favicon-96.png">
+        <link rel="icon" type="image/png" sizes="64x64" href="${srRoot}/images/ico/favicon-64.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="${srRoot}/images/ico/favicon-32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="${srRoot}/images/ico/favicon-16.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="${srRoot}/images/ico/favicon-152.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="${srRoot}/images/ico/favicon-144.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="${srRoot}/images/ico/favicon-120.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="${srRoot}/images/ico/favicon-114.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="${srRoot}/images/ico/favicon-76.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="${srRoot}/images/ico/favicon-72.png">
+        <link rel="apple-touch-icon" href="${srRoot}/images/ico/favicon-57.png">
 
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/bootstrap.min.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/browser.css?${sbPID}" />
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}" />
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/jquery.qtip-2.2.1.min.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/style.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/print.css?${sbPID}" />
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/bootstrap.min.css?${sbPID}"/>
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/browser.css?${sbPID}" />
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}" />
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery.qtip-2.2.1.min.css?${sbPID}"/>
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/style.css?${sbPID}"/>
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/print.css?${sbPID}" />
         % if sbLogin:
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/lib/pnotify.custom.min.css?${sbPID}" />
-        <link rel="stylesheet" type="text/css" href="${sbRoot}/css/country-flags.css?${sbPID}"/>
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/pnotify.custom.min.css?${sbPID}" />
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/country-flags.css?${sbPID}"/>
         % endif
         <%block name="css" />
     </head>
@@ -86,93 +86,93 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="${sbRoot}/home/" title="SickRage"><img alt="SickRage" src="${sbRoot}/images/sickrage.png" style="height: 50px;" class="img-responsive pull-left" /></a>
+                    <a class="navbar-brand" href="${srRoot}/home/" title="SickRage"><img alt="SickRage" src="${srRoot}/images/sickrage.png" style="height: 50px;" class="img-responsive pull-left" /></a>
                 </div>
 
             % if sbLogin:
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
                         <li id="NAVnews" ${('', 'class="active"')[topmenu == 'news']}>
-                            <a href="${sbRoot}/news/">News</a>
+                            <a href="${srRoot}/news/">News</a>
                         </li>
                         <li id="NAVirc" ${('', 'class="active"')[topmenu == 'irc']}>
-                            <a href="${sbRoot}/IRC/">IRC</a>
+                            <a href="${srRoot}/IRC/">IRC</a>
                         </li>
                         <li id="NAVhome" ${('', 'class="active"')[topmenu == 'home']}>
-                            <a href="${sbRoot}/home/">Shows</a>
+                            <a href="${srRoot}/home/">Shows</a>
                         </li>
 
                         <li id="NAVcomingEpisodes" ${('', 'class="active"')[topmenu == 'comingEpisodes']}>
-                            <a href="${sbRoot}/comingEpisodes/">Coming Episodes</a>
+                            <a href="${srRoot}/comingEpisodes/">Coming Episodes</a>
                         </li>
 
                         <li id="NAVhistory" ${('', 'class="active"')[topmenu == 'history']}>
-                            <a href="${sbRoot}/history/">History</a>
+                            <a href="${srRoot}/history/">History</a>
                         </li>
 
                         <li id="NAVmanage" class="dropdown ${('', 'active')[topmenu == 'manage']}">
-                            <a href="${sbRoot}/manage/" class="dropdown-toggle" data-toggle="dropdown">Manage <b class="caret"></b></a>
+                            <a href="${srRoot}/manage/" class="dropdown-toggle" data-toggle="dropdown">Manage <b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li><a href="${sbRoot}/manage/"><i class="menu-icon-manage"></i>&nbsp;Mass Update</a></li>
-                                <li><a href="${sbRoot}/manage/backlogOverview/"><i class="menu-icon-backlog-view"></i>&nbsp;Backlog Overview</a></li>
-                                <li><a href="${sbRoot}/manage/manageSearches/"><i class="menu-icon-manage-searches"></i>&nbsp;Manage Searches</a></li>
-                                <li><a href="${sbRoot}/manage/episodeStatuses/"><i class="menu-icon-backlog"></i>&nbsp;Episode Status Management</a></li>
+                                <li><a href="${srRoot}/manage/"><i class="menu-icon-manage"></i>&nbsp;Mass Update</a></li>
+                                <li><a href="${srRoot}/manage/backlogOverview/"><i class="menu-icon-backlog-view"></i>&nbsp;Backlog Overview</a></li>
+                                <li><a href="${srRoot}/manage/manageSearches/"><i class="menu-icon-manage-searches"></i>&nbsp;Manage Searches</a></li>
+                                <li><a href="${srRoot}/manage/episodeStatuses/"><i class="menu-icon-backlog"></i>&nbsp;Episode Status Management</a></li>
                             % if sickbeard.USE_PLEX and sickbeard.PLEX_SERVER_HOST != "":
-                                <li><a href="${sbRoot}/home/updatePLEX/"><i class="menu-icon-backlog-view"></i>&nbsp;Update PLEX</a></li>
+                                <li><a href="${srRoot}/home/updatePLEX/"><i class="menu-icon-backlog-view"></i>&nbsp;Update PLEX</a></li>
                             % endif
                             % if sickbeard.USE_KODI and sickbeard.KODI_HOST != "":
-                                <li><a href="${sbRoot}/home/updateKODI/"><i class="menu-icon-kodi"></i>&nbsp;Update KODI</a></li>
+                                <li><a href="${srRoot}/home/updateKODI/"><i class="menu-icon-kodi"></i>&nbsp;Update KODI</a></li>
                             % endif
                             % if sickbeard.USE_EMBY and sickbeard.EMBY_HOST != "" and sickbeard.EMBY_APIKEY != "":
-                                <li><a href="${sbRoot}/home/updateEMBY/"><i class="menu-icon-backlog-view"></i>&nbsp;Update Emby</a></li>
+                                <li><a href="${srRoot}/home/updateEMBY/"><i class="menu-icon-backlog-view"></i>&nbsp;Update Emby</a></li>
                             % endif
                             % if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https' or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
-                                <li><a href="${sbRoot}/manage/manageTorrents/"><i class="menu-icon-bittorrent"></i>&nbsp;Manage Torrents</a></li>
+                                <li><a href="${srRoot}/manage/manageTorrents/"><i class="menu-icon-bittorrent"></i>&nbsp;Manage Torrents</a></li>
                             % endif
                             % if sickbeard.USE_FAILED_DOWNLOADS:
-                                <li><a href="${sbRoot}/manage/failedDownloads/"><i class="menu-icon-failed-download"></i>&nbsp;Failed Downloads</a></li>
+                                <li><a href="${srRoot}/manage/failedDownloads/"><i class="menu-icon-failed-download"></i>&nbsp;Failed Downloads</a></li>
                             % endif
                             % if sickbeard.USE_SUBTITLES:
-                                <li><a href="${sbRoot}/manage/subtitleMissed/"><i class="menu-icon-backlog"></i>&nbsp;Missed Subtitle Management</a></li>
+                                <li><a href="${srRoot}/manage/subtitleMissed/"><i class="menu-icon-backlog"></i>&nbsp;Missed Subtitle Management</a></li>
                             % endif
                             </ul>
                         </li>
 
                         <li id="NAVerrorlogs" class="dropdown" ${('', 'class="active"')[topmenu == 'errorlogs']}>
-                            <a href="${sbRoot}/errorlogs/" class="dropdown-toggle" data-toggle="dropdown">${logPageTitle} <b class="caret"></b></a>
+                            <a href="${srRoot}/errorlogs/" class="dropdown-toggle" data-toggle="dropdown">${logPageTitle} <b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li><a href="${sbRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Log (Errors)</a></li>
-                                <li><a href="${sbRoot}/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;View Log</a></li>
+                                <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Log (Errors)</a></li>
+                                <li><a href="${srRoot}/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;View Log</a></li>
                             </ul>
                         </li>
 
                         <li id="NAVconfig" class="dropdown" ${('', 'class="active"')[topmenu == 'config']}>
-                            <a href="${sbRoot}/config/" class="dropdown-toggle" data-toggle="dropdown"><img src="${sbRoot}/images/menu/system18.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
+                            <a href="${srRoot}/config/" class="dropdown-toggle" data-toggle="dropdown"><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="${sbRoot}/config/"><i class="menu-icon-help"></i>&nbsp;Help &amp; Info</a></li>
-                                <li><a href="${sbRoot}/config/general/"><i class="menu-icon-config"></i>&nbsp;General</a></li>
-                                <li><a href="${sbRoot}/config/backuprestore/"><i class="menu-icon-config"></i>&nbsp;Backup &amp; Restore</a></li>
-                                <li><a href="${sbRoot}/config/search/"><i class="menu-icon-config"></i>&nbsp;Search Settings</a></li>
-                                <li><a href="${sbRoot}/config/providers/"><i class="menu-icon-config"></i>&nbsp;Search Providers</a></li>
-                                <li><a href="${sbRoot}/config/subtitles/"><i class="menu-icon-config"></i>&nbsp;Subtitles Settings</a></li>
-                                <li><a href="${sbRoot}/config/postProcessing/"><i class="menu-icon-config"></i>&nbsp;Post Processing</a></li>
-                                <li><a href="${sbRoot}/config/notifications/"><i class="menu-icon-config"></i>&nbsp;Notifications</a></li>
-                                <li><a href="${sbRoot}/config/anime/"><i class="menu-icon-config"></i>&nbsp;Anime</a></li>
+                                <li><a href="${srRoot}/config/"><i class="menu-icon-help"></i>&nbsp;Help &amp; Info</a></li>
+                                <li><a href="${srRoot}/config/general/"><i class="menu-icon-config"></i>&nbsp;General</a></li>
+                                <li><a href="${srRoot}/config/backuprestore/"><i class="menu-icon-config"></i>&nbsp;Backup &amp; Restore</a></li>
+                                <li><a href="${srRoot}/config/search/"><i class="menu-icon-config"></i>&nbsp;Search Settings</a></li>
+                                <li><a href="${srRoot}/config/providers/"><i class="menu-icon-config"></i>&nbsp;Search Providers</a></li>
+                                <li><a href="${srRoot}/config/subtitles/"><i class="menu-icon-config"></i>&nbsp;Subtitles Settings</a></li>
+                                <li><a href="${srRoot}/config/postProcessing/"><i class="menu-icon-config"></i>&nbsp;Post Processing</a></li>
+                                <li><a href="${srRoot}/config/notifications/"><i class="menu-icon-config"></i>&nbsp;Notifications</a></li>
+                                <li><a href="${srRoot}/config/anime/"><i class="menu-icon-config"></i>&nbsp;Anime</a></li>
                             </ul>
                         </li>
 
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="${sbRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="${sbRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
-                                <li><a href="${sbRoot}/changes"><i class="menu-icon-help"></i>&nbsp;Changelog</a></li>
-                                <li><a href="${sbRoot}/home/restart/?pid=${sbPID}" class="confirm restart"><i class="menu-icon-restart"></i>&nbsp;Restart</a></li>
-                                <li><a href="${sbRoot}/home/shutdown/?pid=${sbPID}" class="confirm shutdown"><i class="menu-icon-shutdown"></i>&nbsp;Shutdown</a></li>
-                                <li><a href="${sbRoot}/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;Logout</a></li>
-                                <li><a href="${sbRoot}/home/status/"><i class="menu-icon-help"></i>&nbsp;Server Status</a></li>
+                                <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
+                                <li><a href="${srRoot}/changes"><i class="menu-icon-help"></i>&nbsp;Changelog</a></li>
+                                <li><a href="${srRoot}/home/restart/?pid=${sbPID}" class="confirm restart"><i class="menu-icon-restart"></i>&nbsp;Restart</a></li>
+                                <li><a href="${srRoot}/home/shutdown/?pid=${sbPID}" class="confirm shutdown"><i class="menu-icon-shutdown"></i>&nbsp;Shutdown</a></li>
+                                <li><a href="${srRoot}/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;Logout</a></li>
+                                <li><a href="${srRoot}/home/status/"><i class="menu-icon-help"></i>&nbsp;Server Status</a></li>
                             </ul>
                         </li>
-                        <li id="donate"><a href="https://github.com/SiCKRAGETV/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="${sbRoot}/images/donate.jpg" alt="[donate]" class="navbaricon hidden-xs" /></a></li>
+                        <li id="donate"><a href="https://github.com/SiCKRAGETV/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="${srRoot}/images/donate.jpg" alt="[donate]" class="navbaricon hidden-xs" /></a></li>
                     </ul>
             % endif
                 </div><!-- /.navbar-collapse -->
@@ -193,11 +193,11 @@
                               inner_first = True
                           %>
                           % for cur_link in menuItem['path']:
-                              ${("&middot; ", "")[bool(inner_first)]}<a class="inner" href="${sbRoot}/${menuItem['path'][cur_link]}">${cur_link}</a>
+                              ${("&middot; ", "")[bool(inner_first)]}<a class="inner" href="${srRoot}/${menuItem['path'][cur_link]}">${cur_link}</a>
                               <% inner_first = False %>
                           % endfor
                       % else:
-                          <a href="${sbRoot}/${menuItem['path']}" class="btn${('', (' confirm ' + menuItem.get('class', '')))['confirm' in menuItem]}">${('', '<span class="pull-left ' + icon_class + '"></span> ')[bool(icon_class)]}${menuItem['title']}</a>
+                          <a href="${srRoot}/${menuItem['path']}" class="btn${('', (' confirm ' + menuItem.get('class', '')))['confirm' in menuItem]}">${('', '<span class="pull-left ' + icon_class + '"></span> ')[bool(icon_class)]}${menuItem['title']}</a>
                           <% first = False %>
                       % endif
                 % endif
@@ -230,7 +230,7 @@
                 myDB = db.DBConnection()
                 today = str(datetime.date.today().toordinal())
                 status_quality = '(%s)' % ','.join([str(quality) for quality in Quality.SNATCHED + Quality.SNATCHED_PROPER])
-                status_download = '(%s)' % ','.join([str(quality) for quality in Quality.DOWNLOADED + [ARCHIVED]])
+                status_download = '(%s)' % ','.join([str(quality) for quality in Quality.DOWNLOADED + Quality.ARCHIVED])
 
                 sql_statement = 'SELECT ' \
                 + '(SELECT COUNT(*) FROM tv_episodes WHERE season > 0 AND episode > 0 AND airdate > 1 AND status IN %s) AS ep_snatched, ' % status_quality \
@@ -255,7 +255,7 @@
                 ep_percentage = '' if ep_total == 0 else '(<span class="footerhighlight">%s%%</span>)' % re.sub(r'(\d+)(\.\d)\d+', r'\1\2', str((float(ep_downloaded)/float(ep_total))*100))
 
                 try:
-                    localRoot = sbRoot
+                    localRoot = srRoot
                 except NotFound:
                     localRoot = ''
 
@@ -285,46 +285,38 @@
                 </div>
             </div>
         </footer>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-hover-dropdown.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery-ui-1.10.4.custom.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.cookie.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.cookiejar.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.json-2.2.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.selectboxes.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.tablesorter-2.17.7.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.tablesorter.widgets-2.17.7.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.tablesorter.widget-columnSelector-2.17.7.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.qtip-2.2.1.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/pnotify.custom.min.js"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.form-3.35.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.ui.touch-punch-0.2.2.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/isotope.pkgd.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.confirm.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/script.js?${sbPID}"></script>
-
-        % if sickbeard.FUZZY_DATING:
-        <script type="text/javascript" src="${sbRoot}/js/moment/moment.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${sbRoot}/js/fuzzyMoment.js?${sbPID}"></script>
-        % endif
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/bootstrap.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/bootstrap-hover-dropdown.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery-ui-1.10.4.custom.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.cookie.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.cookiejar.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.json-2.2.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.selectboxes.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter-2.17.7.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter.widgets-2.17.7.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter.widget-columnSelector-2.17.7.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.qtip-2.2.1.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/pnotify.custom.min.js"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.form-3.35.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.ui.touch-punch-0.2.2.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/isotope.pkgd.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.confirm.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.timeago.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/new/parsers.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/script.js?${sbPID}"></script>
         <script type="text/javascript">
-            sbRoot = '${sbRoot}'; // needed for browser.js & ajaxNotifications.js
+            srRoot = '${srRoot}'; // needed for browser.js & ajaxNotifications.js
             //HTML for scrolltopcontrol, which is auto wrapped in DIV w/ ID="topcontrol"
-            top_image_html = '<img src="${sbRoot}/images/top.gif" width="31" height="11" alt="Jump to top" />';
+            top_image_html = '<img src="${srRoot}/images/top.gif" width="31" height="11" alt="Jump to top" />';
             themeSpinner = '${('', '-dark')[sickbeard.THEME_NAME == 'dark']}';
             anonURL = '${sickbeard.ANON_REDIRECT}';
         </script>
-        <script type="text/javascript" src="${sbRoot}/js/lib/jquery.scrolltopcontrol-1.1.js"></script>
-        <script type="text/javascript" src="${sbRoot}/js/browser.js"></script>
-        <script type="text/javascript" src="${sbRoot}/js/ajaxNotifications.js"></script>
-        <script type="text/javascript" src="${sbRoot}/js/confirmations.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.scrolltopcontrol-1.1.js"></script>
+        <script type="text/javascript" src="${srRoot}/js/browser.js"></script>
+        <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js"></script>
+        <script type="text/javascript" src="${srRoot}/js/confirmations.js?${sbPID}"></script>
     % endif
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('.dropdown-toggle').dropdownHover();
-            });
-        </script>
         <%block name="scripts" />
     </body>
 </html>

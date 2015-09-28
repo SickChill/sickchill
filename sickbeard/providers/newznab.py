@@ -135,45 +135,41 @@ class NewznabProvider(generic.NZBProvider):
     def _get_season_search_strings(self, ep_obj):
 
         to_return = []
-        cur_params = {}
+        params = {}
         if not ep_obj:
             return to_return
 
-        cur_params['maxage'] = (datetime.datetime.now() - datetime.datetime.combine(ep_obj.airdate, datetime.datetime.min.time())).days + 1
+        params['maxage'] = (datetime.datetime.now() - datetime.datetime.combine(ep_obj.airdate, datetime.datetime.min.time())).days + 1
+        params['tvdbid'] = ep_obj.show.indexerid
 
         # season
         if ep_obj.show.air_by_date or ep_obj.show.sports:
             date_str = str(ep_obj.airdate).split('-')[0]
-            cur_params['season'] = date_str
-            cur_params['q'] = date_str.replace('-', '.')
+            params['season'] = date_str
+            params['q'] = date_str.replace('-', '.')
         else:
-            cur_params['season'] = str(ep_obj.scene_season)
+            params['season'] = str(ep_obj.scene_season)
 
-        if 'rid' in cur_params:
-            cur_params.pop('rid')
-            cur_params.pop('attrs')
+        save_q = ' ' + params['q'] if 'q' in params else ''
 
-        save_q = ''
-        if 'q' in cur_params:
-            save_q = ' ' + cur_params['q']
 
         # add new query strings for exceptions
         name_exceptions = list(
             set([ep_obj.show.name] + scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid)))
         for cur_exception in name_exceptions:
-            cur_params['q'] = helpers.sanitizeSceneName(cur_exception) + save_q
-            to_return.append(dict(cur_params))
+            params['q'] = helpers.sanitizeSceneName(cur_exception) + save_q
+            to_return.append(dict(params))
 
         return to_return
 
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         to_return = []
         params = {}
-
         if not ep_obj:
             return to_return
 
         params['maxage'] = (datetime.datetime.now() - datetime.datetime.combine(ep_obj.airdate, datetime.datetime.min.time())).days + 1
+        params['tvdbid'] = ep_obj.show.indexerid
 
         if ep_obj.show.air_by_date or ep_obj.show.sports:
             date_str = str(ep_obj.airdate)
@@ -182,10 +178,6 @@ class NewznabProvider(generic.NZBProvider):
         else:
             params['season'] = ep_obj.scene_season
             params['ep'] = ep_obj.scene_episode
-
-        if 'rid' in params:
-            params.pop('rid')
-            params.pop('attrs')
 
         # add new query strings for exceptions
         name_exceptions = list(
@@ -367,7 +359,6 @@ class NewznabCache(tvcache.TVCache):
 
         params = {"t": "tvsearch",
                   "cat": self.provider.catIDs + ',5060,5070',
-                  "attrs": "rageid",
                   "maxage": 4,
                  }
 

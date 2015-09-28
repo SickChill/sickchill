@@ -3,7 +3,7 @@ $(document).ready(function() {
     window.console_prefix = 'Restart: ';
     window.current_pid = '';
 
-    var is_alive_url = sbRoot + '/home/is_alive/';
+    var is_alive_url = srRoot + '/home/is_alive/';
 
     var check_isAlive = setInterval(is_alive, 1000);
 
@@ -38,7 +38,7 @@ $(document).ready(function() {
                     $('#restart_loading').hide();
                     $('#restart_success').show();
                     $('#refresh_message').show();
-                    setTimeout(function(){window.location = sbRoot + '/' + sbDefaultPage + '/';}, 5000);
+                    setTimeout(function(){window.location = srRoot + '/' + sbDefaultPage + '/';}, 5000);
                 }
             }
 

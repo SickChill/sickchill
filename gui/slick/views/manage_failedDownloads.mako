@@ -10,20 +10,8 @@
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings, Overview
 %>
 <%block name="scripts">
-<script type="text/javascript">
-$(document).ready(function(){
-    $("#failedTable:has(tbody tr)").tablesorter({
-        widgets: ['zebra'],
-        sortList: [[0,0]],
-        headers: { 3: { sorter: false } }
-    });
-    $('#limit').change(function(){
-        url = '${sbRoot}/manage/failedDownloads/?limit='+$(this).val()
-        window.location.href = url
-    });
-});
-</script>
-<script type="text/javascript" src="${sbRoot}/js/failedDownloads.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/manage_failedDownloads.js"></script>
+<script type="text/javascript" src="${srRoot}/js/failedDownloads.js?${sbPID}"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -72,9 +60,9 @@ $(document).ready(function(){
     <td align="center">
     <% provider = providers.getProviderClass(generic.GenericProvider.makeID(hItem["provider"])) %>
     % if provider != None:
-        <img src="${sbRoot}/images/providers/${provider.imageName()}" width="16" height="16" alt="${provider.name}" title="${provider.name}"/>
+        <img src="${srRoot}/images/providers/${provider.imageName()}" width="16" height="16" alt="${provider.name}" title="${provider.name}"/>
     % else:
-        <img src="${sbRoot}/images/providers/missing.png" width="16" height="16" alt="missing provider" title="missing provider"/>
+        <img src="${srRoot}/images/providers/missing.png" width="16" height="16" alt="missing provider" title="missing provider"/>
     % endif
     </td>
     <td align="center">${curRemove}</td>

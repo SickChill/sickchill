@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $('#submitMassRemove').click(function(){
+    $('#submitMassRemove').on('click', function(){
         var removeArr = [];
 
         $('.removeCheck').each(function() {
@@ -10,11 +10,11 @@ $(document).ready(function(){
 
         if (removeArr.length === 0) return false;
 
-        url = sbRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|');
+        url = srRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|');
         window.location.href = url;
     });
 
-    $('.bulkCheck').click(function(){
+    $('.bulkCheck').on('click', function(){
         var bulkCheck = this;
         var whichBulkCheck = $(bulkCheck).attr('id');
 

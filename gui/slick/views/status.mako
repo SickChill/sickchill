@@ -6,17 +6,7 @@
     from sickrage.helper.common import dateTimeFormat
 %>
 <%block name="scripts">
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#schedulerStatusTable").tablesorter({
-            widgets: ['saveSort', 'zebra']
-        });
-        $("#queueStatusTable").tablesorter({
-            widgets: ['saveSort', 'zebra'],
-            sortList: [[3,0], [4,0], [2,1]]
-        });
-    });
-</script>
+<script type="text/javascript" src="${srRoot}/js/new/status.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:

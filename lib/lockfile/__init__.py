@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 lockfile.py - Platform-independent advisory file locks.
 
@@ -68,7 +70,7 @@ if not hasattr(threading.Thread, "get_name"):
 
 __all__ = ['Error', 'LockError', 'LockTimeout', 'AlreadyLocked',
            'LockFailed', 'UnlockError', 'NotLocked', 'NotMyLock',
-           'LinkLockFile', 'MkdirLockFile', 'SQLiteLockFile',
+           'LinkFileLock', 'MkdirFileLock', 'SQLiteFileLock',
            'LockBase', 'locked']
 
 class Error(Exception):
@@ -154,14 +156,58 @@ class NotMyLock(UnlockError):
     """
     pass
 
-class LockBase:
+class _SharedBase(object):
+    def __init__(self, path):
+        self.path = path
+
+    def acquire(self, timeout=None):
+        """
+        Acquire the lock.
+
+        * If timeout is omitted (or None), wait forever trying to lock the
+          file.
+
+        * If timeout > 0, try to acquire the lock for that many seconds.  If
+          the lock period expires and the file is still locked, raise
+          LockTimeout.
+
+        * If timeout <= 0, raise AlreadyLocked immediately if the file is
+          already locked.
+        """
+        raise NotImplemented("implement in subclass")
+
+    def release(self):
+        """
+        Release the lock.
+
+        If the file is not locked, raise NotLocked.
+        """
+        raise NotImplemented("implement in subclass")
+
+    def __enter__(self):
+        """
+        Context manager support.
+        """
+        self.acquire()
+        return self
+
+    def __exit__(self, *_exc):
+        """
+        Context manager support.
+        """
+        self.release()
+
+    def __repr__(self):
+        return "<%s: %r>" % (self.__class__.__name__, self.path)
+
+class LockBase(_SharedBase):
     """Base class for platform-specific lock classes."""
     def __init__(self, path, threaded=True, timeout=None):
         """
         >>> lock = LockBase('somefile')
         >>> lock = LockBase('somefile', threaded=False)
         """
-        self.path = path
+        super(LockBase, self).__init__(path)
         self.lock_file = os.path.abspath(path) + ".lock"
         self.hostname = socket.gethostname()
         self.pid = os.getpid()
@@ -189,30 +235,6 @@ class LockBase:
                                                        hash(self.path)))
         self.timeout = timeout
 
-    def acquire(self, timeout=None):
-        """
-        Acquire the lock.
-
-        * If timeout is omitted (or None), wait forever trying to lock the
-          file.
-
-        * If timeout > 0, try to acquire the lock for that many seconds.  If
-          the lock period expires and the file is still locked, raise
-          LockTimeout.
-
-        * If timeout <= 0, raise AlreadyLocked immediately if the file is
-          already locked.
-        """
-        raise NotImplemented("implement in subclass")
-
-    def release(self):
-        """
-        Release the lock.
-
-        If the file is not locked, raise NotLocked.
-        """
-        raise NotImplemented("implement in subclass")
-
     def is_locked(self):
         """
         Tell whether or not the file is locked.
@@ -230,19 +252,6 @@ class LockBase:
         Remove a lock.  Useful if a locking thread failed to unlock.
         """
         raise NotImplemented("implement in subclass")
-
-    def __enter__(self):
-        """
-        Context manager support.
-        """
-        self.acquire()
-        return self
-
-    def __exit__(self, *_exc):
-        """
-        Context manager support.
-        """
-        self.release()
 
     def __repr__(self):
         return "<%s: %r -- %r>" % (self.__class__.__name__, self.unique_name,

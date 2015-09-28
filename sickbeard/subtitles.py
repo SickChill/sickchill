@@ -84,7 +84,7 @@ def getLanguageName(language):
 
 # TODO: Filter here for non-languages in sickbeard.SUBTITLES_LANGUAGES
 def wantedLanguages(sqlLike = False):
-    wantedLanguages = [x for x in sorted(sickbeard.SUBTITLES_LANGUAGES) if x in babelfish.language_converters['opensubtitles'].codes]
+    wantedLanguages = [x for x in sorted(sickbeard.SUBTITLES_LANGUAGES) if x in subtitleCodeFilter()]
     if sqlLike:
         return '%' + ','.join(wantedLanguages) + '%'
     return wantedLanguages
@@ -114,8 +114,6 @@ def subtitlesLanguages(video_path):
             resultList.append(language.alpha2)
 
     defaultLang = wantedLanguages()
-    if len(resultList) is 1 and len(defaultLang) is 1:
-        return defaultLang
 
     if ('pob' in defaultLang or 'pb' in defaultLang) and ('pt' not in defaultLang and 'por' not in defaultLang):
             resultList = [x if not x in ['por', 'pt'] else u'pob' for x in resultList]
@@ -125,6 +123,9 @@ def subtitlesLanguages(video_path):
 # TODO: Return only languages our providers allow
 def subtitleLanguageFilter():
     return [babelfish.Language.fromopensubtitles(language) for language in babelfish.language_converters['opensubtitles'].codes if len(language) == 3]
+
+def subtitleCodeFilter():
+    return [babelfish.Language.fromopensubtitles(language).opensubtitles for language in babelfish.language_converters['opensubtitles'].codes if len(language) == 3]
 
 class SubtitlesFinder():
     """
@@ -141,7 +142,7 @@ class SubtitlesFinder():
             return
 
         if len(sickbeard.subtitles.getEnabledServiceList()) < 1:
-            logger.log(u'Not enough services selected. At least 1 service is required to search subtitles in the background', logger.ERROR)
+            logger.log(u'Not enough services selected. At least 1 service is required to search subtitles in the background', logger.WARNING)
             return
 
         logger.log(u'Checking for subtitles', logger.INFO)

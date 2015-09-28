@@ -5,7 +5,7 @@
     from sickbeard.logger import reverseNames
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/new/viewlogs.js"></script>
+<script type="text/javascript" src="${srRoot}/js/new/viewlogs.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:

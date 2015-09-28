@@ -8,10 +8,10 @@ $(document).ready(function () {
         if (searchRequestXhr) searchRequestXhr.abort();
 
         var searchingFor = $('#nameToSearch').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
-        $('#searchResults').empty().html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> searching ' + searchingFor + '...');
+        $('#searchResults').empty().html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> searching ' + searchingFor + '...');
 
         searchRequestXhr = $.ajax({
-            url: sbRoot + '/home/addShows/searchIndexersForShowName',
+            url: srRoot + '/home/addShows/searchIndexersForShowName',
             data: {'search_term': $('#nameToSearch').val().trim(), 'lang': $('#indexerLangSelect').val(), 'indexer': $('#providedIndexer').val()},
             timeout: parseInt($('#indexer_timeout').val(), 10) * 1000,
             dataType: 'json',
@@ -166,7 +166,7 @@ $(document).ready(function () {
 
         // if we have a show name then sanitize and use it for the dir name
         if (show_name.length) {
-            $.get(sbRoot + '/home/addShows/sanitizeFileName', {name: show_name}, function (data) {
+            $.get(srRoot + '/home/addShows/sanitizeFileName', {name: show_name}, function (data) {
                 $('#displayText').html(sample_text.replace('||', data));
             });
         // if not then it's unknown
@@ -205,7 +205,7 @@ $(document).ready(function () {
         if ($('#anime').prop('checked')) {
             $('#blackwhitelist').show();
             if (show_name) {
-                $.getJSON(sbRoot + '/home/fetch_releasegroups', {'show_name': show_name}, function (data) {
+                $.getJSON(srRoot + '/home/fetch_releasegroups', {'show_name': show_name}, function (data) {
                 if (data.result == 'success') {
                     $.each(data.groups, function(i, group) {
                         var option = $("<option>");

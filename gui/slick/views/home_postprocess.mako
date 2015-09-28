@@ -3,9 +3,7 @@
     import sickbeard
 %>
 <%block name="scripts">
-<script type="text/javascript">
-    $('#episodeDir').fileBrowser({ title: 'Select Unprocessed Episode Folder', key: 'postprocessPath' });
-</script>
+<script type="text/javascript" src="${srRoot}/js/new/home_postprocess.js"></script>
 </%block>
 <%block name="content">
 <div id="content800">

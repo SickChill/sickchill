@@ -5,30 +5,9 @@
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import Overview, Quality, qualityPresets, qualityPresetStrings
     from sickbeard import sbdatetime, network_timezones
-
-    fuzzydate = 'airdate'
 %>
 <%block name="scripts">
 <script type="text/javascript">
-$(document).ready(function(){
-    $('#pickShow').change(function(){
-        var id = $(this).val();
-        if (id) {
-            $('html,body').animate({scrollTop: $('#show-' + id).offset().top -25},'slow');
-        }
-    });
-
-    % if sickbeard.FUZZY_DATING:
-    fuzzyMoment({
-        containerClass : '.${fuzzydate}',
-        dateHasTime : false,
-        dateFormat : '${sickbeard.DATE_PRESET}',
-        timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('False', 'True')[bool(sickbeard.TRIM_ZERO)]}
-    });
-    % endif
-
-});
 </script>
 </%block>
 <%block name="content">
@@ -72,11 +51,11 @@ Jump to Show
     % endif
     <tr class="seasonheader" id="show-${curShow.indexerid}">
         <td colspan="3" class="align-left">
-            <br/><h2><a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></h2>
+            <br/><h2><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></h2>
             <div class="pull-right">
                 <span class="listing-key wanted">Wanted: <b>${showCounts[curShow.indexerid][Overview.WANTED]}</b></span>
                 <span class="listing-key qual">Low Quality: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>
-                <a class="btn btn-inline forceBacklog" href="${sbRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> Force Backlog</a>
+                <a class="btn btn-inline forceBacklog" href="${srRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> Force Backlog</a>
             </div>
         </td>
     </tr>
@@ -98,9 +77,17 @@ Jump to Show
         <tr class="seasonstyle ${Overview.overviewStrings[showCats[curShow.indexerid][whichStr]]}">
             <td class="tableleft" align="center">${whichStr}</td>
             <td class="tableright" align="center" class="nowrap">
-                <div class="${fuzzydate}">${curResult["name"]}</div>
+                ${curResult["name"]}
             </td>
-            <td><div>${(sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network))), 'never')[int(curResult['airdate']) == 1]}</div></td>
+            <% date = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
+            <td>
+            % if int(curResult['airdate']) != 1:
+                <time datetime="${date.isoformat('T')}" class="date">${date}</time>
+            % else:
+                Never
+            % endif
+            <span class="sort_data">${date.isoformat('T')}</span>
+            </td>
         </tr>
     % endfor
 % endfor

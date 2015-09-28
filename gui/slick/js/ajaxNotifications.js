@@ -1,5 +1,5 @@
-var message_url = sbRoot + '/ui/get_messages',
-	test = !1;
+var message_url = srRoot + '/ui/get_messages',
+    test = !1;
 
 PNotify.prototype.options.addclass = 'stack-bottomright';
 PNotify.prototype.options.buttons.closer_hover = !1;
@@ -14,29 +14,30 @@ PNotify.prototype.options.width = '340px';
 PNotify.desktop.permission();
 
 function displayPNotify(type, title, message) {
-	var notification = new PNotify({
-		type: type, title: title,
-		text: message.replace(/<br[\s\/]*(?:\s[^>]*)?>/ig, "\n")
-			.replace(/<[\/]?b(?:\s[^>]*)?>/ig, '*')
-			.replace(/<i(?:\s[^>]*)?>/ig, '[').replace(/<[\/]i>/ig, ']')
-			.replace(/<(?:[\/]?ul|\/li)(?:\s[^>]*)?>/ig, '').replace(/<li(?:\s[^>]*)?>/ig, "\n" + '* ')
-	});
+    var notification = new PNotify({
+        type: type, title: title,
+        text: message.replace(/<br[\s\/]*(?:\s[^>]*)?>/ig, "\n")
+            .replace(/<[\/]?b(?:\s[^>]*)?>/ig, '*')
+            .replace(/<i(?:\s[^>]*)?>/ig, '[').replace(/<[\/]i>/ig, ']')
+            .replace(/<(?:[\/]?ul|\/li)(?:\s[^>]*)?>/ig, '').replace(/<li(?:\s[^>]*)?>/ig, "\n" + '* ')
+    });
 }
 
 function check_notifications() {
-	if ('visible' == document.visibilityState) {
-		$.getJSON(message_url, function (data) {
-			$.each(data, function (name, data) {
-				displayPNotify(data.type, data.title, data.message)
-			});
-		});
-	}
-	setTimeout(check_notifications, 3000)
+    if ('visible' == document.visibilityState) {
+        $.getJSON(message_url, function (data) {
+            $.each(data, function (name, data) {
+                displayPNotify(data.type, data.title, data.message);
+            });
+        });
+    }
+    setTimeout(function () {
+        "use strict";
+        check_notifications();
+    }, 3000);
 }
 
 $(document).ready(function(){
-	check_notifications();
-	if (test) {
-		displayPNotify('notice', 'test', 'test<br/><i class="test-class">hello <b>world</b></i><ul><li>item 1</li><li>item 2</li></ul>');
-	}
+    check_notifications();
+    if(test) displayPNotify('notice', 'test', 'test<br/><i class="test-class">hello <b>world</b></i><ul><li>item 1</li><li>item 2</li></ul>');
 });

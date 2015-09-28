@@ -415,9 +415,13 @@ class SickRage(object):
 
         os.setsid()  # @UndefinedVariable - only available in UNIX
 
-        # Make sure I can read my own files and shut out others
-        prev = os.umask(0)
-        os.umask(prev and int('077', 8))
+        # https://github.com/SiCKRAGETV/sickrage-issues/issues/2969
+        # http://www.microhowto.info/howto/cause_a_process_to_become_a_daemon_in_c.html#idp23920
+        # https://www.safaribooksonline.com/library/view/python-cookbook/0596001673/ch06s08.html
+        # Previous code simply set the umask to whatever it was because it was ANDing instead of ORring
+        # Daemons traditionally run with umask 0 anyways and this should not have repercussions
+        os.umask(0)
+
 
         # Make the child a session-leader by detaching from the terminal
         try:

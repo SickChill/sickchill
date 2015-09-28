@@ -1,4 +1,4 @@
-var search_status_url = sbRoot + '/home/getManualSearchStatus';
+var search_status_url = srRoot + '/home/getManualSearchStatus';
 var failedDownload = false;
 var qualityDownload = false;
 var selectedEpisode = '';
@@ -46,38 +46,36 @@ function updateImages(data) {
         img=el.children('img');
         parent=el.parent();
         if (el) {
+            var rSearchTerm = '';
             if (ep.searchstatus == 'searching') {
                 //el=$('td#' + ep.season + 'x' + ep.episode + '.search img');
                 img.prop('title','Searching');
                 img.prop('alt','Searching');
-                img.prop('src',sbRoot+'/images/' + loadingImage);
+                img.prop('src',srRoot+'/images/' + loadingImage);
                 disableLink(el);
                 // Update Status and Quality
-                var rSearchTerm = /(\w+)\s\((.+?)\)/;
+                rSearchTerm = /(\w+)\s\((.+?)\)/;
                 HtmlContent = ep.searchstatus;
 
-            }
-            else if (ep.searchstatus == 'queued') {
+            } else if (ep.searchstatus == 'queued') {
                 //el=$('td#' + ep.season + 'x' + ep.episode + '.search img');
                 img.prop('title','Queued');
                 img.prop('alt','queued');
-                img.prop('src',sbRoot+'/images/' + queuedImage );
+                img.prop('src',srRoot+'/images/' + queuedImage );
                 disableLink(el);
                 HtmlContent = ep.searchstatus;
-            }
-            else if (ep.searchstatus == 'finished') {
+            } else if (ep.searchstatus == 'finished') {
                 //el=$('td#' + ep.season + 'x' + ep.episode + '.search img');
                 img.prop('title','Searching');
                 img.prop('alt','searching');
                 img.parent().prop('class','epRetry');
-                img.prop('src',sbRoot+'/images/' + searchImage);
+                img.prop('src',srRoot+'/images/' + searchImage);
                 enableLink(el);
 
                 // Update Status and Quality
-                var rSearchTerm = /(\w+)\s\((.+?)\)/;
+                rSearchTerm = /(\w+)\s\((.+?)\)/;
                 HtmlContent = ep.status.replace(rSearchTerm,"$1"+' <span class="quality '+ep.quality+'">'+"$2"+'</span>');
                 parent.closest('tr').prop("class", ep.overview + " season-" + ep.season + " seasonstyle");
-
             }
             // update the status column if it exists
             parent.siblings('.col-status').html(HtmlContent);
@@ -89,16 +87,16 @@ function updateImages(data) {
             if (ep.searchstatus == 'searching') {
                 img_comEps.prop('title','Searching');
                 img_comEps.prop('alt','Searching');
-                img_comEps.prop('src',sbRoot+'/images/' + loadingImage);
+                img_comEps.prop('src',srRoot+'/images/' + loadingImage);
                 disableLink(el_comEps);
             } else if (ep.searchstatus == 'queued') {
                 img_comEps.prop('title','Queued');
                 img_comEps.prop('alt','queued');
-                img_comEps.prop('src',sbRoot+'/images/' + queuedImage );
+                img_comEps.prop('src',srRoot+'/images/' + queuedImage );
             } else if (ep.searchstatus == 'finished') {
                 img_comEps.prop('title','Manual Search');
                 img_comEps.prop('alt','[search]');
-                img_comEps.prop('src',sbRoot+'/images/' + searchImage);
+                img_comEps.prop('src',srRoot+'/images/' + searchImage);
                 if (ep.overview == 'snatched') {
                     el_comEps.closest('tr').remove();
                 } else {
@@ -167,22 +165,12 @@ function disableLink(el) {
         });
 
         $('#manualSearchModalFailed .btn').click(function(){
-            val=$(this).text();
-            if(val=='Yes'){
-                failedDownload = true;
-            } else {
-                failedDownload = false;
-            }
+            failedDownload = ($(this).text() == 'Yes');
             $("#manualSearchModalQuality").modal('show');
         });
 
         $('#manualSearchModalQuality .btn').click(function(){
-            val=$(this).text();
-            if(val=='Yes'){
-                qualityDownload = true;
-            } else {
-                qualityDownload = false;
-            }
+            qualityDownload = ($(this).text() == 'Yes');
             manualSearch();
         });
 
@@ -196,7 +184,7 @@ function disableLink(el) {
             img=selectedEpisode.children('img');
             img.prop('title','loading');
             img.prop('alt','');
-            img.prop('src',sbRoot+'/images/' + options.loadingImage);
+            img.prop('src',srRoot+'/images/' + options.loadingImage);
 
             var url = selectedEpisode.prop('href');
 
@@ -204,11 +192,7 @@ function disableLink(el) {
                 url = url.replace("retryEpisode", "searchEpisode");
             }
 
-            if (qualityDownload === true) {
-                url = url + "&downCurQuality=1";
-            } else {
-                url = url + "&downCurQuality=0";
-            }
+            url = url + "&downCurQuality=" + (qualityDownload ? '1' : '0');
 
             $.getJSON(url, function(data){
 
@@ -237,9 +221,8 @@ function disableLink(el) {
                 img.prop('title',img_result);
                 img.prop('alt',img_result);
                 img.prop('height', options.size);
-                img.prop('src',sbRoot+"/images/"+img_name);
+                img.prop('src',srRoot+"/images/"+img_name);
             });
-            //
 
             // don't follow the link
             return false;

@@ -12,7 +12,7 @@
 % endif
 
 <div id="addShowPortal">
-    <a href="${sbRoot}/home/addShows/newShow/" id="btnNewShow" class="btn btn-large">
+    <a href="${srRoot}/home/addShows/newShow/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addnewshow"></div></div>
         <div class="buttontext">
             <h3>Add New Show</h3>
@@ -22,7 +22,7 @@
 
     <br/><br/>
     % if sickbeard.USE_TRAKT == True:
-    <a href="${sbRoot}/home/addShows/trendingShows/" id="btnNewShow" class="btn btn-large">
+    <a href="${srRoot}/home/addShows/trendingShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addtrendingshow"></div></div>
         <div class="buttontext">
             <h3>Add Trending Show</h3>
@@ -32,7 +32,7 @@
 
     <br/><br/>
 
-    <a href="${sbRoot}/home/addShows/recommendedShows/" id="btnNewShow" class="btn btn-large">
+    <a href="${srRoot}/home/addShows/recommendedShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addrecommendedshow"></div></div>
         <div class="buttontext">
             <h3>Add Recommended Shows</h3>
@@ -43,7 +43,7 @@
     <br/><br/>
     % endif
 
-    <a href="${sbRoot}/home/addShows/popularShows/" id="btnNewShow" class="btn btn-large">
+    <a href="${srRoot}/home/addShows/popularShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addtrendingshow"></div></div>
         <div class="buttontext">
             <h3>View Popular Shows</h3>
@@ -53,7 +53,7 @@
 
     <br/><br/>
 
-    <a href="${sbRoot}/home/addShows/existingShows/" id="btnExistingShow" class="btn btn-large">
+    <a href="${srRoot}/home/addShows/existingShows/" id="btnExistingShow" class="btn btn-large">
         <div class="button"><div class="icon-addexistingshow"></div></div>
         <div class="buttontext">
             <h3>Add Existing Shows</h3>

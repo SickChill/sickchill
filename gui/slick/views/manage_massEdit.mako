@@ -16,11 +16,9 @@
 
     anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
 %>
-<script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/massEdit.js?${sbPID}"></script>
-<script type="text/javascript" charset="utf-8">
-    $('#location').fileBrowser({ title: 'Select Show Location' });
-</script>
+<script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/massEdit.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/manage_massEdit.js"></script>
 </%block>
 <%block name="content">
 <%
@@ -133,7 +131,7 @@
     <div class="selectChoices">
       <select id="edit_default_ep_status" name="default_ep_status" class="form-control form-control-inline input-sm">
           <option value="keep">&lt; keep &gt;</option>
-          % for curStatus in [WANTED, SKIPPED, ARCHIVED, IGNORED]:
+          % for curStatus in [WANTED, SKIPPED, IGNORED]:
           <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == default_ep_status_value]}>${statusStrings[curStatus]}</option>
           % endfor
       </select>

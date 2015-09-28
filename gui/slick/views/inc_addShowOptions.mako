@@ -21,7 +21,7 @@
                 <span class="component-title">Status for previously aired episodes</span>
                 <span class="component-desc">
                     <select name="defaultStatus" id="statusSelect" class="form-control form-control-inline input-sm">
-                    % for curStatus in [SKIPPED, WANTED, ARCHIVED, IGNORED]:
+                    % for curStatus in [SKIPPED, WANTED, IGNORED]:
                         <option value="${curStatus}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT == curStatus]}>${statusStrings[curStatus]}</option>
                     % endfor
                     </select>
@@ -33,7 +33,7 @@
                 <span class="component-title">Status for all future episodes</span>
                 <span class="component-desc">
                     <select name="defaultStatusAfter" id="statusSelectAfter" class="form-control form-control-inline input-sm">
-                    % for curStatus in [SKIPPED, WANTED, ARCHIVED, IGNORED]:
+                    % for curStatus in [SKIPPED, WANTED, IGNORED]:
                         <option value="${curStatus}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT_AFTER == curStatus]}>${statusStrings[curStatus]}</option>
                     % endfor
                     </select>
@@ -68,6 +68,16 @@
                 <span class="component-desc">
                     <input type="checkbox" name="scene" id="scene" ${('', 'checked="checked"')[bool(sickbeard.SCENE_DEFAULT)]} />
                     <p>Is this show scene numbered?</p>
+                </span>
+            </label>
+        </div>
+
+        <div class="field-pair alt">
+            <label for="archive" class="clearfix">
+                <span class="component-title">Archive first match</span>
+                <span class="component-desc">
+                    <input type="checkbox" name="archive" id="archive" ${('', 'checked="checked"')[bool(sickbeard.ARCHIVE_DEFAULT)]} />
+                    <p>Archive episodes after downloading first match?</p>
                 </span>
             </label>
         </div>

@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     $('#saveDefaultsButton').click(function () {
         var anyQualArray = [];
         var bestQualArray = [];
@@ -10,7 +9,7 @@ $(document).ready(function () {
             bestQualArray.push($(d).val());
         });
 
-        $.get(sbRoot + '/config/general/saveAddShowDefaults', {
+        $.get(srRoot + '/config/general/saveAddShowDefaults', {
             defaultStatus: $('#statusSelect').val(),
             anyQualities: anyQualArray.join(','),
             bestQualities: bestQualArray.join(','),
@@ -18,7 +17,8 @@ $(document).ready(function () {
             subtitles: $('#subtitles').prop('checked'),
             anime: $('#anime').prop('checked'),
             scene: $('#scene').prop('checked'),
-            defaultStatusAfter: $('#statusSelectAfter').val()
+            defaultStatusAfter: $('#statusSelectAfter').val(),
+            archive: $('#archive').prop('checked')
         });
 
         $(this).attr('disabled', true);
@@ -29,8 +29,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function () {
+    $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter, #archive').change(function () {
         $('#saveDefaultsButton').attr('disabled', false);
     });
-
 });

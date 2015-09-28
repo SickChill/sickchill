@@ -11,70 +11,23 @@
     from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
 
     from sickbeard.helpers import anon_url
-
-    fuzzydate = 'airdate'
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/lib/jquery.bookmarkscroll.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/displayShow.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/sceneExceptionsTooltip.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/ratingTooltip.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/ajaxEpSubtitles.js?${sbPID}"></script>
-<script type="text/javascript" charset="utf-8">
-$(document).ready(function(){
-    % if sickbeard.FUZZY_DATING:
-    fuzzyMoment({
-        containerClass : '.${fuzzydate}',
-        dateHasTime : false,
-        dateFormat : '${sickbeard.DATE_PRESET}',
-        timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${("false", "true")[bool(sickbeard.TRIM_ZERO)]}
-    });
-    % endif
-    $('.addQTip').each(function () {
-        $(this).css({'cursor':'help', 'text-shadow':'0px 0px 0.5px #666'});
-        $(this).qtip({
-            show: {solo:true},
-            position: {viewport:$(window), my:'left center', adjust:{ y: -10, x: 2 }},
-            style: {tip:{corner:true, method:'polygon'}, classes:'qtip-rounded qtip-shadow ui-tooltip-sb'}
-        });
-    });
-    $.fn.generateStars = function() {
-        return this.each(function(i,e){$(e).html($('<span/>').width($(e).text()*12));});
-    };
-
-    $('.imdbstars').generateStars();
-
-    $("${('#showTable', '#animeTable')[bool(show.is_anime)]}").tablesorter({
-        widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
-        widgetOptions : {
-            columnSelector_saveColumns: true,
-            columnSelector_layout : '<br/><label><input type="checkbox">{name}</label>',
-            columnSelector_mediaquery: false,
-            columnSelector_cssChecked : 'checked'
-        },
-    });
-
-    $('#popover').popover({
-        placement: 'bottom',
-        html: true, // required if content has HTML
-        content: '<div id="popover-target"></div>'
-    })
-    // bootstrap popover event triggered when the popover opens
-    .on('shown.bs.popover', function () {
-        $.tablesorter.columnSelector.attachTo( $("${('#showTable', '#animeTable')[bool(show.is_anime)]}"), '#popover-target');
-    });
-});
-</script>
+<script type="text/javascript" src="${srRoot}/js/lib/jquery.bookmarkscroll.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/displayShow.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/sceneExceptionsTooltip.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/ratingTooltip.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/ajaxEpSubtitles.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/displayShow.js"></script>
 </%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-<input type="hidden" id="sbRoot" value="${sbRoot}" />
+<input type="hidden" id="srRoot" value="${srRoot}" />
     <div class="pull-left form-inline">
         Change Show:
-        <div class="navShow"><img id="prevShow" src="${sbRoot}/images/prev.png" alt="&lt;&lt;" title="Prev Show" /></div>
+        <div class="navShow"><img id="prevShow" src="${srRoot}/images/prev.png" alt="&lt;&lt;" title="Prev Show" /></div>
             <select id="pickShow" class="form-control form-control-inline input-sm">
             % for curShowList in sortedShowLists:
                 <% curShowType = curShowList[0] %>
@@ -91,7 +44,7 @@ $(document).ready(function(){
                 % endif
             % endfor
             </select>
-        <div class="navShow"><img id="nextShow" src="${sbRoot}/images/next.png" alt="&gt;&gt;" title="Next Show" /></div>
+        <div class="navShow"><img id="nextShow" src="${srRoot}/images/next.png" alt="&gt;&gt;" title="Next Show" /></div>
     </div>
 
     <div class="clearfix"></div>
@@ -113,7 +66,7 @@ $(document).ready(function(){
         <span class="h2footer displayspecials pull-right">
             % if season_special:
             Display Specials:
-                <a class="inner" href="${sbRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">${('Show', 'Hide')[bool(sickbeard.DISPLAY_SHOW_SPECIALS)]}</a>
+                <a class="inner" href="${srRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">${('Show', 'Hide')[bool(sickbeard.DISPLAY_SHOW_SPECIALS)]}</a>
             % endif
         </span>
 
@@ -155,7 +108,7 @@ $(document).ready(function(){
 
     <div id="container">
         <div id="posterCol">
-            <a href="${sbRoot}/showPoster/?show=${show.indexerid}&amp;which=poster" rel="dialog" title="View Poster for ${show.name}"><img src="${sbRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb" class="tvshowImg" alt=""/></a>
+            <a href="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster" rel="dialog" title="View Poster for ${show.name}"><img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb" class="tvshowImg" alt=""/></a>
         </div>
 
         <div id="showCol">
@@ -172,17 +125,17 @@ $(document).ready(function(){
 % else:
     % if 'country_codes' in show.imdb_info:
         % for country in show.imdb_info['country_codes'].split('|'):
-                <img src="${sbRoot}/images/blank.png" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
+                <img src="${srRoot}/images/blank.png" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
         % endfor
     % endif
     % if 'year' in show.imdb_info:
                 <span>(${show.imdb_info['year']}) - ${show.imdb_info['runtimes']} minutes - </span>
     % endif
-                <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
+                <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${srRoot}/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
 % endif
-                <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(show.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/></a>
+                <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" height="16" width="16" src="${srRoot}/images/${sickbeard.indexerApi(show.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/></a>
 % if xem_numbering or xem_absolute_numbering:
-                <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><img alt="[xem]" height="16" width="16" src="${sbRoot}/images/xem.png" style="margin-top: -1px; vertical-align:middle;"/></a>
+                <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><img alt="[xem]" height="16" width="16" src="${srRoot}/images/xem.png" style="margin-top: -1px; vertical-align:middle;"/></a>
 % endif
             </div>
 
@@ -257,19 +210,19 @@ $(document).ready(function(){
 
                 <table style="width:180px; float: right; vertical-align: middle; height: 100%;">
                     <% info_flag = subtitles.fromietf(show.lang).opensubtitles if show.lang else '' %>
-                    <tr><td class="showLegend">Info Language:</td><td><img src="${sbRoot}/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${sbRoot}/images/flags/unknown.png';"/></td></tr>
+                    <tr><td class="showLegend">Info Language:</td><td><img src="${srRoot}/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';"/></td></tr>
                     % if sickbeard.USE_SUBTITLES:
-                    <tr><td class="showLegend">Subtitles: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Subtitles: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td></tr>
                     % endif
-                    <tr><td class="showLegend">Flat Folders: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Paused: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.paused)]}" alt="${("N", "Y")[bool(show.paused)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Air-by-Date: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.air_by_date)]}" alt="${("N", "Y")[bool(show.air_by_date)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Sports: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.is_sports)]}" alt="${("N", "Y")[bool(show.is_sports)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Anime: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.is_anime)]}" alt="${("N", "Y")[bool(show.is_anime)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">DVD Order: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.dvdorder)]}" alt="${("N", "Y")[bool(show.dvdorder)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Scene Numbering: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.scene)]}" alt="${("N", "Y")[bool(show.scene)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Flat Folders: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Paused: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.paused)]}" alt="${("N", "Y")[bool(show.paused)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Air-by-Date: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.air_by_date)]}" alt="${("N", "Y")[bool(show.air_by_date)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Sports: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_sports)]}" alt="${("N", "Y")[bool(show.is_sports)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Anime: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_anime)]}" alt="${("N", "Y")[bool(show.is_anime)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">DVD Order: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.dvdorder)]}" alt="${("N", "Y")[bool(show.dvdorder)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Scene Numbering: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.scene)]}" alt="${("N", "Y")[bool(show.scene)]}" width="16" height="16" /></td></tr>
                     % if anyQualities and bestQualities:
-                    <tr><td class="showLegend">Archive First Match: </td><td><img src="${sbRoot}/images/${("no16.png", "yes16.png")[bool(show.archive_firstmatch)]}" alt="${("N", "Y")[bool(show.archive_firstmatch)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Archive First Match: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.archive_firstmatch)]}" alt="${("N", "Y")[bool(show.archive_firstmatch)]}" width="16" height="16" /></td></tr>
                     % endif
                 </table>
             </div>
@@ -286,7 +239,7 @@ $(document).ready(function(){
         <% availableStatus.remove(FAILED) %>
         % endif
         % for curStatus in availableStatus + sorted(Quality.DOWNLOADED) + sorted(Quality.ARCHIVED):
-            % if curStatus != DOWNLOADED:
+            % if curStatus not in [DOWNLOADED, ARCHIVED]:
             <option value="${curStatus}">${statusStrings[curStatus]}</option>
             % endif
         % endfor
@@ -387,7 +340,6 @@ $(document).ready(function(){
                 % if sickbeard.DISPLAY_ALL_SEASONS == False:
                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
                     <script type="text/javascript">
-                    <!--
                         $(function() {
                             $('#collapseSeason-${epResult['season']}').on('hide.bs.collapse', function () {
                                 $('#showseason-${epResult['season']}').text('Show Episodes');
@@ -396,7 +348,6 @@ $(document).ready(function(){
                                 $('#showseason-${epResult['season']}').text('Hide Episodes');
                             })
                         });
-                    //-->
                     </script>
                 % endif
             </th>
@@ -476,8 +427,8 @@ $(document).ready(function(){
                     <input type="checkbox" class="epCheck" id="${str(epResult["season"])+'x'+str(epResult["episode"])}" name="${str(epResult["season"]) +"x"+str(epResult["episode"])}" />
                 % endif
             </td>
-            <td align="center"><img src="${sbRoot}/images/${("nfo-no.gif", "nfo.gif")[epResult["hasnfo"]]}" alt="${("N", "Y")[epResult["hasnfo"]]}" width="23" height="11" /></td>
-            <td align="center"><img src="${sbRoot}/images/${("tbn-no.gif", "tbn.gif")[epResult["hastbn"]]}" alt="${("N", "Y")[epResult["hastbn"]]}" width="23" height="11" /></td>
+            <td align="center"><img src="${srRoot}/images/${("nfo-no.gif", "nfo.gif")[epResult["hasnfo"]]}" alt="${("N", "Y")[epResult["hasnfo"]]}" width="23" height="11" /></td>
+            <td align="center"><img src="${srRoot}/images/${("tbn-no.gif", "tbn.gif")[epResult["hastbn"]]}" alt="${("N", "Y")[epResult["hastbn"]]}" width="23" height="11" /></td>
             <td align="center">
             <%
                 if epLoc and show._location and epLoc.lower().startswith(show._location.lower()):
@@ -517,9 +468,9 @@ $(document).ready(function(){
             </td>
             <td class="col-name">
             % if epResult["description"] != "" and epResult["description"] != None:
-                <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["episode"])}" />
+                <img src="${srRoot}/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["episode"])}" />
             % else:
-                <img src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfoNone" alt="" />
+                <img src="${srRoot}/images/info32.png" width="16" height="16" class="plotInfoNone" alt="" />
             % endif
             ${epResult["name"]}
             </td>
@@ -540,8 +491,15 @@ $(document).ready(function(){
                     ${file_size}
                 % endif
             </td>
+            <% date = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
             <td class="col-airdate">
-                <span class="${fuzzydate}">${(sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network))), 'never')[int(epResult['airdate']) == 1]}</span>
+                % if int(epResult['airdate']) != 1:
+                    <time datetime="${date.isoformat('T')}" class="date">${date}</time>
+                % else:
+                    Never
+                % endif
+                <span class="sort_data">${date.isoformat('T')}</span>
+
             </td>
             <td>
                 % if sickbeard.DOWNLOAD_URL and epResult['location']:
@@ -558,7 +516,7 @@ $(document).ready(function(){
             <td class="col-subtitles" align="center">
             % for sub_lang in [subtitles.fromietf(x) for x in epResult["subtitles"].split(',') if epResult["subtitles"]]:
                 <% flag = sub_lang.opensubtitles %>
-                <img src="${sbRoot}/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${sub_lang.name}" onError="this.onerror=null;this.src='${sbRoot}/images/flags/unknown.png';" />
+                <img src="${srRoot}/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${sub_lang.name}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';" />
             % endfor
             </td>
                 <% curStatus, curQuality = Quality.splitCompositeStatus(int(epResult["status"])) %>
@@ -570,13 +528,13 @@ $(document).ready(function(){
             <td class="col-search">
                 % if int(epResult["season"]) != 0:
                     % if ( int(epResult["status"]) in Quality.SNATCHED + Quality.DOWNLOADED ) and sickbeard.USE_FAILED_DOWNLOADS:
-                        <a class="epRetry" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="retryEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${sbRoot}/images/search16.png" height="16" alt="retry" title="Retry Download" /></a>
+                        <a class="epRetry" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="retryEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/search16.png" height="16" alt="retry" title="Retry Download" /></a>
                     % else:
-                        <a class="epSearch" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="searchEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${sbRoot}/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
+                        <a class="epSearch" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="searchEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
                     % endif
                 % endif
                 % if sickbeard.USE_SUBTITLES and show.subtitles and epResult["location"] and frozenset(subtitles.wantedLanguages()).difference(epResult["subtitles"].split(',')):
-                    <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${sbRoot}/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
+                    <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
                 % endif
             </td>
         </tr>

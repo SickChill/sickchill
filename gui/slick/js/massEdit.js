@@ -1,5 +1,4 @@
 $(document).ready(function(){
-
     function find_dir_index(which){
         var dir_parts = which.split('_');
         return dir_parts[dir_parts.length-1];
@@ -19,14 +18,11 @@ $(document).ready(function(){
         var cur_id = find_dir_index($(this).attr('id'));
         var initial_dir = $("#new_root_dir_"+cur_id).val();
         $(this).nFileBrowser(edit_root_dir, {initialDir: initial_dir, which_id: cur_id});
-        
     });
-	
-	$('.delete_root_dir').click(function(){
-		var cur_id = find_dir_index($(this).attr('id'));
 
-		$('#new_root_dir_'+cur_id).val(null);
-		$('#display_new_root_dir_'+cur_id).html('<b>DELETED</b>');
-	});
-
+    $('.delete_root_dir').click(function(){
+        var cur_id = find_dir_index($(this).attr('id'));
+        $('#new_root_dir_'+cur_id).val(null);
+        $('#display_new_root_dir_'+cur_id).html('<b>DELETED</b>');
+    });
 });

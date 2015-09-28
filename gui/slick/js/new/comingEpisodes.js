@@ -1,40 +1,3 @@
-if($('meta[data-var="sickbeard.COMING_EPS_LAYOUT"]').data('content') == 'list'){
-    $.tablesorter.addParser({
-        id: 'loadingNames',
-        is: function(s) {
-            return false;
-        },
-        format: function(s) {
-            if (0 === s.indexOf('Loading...')){
-                return s.replace('Loading...', '000');
-            } else {
-                return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'False' ? (s || '') : (s || '').replace(/^(The|A|An)\s/i,''));
-            }
-        },
-        type: 'text'
-    });
-    $.tablesorter.addParser({
-        id: 'quality',
-        is: function(s) {
-            return false;
-        },
-        format: function(s) {
-            return s.replace('hd1080p', 5).replace('hd720p', 4).replace('hd', 3).replace('sd', 2).replace('any', 1).replace('best', 0).replace('custom', 7);
-        },
-        type: 'numeric'
-    });
-    $.tablesorter.addParser({
-        id: 'cDate',
-        is: function(s) {
-            return false;
-        },
-        format: function(s) {
-            return new Date(s).getTime();
-        },
-        type: 'numeric'
-    });
-}
-
 $(document).ready(function(){
     if($('meta[data-var="sickbeard.COMING_EPS_LAYOUT"]').data('content') == 'list'){
         var sortCodes = {'date': 0, 'show': 1, 'network': 4};
@@ -49,7 +12,7 @@ $(document).ready(function(){
                 5: function(node) { return $(node).find('span').text().toLowerCase(); }
             },
             headers: {
-                0: { sorter: 'cDate' },
+                0: { sorter: 'realISODate' },
                 1: { sorter: 'loadingNames' },
                 2: { sorter: false },
                 3: { sorter: false },
@@ -61,10 +24,10 @@ $(document).ready(function(){
             }
         });
 
-        $('#sbRoot').ajaxEpSearch();
+        $('#srRoot').ajaxEpSearch();
     }
     if($('meta[data-var="sickbeard.COMING_EPS_LAYOUT"]').data('content') == 'banner' || $('meta[data-var="sickbeard.COMING_EPS_LAYOUT"]').data('content') == 'poster'){
-        $('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
+        $('#srRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
         $('.ep_summary').hide();
         $('.ep_summaryTrigger').click(function() {
             $(this).next('.ep_summary').slideToggle('normal', function() {

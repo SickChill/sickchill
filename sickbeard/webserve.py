@@ -36,13 +36,14 @@ from sickbeard import subtitles
 from sickbeard import network_timezones
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
-from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED, SKIPPED
+from sickbeard.common import SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
 from sickbeard.common import SD, HD720p, HD1080p
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
 from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
     get_xem_numbering_for_show, get_scene_absolute_numbering_for_show, get_xem_absolute_numbering_for_show, \
     get_scene_absolute_numbering
+from sickbeard.webapi import function_mapper
 
 from imdbPopular import imdb_popular
 
@@ -114,7 +115,7 @@ class PageTemplate(MakoTemplate):
 
         super(PageTemplate, self).__init__(*args, **kwargs)
 
-        self.arguments['sbRoot'] = sickbeard.WEB_ROOT
+        self.arguments['srRoot'] = sickbeard.WEB_ROOT
         self.arguments['sbHttpPort'] = sickbeard.WEB_PORT
         self.arguments['sbHttpsPort'] = sickbeard.WEB_PORT
         self.arguments['sbHttpsEnabled'] = sickbeard.ENABLE_HTTPS
@@ -351,36 +352,36 @@ class WebRoot(WebHandler):
         return "User-agent: *\nDisallow: /"
 
     def apibuilder(self):
-        t = PageTemplate(rh=self, file="apiBuilder.mako")
-
         def titler(x):
             return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
 
-        sortedShowList = sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))
+        myDB = db.DBConnection(row_type='dict')
+        shows = sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))
+        episodes = {}
 
-        myDB = db.DBConnection(row_type="dict")
+        results = myDB.select(
+            'SELECT episode, season, showid '
+            'FROM tv_episodes '
+            'ORDER BY season ASC, episode ASC'
+        )
 
-        seasonSQLResults = {}
-        episodeSQLResults = {}
+        for result in results:
+            if result['showid'] not in episodes:
+                episodes[result['showid']] = {}
 
-        for curShow in sortedShowList:
-            seasonSQLResults[curShow.indexerid] = myDB.select(
-                "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC", [curShow.indexerid])
+            if result['season'] not in episodes[result['showid']]:
+                episodes[result['showid']][result['season']] = []
 
-        for curShow in sortedShowList:
-            episodeSQLResults[curShow.indexerid] = myDB.select(
-                "SELECT DISTINCT season,episode FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
-                [curShow.indexerid])
-
-        seasonSQLResults = seasonSQLResults
-        episodeSQLResults = episodeSQLResults
+            episodes[result['showid']][result['season']].append(result['episode'])
 
         if len(sickbeard.API_KEY) == 32:
             apikey = sickbeard.API_KEY
         else:
-            apikey = "api key not generated"
+            apikey = 'API Key not generated'
 
-        return t.render(title="Api Builder", header="Api Builder", sortedShowList=sortedShowList, seasonSQLResults=seasonSQLResults, episodeSQLResults=episodeSQLResults, apikey=apikey)
+        t = PageTemplate(rh=self, file='apiBuilder.mako')
+        return t.render(title='API Builder', header='API Builder', shows=shows, episodes=episodes, apikey=apikey,
+                        commands=function_mapper)
 
     def showPoster(self, show=None, which=None):
         media = None
@@ -1691,13 +1692,13 @@ class Home(WebRoot):
                             logger.ERROR)
                         continue
 
-                    if int(status) == FAILED and epObj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.DOWNLOADED:
+                    if int(status) == FAILED and epObj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.DOWNLOADED + Quality.ARCHIVED:
                         logger.log(
                             u"Refusing to change status of " + curEp + " to FAILED because it's not SNATCHED/DOWNLOADED",
                             logger.ERROR)
                         continue
 
-                    if epObj.status in Quality.DOWNLOADED and int(status) == WANTED:
+                    if epObj.status in Quality.DOWNLOADED + Quality.ARCHIVED and int(status) == WANTED:
                         logger.log(u"Removing release_name for episode as you want to set a downloaded episode back to wanted, so obviously you want it replaced")
                         epObj.release_name = ""
 
@@ -1714,7 +1715,7 @@ class Home(WebRoot):
                 if int(status) in [WANTED, FAILED]:
                     logger.log(u"Add episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " to Watchlist", logger.DEBUG)
                     upd = "add"
-                elif int(status) in [ARCHIVED, IGNORED, SKIPPED ] + Quality.DOWNLOADED:
+                elif int(status) in [IGNORED, SKIPPED] + Quality.DOWNLOADED + Quality.ARCHIVED:
                     logger.log(u"Remove episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " from Watchlist", logger.DEBUG)
                     upd = "remove"
 
@@ -2108,7 +2109,7 @@ class HomeNews(Home):
             news = 'Could not load news from the repo. [Click here for news.md](http://sickragetv.github.io/sickrage-news/news.md)'
 
         t = PageTemplate(rh=self, file="markdown.mako")
-        data = markdown2.markdown(news if news else "The was a problem connecting to github, please refresh and try again")
+        data = markdown2.markdown(news if news else "The was a problem connecting to github, please refresh and try again", extras=['header-ids'])
 
         return t.render(title="News", header="News", topmenu="news", data=data, submenu=self.HomeMenu())
 
@@ -2126,7 +2127,7 @@ class HomeChangeLog(Home):
             changes = 'Could not load changes from the repo. [Click here for CHANGES.md](http://sickragetv.github.io/sickrage-news/CHANGES.md)'
 
         t = PageTemplate(rh=self, file="markdown.mako")
-        data = markdown2.markdown(changes if changes else "The was a problem connecting to github, please refresh and try again")
+        data = markdown2.markdown(changes if changes else "The was a problem connecting to github, please refresh and try again", extras=['header-ids'])
 
         return t.render(title="Changelog", header="Changelog", topmenu="system", data=data, submenu=self.HomeMenu())
 
@@ -2527,7 +2528,8 @@ class HomeAddShows(Home):
                                                         subtitles=sickbeard.SUBTITLES_DEFAULT,
                                                         anime=sickbeard.ANIME_DEFAULT,
                                                         scene=sickbeard.SCENE_DEFAULT,
-                                                        default_status_after=sickbeard.STATUS_DEFAULT_AFTER)
+                                                        default_status_after=sickbeard.STATUS_DEFAULT_AFTER,
+                                                        archive=sickbeard.ARCHIVE_DEFAULT)
 
             ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
         else:
@@ -2540,7 +2542,7 @@ class HomeAddShows(Home):
     def addNewShow(self, whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
                    anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
                    fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
-                   scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None):
+                   scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None, archive=None):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
         provided then it forwards back to newShow, if not it goes to /home.
@@ -2628,6 +2630,7 @@ class HomeAddShows(Home):
         anime = config.checkbox_to_value(anime)
         flatten_folders = config.checkbox_to_value(flatten_folders)
         subtitles = config.checkbox_to_value(subtitles)
+        archive = config.checkbox_to_value(archive)
 
         if whitelist:
             whitelist = short_group_names(whitelist)
@@ -2647,7 +2650,7 @@ class HomeAddShows(Home):
         # add the show
         sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir, int(defaultStatus), newQuality,
                                                     flatten_folders, indexerLang, subtitles, anime,
-                                                    scene, None, blacklist, whitelist, int(defaultStatusAfter))
+                                                    scene, None, blacklist, whitelist, int(defaultStatusAfter), archive)
         ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
 
         return finishAddShow()
@@ -2721,7 +2724,8 @@ class HomeAddShows(Home):
                                                             subtitles=sickbeard.SUBTITLES_DEFAULT,
                                                             anime=sickbeard.ANIME_DEFAULT,
                                                             scene=sickbeard.SCENE_DEFAULT,
-                                                            default_status_after=sickbeard.STATUS_DEFAULT_AFTER)
+                                                            default_status_after=sickbeard.STATUS_DEFAULT_AFTER,
+                                                            archive=sickbeard.ARCHIVE_DEFAULT)
                 num_added += 1
 
         if num_added:
@@ -3497,7 +3501,7 @@ class History(WebRoot):
         self.history = HistoryTool()
 
     def index(self, limit=None):
-    
+
         if limit is None:
             if sickbeard.HISTORY_LIMIT:
                 limit = int(sickbeard.HISTORY_LIMIT)
@@ -3505,9 +3509,9 @@ class History(WebRoot):
                 limit = 100
         else:
             limit = int(limit)
-            
+
         sickbeard.HISTORY_LIMIT = limit
-        
+
         sickbeard.save_config()
 
         compact = []
@@ -3611,7 +3615,7 @@ class ConfigGeneral(Config):
         sickbeard.ROOT_DIRS = rootDirString
 
     def saveAddShowDefaults(self, defaultStatus, anyQualities, bestQualities, defaultFlattenFolders, subtitles=False,
-                            anime=False, scene=False, defaultStatusAfter=WANTED):
+                            anime=False, scene=False, defaultStatusAfter=WANTED, archive=False):
 
         if anyQualities:
             anyQualities = anyQualities.split(',')
@@ -3634,6 +3638,7 @@ class ConfigGeneral(Config):
 
         sickbeard.ANIME_DEFAULT = config.checkbox_to_value(anime)
         sickbeard.SCENE_DEFAULT = config.checkbox_to_value(scene)
+        sickbeard.ARCHIVE_DEFAULT = config.checkbox_to_value(archive)
 
         sickbeard.save_config()
 

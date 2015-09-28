@@ -5,9 +5,7 @@
     from sickbeard.logger import reverseNames
 %>
 <%block name="scripts">
-<script type="text/javascript" charset="utf-8">
-window.setInterval( "location.reload(true)", 600000); // Refresh every 10 minutes
-</script>
+<script type="text/javascript" src="${srRoot}/js/new/errorlogs.js"></script>
 </%block>
 <%block name="content">
 <h1 class="header">${title}</h1>

@@ -27,7 +27,7 @@ from sickbeard.name_parser.parser import NameParser, InvalidNameException, Inval
 from sickrage.helper.common import dateTimeFormat
 from sickrage.helper.encoding import ek
 
-from babelfish import language_converters
+from babelfish import language_converters, Language
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
 MAX_DB_VERSION = 42
@@ -241,6 +241,8 @@ class MainSanityCheck(db.DBSanityCheck):
             "SELECT subtitles, episode_id FROM tv_episodes WHERE subtitles != '' AND subtitles_lastsearch < ?;",
                 [datetime.datetime(2015, 7, 15, 17, 20, 44, 326380).strftime(dateTimeFormat)])
 
+        validLanguages = [Language.fromopensubtitles(language).opensubtitles for language in language_converters['opensubtitles'].codes if len(language) == 3]
+
         if not sqlResults:
             return
 
@@ -251,7 +253,7 @@ class MainSanityCheck(db.DBSanityCheck):
                 (sqlResult['episode_id'], sqlResult['subtitles']), logger.DEBUG)
 
             for subcode in sqlResult['subtitles'].split(','):
-                if not len(subcode) is 3 or not subcode in language_converters['opensubtitles'].codes:
+                if not len(subcode) is 3 or not subcode in validLanguages:
                     logger.log("Fixing subtitle codes for episode_id: %s, invalid code: %s" %
                         (sqlResult['episode_id'], subcode), logger.DEBUG)
                     continue

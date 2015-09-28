@@ -17,8 +17,6 @@
 
     layout = sickbeard.HISTORY_LAYOUT
     history_limit = sickbeard.HISTORY_LIMIT
-
-    fuzzydate = 'airdate'
 %>
 <%block name="css">
 <style type="text/css">
@@ -28,11 +26,9 @@
 <%block name="metas">
 <meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
 <meta data-var="layout" data-content="${layout}">
-<meta data-var="fuzzydate" data-content="${fuzzydate}">
 </%block>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/lib/jquery.timeago.js"></script>
-<script type="text/javascript" src="${sbRoot}/js/new/history.js"></script>
+<script type="text/javascript" src="${srRoot}/js/new/history.js"></script>
 </%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
@@ -54,8 +50,8 @@
 
     <span> Layout:
         <select name="HistoryLayout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>Compact</option>
-            <option value="${sbRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>Detailed</option>
+            <option value="${srRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>Compact</option>
+            <option value="${srRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>Detailed</option>
         </select>
     </span>
 </div>
@@ -83,12 +79,15 @@
         % for hItem in historyResults:
             <% curStatus, curQuality = Quality.splitCompositeStatus(int(hItem["action"])) %>
             <tr>
-                <% curdatetime = datetime.datetime.strptime(str(hItem["date"]), History.date_format) %>
-                <td align="center"><div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(curdatetime, show_seconds=True)}</div><span class="sort_data">${time.mktime(curdatetime.timetuple())}</span></td>
-                <td class="tvShow" width="35%"><a href="${sbRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem["resource"].lower() or "repack" in hItem["resource"].lower()]}</a></td>
+                <td align="center">
+                    <% airDate = sbdatetime.sbdatetime.sbfdatetime(datetime.datetime.strptime(str(hItem["date"]), History.date_format), show_seconds=True) %>
+                    <% isoDate = datetime.datetime.strptime(str(hItem["date"]), History.date_format).isoformat('T') %>
+                    <time datetime="${isoDate}" class="date">${airDate}</time>
+                </td>
+                <td class="tvShow" width="35%"><a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem["resource"].lower() or "repack" in hItem["resource"].lower()]}</a></td>
                 <td align="center" ${('', 'class="subtitles_column"')[curStatus == SUBTITLED]}>
                 % if curStatus == SUBTITLED:
-                    <img width="16" height="11" style="vertical-align:middle;" src="${sbRoot}/images/subtitles/flags/${hItem['resource']}.png" onError="this.onerror=null;this.src='${sbRoot}/images/flags/unknown.png';">
+                    <img width="16" height="11" style="vertical-align:middle;" src="${srRoot}/images/subtitles/flags/${hItem['resource']}.png" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';">
                 % endif
                     <span style="cursor: help; vertical-align:middle;" title="${os.path.basename(hItem['resource'])}">${statusStrings[curStatus]}</span>
                 </td>
@@ -102,12 +101,12 @@
                         % if curStatus in [SNATCHED, FAILED]:
                             <% provider = providers.getProviderClass(generic.GenericProvider.makeID(hItem["provider"])) %>
                             % if provider != None:
-                                <img src="${sbRoot}/images/providers/${provider.imageName()}" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">${provider.name}</span>
+                                <img src="${srRoot}/images/providers/${provider.imageName()}" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">${provider.name}</span>
                             % else:
-                                <img src="${sbRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" title="missing provider"/> <span style="vertical-align:middle;">Missing Provider</span>
+                                <img src="${srRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" title="missing provider"/> <span style="vertical-align:middle;">Missing Provider</span>
                             % endif
                         % else:
-                                <img src="${sbRoot}/images/subtitles/${hItem['provider']}.png" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">${hItem["provider"].capitalize()}</span>
+                                <img src="${srRoot}/images/subtitles/${hItem['provider']}.png" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">${hItem["provider"].capitalize()}</span>
                         % endif
                     % endif
                 % endif
@@ -143,10 +142,13 @@
         <tbody>
         % for hItem in compactResults:
             <tr>
-                <% curdatetime = datetime.datetime.strptime(str(hItem["actions"][0]["time"]), History.date_format) %>
-                <td align="center"><div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(curdatetime, show_seconds=True)}</div><span class="sort_data">${time.mktime(curdatetime.timetuple())}</span></td>
+                <td align="center">
+                    <% airDate = sbdatetime.sbdatetime.sbfdatetime(datetime.datetime.strptime(str(hItem["actions"][0]["time"]), History.date_format), show_seconds=True) %>
+                    <% isoDate = datetime.datetime.strptime(str(hItem["actions"][0]["time"]), History.date_format).isoformat('T') %>
+                    <time datetime="${isoDate}" class="date">${airDate}</time>
+                </td>
                 <td class="tvShow" width="25%">
-                    <span><a href="${sbRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])}${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}</a></span>
+                    <span><a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])}${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}</a></span>
                 </td>
                 <td align="center" provider="${str(sorted(hItem["actions"])[0]["provider"])}">
                     % for action in sorted(hItem["actions"]):
@@ -154,9 +156,9 @@
                         % if curStatus in [SNATCHED, FAILED]:
                             <% provider = providers.getProviderClass(generic.GenericProvider.makeID(action["provider"])) %>
                             % if provider != None:
-                                <img src="${sbRoot}/images/providers/${provider.imageName()}" width="16" height="16" style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${os.path.basename(action["resource"])}"/>
+                                <img src="${srRoot}/images/providers/${provider.imageName()}" width="16" height="16" style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${os.path.basename(action["resource"])}"/>
                             % else:
-                                <img src="${sbRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="missing provider" title="missing provider"/>
+                                <img src="${srRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="missing provider" title="missing provider"/>
                             % endif
                         % endif
                     % endfor
@@ -178,9 +180,9 @@
                     % for action in sorted(hItem["actions"]):
                         <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
                         % if curStatus == SUBTITLED:
-                            <img src="${sbRoot}/images/subtitles/${action['provider']}.png" width="16" height="16" style="vertical-align:middle;" alt="${action["provider"]}" title="${action["provider"].capitalize()}: ${os.path.basename(action["resource"])}"/>
+                            <img src="${srRoot}/images/subtitles/${action['provider']}.png" width="16" height="16" style="vertical-align:middle;" alt="${action["provider"]}" title="${action["provider"].capitalize()}: ${os.path.basename(action["resource"])}"/>
                             <span style="vertical-align:middle;"> / </span>
-                            <img width="16" height="11" style="vertical-align:middle;" src="${sbRoot}/images/subtitles/flags/${action['resource']}.png" onError="this.onerror=null;this.src='${sbRoot}/images/flags/unknown.png';" style="vertical-align: middle !important;">
+                            <img width="16" height="11" style="vertical-align:middle;" src="${srRoot}/images/subtitles/flags/${action['resource']}.png" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';" style="vertical-align: middle !important;">
                             &nbsp;
                         % endif
                     % endfor

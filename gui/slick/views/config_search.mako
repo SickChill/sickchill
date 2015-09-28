@@ -4,15 +4,9 @@
     from sickbeard import clients
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${sbRoot}/js/configSearch.js?${sbPID}"></script>
-<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
-<script type="text/javascript" charset="utf-8">
-    $('#config-components').tabs();
-    $('#nzb_dir').fileBrowser({ title: 'Select .nzb black hole/watch location' });
-    $('#torrent_dir').fileBrowser({ title: 'Select .torrent black hole/watch location' });
-    $('#torrent_path').fileBrowser({ title: 'Select .torrent download location' });
-    $('#tv_download_dir').fileBrowser({ title: 'Select TV download location' });
-</script>
+<script type="text/javascript" src="${srRoot}/js/configSearch.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/config.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/config_search.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -38,7 +32,7 @@
 
                     <div class="component-group-desc">
                         <h3>Episode Search</h3>
-                        <p>How to manage searching with <a href="${sbRoot}/config/providers">providers</a>.</p>
+                        <p>How to manage searching with <a href="${srRoot}/config/providers">providers</a>.</p>
                     </div>
 
                     <fieldset class="component-group-list">
