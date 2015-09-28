@@ -24,21 +24,21 @@
 ### Example Using SickRage as daemon with pid file
 # Type=forking
 # PIDFile=/var/run/sickrage/sickrage.pid
-# ExecStart=/usr/bin/python /opt/sickrage/SickBeard.py -q --daemon --nolaunch --pidfile=/var/run/sickrage/sickrage.pid --datadir=/opt/sickrage
+# ExecStart=/usr/bin/python2.7 /opt/sickrage/SickBeard.py -q --daemon --nolaunch --pidfile=/var/run/sickrage/sickrage.pid --datadir=/opt/sickrage
 
 ## Example Using SickRage as daemon without pid file
 # Type=forking
 # GuessMainPID=no
-# ExecStart=/usr/bin/python /opt/sickrage/SickBeard.py -q --daemon --nolaunch --datadir=/opt/sickrage
+# ExecStart=/usr/bin/python2.7 /opt/sickrage/SickBeard.py -q --daemon --nolaunch --datadir=/opt/sickrage
 
 ### Example Using simple
 # Type=simple
-# ExecStart=/usr/bin/python /opt/sickrage/SickBeard.py -q --nolaunch
+# ExecStart=/usr/bin/python2.7 /opt/sickrage/SickBeard.py -q --nolaunch
 
 ### Example Using simple with EnvironmentFile where SR_DATA=/home/sickrage/.sickrage in /etc/sickrage.conf
 # Type=simple
 # EnvironmentFile=/etc/sickrage.conf
-# ExecStart=/usr/bin/python /opt/sickrage/SickBeard.py -q --nolaunch --datadir=${SR_DATA}
+# ExecStart=/usr/bin/python2.7 /opt/sickrage/SickBeard.py -q --nolaunch --datadir=${SR_DATA}
 
 ### Configuration
 
@@ -51,7 +51,7 @@ Group=sickrage
 
 Type=forking
 GuessMainPID=no
-ExecStart=/usr/bin/python /opt/sickrage/SickBeard.py -q --daemon --nolaunch --datadir=/opt/sickrage
+ExecStart=/usr/bin/python2.7 /opt/sickrage/SickBeard.py -q --daemon --nolaunch --datadir=/opt/sickrage
 
 [Install]
 WantedBy=multi-user.target

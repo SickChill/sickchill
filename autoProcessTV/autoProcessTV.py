@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
@@ -7,7 +7,7 @@
 # DEPRECATION NOTICE: autoProcessTV is deprecated and will be removed
 # from SickRage at 31-10-2015.
 #
-# Please switch to nzbToMedia from Clinton Hall, which is included in 
+# Please switch to nzbToMedia from Clinton Hall, which is included in
 # the contrib folder
 #
 # SickRage is free software: you can redistribute it and/or modify
