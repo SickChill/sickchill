@@ -2706,7 +2706,7 @@ class CMD_ShowStats(ApiCall):
         # the outgoing container
         episodes_stats = {}
         episodes_stats["downloaded"] = {}
-        # truning codes into strings
+        # turning codes into strings
         for statusCode in episode_qualities_counts_download:
             if statusCode == "total":
                 episodes_stats["downloaded"]["total"] = episode_qualities_counts_download[statusCode]
