@@ -1564,7 +1564,7 @@ def _setUpSession(session, headers):
 
     # request session
     cache_dir = sickbeard.CACHE_DIR or _getTempDir()
-    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')), cache_etags=False)
+    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions'), use_dir_lock=True), cache_etags=False)
 
     # request session clear residual referer
     if 'Referer' in session.headers and not 'Referer' in headers:

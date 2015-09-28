@@ -566,7 +566,7 @@ class Tvdb:
             # get response from TVDB
             if self.config['cache_enabled']:
 
-                session = CacheControl(sess=self.config['session'], cache=caches.FileCache(self.config['cache_location']), cache_etags=False)
+                session = CacheControl(sess=self.config['session'], cache=caches.FileCache(self.config['cache_location'], use_dir_lock=True), cache_etags=False)
                 if self.config['proxy']:
                     log().debug("Using proxy for URL: %s" % url)
                     session.proxies = {
