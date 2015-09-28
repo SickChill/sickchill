@@ -59,6 +59,7 @@ from sickbeard.common import SNATCHED_PROPER
 from sickbeard.common import UNAIRED
 from sickbeard.common import UNKNOWN
 from sickbeard.common import WANTED
+from sickbeard.common import ARCHIVED
 from sickbeard.common import statusStrings
 import codecs
 
