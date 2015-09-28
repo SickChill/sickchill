@@ -35,7 +35,7 @@ DESC=SickRage
 ## SR_HOME=         #$APP_PATH, the location of SickBeard.py, the default is /opt/sickrage
 ## SR_DATA=         #$DATA_DIR, the location of sickbeard.db, cache, logs, the default is /opt/sickrage
 ## SR_PIDFILE=      #$PID_FILE, the location of sickrage.pid, the default is /var/run/sickrage/sickrage.pid
-## PYTHON_BIN=      #$DAEMON, the location of the python binary, the default is /usr/bin/python
+## PYTHON_BIN=      #$DAEMON, the location of the python binary, the default is /usr/bin/python2.7
 ## SR_OPTS=         #$EXTRA_DAEMON_OPTS, extra cli option for sickrage, i.e. " --config=/home/sickrage/config.ini"
 ## SSD_OPTS=        #$EXTRA_SSD_OPTS, extra start-stop-daemon option like " --group=users"
 ##
@@ -44,7 +44,7 @@ DESC=SickRage
 ## otherwise default sickrage is used
 
 ## The defaults
-# Run as username 
+# Run as username
 RUN_AS=${SR_USER-sickrage}
 
 # Path to app SR_HOME=path_to_app_SickBeard.py
@@ -57,7 +57,7 @@ DATA_DIR=${SR_DATA-/opt/sickrage}
 PID_FILE=${SR_PIDFILE-/var/run/sickrage/sickrage.pid}
 
 # path to python bin
-DAEMON=${PYTHON_BIN-/usr/bin/python}
+DAEMON=${PYTHON_BIN-/usr/bin/python2.7}
 
 # Extra daemon option like: SR_OPTS=" --config=/home/sickrage/config.ini"
 EXTRA_DAEMON_OPTS=${SR_OPTS-}
