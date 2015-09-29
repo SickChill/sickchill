@@ -221,9 +221,9 @@ class KATProvider(generic.TorrentProvider):
             if show:
                 curEp = show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
 
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
+                searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
 
-                for item in self._doSearch(searchString[0]):
+                for item in self._doSearch(searchStrings):
                     title, url = self._get_title_and_url(item)
                     pubdate = item[6]
 
