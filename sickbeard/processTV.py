@@ -311,11 +311,10 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
     :return: True if dir is valid for processing, False if not
     """
 
-    IGNORED_FOLDERS = ['.@__thumb']
+    IGNORED_FOLDERS = ['.@__thumb', '@eaDir']
     folder_name = ek(os.path.basename, dirName)
-    for ignored_folder in IGNORED_FOLDERS:
-        if folder_name == ignored_folder:
-            return False
+    if folder_name in IGNORED_FOLDERS:
+        return False
 
     result.output += logHelper(u"Processing folder " + dirName, logger.DEBUG)
 
