@@ -412,7 +412,7 @@ class ApiCall(ApiHandler):
                 value = True
             elif value in ("false", "False", "FALSE"):
                 value = False
-            else:
+            elif value not in (True, False):
                 error = True
         elif type == "list":
             value = value.split("|")
@@ -421,14 +421,12 @@ class ApiCall(ApiHandler):
         elif type == "ignore":
             pass
         else:
-            logger.log(u"API :: Invalid param type set " + str(type) + " can not check or convert ignoring it",
-                       logger.ERROR)
+            logger.log(u'API :: Invalid param type: "%s" can not be checked. Ignoring it.' % str(type), logger.ERROR)
 
         if error:
             # this is a real ApiError !!
-            raise ApiError(
-                u"param: '" + str(name) + "' with given value: '" + str(value) + "' could not be parsed into '" + str(
-                    type) + "'")
+            raise ApiError(u'param "%s" with given value "%s" could not be parsed into "%s"'
+                           % (str(name), str(value), str(type)))
 
         return value
 
@@ -670,7 +668,7 @@ class CMD_ComingEpisodes(ApiCall):
         self.sort, args = self.check_params(args, kwargs, "sort", "date", False, "string", ComingEpisodes.sorts.keys())
         self.type, args = self.check_params(args, kwargs, "type", '|'.join(ComingEpisodes.categories), False, "list",
                                             ComingEpisodes.categories)
-        self.paused, args = self.check_params(args, kwargs, "paused", sickbeard.COMING_EPS_DISPLAY_PAUSED, False,
+        self.paused, args = self.check_params(args, kwargs, "paused", bool(sickbeard.COMING_EPS_DISPLAY_PAUSED), False,
                                               "bool", [])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
@@ -724,7 +722,7 @@ class CMD_Episode(ApiCall):
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
         # optional
-        self.fullPath, args = self.check_params(args, kwargs, "full_path", 0, False, "bool", [])
+        self.fullPath, args = self.check_params(args, kwargs, "full_path", False, False, "bool", [])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -843,7 +841,7 @@ class CMD_EpisodeSetStatus(ApiCall):
                                               ["wanted", "skipped", "ignored", "failed"])
         # optional
         self.e, args = self.check_params(args, kwargs, "episode", None, False, "int", [])
-        self.force, args = self.check_params(args, kwargs, "force", 0, False, "bool", [])
+        self.force, args = self.check_params(args, kwargs, "force", False, False, "bool", [])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -1273,12 +1271,12 @@ class CMD_PostProcess(ApiCall):
         # required
         # optional
         self.path, args = self.check_params(args, kwargs, "path", None, False, "string", [])
-        self.force_replace, args = self.check_params(args, kwargs, "force_replace", 0, False, "bool", [])
-        self.return_data, args = self.check_params(args, kwargs, "return_data", 0, False, "bool", [])
+        self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", [])
+        self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", [])
         self.process_method, args = self.check_params(args, kwargs, "process_method", False, False, "string",
                                                       ["copy", "symlink", "hardlink", "move"])
-        self.is_priority, args = self.check_params(args, kwargs, "is_priority", 0, False, "bool", [])
-        self.failed, args = self.check_params(args, kwargs, "failed", 0, False, "bool", [])
+        self.is_priority, args = self.check_params(args, kwargs, "is_priority", False, False, "bool", [])
+        self.failed, args = self.check_params(args, kwargs, "failed", False, False, "bool", [])
         self.type, args = self.check_params(args, kwargs, "type", "auto", None, "string", ["auto", "manual"])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
@@ -1334,7 +1332,7 @@ class CMD_SickBeardAddRootDir(ApiCall):
         # required
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
         # optional
-        self.default, args = self.check_params(args, kwargs, "default", 0, False, "bool", [])
+        self.default, args = self.check_params(args, kwargs, "default", False, False, "bool", [])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -1548,7 +1546,7 @@ class CMD_SickBeardPauseBacklog(ApiCall):
     def __init__(self, args, kwargs):
         # required
         # optional
-        self.pause, args = self.check_params(args, kwargs, "pause", 0, False, "bool", [])
+        self.pause, args = self.check_params(args, kwargs, "pause", False, False, "bool", [])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -1960,7 +1958,7 @@ class CMD_ShowAddExisting(ApiCall):
                                                ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
                                                 "fullhdwebdl", "hdbluray", "fullhdbluray"])
         self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders",
-                                                       str(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
+                                                       bool(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
         self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES),
                                                  False, "int", [])
         # super, missing, help
@@ -2057,22 +2055,21 @@ class CMD_ShowAddNew(ApiCall):
                                                ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
                                                 "fullhdwebdl", "hdbluray", "fullhdbluray"])
         self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders",
-                                                       str(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
+                                                       bool(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
                                               ["wanted", "skipped", "ignored"])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             self.valid_languages.keys())
-        self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES),
+        self.subtitles, args = self.check_params(args, kwargs, "subtitles", bool(sickbeard.USE_SUBTITLES),
                                                  False, "bool", [])
-        self.anime, args = self.check_params(args, kwargs, "anime", int(sickbeard.ANIME_DEFAULT), False,
+        self.anime, args = self.check_params(args, kwargs, "anime", bool(sickbeard.ANIME_DEFAULT), False,
                                              "bool", [])
-        self.scene, args = self.check_params(args, kwargs, "scene", int(sickbeard.SCENE_DEFAULT), False,
+        self.scene, args = self.check_params(args, kwargs, "scene", bool(sickbeard.SCENE_DEFAULT), False,
                                              "bool", [])
         self.future_status, args = self.check_params(args, kwargs, "future_status", None, False, "string",
                                                      ["wanted", "skipped", "ignored"])
-
         self.archive_firstmatch, args = self.check_params(args, kwargs, "archive_firstmatch",
-                                             int(sickbeard.ARCHIVE_DEFAULT), False, "bool", [])
+                                                          bool(sickbeard.ARCHIVE_DEFAULT), False, "bool", [])
 
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
@@ -2249,7 +2246,7 @@ class CMD_ShowDelete(ApiCall):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
-        self.removefiles, args = self.check_params(args, kwargs, "removefiles", 0, False, "bool", [])
+        self.removefiles, args = self.check_params(args, kwargs, "removefiles", False, False, "bool", [])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -2414,7 +2411,7 @@ class CMD_ShowPause(ApiCall):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
-        self.pause, args = self.check_params(args, kwargs, "pause", 0, False, "bool", [])
+        self.pause, args = self.check_params(args, kwargs, "pause", False, False, "bool", [])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
