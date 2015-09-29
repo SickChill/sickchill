@@ -494,7 +494,7 @@
             <% date = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
             <td class="col-airdate">
                 % if int(epResult['airdate']) != 1:
-                    <time datetime="${date.isoformat('T')}" class="date">${date}</time>
+                    <time datetime="${date.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(date)}</time>
                 % else:
                     Never
                 % endif

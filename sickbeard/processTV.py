@@ -311,16 +311,21 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
     :return: True if dir is valid for processing, False if not
     """
 
+    IGNORED_FOLDERS = ['.@__thumb', '@eaDir']
+    folder_name = ek(os.path.basename, dirName)
+    if folder_name in IGNORED_FOLDERS:
+        return False
+
     result.output += logHelper(u"Processing folder " + dirName, logger.DEBUG)
 
-    if ek(os.path.basename, dirName).startswith('_FAILED_'):
+    if folder_name.startswith('_FAILED_'):
         result.output += logHelper(u"The directory name indicates it failed to extract.", logger.DEBUG)
         failed = True
-    elif ek(os.path.basename, dirName).startswith('_UNDERSIZED_'):
+    elif folder_name.startswith('_UNDERSIZED_'):
         result.output += logHelper(u"The directory name indicates that it was previously rejected for being undersized.",
                                logger.DEBUG)
         failed = True
-    elif ek(os.path.basename, dirName).upper().startswith('_UNPACK'):
+    elif folder_name.upper().startswith('_UNPACK'):
         result.output += logHelper(u"The directory name indicates that this release is in the process of being unpacked.",
                                logger.DEBUG)
         result.missedfiles.append(dirName + " : Being unpacked")

@@ -28,7 +28,7 @@ homedir=${SR_HOME-/opt/sickrage}
 datadir=${SR_DATA-/opt/sickrage}
 pidfile=${SR_PIDFILE-/var/run/sickrage/sickrage.pid}
 nice=${SR_NICE-}
-python_bin=${PYTHON_BIN-/usr/bin/python}
+python_bin=${PYTHON_BIN-/usr/bin/python2.7}
 ##
 
 pidpath=`dirname ${pidfile}`

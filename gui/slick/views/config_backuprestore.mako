@@ -25,9 +25,6 @@
 % if sickbeard.INDEXER_DEFAULT:
     <% indexer = sickbeard.INDEXER_DEFAULT %>
 % endif
-
-<script type="text/javascript" src="${srRoot}/js/config.js?${sbPID}"></script>
-
 <div id="config">
     <div id="config-content">
 
