@@ -24,8 +24,9 @@ from sickbeard import db
 from sickrage.helper.common import dateTimeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
+from enzyme import MKV
+from babelfish import Error as BabelfishError, Language, language_converters
 import subliminal
-import babelfish
 import subprocess
 
 subliminal.cache_region.configure('dogpile.cache.memory')
@@ -70,7 +71,7 @@ def getEnabledServiceList():
 
 #Hack around this for now.
 def fromietf(language):
-    return babelfish.Language.fromopensubtitles(language)
+    return Language.fromopensubtitles(language)
 
 def isValidLanguage(language):
     try:
@@ -92,9 +93,30 @@ def wantedLanguages(sqlLike = False):
 def subtitlesLanguages(video_path):
     """Return a list detected subtitles for the given video file"""
     resultList = []
+    embedded_subtitle_languages = set()
 
     # Serch for embedded subtitles
-    embedded_languages = subliminal.scan_video(video_path, subtitles=False, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL)
+    if video_path.endswith('mkv'):
+        with open(video_path, 'rb') as f:
+            mkv = MKV(f)
+            if mkv.subtitle_tracks:
+                for st in mkv.subtitle_tracks:
+                    if st.language:
+                        try:
+                            embedded_subtitle_languages.add(Language.fromalpha3b(st.language))
+                        except BabelfishError:
+                            logger.log('Embedded subtitle track is not a valid language', logger.DEBUG)
+                            embedded_subtitle_languages.add(Language('und'))
+                    elif st.name:
+                        try:
+                            embedded_subtitle_languages.add(Language.fromname(st.name))
+                        except BabelfishError:
+                            logger.log('Embedded subtitle track is not a valid language', logger.DEBUG)
+                            embedded_subtitle_languages.add(Language('und'))
+                    else:
+                        embedded_subtitle_languages.add(Language('und'))
+            else:
+                logger.log('MKV has no subtitle track', logger.DEBUG)
 
     # Search subtitles in the absolute path
     if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
@@ -105,7 +127,7 @@ def subtitlesLanguages(video_path):
 
     languages = subliminal.video.scan_subtitle_languages(video_path)
 
-    for language in languages.union(embedded_languages.subtitle_languages):
+    for language in languages.union(embedded_subtitle_languages):
         if hasattr(language, 'opensubtitles') and language.opensubtitles:
             resultList.append(language.opensubtitles)
         elif hasattr(language, 'alpha3') and language.alpha3:
@@ -122,10 +144,10 @@ def subtitlesLanguages(video_path):
 
 # TODO: Return only languages our providers allow
 def subtitleLanguageFilter():
-    return [babelfish.Language.fromopensubtitles(language) for language in babelfish.language_converters['opensubtitles'].codes if len(language) == 3]
+    return [Language.fromopensubtitles(language) for language in language_converters['opensubtitles'].codes if len(language) == 3]
 
 def subtitleCodeFilter():
-    return [babelfish.Language.fromopensubtitles(language).opensubtitles for language in babelfish.language_converters['opensubtitles'].codes if len(language) == 3]
+    return [Language.fromopensubtitles(language).opensubtitles for language in language_converters['opensubtitles'].codes if len(language) == 3]
 
 class SubtitlesFinder():
     """
