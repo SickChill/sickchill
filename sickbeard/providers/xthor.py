@@ -47,7 +47,7 @@ class XthorProvider(generic.TorrentProvider):
         self.cj = cookielib.CookieJar()
 
         self.url = "https://xthor.bz"
-        self.urlsearch = "https://xthor.bz/browse.php?search=\"%s%s\""
+        self.urlsearch = "https://xthor.bz/browse.php?search=\"%s\"%s"
         self.categories = "&searchin=title&incldead=0"
 
         self.enabled = False
