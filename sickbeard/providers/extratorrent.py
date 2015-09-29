@@ -20,9 +20,9 @@ import re
 import traceback
 import datetime
 import sickbeard
-import generic
 import xmltodict
 
+from sickbeard.providers import generic
 from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
@@ -38,9 +38,8 @@ class ExtraTorrentProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "ExtraTorrent")
 
         self.urls = {
-            'rss': 'http://extratorrent.cc/rss.xml',
             'index': 'http://extratorrent.cc',
-            'api': 'http://torrentproject.se/'
+            'rss': 'http://extratorrent.cc/rss.xml',
             }
 
         self.url = self.urls['index']
@@ -58,9 +57,6 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
     def isEnabled(self):
         return self.enabled
-
-    def imageName(self):
-        return 'extratorrent.png'
 
     def getQuality(self, item, anime=False):
         return Quality.sceneQuality(item[0], anime)
@@ -120,30 +116,20 @@ class ExtraTorrentProvider(generic.TorrentProvider):
             for search_string in search_strings[mode]:
                 try:
                     self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string.strip()})
-                    xdata = self.getURL(self.urls['rss'], params=self.search_params)
-                    if not xdata:
+                    data = self.getURL(self.urls['rss'], params=self.search_params)
+                    if not data:
                         continue
 
-                    data = xmltodict.parse(xdata)
+                    data = xmltodict.parse(data)
                     for item in data['rss']['channel']['item']:
                         title = item['title']
-                        #info_hash = wdwqdwqdwqq
                         info_hash = item['info_hash']
-                        logger.log("hash :   " + info_hash, logger.DEBUG)
                         url = item['enclosure']['@url']
-                        if sickbeard.TORRENT_METHOD != "blackhole" or 'extratorrent' not in url:
-                                trackerUrl = self.urls['api'] + "" + info_hash + "/trackers_json"
-                                jdata = self.getURL(trackerUrl, json=True)
-                                url = "magnet:?xt=urn:btih:" + info_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
-                                logger.log("Magnet URL: " + url, logger.DEBUG)
-                        else:
-                            url = item['enclosure']['@url']
-                            logger.log("Falling back to torrent file", logger.DEBUG)
                         size = int(item['enclosure']['@length'] or item['size'])
                         seeders = int(item['seeders'])
                         leechers = int(item['leechers'])
 
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if not seeders or seeders < self.minseed or leechers < self.minleech:
                             continue
 
                         items[mode].append((title, url, seeders, leechers, size, info_hash))
@@ -156,6 +142,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
         return results
 
     def _get_title_and_url(self, item):
+        #pylint: disable=W0612
         title, url, seeders, leechers, size, info_hash = item
 
         if title:
@@ -168,13 +155,12 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
 
     def _get_size(self, item):
+        #pylint: disable=W0612
         title, url, seeders, leechers, size, info_hash = item
         return size
 
     def findPropers(self, search_date=datetime.datetime.today()):
-
         results = []
-
         myDB = db.DBConnection()
         sqlResults = myDB.select(
             'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
@@ -188,10 +174,8 @@ class ExtraTorrentProvider(generic.TorrentProvider):
             show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
             if show:
                 curEp = show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(searchString[0]):
+                searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
+                for item in self._doSearch(searchStrings):
                     title, url = self._get_title_and_url(item)
                     results.append(classes.Proper(title, url, datetime.datetime.today(), show))
 
@@ -206,7 +190,7 @@ class ExtraTorrentCache(tvcache.TVCache):
 
         tvcache.TVCache.__init__(self, _provider)
 
-        self.minTime = 12
+        self.minTime = 30
 
     def _getRSSData(self):
         search_strings = {'RSS': ['']}

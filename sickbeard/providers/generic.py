@@ -92,7 +92,7 @@ class GenericProvider:
 
     @staticmethod
     def makeID(name):
-        return re.sub("[^\w\d_]", "_", name.strip().lower())
+        return re.sub(r"[^\w\d_]", "_", name.strip().lower())
 
     def imageName(self):
         return self.getID() + '.png'
@@ -156,7 +156,7 @@ class GenericProvider:
         filename = u''
         if result.url.startswith('magnet'):
             try:
-                torrent_hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0].upper()
+                torrent_hash = re.findall(r'urn:btih:([\w]{32,40})', result.url)[0].upper()
 
                 try:
                     torrent_name = re.findall('dn=([^&]+)', result.url)[0]
