@@ -152,6 +152,10 @@ class FNTProvider(generic.TorrentProvider):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
+        # check for auth
+        if not self._doLogin():
+            return results
+
         for mode in search_strings.keys():
             for search_string in search_strings[mode]:
                 logger.log(u"Search string: " + search_string, logger.DEBUG)
