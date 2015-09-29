@@ -58,9 +58,6 @@ class ExtraTorrentProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def getQuality(self, item, anime=False):
-        return Quality.sceneQuality(item[0], anime)
-
     def _get_season_search_strings(self, ep_obj):
 
         search_string = {'Season': []}
@@ -159,7 +156,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
         title, url, seeders, leechers, size, info_hash = item
         return size
 
-    def findPropers(self, search_date=datetime.datetime.today()):
+    def findPropers(self, search_date=datetime.datetime.today()-datetime.timedelta(days=1)):
         results = []
         myDB = db.DBConnection()
         sqlResults = myDB.select(
