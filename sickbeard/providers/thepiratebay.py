@@ -25,6 +25,7 @@ import datetime
 import sickbeard
 import generic
 from sickbeard.common import Quality
+from sickbeard.common import USER_AGENT
 from sickbeard import db
 from sickbeard import classes
 from sickbeard import logger
@@ -55,6 +56,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
         self.url = self.urls['base_url']
 
         self.searchurl = self.url + 'search/%s/0/7/200' # order by seed
+        self.headers.update({'User-Agent': USER_AGENT})
 
         self.re_title_url = '/torrent/(?P<id>\d+)/(?P<title>.*?)//1".+?(?P<url>magnet.*?)//1".+?(?P<seeders>\d+)</td>.+?(?P<leechers>\d+)</td>'
 
