@@ -2,7 +2,7 @@
 <%!
     import datetime
     import urllib
-    from os.path import basename
+    import ntpath
     import sickbeard
     from sickbeard import subtitles, sbdatetime, network_timezones
     import sickbeard.helpers
@@ -475,15 +475,7 @@
             ${epResult["name"]}
             </td>
             <td class="col-name]">
-                % if epResult['location']:
-                    <%
-                    filename = epResult['location']
-                    for rootDir in sickbeard.ROOT_DIRS.split('|'):
-                        if not rootDir.startswith('/'):
-                            filename = filename.replace('\\','\\\\')
-                    %>
-                    ${basename(filename)}
-                % endif
+                ${ntpath.basename((epResult['location'] or '').replace('\\','\\\\'))}
             </td>
             <td class="col-ep">
                 % if epResult["file_size"]:
