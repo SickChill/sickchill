@@ -131,13 +131,19 @@ class KATProvider(generic.TorrentProvider):
                 try:
                     data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
                     if not data:
+                        logger.log(u'No response, skipping...', logger.DEBUG)
                         continue
 
-                    entries = xmltodict.parse(data)
-                    if not all([entries, 'rss' in entries, 'channel' in entries['rss'], 'item' in entries['rss']['channel']]):
+                    data = xmltodict.parse(data)
+                    if not all([data, 'rss' in data, 'channel' in data['rss'], 'item' in data['rss']['channel']]):
+                        logger.log(u'Malformed rss returned, skipping...', logger.DEBUG)
                         continue
 
-                    for item in entries['rss']['channel']['item']:
+                    # https://github.com/martinblech/xmltodict/issues/111
+                    entries = data['rss']['channel']['item']
+                    entries = entries if isinstance(entries, list) else [entries]
+
+                    for item in entries:
                         try:
                             title = item['title']
 
