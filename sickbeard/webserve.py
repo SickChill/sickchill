@@ -1951,12 +1951,11 @@ class Home(WebRoot):
         # return the correct json value
 
         # Find the quality class for the episode
-        quality_class = Quality.qualityStrings[Quality.UNKNOWN]
         ep_status, ep_quality = Quality.splitCompositeStatus(ep_obj.status)
-        for x in (SD, HD720p, HD1080p):
-            if ep_quality in Quality.splitQuality(x)[0]:
-                quality_class = qualityPresetStrings[x]
-                break
+        if ep_quality in Quality.cssClassStrings:
+            quality_class = Quality.cssClassStrings[ep_quality]
+        else:
+            quality_class = Quality.cssClassStrings[Quality.UNKNOWN]
 
         return quality_class
 
