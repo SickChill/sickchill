@@ -1100,7 +1100,7 @@ class Home(WebRoot):
             return self.redirect('/home/')
 
         checkversion = CheckVersion()
-        backup = checkversion._runbackup()
+        backup = checkversion.run_backup_if_safe()
 
         if backup == True:
 
@@ -1114,6 +1114,7 @@ class Home(WebRoot):
                 return self._genericMessage("Update Failed",
                                             "Update wasn't successful, not restarting. Check your log for more information.")
         else:
+            ui.notifications.message('Not safe to update now. Some threads are running. Check Server Status page')
             return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
 
     def branchCheckout(self, branch):
