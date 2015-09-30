@@ -83,6 +83,20 @@
                             </label>
                         </div>
                         <div class="field-pair">
+                            <input type="checkbox" name="create_missing_show_dirs" id="create_missing_show_dirs" ${('', 'checked="checked"')[bool(sickbeard.CREATE_MISSING_SHOW_DIRS)]}/>
+                            <label for="create_missing_show_dirs">
+                                <span class="component-title">Create missing show directories</span>
+                                <span class="component-desc">Create missing show diretories when they get deleted</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
+                            <input type="checkbox" name="add_shows_wo_dir" id="add_shows_wo_dir" ${('', 'checked="checked"')[bool(sickbeard.ADD_SHOWS_WO_DIR)]}/>
+                            <label for="add_shows_wo_dir">
+                                <span class="component-title">Add shows without directory</span>
+                                <span class="component-desc">Add shows without creating a directory (don't recommended)</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
                             <input type="checkbox" name="del_rar_contents" id="del_rar_contents" ${('', 'checked="checked"')[bool(sickbeard.DELRARCONTENTS)]}/>
                             <label for="del_rar_contents">
                                 <span class="component-title">Delete RAR contents</span>

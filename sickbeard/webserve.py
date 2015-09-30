@@ -1951,12 +1951,11 @@ class Home(WebRoot):
         # return the correct json value
 
         # Find the quality class for the episode
-        quality_class = Quality.qualityStrings[Quality.UNKNOWN]
         ep_status, ep_quality = Quality.splitCompositeStatus(ep_obj.status)
-        for x in (SD, HD720p, HD1080p):
-            if ep_quality in Quality.splitQuality(x)[0]:
-                quality_class = qualityPresetStrings[x]
-                break
+        if ep_quality in Quality.cssClassStrings:
+            quality_class = Quality.cssClassStrings[ep_quality]
+        else:
+            quality_class = Quality.cssClassStrings[Quality.UNKNOWN]
 
         return quality_class
 
@@ -3932,7 +3931,7 @@ class ConfigPostProcessing(Config):
                            no_delete=None, rename_episodes=None, airdate_episodes=None, unpack=None,
                            move_associated_files=None, sync_files=None, postpone_if_sync_files=None, nfo_rename=None,
                            tv_download_dir=None, naming_custom_abd=None,
-                           naming_anime=None,
+                           naming_anime=None,create_missing_show_dirs=None,add_shows_wo_dir=None,
                            naming_abd_pattern=None, naming_strip_year=None, use_failed_downloads=None,
                            delete_failed=None, extra_scripts=None, skip_removed_files=None,
                            naming_custom_sports=None, naming_sports_pattern=None,
@@ -3957,6 +3956,8 @@ class ConfigPostProcessing(Config):
             sickbeard.UNPACK = config.checkbox_to_value(unpack)
         sickbeard.NO_DELETE = config.checkbox_to_value(no_delete)
         sickbeard.KEEP_PROCESSED_DIR = config.checkbox_to_value(keep_processed_dir)
+        sickbeard.CREATE_MISSING_SHOW_DIRS = config.checkbox_to_value(create_missing_show_dirs)
+        sickbeard.ADD_SHOWS_WO_DIR = config.checkbox_to_value(add_shows_wo_dir)
         sickbeard.PROCESS_METHOD = process_method
         sickbeard.DELRARCONTENTS = config.checkbox_to_value(del_rar_contents)
         sickbeard.EXTRA_SCRIPTS = [x.strip() for x in extra_scripts.split('|') if x.strip()]

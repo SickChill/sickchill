@@ -164,10 +164,10 @@ class CheckVersion:
                     logger.log(u"We can't proceed with the update. New update has a old DB version. It's not possible to downgrade", logger.ERROR)
                     return False
                 else:
-                    logger.log(u"We can't proceed with the update. Unable to check remote DB version", logger.ERROR)
+                    logger.log(u"We can't proceed with the update. Unable to check remote DB version. Error: %s" % result, logger.ERROR)
                     return False
-            except:
-                logger.log(u"We can't proceed with the update. Unable to compare DB version", logger.ERROR)
+            except Exception as e:
+                logger.log(u"We can't proceed with the update. Unable to compare DB version. Error: %s" % repr(e), logger.ERROR)
                 return False
 
         def postprocessor_safe(self):
@@ -199,6 +199,7 @@ class CheckVersion:
 
     def getDBcompare(self):
         try:
+            self.updater.need_update()
             cur_hash = str(self.updater.get_newest_commit_hash())
             assert len(cur_hash) is 40, "Commit hash wrong length: %s hash: %s" % (len(cur_hash), cur_hash)
 
@@ -216,9 +217,8 @@ class CheckVersion:
                 return 'equal'
             else:
                 return 'downgrade'
-        except Exception:
-            raise
-            return 'error'
+        except Exception as e:
+            return repr(e)
 
     def find_install_type(self):
         """

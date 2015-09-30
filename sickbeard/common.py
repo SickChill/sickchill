@@ -270,7 +270,7 @@ class Quality:
             ret = Quality.SDTV
         elif checkName([r"web.?dl|webrip", r"xvid|x26[45]|h.?26[45]"], all) and not checkName([r"(720|1080)[pi]"], all):
             ret = Quality.SDTV
-        elif checkName([r"(dvdrip|b[rd]rip|blue?-?ray)(.ws)?.(xvid|divx|x26[45])"], any) and not checkName([r"(720|1080)[pi]"], all):
+        elif checkName([r"(dvd(rip|mux)|b[rd](rip|mux)|blue?-?ray)(.ws)?.(xvid|divx|x26[45])"], any) and not checkName([r"(720|1080)[pi]"], all):
             ret = Quality.SDDVD
         elif checkName([r"720p", r"hd.?tv", r"x26[45]"], all) or checkName([r"hr.ws.pdtv.x26[45]"], any) and not checkName(
                 [r"1080[pi]"], all):
