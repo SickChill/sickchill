@@ -172,7 +172,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
             if show:
                 curEp = show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
                 searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-                for item in self._doSearch(searchStrings):
+                for item in self._doSearch(searchStrings[0]):
                     title, url = self._get_title_and_url(item)
                     results.append(classes.Proper(title, url, datetime.datetime.today(), show))
 
