@@ -223,7 +223,7 @@ class KATProvider(generic.TorrentProvider):
 
                 searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
 
-                for item in self._doSearch(searchStrings):
+                for item in self._doSearch(searchStrings[0]):
                     title, url = self._get_title_and_url(item)
                     pubdate = item[6]
 
