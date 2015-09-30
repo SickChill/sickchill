@@ -8,6 +8,7 @@ $(document).ready(function(){
         $('#minLevel').prop('disabled', true);
         $('#logFilter').prop('disabled', true);
         $('#logSearch').prop('disabled', true);
+        document.body.style.cursor='wait'
         url = srRoot + '/errorlogs/viewlog/?minLevel='+$('select[name=minLevel]').val()+'&logFilter='+$('select[name=logFilter]').val()+'&logSearch='+$('#logSearch').val();
         $.get(url, function(data){
             history.pushState('data', '', url);
