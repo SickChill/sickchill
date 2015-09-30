@@ -96,27 +96,28 @@ def subtitlesLanguages(video_path):
     embedded_subtitle_languages = set()
 
     # Serch for embedded subtitles
-    if video_path.endswith('mkv'):
-        with open(video_path, 'rb') as f:
-            mkv = MKV(f)
-            if mkv.subtitle_tracks:
-                for st in mkv.subtitle_tracks:
-                    if st.language:
-                        try:
-                            embedded_subtitle_languages.add(Language.fromalpha3b(st.language))
-                        except BabelfishError:
-                            logger.log('Embedded subtitle track is not a valid language', logger.DEBUG)
+    if not sickbeard.EMBEDDED_SUBTITLES_ALL:
+        if video_path.endswith('mkv'):
+            with open(video_path, 'rb') as f:
+                mkv = MKV(f)
+                if mkv.subtitle_tracks:
+                    for st in mkv.subtitle_tracks:
+                        if st.language:
+                            try:
+                                embedded_subtitle_languages.add(Language.fromalpha3b(st.language))
+                            except BabelfishError:
+                                logger.log('Embedded subtitle track is not a valid language', logger.DEBUG)
+                                embedded_subtitle_languages.add(Language('und'))
+                        elif st.name:
+                            try:
+                                embedded_subtitle_languages.add(Language.fromname(st.name))
+                            except BabelfishError:
+                                logger.log('Embedded subtitle track is not a valid language', logger.DEBUG)
+                                embedded_subtitle_languages.add(Language('und'))
+                        else:
                             embedded_subtitle_languages.add(Language('und'))
-                    elif st.name:
-                        try:
-                            embedded_subtitle_languages.add(Language.fromname(st.name))
-                        except BabelfishError:
-                            logger.log('Embedded subtitle track is not a valid language', logger.DEBUG)
-                            embedded_subtitle_languages.add(Language('und'))
-                    else:
-                        embedded_subtitle_languages.add(Language('und'))
-            else:
-                logger.log('MKV has no subtitle track', logger.DEBUG)
+                else:
+                    logger.log('MKV has no subtitle track', logger.DEBUG)
 
     # Search subtitles in the absolute path
     if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
@@ -125,9 +126,14 @@ def subtitlesLanguages(video_path):
     elif sickbeard.SUBTITLES_DIR:
         video_path = ek(os.path.join, ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR, ek(os.path.basename, video_path))
 
-    languages = subliminal.video.scan_subtitle_languages(video_path)
+    external_subtitle_languages = subliminal.video.scan_subtitle_languages(video_path)
+    subtitle_languages = external_subtitle_languages.union(embedded_subtitle_languages)
 
-    for language in languages.union(embedded_subtitle_languages):
+    if (len(subtitle_languages) is 1 and len(wantedLanguages()) is 1) and Language('und') in subtitle_languages:
+        subtitle_languages.remove(Language('und'))
+        subtitle_languages.add(fromietf(wantedLanguages()[0]))
+
+    for language in subtitle_languages:
         if hasattr(language, 'opensubtitles') and language.opensubtitles:
             resultList.append(language.opensubtitles)
         elif hasattr(language, 'alpha3') and language.alpha3:
