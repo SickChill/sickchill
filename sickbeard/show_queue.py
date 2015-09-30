@@ -43,7 +43,10 @@ class ShowQueue(generic_queue.GenericQueue):
         self.queue_name = "SHOWQUEUE"
 
     def _isInQueue(self, show, actions):
-        return show.indexerid in [x.show.indexerid for x in self.queue if x.action_id in actions]
+        if not show:
+            return False
+
+        return show.indexerid in [x.show.indexerid if x.show else 0 for x in self.queue if x.action_id in actions]
 
     def _isBeingSomethinged(self, show, actions):
         return self.currentItem != None and show == self.currentItem.show and \
@@ -153,7 +156,7 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def removeShow(self, show, full=False):
-        if self._isInQueue(show, ShowQueueActions.REMOVE):
+        if self._isInQueue(show, (ShowQueueActions.REMOVE,)):
             raise CantRemoveShowException("This show is already queued to be removed")
 
         # remove other queued actions for this show.

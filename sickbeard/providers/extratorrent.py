@@ -115,10 +115,19 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                     self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string.strip()})
                     data = self.getURL(self.urls['rss'], params=self.search_params)
                     if not data:
+                        logger.log(u'No response, skipping...', logger.DEBUG)
                         continue
 
                     data = xmltodict.parse(data)
-                    for item in data['rss']['channel']['item']:
+                    if not all([data, 'rss' in data, 'channel' in data['rss'], 'item' in data['rss']['channel']]):
+                        logger.log(u'Malformed rss returned, skipping...', logger.DEBUG)
+                        continue
+
+                    # https://github.com/martinblech/xmltodict/issues/111
+                    entries = data['rss']['channel']['item']
+                    entries = entries if isinstance(entries, list) else [entries]
+
+                    for item in entries:
                         title = item['title']
                         info_hash = item['info_hash']
                         url = item['enclosure']['@url']
