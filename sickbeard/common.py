@@ -265,10 +265,10 @@ class Quality:
 
             return ret
 
-        if checkName([r"(pdtv|hd.?tv|dsr|tvrip).(xvid|x26[45]|h.?26[45])"], all) and not checkName([r"(720|1080)[pi]"], all) and\
+        if checkName([r"(pdtv|hd.?tv|dsr|tv(rip|mux)).(xvid|x26[45]|h.?26[45])"], all) and not checkName([r"(720|1080)[pi]"], all) and\
                 not checkName([r"hr.ws.pdtv.x26[45]"], any):
             ret = Quality.SDTV
-        elif checkName([r"web.?dl|webrip", r"xvid|x26[45]|h.?26[45]"], all) and not checkName([r"(720|1080)[pi]"], all):
+        elif checkName([r"web.?dl|web(rip|mux)", r"xvid|x26[45]|h.?26[45]"], all) and not checkName([r"(720|1080)[pi]"], all):
             ret = Quality.SDTV
         elif checkName([r"(dvd(rip|mux)|b[rd](rip|mux)|blue?-?ray)(.ws)?.(xvid|divx|x26[45])"], any) and not checkName([r"(720|1080)[pi]"], all):
             ret = Quality.SDDVD
@@ -279,13 +279,13 @@ class Quality:
             ret = Quality.RAWHDTV
         elif checkName([r"1080p", r"hd.?tv", r"x26[45]"], all):
             ret = Quality.FULLHDTV
-        elif checkName([r"720p", r"web.?dl|webrip"], all) or checkName([r"720p", r"itunes", r"h.?26[45]"], all):
+        elif checkName([r"720p", r"web.?dl|web(rip|mux)"], all) or checkName([r"720p", r"itunes", r"h.?26[45]"], all):
             ret = Quality.HDWEBDL
-        elif checkName([r"1080p", r"web.?dl|webrip"], all) or checkName([r"1080p", r"itunes", r"h.?26[45]"], all):
+        elif checkName([r"1080p", r"web.?dl|web(rip|mux)"], all) or checkName([r"1080p", r"itunes", r"h.?26[45]"], all):
             ret = Quality.FULLHDWEBDL
-        elif checkName([r"720p", r"blue?-?ray|hddvd|b[rd]rip", r"x26[45]"], all):
+        elif checkName([r"720p", r"blue?-?ray|hddvd|b[rd](rip|mux)", r"x26[45]"], all):
             ret = Quality.HDBLURAY
-        elif checkName([r"1080p", r"blue?-?ray|hddvd|b[rd]rip", r"x26[45]"], all):
+        elif checkName([r"1080p", r"blue?-?ray|hddvd|b[rd](rip|mux)", r"x26[45]"], all):
             ret = Quality.FULLHDBLURAY
 
         return ret
