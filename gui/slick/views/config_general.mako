@@ -631,7 +631,7 @@
 % if not sickbeard.SKIP_REMOVED_FILES:
                                         <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm">
                                         % for defStatus in [SKIPPED, IGNORED, ARCHIVED]:
-                                            <option value="${defStatus}" ${('', 'selected="selected"')[sickbeard.EP_DEFAULT_DELETED_STATUS == defStatus]}>${statusStrings[defStatus]}</option>
+                                            <option value="${defStatus}" ${('', 'selected="selected"')[int(sickbeard.EP_DEFAULT_DELETED_STATUS) == defStatus]}>${statusStrings[defStatus]}</option>
                                         % endfor
                                         </select>
 % else:
