@@ -65,7 +65,7 @@
 
 <div id="HomeLayout" class="pull-right hidden-print" style="margin-top: -40px;">
     % if layout != 'poster':
-        <button id="popover" type="button" class="btn btn-inline">Select Column <b class="caret"></b></button>
+        <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
     % endif
     <span> Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
