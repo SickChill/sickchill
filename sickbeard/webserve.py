@@ -2139,7 +2139,7 @@ class HomePostProcess(Home):
 
     def index(self):
         t = PageTemplate(rh=self, file="home_postprocess.mako")
-        return t.render(submenu=self.HomeMenu(), title='Post Processing', header='Post Processing')
+        return t.render(submenu=self.HomeMenu(), title='Post Processing', header='Post Processing', topmenu='home')
 
     def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
                        is_priority=None, delete_on="0", failed="0", type="auto", *args, **kwargs):
@@ -2183,7 +2183,7 @@ class HomeAddShows(Home):
 
     def index(self):
         t = PageTemplate(rh=self, file="home_addShows.mako")
-        return t.render(submenu=self.HomeMenu(), title='Add Shows', header='Add Shows')
+        return t.render(submenu=self.HomeMenu(), title='Add Shows', header='Add Shows', topmenu='home')
 
     def getIndexerLanguages(self):
         result = sickbeard.indexerApi().config['valid_languages']
@@ -2352,7 +2352,7 @@ class HomeAddShows(Home):
                 use_provided_info=use_provided_info, default_show_name=default_show_name, other_shows=other_shows,
                 provided_show_dir=show_dir, provided_indexer_id=provided_indexer_id, provided_indexer_name=provided_indexer_name,
                 provided_indexer=provided_indexer, indexers=sickbeard.indexerApi().indexers, whitelist=[], blacklist=[], groups=[],
-                title='New Show', header='New Show'
+                title='New Show', header='New Show', topmenu='home'
         )
 
     def recommendedShows(self):
@@ -2473,7 +2473,7 @@ class HomeAddShows(Home):
         except Exception as e:
             popular_shows = None
 
-        return t.render(title="Popular Shows", header="Popular Shows", submenu = self.HomeMenu(), popular_shows=popular_shows, imdb_exception=e)
+        return t.render(title="Popular Shows", header="Popular Shows", submenu = self.HomeMenu(), popular_shows=popular_shows, imdb_exception=e, topmenu="home")
 
 
     def addShowToBlacklist(self, indexer_id):

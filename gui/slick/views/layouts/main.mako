@@ -98,8 +98,13 @@
                         <li id="NAVirc" ${('', 'class="active"')[topmenu == 'irc']}>
                             <a href="${srRoot}/IRC/">IRC</a>
                         </li>
-                        <li id="NAVhome" ${('', 'class="active"')[topmenu == 'home']}>
-                            <a href="${srRoot}/home/">Shows</a>
+                        <li id="NAVhome" class="dropdown ${('', 'active')[topmenu == 'home']}">
+                            <a href="${srRoot}/home/" class="dropdown-toggle disabled" data-toggle="dropdown">Shows <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="${srRoot}/home/"><i class="menu-icon-home"></i>&nbsp;Show List</a></li>
+                                <li><a href="${srRoot}/home/addShows/"><i class="menu-icon-addshow"></i>&nbsp;Add Shows</a></li>
+                                <li><a href="${srRoot}/home/postprocess/"><i class="menu-icon-postprocess"></i>&nbsp;Manual Post-Processing</a></li>
+                            </ul>
                         </li>
 
                         <li id="NAVcomingEpisodes" ${('', 'class="active"')[topmenu == 'comingEpisodes']}>
