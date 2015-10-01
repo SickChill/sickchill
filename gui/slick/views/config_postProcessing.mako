@@ -104,17 +104,6 @@
                             </label>
                         </div>
                         <div class="field-pair">
-                            <input type="checkbox" name="skip_removed_files" id="skip_removed_files" ${('', 'checked="checked"')[bool(sickbeard.SKIP_REMOVED_FILES)]}/>
-                            <label for="skip_removed_files">
-                                <span class="component-title">Skip Remove Detection</span>
-                                <span class="component-desc">Skip detection of removed files, so they don't get set to ignored/archived?</span>
-                            </label>
-                            <label class="nocheck">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><b>NOTE:</b> This may mean SickRage misses renames as well</span>
-                            </label>
-                        </div>
-                        <div class="field-pair">
                             <label class="nocheck">
                                 <span class="component-title">Extra Scripts</span>
                                 <input type="text" name="extra_scripts" value="${'|'.join(sickbeard.EXTRA_SCRIPTS)}" class="form-control input-sm input350" />
