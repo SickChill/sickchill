@@ -92,13 +92,13 @@
             % if sbLogin:
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li id="NAVnews" ${('', 'class="active"')[topmenu == 'news']}>
+                        <li id="NAVnews"${('', ' class="active"')[topmenu == 'news']}>
                             <a href="${srRoot}/news/">News</a>
                         </li>
-                        <li id="NAVirc" ${('', 'class="active"')[topmenu == 'irc']}>
+                        <li id="NAVirc"${('', ' class="active"')[topmenu == 'irc']}>
                             <a href="${srRoot}/IRC/">IRC</a>
                         </li>
-                        <li id="NAVhome" class="dropdown ${('', 'active')[topmenu == 'home']}">
+                        <li id="NAVhome" class="dropdown${('', ' active')[topmenu == 'home']}">
                             <a href="${srRoot}/home/" class="dropdown-toggle disabled" data-toggle="dropdown">Shows <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/home/"><i class="menu-icon-home"></i>&nbsp;Show List</a></li>
@@ -107,15 +107,15 @@
                             </ul>
                         </li>
 
-                        <li id="NAVcomingEpisodes" ${('', 'class="active"')[topmenu == 'comingEpisodes']}>
+                        <li id="NAVcomingEpisodes"${('', ' class="active"')[topmenu == 'comingEpisodes']}>
                             <a href="${srRoot}/comingEpisodes/">Coming Episodes</a>
                         </li>
 
-                        <li id="NAVhistory" ${('', 'class="active"')[topmenu == 'history']}>
+                        <li id="NAVhistory"${('', ' class="active"')[topmenu == 'history']}>
                             <a href="${srRoot}/history/">History</a>
                         </li>
 
-                        <li id="NAVmanage" class="dropdown ${('', 'active')[topmenu == 'manage']}">
+                        <li id="NAVmanage" class="dropdown${('', ' active')[topmenu == 'manage']}">
                             <a href="${srRoot}/manage/" class="dropdown-toggle" data-toggle="dropdown">Manage <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/manage/"><i class="menu-icon-manage"></i>&nbsp;Mass Update</a></li>
@@ -143,7 +143,7 @@
                             </ul>
                         </li>
 
-                        <li id="NAVerrorlogs" class="dropdown" ${('', 'class="active"')[topmenu == 'errorlogs']}>
+                        <li id="NAVerrorlogs" class="dropdown${('', ' active')[topmenu == 'errorlogs']}">
                             <a href="${srRoot}/errorlogs/" class="dropdown-toggle" data-toggle="dropdown">${logPageTitle} <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Log (Errors)</a></li>
@@ -151,7 +151,7 @@
                             </ul>
                         </li>
 
-                        <li id="NAVconfig" class="dropdown" ${('', 'class="active"')[topmenu == 'config']}>
+                        <li id="NAVconfig" class="dropdown${('', ' active')[topmenu == 'config']}">
                             <a href="${srRoot}/config/" class="dropdown-toggle" data-toggle="dropdown"><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/config/"><i class="menu-icon-help"></i>&nbsp;Help &amp; Info</a></li>
@@ -166,7 +166,7 @@
                             </ul>
                         </li>
 
-                        <li class="dropdown">
+                        <li id="NAVsystem" class="dropdown${('', ' active')[topmenu == 'system']}">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
