@@ -31,6 +31,7 @@ from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.helpers import sanitizeSceneName
+from sickbeard.common import USER_AGENT
 
 
 class ExtraTorrentProvider(generic.TorrentProvider):
@@ -52,7 +53,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
         self.minleech = None
 
         self.cache = ExtraTorrentCache(self)
-
+        self.headers.update({'User-Agent': USER_AGENT})
         self.search_params = {'cid': 8}
 
     def isEnabled(self):
