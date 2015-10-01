@@ -260,7 +260,7 @@
             <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched"checked="checked" /> Snatched: <b>${epCounts[Overview.SNATCHED]}</b></span></label>
         </div>
 
-        <button id="popover" type="button" class="btn btn-xs">Select Columns</button>
+        <button id="popover" type="button" class="btn btn-xs">Select Columns <b class="caret"></b></button>
         <div class="pull-right" >
             <button class="btn btn-xs seriesCheck">Select Filtered Episodes</button>
             <button class="btn btn-xs clearAll">Clear All</button>
