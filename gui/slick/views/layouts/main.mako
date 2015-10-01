@@ -116,7 +116,7 @@
                         </li>
 
                         <li id="NAVmanage" class="dropdown${('', ' active')[topmenu == 'manage']}">
-                            <a href="${srRoot}/manage/" class="dropdown-toggle" data-toggle="dropdown">Manage <b class="caret"></b></a>
+                            <a href="${srRoot}/manage/episodeStatuses/" class="dropdown-toggle disabled" data-toggle="dropdown">Manage <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/manage/"><i class="menu-icon-manage"></i>&nbsp;Mass Update</a></li>
                                 <li><a href="${srRoot}/manage/backlogOverview/"><i class="menu-icon-backlog-view"></i>&nbsp;Backlog Overview</a></li>
@@ -144,7 +144,7 @@
                         </li>
 
                         <li id="NAVerrorlogs" class="dropdown${('', ' active')[topmenu == 'errorlogs']}">
-                            <a href="${srRoot}/errorlogs/" class="dropdown-toggle" data-toggle="dropdown">${logPageTitle} <b class="caret"></b></a>
+                            <a href="${srRoot}/errorlogs/" class="dropdown-toggle disabled" data-toggle="dropdown">${logPageTitle} <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Log (Errors)</a></li>
                                 <li><a href="${srRoot}/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;View Log</a></li>
@@ -152,7 +152,7 @@
                         </li>
 
                         <li id="NAVconfig" class="dropdown${('', ' active')[topmenu == 'config']}">
-                            <a href="${srRoot}/config/" class="dropdown-toggle" data-toggle="dropdown"><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
+                            <a href="${srRoot}/config/" class="dropdown-toggle disabled" data-toggle="dropdown"><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/config/"><i class="menu-icon-help"></i>&nbsp;Help &amp; Info</a></li>
                                 <li><a href="${srRoot}/config/general/"><i class="menu-icon-config"></i>&nbsp;General</a></li>
@@ -167,7 +167,7 @@
                         </li>
 
                         <li id="NAVsystem" class="dropdown${('', ' active')[topmenu == 'system']}">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span></a>
+                            <a href="${srRoot}/home/status/" class="dropdown-toggle disabled" data-toggle="dropdown"><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
                                 <li><a href="${srRoot}/changes"><i class="menu-icon-help"></i>&nbsp;Changelog</a></li>
