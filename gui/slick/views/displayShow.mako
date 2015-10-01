@@ -311,6 +311,8 @@
             dfltEpNumbering = True
 
         epLoc = epResult["location"]
+        if epLoc and show._location and epLoc.lower().startswith(show._location.lower()):
+            epLoc = epLoc[len(show._location)+1:]
         %>
         % if int(epResult["season"]) != curSeason:
             % if curSeason == -1:
@@ -420,7 +422,6 @@
         % endif
         <% curSeason = int(epResult["season"]) %>
         % endif
-        <% epLoc = epResult["location"] %>
         <tr class="${Overview.overviewStrings[epCats[epStr]]} season-${curSeason} seasonstyle">
             <td class="col-checkbox">
                 % if int(epResult["status"]) != UNAIRED:
@@ -431,13 +432,9 @@
             <td align="center"><img src="${srRoot}/images/${("tbn-no.gif", "tbn.gif")[epResult["hastbn"]]}" alt="${("N", "Y")[epResult["hastbn"]]}" width="23" height="11" /></td>
             <td align="center">
             <%
-                if epLoc and show._location and epLoc.lower().startswith(show._location.lower()):
-                    epLoc = epLoc[len(show._location)+1:]
-
+                text = str(epResult['episode'])
                 if epLoc != '' and epLoc != None:
-                    text = '<span title="' + epLoc + '" class="addQTip">' + str(epResult['episode']) + "</span>"
-                else:
-                    text = str(epResult['episode'])
+                    text = '<span title="' + epLoc + '" class="addQTip">' + text + "</span>"
             %>
                 ${text}
             </td>
@@ -474,9 +471,7 @@
             % endif
             ${epResult["name"]}
             </td>
-            <td class="col-name]">
-                ${ntpath.basename((epResult['location'] or '').replace('\\','\\\\'))}
-            </td>
+            <td class="col-name">${epLoc}</td>
             <td class="col-ep">
                 % if epResult["file_size"]:
                     <% file_size = sickbeard.helpers.pretty_filesize(epResult["file_size"]) %>
