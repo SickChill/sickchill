@@ -24,7 +24,7 @@ from sickbeard import db
 from sickrage.helper.common import dateTimeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
-from enzyme import MKV
+from enzyme import MKV, MalformedMKVError
 from babelfish import Error as BabelfishError, Language, language_converters
 import subliminal
 import subprocess
@@ -98,8 +98,9 @@ def subtitlesLanguages(video_path):
     # Serch for embedded subtitles
     if not sickbeard.EMBEDDED_SUBTITLES_ALL:
         if video_path.endswith('mkv'):
-            with open(video_path, 'rb') as f:
-                mkv = MKV(f)
+            try:
+                with open(video_path.encode(sickbeard.SYS_ENCODING), 'rb') as f:
+                    mkv = MKV(f)
                 if mkv.subtitle_tracks:
                     for st in mkv.subtitle_tracks:
                         if st.language:
@@ -118,6 +119,8 @@ def subtitlesLanguages(video_path):
                             embedded_subtitle_languages.add(Language('und'))
                 else:
                     logger.log('MKV has no subtitle track', logger.DEBUG)
+            except MalformedMKVError:
+                logger.log('MKV seems to be malformed, ignoring embedded subtitles', logger.WARNING)
 
     # Search subtitles in the absolute path
     if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
