@@ -131,8 +131,9 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                     for item in entries:
                         title = item['title']
                         info_hash = item['info_hash']
-                        url = item['enclosure']['@url']
-                        size = int(item['enclosure']['@length'] or item['size'])
+                        if 'enclosure' in item: url = item['enclosure']['@url']
+                        else: url = item['link']
+                        size = int(item['size'])
                         seeders = helpers.tryInt(item['seeders'],0)
                         leechers = helpers.tryInt(item['leechers'],0)
 
@@ -156,7 +157,17 @@ class ExtraTorrentProvider(generic.TorrentProvider):
             title = self._clean_title_from_provider(title)
 
         if url:
-            url = url.replace('&amp;', '&')
+            
+            if '.html' in url:
+		        #In case of failure uncoment the folowing lines
+                #logger.log(u'Replacing url...' + url, logger.DEBUG)
+                url = url.replace('/torrent/', '/download/')
+                url = url.replace('.html', '.torrent')
+                url = url.replace('&amp;', '&')
+                #logger.log(u'Replaced url...' + url, logger.DEBUG)
+            else:
+                url = url.replace('&amp;', '&')
+
 
         return (title, url)
 
