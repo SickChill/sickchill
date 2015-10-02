@@ -68,7 +68,7 @@ class CheckVersion:
             sickbeard.BRANCH = self.get_branch()
 
             if self.check_for_new_version(force):
-                if sickbeard.AUTO_UPDATE or force is True:
+                if sickbeard.AUTO_UPDATE:
                     logger.log(u"New update found for SickRage, starting auto-updater ...")
                     ui.notifications.message('New update found for SickRage, starting auto-updater')
                     if self.run_backup_if_safe() is True:
@@ -191,10 +191,10 @@ class CheckVersion:
         showupdate_safe = showupdate_safe(self)
 
         if db_safe == True and postprocessor_safe == True and showupdate_safe == True:
-            logger.log(u"Proceeding with update", logger.DEBUG)
+            logger.log(u"Proceeding with auto update", logger.DEBUG)
             return True
         else:
-            logger.log(u"Update aborted", logger.DEBUG)
+            logger.log(u"Auto update aborted", logger.DEBUG)
             return False
 
     def getDBcompare(self):
