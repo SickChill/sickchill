@@ -131,23 +131,34 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                     for item in entries:
                         title = item['title']
                         info_hash = item['info_hash']
-                        if 'enclosure' in item: url = item['enclosure']['@url']
-                        else: url = item['link']
                         size = int(item['size'])
                         seeders = helpers.tryInt(item['seeders'],0)
                         leechers = helpers.tryInt(item['leechers'],0)
+                        url = item['enclosure']['@url'] if 'enclosure' in item else self._magnet_from_details(item['link'])
 
-                        if not seeders or seeders < self.minseed or leechers < self.minleech:
+                        if not all([title, url, seeders, seeders >= self.minseed, leechers >= self.minleech, size]):
                             continue
 
                         items[mode].append((title, url, seeders, leechers, size, info_hash))
 
-                except Exception:
+                except (AttributeError, TypeError, KeyError, ValueError):
                     logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
 
             results += items[mode]
 
         return results
+
+
+    def _magnet_from_details(self, link):
+        details = self.getURL(link)
+        if not details:
+            return ''
+
+        match = re.search(r'href="(magnet.*?)"', details)
+        if not match:
+            return ''
+
+        return match.group(1)
 
     def _get_title_and_url(self, item):
         #pylint: disable=W0612
@@ -157,16 +168,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
             title = self._clean_title_from_provider(title)
 
         if url:
-            
-            if '.html' in url:
-		        #In case of failure uncoment the folowing lines
-                #logger.log(u'Replacing url...' + url, logger.DEBUG)
-                url = url.replace('/torrent/', '/download/')
-                url = url.replace('.html', '.torrent')
-                url = url.replace('&amp;', '&')
-                #logger.log(u'Replaced url...' + url, logger.DEBUG)
-            else:
-                url = url.replace('&amp;', '&')
+            url = url.replace('&amp;', '&')
 
 
         return (title, url)
