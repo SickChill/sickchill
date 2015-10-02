@@ -131,22 +131,34 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                     for item in entries:
                         title = item['title']
                         info_hash = item['info_hash']
-                        url = item['enclosure']['@url']
-                        size = int(item['enclosure']['@length'] or item['size'])
+                        size = int(item['size'])
                         seeders = helpers.tryInt(item['seeders'],0)
                         leechers = helpers.tryInt(item['leechers'],0)
+                        url = item['enclosure']['@url'] if 'enclosure' in item else self._magnet_from_details(item['link'])
 
-                        if not seeders or seeders < self.minseed or leechers < self.minleech:
+                        if not all([title, url, seeders, seeders >= self.minseed, leechers >= self.minleech, size]):
                             continue
 
                         items[mode].append((title, url, seeders, leechers, size, info_hash))
 
-                except Exception:
+                except (AttributeError, TypeError, KeyError, ValueError):
                     logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
 
             results += items[mode]
 
         return results
+
+
+    def _magnet_from_details(self, link):
+        details = self.getURL(link)
+        if not details:
+            return ''
+
+        match = re.search(r'href="(magnet.*?)"', details)
+        if not match:
+            return ''
+
+        return match.group(1)
 
     def _get_title_and_url(self, item):
         #pylint: disable=W0612
@@ -157,6 +169,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
         if url:
             url = url.replace('&amp;', '&')
+
 
         return (title, url)
 
