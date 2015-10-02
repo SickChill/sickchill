@@ -221,7 +221,7 @@ def isSyncFile(filename):
     extension = filename.rpartition(".")[2].lower()
     #if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
     syncfiles = sickbeard.SYNC_FILES
-    if extension in syncfiles.split(","):
+    if extension in syncfiles.split(",") or filename.startswith('.syncthing'):
         return True
     else:
         return False
