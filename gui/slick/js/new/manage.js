@@ -1,24 +1,3 @@
-$.tablesorter.addParser({
-    id: 'showNames',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'True' ? (s || '') : (s || '').replace(/^(The|A|An)\s/i,''));
-    },
-    type: 'text'
-});
-$.tablesorter.addParser({
-    id: 'quality',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        return s.replace('hd1080p',5).replace('hd720p',4).replace('hd',3).replace('sd',2).replace('any',1).replace('best',0).replace('custom',7);
-    },
-    type: 'numeric'
-});
-
 $(document).ready(function(){
     $("#massUpdateTable:has(tbody tr)").tablesorter({
         sortList: [[1,0]],

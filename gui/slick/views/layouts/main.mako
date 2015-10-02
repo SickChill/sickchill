@@ -309,6 +309,7 @@
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.confirm.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.timeago.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/new/parsers.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/new/meta.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/script.js?${sbPID}"></script>
         <script type="text/javascript">
             srRoot = '${srRoot}'; // needed for browser.js & ajaxNotifications.js
