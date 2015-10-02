@@ -38,8 +38,3 @@ $(document).ready(function(){
         });
     }
 });
-
-setTimeout(function () {
-    "use strict";
-    location.reload(true);
-}, 60000);

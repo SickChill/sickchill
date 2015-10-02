@@ -55,8 +55,3 @@ $(document).ready(function(){
         $('#container').isotope({sortAscending: ('asc' == this.value)});
     });
 });
-
-setTimeout(function () {
-    "use strict";
-    location.reload(true);
-}, 60000);
