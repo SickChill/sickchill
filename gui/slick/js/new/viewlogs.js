@@ -16,6 +16,7 @@ $(document).ready(function(){
             $('#minLevel').removeProp('disabled');
             $('#logFilter').removeProp('disabled');
             $('#logSearch').removeProp('disabled');
+            document.body.style.cursor='default';
         });
     });
 
