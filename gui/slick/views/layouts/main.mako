@@ -43,7 +43,25 @@
         <meta name="msapplication-TileImage" content="${srRoot}/images/ico/favicon-144.png">
         <meta name="msapplication-config" content="${srRoot}/css/browserconfig.xml">
 
+
+        <meta data-var="srRoot" data-content="${srRoot}">
+        <meta data-var="themeSpinner" data-content="${('', '-dark')[sickbeard.THEME_NAME == 'dark']}">
+        <meta data-var="anonURL" data-content="${sickbeard.ANON_REDIRECT}">
+
+        <meta data-var="sickbeard.ANIME_SPLIT_HOME" data-content="${sickbeard.ANIME_SPLIT_HOME}">
+        <meta data-var="sickbeard.COMING_EPS_LAYOUT" data-content="${sickbeard.COMING_EPS_LAYOUT}">
+        <meta data-var="sickbeard.COMING_EPS_SORT" data-content="${sickbeard.COMING_EPS_SORT}">
+        <meta data-var="sickbeard.DATE_PRESET" data-content="${sickbeard.DATE_PRESET}">
+        <meta data-var="sickbeard.FILTER_ROW" data-content="${sickbeard.FILTER_ROW}">
         <meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
+        <meta data-var="sickbeard.HOME_LAYOUT" data-content="${sickbeard.HOME_LAYOUT}">
+        <meta data-var="sickbeard.POSTER_SORTBY" data-content="${sickbeard.POSTER_SORTBY}">
+        <meta data-var="sickbeard.POSTER_SORTDIR" data-content="${sickbeard.POSTER_SORTDIR}">
+        <meta data-var="sickbeard.ROOT_DIRS" data-content="${sickbeard.ROOT_DIRS}">
+        <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
+        <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
+        <meta data-var="sickbeard.TIME_PRESET" data-content="${sickbeard.TIME_PRESET}">
+        <meta data-var="sickbeard.TRIM_ZERO" data-content="${sickbeard.TRIM_ZERO}">
         <%block name="metas" />
 
         <link rel="shortcut icon" href="${srRoot}/images/ico/favicon.ico">
@@ -311,13 +329,6 @@
         <script type="text/javascript" src="${srRoot}/js/new/parsers.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/new/meta.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/script.js?${sbPID}"></script>
-        <script type="text/javascript">
-            srRoot = '${srRoot}'; // needed for browser.js & ajaxNotifications.js
-            //HTML for scrolltopcontrol, which is auto wrapped in DIV w/ ID="topcontrol"
-            top_image_html = '<img src="${srRoot}/images/top.gif" width="31" height="11" alt="Jump to top" />';
-            themeSpinner = '${('', '-dark')[sickbeard.THEME_NAME == 'dark']}';
-            anonURL = '${sickbeard.ANON_REDIRECT}';
-        </script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.scrolltopcontrol-1.1.js"></script>
         <script type="text/javascript" src="${srRoot}/js/browser.js"></script>
         <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js"></script>

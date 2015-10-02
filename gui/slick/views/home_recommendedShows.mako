@@ -2,9 +2,6 @@
 <%!
     import sickbeard
 %>
-<%block name="metas">
-<meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
-</%block>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/recommendedShows.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>

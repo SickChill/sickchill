@@ -23,10 +23,6 @@
 .sort_data {display:none;}
 </style>
 </%block>
-<%block name="metas">
-<meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
-<meta data-var="layout" data-content="${layout}">
-</%block>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/new/history.js"></script>
 </%block>
