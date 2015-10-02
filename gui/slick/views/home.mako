@@ -40,17 +40,7 @@
     max_download_count = max_download_count * 100
 %>
 <%block name="metas">
-<meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
-<meta data-var="sickbeard.FILTER_ROW" data-content="${sickbeard.FILTER_ROW}">
-<meta data-var="sickbeard.ANIME_SPLIT_HOME" data-content="${sickbeard.ANIME_SPLIT_HOME}">
-<meta data-var="sickbeard.POSTER_SORTBY" data-content="${sickbeard.POSTER_SORTBY}">
-<meta data-var="sickbeard.POSTER_SORTDIR" data-content="${sickbeard.POSTER_SORTDIR}">
-<meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
-<meta data-var="sickbeard.DATE_PRESET" data-content="${sickbeard.DATE_PRESET}">
-<meta data-var="sickbeard.TIME_PRESET" data-content="${sickbeard.TIME_PRESET}">
-<meta data-var="sickbeard.TRIM_ZERO" data-content="${sickbeard.TRIM_ZERO}">
 <meta data-var="max_download_count" data-content="${max_download_count}">
-<meta data-var="layout" data-content="${layout}">
 </%block>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/new/home.js"></script>

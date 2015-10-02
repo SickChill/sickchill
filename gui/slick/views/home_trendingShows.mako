@@ -8,9 +8,6 @@
     from sickbeard import sbdatetime
     from sickbeard.helpers import anon_url
 %>
-<%block name="metas">
-<meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
-</%block>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/addTrendingShow.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>

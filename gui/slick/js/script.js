@@ -1,3 +1,8 @@
+var srRoot = getMeta('srRoot'),
+    themeSpinner = getMeta('themeSpinner'),
+    anonURL = getMeta('anonURL'),
+    top_image_html = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />';
+
 function initHeader() {
     //settings
     var header = $("#header");

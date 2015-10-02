@@ -2,9 +2,6 @@
 <%!
     import sickbeard
 %>
-<%block name="metas">
-<meta data-var="sickbeard.ROOT_DIRS" data-content="${sickbeard.ROOT_DIRS}">
-</%block>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/addExistingShow.js?${sbPID}"></script>
