@@ -134,7 +134,7 @@
 
             <td>
 % if cur_result['description']:
-                <img alt='' src='${srRoot}/images/info32.png' height='16' width='16' class='plotInfo' id="plot_info_${'%s_%s_%s' % (str(cur_result['showid']), str(cur_result['season']), str(cur_result['episode']))}" />
+                <img alt="" src="${srRoot}/images/info32.png" height="16" width="16" class="plotInfo" id="plot_info_${'%s_%s_%s' % (str(cur_result['showid']), str(cur_result['season']), str(cur_result['episode']))}" />
 % else:
                 <img alt="" src="${srRoot}/images/info32.png" width="16" height="16" class="plotInfoNone"  />
 % endif
@@ -153,11 +153,15 @@
 % if cur_result['imdb_id']:
                 <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${srRoot}/images/imdb.png" />
 % endif
-                <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result['showid']}"><img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16" src="${srRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" /></a>
+                <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result['showid']}">
+                    <img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16" src="${srRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" />
+                </a>
             </td>
 
             <td align="center">
-                <a href="${srRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="${srRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
+                <a href="${srRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch">
+                    <img alt="[search]" height="16" width="16" src="${srRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" />
+                </a>
             </td>
         </tr>
 % endfor
@@ -286,7 +290,9 @@
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <tr>
             <th ${('class="nobg"', 'rowspan="2"')[banner == layout]} valign="top">
-                <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}"><img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}" src="${srRoot}/showPoster/?show=${cur_result['showid']}&amp;which=${(layout, 'poster_thumb')[layout == 'poster']}" /></a>
+                <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">
+                    <img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}" src="${srRoot}/showPoster/?show=${cur_result['showid']}&amp;which=${(layout, 'poster_thumb')[layout == 'poster']}" />
+                </a>
             </th>
 % if 'banner' == layout:
         </tr>
@@ -296,10 +302,9 @@
                 <div class="clearfix">
                     <span class="tvshowTitle">
                         <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}
-                    % if int(cur_result['paused']):
-                        <span class="pause">[paused]</span>
-                    % endif
-                    </a></span>
+                            ${('', '<span class="pause">[paused]</span>')[int(cur_result['paused'])]}
+                        </a>
+                    </span>
 
                     <span class="tvshowTitleIcons">
 % if cur_result['imdb_id']:
@@ -313,7 +318,6 @@
                 <span class="title">Next Episode:</span> <span>${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}</span>
 
                 <div class="clearfix">
-
                     <span class="title">Airs: </span><span class="airdate">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING)}</span>${('', '<span> on %s</span>' % str(cur_result['network']))[bool(cur_result['network'])]}
                 </div>
 
@@ -334,7 +338,7 @@
                         <img class="ep_summaryTriggerNone" src="${srRoot}/images/plus.png" height="16" width="16" alt="" />
 % endif
                 </div>
-        </td>
+            </td>
         </tr>
         </table>
     </div>
@@ -347,8 +351,6 @@
 % endif
 
 % if 'calendar' == layout:
-
-## <% today = datetime.date.today() %>
 <% dates = [today.date() + datetime.timedelta(days = i) for i in range(7)] %>
 <% tbl_day = 0 %>
 <br>
