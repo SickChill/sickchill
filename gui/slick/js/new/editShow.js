@@ -11,7 +11,7 @@ $('#submit').click(function(){
 
     $("#exceptions_list").val(all_exceptions);
 
-    if($('meta[data-var="show.is_anime"]').data('content') === 'True') generate_bwlist();
+    if(metaToBool('show.is_anime')) generate_bwlist();
 });
 $('#addSceneName').click(function() {
     var scene_ex = $('#SceneName').val();

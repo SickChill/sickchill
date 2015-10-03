@@ -62,13 +62,10 @@ $.tablesorter.addParser({
         nums[0] = parseInt(nums[0]);
         nums[1] = parseInt(nums[1]);
 
-        if (nums[0] === 0)
-          return nums[1];
-
-        var finalNum = parseInt(($('meta[data-var="max_download_count"]').data('content'))*nums[0]/nums[1]);
+        if (nums[0] === 0) return nums[1];
+        var finalNum = parseInt((getMeta('max_download_count'))*nums[0]/nums[1]);
         var pct = Math.round((nums[0]/nums[1])*100) / 1000;
-        if (finalNum > 0)
-          finalNum += nums[0];
+        if (finalNum > 0) finalNum += nums[0];
 
         return finalNum + pct;
     },
