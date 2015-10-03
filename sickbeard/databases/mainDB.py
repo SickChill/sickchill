@@ -46,9 +46,35 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_subtitles_codes()
         self.fix_show_nfo_lang()
         self.convert_tvrage_to_tvdb()
+        self.convert_archived_to_compund()
+
+
+    def convert_archived_to_compund(self):
+        logger.log(u'Checking for archived episodes not qualified', logger.DEBUG)
+
+        query = "SELECT episode_id, showid, status, location, season, episode " + \
+        "FROM tv_episodes WHERE status = %s" % common.ARCHIVED
+
+        sqlResults = self.connection.select(query)
+        if sqlResults:
+            logger.log(u"Found %i shows with bare archived status, attempting automatic conversion..." % len(sqlResults), logger.WARNING)
+
+        for archivedEp in sqlResults:
+            fixedStatus = common.Quality.compositeStatus(common.ARCHIVED, common.Quality.UNKNOWN)
+            existing = archivedEp['location'] and ek(os.path.exists, archivedEp['location'])
+            if existing:
+                quality = common.Quality.assumeQuality(archivedEp['location'])
+                fixedStatus = common.Quality.compositeStatus(common.ARCHIVED, quality)
+
+            logger.log(u'Changing status from %s to %s for %s: S%02dE%02d at %s (File %s)' %
+                (common.statusStrings[common.ARCHIVED], common.statusStrings[fixedStatus],
+                 archivedEp['showid'], archivedEp['season'], archivedEp['episode'],
+                 archivedEp['location'] if archivedEp['location'] else 'unknown location', ('NOT FOUND', 'EXISTS')[bool(existing)]))
+
+            self.connection.action("UPDATE tv_episodes SET status = %i WHERE episode_id = %i" % (fixedStatus, archivedEp['episode_id']))
 
     def convert_tvrage_to_tvdb(self):
-        logger.log(u"Checking for shows with tvrage id's, since tvrage is gone")
+        logger.log(u"Checking for shows with tvrage id's, since tvrage is gone", logger.DEBUG)
         from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
         from sickbeard.indexers.indexer_config import INDEXER_TVDB
 

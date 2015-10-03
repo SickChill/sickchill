@@ -1100,9 +1100,16 @@ class TVShow(object):
                     with curEp.lock:
                         # if it used to have a file associated with it and it doesn't anymore then set it to sickbeard.EP_DEFAULT_DELETED_STATUS
                         if curEp.location and curEp.status in Quality.DOWNLOADED:
+                        
+                            if sickbeard.EP_DEFAULT_DELETED_STATUS == ARCHIVED:
+                                oldStatus, oldQuality = Quality.splitCompositeStatus(curEp.status)
+                                new_status = Quality.compositeStatus(ARCHIVED, oldQuality)
+                            else:
+                                new_status = sickbeard.EP_DEFAULT_DELETED_STATUS
+                                
                             logger.log(u"%s: Location for S%02dE%02d doesn't exist, removing it and changing our status to %s" %
-                            (self.indexerid, season, episode, statusStrings[sickbeard.EP_DEFAULT_DELETED_STATUS]) ,logger.DEBUG)
-                            curEp.status = sickbeard.EP_DEFAULT_DELETED_STATUS
+                            (self.indexerid, season, episode, statusStrings[new_status]) ,logger.DEBUG)
+                            curEp.status = new_status
                             curEp.subtitles = list()
                             curEp.subtitles_searchcount = 0
                             curEp.subtitles_lastsearch = str(datetime.datetime.min)
@@ -1478,7 +1485,7 @@ class TVEpisode(object):
             video = None
             try:
                 # Never look for subtitles in the same path, as we specify the path later on
-                video = subliminal.scan_video(vname, subtitles=False, embedded_subtitles=False)
+                video = subliminal.scan_video(vname.encode(sickbeard.SYS_ENCODING), subtitles=False, embedded_subtitles=False)
             except Exception:
                 logger.log(u'%s: Exception caught in subliminal.scan_video for S%02dE%02d' %
                     (self.show.indexerid, self.season, self.episode), logger.DEBUG)

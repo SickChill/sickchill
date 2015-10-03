@@ -1,8 +1,4 @@
 $(document).ready(function(){
-    $('#backupDir').fileBrowser({ title: 'Select backup folder to save to', key: 'backupPath' });
-    $('#backupFile').fileBrowser({ title: 'Select backup files to restore', key: 'backupFile', includeFiles: 1 });
-    $('#config-components').tabs();
-
     $(".enabler").each(function(){
         if (!$(this).prop('checked')) $('#content_'+$(this).attr('id')).hide();
     });
@@ -80,7 +76,7 @@ $(document).ready(function(){
 
     $('#branchCheckout').click(function() {
         var url = srRoot+'/home/branchCheckout?branch='+$("#branchVersion").val();
-        var checkDBversion = srRoot + "/home/getDBcompare";
+        var  checkDBversion = srRoot + "/home/getDBcompare";
         $.getJSON(checkDBversion, function(data){
             if (data.status == "success") {
                 if (data.message == "equal") {

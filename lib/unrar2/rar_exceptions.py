@@ -28,7 +28,3 @@ class InvalidRARArchive(Exception): pass
 class FileOpenError(Exception): pass
 class IncorrectRARPassword(Exception): pass
 class InvalidRARArchiveUsage(Exception): pass
-class FatalRARError(Exception): pass
-class CRCRARError(Exception): pass
-class NoFileToExtract(Exception): pass
-class GenericRARError(Exception): pass

@@ -726,6 +726,7 @@ def initialize(consoleLogging=True):
             if os.path.exists(os.path.join(DATA_DIR, 'restore')):
                 try:
                     shutil.rmtree(os.path.join(DATA_DIR, 'restore'))
+                    shutil.rmtree(os.path.join(CACHE_DIR, 'mako'))
                 except Exception as e:
                     logger.log(u"Restore: Unable to remove the restore directory: {0}".format(str(e)), logger.ERROR)
 

@@ -4,15 +4,10 @@
     import sickbeard
     from sickbeard.helpers import anon_url
 %>
-<%block name="metas">
-## <meta data-var="subtitles.subtitleLanguageFilter" data-content="${','.join("{id: " + lang.opensubtitles + ", name: " + lang.name + "}" for lang in subtitles.subtitleLanguageFilter())}">
-## <meta data-var="prePopulate" data-content="${','.join("{id: " + subtitles.fromietf(lang).opensubtitles + ", name: " + subtitles.fromietf(lang).name + "}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''}">
-</%block>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/configSubtitles.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/config.js"></script>
 <script type="text/javascript" src="${srRoot}/js/lib/jquery.tokeninput.js"></script>
-## <script type="text/javascript" src="${srRoot}/js/new/config_subtitles.js"></script>
 <script>
 $(document).ready(function() {
     $("#subtitles_languages").tokenInput([${','.join("{\"id\": \"" + lang.opensubtitles + "\", name: \"" + lang.name + "\"}" for lang in subtitles.subtitleLanguageFilter())}], {
@@ -56,7 +51,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                             <label for="use_subtitles" class="clearfix">
                                 <span class="component-title">Search Subtitles</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" ${("", " checked=\"checked\"")[bool(sickbeard.USE_SUBTITLES)]} id="use_subtitles" name="use_subtitles">
+                                    <input type="checkbox" class="enabler" ${('', ' checked="checked"')[bool(sickbeard.USE_SUBTITLES)]} id="use_subtitles" name="use_subtitles">
                                 </span>
                             </label>
                         </div>

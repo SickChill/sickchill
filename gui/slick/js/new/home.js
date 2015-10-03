@@ -1,60 +1,3 @@
-$.tablesorter.addParser({
-    id: 'loadingNames',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        if (s.indexOf('Loading...') === 0)
-          return s.replace('Loading...','000');
-        else
-        return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'True' ? (s || '') : (s || '').replace(/^(The|A|An)\s/i,''));
-    },
-    type: 'text'
-});
-
-$.tablesorter.addParser({
-    id: 'quality',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        return s.replace('hd1080p',5).replace('hd720p',4).replace('hd',3).replace('sd',2).replace('any',1).replace('custom',7);
-    },
-    type: 'numeric'
-});
-
-$.tablesorter.addParser({
-    id: 'eps',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        match = s.match(/^(.*)/);
-
-        if (match === null || match[1] == "?") return -10;
-
-        var nums = match[1].split(" / ");
-        if (nums[0].indexOf("+") != -1) {
-            var num_parts = nums[0].split("+");
-            nums[0] = num_parts[0];
-        }
-
-        nums[0] = parseInt(nums[0]);
-        nums[1] = parseInt(nums[1]);
-
-        if (nums[0] === 0)
-          return nums[1];
-
-        var finalNum = parseInt(($('meta[data-var="max_download_count"]').data('content'))*nums[0]/nums[1]);
-        var pct = Math.round((nums[0]/nums[1])*100) / 1000;
-        if (finalNum > 0)
-          finalNum += nums[0];
-
-        return finalNum + pct;
-    },
-    type: 'numeric'
-});
-
 $(document).ready(function(){
     // Resets the tables sorting, needed as we only use a single call for both tables in tablesorter
     $('.resetsorting').on('click', function(){
@@ -88,7 +31,7 @@ $(document).ready(function(){
         },
         widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
         headers: (function(){
-            if($('meta[data-var="sickbeard.FILTER_ROW"]').data('content') == 'True'){
+            if(metaToBool('sickbeard.FILTER_ROW')){
                 return {
                     0: { sorter: 'isoDate' },
                     1: { columnSelector: false },
@@ -108,7 +51,7 @@ $(document).ready(function(){
             }
         }()),
         widgetOptions: (function(){
-            if($('meta[data-var="sickbeard.FILTER_ROW"]').data('content') == 'True'){
+            if(metaToBool('sickbeard.FILTER_ROW')){
                 return {
                     filter_columnFilters: true,
                     filter_hideFilters : true,
@@ -184,7 +127,7 @@ $(document).ready(function(){
         $.tablesorter.filter.bindSearch( "#showListTableShows", $('.search') );
     }
 
-    if(['True', 1].indexOf($('meta[data-var="sickbeard.ANIME_SPLIT_HOME"]').data('content')) >= 0){
+    if(metaToBool('sickbeard.ANIME_SPLIT_HOME')){
         if($("#showListTableAnime").find("tbody").find("tr").size() > 0){
             $.tablesorter.filter.bindSearch( "#showListTableAnime", $('.search') );
         }
@@ -192,46 +135,46 @@ $(document).ready(function(){
 
     var $container = [$('#container'), $('#container-anime')];
 
-    $.each($container, function (j) {
+    $.each($container, function (j){
         this.isotope({
             itemSelector: '.show',
-            sortBy : $('meta[data-var="sickbeard.POSTER_SORTBY"]').data('content'),
-            sortAscending: $('meta[data-var="sickbeard.POSTER_SORTDIR"]').data('content'),
+            sortBy : getMeta('sickbeard.POSTER_SORTBY'),
+            sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
             layoutMode: 'masonry',
             masonry: {
                 columnWidth: 13,
                 isFitWidth: true
             },
             getSortData: {
-                name: function( itemElem ) {
-                    var name = $( itemElem ).attr('data-name');
-                    return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'True' ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
+                name: function(itemElem){
+                    var name = $(itemElem).attr('data-name');
+                    return (metaToBool('sickbeard.SORT_ARTICLE') ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
                 },
                 network: '[data-network]',
-                date: function( itemElem ) {
-                    var date = $( itemElem ).attr('data-date');
-                    return date.length && parseInt( date, 10 ) || Number.POSITIVE_INFINITY;
+                date: function(itemElem){
+                    var date = $(itemElem).attr('data-date');
+                    return date.length && parseInt(date, 10) || Number.POSITIVE_INFINITY;
                 },
-                progress: function( itemElem ) {
-                    var progress = $( itemElem ).attr('data-progress');
-                    return progress.length && parseInt( progress, 10 ) || Number.NEGATIVE_INFINITY;
+                progress: function(itemElem){
+                    var progress = $(itemElem).attr('data-progress');
+                    return progress.length && parseInt(progress, 10) || Number.NEGATIVE_INFINITY;
                 }
             }
         });
     });
 
-    $('#postersort').on( 'change', function() {
+    $('#postersort').on('change', function(){
         var sortValue = this.value;
-        $('#container').isotope({ sortBy: sortValue });
-        $('#container-anime').isotope({ sortBy: sortValue });
+        $('#container').isotope({sortBy: sortValue});
+        $('#container-anime').isotope({sortBy: sortValue});
         $.get(this.options[this.selectedIndex].getAttribute('data-sort'));
     });
 
-    $('#postersortdirection').on( 'change', function() {
+    $('#postersortdirection').on('change', function(){
         var sortDirection = this.value;
         sortDirection = sortDirection == 'true';
-        $('#container').isotope({ sortAscending: sortDirection });
-        $('#container-anime').isotope({ sortAscending: sortDirection });
+        $('#container').isotope({sortAscending: sortDirection});
+        $('#container-anime').isotope({sortAscending: sortDirection});
         $.get(this.options[this.selectedIndex].getAttribute('data-sort'));
     });
 
@@ -242,7 +185,7 @@ $(document).ready(function(){
     }).on('shown.bs.popover', function () { // bootstrap popover event triggered when the popover opens
         // call this function to copy the column selection code into the popover
         $.tablesorter.columnSelector.attachTo( $('#showListTableShows'), '#popover-target');
-        if(['True', 1].indexOf($('meta[data-var="sickbeard.ANIME_SPLIT_HOME"]').data('content')) >= 0){
+        if(metaToBool('sickbeard.ANIME_SPLIT_HOME')){
             $.tablesorter.columnSelector.attachTo( $('#showListTableAnime'), '#popover-target');
         }
 

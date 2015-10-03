@@ -1,7 +1,7 @@
 $(document).ready(function(){
-    if($('meta[data-var="sickbeard.COMING_EPS_LAYOUT"]').data('content') == 'list'){
+    if(isMeta('sickbeard.COMING_EPS_LAYOUT', ['list'])){
         var sortCodes = {'date': 0, 'show': 1, 'network': 4};
-        var sort = $('meta[data-var="sickbeard.COMING_EPS_SORT"]').data('content');
+        var sort = getMeta('sickbeard.COMING_EPS_SORT');
         var sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
 
         $('#showListTable:has(tbody tr)').tablesorter({
@@ -26,7 +26,8 @@ $(document).ready(function(){
 
         $('#srRoot').ajaxEpSearch();
     }
-    if($('meta[data-var="sickbeard.COMING_EPS_LAYOUT"]').data('content') == 'banner' || $('meta[data-var="sickbeard.COMING_EPS_LAYOUT"]').data('content') == 'poster'){
+
+    if(isMeta('sickbeard.COMING_EPS_LAYOUT', ['banner', 'poster'])){
         $('#srRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
         $('.ep_summary').hide();
         $('.ep_summaryTrigger').click(function() {
@@ -38,8 +39,3 @@ $(document).ready(function(){
         });
     }
 });
-
-setTimeout(function () {
-    "use strict";
-    location.reload(true);
-}, 60000);

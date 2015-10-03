@@ -1,3 +1,8 @@
+var srRoot = getMeta('srRoot'),
+    themeSpinner = getMeta('themeSpinner'),
+    anonURL = getMeta('anonURL'),
+    top_image_html = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />';
+
 function initHeader() {
     //settings
     var header = $("#header");
@@ -59,27 +64,6 @@ function resetFilters(text) {
     }
 }
 
-function initFancybox() {
-    if ($("a[rel=dialog]").length > 0) {
-        $.getScript(srRoot + '/js/fancybox/jquery.fancybox.pack.js', function () {
-            $("head").append("<link rel='stylesheet' href='" + srRoot + "/js/fancybox/jquery.fancybox.css'>");
-            $("a[rel=dialog]").fancybox({
-                type: "image",
-                padding: 0,
-                helpers : {
-                    title : null,
-                    overlay : {
-                        locked: false,
-                        css : {
-                            'background' : 'rgba(0, 0, 0, 0.4)'
-                        }
-                    }
-                }
-            });
-        });
-    }
-}
-
 function initTabs() {
     $("#config-components").tabs({
         activate: function (event, ui) {
@@ -125,7 +109,6 @@ function initTabs() {
 
 function init() {
     initHeader();
-    initFancybox();
     initTabs();
 }
 
@@ -133,7 +116,7 @@ $(document).ready(function () {
     init();
     $(document).ready(function() {
         $('.dropdown-toggle').dropdownHover();
-        if(['True', 1].indexOf($('meta[data-var="sickbeard.FUZZY_DATING"]').data('content')) >= 0){
+        if(metaToBool('sickbeard.FUZZY_DATING')){
             $.timeago.settings.allowFuture = true;
             $.timeago.settings.strings = {
                 prefixAgo: null,
@@ -143,13 +126,13 @@ $(document).ready(function () {
                 seconds: "less than a minute",
                 minute: "about a minute",
                 minutes: "%d minutes",
-                hour: "about an hour",
-                hours: "about %d hours",
+                hour: "an hour",
+                hours: "%d hours",
                 day: "a day",
                 days: "%d days",
-                month: "about a month",
+                month: "a month",
                 months: "%d months",
-                year: "about a year",
+                year: "a year",
                 years: "%d years",
                 wordSeparator: " ",
                 numbers: []

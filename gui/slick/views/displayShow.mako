@@ -260,7 +260,7 @@
             <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched"checked="checked" /> Snatched: <b>${epCounts[Overview.SNATCHED]}</b></span></label>
         </div>
 
-        <button id="popover" type="button" class="btn btn-xs">Select Columns</button>
+        <button id="popover" type="button" class="btn btn-xs">Select Columns <b class="caret"></b></button>
         <div class="pull-right" >
             <button class="btn btn-xs seriesCheck">Select Filtered Episodes</button>
             <button class="btn btn-xs clearAll">Clear All</button>
@@ -311,6 +311,8 @@
             dfltEpNumbering = True
 
         epLoc = epResult["location"]
+        if epLoc and show._location and epLoc.lower().startswith(show._location.lower()):
+            epLoc = epLoc[len(show._location)+1:]
         %>
         % if int(epResult["season"]) != curSeason:
             % if curSeason == -1:
@@ -420,7 +422,6 @@
         % endif
         <% curSeason = int(epResult["season"]) %>
         % endif
-        <% epLoc = epResult["location"] %>
         <tr class="${Overview.overviewStrings[epCats[epStr]]} season-${curSeason} seasonstyle">
             <td class="col-checkbox">
                 % if int(epResult["status"]) != UNAIRED:
@@ -431,13 +432,9 @@
             <td align="center"><img src="${srRoot}/images/${("tbn-no.gif", "tbn.gif")[epResult["hastbn"]]}" alt="${("N", "Y")[epResult["hastbn"]]}" width="23" height="11" /></td>
             <td align="center">
             <%
-                if epLoc and show._location and epLoc.lower().startswith(show._location.lower()):
-                    epLoc = epLoc[len(show._location)+1:]
-
+                text = str(epResult['episode'])
                 if epLoc != '' and epLoc != None:
-                    text = '<span title="' + epLoc + '" class="addQTip">' + str(epResult['episode']) + "</span>"
-                else:
-                    text = str(epResult['episode'])
+                    text = '<span title="' + epLoc + '" class="addQTip">' + text + "</span>"
             %>
                 ${text}
             </td>
@@ -474,16 +471,19 @@
             % endif
             ${epResult["name"]}
             </td>
-            <td class="col-name]">
-                ${ntpath.basename((epResult['location'] or '').replace('\\','\\\\'))}
-            </td>
+            <td class="col-name">${epLoc}</td>
             <td class="col-ep">
                 % if epResult["file_size"]:
                     <% file_size = sickbeard.helpers.pretty_filesize(epResult["file_size"]) %>
                     ${file_size}
                 % endif
             </td>
-            <% date = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
+            % if epResult['airdate'] > int(datetime.datetime.now().toordinal()) * 100:
+                <% tempDate = datetime.datetime.utcfromtimestamp(0) + datetime.timedelta(seconds=epResult['airdate']) %>
+            % else:
+                <% tempDate = epResult['airdate'] %>
+            % endif
+            <% date = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(tempDate, show.airs, show.network)) %>
             <td class="col-airdate">
                 % if int(epResult['airdate']) != 1:
                     <time datetime="${date.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(date)}</time>
@@ -491,7 +491,6 @@
                     Never
                 % endif
                 <span class="sort_data">${date.isoformat('T')}</span>
-
             </td>
             <td>
                 % if sickbeard.DOWNLOAD_URL and epResult['location']:

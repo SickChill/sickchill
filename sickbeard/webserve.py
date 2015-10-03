@@ -641,21 +641,9 @@ class Home(WebRoot):
     def __init__(self, *args, **kwargs):
         super(Home, self).__init__(*args, **kwargs)
 
-    def HomeMenu(self):
-        menu = [
-            {'title': 'Add Shows', 'path': 'home/addShows/', 'icon': 'ui-icon ui-icon-video'},
-            {'title': 'Manual Post-Processing', 'path': 'home/postprocess/', 'icon': 'ui-icon ui-icon-folder-open'},
-            {'title': 'Update KODI', 'path': 'home/updateKODI/', 'requires': self.haveKODI(), 'icon': 'submenu-icon-kodi'},
-            {'title': 'Update Plex', 'path': 'home/updatePLEX/', 'requires': self.havePLEX(), 'icon': 'ui-icon ui-icon-refresh'},
-            {'title': 'Update Emby', 'path': 'home/updateEMBY/', 'requires': self.haveEMBY(), 'icon': 'ui-icon ui-icon-refresh'},
-            {'title': 'Manage Torrents', 'path': 'manage/manageTorrents/', 'requires': self.haveTORRENT(), 'icon': 'submenu-icon-bittorrent'},
-        ]
-
-        return menu
-
     def _genericMessage(self, subject, message):
         t = PageTemplate(rh=self, file="genericMessage.mako")
-        return t.render(message=message, subject=subject, submenu=self.HomeMenu(), topmenu="home", title="")
+        return t.render(message=message, subject=subject, topmenu="home", title="")
 
     def _getEpisode(self, show, season=None, episode=None, absolute=None):
         if show is None:
@@ -692,7 +680,7 @@ class Home(WebRoot):
         else:
             showlists = [["Shows", sickbeard.showList]]
 
-        return t.render(title="Home", header="Show List", topmenu="home", showlists=showlists, submenu=self.HomeMenu())
+        return t.render(title="Home", header="Show List", topmenu="home", showlists=showlists)
 
     def is_alive(self, *args, **kwargs):
         if 'callback' in kwargs and '_' in kwargs:
@@ -1067,7 +1055,7 @@ class Home(WebRoot):
                 rootDir[subject] = helpers.getDiskSpaceUsage(subject)
 
         t = PageTemplate(rh=self, file="status.mako")
-        return t.render(title='Status', header='Status', topmenu='system', submenu=self.HomeMenu(), tvdirFree=tvdirFree, rootDir=rootDir)
+        return t.render(title='Status', header='Status', topmenu='system', tvdirFree=tvdirFree, rootDir=rootDir)
 
     def shutdown(self, pid=None):
         if not Shutdown.stop(pid):
@@ -1084,7 +1072,7 @@ class Home(WebRoot):
 
         t = PageTemplate(rh=self, file="restart.mako")
 
-        return t.render(title="Home", header="Restarting SickRage", topmenu="system", submenu=self.HomeMenu())
+        return t.render(title="Home", header="Restarting SickRage", topmenu="system")
 
     def updateCheck(self, pid=None):
         if str(pid) != str(sickbeard.PID):
@@ -1109,7 +1097,7 @@ class Home(WebRoot):
                 sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
                 t = PageTemplate(rh=self, file="restart.mako")
-                return t.render(title="Home", header="Restarting SickRage", topmenu="home", submenu=self.HomeMenu())
+                return t.render(title="Home", header="Restarting SickRage", topmenu="home")
             else:
                 return self._genericMessage("Update Failed",
                                             "Update wasn't successful, not restarting. Check your log for more information.")
@@ -1334,11 +1322,10 @@ class Home(WebRoot):
                 scene_exceptions = sickbeard.scene_exceptions.get_scene_exceptions(showObj.indexerid)
 
             if showObj.is_anime:
-                return t.render(submenu=self.HomeMenu(), show=show, scene_exceptions=scene_exceptions, groups=groups, whitelist=whitelist,
+                return t.render(show=show, scene_exceptions=scene_exceptions, groups=groups, whitelist=whitelist,
                                 blacklist=blacklist, title='Edit Shows', header='Edit Shows')
             else:
-                return t.render(submenu=self.HomeMenu(), show=show, scene_exceptions=scene_exceptions, title='Edit Shows',
-                                header='Edit Shows')
+                return t.render(show=show, scene_exceptions=scene_exceptions, title='Edit Shows', header='Edit Shows')
 
         flatten_folders = config.checkbox_to_value(flatten_folders)
         dvdorder = config.checkbox_to_value(dvdorder)
@@ -2093,7 +2080,7 @@ class HomeIRC(Home):
     def index(self):
 
         t = PageTemplate(rh=self, file="IRC.mako")
-        return t.render(topmenu="irc", header="IRC", title="IRC", submenu=self.HomeMenu())
+        return t.render(topmenu="irc", header="IRC", title="IRC")
 
 @route('/news(/?.*)')
 class HomeNews(Home):
@@ -2110,7 +2097,7 @@ class HomeNews(Home):
         t = PageTemplate(rh=self, file="markdown.mako")
         data = markdown2.markdown(news if news else "The was a problem connecting to github, please refresh and try again", extras=['header-ids'])
 
-        return t.render(title="News", header="News", topmenu="news", data=data, submenu=self.HomeMenu())
+        return t.render(title="News", header="News", topmenu="news", data=data)
 
 
 @route('/changes(/?.*)')
@@ -2128,7 +2115,7 @@ class HomeChangeLog(Home):
         t = PageTemplate(rh=self, file="markdown.mako")
         data = markdown2.markdown(changes if changes else "The was a problem connecting to github, please refresh and try again", extras=['header-ids'])
 
-        return t.render(title="Changelog", header="Changelog", topmenu="system", data=data, submenu=self.HomeMenu())
+        return t.render(title="Changelog", header="Changelog", topmenu="system", data=data)
 
 
 @route('/home/postprocess(/?.*)')
@@ -2138,7 +2125,7 @@ class HomePostProcess(Home):
 
     def index(self):
         t = PageTemplate(rh=self, file="home_postprocess.mako")
-        return t.render(submenu=self.HomeMenu(), title='Post Processing', header='Post Processing')
+        return t.render(title='Post Processing', header='Post Processing', topmenu='home')
 
     def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
                        is_priority=None, delete_on="0", failed="0", type="auto", *args, **kwargs):
@@ -2182,7 +2169,7 @@ class HomeAddShows(Home):
 
     def index(self):
         t = PageTemplate(rh=self, file="home_addShows.mako")
-        return t.render(submenu=self.HomeMenu(), title='Add Shows', header='Add Shows')
+        return t.render(title='Add Shows', header='Add Shows', topmenu='home')
 
     def getIndexerLanguages(self):
         result = sickbeard.indexerApi().config['valid_languages']
@@ -2306,7 +2293,7 @@ class HomeAddShows(Home):
                     cur_dir['added_already'] = True
 
 
-        return t.render(submenu=self.HomeMenu(), dirList=dir_list)
+        return t.render(dirList=dir_list)
 
 
     def newShow(self, show_to_add=None, other_shows=None, search_string=None):
@@ -2347,11 +2334,11 @@ class HomeAddShows(Home):
 
         provided_indexer = int(indexer or sickbeard.INDEXER_DEFAULT)
 
-        return t.render(submenu=self.HomeMenu(), enable_anime_options=True,
+        return t.render(enable_anime_options=True,
                 use_provided_info=use_provided_info, default_show_name=default_show_name, other_shows=other_shows,
                 provided_show_dir=show_dir, provided_indexer_id=provided_indexer_id, provided_indexer_name=provided_indexer_name,
                 provided_indexer=provided_indexer, indexers=sickbeard.indexerApi().indexers, whitelist=[], blacklist=[], groups=[],
-                title='New Show', header='New Show'
+                title='New Show', header='New Show', topmenu='home'
         )
 
     def recommendedShows(self):
@@ -2360,7 +2347,7 @@ class HomeAddShows(Home):
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, file="home_recommendedShows.mako")
-        return t.render(title="Recommended Shows", header="Recommended Shows", submenu=self.HomeMenu(), enable_anime_options=False)
+        return t.render(title="Recommended Shows", header="Recommended Shows", enable_anime_options=False)
 
     def getRecommendedShows(self):
         t = PageTemplate(rh=self, file="trendingShows.mako")
@@ -2403,7 +2390,7 @@ class HomeAddShows(Home):
         except traktException as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
-        return t.render(title="Trending Shows", header="Trending Shows", trending_shows=trending_shows, blacklist=blacklist, submenu=self.HomeMenu())
+        return t.render(title="Trending Shows", header="Trending Shows", trending_shows=trending_shows, blacklist=blacklist)
 
     def trendingShows(self):
         """
@@ -2411,7 +2398,7 @@ class HomeAddShows(Home):
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, file="home_trendingShows.mako")
-        return t.render(title="Trending Shows", header="Trending Shows", submenu=self.HomeMenu(), enable_anime_options=False)
+        return t.render(title="Trending Shows", header="Trending Shows", enable_anime_options=False)
 
     def getTrendingShows(self):
         """
@@ -2457,7 +2444,7 @@ class HomeAddShows(Home):
         except traktException as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
-        return t.render(submenu = self.HomeMenu(), blacklist=blacklist, trending_shows=trending_shows)
+        return t.render(blacklist=blacklist, trending_shows=trending_shows)
 
 
     def popularShows(self):
@@ -2472,7 +2459,7 @@ class HomeAddShows(Home):
         except Exception as e:
             popular_shows = None
 
-        return t.render(title="Popular Shows", header="Popular Shows", submenu = self.HomeMenu(), popular_shows=popular_shows, imdb_exception=e)
+        return t.render(title="Popular Shows", header="Popular Shows", popular_shows=popular_shows, imdb_exception=e, topmenu="home")
 
 
     def addShowToBlacklist(self, indexer_id):
@@ -2499,7 +2486,7 @@ class HomeAddShows(Home):
         Prints out the page to add existing shows from a root dir
         """
         t = PageTemplate(rh=self, file="home_addExistingShow.mako")
-        return t.render(submenu=self.HomeMenu(), enable_anime_options=False, title='Existing Show', header='Existing Show', topmenu="home")
+        return t.render(enable_anime_options=False, title='Existing Show', header='Existing Show', topmenu="home")
 
     def addTraktShow(self, indexer_id, showName):
         if helpers.findCertainShow(sickbeard.showList, int(indexer_id)):
@@ -3642,7 +3629,7 @@ class ConfigGeneral(Config):
         sickbeard.save_config()
 
     def saveGeneral(self, log_dir=None, log_nr = 5, log_size = 1048576, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
-                    trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
+                    trash_remove_show=None, trash_rotate_logs=None, update_frequency=None, skip_removed_files=None,
                     indexerDefaultLang='en', ep_default_deleted_status=None, launch_browser=None, showupdate_hour=3, web_username=None,
                     api_key=None, indexer_default=None, timezone_display=None, cpu_preset='NORMAL',
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
@@ -3659,6 +3646,7 @@ class ConfigGeneral(Config):
         sickbeard.DOWNLOAD_URL = download_url
         sickbeard.INDEXER_DEFAULT_LANGUAGE = indexerDefaultLang
         sickbeard.EP_DEFAULT_DELETED_STATUS = ep_default_deleted_status
+        sickbeard.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         config.change_SHOWUPDATE_HOUR(showupdate_hour)
         config.change_VERSION_NOTIFY(config.checkbox_to_value(version_notify))
@@ -3933,7 +3921,7 @@ class ConfigPostProcessing(Config):
                            tv_download_dir=None, naming_custom_abd=None,
                            naming_anime=None,create_missing_show_dirs=None,add_shows_wo_dir=None,
                            naming_abd_pattern=None, naming_strip_year=None, use_failed_downloads=None,
-                           delete_failed=None, extra_scripts=None, skip_removed_files=None,
+                           delete_failed=None, extra_scripts=None,
                            naming_custom_sports=None, naming_sports_pattern=None,
                            naming_custom_anime=None, naming_anime_pattern=None, naming_anime_multi_ep=None,
                            autopostprocesser_frequency=None):
@@ -3972,7 +3960,6 @@ class ConfigPostProcessing(Config):
         sickbeard.NAMING_STRIP_YEAR = config.checkbox_to_value(naming_strip_year)
         sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
         sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
-        sickbeard.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
         sickbeard.NFO_RENAME = config.checkbox_to_value(nfo_rename)
 
         sickbeard.METADATA_KODI = kodi_data

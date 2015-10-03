@@ -1,24 +1,3 @@
-$.tablesorter.addParser({
-    id: 'showNames',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'True' ? (s || '') : (s || '').replace(/^(The|A|An)\s/i,''));
-    },
-    type: 'text'
-});
-$.tablesorter.addParser({
-    id: 'quality',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        return s.replace('hd1080p',5).replace('hd720p',4).replace('hd',3).replace('sd',2).replace('any',1).replace('best',0).replace('custom',7);
-    },
-    type: 'numeric'
-});
-
 $(document).ready(function(){
     $("#massUpdateTable:has(tbody tr)").tablesorter({
         sortList: [[1,0]],
@@ -30,6 +9,7 @@ $(document).ready(function(){
             6: function(node) { return $(node).find("img").attr("alt"); },
             7: function(node) { return $(node).find("img").attr("alt"); },
             8: function(node) { return $(node).find("img").attr("alt"); },
+            9: function(node) { return $(node).find("img").attr("alt"); },
         },
         widgets: ['zebra'],
         headers: {
@@ -40,11 +20,11 @@ $(document).ready(function(){
             4: { sorter: 'scene'},
             5: { sorter: 'anime'},
             6: { sorter: 'flatfold'},
-            7: { sorter: 'paused'},
-            8: { sorter: 'subtitle'},
-            9: { sorter: 'default_ep_status'},
-           10: { sorter: 'status'},
-           11: { sorter: false},
+            7: { sorter: 'archive_firstmatch'},
+            8: { sorter: 'paused'},
+            9: { sorter: 'subtitle'},
+           10: { sorter: 'default_ep_status'},
+           11: { sorter: 'status'},
            12: { sorter: false},
            13: { sorter: false},
            14: { sorter: false},

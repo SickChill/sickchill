@@ -1,10 +1,7 @@
-import os,sys,inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir)
+import os, sys
 
-import unrar2 as UnRAR2
-from unrar2.rar_exceptions import *
+import UnRAR2
+from UnRAR2.rar_exceptions import *
 
 
 def cleanup(dir='test'):

@@ -1,7 +1,7 @@
 $(document).ready(function(){
     $( "#tabs" ).tabs({
         collapsible: true,
-        selected: ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'True' ? -1 : 0)
+        selected: (metaToBool('sickbeard.SORT_ARTICLE') ? -1 : 0)
     });
 
     // initialise combos for dirty page refreshes
@@ -17,7 +17,7 @@ $(document).ready(function(){
             getSortData: {
                 name: function( itemElem ) {
                     var name = $( itemElem ).attr('data-name');
-                    return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'True' ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
+                    return (metaToBool('sickbeard.SORT_ARTICLE') ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
                 },
                 rating: '[data-rating] parseInt',
                 votes: '[data-votes] parseInt',
@@ -55,8 +55,3 @@ $(document).ready(function(){
         $('#container').isotope({sortAscending: ('asc' == this.value)});
     });
 });
-
-setTimeout(function () {
-    "use strict";
-    location.reload(true);
-}, 60000);

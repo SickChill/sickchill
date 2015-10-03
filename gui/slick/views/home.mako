@@ -40,17 +40,7 @@
     max_download_count = max_download_count * 100
 %>
 <%block name="metas">
-<meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
-<meta data-var="sickbeard.FILTER_ROW" data-content="${sickbeard.FILTER_ROW}">
-<meta data-var="sickbeard.ANIME_SPLIT_HOME" data-content="${sickbeard.ANIME_SPLIT_HOME}">
-<meta data-var="sickbeard.POSTER_SORTBY" data-content="${sickbeard.POSTER_SORTBY}">
-<meta data-var="sickbeard.POSTER_SORTDIR" data-content="${sickbeard.POSTER_SORTDIR}">
-<meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
-<meta data-var="sickbeard.DATE_PRESET" data-content="${sickbeard.DATE_PRESET}">
-<meta data-var="sickbeard.TIME_PRESET" data-content="${sickbeard.TIME_PRESET}">
-<meta data-var="sickbeard.TRIM_ZERO" data-content="${sickbeard.TRIM_ZERO}">
 <meta data-var="max_download_count" data-content="${max_download_count}">
-<meta data-var="layout" data-content="${layout}">
 </%block>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/new/home.js"></script>
@@ -65,7 +55,7 @@
 
 <div id="HomeLayout" class="pull-right hidden-print" style="margin-top: -40px;">
     % if layout != 'poster':
-        <button id="popover" type="button" class="btn btn-inline">Select Column <b class="caret"></b></button>
+        <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
     % endif
     <span> Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
@@ -396,7 +386,7 @@
     % if layout == 'small':
         <td class="tvShow">
             <div class="imgsmallposter ${layout}">
-                <a href="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=${layout}" rel="dialog" title="${curShow.name}">
+                <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}" title="${curShow.name}">
                     <img src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="${layout}" alt="${curShow.indexerid}"/>
                 </a>
                 <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>

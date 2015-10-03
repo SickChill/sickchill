@@ -611,14 +611,27 @@
                                 </span>
                             </label>
                         </div>
+                        
+                        <div class="field-pair">
+                            <label for="skip_removed_files">
+                                <span class="component-title">Skip Remove Detection</span>
+                                <span class="component-desc">
+                                <input type="checkbox" name="skip_removed_files" id="skip_removed_files" ${('', 'checked="checked"')[bool(sickbeard.SKIP_REMOVED_FILES)]}/>
+                                <p>Skip detection of removed files. If disable it will set default deleted status</p>
+                                 </span>
+                                <div class="clear-left">  
+                                <span class="component-desc"><b>NOTE:</b> This may mean SickRage misses renames as well</span>
+                                </div>                                
+                        </div>
+                        
                         <div class="field-pair">
                             <label for="ep_default_deleted_status">
                                 <span class="component-title">Default deleted episode status:</span>
                                     <span class="component-desc">
 % if not sickbeard.SKIP_REMOVED_FILES:
                                         <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm">
-                                        % for defStatus in [SKIPPED, IGNORED]:
-                                            <option value="${defStatus}" ${('', 'selected="selected"')[sickbeard.EP_DEFAULT_DELETED_STATUS == defStatus]}>${statusStrings[defStatus]}</option>
+                                        % for defStatus in [SKIPPED, IGNORED, ARCHIVED]:
+                                            <option value="${defStatus}" ${('', 'selected="selected"')[int(sickbeard.EP_DEFAULT_DELETED_STATUS) == defStatus]}>${statusStrings[defStatus]}</option>
                                         % endfor
                                         </select>
 % else:
@@ -630,6 +643,10 @@
                                         <input type="hidden" name="ep_default_deleted_status" value="${sickbeard.EP_DEFAULT_DELETED_STATUS}" />
 % endif
                                     <span>Define the status to be set for media file that has been deleted.</span>
+                                    <div class="clear-left">                                    
+                                    <p> <b>NOTE:</b> Archived option will keep previous downloaded quality</p>
+                                    <p>Example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)</p>
+                                    </div>
                                 </span>
                             </label>
                         </div>

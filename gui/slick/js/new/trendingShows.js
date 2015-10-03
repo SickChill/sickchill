@@ -12,7 +12,7 @@ $(document).ready(function(){
             getSortData: {
                 name: function(itemElem) {
                     var name = $(itemElem).attr('data-name') || '';
-                    return ($('meta[data-var="sickbeard.SORT_ARTICLE"]').data('content') == 'False' ? name.replace(/^(The|A|An)\s/i, '') : name).toLowerCase();
+                    return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^(The|A|An)\s/i, '')).toLowerCase();
                 },
                 rating: '[data-rating] parseInt',
                 votes: '[data-votes] parseInt',
@@ -50,8 +50,3 @@ $(document).ready(function(){
         $('#container').isotope({sortAscending: ('asc' == this.value)});
     });
 });
-
-setTimeout(function () {
-    "use strict";
-    location.reload(true);
-}, 60000);

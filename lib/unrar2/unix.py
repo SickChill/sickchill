@@ -48,7 +48,7 @@ def call_unrar(params):
                 pass
         if rar_executable_cached is None:
             raise UnpackerNotInstalled("No suitable RAR unpacker installed")
-            
+
     assert type(params) == list, "params must be list"
     args = [rar_executable_cached] + params
     try:
@@ -62,18 +62,15 @@ class RarFileImplementation(object):
     def init(self, password=None):
         global rar_executable_version
         self.password = password
-        
-        proc = self.call('v', [])
-        stdoutdata, stderrdata = proc.communicate()
-        
-        # Use unrar return code if available
-        self._check_returncode(proc.returncode)
+
+
+        stdoutdata, stderrdata = self.call('v', []).communicate()
 
         for line in stderrdata.splitlines():
             if line.strip().startswith("Cannot open"):
                 raise FileOpenError
             if line.find("CRC failed")>=0:
-                raise IncorrectRARPassword   
+                raise IncorrectRARPassword
         accum = []
         source = iter(stdoutdata.splitlines())
         line = ''
@@ -110,40 +107,36 @@ class RarFileImplementation(object):
             else:
                 self.comment = None
         else:
-            raise UnpackerNotInstalled("Unsupported RAR version, expected 4.x or 5.x, found: " 
+            raise UnpackerNotInstalled("Unsupported RAR version, expected 4.x or 5.x, found: "
                     + signature.split(" ")[1])
-                
-                
+
+
     def escaped_password(self):
         return '-' if self.password == None else self.password
-        
-        
+
+
     def call(self, cmd, options=[], files=[]):
         options2 = options + ['p'+self.escaped_password()]
         soptions = ['-'+x for x in options2]
         return call_unrar([cmd]+soptions+['--',self.archiveName]+files)
 
     def infoiter(self):
-        
+
         command = "v" if rar_executable_version == 4 else "l"
-        proc = self.call(command, ['c-'])
-        stdoutdata, stderrdata = proc.communicate()
-        
-        # Use unrar return code if available
-        self._check_returncode(proc.returncode)
-        
+        stdoutdata, stderrdata = self.call(command, ['c-']).communicate()
+
         for line in stderrdata.splitlines():
             if line.strip().startswith("Cannot open"):
                 raise FileOpenError
-            
+
         accum = []
         source = iter(stdoutdata.splitlines())
         line = ''
         while not line.startswith('-----------'):
             if line.strip().endswith('is not RAR archive'):
                 raise InvalidRARArchive
-            if line.startswith("CRC failed") or line.startswith("Checksum error") or line.startswith("checksum error"):
-                raise IncorrectRARPassword  
+            if line.startswith("CRC failed") or line.startswith("Checksum error"):
+                raise IncorrectRARPassword
             line = source.next()
         line = source.next()
         i = 0
@@ -160,7 +153,11 @@ class RarFileImplementation(object):
                     data['size'] = int(fields[0])
                     attr = fields[5]
                     data['isdir'] = 'd' in attr.lower()
-                    data['datetime'] = time.strptime(fields[3]+" "+fields[4], '%d-%m-%y %H:%M')
+                    try:
+                        data['datetime'] = time.strptime(fields[3]+" "+fields[4], '%d-%m-%y %H:%M')
+                    except ValueError:
+                        data['datetime'] = time.strptime(fields[3]+" "+fields[4], '%y-%m-%d %H:%M')
+
                     data['comment'] = None
                     data['volume'] = None
                     yield data
@@ -182,7 +179,7 @@ class RarFileImplementation(object):
                 yield data
                 i += 1
                 line = source.next()
-            
+
 
     def read_files(self, checker):
         res = []
@@ -191,9 +188,9 @@ class RarFileImplementation(object):
             if checkres==True and not info.isdir:
                 pipe = self.call('p', ['inul'], [info.filename]).stdout
                 res.append((info, pipe.read()))
-        return res            
+        return res
 
-          
+
     def extract(self, checker, path, withSubpath, overwrite):
         res = []
         command = 'x'
@@ -217,65 +214,28 @@ class RarFileImplementation(object):
         names.append(path)
         proc = self.call(command, options, names)
         stdoutdata, stderrdata = proc.communicate()
-        
-        # Use unrar return code if available
-        self._check_returncode(proc.returncode)
-        
-        if stderrdata.find("CRC failed")>=0 or stderrdata.find("Checksum error")>=0 or stderrdata.find("checksum error")>=0:
-            raise CRCRARError
-        if stderrdata.find("No files to extract")>=0:
-            raise NoFileToExtract
-        if stderrdata.find("Bad archive")>=0:
-            raise FatalRARError
-            
+        if stderrdata.find("CRC failed")>=0 or stderrdata.find("Checksum error")>=0:
+            raise IncorrectRARPassword
         return res
-    
-    def _check_returncode(self, returncode):
-        # RAR exit code from unrarsrc-5.2.1.tar.gz/errhnd.hpp
-        RARX_SUCCESS   =   0
-        RARX_WARNING   =   1
-        RARX_FATAL     =   2
-        RARX_CRC       =   3
-        RARX_LOCK      =   4
-        RARX_WRITE     =   5
-        RARX_OPEN      =   6
-        RARX_USERERROR =   7
-        RARX_MEMORY    =   8
-        RARX_CREATE    =   9
-        RARX_NOFILES   =  10
-        RARX_BADPWD    =  11
-        RARX_USERBREAK = 255
-        
-        if returncode != RARX_SUCCESS:
-            if returncode == RARX_FATAL:
-                raise FatalRARError
-            elif returncode == RARX_CRC:
-                raise CRCRARError
-            elif returncode == RARX_BADPWD:
-                raise IncorrectRARPassword
-            elif returncode == RARX_NOFILES:
-                raise NoFileToExtract
-            else:
-                raise GenericRARError
-            
+
     def destruct(self):
         pass
-        
+
     def get_volume(self):
         command = "v" if rar_executable_version == 4 else "l"
         stdoutdata, stderrdata = self.call(command, ['c-']).communicate()
-        
+
         for line in stderrdata.splitlines():
             if line.strip().startswith("Cannot open"):
                 raise FileOpenError
-            
+
         source = iter(stdoutdata.splitlines())
         line = ''
         while not line.startswith('-----------'):
             if line.strip().endswith('is not RAR archive'):
                 raise InvalidRARArchive
             if line.startswith("CRC failed") or line.startswith("Checksum error"):
-                raise IncorrectRARPassword  
+                raise IncorrectRARPassword
             line = source.next()
         line = source.next()
         if rar_executable_version == 4:
@@ -287,7 +247,7 @@ class RarFileImplementation(object):
                 return int(items[5]) - 1
             else:
                 return None
-                
+
         elif rar_executable_version == 5:
             while not line.startswith('-----------'):
                 line = source.next()
@@ -297,5 +257,3 @@ class RarFileImplementation(object):
                 return int(items[2]) - 1
             else:
                 return None
-
-    

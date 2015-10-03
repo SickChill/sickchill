@@ -49,7 +49,7 @@ $(document).ready(function(){
     });
 
     if(deleteCount >= 1) {
-        bootbox.confirm("You have selected to delete " + deleteCount + " show(s).  Are you sure you wish to cntinue? All files will be removed from your system.", function(result) {
+        bootbox.confirm("You have selected to delete " + deleteCount + " show(s).  Are you sure you wish to continue? All files will be removed from your system.", function(result) {
             if(result) {
                 $('.deleteCheck').each(function() {
                     if(this.checked === true) {
