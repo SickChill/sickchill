@@ -18,11 +18,6 @@
     layout = sickbeard.HISTORY_LAYOUT
     history_limit = sickbeard.HISTORY_LIMIT
 %>
-<%block name="css">
-<style type="text/css">
-.sort_data {display:none;}
-</style>
-</%block>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/new/history.js"></script>
 </%block>
