@@ -308,7 +308,7 @@
                 </div>
             </div>
         </footer>
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery-2.1.4.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/bootstrap.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/bootstrap-hover-dropdown.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery-ui-1.10.4.custom.min.js?${sbPID}"></script>
