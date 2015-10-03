@@ -285,7 +285,7 @@ class TVShow(object):
             if noCreate:
                 return None
 
-            logger.log(str(self.indexerid) + u": An object for episode S%02dE%02d didn't exist in the cache, trying to create it" % (season, episode), logger.DEBUG)
+            #logger.log(str(self.indexerid) + u": An object for episode S%02dE%02d didn't exist in the cache, trying to create it" % (season, episode), logger.DEBUG)
 
             if file:
                 ep = TVEpisode(self, season, episode, file)
@@ -1100,13 +1100,13 @@ class TVShow(object):
                     with curEp.lock:
                         # if it used to have a file associated with it and it doesn't anymore then set it to sickbeard.EP_DEFAULT_DELETED_STATUS
                         if curEp.location and curEp.status in Quality.DOWNLOADED:
-                        
+
                             if sickbeard.EP_DEFAULT_DELETED_STATUS == ARCHIVED:
                                 oldStatus, oldQuality = Quality.splitCompositeStatus(curEp.status)
                                 new_status = Quality.compositeStatus(ARCHIVED, oldQuality)
                             else:
                                 new_status = sickbeard.EP_DEFAULT_DELETED_STATUS
-                                
+
                             logger.log(u"%s: Location for S%02dE%02d doesn't exist, removing it and changing our status to %s" %
                             (self.indexerid, season, episode, statusStrings[new_status]) ,logger.DEBUG)
                             curEp.status = new_status
