@@ -1079,6 +1079,7 @@ class Home(WebRoot):
             return self.redirect('/home/')
 
         sickbeard.versionCheckScheduler.action.check_for_new_version(force=True)
+        sickbeard.versionCheckScheduler.action.check_for_new_news(force=True)
 
         return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
@@ -2089,10 +2090,14 @@ class HomeNews(Home):
 
     def index(self):
         try:
-            news = helpers.getURL('http://sickragetv.github.io/sickrage-news/news.md', session=requests.Session())
+            news = sickbeard.versionCheckScheduler.action.check_for_new_news(force=True)
         except Exception:
             logger.log(u'Could not load news from repo, giving a link!', logger.DEBUG)
-            news = 'Could not load news from the repo. [Click here for news.md](http://sickragetv.github.io/sickrage-news/news.md)'
+            news = 'Could not load news from the repo. [Click here for news.md]('+sickbeard.NEWS_URL+')'
+
+        sickbeard.NEWS_LAST_READ = sickbeard.NEWS_LATEST
+        sickbeard.NEWS_UNREAD = 0
+        sickbeard.save_config()
 
         t = PageTemplate(rh=self, file="markdown.mako")
         data = markdown2.markdown(news if news else "The was a problem connecting to github, please refresh and try again", extras=['header-ids'])

@@ -139,6 +139,11 @@ GIT_AUTOISSUES = False
 GIT_NEWVER = False
 DEVELOPER = False
 
+NEWS_URL = 'http://sickragetv.github.io/sickrage-news/news.md'
+NEWS_LAST_READ = None
+NEWS_LATEST = None
+NEWS_UNREAD = 0
+
 INIT_LOCK = Lock()
 started = False
 
@@ -602,7 +607,7 @@ def initialize(consoleLogging=True):
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, ARCHIVE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_ORG, GIT_REPO, GIT_USERNAME, GIT_PASSWORD, \
-            GIT_AUTOISSUES, DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY
+            GIT_AUTOISSUES, DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_URL, NEWS_LAST_READ, NEWS_LATEST, NEWS_UNREAD
 
         if __INITIALIZED__:
             return False
@@ -876,6 +881,9 @@ def initialize(consoleLogging=True):
             SHOWUPDATE_HOUR = 0
 
         BACKLOG_DAYS = check_setting_int(CFG, 'General', 'backlog_days', 7)
+
+        NEWS_LAST_READ = check_setting_str(CFG, 'General', 'news_last_read', '1970-01-01')
+        NEWS_LATEST = NEWS_LAST_READ
 
         NZB_DIR = check_setting_str(CFG, 'Blackhole', 'nzb_dir', '')
         TORRENT_DIR = check_setting_str(CFG, 'Blackhole', 'torrent_dir', '')
@@ -1733,6 +1741,7 @@ def save_config():
     new_config['General']['no_restart'] = int(NO_RESTART)
     new_config['General']['developer'] = int(DEVELOPER)
     new_config['General']['display_all_seasons'] = int(DISPLAY_ALL_SEASONS)
+    new_config['General']['news_last_read'] = NEWS_LAST_READ
 
     new_config['Blackhole'] = {}
     new_config['Blackhole']['nzb_dir'] = NZB_DIR

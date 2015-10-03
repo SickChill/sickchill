@@ -80,6 +80,8 @@ class CheckVersion:
                             logger.log(u"Update failed!")
                             ui.notifications.message('Update failed!')
 
+            self.check_for_new_news(force)
+
         self.amActive = False
 
     def run_backup_if_safe(self):
@@ -270,6 +272,41 @@ class CheckVersion:
         # found updates
         self.updater.set_newest_text()
         return True
+
+    def check_for_new_news(self, force=False):
+        """
+        Checks GitHub for the latest news.
+
+        returns: str, a copy of the news
+
+        force: if true the VERSION_NOTIFY setting will be ignored and a check will be forced
+        """
+
+        if not self.updater or not sickbeard.VERSION_NOTIFY and not sickbeard.AUTO_UPDATE and not force:
+            logger.log(u"check_for_new_news: Version checking is disabled, not checking for latest news")
+            return ''
+
+        # Grab a copy of the news
+        logger.log(u'check_for_new_news: Checking GitHub for latest news.', logger.DEBUG)
+        try:
+            news = helpers.getURL(sickbeard.NEWS_URL, session=requests.Session())
+        except Exception:
+            logger.log(u'check_for_new_news: Could not load news from repo.', logger.WARNING)
+
+        last_read = time.mktime(time.strptime(sickbeard.NEWS_LAST_READ, '%Y-%m-%d'))
+        dates= re.finditer(r'^####(\d{4}-\d{2}-\d{2})####$', news, re.M)
+
+        sickbeard.NEWS_UNREAD = 0
+        gotLatest = False
+        for match in dates:
+            if not gotLatest:
+                gotLatest = True
+                sickbeard.NEWS_LATEST = match.group(1)
+
+            if time.mktime(time.strptime(match.group(1), '%Y-%m-%d')) > last_read:
+                sickbeard.NEWS_UNREAD += 1
+
+        return news
 
     def update(self):
         if self.updater:
