@@ -167,7 +167,7 @@
                         </li>
 
                         <li id="NAVerrorlogs" class="navbar-split dropdown${('', ' active')[topmenu == 'errorlogs']}">
-                            <a href="${srRoot}/errorlogs/" class="dropdown-toggle">${logPageTitle}</a>
+                            <a href="${srRoot}/errorlogs/viewlog/" class="dropdown-toggle">${logPageTitle}</a>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Log (Errors)</a></li>
