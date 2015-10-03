@@ -110,13 +110,6 @@
             % if sbLogin:
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li id="NAVnews"${('', ' class="active"')[topmenu == 'news']}>
-                            <a href="${srRoot}/news/">News</a>
-                        </li>
-                        <li id="NAVirc"${('', ' class="active"')[topmenu == 'irc']}>
-                            <a href="${srRoot}/IRC/">IRC</a>
-                        </li>
-
                         <li id="NAVhome" class="navbar-split dropdown${('', ' active')[topmenu == 'home']}">
                             <a href="${srRoot}/home/" class="dropdown-toggle">Shows</a>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
@@ -197,16 +190,20 @@
                             <a href="${srRoot}/home/status/" class="dropdown-toggle"><span class="visible-xs">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" /></a>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
                             <ul class="dropdown-menu">
+                                <li><a href="${srRoot}/news/"><i class="menu-icon-help"></i>&nbsp;News</a></li>
+                                <li><a href="${srRoot}/IRC/"><i class="menu-icon-help"></i>&nbsp;IRC</a></li>
+                                <li><a href="${srRoot}/changes/"><i class="menu-icon-help"></i>&nbsp;Changelog</a></li>
+                                <li><a href="https://github.com/SiCKRAGETV/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="menu-icon-help"></i>&nbsp;Support SickRage</a></li>
+                                <li role="separator" class="divider"></li>
                                 <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
-                                <li><a href="${srRoot}/changes"><i class="menu-icon-help"></i>&nbsp;Changelog</a></li>
                                 <li><a href="${srRoot}/home/restart/?pid=${sbPID}" class="confirm restart"><i class="menu-icon-restart"></i>&nbsp;Restart</a></li>
                                 <li><a href="${srRoot}/home/shutdown/?pid=${sbPID}" class="confirm shutdown"><i class="menu-icon-shutdown"></i>&nbsp;Shutdown</a></li>
                                 <li><a href="${srRoot}/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;Logout</a></li>
+                                <li role="separator" class="divider"></li>
                                 <li><a href="${srRoot}/home/status/"><i class="menu-icon-help"></i>&nbsp;Server Status</a></li>
                             </ul>
                             <div style="clear:both;"></div>
                         </li>
-                        <li id="donate"><a href="https://github.com/SiCKRAGETV/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="${srRoot}/images/donate.jpg" alt="[donate]" class="navbaricon hidden-xs" /></a></li>
                     </ul>
             % endif
                 </div><!-- /.navbar-collapse -->
