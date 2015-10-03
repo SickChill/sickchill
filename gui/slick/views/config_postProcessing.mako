@@ -86,7 +86,7 @@
                             <input type="checkbox" name="create_missing_show_dirs" id="create_missing_show_dirs" ${('', 'checked="checked"')[bool(sickbeard.CREATE_MISSING_SHOW_DIRS)]}/>
                             <label for="create_missing_show_dirs">
                                 <span class="component-title">Create missing show directories</span>
-                                <span class="component-desc">Create missing show diretories when they get deleted</span>
+                                <span class="component-desc">Create missing show directories when they get deleted</span>
                             </label>
                         </div>
                         <div class="field-pair">
