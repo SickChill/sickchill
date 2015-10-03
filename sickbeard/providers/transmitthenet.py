@@ -34,12 +34,13 @@ from urllib import urlencode
 
 class TransmitTheNetProvider(generic.TorrentProvider):
     def __init__(self):
+
         generic.TorrentProvider.__init__(self, "TransmitTheNet")
 
         self.urls = {
             'base_url': 'https://transmithe.net/',
             'index': 'https://transmithe.net/index.php',
-            }
+        }
 
         self.url = self.urls['base_url']
 
@@ -55,7 +56,9 @@ class TransmitTheNetProvider(generic.TorrentProvider):
         self.cache = TransmitTheNetCache(self)
 
         self.search_params = {
-            'page': 'torrents', "category": 1, "active": 1
+            "page": 'torrents',
+            "category": 0,
+            "active": 1
         }
 
     def isEnabled(self):
@@ -70,6 +73,7 @@ class TransmitTheNetProvider(generic.TorrentProvider):
         return quality
 
     def _checkAuth(self):
+
         if not self.username or not self.password:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
@@ -78,11 +82,11 @@ class TransmitTheNetProvider(generic.TorrentProvider):
     def _doLogin(self):
 
         login_params = {
-             'uid': self.username,
-             'pwd': self.password,
-             'remember_me': 'on',
-             'login': 'submit'
-            }
+            'uid': self.username,
+            'pwd': self.password,
+            'remember_me': 'on',
+            'login': 'submit'
+        }
 
         response = self.getURL(self.urls['index'], params={'page': 'login'}, post_data=login_params, timeout=30)
         if not response:
@@ -106,7 +110,7 @@ class TransmitTheNetProvider(generic.TorrentProvider):
             elif ep_obj.show.anime:
                 ep_string = show_name + ' ' + "%d" % ep_obj.scene_absolute_number
             else:
-                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName SXX
+                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  # 1) showName SXX
 
             search_string['Season'].append(ep_string.strip())
 
@@ -141,7 +145,7 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                             sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
                                                                   'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
 
-                search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
+                search_string['Episode'].append(re.sub('\s+', ' ', ep_string.replace('.', ' ').strip()))
 
         return [search_string]
 
@@ -156,17 +160,17 @@ class TransmitTheNetProvider(generic.TorrentProvider):
         for mode in search_strings.keys():
             for search_string in search_strings[mode]:
 
-                self.search_params['search'] = search_string.strip()
+                self.search_params['search'] = search_string
                 logger.log(u"Search string: " + self.search_params['search'] + " for " + self.name, logger.DEBUG)
 
                 data = self.getURL(self.urls['index'], params=self.search_params)
                 url_searched = self.urls['index'] + "?" + urlencode(self.search_params)
 
                 if not data:
-                    logger.log(u"The response from (" + url_searched + ") is empty.",logger.DEBUG)
+                    logger.log(u"The response from (" + url_searched + ") is empty.", logger.DEBUG)
                     continue
 
-                logger.log(u"Search query from (" + url_searched + ") returned data.",logger.DEBUG)
+                logger.log(u"Search query from (" + url_searched + ") returned data.", logger.DEBUG)
 
                 try:
                     with BS4Parser(data) as html:
@@ -180,22 +184,25 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                                 if torr_row:
                                     torrent_rows.append(torr_row)
 
-                        #Continue only if one Release is found
+                        # Continue only if one Release is found
                         if len(torrent_rows) < 1:
-                             logger.log(u"The Data returned from " + self.name + " did not contain any torrent", logger.DEBUG)
-                             continue
+                            logger.log(u"The Data returned from " + self.name + " did not contain any torrent",
+                                       logger.DEBUG)
+                            continue
 
                         for torrent_row in torrent_rows:
 
-                            title = torrent_row.find('a',{"data-src": True})['data-src'].rsplit('.', 1)[0]
+                            title = torrent_row.find('a', {"data-src": True})['data-src'].rsplit('.', 1)[0]
                             download_href = torrent_row.find('img', {"alt": 'Download Torrent'}).findParent()['href']
-                            id = torrent_row.find('a',{"data-src": True})['href'].split("&id=", 1)[1]
+                            id = torrent_row.find('a', {"data-src": True})['href'].split("&id=", 1)[1]
                             seeders = int(torrent_row.findAll('a', {'title': 'Click here to view peers details'})[0].text.strip())
                             leechers = int(torrent_row.findAll('a', {'title': 'Click here to view peers details'})[1].text.strip())
 
-                            #Filter unseeded torrent
+                            # Filter unseeded torrent
                             if seeders < self.minseed:
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders: {0} (S:{1})".format(name, seeders), logger.DEBUG)
+                                logger.log(
+                                    u"Discarding torrent because it doesn't meet the minimum seeders: {0} (S:{1})".format(
+                                        title, seeders), logger.DEBUG)
                                 continue
 
                             if not title or not download_href:
@@ -204,14 +211,15 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                             download_url = self.urls['base_url'] + download_href
 
                             item = title, download_url, id, seeders, leechers
-                            logger.log(u"Found result: " + title.replace(' ','.') + " (" + download_url + ")", logger.DEBUG)
+                            logger.log(u"Found result: " + title.replace(' ', '.') + " (" + download_url + ")",
+                                       logger.DEBUG)
 
                             items[mode].append(item)
 
                 except:
                     logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
 
-            #For each search mode sort all the items by seeders
+            # For each search mode sort all the items by seeders
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
@@ -262,10 +270,9 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
 class TransmitTheNetCache(tvcache.TVCache):
     def __init__(self, provider):
-
         tvcache.TVCache.__init__(self, provider)
 
-        # only poll TorrentBytes every 20 minutes max
+        # Only poll TransmitTheNet every 20 minutes max
         self.minTime = 20
 
     def _getRSSData(self):
