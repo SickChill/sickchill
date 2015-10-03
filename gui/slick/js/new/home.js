@@ -138,8 +138,6 @@ $(document).ready(function(){
     $.each($container, function (j){
         this.isotope({
             itemSelector: '.show',
-            // (isMeta('sickbeard.HOME_LAYOUT', ['detailed']))
-            // getMeta('sickbeard.POSTER_SORTBY')
             sortBy : getMeta('sickbeard.POSTER_SORTBY'),
             sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
             layoutMode: 'masonry',
