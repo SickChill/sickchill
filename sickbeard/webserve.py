@@ -138,19 +138,8 @@ class PageTemplate(MakoTemplate):
         if "X-Forwarded-Proto" in rh.request.headers:
             self.arguments['sbHttpsEnabled'] = True if rh.request.headers['X-Forwarded-Proto'] == 'https' else False
 
-        logPageTitle = 'Logs &amp; Errors'
-        if len(classes.ErrorViewer.errors):
-            logPageTitle += ' (' + str(len(classes.ErrorViewer.errors)) + ')'
-        self.arguments['logPageTitle'] = logPageTitle
+        self.arguments['numErrors'] = len(classes.ErrorViewer.errors)
         self.arguments['sbPID'] = str(sickbeard.PID)
-        self.arguments['menu'] = [
-            {'title': 'Home', 'key': 'home'},
-            {'title': 'Coming Episodes', 'key': 'comingEpisodes'},
-            {'title': 'History', 'key': 'history'},
-            {'title': 'Manage', 'key': 'manage'},
-            {'title': 'Config', 'key': 'config'},
-            {'title': logPageTitle, 'key': 'errorlogs'},
-        ]
 
         self.arguments['title'] = "FixME"
         self.arguments['header'] = "FixME"
