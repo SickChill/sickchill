@@ -116,13 +116,16 @@
                         <li id="NAVirc"${('', ' class="active"')[topmenu == 'irc']}>
                             <a href="${srRoot}/IRC/">IRC</a>
                         </li>
-                        <li id="NAVhome" class="dropdown${('', ' active')[topmenu == 'home']}">
-                            <a href="${srRoot}/home/" class="dropdown-toggle disabled" data-toggle="dropdown">Shows <b class="caret"></b></a>
+
+                        <li id="NAVhome" class="navbar-split dropdown${('', ' active')[topmenu == 'home']}">
+                            <a href="${srRoot}/home/" class="dropdown-toggle">Shows</a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/home/"><i class="menu-icon-home"></i>&nbsp;Show List</a></li>
                                 <li><a href="${srRoot}/home/addShows/"><i class="menu-icon-addshow"></i>&nbsp;Add Shows</a></li>
                                 <li><a href="${srRoot}/home/postprocess/"><i class="menu-icon-postprocess"></i>&nbsp;Manual Post-Processing</a></li>
                             </ul>
+                            <div style="clear:both;"></div>
                         </li>
 
                         <li id="NAVcomingEpisodes"${('', ' class="active"')[topmenu == 'comingEpisodes']}>
@@ -133,8 +136,9 @@
                             <a href="${srRoot}/history/">History</a>
                         </li>
 
-                        <li id="NAVmanage" class="dropdown${('', ' active')[topmenu == 'manage']}">
-                            <a href="${srRoot}/manage/episodeStatuses/" class="dropdown-toggle disabled" data-toggle="dropdown">Manage <b class="caret"></b></a>
+                        <li id="NAVmanage" class="navbar-split dropdown${('', ' active')[topmenu == 'manage']}">
+                            <a href="${srRoot}/manage/episodeStatuses/" class="dropdown-toggle">Manage</a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/manage/"><i class="menu-icon-manage"></i>&nbsp;Mass Update</a></li>
                                 <li><a href="${srRoot}/manage/backlogOverview/"><i class="menu-icon-backlog-view"></i>&nbsp;Backlog Overview</a></li>
@@ -159,18 +163,22 @@
                                 <li><a href="${srRoot}/manage/subtitleMissed/"><i class="menu-icon-backlog"></i>&nbsp;Missed Subtitle Management</a></li>
                             % endif
                             </ul>
+                            <div style="clear:both;"></div>
                         </li>
 
-                        <li id="NAVerrorlogs" class="dropdown${('', ' active')[topmenu == 'errorlogs']}">
-                            <a href="${srRoot}/errorlogs/" class="dropdown-toggle disabled" data-toggle="dropdown">${logPageTitle} <b class="caret"></b></a>
+                        <li id="NAVerrorlogs" class="navbar-split dropdown${('', ' active')[topmenu == 'errorlogs']}">
+                            <a href="${srRoot}/errorlogs/" class="dropdown-toggle">${logPageTitle}</a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Log (Errors)</a></li>
                                 <li><a href="${srRoot}/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;View Log</a></li>
                             </ul>
+                            <div style="clear:both;"></div>
                         </li>
 
-                        <li id="NAVconfig" class="dropdown${('', ' active')[topmenu == 'config']}">
-                            <a href="${srRoot}/config/" class="dropdown-toggle disabled" data-toggle="dropdown"><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
+                        <li id="NAVconfig" class="navbar-split dropdown${('', ' active')[topmenu == 'config']}">
+                            <a href="${srRoot}/config/" class="dropdown-toggle"><span class="visible-xs">Config</span><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" /></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/config/"><i class="menu-icon-help"></i>&nbsp;Help &amp; Info</a></li>
                                 <li><a href="${srRoot}/config/general/"><i class="menu-icon-config"></i>&nbsp;General</a></li>
@@ -182,10 +190,12 @@
                                 <li><a href="${srRoot}/config/notifications/"><i class="menu-icon-config"></i>&nbsp;Notifications</a></li>
                                 <li><a href="${srRoot}/config/anime/"><i class="menu-icon-config"></i>&nbsp;Anime</a></li>
                             </ul>
+                            <div style="clear:both;"></div>
                         </li>
 
-                        <li id="NAVsystem" class="dropdown${('', ' active')[topmenu == 'system']}">
-                            <a href="${srRoot}/home/status/" class="dropdown-toggle disabled" data-toggle="dropdown"><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span></a>
+                        <li id="NAVsystem" class="navbar-split dropdown${('', ' active')[topmenu == 'system']}">
+                            <a href="${srRoot}/home/status/" class="dropdown-toggle"><span class="visible-xs">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" /></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
                                 <li><a href="${srRoot}/changes"><i class="menu-icon-help"></i>&nbsp;Changelog</a></li>
@@ -194,6 +204,7 @@
                                 <li><a href="${srRoot}/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;Logout</a></li>
                                 <li><a href="${srRoot}/home/status/"><i class="menu-icon-help"></i>&nbsp;Server Status</a></li>
                             </ul>
+                            <div style="clear:both;"></div>
                         </li>
                         <li id="donate"><a href="https://github.com/SiCKRAGETV/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="${srRoot}/images/donate.jpg" alt="[donate]" class="navbaricon hidden-xs" /></a></li>
                     </ul>
