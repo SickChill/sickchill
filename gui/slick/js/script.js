@@ -138,7 +138,7 @@ $(document).ready(function () {
     init();
     $(document).ready(function() {
         $('.dropdown-toggle').dropdownHover();
-        if(['True', 1].indexOf($('meta[data-var="sickbeard.FUZZY_DATING"]').data('content')) >= 0){
+        if(metaToBool('sickbeard.FUZZY_DATING')){
             $.timeago.settings.allowFuture = true;
             $.timeago.settings.strings = {
                 prefixAgo: null,
@@ -148,13 +148,13 @@ $(document).ready(function () {
                 seconds: "less than a minute",
                 minute: "about a minute",
                 minutes: "%d minutes",
-                hour: "about an hour",
-                hours: "about %d hours",
+                hour: "an hour",
+                hours: "%d hours",
                 day: "a day",
                 days: "%d days",
-                month: "about a month",
+                month: "a month",
                 months: "%d months",
-                year: "about a year",
+                year: "a year",
                 years: "%d years",
                 wordSeparator: " ",
                 numbers: []

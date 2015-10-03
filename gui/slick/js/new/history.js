@@ -3,7 +3,7 @@ $(document).ready(function(){
         widgets: ['zebra', 'filter'],
         sortList: [[0,1]],
         textExtraction: (function(){
-            if($('meta[data-var="layout"]').data('content') == 'detailed'){
+            if(isMeta('sickbeard.HOME_LAYOUT', ['detailed'])){
                 return {
                     0: function(node) { return $(node).find('time').attr('datetime'); },
                     4: function(node) { return $(node).find("span").text().toLowerCase(); }
@@ -18,7 +18,7 @@ $(document).ready(function(){
             }
         }()),
         headers: (function(){
-            if($('meta[data-var="layout"]').data('content') == 'detailed'){
+            if(isMeta('sickbeard.HOME_LAYOUT', ['detailed'])){
                 return {
                     0: { sorter: 'realISODate' },
                     4: { sorter: 'quality' }

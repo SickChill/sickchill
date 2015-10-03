@@ -135,46 +135,46 @@ $(document).ready(function(){
 
     var $container = [$('#container'), $('#container-anime')];
 
-    $.each($container, function (j) {
+    $.each($container, function (j){
         this.isotope({
             itemSelector: '.show',
-            sortBy : $('meta[data-var="sickbeard.POSTER_SORTBY"]').data('content'),
-            sortAscending: $('meta[data-var="sickbeard.POSTER_SORTDIR"]').data('content'),
+            sortBy : getMeta('sickbeard.POSTER_SORTBY'),
+            sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
             layoutMode: 'masonry',
             masonry: {
                 columnWidth: 13,
                 isFitWidth: true
             },
             getSortData: {
-                name: function( itemElem ) {
-                    var name = $( itemElem ).attr('data-name');
+                name: function(itemElem){
+                    var name = $(itemElem).attr('data-name');
                     return (metaToBool('sickbeard.SORT_ARTICLE') ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
                 },
                 network: '[data-network]',
-                date: function( itemElem ) {
-                    var date = $( itemElem ).attr('data-date');
-                    return date.length && parseInt( date, 10 ) || Number.POSITIVE_INFINITY;
+                date: function(itemElem){
+                    var date = $(itemElem).attr('data-date');
+                    return date.length && parseInt(date, 10) || Number.POSITIVE_INFINITY;
                 },
-                progress: function( itemElem ) {
-                    var progress = $( itemElem ).attr('data-progress');
-                    return progress.length && parseInt( progress, 10 ) || Number.NEGATIVE_INFINITY;
+                progress: function(itemElem){
+                    var progress = $(itemElem).attr('data-progress');
+                    return progress.length && parseInt(progress, 10) || Number.NEGATIVE_INFINITY;
                 }
             }
         });
     });
 
-    $('#postersort').on( 'change', function() {
+    $('#postersort').on('change', function(){
         var sortValue = this.value;
-        $('#container').isotope({ sortBy: sortValue });
-        $('#container-anime').isotope({ sortBy: sortValue });
+        $('#container').isotope({sortBy: sortValue});
+        $('#container-anime').isotope({sortBy: sortValue});
         $.get(this.options[this.selectedIndex].getAttribute('data-sort'));
     });
 
-    $('#postersortdirection').on( 'change', function() {
+    $('#postersortdirection').on('change', function(){
         var sortDirection = this.value;
         sortDirection = sortDirection == 'true';
-        $('#container').isotope({ sortAscending: sortDirection });
-        $('#container-anime').isotope({ sortAscending: sortDirection });
+        $('#container').isotope({sortAscending: sortDirection});
+        $('#container-anime').isotope({sortAscending: sortDirection});
         $.get(this.options[this.selectedIndex].getAttribute('data-sort'));
     });
 
