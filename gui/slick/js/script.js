@@ -64,27 +64,6 @@ function resetFilters(text) {
     }
 }
 
-function initFancybox() {
-    if ($("a[rel=dialog]").length > 0) {
-        $.getScript(srRoot + '/js/fancybox/jquery.fancybox.pack.js', function () {
-            $("head").append("<link rel='stylesheet' href='" + srRoot + "/js/fancybox/jquery.fancybox.css'>");
-            $("a[rel=dialog]").fancybox({
-                type: "image",
-                padding: 0,
-                helpers : {
-                    title : null,
-                    overlay : {
-                        locked: false,
-                        css : {
-                            'background' : 'rgba(0, 0, 0, 0.4)'
-                        }
-                    }
-                }
-            });
-        });
-    }
-}
-
 function initTabs() {
     $("#config-components").tabs({
         activate: function (event, ui) {
@@ -130,7 +109,6 @@ function initTabs() {
 
 function init() {
     initHeader();
-    initFancybox();
     initTabs();
 }
 

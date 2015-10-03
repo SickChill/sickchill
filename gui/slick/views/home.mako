@@ -386,7 +386,7 @@
     % if layout == 'small':
         <td class="tvShow">
             <div class="imgsmallposter ${layout}">
-                <a href="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=${layout}" rel="dialog" title="${curShow.name}">
+                <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}" title="${curShow.name}">
                     <img src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="${layout}" alt="${curShow.indexerid}"/>
                 </a>
                 <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
