@@ -1345,10 +1345,6 @@ td.col-search {
 comingEpisodes.mako
 ========================================================================== */
 
-.sort_data {
-    display: none;
-}
-
 .key {
     margin-bottom: 20px;
 }
@@ -2105,7 +2101,6 @@ input, textarea, select, .uneditable-input {
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
     color: #ffffff;
-    background-color: transparent;
 }
 
 .navbar-default .navbar-nav > .active > a,

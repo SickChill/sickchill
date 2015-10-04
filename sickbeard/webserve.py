@@ -138,19 +138,9 @@ class PageTemplate(MakoTemplate):
         if "X-Forwarded-Proto" in rh.request.headers:
             self.arguments['sbHttpsEnabled'] = True if rh.request.headers['X-Forwarded-Proto'] == 'https' else False
 
-        logPageTitle = 'Logs &amp; Errors'
-        if len(classes.ErrorViewer.errors):
-            logPageTitle += ' (' + str(len(classes.ErrorViewer.errors)) + ')'
-        self.arguments['logPageTitle'] = logPageTitle
+        self.arguments['numErrors'] = len(classes.ErrorViewer.errors)
+        self.arguments['numWarnings'] = len(classes.WarningViewer.errors)
         self.arguments['sbPID'] = str(sickbeard.PID)
-        self.arguments['menu'] = [
-            {'title': 'Home', 'key': 'home'},
-            {'title': 'Coming Episodes', 'key': 'comingEpisodes'},
-            {'title': 'History', 'key': 'history'},
-            {'title': 'Manage', 'key': 'manage'},
-            {'title': 'Config', 'key': 'config'},
-            {'title': logPageTitle, 'key': 'errorlogs'},
-        ]
 
         self.arguments['title'] = "FixME"
         self.arguments['header'] = "FixME"
@@ -511,7 +501,7 @@ class WebRoot(WebHandler):
 
         t = PageTemplate(rh=self, file='comingEpisodes.mako')
         return t.render(submenu=submenu, next_week=next_week1, today=today, results=results, layout=layout,
-                        title='Coming Episodes', header='Coming Episodes', topmenu='comingEpisodes')
+                        title='Schedule', header='Schedule', topmenu='comingEpisodes')
 
 
 class CalendarHandler(BaseHandler):
@@ -1079,6 +1069,7 @@ class Home(WebRoot):
             return self.redirect('/home/')
 
         sickbeard.versionCheckScheduler.action.check_for_new_version(force=True)
+        sickbeard.versionCheckScheduler.action.check_for_new_news(force=True)
 
         return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
@@ -2080,7 +2071,7 @@ class HomeIRC(Home):
     def index(self):
 
         t = PageTemplate(rh=self, file="IRC.mako")
-        return t.render(topmenu="irc", header="IRC", title="IRC")
+        return t.render(topmenu="system", header="IRC", title="IRC")
 
 @route('/news(/?.*)')
 class HomeNews(Home):
@@ -2089,15 +2080,19 @@ class HomeNews(Home):
 
     def index(self):
         try:
-            news = helpers.getURL('http://sickragetv.github.io/sickrage-news/news.md', session=requests.Session())
+            news = sickbeard.versionCheckScheduler.action.check_for_new_news(force=True)
         except Exception:
             logger.log(u'Could not load news from repo, giving a link!', logger.DEBUG)
-            news = 'Could not load news from the repo. [Click here for news.md](http://sickragetv.github.io/sickrage-news/news.md)'
+            news = 'Could not load news from the repo. [Click here for news.md]('+sickbeard.NEWS_URL+')'
+
+        sickbeard.NEWS_LAST_READ = sickbeard.NEWS_LATEST
+        sickbeard.NEWS_UNREAD = 0
+        sickbeard.save_config()
 
         t = PageTemplate(rh=self, file="markdown.mako")
         data = markdown2.markdown(news if news else "The was a problem connecting to github, please refresh and try again", extras=['header-ids'])
 
-        return t.render(title="News", header="News", topmenu="news", data=data)
+        return t.render(title="News", header="News", topmenu="system", data=data)
 
 
 @route('/changes(/?.*)')
@@ -4892,23 +4887,32 @@ class ErrorLogs(WebRoot):
 
     def ErrorLogsMenu(self):
         menu = [
-            {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/', 'icon': 'ui-icon ui-icon-trash'},
+            {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/', 'requires': self.haveErrors(), 'icon': 'ui-icon ui-icon-trash'},
+            {'title': 'Clear Warnings', 'path': 'errorlogs/clearerrors/?level='+str(logger.WARNING), 'requires': self.haveWarnings(), 'icon': 'ui-icon ui-icon-trash'},
             {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors(), 'class':'sumbiterrors', 'confirm': True, 'icon': 'ui-icon ui-icon-arrowreturnthick-1-n'},
         ]
 
         return menu
 
-    def index(self):
+    def index(self, level=logger.ERROR):
 
         t = PageTemplate(rh=self, file="errorlogs.mako")
-        return t.render(header="Logs &amp; Errors", title="Logs &amp; Errors", topmenu="errorlogs", submenu=self.ErrorLogsMenu())
+        return t.render(header="Logs &amp; Errors", title="Logs &amp; Errors", topmenu="system", submenu=self.ErrorLogsMenu(), logLevel=int(level))
 
     def haveErrors(self):
         if len(classes.ErrorViewer.errors) > 0:
             return True
 
-    def clearerrors(self):
-        classes.ErrorViewer.clear()
+    def haveWarnings(self):
+        if len(classes.WarningViewer.errors) > 0:
+            return True
+
+    def clearerrors(self, level=logger.ERROR):
+        if int(level) == logger.WARNING:
+            classes.WarningViewer.clear()
+        else:
+            classes.ErrorViewer.clear()
+
         return self.redirect("/errorlogs/")
 
     def viewlog(self, minLevel=logger.INFO, logFilter="<NONE>",logSearch=None, maxLines=500):
@@ -4995,7 +4999,7 @@ class ErrorLogs(WebRoot):
                 with ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
                         data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 
-        return t.render(header="Log File", title="Logs", topmenu="errorlogs", submenu=self.ErrorLogsMenu(),
+        return t.render(header="Log File", title="Logs", topmenu="system", submenu=self.ErrorLogsMenu(),
                 logLines="".join(data), minLevel=minLevel, logNameFilters=logNameFilters,
                 logFilter=logFilter, logSearch=logSearch)
 

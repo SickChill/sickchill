@@ -79,14 +79,13 @@ Jump to Show
             <td class="tableright" align="center" class="nowrap">
                 ${curResult["name"]}
             </td>
-            <% date = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
             <td>
+            <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
             % if int(curResult['airdate']) != 1:
-                <time datetime="${date.isoformat('T')}" class="date">${date}</time>
+                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
             % else:
                 Never
             % endif
-            <span class="sort_data">${date.isoformat('T')}</span>
             </td>
         </tr>
     % endfor

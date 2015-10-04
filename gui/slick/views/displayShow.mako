@@ -478,19 +478,14 @@
                     ${file_size}
                 % endif
             </td>
-            % if epResult['airdate'] > int(datetime.datetime.now().toordinal()) * 100:
-                <% tempDate = datetime.datetime.utcfromtimestamp(0) + datetime.timedelta(seconds=epResult['airdate']) %>
-            % else:
-                <% tempDate = epResult['airdate'] %>
-            % endif
-            <% date = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(tempDate, show.airs, show.network)) %>
             <td class="col-airdate">
                 % if int(epResult['airdate']) != 1:
-                    <time datetime="${date.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(date)}</time>
+                    ## Lets do this exactly like ComingEpisodes and History
+                    <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
+                    <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
                 % else:
                     Never
                 % endif
-                <span class="sort_data">${date.isoformat('T')}</span>
             </td>
             <td>
                 % if sickbeard.DOWNLOAD_URL and epResult['location']:

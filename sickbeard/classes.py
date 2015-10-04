@@ -271,6 +271,30 @@ class ErrorViewer:
         return ErrorViewer.errors
 
 
+class WarningViewer:
+    """
+    Keeps a static list of (warning) UIErrors to be displayed on the UI and allows
+    the list to be cleared.
+    """
+
+    errors = []
+
+    def __init__(self):
+        WarningViewer.errors = []
+
+    @staticmethod
+    def add(error):
+        WarningViewer.errors.append(error)
+
+    @staticmethod
+    def clear():
+        WarningViewer.errors = []
+
+    @staticmethod
+    def get():
+        return WarningViewer.errors
+
+
 class UIError:
     """
     Represents an error to be displayed in the web UI.

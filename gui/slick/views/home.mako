@@ -352,13 +352,10 @@
 %>
     <tr>
     % if cur_airs_next:
-        <% ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
+        <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
         % try:
-            <% temp_sbfdate_next = sbdatetime.sbdatetime.sbfdate(ldatetime) %>
-            <% temp_timegm_next = calendar.timegm(ldatetime.timetuple()) %>
             <td align="center" class="nowrap">
-                <time datetime="${ldatetime.isoformat('T')}" class="date">${temp_sbfdate_next}</time>
-                <span class="sort_data">${temp_timegm_next}</span>
+                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
             </td>
         % except ValueError:
             <td align="center" class="nowrap"></td>
@@ -368,13 +365,10 @@
     % endif
 
     % if cur_airs_prev:
-        <% pdatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)) %>
+        <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)) %>
         % try:
-            <% temp_sbfdate_prev = sbdatetime.sbdatetime.sbfdate(pdatetime) %>
-            <% temp_timegm_prev = calendar.timegm(pdatetime.timetuple()) %>
             <td align="center" class="nowrap">
-                <time datetime="${pdatetime.isoformat('T')}" class="date">${temp_sbfdate_prev}</time>
-                <span class="sort_data">${temp_timegm_prev}</span>
+                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
             </td>
         % except ValueError:
             <td align="center" class="nowrap"></td>
