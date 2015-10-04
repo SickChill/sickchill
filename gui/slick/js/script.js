@@ -30,7 +30,6 @@ function initHeader() {
             inside = false;
         }
     });
-
 }
 
 
@@ -59,9 +58,7 @@ function showMsg(msg, loader, timeout, ms) {
 }
 
 function resetFilters(text) {
-    if ($(".dataTables_filter").length > 0) {
-        $(".dataTables_filter input").attr("placeholder", "filter " + text + "");
-    }
+    if ($(".dataTables_filter").length > 0) $(".dataTables_filter input").attr("placeholder", "filter " + text + "");
 }
 
 function initTabs() {
@@ -106,38 +103,32 @@ function initTabs() {
 
     });
 }
-
-function init() {
+$(document).ready(function () {
     initHeader();
     initTabs();
-}
-
-$(document).ready(function () {
-    init();
-    $(document).ready(function() {
-        $('.dropdown-toggle').dropdownHover();
-        if(metaToBool('sickbeard.FUZZY_DATING')){
-            $.timeago.settings.allowFuture = true;
-            $.timeago.settings.strings = {
-                prefixAgo: null,
-                prefixFromNow: 'In ',
-                suffixAgo: "ago",
-                suffixFromNow: "",
-                seconds: "less than a minute",
-                minute: "about a minute",
-                minutes: "%d minutes",
-                hour: "an hour",
-                hours: "%d hours",
-                day: "a day",
-                days: "%d days",
-                month: "a month",
-                months: "%d months",
-                year: "a year",
-                years: "%d years",
-                wordSeparator: " ",
-                numbers: []
-            };
-            $("[datetime]").timeago();
-        }
-    });
+    $(document).anchor();
+    $('.dropdown-toggle').dropdownHover();
+    if(metaToBool('sickbeard.FUZZY_DATING')){
+        $.timeago.settings.allowFuture = true;
+        $.timeago.settings.strings = {
+            prefixAgo: null,
+            prefixFromNow: 'In ',
+            suffixAgo: "ago",
+            suffixFromNow: "",
+            seconds: "less than a minute",
+            minute: "about a minute",
+            minutes: "%d minutes",
+            hour: "an hour",
+            hours: "%d hours",
+            day: "a day",
+            days: "%d days",
+            month: "a month",
+            months: "%d months",
+            year: "a year",
+            years: "%d years",
+            wordSeparator: " ",
+            numbers: []
+        };
+        $("[datetime]").timeago();
+    }
 });

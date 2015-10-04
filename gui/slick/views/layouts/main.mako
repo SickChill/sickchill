@@ -91,6 +91,15 @@
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/pnotify.custom.min.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/country-flags.css?${sbPID}"/>
         % endif
+        <style>
+            *[id]:before {
+              display: block;
+              content: " ";
+              margin-top: -60px;
+              height: 60px;
+              visibility: hidden;
+            }
+        </style>
         <%block name="css" />
     </head>
 
@@ -342,6 +351,7 @@
         <script type="text/javascript" src="${srRoot}/js/lib/jquery-2.1.4.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/bootstrap.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/bootstrap-hover-dropdown.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/bootstrap-anchor.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery-ui-1.10.4.custom.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.cookie.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.cookiejar.js?${sbPID}"></script>
