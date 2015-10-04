@@ -4897,7 +4897,7 @@ class ErrorLogs(WebRoot):
     def index(self, level=logger.ERROR):
 
         t = PageTemplate(rh=self, file="errorlogs.mako")
-        return t.render(header="Logs &amp; Errors", title="Logs &amp; Errors", topmenu="errorlogs", submenu=self.ErrorLogsMenu(), logLevel=int(level))
+        return t.render(header="Logs &amp; Errors", title="Logs &amp; Errors", topmenu="system", submenu=self.ErrorLogsMenu(), logLevel=int(level))
 
     def haveErrors(self):
         if len(classes.ErrorViewer.errors) > 0:
@@ -4999,7 +4999,7 @@ class ErrorLogs(WebRoot):
                 with ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
                         data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 
-        return t.render(header="Log File", title="Logs", topmenu="errorlogs", submenu=self.ErrorLogsMenu(),
+        return t.render(header="Log File", title="Logs", topmenu="system", submenu=self.ErrorLogsMenu(),
                 logLines="".join(data), minLevel=minLevel, logNameFilters=logNameFilters,
                 logFilter=logFilter, logSearch=logSearch)
 

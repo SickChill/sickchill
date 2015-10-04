@@ -159,33 +159,6 @@
                             <div style="clear:both;"></div>
                         </li>
 
-                        <%
-                            numCombined = numErrors + numWarnings
-                            if numCombined:
-                                if numErrors:
-                                    errorBadgeClass = 'btn-danger'
-                                else:
-                                    errorBadgeClass = 'btn-warning'
-
-                                errorBadge = ' <span class="badge '+errorBadgeClass+'">'+str(numCombined)+'</span>'
-                            else:
-                                errorBadge = ''
-                        %>
-                        <li id="NAVerrorlogs" class="navbar-split dropdown${('', ' active')[topmenu == 'errorlogs']}">
-                            <a href="${srRoot}/errorlogs/viewlog/" class="dropdown-toggle">Logs &amp; Errors${errorBadge}</a>
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-%if numErrors:
-                                <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Errors <span class="badge btn-danger">${numErrors}</span></a></li>
-%endif
-%if numWarnings:
-                                <li><a href="${srRoot}/errorlogs/?level=${sickbeard.logger.WARNING}"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Warnings <span class="badge btn-warning">${numWarnings}</span></a></li>
-%endif
-                                <li><a href="${srRoot}/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;View Log</a></li>
-                            </ul>
-                            <div style="clear:both;"></div>
-                        </li>
-
                         <li id="NAVconfig" class="navbar-split dropdown${('', ' active')[topmenu == 'config']}">
                             <a href="${srRoot}/config/" class="dropdown-toggle"><span class="visible-xs">Config</span><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" /></a>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
@@ -208,15 +181,36 @@
                                 newsBadge = ' <span class="badge">'+str(sickbeard.NEWS_UNREAD)+'</span>'
                             else:
                                 newsBadge = ''
+
+                            numCombined = numErrors + numWarnings + sickbeard.NEWS_UNREAD
+                            if numCombined:
+                                if numErrors:
+                                    toolsBadgeClass = ' btn-danger'
+                                elif numWarnings:
+                                    toolsBadgeClass = ' btn-warning'
+                                else:
+                                    toolsBadgeClass = ''
+
+                                toolsBadge = ' <span class="badge'+toolsBadgeClass+'">'+str(numCombined)+'</span>'
+                            else:
+                                toolsBadge = ''
                         %>
                         <li id="NAVsystem" class="navbar-split dropdown${('', ' active')[topmenu == 'system']}">
-                            <a href="${srRoot}/home/status/" class="dropdown-toggle"><span class="visible-xs">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${newsBadge}</a>
+                            <a href="${srRoot}/home/status/" class="dropdown-toggle"><span class="visible-xs">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${toolsBadge}</a>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/news/"><i class="menu-icon-help"></i>&nbsp;News${newsBadge}</a></li>
                                 <li><a href="${srRoot}/IRC/"><i class="menu-icon-help"></i>&nbsp;IRC</a></li>
                                 <li><a href="${srRoot}/changes/"><i class="menu-icon-help"></i>&nbsp;Changelog</a></li>
                                 <li><a href="https://github.com/SiCKRAGETV/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="menu-icon-help"></i>&nbsp;Support SickRage</a></li>
+                                <li role="separator" class="divider"></li>
+                                %if numErrors:
+                                    <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Errors <span class="badge btn-danger">${numErrors}</span></a></li>
+                                %endif
+                                %if numWarnings:
+                                    <li><a href="${srRoot}/errorlogs/?level=${sickbeard.logger.WARNING}"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Warnings <span class="badge btn-warning">${numWarnings}</span></a></li>
+                                %endif
+                                <li><a href="${srRoot}/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;View Log</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
                                 <li><a href="${srRoot}/home/restart/?pid=${sbPID}" class="confirm restart"><i class="menu-icon-restart"></i>&nbsp;Restart</a></li>
