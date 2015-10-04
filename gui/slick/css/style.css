@@ -1345,10 +1345,6 @@ td.col-search {
 comingEpisodes.mako
 ========================================================================== */
 
-.sort_data {
-    display: none;
-}
-
 .key {
     margin-bottom: 20px;
 }
