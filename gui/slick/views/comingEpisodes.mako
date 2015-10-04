@@ -112,9 +112,8 @@
 
         <tr class="${show_div}">
             <td align="center" nowrap="nowrap">
-                <% airDate = sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING) %>
-                <% isoDate = sbdatetime.sbdatetime.convert_to_setting(cur_result['localtime']).isoformat('T') %>
-                <time datetime="${isoDate}" class="date">${airDate}</time>
+                <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_result['localtime'], cur_result['airs'], cur_result['network'])) %>
+                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
             </td>
 
             <td class="tvShow" nowrap="nowrap"><a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>

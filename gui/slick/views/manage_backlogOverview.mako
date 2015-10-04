@@ -80,16 +80,12 @@ Jump to Show
                 ${curResult["name"]}
             </td>
             <td>
-            ## Match ComingEpisodes, displayShow, and History
-            <% date = network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network) %>
-            <% airDate = sbdatetime.sbdatetime.sbfdatetime(date) %>
-            <% isoDate = sbdatetime.sbdatetime.convert_to_setting(date).isoformat('T') %>
+            <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
             % if int(curResult['airdate']) != 1:
-                <time datetime="${isoDate}" class="date">${airDate}</time>
+                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
             % else:
                 Never
             % endif
-            <span class="sort_data">${airDate}</span>
             </td>
         </tr>
     % endfor
