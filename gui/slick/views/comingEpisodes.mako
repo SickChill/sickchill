@@ -113,7 +113,7 @@
         <tr class="${show_div}">
             <td align="center" nowrap="nowrap">
                 <% airDate = sbdatetime.sbdatetime.convert_to_setting(cur_result['localtime']) %>
-                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
+                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
             </td>
 
             <td class="tvShow" nowrap="nowrap"><a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>

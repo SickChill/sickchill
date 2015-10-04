@@ -1233,6 +1233,20 @@ class Home(WebRoot):
         indexerid = int(showObj.indexerid)
         indexer = int(showObj.indexer)
 
+        # Delete any previous occurrances
+        for index, recentShow in enumerate(sickbeard.SHOWS_RECENT):
+            if recentShow['indexerid'] == indexerid:
+                del sickbeard.SHOWS_RECENT[index]
+
+        # Only track 5 most recent shows
+        del sickbeard.SHOWS_RECENT[4:]
+
+        # Insert most recent show
+        sickbeard.SHOWS_RECENT.insert(0, {
+            'indexerid': indexerid,
+            'name': showObj.name,
+        })
+
         return t.render(submenu=submenu, showLoc=showLoc, show_message=show_message,
                 show=showObj, sqlResults=sqlResults, seasonResults=seasonResults,
                 sortedShowLists=sortedShowLists, bwl=bwl, epCounts=epCounts,
@@ -2726,28 +2740,10 @@ class Manage(Home, WebRoot):
     def __init__(self, *args, **kwargs):
         super(Manage, self).__init__(*args, **kwargs)
 
-    def ManageMenu(self):
-        menu = [
-            {'title': 'Backlog Overview', 'path': 'manage/backlogOverview/', 'icon': 'ui-icon ui-icon-refresh'},
-            {'title': 'Manage Searches', 'path': 'manage/manageSearches/', 'icon': 'ui-icon ui-icon-search'},
-            {'title': 'Episode Status Management', 'path': 'manage/episodeStatuses/', 'icon': 'ui-icon ui-icon-transferthick-e-w'}, ]
-
-        if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' \
-                and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https'
-                     or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
-            menu.append({'title': 'Manage Torrents', 'path': 'manage/manageTorrents/', 'icon': 'submenu-icon-bittorrent'})
-
-        if sickbeard.USE_SUBTITLES:
-            menu.append({'title': 'Missed Subtitle Management', 'path': 'manage/subtitleMissed/', 'icon': 'ui-icon ui-icon-transferthick-e-w'})
-
-        if sickbeard.USE_FAILED_DOWNLOADS:
-            menu.append({'title': 'Failed Downloads', 'path': 'manage/failedDownloads/', 'icon': 'submenu-icon-failed-download'})
-
-        return menu
 
     def index(self):
         t = PageTemplate(rh=self, file="manage.mako")
-        return t.render(submenu=self.ManageMenu(), title='Mass Update', header='Mass Update', topmenu='manage')
+        return t.render(title='Mass Update', header='Mass Update', topmenu='manage')
 
 
     def showEpisodeStatuses(self, indexer_id, whichStatus):
@@ -2786,7 +2782,7 @@ class Manage(Home, WebRoot):
         # if we have no status then this is as far as we need to go
         if not status_list:
             return t.render(title="Episode Overview",  header="Episode Overview",
-                    topmenu="manage", submenu=self.ManageMenu(), whichStatus=whichStatus)
+                    topmenu="manage", whichStatus=whichStatus)
 
         myDB = db.DBConnection()
         status_results = myDB.select(
@@ -2810,8 +2806,8 @@ class Manage(Home, WebRoot):
                 sorted_show_ids.append(cur_indexer_id)
 
         return t.render(title="Episode Overview",  header="Episode Overview",
-                    topmenu='manage', submenu=self.ManageMenu(), whichStatus=whichStatus,
-                    show_names=show_names, ep_counts=ep_counts, sorted_show_ids=sorted_show_ids)
+                        topmenu='manage', whichStatus=whichStatus,
+                        show_names=show_names, ep_counts=ep_counts, sorted_show_ids=sorted_show_ids)
 
 
     def changeEpisodeStatuses(self, oldStatus, newStatus, *args, **kwargs):
@@ -2887,7 +2883,7 @@ class Manage(Home, WebRoot):
         t = PageTemplate(rh=self, file="manage_subtitleMissed.mako")
 
         if not whichSubs:
-            return t.render(submenu=self.ManageMenu(), whichSubs=whichSubs, title='Episode Overview', header='Episode Overview', topmenu='manage')
+            return t.render(whichSubs=whichSubs, title='Episode Overview', header='Episode Overview', topmenu='manage')
 
         myDB = db.DBConnection()
         status_results = myDB.select(
@@ -2916,8 +2912,8 @@ class Manage(Home, WebRoot):
             if cur_indexer_id not in sorted_show_ids:
                 sorted_show_ids.append(cur_indexer_id)
 
-        return t.render(submenu=self.ManageMenu(), whichSubs=whichSubs, show_names=show_names, ep_counts=ep_counts, sorted_show_ids=sorted_show_ids,
-                        title='Episode Overview', header='Episode Overview', topmenu='manage')
+        return t.render(whichSubs=whichSubs, show_names=show_names, ep_counts=ep_counts, sorted_show_ids=sorted_show_ids,
+                        title='Missing Subtitles', header='Missing Subtitles', topmenu='manage')
 
 
     def downloadSubtitleMissed(self, *args, **kwargs):
@@ -2999,7 +2995,7 @@ class Manage(Home, WebRoot):
             showCats[curShow.indexerid] = epCats
             showSQLResults[curShow.indexerid] = sqlResults
 
-        return t.render(submenu=self.ManageMenu(), showCounts=showCounts, showCats=showCats, showSQLResults=showSQLResults,
+        return t.render(showCounts=showCounts, showCats=showCats, showSQLResults=showSQLResults,
                         title='Backlog Overview', header='Backlog Overview', topmenu='manage')
 
 
@@ -3132,7 +3128,7 @@ class Manage(Home, WebRoot):
         air_by_date_value = last_air_by_date if air_by_date_all_same else None
         root_dir_list = root_dir_list
 
-        return t.render(submenu=self.ManageMenu(), showList=toEdit, archive_firstmatch_value=archive_firstmatch_value, default_ep_status_value=default_ep_status_value,
+        return t.render(showList=toEdit, archive_firstmatch_value=archive_firstmatch_value, default_ep_status_value=default_ep_status_value,
                         paused_value=paused_value, anime_value=anime_value, flatten_folders_value=flatten_folders_value,
                         quality_value=quality_value, subtitles_value=subtitles_value, scene_value=scene_value, sports_value=sports_value,
                         air_by_date_value=air_by_date_value, root_dir_list=root_dir_list, title='Mass Edit', header='Mass Edit', topmenu='manage')
@@ -3394,7 +3390,7 @@ class Manage(Home, WebRoot):
         if not sickbeard.TORRENT_PASSWORD == "" and not sickbeard.TORRENT_USERNAME == "":
             webui_url = re.sub('://', '://' + str(sickbeard.TORRENT_USERNAME) + ':' + str(sickbeard.TORRENT_PASSWORD) + '@' ,webui_url)
 
-        return t.render(submenu=self.ManageMenu(), webui_url=webui_url, info_download_station=info_download_station,
+        return t.render(webui_url=webui_url, info_download_station=info_download_station,
                         title='Manage Torrents', header='Manage Torrents', topmenu='manage')
 
 
@@ -3417,7 +3413,7 @@ class Manage(Home, WebRoot):
 
         t = PageTemplate(rh=self, file="manage_failedDownloads.mako")
 
-        return t.render(submenu=self.ManageMenu(), limit=limit, failedResults=sqlResults, title='Failed Downloads', header='Failed Downloads', topmenu='manage')
+        return t.render(limit=limit, failedResults=sqlResults, title='Failed Downloads', header='Failed Downloads', topmenu='manage')
 
 
 @route('/manage/manageSearches(/?.*)')
@@ -3429,7 +3425,7 @@ class ManageSearches(Manage):
         t = PageTemplate(rh=self, file="manage_manageSearches.mako")
         # t.backlogPI = sickbeard.backlogSearchScheduler.action.getProgressIndicator()
 
-        return t.render(submenu=self.ManageMenu(), backlogPaused=sickbeard.searchQueueScheduler.action.is_backlog_paused(),
+        return t.render(backlogPaused=sickbeard.searchQueueScheduler.action.is_backlog_paused(),
                         backlogRunning=sickbeard.searchQueueScheduler.action.is_backlog_in_progress(), dailySearchStatus=sickbeard.dailySearchScheduler.action.amActive,
                         findPropersStatus=sickbeard.properFinderScheduler.action.amActive, queueLength=sickbeard.searchQueueScheduler.action.queue_length(),
                         title='Manage Searches', header='Manage Searches', topmenu='manage')

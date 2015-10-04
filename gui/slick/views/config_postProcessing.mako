@@ -93,7 +93,7 @@
                             <input type="checkbox" name="add_shows_wo_dir" id="add_shows_wo_dir" ${('', 'checked="checked"')[bool(sickbeard.ADD_SHOWS_WO_DIR)]}/>
                             <label for="add_shows_wo_dir">
                                 <span class="component-title">Add shows without directory</span>
-                                <span class="component-desc">Add shows without creating a directory (don't recommended)</span>
+                                <span class="component-desc">Add shows without creating a directory (not recommended)</span>
                             </label>
                         </div>
                         <div class="field-pair">
@@ -305,7 +305,7 @@
                                 </label>
                                 <label class="nocheck">
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc"><b>NOTE:</b> Dont' forget to add quality pattern. Otherwise after post-procesing the episode will have UNKNOWN quality</span>
+                                    <span class="component-desc"><b>NOTE:</b> Don't forget to add quality pattern. Otherwise after post-procesing the episode will have UNKNOWN quality</span>
                                  </label>
                             </div>
 

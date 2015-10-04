@@ -422,7 +422,7 @@
         % endif
         <% curSeason = int(epResult["season"]) %>
         % endif
-        <tr class="${Overview.overviewStrings[epCats[epStr]]} season-${curSeason} seasonstyle">
+        <tr class="${Overview.overviewStrings[epCats[epStr]]} season-${curSeason} seasonstyle" id="${'S' + str(epResult["season"]) + 'E' + str(epResult["episode"])}">
             <td class="col-checkbox">
                 % if int(epResult["status"]) != UNAIRED:
                     <input type="checkbox" class="epCheck" id="${str(epResult["season"])+'x'+str(epResult["episode"])}" name="${str(epResult["season"]) +"x"+str(epResult["episode"])}" />

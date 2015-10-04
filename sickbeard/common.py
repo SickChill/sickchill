@@ -265,7 +265,7 @@ class Quality:
 
             return ret
 
-        if checkName([r"(pdtv|hd.?tv|dsr|tv(rip|mux)).(xvid|x26[45]|h.?26[45])"], all) and not checkName([r"(720|1080)[pi]"], all) and\
+        if checkName([r"([sp]d.?tv|hd.?tv|dsr|tv(rip|mux)).(xvid|x26[45]|h.?26[45])"], all) and not checkName([r"(720|1080)[pi]"], all) and\
                 not checkName([r"hr.ws.pdtv.x26[45]"], any):
             ret = Quality.SDTV
         elif checkName([r"web.?dl|web(rip|mux)", r"xvid|x26[45]|h.?26[45]"], all) and not checkName([r"(720|1080)[pi]"], all):
