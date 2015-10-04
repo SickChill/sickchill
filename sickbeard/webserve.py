@@ -139,6 +139,7 @@ class PageTemplate(MakoTemplate):
             self.arguments['sbHttpsEnabled'] = True if rh.request.headers['X-Forwarded-Proto'] == 'https' else False
 
         self.arguments['numErrors'] = len(classes.ErrorViewer.errors)
+        self.arguments['numWarnings'] = len(classes.WarningViewer.errors)
         self.arguments['sbPID'] = str(sickbeard.PID)
 
         self.arguments['title'] = "FixME"
@@ -4886,23 +4887,32 @@ class ErrorLogs(WebRoot):
 
     def ErrorLogsMenu(self):
         menu = [
-            {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/', 'icon': 'ui-icon ui-icon-trash'},
+            {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/', 'requires': self.haveErrors(), 'icon': 'ui-icon ui-icon-trash'},
+            {'title': 'Clear Warnings', 'path': 'errorlogs/clearerrors/?level='+str(logger.WARNING), 'requires': self.haveWarnings(), 'icon': 'ui-icon ui-icon-trash'},
             {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors(), 'class':'sumbiterrors', 'confirm': True, 'icon': 'ui-icon ui-icon-arrowreturnthick-1-n'},
         ]
 
         return menu
 
-    def index(self):
+    def index(self, level=logger.ERROR):
 
         t = PageTemplate(rh=self, file="errorlogs.mako")
-        return t.render(header="Logs &amp; Errors", title="Logs &amp; Errors", topmenu="errorlogs", submenu=self.ErrorLogsMenu())
+        return t.render(header="Logs &amp; Errors", title="Logs &amp; Errors", topmenu="errorlogs", submenu=self.ErrorLogsMenu(), logLevel=int(level))
 
     def haveErrors(self):
         if len(classes.ErrorViewer.errors) > 0:
             return True
 
-    def clearerrors(self):
-        classes.ErrorViewer.clear()
+    def haveWarnings(self):
+        if len(classes.WarningViewer.errors) > 0:
+            return True
+
+    def clearerrors(self, level=logger.ERROR):
+        if int(level) == logger.WARNING:
+            classes.WarningViewer.clear()
+        else:
+            classes.ErrorViewer.clear()
+
         return self.redirect("/errorlogs/")
 
     def viewlog(self, minLevel=logger.INFO, logFilter="<NONE>",logSearch=None, maxLines=500):

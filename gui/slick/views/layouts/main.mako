@@ -159,17 +159,28 @@
                             <div style="clear:both;"></div>
                         </li>
 
-			<%
-			    if numErrors:
-			        errorBadge = ' <span class="badge btn-danger">'+str(numErrors)+'</span>'
-			    else:
-			        errorBadge = ''
-			%>
+                        <%
+                            numCombined = numErrors + numWarnings
+                            if numCombined:
+                                if numErrors:
+                                    errorBadgeClass = 'btn-danger'
+                                else:
+                                    errorBadgeClass = 'btn-warning'
+
+                                errorBadge = ' <span class="badge '+errorBadgeClass+'">'+str(numCombined)+'</span>'
+                            else:
+                                errorBadge = ''
+                        %>
                         <li id="NAVerrorlogs" class="navbar-split dropdown${('', ' active')[topmenu == 'errorlogs']}">
                             <a href="${srRoot}/errorlogs/viewlog/" class="dropdown-toggle">Logs &amp; Errors${errorBadge}</a>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Log (Errors)</a></li>
+%if numErrors:
+                                <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Errors <span class="badge btn-danger">${numErrors}</span></a></li>
+%endif
+%if numWarnings:
+                                <li><a href="${srRoot}/errorlogs/?level=${sickbeard.logger.WARNING}"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Warnings <span class="badge btn-warning">${numWarnings}</span></a></li>
+%endif
                                 <li><a href="${srRoot}/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;View Log</a></li>
                             </ul>
                             <div style="clear:both;"></div>
