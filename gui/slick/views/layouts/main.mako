@@ -91,15 +91,6 @@
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/pnotify.custom.min.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/country-flags.css?${sbPID}"/>
         % endif
-        <style>
-            *[id]:before {
-              display: block;
-              content: " ";
-              margin-top: -60px;
-              height: 60px;
-              visibility: hidden;
-            }
-        </style>
         <%block name="css" />
     </head>
 
