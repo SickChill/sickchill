@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $('#minLevel,#logFilter,#logSearch').on('change', function(){
+    $('#minLevel,#logFilter,#logSearch').on('keyup change', function(){
         if ($('#logSearch').val().length > 0){
             $('#logSearch').prop('disabled', true);
             $('#logFilter option[value="<NONE>"]').prop('selected', true);
