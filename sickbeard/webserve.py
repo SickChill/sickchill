@@ -2913,7 +2913,7 @@ class Manage(Home, WebRoot):
                 sorted_show_ids.append(cur_indexer_id)
 
         return t.render(whichSubs=whichSubs, show_names=show_names, ep_counts=ep_counts, sorted_show_ids=sorted_show_ids,
-                        title='Episode Overview', header='Episode Overview', topmenu='manage')
+                        title='Missing Subtitles', header='Missing Subtitles', topmenu='manage')
 
 
     def downloadSubtitleMissed(self, *args, **kwargs):
