@@ -8,12 +8,22 @@
 <script type="text/javascript" src="${srRoot}/js/new/errorlogs.js"></script>
 </%block>
 <%block name="content">
+<%
+    if logLevel == sickbeard.logger.WARNING:
+        errors = classes.WarningViewer.errors
+        title = 'Logs &amp Errors [WARNING]'
+    else:
+        errors = classes.ErrorViewer.errors
+        title = 'Logs &amp Errors [ERROR]'
+%>
 <h1 class="header">${title}</h1>
 <div class="align-left"><pre>
-% if classes.ErrorViewer.errors:
-    % for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
-        ${curError.time} ${curError.message}
+% if errors:
+    % for curError in sorted(errors, key=lambda error: error.time, reverse=True)[:500]:
+${curError.time} ${curError.message}
     % endfor
+% else:
+There are no events to display.
 % endif
 </pre>
 </div>

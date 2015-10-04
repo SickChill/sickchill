@@ -146,6 +146,9 @@ class Logger(object):
         if level == ERROR:
             self.logger.exception(message, *args, **kwargs)
             classes.ErrorViewer.add(classes.UIError(message))
+        elif level == WARNING:
+            self.logger.exception(message, *args, **kwargs)
+            classes.WarningViewer.add(classes.UIError(message))
 
             # if sickbeard.GIT_AUTOISSUES:
             #    self.submit_errors()
