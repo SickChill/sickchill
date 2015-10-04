@@ -78,7 +78,7 @@
                                         <option value="news" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'news']}>News</option>
                                         <option value="IRC" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'IRC']}>IRC</option>
                                         <option value="home" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'home']}>Shows</option>
-                                        <option value="comingEpisodes" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'comingEpisodes']}>Coming Episodes</option>
+                                        <option value="comingEpisodes" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'comingEpisodes']}>Schedule</option>
                                         <option value="history" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'history']}>History</option>
                                     </select>
                                     <span>when launching SickRage interface</span>
@@ -291,7 +291,7 @@
                                 <span class="component-title">Missed episodes range</span>
                                 <span class="component-desc">
                                     <input type="number" step="1" min="7" name="coming_eps_missed_range" id="coming_eps_missed_range" value="${sickbeard.COMING_EPS_MISSED_RANGE}" class="form-control input-sm input75" />
-                                    <p>Set the range in days of the missed episodes in the Coming Episode page</p>
+                                    <p>Set the range in days of the missed episodes in the Schedule page</p>
                                 </span>
                             </label>
                         </div>
