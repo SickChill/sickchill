@@ -26,6 +26,7 @@ import stat
 import traceback
 import db
 import time
+import datetime
 
 import sickbeard
 from sickbeard import notifiers
@@ -290,10 +291,13 @@ class CheckVersion:
         logger.log(u'check_for_new_news: Checking GitHub for latest news.', logger.DEBUG)
         try:
             news = helpers.getURL(sickbeard.NEWS_URL, session=requests.Session())
-        except Exception:
+        except:
             logger.log(u'check_for_new_news: Could not load news from repo.', logger.WARNING)
 
-        last_read = time.mktime(time.strptime(sickbeard.NEWS_LAST_READ, '%Y-%m-%d'))
+        try:
+            last_read = datetime.datetime.strptime(sickbeard.NEWS_LAST_READ, '%Y-%m-%d')
+        except:
+            last_read = 0
         dates= re.finditer(r'^####(\d{4}-\d{2}-\d{2})####$', news, re.M)
 
         sickbeard.NEWS_UNREAD = 0
@@ -303,8 +307,11 @@ class CheckVersion:
                 gotLatest = True
                 sickbeard.NEWS_LATEST = match.group(1)
 
-            if time.mktime(time.strptime(match.group(1), '%Y-%m-%d')) > last_read:
-                sickbeard.NEWS_UNREAD += 1
+            try:
+                if datetime.datetime.strptime(match.group(1), '%Y-%m-%d') > last_read:
+                    sickbeard.NEWS_UNREAD += 1
+            except:
+                pass
 
         return news
 
