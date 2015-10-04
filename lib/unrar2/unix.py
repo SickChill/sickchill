@@ -156,7 +156,7 @@ class RarFileImplementation(object):
                     try:
                         data['datetime'] = time.strptime(fields[3]+" "+fields[4], '%d-%m-%y %H:%M')
                     except ValueError:
-                        data['datetime'] = time.strptime(fields[3]+" "+fields[4], '%y-%m-%d %H:%M')
+                        data['datetime'] = time.strptime(fields[3]+" "+fields[4], '%Y-%m-%d %H:%M')
 
                     data['comment'] = None
                     data['volume'] = None
@@ -176,7 +176,7 @@ class RarFileImplementation(object):
                 try:
                     data['datetime'] = time.strptime(fields[2]+" "+fields[3], '%d-%m-%y %H:%M')
                 except ValueError:
-                    data['datetime'] = time.strptime(fields[2]+" "+fields[3], '%y-%m-%d %H:%M')
+                    data['datetime'] = time.strptime(fields[2]+" "+fields[3], '%Y-%m-%d %H:%M')
                 data['comment'] = None
                 data['volume'] = None
                 yield data
