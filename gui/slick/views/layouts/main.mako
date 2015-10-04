@@ -122,7 +122,7 @@
                         </li>
 
                         <li id="NAVcomingEpisodes"${('', ' class="active"')[topmenu == 'comingEpisodes']}>
-                            <a href="${srRoot}/comingEpisodes/">Coming Episodes</a>
+                            <a href="${srRoot}/comingEpisodes/">Schedule</a>
                         </li>
 
                         <li id="NAVhistory"${('', ' class="active"')[topmenu == 'history']}>

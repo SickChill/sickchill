@@ -501,7 +501,7 @@ class WebRoot(WebHandler):
 
         t = PageTemplate(rh=self, file='comingEpisodes.mako')
         return t.render(submenu=submenu, next_week=next_week1, today=today, results=results, layout=layout,
-                        title='Coming Episodes', header='Coming Episodes', topmenu='comingEpisodes')
+                        title='Schedule', header='Schedule', topmenu='comingEpisodes')
 
 
 class CalendarHandler(BaseHandler):
