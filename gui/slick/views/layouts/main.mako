@@ -352,7 +352,7 @@
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter.widgets-2.17.7.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter.widget-columnSelector-2.17.7.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.qtip-2.2.1.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/lib/pnotify.custom.min.js"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/pnotify.custom.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.form-3.35.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.ui.touch-punch-0.2.2.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/isotope.pkgd.min.js?${sbPID}"></script>
@@ -362,9 +362,9 @@
         <script type="text/javascript" src="${srRoot}/js/new/parsers.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/new/meta.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/script.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.scrolltopcontrol-1.1.js"></script>
-        <script type="text/javascript" src="${srRoot}/js/browser.js"></script>
-        <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.scrolltopcontrol-1.1.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/browser.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/confirmations.js?${sbPID}"></script>
     % endif
         <%block name="scripts" />
