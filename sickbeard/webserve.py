@@ -2081,7 +2081,7 @@ class HomeIRC(Home):
     def index(self):
 
         t = PageTemplate(rh=self, file="IRC.mako")
-        return t.render(topmenu="irc", header="IRC", title="IRC")
+        return t.render(topmenu="system", header="IRC", title="IRC")
 
 @route('/news(/?.*)')
 class HomeNews(Home):
@@ -2102,7 +2102,7 @@ class HomeNews(Home):
         t = PageTemplate(rh=self, file="markdown.mako")
         data = markdown2.markdown(news if news else "The was a problem connecting to github, please refresh and try again", extras=['header-ids'])
 
-        return t.render(title="News", header="News", topmenu="news", data=data)
+        return t.render(title="News", header="News", topmenu="system", data=data)
 
 
 @route('/changes(/?.*)')
