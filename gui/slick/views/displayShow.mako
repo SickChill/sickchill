@@ -484,7 +484,7 @@
                     <% date = network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network) %>
                     <% airDate = sbdatetime.sbdatetime.sbfdatetime(date) %>
                     <% isoDate = sbdatetime.sbdatetime.convert_to_setting(date).isoformat('T') %>
-                    <time datetime="${isoDate}" class="date">${airDate}-${isoDate}</time>
+                    <time datetime="${isoDate}" class="date">${airDate}</time>
                 % else:
                     Never
                 % endif
