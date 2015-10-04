@@ -117,6 +117,12 @@
                                 <li><a href="${srRoot}/home/"><i class="menu-icon-home"></i>&nbsp;Show List</a></li>
                                 <li><a href="${srRoot}/home/addShows/"><i class="menu-icon-addshow"></i>&nbsp;Add Shows</a></li>
                                 <li><a href="${srRoot}/home/postprocess/"><i class="menu-icon-postprocess"></i>&nbsp;Manual Post-Processing</a></li>
+                                % if sickbeard.SHOWS_RECENT:
+                                    <li role="separator" class="divider"></li>
+                                    % for recentShow in sickbeard.SHOWS_RECENT:
+                                        <li><a href="${srRoot}/home/displayShow/?show=${recentShow['indexerid']}"><i class="menu-icon-addshow"></i>&nbsp;${recentShow['name']|trim,h}</a></li>
+                                    % endfor
+                                % endif
                             </ul>
                             <div style="clear:both;"></div>
                         </li>

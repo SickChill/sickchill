@@ -1233,6 +1233,20 @@ class Home(WebRoot):
         indexerid = int(showObj.indexerid)
         indexer = int(showObj.indexer)
 
+        # Delete any previous occurrances
+        for index, recentShow in enumerate(sickbeard.SHOWS_RECENT):
+            if recentShow['indexerid'] == indexerid:
+                del sickbeard.SHOWS_RECENT[index]
+
+        # Only track 5 most recent shows
+        del sickbeard.SHOWS_RECENT[4:]
+
+        # Insert most recent show
+        sickbeard.SHOWS_RECENT.insert(0, {
+            'indexerid': indexerid,
+            'name': showObj.name,
+        })
+
         return t.render(submenu=submenu, showLoc=showLoc, show_message=show_message,
                 show=showObj, sqlResults=sqlResults, seasonResults=seasonResults,
                 sortedShowLists=sortedShowLists, bwl=bwl, epCounts=epCounts,
