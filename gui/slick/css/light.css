@@ -102,12 +102,17 @@ bootstrap Overrides
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#555555', endColorstr='#333333');
     background: -webkit-gradient(linear, left top, left bottom, from(#555), to(#333));
     background: -moz-linear-gradient(top,  #555,  #333);
-	border-color: #3e3f3a;
+    border-color: #3e3f3a;
 }
 
 .navbar-default .navbar-collapse,
 .navbar-default .navbar-form {
-	border-color: #3e3f3a;
+    border-color: #3e3f3a;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    background-color: #333;
 }
 
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
@@ -127,13 +132,13 @@ tablesorter.css
 ========================================================================== */
 
 .tablesorter {
-	width: 100%;
-	margin-right: auto;
-	margin-left: auto;
-	color: #000;
-	text-align: left;
-	background-color: #ddd;
-	border-spacing: 0;
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    color: #000;
+    text-align: left;
+    background-color: #ddd;
+    border-spacing: 0;
 }
 
 /* hidden filter row */
