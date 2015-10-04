@@ -112,7 +112,7 @@
 
         <tr class="${show_div}">
             <td align="center" nowrap="nowrap">
-                <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_result['localtime'], cur_result['airs'], cur_result['network'])) %>
+                <% airDate = sbdatetime.sbdatetime.convert_to_setting(cur_result['localtime']) %>
                 <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
             </td>
 
