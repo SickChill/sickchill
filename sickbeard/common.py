@@ -275,7 +275,7 @@ class Quality:
         elif checkName([r"720p", r"hd.?tv", r"[xh].?26[45]"], all) or checkName([r"hr.ws.pdtv.[xh].?26[45]"], any) and not checkName(
                 [r"1080[pi]"], all):
             ret = Quality.HDTV
-        elif checkName([r"720p|1080i", r"hd.?tv", r"mpeg-?2"], all) or checkName([r"1080[pi].hdtv", r"h.26[45]"], all):
+        elif checkName([r"720p|1080i", r"hd.?tv", r"mpeg-?2"], all) or checkName([r"1080[pi].hdtv", r"h.?26[45]"], all):
             ret = Quality.RAWHDTV
         elif checkName([r"1080p", r"hd.?tv", r"[xh].?26[45]"], all):
             ret = Quality.FULLHDTV

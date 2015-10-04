@@ -85,7 +85,7 @@ Jump to Show
             <% airDate = sbdatetime.sbdatetime.sbfdatetime(date) %>
             <% isoDate = sbdatetime.sbdatetime.convert_to_setting(date).isoformat('T') %>
             % if int(curResult['airdate']) != 1:
-                <time datetime="${isoDate}" class="date">${airDate}</time>
+                <time datetime="${isoDate}" class="date">${airDate}-${isoDate}</time>
             % else:
                 Never
             % endif
