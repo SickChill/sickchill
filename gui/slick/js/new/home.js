@@ -22,8 +22,8 @@ $(document).ready(function(){
     $("#showListTableShows:has(tbody tr), #showListTableAnime:has(tbody tr)").tablesorter({
         sortList: [[7,1],[2,0]],
         textExtraction: {
-            0: function(node) { return $(node).find("span").text().toLowerCase(); },
-            1: function(node) { return $(node).find("span").text().toLowerCase(); },
+            0: function(node) { return $(node).find('time').attr('datetime'); },
+            1: function(node) { return $(node).find('time').attr('datetime'); },
             3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
             4: function(node) { return $(node).find("span").text().toLowerCase(); },
             5: function(node) { return $(node).find("span:first").text(); },
@@ -33,8 +33,8 @@ $(document).ready(function(){
         headers: (function(){
             if(metaToBool('sickbeard.FILTER_ROW')){
                 return {
-                    0: { sorter: 'isoDate' },
-                    1: { columnSelector: false },
+                    0: { sorter: 'realISODate' },
+                    1: { sorter: 'realISODate' },
                     2: { sorter: 'loadingNames' },
                     4: { sorter: 'quality' },
                     5: { sorter: 'eps' },
@@ -42,8 +42,8 @@ $(document).ready(function(){
                 };
             } else {
                 return {
-                    0: { sorter: 'isoDate' },
-                    1: { columnSelector: false },
+                    0: { sorter: 'realISODate' },
+                    1: { sorter: 'realISODate' },
                     2: { sorter: 'loadingNames' },
                     4: { sorter: 'quality' },
                     5: { sorter: 'eps' }
