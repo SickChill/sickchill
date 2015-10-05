@@ -142,6 +142,7 @@ def remove_non_release_groups(name):
                        r'\[eztv\]$':        'searchre',
                        r'\[ettv\]$':        'searchre',
                        r'\[vtv\]$':         'searchre',
+                       r'\[EtHD\]$':        'searchre',
                        r'\[GloDLS\]$':      'searchre',
                        r'\[silv4\]$':       'searchre',
                        r'\[Seedbox\]$':     'searchre',
