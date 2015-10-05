@@ -1,4 +1,4 @@
-SickRage [![Build Status](https://travis-ci.org/SiCKRAGETV/SickRage.svg?branch=develop)](https://travis-ci.org/SiCKRAGETV/SickRage)
+SickRage [![Build Status](https://travis-ci.org/SiCKRAGETV/SickRage.svg?branch=develop)](https://travis-ci.org/SiCKRAGETV/SickRage) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/sickragetv/sickrage-issues.svg)](http://isitmaintained.com/project/sickragetv/sickrage-issues "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/sickragetv/sickrage-issues.svg)](http://isitmaintained.com/project/sickragetv/sickrage-issues "Percentage of issues still open")
 =====
 Automatic Video Library Manager for TV Shows. It watches for new episodes of your favorite shows, and when they are posted it does its magic.
 
