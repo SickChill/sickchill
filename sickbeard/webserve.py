@@ -4909,7 +4909,7 @@ class ErrorLogs(WebRoot):
         else:
             classes.ErrorViewer.clear()
 
-        return self.redirect("/errorlogs/")
+        return self.redirect("/errorlogs/viewlog/")
 
     def viewlog(self, minLevel=logger.INFO, logFilter="<NONE>",logSearch=None, maxLines=500):
 
