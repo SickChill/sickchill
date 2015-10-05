@@ -172,7 +172,7 @@ class T411Provider(generic.TorrentProvider):
 
                         if not torrents:
                             logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                       logger.WARNING)
+                                       logger.DEBUG)
                             continue
 
                         for torrent in torrents:
