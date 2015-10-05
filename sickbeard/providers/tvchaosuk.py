@@ -165,16 +165,17 @@ class TVChaosUKProvider(generic.TorrentProvider):
                     for torrent in torrent_table:
                         try:
                             title = torrent.find(attrs={'class':'tooltip-content'}).text.strip()
-                            url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
+                            download_url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
                             seeders = int(torrent.find(title='Seeders').text.strip())
                             leechers = int(torrent.find(title='Leechers').text.strip())
 
-                            #Filter unseeded torrent
-                            if not seeders or seeders < self.minseed or leechers < self.minleech:
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            if not all([title, download_url]):
                                 continue
-
-                            if not title or not url:
+                                
+                            #Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             # Chop off tracker/channel prefix or we cant parse the result!
@@ -189,7 +190,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
                             # Strip year from the end or we can't parse it!
                             title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
 
-                            item = title, url, seeders, leechers
+                            item = title, download_url, seeders, leechers
                             logger.log(u'Found result: ' + title.replace(' ', '.') + ' (' + url + ')', logger.DEBUG)
 
                             items[mode].append(item)

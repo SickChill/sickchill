@@ -171,18 +171,20 @@ class SpeedCDProvider(generic.TorrentProvider):
                         continue
 
                     title = re.sub('<[^>]*>', '', torrent['name'])
-                    url = self.urls['download'] % (torrent['id'])
+                    download_url = self.urls['download'] % (torrent['id'])
                     seeders = int(torrent['seed'])
                     leechers = int(torrent['leech'])
 
-                    if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
-                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                    if not all([title, download_url]):
+                        continue
+                        
+                    #Filter unseeded torrent
+                    if seeders < self.minseed or leechers < self.minleech:
+                        if mode != 'RSS':
+                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
-                    if not title or not url:
-                        continue
-
-                    item = title, url, seeders, leechers
+                    item = title, download_url, seeders, leechers
                     items[mode].append(item)
 
             #For each search mode sort all the items by seeders

@@ -136,20 +136,19 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 matches = re.compile(re_title_url, re.DOTALL).finditer(data)
                 for torrent in matches:
                     title = torrent.group('title')
-                    url = torrent.group('url')
+                    download_url = torrent.group('url')
                     #id = int(torrent.group('id'))
                     size = self._convertSize(torrent.group('size'))
                     seeders = int(torrent.group('seeders'))
                     leechers = int(torrent.group('leechers'))
 
-                    # Continue before we check if we need to log anything,
-                    # if there is no url or title.
-                    if not title or not url:
+                    if not all([title, download_url]):
                         continue
-
+                        
                     #Filter unseeded torrent
-                    if not seeders or seeders < self.minseed or leechers < self.minleech:
-                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                    if seeders < self.minseed or leechers < self.minleech:
+                        if mode != 'RSS':
+                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
                     #Accept Torrent only from Good People for every Episode Search
@@ -157,7 +156,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                         logger.log(u"ThePirateBay Provider found result " + title + " but that doesn't seem like a trusted result so I'm ignoring it", logger.DEBUG)
                         continue
 
-                    item = title, url, size, seeders, leechers
+                    item = title, download_url, size, seeders, leechers
 
                     items[mode].append(item)
 

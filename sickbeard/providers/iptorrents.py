@@ -52,6 +52,8 @@ class IPTorrentsProvider(generic.TorrentProvider):
         self.password = None
         self.ratio = None
         self.freeleech = False
+        self.minseed = None
+        self.minleech = None
 
         self.cache = IPTorrentsCache(self)
 
@@ -374,25 +376,26 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
                             try:
                                 torrent = result.find_all('td')[1].find('a')
-                                torrent_name = torrent.string
-                                torrent_download_url = self.urls['base_url'] + (result.find_all('td')[3].find('a'))['href']
-                                torrent_details_url = self.urls['base_url'] + torrent['href']
-                                torrent_seeders = int(result.find('td', attrs={'class': 'ac t_seeders'}).string)
-                                ## Not used, perhaps in the future ##
-                                #torrent_id = int(torrent['href'].replace('/details.php?id=', ''))
-                                #torrent_leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).string)
+                                title = torrent.string
+                                download_url = self.urls['base_url'] + (result.find_all('td')[3].find('a'))['href']
+                                details_url = self.urls['base_url'] + torrent['href']
+                                seeders = int(result.find('td', attrs={'class': 'ac t_seeders'}).string)
+                                id = int(torrent['href'].replace('/details.php?id=', ''))
+                                leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).string)
                             except (AttributeError, TypeError):
                                 continue
 
-                            # Filter unseeded torrent and torrents with no name/url
-                            if mode != 'RSS' and torrent_seeders == 0:
+                            if not all([title, download_url]):
+                                continue
+                                
+                            #Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            if not torrent_name or not torrent_download_url:
-                                continue
-
-                            item = torrent_name, torrent_download_url
-                            logger.log(u"Found result: " + torrent_name + " (" + torrent_details_url + ")", logger.DEBUG)
+                            item = title, download_url, seeders, leechers
+                            logger.log(u"Found result: " + title + " (" + details_url + ")", logger.DEBUG)
                             items[mode].append(item)
 
                 except Exception, e:
@@ -404,7 +407,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
     def _get_title_and_url(self, item):
 
-        title, url = item
+        title, url, seeders, leechers = item
 
         if title:
             title = u'' + title

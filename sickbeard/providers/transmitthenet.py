@@ -160,8 +160,8 @@ class TransmitTheNetProvider(generic.TorrentProvider):
         for mode in search_strings.keys():
             for search_string in search_strings[mode]:
 
-                self.search_params['search'] = search_string
-                logger.log(u"Search string: " + self.search_params['search'] + " for " + self.name, logger.DEBUG)
+            logger.log(u"Search string: " + search_string, logger.DEBUG)
+            self.search_params['search'] = search_string
 
                 data = self.getURL(self.urls['index'], params=self.search_params)
                 url_searched = self.urls['index'] + "?" + urlencode(self.search_params)
@@ -197,18 +197,16 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                             id = torrent_row.find('a', {"data-src": True})['href'].split("&id=", 1)[1]
                             seeders = int(torrent_row.findAll('a', {'title': 'Click here to view peers details'})[0].text.strip())
                             leechers = int(torrent_row.findAll('a', {'title': 'Click here to view peers details'})[1].text.strip())
-
-                            # Filter unseeded torrent
-                            if seeders < self.minseed:
-                                logger.log(
-                                    u"Discarding torrent because it doesn't meet the minimum seeders: {0} (S:{1})".format(
-                                        title, seeders), logger.DEBUG)
-                                continue
-
-                            if not title or not download_href:
-                                continue
-
                             download_url = self.urls['base_url'] + download_href
+
+                            if not all([title, download_url]):
+                                continue
+                                
+                            #Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                continue
 
                             item = title, download_url, id, seeders, leechers
                             logger.log(u"Found result: " + title.replace(' ', '.') + " (" + download_url + ")",

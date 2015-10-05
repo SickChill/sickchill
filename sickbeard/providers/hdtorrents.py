@@ -189,7 +189,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                         try:
                             if None is title and cell.get('title') and cell.get('title') in 'Download':
                                 title = re.search('f=(.*).torrent', cell.a['href']).group(1).replace('+', '.')
-                                url = self.urls['home'] % cell.a['href']
+                                download_url = self.urls['home'] % cell.a['href']
                             if None is seeders and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
                                 seeders = int(cell.text)
                             elif None is leechers and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
@@ -204,12 +204,17 @@ class HDTorrentsProvider(generic.TorrentProvider):
                             # Need size for failed downloads handling
                             if re.match('[0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+', cells[7].text):
                                 size = self._convertSize(cells[7].text)
-
-                            if not title or not url or not seeders or leechers is None or not size or \
-                                    seeders < self.minseed or leechers < self.minleech:
+                                
+                            if not all([title, download_url]):
+                                continue
+                                
+                            #Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            item = title, url, seeders, leechers, size
+                            item = title, download_url, seeders, leechers, size
                             logger.log(u"Found result: " + title + " (" + searchURL + ")", logger.DEBUG)
 
                             results.append(item)

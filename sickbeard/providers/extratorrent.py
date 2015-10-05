@@ -134,12 +134,18 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                         size = int(item['size'])
                         seeders = helpers.tryInt(item['seeders'],0)
                         leechers = helpers.tryInt(item['leechers'],0)
-                        url = item['enclosure']['@url'] if 'enclosure' in item else self._magnet_from_details(item['link'])
+                        download_url = item['enclosure']['@url'] if 'enclosure' in item else self._magnet_from_details(item['link'])
 
-                        if not all([title, url, seeders, seeders >= self.minseed, leechers >= self.minleech, size]):
+                        if not all([title, download_url]):
+                            continue
+                            
+                            #Filter unseeded torrent
+                        if seeders < self.minseed or leechers < self.minleech:
+                            if mode != 'RSS':
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        items[mode].append((title, url, seeders, leechers, size, info_hash))
+                        items[mode].append((title, download_url, seeders, leechers, size, info_hash))
 
                 except (AttributeError, TypeError, KeyError, ValueError):
                     logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)

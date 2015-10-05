@@ -151,7 +151,7 @@ class KATProvider(generic.TorrentProvider):
                             # unless it is not torcache or we are not using blackhole
                             # because we want to use magnets if connecting direct to client
                             # so that proxies work.
-                            url = item['enclosure']['@url']
+                            download_url = item['enclosure']['@url']
                             if sickbeard.TORRENT_METHOD != "blackhole" or 'torcache' not in url:
                                 url = item['torrent:magnetURI']
 
@@ -166,16 +166,17 @@ class KATProvider(generic.TorrentProvider):
                         except (AttributeError, TypeError, KeyError):
                             continue
 
-                        # Dont let RSS add items with no seeders either -.-
-                        if not seeders or seeders < self.minseed or leechers < self.minleech:
-                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                        if not all([title, download_url]):
+                            continue
+
+                        #Filter unseeded torrent
+                        if seeders < self.minseed or leechers < self.minleech:
+                            if mode != 'RSS':
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
 
                         if self.confirmed and not verified:
                             logger.log(u"KAT Provider found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
-                            continue
-
-                        if not title or not url:
                             continue
 
                         try:

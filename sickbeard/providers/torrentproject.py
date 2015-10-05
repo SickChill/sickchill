@@ -136,24 +136,31 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
 		
         torrents = self.getURL(searchUrl, json=True)
         del torrents["total_found"]
-		
-		
+
         results = []
         for i in torrents:
-            name = torrents[i]["title"]
+            title = torrents[i]["title"]
             seeders = torrents[i]["seeds"]
             leechers = torrents[i]["leechs"]
-            if seeders < self.minseed or leechers < self.minleech:
-                logger.log("Torrent doesn't meet minimum seeds & leechers not selecting :   " + name, logger.DEBUG)
-                continue
             hash = torrents[i]["torrent_hash"]
             size = torrents[i]["torrent_size"]
             trackerUrl = self.urls['api'] + "" + hash + "/trackers_json"
-            logger.log(u'The tracker list is: ' + trackerUrl, logger.DEBUG)
+            #These lines arent normaly needed ,enable only if it fails...
+            #logger.log(u'The tracker list is: ' + trackerUrl, logger.DEBUG)
             jdata = self.getURL(trackerUrl, json=True)
-            magnet = "magnet:?xt=urn:btih:" + hash + "&dn=" + name + "".join(["&tr=" + s for s in jdata])
-            logger.log(u'Magnet URL is: ' + magnet, logger.DEBUG)
-            results.append((name, magnet, size))
+            download_url = "magnet:?xt=urn:btih:" + hash + "&dn=" + name + "".join(["&tr=" + s for s in jdata])
+
+            if not all([title, download_url]):
+                continue
+                
+            #Filter unseeded torrent
+            if seeders < self.minseed or leechers < self.minleech:
+                if mode != 'RSS':
+                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                continue
+
+            #logger.log(u'Magnet URL is: ' + download_url, logger.DEBUG)
+            results.append((name, download_url, seeders, leechers, size))
 
         logger.log("URL to be parsed: " + searchUrl, logger.DEBUG)
 

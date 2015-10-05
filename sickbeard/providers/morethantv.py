@@ -210,7 +210,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
                             if cells[1].find('img', alt='Nuked') != None:
                                 continue
                             torrent_id_long = link['href'].replace('torrents.php?action=download&id=', '')
-                            torrent_id = torrent_id_long.split('&', 1)[0]
+                            id = torrent_id_long.split('&', 1)[0]
 
 
                             try:
@@ -228,19 +228,16 @@ class MoreThanTVProvider(generic.TorrentProvider):
                                 continue
 
 
+                            if not all([title, download_url]):
+                                continue
+                                
                             #Filter unseeded torrent
-                            if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            if not title or not download_url:
-                                continue
-
-# Debug
-#                            logger.log(u"title = " + title + ", download_url = " + download_url + ", torrent_id = " + torrent_id + ", seeders = " + seeders + ", leechers = " + leechers, logger.DEBUG)
-
-
-                            item = title, download_url, torrent_id, seeders, leechers
+                            item = title, download_url, id, seeders, leechers
                             logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
 
                             items[mode].append(item)
