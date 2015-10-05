@@ -252,7 +252,7 @@ class CheckVersion:
         force: if true the VERSION_NOTIFY setting will be ignored and a check will be forced
         """
 
-        if not self.updater or not sickbeard.VERSION_NOTIFY and not sickbeard.AUTO_UPDATE and not force:
+        if not self.updater or (not sickbeard.VERSION_NOTIFY and not sickbeard.AUTO_UPDATE and not force):
             logger.log(u"Version checking is disabled, not checking for the newest version")
             return False
 
@@ -278,14 +278,10 @@ class CheckVersion:
         """
         Checks GitHub for the latest news.
 
-        returns: str, a copy of the news
+        returns: unicode, a copy of the news
 
-        force: if true the VERSION_NOTIFY setting will be ignored and a check will be forced
+        force: ignored
         """
-
-        if not self.updater or not sickbeard.VERSION_NOTIFY and not sickbeard.AUTO_UPDATE and not force:
-            logger.log(u"check_for_new_news: Version checking is disabled, not checking for latest news")
-            return ''
 
         # Grab a copy of the news
         logger.log(u'check_for_new_news: Checking GitHub for latest news.', logger.DEBUG)
@@ -523,7 +519,7 @@ class GitUpdateManager(UpdateManager):
             return
 
         # get latest commit_hash from remote
-        output, err, exit_status = self._run_git(self._git_path, 'rev-parse --verify --quiet "@{upstream}"')
+        output, err, exit_status = self._run_git(self._git_path, 'rev-parse --verify --quiet %s' % sickbeard.GIT_REMOTE)
 
         if exit_status == 0 and output:
             cur_commit_hash = output.strip()
@@ -539,7 +535,7 @@ class GitUpdateManager(UpdateManager):
             return
 
         # get number of commits behind and ahead (option --count not supported git < 1.7.2)
-        output, err, exit_status = self._run_git(self._git_path, 'rev-list --left-right "@{upstream}"...HEAD')
+        output, err, exit_status = self._run_git(self._git_path, 'rev-list --left-right %s...HEAD' % sickbeard.GIT_REMOTE)
 
         if exit_status == 0 and output:
 
