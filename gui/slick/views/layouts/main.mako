@@ -352,6 +352,7 @@
         <script type="text/javascript" src="${srRoot}/js/lib/isotope.pkgd.min.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.confirm.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/lib/formwizard.js?${sbPID}"></script><!-- Can't be added to bower -->
+        <script type="text/javascript" src="${srRoot}/js/lib/pnotify.custom.min.js?${sbPID}"></script><!-- Needs to be removed -->
         <script type="text/javascript" src="${srRoot}/js/new/parsers.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/new/meta.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/script.js?${sbPID}"></script>
