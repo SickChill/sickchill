@@ -2,7 +2,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
         bower_concat: {
             all: {
-                dest: 'gui/slick/js/_bower.js',
+                dest: '../gui/slick/js/_bower.js',
                 // cssDest: 'gui/slick/css/_bower.css',
                 exclude: [
                     // 'jquery',
@@ -21,7 +21,7 @@ module.exports = function(grunt) {
         uglify: {
             my_target: {
                 files: {
-                    'gui/slick/js/_bower.min.js': ['gui/slick/js/_bower.js']
+                    '../gui/slick/js/_bower.min.js': ['../gui/slick/js/_bower.js']
                 }
             }
         }
