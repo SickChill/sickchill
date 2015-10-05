@@ -33,7 +33,11 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
 from unrar2 import RarFile
-from unrar2.rar_exceptions import *
+from unrar2.rar_exceptions import FileOpenError
+from unrar2.rar_exceptions import ArchiveHeaderBroken
+from unrar2.rar_exceptions import InvalidRARArchive
+from unrar2.rar_exceptions import InvalidRARArchiveUsage
+from unrar2.rar_exceptions import IncorrectRARPassword
 
 import shutil
 import shutil_custom
@@ -438,30 +442,30 @@ def unRAR(path, rarFiles, force, result):
                             unpacked_files.append(basename)
                 del rar_handle
 
-            except FatalRARError:
-                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Fatal Error".format(archive), logger.ERROR)
+            except ArchiveHeaderBroken as e:
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Archive Header Broken".format(archive), logger.ERROR)
                 result.result = False
-                result.missedfiles.append(archive + " : Fatal error unpacking archive")
-                continue
-            except CRCRARError:
-                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Archive CRC Error".format(archive), logger.ERROR)
-                result.result = False
-                result.missedfiles.append(archive + " : CRC error unpacking archive")
+                result.missedfiles.append(archive + " : Unpacking failed because the Archive Header is Broken")
                 continue
             except IncorrectRARPassword:
-                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Invalid Password".format(archive), logger.ERROR)
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Incorrect Rar Password".format(archive), logger.ERROR)
                 result.result = False
-                result.missedfiles.append(archive + " : Password protected RAR")
+                result.missedfiles.append(archive + " : Unpacking failed because of an Incorrect Rar Password")
                 continue
-            except NoFileToExtract:
-                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: No file extracted, check the parent folder and destination file permissions.".format(archive), logger.ERROR)
+            except FileOpenError:
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: File Open Error, check the parent folder and destination file permissions.".format(archive), logger.ERROR)
                 result.result = False
-                result.missedfiles.append(archive + " : Nothing was unpacked (file permissions?)")
+                result.missedfiles.append(archive + " : Unpacking failed with a File Open Error (file permissions?)")
                 continue
-            except GenericRARError:
-                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Generic Error".format(archive), logger.ERROR)
+            except InvalidRARArchiveUsage:
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Invalid Rar Archive Usage".format(archive), logger.ERROR)
                 result.result = False
-                result.missedfiles.append(archive + " : Unpacking Failed with a Generic Error")
+                result.missedfiles.append(archive + " : Unpacking Failed with Invalid Rar Archive Usage")
+                continue
+            except InvalidRARArchive:
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Invalid Rar Archive".format(archive), logger.ERROR)
+                result.result = False
+                result.missedfiles.append(archive + " : Unpacking Failed with an Invalid Rar Archive Error")
                 continue
             except Exception, e:
                 result.output += logHelper(u"Failed Unrar archive " + archive + ': ' + ex(e), logger.ERROR)
