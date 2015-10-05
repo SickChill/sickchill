@@ -57,3 +57,7 @@ Thumbs.db
 # Unrar Executable   #
 ######################
 lib/unrar2/UnRAR.exe
+
+# Bower #
+######################
+bower_components
