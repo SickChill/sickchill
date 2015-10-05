@@ -100,7 +100,7 @@ class BinSearchCache(tvcache.TVCache):
 
             url += urllib.urlencode(urlArgs)
 
-            logger.log(u"BinSearch cache update URL: " + url, logger.DEBUG)
+            logger.log(u"Cache update URL: %s " % url, logger.DEBUG)
 
             for item in self.getRSSFeed(url)['entries'] or []:
                 ci = self._parseItem(item)

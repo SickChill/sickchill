@@ -67,9 +67,6 @@ class TVChaosUKProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'tvchaosuk.png'
-
     def getQuality(self, item, anime=False):
         return Quality.sceneQuality(item[0], anime)
 
@@ -84,59 +81,14 @@ class TVChaosUKProvider(generic.TorrentProvider):
         login_params = {'username': self.username, 'password': self.password}
         response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
-            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
+            logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('Error: Username or password incorrect!', response):
-            logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
+            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
-        logger.log(u'Login successful for ' + self.name, logger.DEBUG)
         return True
-
-    def _get_season_search_strings(self, ep_obj):
-
-        search_string = {'Season': []}
-
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            for sep in ' ', ' - ':
-                season_string = show_name + sep + 'Series '
-                if ep_obj.show.air_by_date or ep_obj.show.sports:
-                    season_string += str(ep_obj.airdate).split('-')[0]
-                elif ep_obj.show.anime:
-                    season_string += '%d' % ep_obj.scene_absolute_number
-                else:
-                    season_string += '%d' % int(ep_obj.scene_season)
-
-                search_string['Season'].append(re.sub(r'\s+', ' ', season_string.replace('.', ' ').strip()))
-
-        return [search_string]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_string = {'Episode': []}
-
-        if not ep_obj:
-            return []
-
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            for sep in ' ', ' - ':
-                ep_string = sanitizeSceneName(show_name) + sep
-                if self.show.air_by_date:
-                    ep_string += str(ep_obj.airdate).replace('-', '|')
-                elif self.show.sports:
-                    ep_string += str(ep_obj.airdate).replace('-', '|') + '|' + ep_obj.airdate.strftime('%b')
-                elif self.show.anime:
-                    ep_string += '%i' % int(ep_obj.scene_absolute_number)
-                else:
-                    ep_string += sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season, 'episodenumber': ep_obj.scene_episode}
-
-                if add_string:
-                    ep_string += ' %s' % add_string
-
-                search_string['Episode'].append(re.sub(r'\s+', ' ', ep_string.replace('.', ' ').strip()))
-
-        return [search_string]
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
@@ -148,17 +100,17 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
         for mode in search_strings.keys():
             for search_string in search_strings[mode]:
-                self.search_params['keywords'] = search_string.strip()
-                logger.log(u'Search string: ' + self.search_params['keywords'] + ' for ' + self.name, logger.DEBUG)
 
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+        
+                self.search_params['keywords'] = search_string.strip()
                 data = self.getURL(self.urls['search'], params=self.search_params)
                 url_searched = self.urls['search'] + '?' + urlencode(self.search_params)
 
                 if not data:
-                    logger.log(u'The response from (' + url_searched + ') is empty.',logger.DEBUG)
+                    logger.log("No data returned from provider", logger.DEBUG)
                     continue
-
-                logger.log(u'Search query from (' + url_searched + ') returned data.',logger.DEBUG)
 
                 with BS4Parser(data) as html:
                     torrent_table = html.find(id='listtorrents').find_all('tr')
@@ -171,7 +123,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
                             if not all([title, download_url]):
                                 continue
-                                
+        
                             #Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
@@ -191,7 +143,8 @@ class TVChaosUKProvider(generic.TorrentProvider):
                             title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
 
                             item = title, download_url, seeders, leechers
-                            logger.log(u'Found result: ' + title.replace(' ', '.') + ' (' + url + ')', logger.DEBUG)
+                            if mode != 'RSS':
+                                logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)
 
@@ -213,7 +166,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
             title = self._clean_title_from_provider(title)
 
         if url:
-            url = str(url).replace('&amp;', '&')
+            url = url.replace('&amp;', '&')
 
         return (title, url)
 

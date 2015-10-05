@@ -70,50 +70,6 @@ class KATProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'kat.png'
-
-    def _get_season_search_strings(self, ep_obj):
-        search_string = {'Season': []}
-
-        for show_name in set(allPossibleShowNames(ep_obj.show)):
-            ep_string = sanitizeSceneName(show_name) + ' '
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                ep_string += str(ep_obj.airdate).split('-')[0]
-            elif ep_obj.show.anime:
-                ep_string += "%02d" % ep_obj.scene_absolute_number
-            else:
-                ep_string = '%s S%02d -S%02dE category:tv' % (sanitizeSceneName(show_name), ep_obj.scene_season, ep_obj.scene_season) #1) showName SXX -SXXE
-                search_string['Season'].append(ep_string)
-                ep_string = '%s "Season %d" -Ep* category:tv' % (sanitizeSceneName(show_name), ep_obj.scene_season) # 2) showName "Season X"
-
-            search_string['Season'].append(ep_string)
-
-        return [search_string]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-        search_string = {'Episode': []}
-
-        for show_name in set(allPossibleShowNames(ep_obj.show)):
-            ep_string = sanitizeSceneName(show_name) + ' '
-            if ep_obj.show.air_by_date:
-                ep_string += str(ep_obj.airdate).replace('-', ' ')
-            elif ep_obj.show.sports:
-                ep_string += str(ep_obj.airdate).replace('-', ' ') + '|' + ep_obj.airdate.strftime('%b')
-            elif ep_obj.show.anime:
-                ep_string += "%02d" % ep_obj.scene_absolute_number
-            else:
-                ep_string += sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                   'episodenumber': ep_obj.scene_episode} + '|' + \
-                             sickbeard.config.naming_ep_type[0] % {'seasonnumber': ep_obj.scene_season,
-                                                                   'episodenumber': ep_obj.scene_episode}
-            if add_string:
-                ep_string += ' ' + add_string
-
-            search_string['Episode'].append(re.sub(r'\s+', ' ', ep_string.strip()))
-
-        return [search_string]
-
     def _get_size(self, item):
         #pylint: disable=W0612
         title, url, info_hash, seeders, leechers, size, pubdate = item
@@ -124,19 +80,23 @@ class KATProvider(generic.TorrentProvider):
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         for mode in search_strings.keys():
+    
             for search_string in search_strings[mode]:
+
                 self.search_params.update({'q': search_string, 'field': ('seeders', 'time_add')[mode == 'RSS']})
-                logger.log(u"Search string: %s" % unicode(self.search_params), logger.DEBUG)
+    
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
                 try:
                     data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
                     if not data:
-                        logger.log(u'No response, skipping...', logger.DEBUG)
+                        logger.log("No data returned from provider", logger.DEBUG)
                         continue
 
                     data = xmltodict.parse(data)
                     if not all([data, 'rss' in data, 'channel' in data['rss'], 'item' in data['rss']['channel']]):
-                        logger.log(u'Malformed rss returned, skipping...', logger.DEBUG)
+                        logger.log(u"Malformed rss returned, skipping", logger.DEBUG)
                         continue
 
                     # https://github.com/martinblech/xmltodict/issues/111
@@ -175,8 +135,8 @@ class KATProvider(generic.TorrentProvider):
                                 logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        if self.confirmed and not verified:
-                            logger.log(u"KAT Provider found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
+                        if self.confirmed and not verified and mode != 'RSS':
+                            logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                             continue
 
                         try:
@@ -185,6 +145,8 @@ class KATProvider(generic.TorrentProvider):
                             pubdate = datetime.datetime.today()
 
                         item = title, url, info_hash, seeders, leechers, size, pubdate
+                        if mode != 'RSS':
+                            logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                         items[mode].append(item)
 

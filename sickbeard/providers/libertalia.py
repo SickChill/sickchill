@@ -65,57 +65,6 @@ class LibertaliaProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'libertalia.png'
-
-    def _get_season_search_strings(self, ep_obj):
-
-        search_string = {'Season': []}
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                ep_string = show_name + '.' + str(ep_obj.airdate).split('-')[0]
-            elif ep_obj.show.anime:
-                ep_string = show_name + '.' + "%d" % ep_obj.scene_absolute_number
-            else:
-                ep_string = show_name + '.S%02d' % int(ep_obj.scene_season)  # 1) showName.SXX
-
-            search_string['Season'].append(ep_string)
-
-        return [search_string]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_string = {'Episode': []}
-
-        if not ep_obj:
-            return []
-
-        if self.show.air_by_date:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + '.' + \
-                            str(ep_obj.airdate).replace('-', '|')
-                search_string['Episode'].append(ep_string)
-        elif self.show.sports:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + '.' + \
-                            str(ep_obj.airdate).replace('-', '|') + '|' + \
-                            ep_obj.airdate.strftime('%b')
-                search_string['Episode'].append(ep_string)
-        elif self.show.anime:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + '.' + \
-                            "%i" % int(ep_obj.scene_absolute_number)
-                search_string['Episode'].append(ep_string)
-        else:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + '.' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
-
-                search_string['Episode'].append(re.sub('\s+', '.', ep_string))
-
-        return [search_string]
-
     def getQuality(self, item, anime=False):
         quality = Quality.sceneQuality(item[0], anime)
         return quality
@@ -129,25 +78,21 @@ class LibertaliaProvider(generic.TorrentProvider):
                             'password': self.password
         }
 
-        logger.log('Performing authentication to Libertalia', logger.DEBUG)
         response = self.getURL(self.url + '/login.php',  post_data=login_params, timeout=30)
         if not response:
-            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
+            logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('upload.php', response):
-            logger.log(u'Login to ' + self.name + ' was successful.', logger.DEBUG)
             return True
         else:
-            logger.log(u'Login to ' + self.name + ' was unsuccessful.', logger.WARNING)
+            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
 
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
-
-        logger.log(u"_doSearch started with ..." + str(search_params), logger.DEBUG)
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -160,12 +105,10 @@ class LibertaliaProvider(generic.TorrentProvider):
 
             for search_string in search_params[mode]:
 
-                if isinstance(search_string, unicode):
-                    search_string = unidecode(search_string)
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urlsearch % (urllib.quote(search_string), self.categories)
-
-                logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
                 data = self.getURL(searchURL)
                 if not data:
@@ -174,24 +117,22 @@ class LibertaliaProvider(generic.TorrentProvider):
                 with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                     resultsTable = html.find("table", { "class" : "torrent_table"  })
                     if resultsTable:
-                        logger.log(u"Libertalia found result table ! " , logger.DEBUG)
                         rows = resultsTable.findAll("tr" ,  {"class" : "torrent_row  new  "}  )  # torrent_row new
 
                         for row in rows:
 
                             #bypass first row because title only
                             columns = row.find('td', {"class" : "torrent_name"} )
-                            logger.log(u"Libertalia found rows ! " , logger.DEBUG)
                             isvfclass = row.find('td', {"class" : "sprite-vf"} )
                             isvostfrclass = row.find('td', {"class" : "sprite-vostfr"} )
                             link = columns.find("a",  href=re.compile("torrents"))
                             if link:
                                 title = link.text
                                 recherched=searchURL.replace(".","(.*)").replace(" ","(.*)").replace("'","(.*)")
-                                logger.log(u"Libertalia title : " + title, logger.DEBUG)
                                 downloadURL =  row.find("a",href=re.compile("torrent_pass"))['href']
-                                logger.log(u"Libertalia download URL : " + downloadURL, logger.DEBUG)
                                 item = title, downloadURL
+                                if mode != 'RSS':
+                                    logger.log(u"Found result: %s " % title, logger.DEBUG)
                                 items[mode].append(item)
             results += items[mode]
 
@@ -237,7 +178,7 @@ class LibertaliaProvider(generic.TorrentProvider):
             title = title.replace(' ', '.')
 
         if url:
-            url = str(url).replace('&amp;', '&')
+            url = url.replace('&amp;', '&')
 
         return (title, url)
 

@@ -90,9 +90,6 @@ class RarbgProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'rarbg.png'
-
     def _doLogin(self):
         if self.token and self.tokenExpireDate and datetime.datetime.now() < self.tokenExpireDate:
             return True
@@ -119,56 +116,6 @@ class RarbgProvider(generic.TorrentProvider):
         quality = Quality.sceneQuality(item[0], anime)
         return quality
 
-    def _get_season_search_strings(self, ep_obj):
-
-        search_string = {'Season': []}
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                ep_string = show_name + ' ' + str(ep_obj.airdate).split('-')[0]
-            elif ep_obj.show.anime:
-                ep_string = show_name + ' ' + "%d" % ep_obj.scene_absolute_number
-            else:
-                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName.SXX
-
-            search_string['Season'].append(ep_string)
-
-        return [search_string]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_string = {'Episode': []}
-
-        if not ep_obj:
-            return []
-
-        if self.show.air_by_date:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = show_name + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|')
-                search_string['Episode'].append(ep_string)
-        elif self.show.sports:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = show_name + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|') + '|' + \
-                            ep_obj.airdate.strftime('%b')
-                search_string['Episode'].append(ep_string)
-        elif self.show.anime:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = show_name + ' ' + \
-                            "%i" % int(ep_obj.scene_absolute_number)
-                search_string['Episode'].append(ep_string)
-        else:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = show_name + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode}
-                if add_string:
-                    ep_string = ep_string + ' %s' % add_string
-
-                search_string['Episode'].append(ep_string)
-
-        return [search_string]
-
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
@@ -186,6 +133,10 @@ class RarbgProvider(generic.TorrentProvider):
 
         for mode in search_params.keys(): #Mode = RSS, Season, Episode
             for search_string in search_params[mode]:
+
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+        
                 if mode == 'RSS':
                     searchURL = self.urls['listing'] + self.defaultOptions
                 elif mode == 'Season':
@@ -199,7 +150,7 @@ class RarbgProvider(generic.TorrentProvider):
                     else:
                         searchURL = self.urls['search'].format(search_string=search_string) + self.defaultOptions
                 else:
-                    logger.log(u'{name} invalid search mode:{mode}'.format(name=self.name, mode=mode), logger.ERROR)
+                    logger.log(u"Invalid search mode: %s " % mode, logger.ERROR)
 
                 if self.minleech:
                     searchURL += self.urlOptions['leechers'].format(min_leechers=int(self.minleech))
@@ -212,8 +163,6 @@ class RarbgProvider(generic.TorrentProvider):
 
                 if self.ranked:
                     searchURL += self.urlOptions['ranked'].format(ranked=int(self.ranked))
-
-                logger.log(u'{name} search page URL: {url}'.format(name=self.name, url=searchURL), logger.DEBUG)
 
                 try:
                     retry = 3
@@ -271,7 +220,7 @@ class RarbgProvider(generic.TorrentProvider):
                     continue
 
                 try:
-                    data = re.search('\[\{\"filename\".*\}\]', data)
+                    data = re.search(r'\[\{\"filename\".*\}\]', data)
                     if data is not None:
                         data_json = json.loads(data.group())
                     else:
@@ -314,7 +263,7 @@ class RarbgProvider(generic.TorrentProvider):
             title = self._clean_title_from_provider(title)
 
         if url:
-            url = str(url).replace('&amp;', '&')
+            url = url.replace('&amp;', '&')
 
         return title, url
 

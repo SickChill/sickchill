@@ -75,58 +75,19 @@ class ThePirateBayProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def _get_season_search_strings(self, ep_obj):
-
-        search_strings = {'Season': []}
-        for show_name in set(allPossibleShowNames(ep_obj.show)):
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                ep_string = show_name + ' ' + str(ep_obj.airdate).split('-')[0]
-                search_strings['Season'].append(ep_string)
-                ep_string = show_name + ' Season ' + str(ep_obj.airdate).split('-')[0]
-            elif ep_obj.show.anime:
-                ep_string = show_name + ' %02d' % ep_obj.scene_absolute_number
-            else:
-                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)
-                search_strings['Season'].append(ep_string)
-                ep_string = show_name + ' Season ' + str(ep_obj.scene_season) + ' -Ep*'
-
-            search_strings['Season'].append(ep_string)
-
-        return [search_strings]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_strings = {'Episode': []}
-        for show_name in set(allPossibleShowNames(ep_obj.show)):
-            ep_string = sanitizeSceneName(show_name) + ' '
-            if ep_obj.show.air_by_date:
-                ep_string += str(ep_obj.airdate).replace('-', ' ')
-            elif ep_obj.show.sports:
-                ep_string += str(ep_obj.airdate).replace('-', '|') + '|' + ep_obj.airdate.strftime('%b')
-            elif ep_obj.show.anime:
-                ep_string += "%02i" % int(ep_obj.scene_absolute_number)
-            else:
-                ep_string += sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                   'episodenumber': ep_obj.scene_episode} + '|' + \
-                sickbeard.config.naming_ep_type[0] % {'seasonnumber': ep_obj.scene_season,
-                                                      'episodenumber': ep_obj.scene_episode}
-
-            if add_string:
-                ep_string += ' %s' % add_string
-
-            search_strings['Episode'].append(re.sub(r'\s+', ' ', ep_string).strip())
-
-        return [search_strings]
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         for mode in search_strings.keys():
+    
             for search_string in search_strings[mode]:
+
                 self.search_params.update({'q': search_string.strip()})
-                logger.log(u"Search string: " + search_string.strip(), logger.DEBUG)
+    
+                if mode != 'RSS':
+                    logger.log(u"Search string: " + search_string, logger.DEBUG)
 
                 data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
                 if not data:
@@ -144,7 +105,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
                     if not all([title, download_url]):
                         continue
-                        
+
                     #Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
@@ -152,11 +113,13 @@ class ThePirateBayProvider(generic.TorrentProvider):
                         continue
 
                     #Accept Torrent only from Good People for every Episode Search
-                    if self.confirmed and re.search(r'(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None:
-                        logger.log(u"ThePirateBay Provider found result " + title + " but that doesn't seem like a trusted result so I'm ignoring it", logger.DEBUG)
+                    if self.confirmed and re.search(r'(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None and mode != 'RSS':
+                        logger.log(u"Found result %s but that doesn't seem like a trusted result so I'm ignoring it" % title, logger.DEBUG)
                         continue
 
                     item = title, download_url, size, seeders, leechers
+                    if mode != 'RSS':
+                        logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                     items[mode].append(item)
 

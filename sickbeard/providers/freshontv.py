@@ -71,9 +71,6 @@ class FreshOnTVProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'freshontv.png'
-
     def getQuality(self, item, anime=False):
 
         quality = Quality.sceneQuality(item[0], anime)
@@ -82,7 +79,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
     def _checkAuth(self):
 
         if not self.username or not self.password:
-            raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
+            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
 
         return True
 
@@ -100,11 +97,10 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
             response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
             if not response:
-                logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
+                logger.log(u"Unable to connect to provider", logger.WARNING)
                 return False
 
             if re.search('/logout.php', response):
-                logger.log(u'Login to ' + self.name + ' was successful.', logger.DEBUG)
 
                 try:
                     if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
@@ -116,67 +112,17 @@ class FreshOnTVProvider(generic.TorrentProvider):
                         }
                         return True
                 except:
-                    logger.log(u'Unable to obtain cookie for FreshOnTV', logger.WARNING)
+                    logger.log(u"Unable to login to provider (cookie)", logger.WARNING)
                     return False
 
             else:
-                logger.log(u'Login to ' + self.name + ' was unsuccessful.', logger.DEBUG)
                 if re.search('Username does not exist in the userbase or the account is not confirmed yet.', response):
-                    logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
+                    logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
 
                 if re.search('DDoS protection by CloudFlare', response):
-                    logger.log(u'Unable to login to ' + self.name + ' due to CloudFlare DDoS javascript check.', logger.ERROR)
+                    logger.log(u"Unable to login to provider due to CloudFlare DDoS javascript check", logger.WARNING)
 
                     return False
-
-
-    def _get_season_search_strings(self, ep_obj):
-
-        search_string = {'Season': []}
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                ep_string = show_name + '.' + str(ep_obj.airdate).split('-')[0]
-            elif ep_obj.show.anime:
-                ep_string = show_name + '.' + "%d" % ep_obj.scene_absolute_number
-            else:
-                ep_string = show_name + '.S%02d' % int(ep_obj.scene_season)  #1) showName SXX
-
-            search_string['Season'].append(ep_string)
-
-        return [search_string]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_string = {'Episode': []}
-
-        if not ep_obj:
-            return []
-
-        if self.show.air_by_date:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|')
-                search_string['Episode'].append(ep_string)
-        elif self.show.sports:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|') + '|' + \
-                            ep_obj.airdate.strftime('%b')
-                search_string['Episode'].append(ep_string)
-        elif self.show.anime:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            "%i" % int(ep_obj.scene_absolute_number)
-                search_string['Episode'].append(ep_string)
-        else:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
-
-                search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
-
-        return [search_string]
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
@@ -191,16 +137,15 @@ class FreshOnTVProvider(generic.TorrentProvider):
         for mode in search_params.keys():
             for search_string in search_params[mode]:
 
-                if isinstance(search_string, unicode):
-                    search_string = unidecode(search_string)
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (freeleech, search_string)
-                logger.log(u"Search string: " + searchURL, logger.DEBUG)
                 init_html = self.getURL(searchURL)
                 max_page_number = 0
 
                 if not init_html:
-                    logger.log(u"The opening search response from " + self.name + " is empty.",logger.DEBUG)
+                    logger.log("No data returned from provider", logger.DEBUG)
                     continue
 
                 try:
@@ -228,7 +173,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                         if max_page_number > 3 and mode is 'RSS':
                             max_page_number = 3
                 except:
-                    logger.log(u"BS4 parser unable to process response " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
                     continue
 
                 data_response_list = []
@@ -240,11 +185,10 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
                         time.sleep(1)
                         page_searchURL = searchURL + '&page=' + str(i)
-                        logger.log(u"Search string: " + page_searchURL, logger.DEBUG)
+                        #'.log(u"Search string: " + page_searchURL, logger.DEBUG)
                         page_html = self.getURL(page_searchURL)
 
                         if not page_html:
-                            logger.log(u"The search response for page number " + str(i) + " is empty." + self.name,logger.DEBUG)
                             continue
 
                         data_response_list.append(page_html)
@@ -259,7 +203,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
                             #Continue only if a Release is found
                             if len(torrent_rows) == 0:
-                                logger.log(u"The Data returned from " + self.name + " does not contain any torrent", logger.DEBUG)
+                                logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                                 continue
 
                             for individual_torrent in torrent_rows:
@@ -271,7 +215,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                                 try:
                                     title = individual_torrent.find('a', {'class': 'torrent_name_link'})['title']
                                 except:
-                                    logger.log(u"Unable to parse torrent title " + self.name + " Traceback: " + traceback.format_exc(), logger.DEBUG)
+                                    logger.log(u"Unable to parse torrent title. Traceback: %s " % traceback.format_exc(), logger.WARNING)
                                     continue
 
                                 try:
@@ -279,23 +223,20 @@ class FreshOnTVProvider(generic.TorrentProvider):
                                     id = int((re.match('.*?([0-9]+)$', details_url).group(1)).strip())
                                     download_url = self.urls['download'] % (str(id))
                                 except:
-                                    logger.log(u"Unable to parse torrent id & download url  " + self.name + " Traceback: " + traceback.format_exc(), logger.DEBUG)
                                     continue
 
                                 try:
                                     seeders = int(individual_torrent.find('td', {'class': 'table_seeders'}).find('span').text.strip())
                                 except:
-                                    logger.log(u"Unable to parse torrent seeders content  " + self.name + " Traceback: " + traceback.format_exc(), logger.DEBUG)
                                     seeders = 1
                                 try:
                                     leechers = int(individual_torrent.find('td', {'class': 'table_leechers'}).find('a').text.strip())
                                 except:
-                                    logger.log(u"Unable to parse torrent leechers content " + self.name + " Traceback: " + traceback.format_exc(), logger.DEBUG)
                                     leechers = 0
 
                                 if not all([title, download_url]):
                                     continue
-                                    
+            
                                 #Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
                                     if mode != 'RSS':
@@ -303,12 +244,13 @@ class FreshOnTVProvider(generic.TorrentProvider):
                                     continue
 
                                 item = title, download_url, id, seeders, leechers
-                                logger.log(u"Found result: " + title + " (" + searchURL + ")", logger.DEBUG)
+                                if mode != 'RSS':
+                                    logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                                 items[mode].append(item)
 
                 except Exception as e:
-                    logger.log(u"Failed parsing " + " Traceback: " + traceback.format_exc(), logger.DEBUG)
+                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             #For each search mode sort all the items by seeders
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
@@ -325,7 +267,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
             title = self._clean_title_from_provider(title)
 
         if url:
-            url = str(url).replace('&amp;', '&')
+            url = url.replace('&amp;', '&')
 
         return (title, url)
 

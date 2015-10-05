@@ -65,9 +65,6 @@ class HDTorrentsProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'hdtorrents.png'
-
     def _checkAuth(self):
 
         if not self.username or not self.password:
@@ -86,147 +83,104 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
         response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
         if not response:
-            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
+            logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('You need cookies enabled to log in.', response):
-            logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
+            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
 
-    def _get_season_search_strings(self, ep_obj):
-        if not ep_obj:
-            return []
-
-        search_strings = []
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                ep_string = show_name + ' ' + str(ep_obj.airdate).split('-')[0]
-            elif ep_obj.show.anime:
-                ep_string = show_name + ' ' + "%d" % ep_obj.scene_absolute_number
-            else:
-                ep_string = show_name + ' S%02d' % ep_obj.scene_season
-
-            search_strings.append(ep_string)
-
-        return [search_strings]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-        if not ep_obj:
-            return []
-
-        search_strings = []
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            if self.show.air_by_date:
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|')
-            elif self.show.sports:
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|') + '|' + \
-                            ep_obj.airdate.strftime('%b')
-            elif self.show.anime:
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            "%i" % int(ep_obj.scene_absolute_number)
-            else:
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode}
-            if add_string:
-                ep_string += ' %s' % add_string
-
-            search_strings.append(ep_string)
-
-        return [search_strings]
-
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
 
         if not self._doLogin():
             return results
 
-        for search_string in search_params if search_params else '':
-            if isinstance(search_string, unicode):
-                search_string = unidecode(search_string)
+        for mode in search_strings.keys():
+            for search_string in search_strings[mode]:
 
+                searchURL = self.urls['search'] % (urllib.quote_plus(search_string.replace('.', ' ')), self.categories)
 
-            searchURL = self.urls['search'] % (urllib.quote_plus(search_string.replace('.', ' ')), self.categories)
-            logger.log(u"Search string: " + searchURL, logger.DEBUG)
-            data = self.getURL(searchURL)
-            if not data:
-                logger.log(u'No grabs for you', logger.DEBUG)
-                continue
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s" %  search_strings, logger.DEBUG)
 
-            html = soup(data)
-            if not html:
-                continue
-
-            empty = html.find('No torrents here')
-            if empty:
-                logger.log(u"Could not find any torrents", logger.ERROR)
-                continue
-
-            tables = html.find('table', attrs={'class': 'mainblockcontenttt'})
-            if not tables:
-                logger.log(u"Could not find table of torrents mainblockcontenttt", logger.ERROR)
-                continue
-
-            torrents = tables.findChildren('tr')
-            if not torrents:
-                 continue
-
-            # Skip column headers
-            for result in torrents[1:]:
-                try:
-                    cells = result.findChildren('td', attrs={'class': re.compile(r'(green|yellow|red|mainblockcontent)')})
-                    if not cells:
-                        continue
-
-                    title = url = seeders = leechers = None
-                    size = 0
-                    for cell in cells:
-                        try:
-                            if None is title and cell.get('title') and cell.get('title') in 'Download':
-                                title = re.search('f=(.*).torrent', cell.a['href']).group(1).replace('+', '.')
-                                download_url = self.urls['home'] % cell.a['href']
-                            if None is seeders and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
-                                seeders = int(cell.text)
-                            elif None is leechers and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
-                                leechers = int(cell.text)
-
-                            # Skip torrents released before the episode aired (fakes)
-                            if re.match('..:..:..  ..:..:....', cells[6].text):
-                                if (datetime.strptime(cells[6].text, '%H:%M:%S  %m/%d/%Y') -
-                                    datetime.combine(epObj.airdate, datetime.min.time())).days < 0:
-                                    continue
-
-                            # Need size for failed downloads handling
-                            if re.match('[0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+', cells[7].text):
-                                size = self._convertSize(cells[7].text)
-                                
-                            if not all([title, download_url]):
-                                continue
-                                
-                            #Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                continue
-
-                            item = title, download_url, seeders, leechers, size
-                            logger.log(u"Found result: " + title + " (" + searchURL + ")", logger.DEBUG)
-
-                            results.append(item)
-
-                        except:
-                            raise
-
-                except (AttributeError, TypeError, KeyError, ValueError):
+                data = self.getURL(searchURL)
+                if not data:
+                    logger.log("No data returned from provider", logger.DEBUG)
                     continue
 
-        results.sort(key=lambda tup: tup[3], reverse=True)
-        return results
+                html = soup(data)
+                if not html:
+                    logger.log("No html data parsed from provider", logger.DEBUG)
+                    continue
+
+                empty = html.find('No torrents here')
+                if empty:
+                    logger.log(u"Data returned from provicer does not contain any torrents", logger.DEBUG)
+                    continue
+
+                tables = html.find('table', attrs={'class': 'mainblockcontenttt'})
+                if not tables:
+                    logger.log(u"Could not find table of torrents mainblockcontenttt", logger.ERROR)
+                    continue
+        
+                torrents = tables.findChildren('tr')
+                if not torrents:
+                     continue
+
+                # Skip column headers
+                for result in torrents[1:]:
+                    try:
+                        cells = result.findChildren('td', attrs={'class': re.compile(r'(green|yellow|red|mainblockcontent)')})
+                        if not cells:
+                            continue
+
+                        title = url = seeders = leechers = None
+                        size = 0
+                        for cell in cells:
+                            try:
+                                if None is title and cell.get('title') and cell.get('title') in 'Download':
+                                    title = re.search('f=(.*).torrent', cell.a['href']).group(1).replace('+', '.')
+                                    url = self.urls['home'] % cell.a['href']
+                                if None is seeders and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
+                                    seeders = int(cell.text)
+                                elif None is leechers and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
+                                    leechers = int(cell.text)
+
+                                # Skip torrents released before the episode aired (fakes)
+                                if re.match('..:..:..  ..:..:....', cells[6].text):
+                                    if (datetime.strptime(cells[6].text, '%H:%M:%S  %m/%d/%Y') -
+                                        datetime.combine(epObj.airdate, datetime.min.time())).days < 0:
+                                        continue
+
+                                # Need size for failed downloads handling
+                                if re.match(r'[0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+', cells[7].text):
+                                    size = self._convertSize(cells[7].text)
+
+                                if not all([title, download_url]):
+                                    continue
+            
+                                    #Filter unseeded torrent
+                                if seeders < self.minseed or leechers < self.minleech:
+                                    if mode != 'RSS':
+                                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    continue
+
+                                if mode != 'RSS':
+                                    logger.log(u"Found result: %s " % title, logger.DEBUG)
+
+                                results.append(item)
+
+                            except:
+                                raise
+
+                    except (AttributeError, TypeError, KeyError, ValueError):
+                        continue
+
+            results.sort(key=lambda tup: tup[3], reverse=True)
 
     def _get_title_and_url(self, item):
 
@@ -236,7 +190,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
             title = self._clean_title_from_provider(title)
 
         if url:
-            url = str(url).replace('&amp;', '&')
+            url = url.replace('&amp;', '&')
 
         return (title, url)
 
@@ -303,11 +257,11 @@ class HDTorrentsCache(tvcache.TVCache):
         tvcache.TVCache.__init__(self, provider)
 
         # only poll HDTorrents every 10 minutes max
-        self.minTime = 20
+        self.minTime = 10
 
     def _getRSSData(self):
-        search_params = []
-        return {'entries': self.provider._doSearch(search_params)}
+        search_strings = {'RSS': ['']}
+        return {'entries': self.provider._doSearch(search_strings)}
 
 
 provider = HDTorrentsProvider()

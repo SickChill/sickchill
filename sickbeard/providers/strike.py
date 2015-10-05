@@ -22,8 +22,6 @@ import generic
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import show_name_helpers
-from sickbeard import db
-from sickbeard.common import WANTED
 from sickbeard.config import naming_ep_type
 from sickbeard.helpers import sanitizeSceneName
 
@@ -38,74 +36,9 @@ class STRIKEProvider(generic.TorrentProvider):
 
         self.cache = StrikeCache(self)
         self.minseed, self.minleech = 2 * [None]
-		
+
     def isEnabled(self):
         return self.enabled
-
-
-    def imageName(self):
-        return 'getstrike.png'
-
-
-    def _get_airbydate_season_range(self, season):
-        if season == None:
-            return ()
-        year, month = map(int, season.split('-'))
-        min_date = datetime.date(year, month, 1)
-        if month == 12:
-            max_date = datetime.date(year, month, 31)
-        else:
-            max_date = datetime.date(year, month+1, 1) -  datetime.timedelta(days=1)
-        return (min_date, max_date)
-
-
-    def _get_season_search_strings(self, show, season=None):
-        search_string = []
-
-        if not (show and season):
-            return []
-
-        myDB = db.DBConnection()
-
-        if show.air_by_date:
-            (min_date, max_date) = self._get_airbydate_season_range(season)
-            sqlResults = myDB.select("SELECT DISTINCT airdate FROM tv_episodes WHERE showid = ? AND airdate >= ? AND airdate <= ? AND status = ?", [show.tvdbid,  min_date.toordinal(), max_date.toordinal(), WANTED])
-        else:
-            sqlResults = myDB.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? AND season = ? AND status = ?", [show.tvdbid, season, WANTED])
-
-        for sqlEp in sqlResults:
-            for show_name in set(show_name_helpers.allPossibleShowNames(show)):
-                if show.air_by_date:
-                    ep_string = sanitizeSceneName(show_name) +' '+ str(datetime.date.fromordinal(sqlEp["airdate"])).replace('-', '.')
-                    search_string.append(ep_string)
-                else:
-                    ep_string = sanitizeSceneName(show_name) + ' S%02d' % sqlEp["season"]
-                    search_string.append(ep_string)
-
-        return search_string
-
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        if not ep_obj:
-            return []
-
-        search_string = []
-
-        for show_name in set(show_name_helpers.allPossibleShowNames(ep_obj.show)):
-            ep_string = sanitizeSceneName(show_name)
-            if ep_obj.show.air_by_date:
-                ep_string += ' ' + str(ep_obj.airdate).replace('-', '.')
-            else:
-                ep_string += ' ' + naming_ep_type[2] % {'seasonnumber': ep_obj.season, 'episodenumber': ep_obj.episode}
-
-            if len(add_string):
-                ep_string += ' %s' % add_string
-
-            search_string.append(ep_string)
-
-        return search_string
-
 
     def _get_title_and_url(self, item):
         title, url, size = item
@@ -113,51 +46,59 @@ class STRIKEProvider(generic.TorrentProvider):
             title = self._clean_title_from_provider(title)
 
         if url:
-            url = str(url).replace('&amp;', '&')
+            url = url.replace('&amp;', '&')
 
         return (title, url)
 
 
     def _get_size(self, item):
         title, url, size = item
-        logger.log(u'Size: %s' % size, logger.DEBUG)
-
         return size
 
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
-        logger.log("Performing Search: {0}".format(search_params))
+        for mode in search_strings.keys(): #Mode = RSS, Season, Episode
 
-        searchUrl = self.url + "api/v2/torrents/search/?category=TV&phrase=" + search_params
+            for search_string in search_strings[mode]:
 
-        jdata = self.getURL(searchUrl, json=True)
-        if not jdata:
-            logger.log("No data returned to be parsed!!!")
-            return []
-
-        logger.log("URL to be parsed: " + searchUrl, logger.DEBUG)
-
-        results = []
-
-        for item in jdata['torrents']:
-            seeders = ('seeds' in item and item['seeds']) or 0
-            leechers = ('leeches' in item and item['leeches']) or 0
-            title = ('torrent_title' in item and item['torrent_title']) or ''
-            download_url = ('magnet_uri' in item and item['magnet_uri']) or ''
-
-            if not all([title, download_url]):
-                continue
-                
-            #Filter unseeded torrent
-            if seeders < self.minseed or leechers < self.minleech:
                 if mode != 'RSS':
-                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                continue
-            
-            results.append((title, download_url, seeders, leechers))
+                    logger.log(u"Search string: " + search_string.strip(), logger.DEBUG)
 
-        return results
+                searchUrl = self.url + "api/v2/torrents/search/?category=TV&phrase=" + search_string
+
+                jdata = self.getURL(searchUrl, json=True)
+                if not jdata:
+                    logger.log("No data returned from provider", logger.DEBUG)
+                    return []
+
+                results = []
+
+                for item in jdata['torrents']:
+                    seeders = ('seeds' in item and item['seeds']) or 0
+                    leechers = ('leeches' in item and item['leeches']) or 0
+                    title = ('torrent_title' in item and item['torrent_title']) or ''
+                    download_url = ('magnet_uri' in item and item['magnet_uri']) or ''
+        
+                    if not all([title, download_url]):
+                        continue
+            
+                    #Filter unseeded torrent
+                    if seeders < self.minseed or leechers < self.minleech:
+                        if mode != 'RSS':
+                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                        continue
+        
+                    if mode != 'RSS':
+                        logger.log(u"Found result: %s " % title, logger.DEBUG)
+        
+                    item = title, download_url, seeders, leechers
+                    items[mode].append(item)
+                    
+            #For each search mode sort all the items by seeders
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+
+            results += items[mode]
 
 
 class StrikeCache(tvcache.TVCache):
