@@ -65,6 +65,11 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
 <%include file="/inc_qualityChooser.mako"/>
 <br />
 
+<b>Archive on first match:</b>
+<input type="checkbox" name="archive_firstmatch" ${('', 'checked="checked"')[show.archive_firstmatch == 1]} /><br>
+(check this to have the episode archived after the first best match is found from your archive quality list)</br>
+<br />
+
 <b>Default Episode Status:</b><br />
 (this will set the status for future episodes)<br />
 <select name="defaultEpStatus" id="defaultEpStatusSelect" class="form-control form-control-inline input-sm">
@@ -114,13 +119,6 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
 <input type="checkbox" name="dvdorder" ${('', 'checked="checked"')[show.dvdorder == 1]} /><br/>
 (check this if you wish to use the DVD order instead of the Airing order. A "Force Full Update" is necessary, and if you have existing episodes you need to move them)
 <br/><br/>
-
-% if anyQualities + bestQualities:
-<b>Archive on first match:</b>
-<input type="checkbox" name="archive_firstmatch" ${('', 'checked="checked"')[show.archive_firstmatch == 1]} /><br>
-(check this to have the episode archived after the first best match is found from your archive quality list)</br>
-<br />
-% endif
 
 <b>Ignored Words:</b></br>
 <input type="text" name="rls_ignore_words" id="rls_ignore_words" value="${show.rls_ignore_words}" class="form-control form-control-inline input-sm input350" /><br />

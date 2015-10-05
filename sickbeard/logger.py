@@ -27,6 +27,7 @@ import logging.handlers
 import threading
 import platform
 import locale
+import traceback
 
 import sickbeard
 from sickbeard import classes
@@ -164,10 +165,13 @@ class Logger(object):
             sys.exit(1)
 
     def submit_errors(self):
+
+        submitter_result = u''
+        issue_id = None
         # pylint: disable=R0912,R0914,R0915
         if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEBUG and len(classes.ErrorViewer.errors) > 0):
-            self.log('Please set your GitHub username and password in the config and enable debug. Unable to submit issue ticket to GitHub!')
-            return
+            submitter_result = u'Please set your GitHub username and password in the config and enable debug. Unable to submit issue ticket to GitHub!'
+            return submitter_result, issue_id
 
         try:
             from sickbeard.versionChecker import CheckVersion
@@ -175,15 +179,16 @@ class Logger(object):
             checkversion.check_for_new_version()
             commits_behind = checkversion.updater.get_num_commits_behind()
         except Exception:
-            self.log('Could not check if your SickRage is updated, unable to submit issue ticket to GitHub!')
-            return
+            submitter_result = u'Could not check if your SickRage is updated, unable to submit issue ticket to GitHub!'
+            return submitter_result, issue_id
 
         if commits_behind is None or commits_behind > 0:
-            self.log('Please update SickRage, unable to submit issue ticket to GitHub with an outdated version!')
-            return
+            submitter_result = u'Please update SickRage, unable to submit issue ticket to GitHub with an outdated version!'
+            return  submitter_result, issue_id
 
         if self.submitter_running:
-            return 'RUNNING'
+            submitter_result = u'Issue submitter is running, please wait for it to complete'
+            return submitter_result, issue_id
 
         self.submitter_running = True
 
@@ -261,32 +266,39 @@ class Logger(object):
                 reports = gh.get_organization(gh_org).get_repo(gh_repo).get_issues(state="all")
 
                 issue_found = False
-                issue_id = 0
                 for report in reports:
                     if title_Error == report.title:
-                        comment = report.create_comment(message)
-                        if comment:
-                            issue_id = report.number
-                            self.log('Commented on existing issue #%s successfully!' % issue_id)
-                            issue_found = True
+                        issue_id = report.number
+                        if not report.locked:
+                            if report.create_comment(message):
+                                submitter_result = u'Commented on existing issue #%s successfully!' % issue_id
+                            else:
+                                submitter_result = u'Failed to comment on found issue #%s!' % issue_id
+                        else:
+                            submitter_result = u'Issue #%s is locked, check github to find info about the error.' % issue_id
+
+                        issue_found = True
                         break
 
                 if not issue_found:
                     issue = gh.get_organization(gh_org).get_repo(gh_repo).create_issue(title_Error, message)
                     if issue:
                         issue_id = issue.number
-                        self.log('Your issue ticket #%s was submitted successfully!' % issue_id)
+                        submitter_result = u'Your issue ticket #%s was submitted successfully!' % issue_id
+                    else:
+                        submitter_result = u'Failed to create a new issue!'
 
-                # clear error from error list
-                classes.ErrorViewer.errors.remove(curError)
+                if issue_id:
+                    # clear error from error list
+                    classes.ErrorViewer.errors.remove(curError)
 
-                self.submitter_running = False
-                return issue_id
         except Exception as e:
-            self.log(ex(e), ERROR)
-
-        self.submitter_running = False
-
+            self.log(traceback.format_exc(), ERROR)
+            submitter_result = u'Exception generated in issue submitter, please check the log'
+            issue_id = None
+        finally:
+            self.submitter_running = False
+            return submitter_result, issue_id
 
 # pylint: disable=R0903
 class Wrapper(object):

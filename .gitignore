@@ -1,7 +1,8 @@
 #  SR User Related   #
 ######################
-cache*/
-Logs/
+/cache/
+/Logs/
+/data/
 restore/
 backup*/
 cache.db*
@@ -14,11 +15,12 @@ server.key
 
 #  SR Test Related   #
 ######################
-/tests/Logs/*
-/tests/cache/*
+/tests/Logs/
+/tests/cache/
 /tests/sickbeard.db*
 /tests/cache.db*
 /tests/failed.db
+/tests/data/
 
 #  Compiled source   #
 ######################
@@ -57,3 +59,9 @@ Thumbs.db
 # Unrar Executable   #
 ######################
 lib/unrar2/UnRAR.exe
+
+# Bower #
+######################
+bower_components
+node_modules
+gui/**/_bower.js

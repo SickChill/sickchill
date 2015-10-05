@@ -4909,7 +4909,7 @@ class ErrorLogs(WebRoot):
         else:
             classes.ErrorViewer.clear()
 
-        return self.redirect("/errorlogs/")
+        return self.redirect("/errorlogs/viewlog/")
 
     def viewlog(self, minLevel=logger.INFO, logFilter="<NONE>",logSearch=None, maxLines=500):
 
@@ -5004,10 +5004,8 @@ class ErrorLogs(WebRoot):
             ui.notifications.error("Missing information", "Please set your GitHub username and password in the config.")
             logger.log(u'Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
         else:
-            issue_id = logger.submit_errors()
-            if issue_id == 'RUNNING':
-                ui.notifications.message('Issue submitter is running, please wait for it to complete')
-            elif issue_id:
-                ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue_id)
+            submitter_result, issue_id = logger.submit_errors()
+            logger.log(submitter_result, (logger.INFO, logger.WARNING)[issue_id is None])
+            ui.notifications.message(submitter_result)
 
         return self.redirect("/errorlogs/")
