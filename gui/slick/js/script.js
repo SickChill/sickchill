@@ -106,7 +106,6 @@ function initTabs() {
 $(document).ready(function () {
     initHeader();
     initTabs();
-    $(document).anchor();
     $('.dropdown-toggle').dropdownHover();
     if(metaToBool('sickbeard.FUZZY_DATING')){
         $.timeago.settings.allowFuture = true;
