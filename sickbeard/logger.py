@@ -27,6 +27,7 @@ import logging.handlers
 import threading
 import platform
 import locale
+import traceback
 
 import sickbeard
 from sickbeard import classes
