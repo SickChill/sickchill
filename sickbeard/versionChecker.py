@@ -490,12 +490,10 @@ class GitUpdateManager(UpdateManager):
             return False
 
     def _find_installed_branch(self):
-        branch_info, err, exit_status = self._run_git(self._git_path, 'symbolic-ref -q HEAD')  # @UnusedVariable
-        if exit_status == 0 and branch_info:
-            branch = branch_info.strip().replace('refs/heads/', '', 1)
-            if branch:
-                sickbeard.BRANCH = branch
-                return branch
+        branch, err, exit_status = self._run_git(self._git_path, 'symbolic-ref --short -q HEAD')  # @UnusedVariable
+        if exit_status == 0 and branch:
+            sickbeard.BRANCH = branch.strip()
+            return branch
 
         return ""
 
@@ -512,14 +510,13 @@ class GitUpdateManager(UpdateManager):
         self.update_remote_origin()
 
         # get all new info from github
-        output, err, exit_status = self._run_git(self._git_path, 'fetch %s' % sickbeard.GIT_REMOTE)
-
+        output, err, exit_status = self._run_git(self._git_path, 'fetch --all -q -u')
         if not exit_status == 0:
             logger.log(u"Unable to contact github, can't check for update", logger.WARNING)
             return
 
         # get latest commit_hash from remote
-        output, err, exit_status = self._run_git(self._git_path, 'rev-parse --verify --quiet %s' % sickbeard.GIT_REMOTE)
+        output, err, exit_status = self._run_git(self._git_path, 'rev-parse --verify --quiet "@{upstream}"')
 
         if exit_status == 0 and output:
             cur_commit_hash = output.strip()
@@ -535,8 +532,7 @@ class GitUpdateManager(UpdateManager):
             return
 
         # get number of commits behind and ahead (option --count not supported git < 1.7.2)
-        output, err, exit_status = self._run_git(self._git_path, 'rev-list --left-right %s...HEAD' % sickbeard.GIT_REMOTE)
-
+        output, err, exit_status = self._run_git(self._git_path, 'rev-list --left-right "@{upstream}"...HEAD')
         if exit_status == 0 and output:
 
             try:
@@ -664,7 +660,7 @@ class GitUpdateManager(UpdateManager):
         branches, err, exit_status = self._run_git(self._git_path, 'ls-remote --heads %s' % sickbeard.GIT_REMOTE)  # @UnusedVariable
         if exit_status == 0 and branches:
             if branches:
-                return re.findall('\S+\Wrefs/heads/(.*)', branches)
+                return re.findall(r'refs/heads/(.*)', branches)
         return []
 
     def update_remote_origin(self):
