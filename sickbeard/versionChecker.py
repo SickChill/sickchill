@@ -490,11 +490,12 @@ class GitUpdateManager(UpdateManager):
             return False
 
     def _find_installed_branch(self):
-        branch, err, exit_status = self._run_git(self._git_path, 'symbolic-ref --short -q HEAD')  # @UnusedVariable
-        if exit_status == 0 and branch:
-            sickbeard.BRANCH = branch.strip()
-            return branch
-
+        branch_info, err, exit_status = self._run_git(self._git_path, 'symbolic-ref -q HEAD')  # @UnusedVariable
+        if exit_status == 0 and branch_info:
+            branch = branch_info.strip().replace('refs/heads/', '', 1)
+            if branch:
+                sickbeard.BRANCH = branch
+                return branch
         return ""
 
     def _check_github_for_update(self):
