@@ -2143,9 +2143,6 @@ input, textarea, select, .uneditable-input {
 }
 
 .navbar-default .navbar-nav > li.navbar-split > a:first-child {
-    border-width: 0 1px 0 0;
-    border-style: solid;
-    border-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 20%, #ddd, rgba(0, 0, 0, 0) 80%) 1 100%;
     padding-right: 8px;
 }
 
