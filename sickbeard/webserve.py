@@ -4881,19 +4881,23 @@ class ErrorLogs(WebRoot):
     def __init__(self, *args, **kwargs):
         super(ErrorLogs, self).__init__(*args, **kwargs)
 
-    def ErrorLogsMenu(self):
+    def ErrorLogsMenu(self, level):
         menu = [
-            {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/', 'requires': self.haveErrors(), 'icon': 'ui-icon ui-icon-trash'},
-            {'title': 'Clear Warnings', 'path': 'errorlogs/clearerrors/?level='+str(logger.WARNING), 'requires': self.haveWarnings(), 'icon': 'ui-icon ui-icon-trash'},
-            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors(), 'class':'sumbiterrors', 'confirm': True, 'icon': 'ui-icon ui-icon-arrowreturnthick-1-n'},
+            {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/', 'requires': self.haveErrors() and level == logger.ERROR, 'icon': 'ui-icon ui-icon-trash'},
+            {'title': 'Clear Warnings', 'path': 'errorlogs/clearerrors/?level='+str(logger.WARNING), 'requires': self.haveWarnings() and level == logger.WARNING, 'icon': 'ui-icon ui-icon-trash'},
+            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors() and level == logger.ERROR, 'class':'sumbiterrors', 'confirm': True, 'icon': 'ui-icon ui-icon-arrowreturnthick-1-n'},
         ]
 
         return menu
 
     def index(self, level=logger.ERROR):
+        try:
+            level = int(level)
+        except:
+            level = logger.ERROR
 
         t = PageTemplate(rh=self, file="errorlogs.mako")
-        return t.render(header="Logs &amp; Errors", title="Logs &amp; Errors", topmenu="system", submenu=self.ErrorLogsMenu(), logLevel=int(level))
+        return t.render(header="Logs &amp; Errors", title="Logs &amp; Errors", topmenu="system", submenu=self.ErrorLogsMenu(level), logLevel=level)
 
     def haveErrors(self):
         if len(classes.ErrorViewer.errors) > 0:
@@ -4995,7 +4999,7 @@ class ErrorLogs(WebRoot):
                 with ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
                         data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 
-        return t.render(header="Log File", title="Logs", topmenu="system", submenu=self.ErrorLogsMenu(),
+        return t.render(header="Log File", title="Logs", topmenu="system",
                 logLines="".join(data), minLevel=minLevel, logNameFilters=logNameFilters,
                 logFilter=logFilter, logSearch=logSearch)
 
