@@ -1920,7 +1920,7 @@ def getDiskSpaceUsage(diskPath=None):
     :param diskPath: the filesystem path being checked
     '''
 
-    if diskPath:
+    if diskPath and os.path.exists(diskPath):
         if platform.system() == 'Windows':
             free_bytes = ctypes.c_ulonglong(0)
             ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(diskPath), None, None, ctypes.pointer(free_bytes))
