@@ -49,9 +49,6 @@ class NyaaProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'nyaatorrents.png'
-
     def getQuality(self, item, anime=False):
         title = item.get('title')
         quality = Quality.sceneQuality(title, anime)
@@ -67,9 +64,11 @@ class NyaaProvider(generic.TorrentProvider):
         return [x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
     def _doSearch(self, search_string, search_mode='eponly', epcount=0, age=0, epObj=None):
+
         if self.show and not self.show.is_anime:
-            logger.log(u"" + str(self.show.name) + " is not an anime skiping " + str(self.name))
             return []
+
+        logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
         params = {
             "term": search_string.encode('utf-8'),
@@ -78,19 +77,16 @@ class NyaaProvider(generic.TorrentProvider):
         }
 
         searchURL = self.url + '?page=rss&' + urllib.urlencode(params)
+        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
 
-        logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
         results = []
         for curItem in self.cache.getRSSFeed(searchURL, items=['entries'])['entries'] or []:
             (title, url) = self._get_title_and_url(curItem)
 
             if title and url:
+                logger.log(u"Found result: %s " % title, logger.DEBUG)
                 results.append(curItem)
-            else:
-                logger.log(
-                    u"The data returned from the " + self.name + " is incomplete, this result is unusable",
-                    logger.DEBUG)
 
         return results
 
@@ -99,7 +95,7 @@ class NyaaProvider(generic.TorrentProvider):
 
     def _extract_name_from_filename(self, filename):
         name_regex = '(.*?)\.?(\[.*]|\d+\.TPB)\.torrent$'
-        logger.log(u"Comparing " + name_regex + " against " + filename, logger.DEBUG)
+        logger.log(u"Comparing %s against %s" % (name_regex, filename), logger.DEBUG)
         match = re.match(name_regex, filename, re.I)
         if match:
             return match.group(1)
@@ -125,7 +121,7 @@ class NyaaCache(tvcache.TVCache):
 
         url = self.provider.url + '?' + urllib.urlencode(params)
 
-        logger.log(u"NyaaTorrents cache update URL: " + url, logger.DEBUG)
+        logger.log(u"Cache update URL: %s" % url, logger.DEBUG)
 
         return self.getRSSFeed(url)
 

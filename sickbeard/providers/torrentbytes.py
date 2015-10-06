@@ -66,9 +66,6 @@ class TorrentBytesProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'torrentbytes.png'
-
     def getQuality(self, item, anime=False):
 
         quality = Quality.sceneQuality(item[0], anime)
@@ -83,62 +80,14 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
         response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
         if not response:
-            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
+            logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('Username or password incorrect', response):
-            logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
+            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
-
-    def _get_season_search_strings(self, ep_obj):
-
-        search_string = {'Season': []}
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                ep_string = show_name + '.' + str(ep_obj.airdate).split('-')[0]
-            elif ep_obj.show.anime:
-                ep_string = show_name + '.' + "%d" % ep_obj.scene_absolute_number
-            else:
-                ep_string = show_name + '.S%02d' % int(ep_obj.scene_season)  #1) showName SXX
-
-            search_string['Season'].append(ep_string)
-
-        return [search_string]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_string = {'Episode': []}
-
-        if not ep_obj:
-            return []
-
-        if self.show.air_by_date:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|')
-                search_string['Episode'].append(ep_string)
-        elif self.show.sports:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|') + '|' + \
-                            ep_obj.airdate.strftime('%b')
-                search_string['Episode'].append(ep_string)
-        elif self.show.anime:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            "%i" % int(ep_obj.scene_absolute_number)
-                search_string['Episode'].append(ep_string)
-        else:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
-
-                search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
-
-        return [search_string]
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
@@ -149,14 +98,14 @@ class TorrentBytesProvider(generic.TorrentProvider):
             return results
 
         for mode in search_params.keys():
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                if isinstance(search_string, unicode):
-                    search_string = unidecode(search_string)
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories)
-
-                logger.log(u"Search string: " + searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
 
                 data = self.getURL(searchURL)
                 if not data:
@@ -169,8 +118,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
                         #Continue only if one Release is found
                         if len(torrent_rows) < 2:
-                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                       logger.DEBUG)
+                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                         for result in torrent_rows[1:]:
@@ -193,21 +141,23 @@ class TorrentBytesProvider(generic.TorrentProvider):
                             except (AttributeError, TypeError):
                                 continue
 
-                            #Filter unseeded torrent
-                            if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            if not all([title, download_url]):
                                 continue
-
-                            if not title or not download_url:
+        
+                            #Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             item = title, download_url, id, seeders, leechers
-                            logger.log(u"Found result: " + title.replace(' ','.') + " (" + searchURL + ")", logger.DEBUG)
+                            if mode != 'RSS':
+                                logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)
 
                 except Exception, e:
-                    logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             #For each search mode sort all the items by seeders
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
@@ -224,7 +174,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
             title = self._clean_title_from_provider(title)
 
         if url:
-            url = str(url).replace('&amp;', '&')
+            url = url.replace('&amp;', '&')
 
         return (title, url)
 

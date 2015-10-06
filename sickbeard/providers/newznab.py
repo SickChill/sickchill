@@ -34,6 +34,7 @@ from sickbeard.common import Quality
 from sickbeard.providers import generic
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import AuthException
+from sickbeard.common import USER_AGENT
 
 
 class NewznabProvider(generic.NZBProvider):
@@ -47,6 +48,8 @@ class NewznabProvider(generic.NZBProvider):
         self.urls = {'base_url': url}
 
         self.url = self.urls['base_url']
+
+        self.headers.update({'User-Agent': USER_AGENT})
 
         self.key = key
 
@@ -111,12 +114,12 @@ class NewznabProvider(generic.NZBProvider):
             data = self.cache.getRSSFeed("%s/api?%s" % (self.url, urllib.urlencode(params)))
         except Exception:
             logger.log(u"Error getting html for [%s]" %
-                       ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x, y) for x, y in params.iteritems()))), logger.DEBUG)
+                       ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x, y) for x, y in params.iteritems()))), logger.WARNING)
             return (False, return_categories, "Error getting html for [%s]" %
                     ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x, y) for x, y in params.iteritems()))))
 
         if not self._checkAuthFromData(data):
-            logger.log(u"Error parsing xml for [%s]" % (self.name), logger.DEBUG)
+            logger.log(u"Error parsing xml", logger.DEBUG)
             return False, return_categories, "Error parsing xml for [%s]" % (self.name)
 
         try:
@@ -197,8 +200,7 @@ class NewznabProvider(generic.NZBProvider):
     def _checkAuth(self):
 
         if self.needs_auth and not self.key:
-            logger.log(u"Incorrect authentication credentials for " + self.name + " : " + "API key is missing",
-                       logger.WARNING)
+            logger.log(u"Invalid api key. Check your settings", logger.WARNING)
             #raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
@@ -228,7 +230,7 @@ class NewznabProvider(generic.NZBProvider):
         elif bozo == 1:
             raise Exception(bozo_exception)
         else:
-            logger.log(u"Unknown error given from " + self.name + ": " + err_desc, logger.ERROR)
+            logger.log(u"Unknown error: %s" % err_desc, logger.ERROR)
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
@@ -241,6 +243,7 @@ class NewznabProvider(generic.NZBProvider):
 
         if search_params:
             params.update(search_params)
+            logger.log(u'Search parameters: %s' % repr(search_params), logger.DEBUG)
 
         # category ids
         if self.show and self.show.is_sports:
@@ -269,7 +272,7 @@ class NewznabProvider(generic.NZBProvider):
             while(datetime.datetime.now() - self.last_search).seconds < 5:
                 time.sleep(1)
 
-            logger.log(u"Search url: " + search_url, logger.DEBUG)
+            logger.log(u"Search url: %s" % search_url, logger.DEBUG)
 
             data = self.cache.getRSSFeed(search_url)
 
@@ -284,10 +287,6 @@ class NewznabProvider(generic.NZBProvider):
 
                 if title and url:
                     results.append(item)
-                else:
-                    logger.log(
-                        u"The data returned from the " + self.name + " is incomplete, this result is unusable",
-                        logger.DEBUG)
 
             # get total and offset attribs
             try:
@@ -312,7 +311,7 @@ class NewznabProvider(generic.NZBProvider):
                 logger.log(u'%d' % (total - offset) + ' more items to be fetched from provider.' +
                            'Fetching another %d' % int(params['limit']) + ' items.', logger.DEBUG)
             else:
-                logger.log(u'No more searches needed.', logger.DEBUG)
+                logger.log(u'No more searches needed', logger.DEBUG)
                 break
 
         return results
@@ -373,7 +372,7 @@ class NewznabCache(tvcache.TVCache):
         while (datetime.datetime.now() - self.last_search).seconds < 5:
             time.sleep(1)
 
-        logger.log(self.provider.name + " cache update URL: " + rss_url, logger.DEBUG)
+        logger.log("Cache update URL: %s " % rss_url, logger.DEBUG)
         data = self.getRSSFeed(rss_url)
 
         self.last_search = datetime.datetime.now()
@@ -390,12 +389,9 @@ class NewznabCache(tvcache.TVCache):
         self._checkItemAuth(title, url)
 
         if not title or not url:
-            logger.log(
-                u"The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable",
-                logger.DEBUG)
             return None
 
         tvrageid = 0
 
-        logger.log(u"Attempting to add item from RSS to cache: " + title, logger.DEBUG)
+        logger.log(u"Attempting to add item from RSS to cache: %s" % title, logger.DEBUG)
         return self._addCacheEntry(title, url, indexer_id=tvrageid)

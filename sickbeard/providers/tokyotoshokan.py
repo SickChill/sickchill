@@ -49,9 +49,6 @@ class TokyoToshokanProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'tokyotoshokan.png'
-
     def _get_title_and_url(self, item):
 
         title, url = item
@@ -83,8 +80,9 @@ class TokyoToshokanProvider(generic.TorrentProvider):
 
     def _doSearch(self, search_string, search_mode='eponly', epcount=0, age=0, epObj=None):
         if self.show and not self.show.is_anime:
-            logger.log(u"" + str(self.show.name) + " is not an anime skiping " + str(self.name))
             return []
+
+        logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
         params = {
             "terms": search_string.encode('utf-8'),
@@ -92,10 +90,8 @@ class TokyoToshokanProvider(generic.TorrentProvider):
         }
 
         searchURL = self.url + 'search.php?' + urllib.urlencode(params)
-
+        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
         data = self.getURL(searchURL)
-
-        logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
         if not data:
             return []
@@ -110,19 +106,19 @@ class TokyoToshokanProvider(generic.TorrentProvider):
                         a = 1
                     else:
                         a = 0
-    
+
                     for top, bottom in zip(torrent_rows[a::2], torrent_rows[a::2]):
                         title = top.find('td', attrs={'class': 'desc-top'}).text
                         url = top.find('td', attrs={'class': 'desc-top'}).find('a')['href']
-    
+
                         if not title or not url:
                             continue
-    
+
                         item = title.lstrip(), url
                         results.append(item)
 
         except Exception, e:
-            logger.log(u"Failed to parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
+            logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
 
         return results
@@ -142,7 +138,7 @@ class TokyoToshokanCache(tvcache.TVCache):
 
         url = self.provider.url + 'rss.php?' + urllib.urlencode(params)
 
-        logger.log(u"TokyoToshokan cache update URL: " + url, logger.DEBUG)
+        logger.log(u"Cache update URL: %s" % url, logger.DEBUG)
 
         return self.getRSSFeed(url)
 

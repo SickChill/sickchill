@@ -41,9 +41,6 @@ class TitansOfTVProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'titansoftv.png'
-
     def seedRatio(self):
         return self.ratio
 
@@ -56,14 +53,12 @@ class TitansOfTVProvider(generic.TorrentProvider):
     def _checkAuthFromData(self, data):
 
         if 'error' in data:
-            logger.log(u'Incorrect authentication credentials for ' + self.name + ' : ' + data['error'],
-                       logger.DEBUG)
-            raise AuthException(
-                'Your authentication credentials for ' + self.name + ' are incorrect, check your config.')
+            logger.log(u"Invalid api key. Check your settings", logger.WARNING)
 
         return True
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+
         self._checkAuth()
         results = []
         params = {}
@@ -72,13 +67,14 @@ class TitansOfTVProvider(generic.TorrentProvider):
         if search_params:
             params.update(search_params)
 
-        search_url = self.url + '?' + urllib.urlencode(params)
-        logger.log(u'Search url: %s' % search_url)
+        searchURL = self.url + '?' + urllib.urlencode(params)
+        logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
 
-        parsedJSON = self.getURL(search_url, json=True)  # do search
+        parsedJSON = self.getURL(searchURL, json=True)  # do search
 
         if not parsedJSON:
-            logger.log(u'No data returned from ' + self.name, logger.ERROR)
+            logger.log("No data returned from provider", logger.DEBUG)
             return results
 
         if self._checkAuthFromData(parsedJSON):
@@ -92,6 +88,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
                 (title, url) = self._get_title_and_url(result)
 
                 if title and url:
+                    logger.log(u"Found result: %s " % title, logger.DEBUG)
                     results.append(result)
 
         return results
