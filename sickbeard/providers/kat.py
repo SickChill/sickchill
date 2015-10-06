@@ -25,15 +25,15 @@ import datetime
 import xmltodict
 
 import sickbeard
-from sickbeard.providers import generic
-from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import helpers
 from sickbeard import db
 from sickbeard import classes
+from sickbeard.common import Quality
+from sickbeard.common import USER_AGENT
+from sickbeard.providers import generic
 from sickbeard.show_name_helpers import allPossibleShowNames, sanitizeSceneName
-
 
 class KATProvider(generic.TorrentProvider):
     def __init__(self):
@@ -58,6 +58,7 @@ class KATProvider(generic.TorrentProvider):
         }
 
         self.url = self.urls['base_url']
+        self.headers.update({'User-Agent': USER_AGENT})
 
         self.search_params = {
             'q': '',
