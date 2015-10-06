@@ -5,7 +5,7 @@ $(document).ready(function(){
         var sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
 
         $('#showListTable:has(tbody tr)').tablesorter({
-            widgets: ['stickyHeaders'],
+            widgets: ['stickyHeaders', 'filter'],
             sortList: sortList,
             textExtraction: {
                 0: function(node) { return $(node).find('time').attr('datetime'); },
