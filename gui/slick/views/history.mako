@@ -36,6 +36,8 @@
         <option value="100" ${('', 'selected="selected"')[limit == 100]}>100</option>
         <option value="250" ${('', 'selected="selected"')[limit == 250]}>250</option>
         <option value="500" ${('', 'selected="selected"')[limit == 500]}>500</option>
+        <option value="750" ${('', 'selected="selected"')[limit == 750]}>750</option>
+        <option value="1000" ${('', 'selected="selected"')[limit == 1000]}>1000</option>
         <option value="0"   ${('', 'selected="selected"')[limit == 0  ]}>All</option>
     </select>
 
