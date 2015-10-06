@@ -269,7 +269,7 @@ class Logger(object):
                 for report in reports:
                     if title_Error == report.title:
                         issue_id = report.number
-                        if not report.locked:
+                        if not report.raw_data['locked']:
                             if report.create_comment(message):
                                 submitter_result = u'Commented on existing issue #%s successfully!' % issue_id
                             else:

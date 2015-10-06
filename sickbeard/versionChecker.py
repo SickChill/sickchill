@@ -252,7 +252,7 @@ class CheckVersion:
         force: if true the VERSION_NOTIFY setting will be ignored and a check will be forced
         """
 
-        if not self.updater or not sickbeard.VERSION_NOTIFY and not sickbeard.AUTO_UPDATE and not force:
+        if not self.updater or (not sickbeard.VERSION_NOTIFY and not sickbeard.AUTO_UPDATE and not force):
             logger.log(u"Version checking is disabled, not checking for the newest version")
             return False
 
@@ -278,14 +278,10 @@ class CheckVersion:
         """
         Checks GitHub for the latest news.
 
-        returns: str, a copy of the news
+        returns: unicode, a copy of the news
 
-        force: if true the VERSION_NOTIFY setting will be ignored and a check will be forced
+        force: ignored
         """
-
-        if not self.updater or not sickbeard.VERSION_NOTIFY and not sickbeard.AUTO_UPDATE and not force:
-            logger.log(u"check_for_new_news: Version checking is disabled, not checking for latest news")
-            return ''
 
         # Grab a copy of the news
         logger.log(u'check_for_new_news: Checking GitHub for latest news.', logger.DEBUG)
@@ -494,12 +490,10 @@ class GitUpdateManager(UpdateManager):
             return False
 
     def _find_installed_branch(self):
-        branch_info, err, exit_status = self._run_git(self._git_path, 'symbolic-ref -q HEAD')  # @UnusedVariable
-        if exit_status == 0 and branch_info:
-            branch = branch_info.strip().replace('refs/heads/', '', 1)
-            if branch:
-                sickbeard.BRANCH = branch
-                return branch
+        branch, err, exit_status = self._run_git(self._git_path, 'symbolic-ref --short -q HEAD')  # @UnusedVariable
+        if exit_status == 0 and branch:
+            sickbeard.BRANCH = branch.strip()
+            return branch
 
         return ""
 
@@ -516,8 +510,7 @@ class GitUpdateManager(UpdateManager):
         self.update_remote_origin()
 
         # get all new info from github
-        output, err, exit_status = self._run_git(self._git_path, 'fetch %s' % sickbeard.GIT_REMOTE)
-
+        output, err, exit_status = self._run_git(self._git_path, 'fetch --all -q -u')
         if not exit_status == 0:
             logger.log(u"Unable to contact github, can't check for update", logger.WARNING)
             return
@@ -540,7 +533,6 @@ class GitUpdateManager(UpdateManager):
 
         # get number of commits behind and ahead (option --count not supported git < 1.7.2)
         output, err, exit_status = self._run_git(self._git_path, 'rev-list --left-right "@{upstream}"...HEAD')
-
         if exit_status == 0 and output:
 
             try:
@@ -668,7 +660,7 @@ class GitUpdateManager(UpdateManager):
         branches, err, exit_status = self._run_git(self._git_path, 'ls-remote --heads %s' % sickbeard.GIT_REMOTE)  # @UnusedVariable
         if exit_status == 0 and branches:
             if branches:
-                return re.findall('\S+\Wrefs/heads/(.*)', branches)
+                return re.findall(r'refs/heads/(.*)', branches)
         return []
 
     def update_remote_origin(self):
