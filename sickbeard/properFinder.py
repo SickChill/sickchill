@@ -91,17 +91,17 @@ class ProperFinder:
             try:
                 curPropers = curProvider.findPropers(search_date)
             except AuthException, e:
-                logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+                logger.log(u"Authentication error: " + ex(e), logger.DEBUG)
                 continue
             except Exception, e:
-                logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
+                logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
                 logger.log(traceback.format_exc(), logger.DEBUG)
                 continue
 
             # if they haven't been added by a different provider than add the proper to the list
             for x in curPropers:
                 if not re.search('(^|[\. _-])(proper|repack)([\. _-]|$)', x.name, re.I):
-                    logger.log(u'findPropers returned a non-proper, we have caught and skipped it but please report this', logger.WARNING)
+                    logger.log(u'findPropers returned a non-proper, we have caught and skipped it.', logger.DEBUG)
                     continue
 
                 name = self._genericName(x.name)
