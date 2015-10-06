@@ -95,6 +95,7 @@ class SpeedCDProvider(generic.TorrentProvider):
             return results
 
         for mode in search_params.keys():
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':

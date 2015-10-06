@@ -132,6 +132,7 @@ class RarbgProvider(generic.TorrentProvider):
             ep_indexer = None
 
         for mode in search_params.keys(): #Mode = RSS, Season, Episode
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
@@ -163,6 +164,8 @@ class RarbgProvider(generic.TorrentProvider):
 
                 if self.ranked:
                     searchURL += self.urlOptions['ranked'].format(ranked=int(self.ranked))
+
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
 
                 try:
                     retry = 3

@@ -74,20 +74,26 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
-        for mode in search_strings.keys(): #Mode = RSS, Season, Episode
+        results = []
+        items = {'Season': [], 'Episode': [], 'RSS': []}
 
+        for mode in search_strings.keys(): #Mode = RSS, Season, Episode
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchUrl = self.urls['api'] + "?s=" + search_string + "&out=json"
-
-                torrents = self.getURL(searchUrl, json=True)
+                searchURL = self.urls['api'] + "?s=" + search_string + "&out=json"
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                torrents = self.getURL(searchURL, json=True)
+                if int(torrents["total_found"]) == 0:
+                    logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                    continue
                 del torrents["total_found"]
 
                 if not torrents:
-                    logger.log(u"Data returned from provicer does not contain any torrents", logger.DEBUG)
+                    logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                     continue
 
                 results = []
@@ -101,13 +107,24 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                     hash = torrents[i]["torrent_hash"]
                     size = torrents[i]["torrent_size"]
                     trackerUrl = self.urls['api'] + "" + hash + "/trackers_json"
-                    logger.log(u'The tracker list is: ' + trackerUrl, logger.DEBUG)
                     jdata = self.getURL(trackerUrl, json=True)
                     download_url = "magnet:?xt=urn:btih:" + hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
 
+                    if not all([title, download_url]):
+                        continue
+                        
+                    item = title, download_url, id, seeders, leechers
+
                     if mode != 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
-                    results.append((title, download_url, size))
+                    items[mode].append(item)
+                    
+            # For each search mode sort all the items by seeders
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+
+            results += items[mode]
+
+        return results
 
 class TORRENTPROJECTCache(tvcache.TVCache):
     def __init__(self, provider):
@@ -120,6 +137,7 @@ class TORRENTPROJECTCache(tvcache.TVCache):
     def _getRSSData(self):
         # no rss for torrentproject afaik,& can't search with empty string
         # newest results are always > 1 day since added anyways
+        search_strings = {'RSS': ['']}
         return {'entries': {}}
 
 provider = TORRENTPROJECTProvider()

@@ -299,6 +299,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
             return results
 
         for mode in search_params.keys():
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
@@ -307,6 +308,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
                 searchURL = self.urls['search'] % (self.categorie, freeleech, search_string)
                 searchURL += ';o=seeders' if mode != 'RSS' else ''
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
 
                 data = self.getURL(searchURL)
                 if not data:

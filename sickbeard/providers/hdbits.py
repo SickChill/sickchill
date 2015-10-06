@@ -90,8 +90,7 @@ class HDBitsProvider(generic.TorrentProvider):
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
         results = []
 
-        if mode != 'RSS':
-            logger.log(u"Search string: %s" %  search_params, logger.DEBUG)
+        logger.log(u"Search string: %s" %  search_params, logger.DEBUG)
 
         self._checkAuth()
 

@@ -67,10 +67,11 @@ class TitansOfTVProvider(generic.TorrentProvider):
         if search_params:
             params.update(search_params)
 
-        search_url = self.url + '?' + urllib.urlencode(params)
+        searchURL = self.url + '?' + urllib.urlencode(params)
         logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
 
-        parsedJSON = self.getURL(search_url, json=True)  # do search
+        parsedJSON = self.getURL(searchURL, json=True)  # do search
 
         if not parsedJSON:
             logger.log("No data returned from provider", logger.DEBUG)

@@ -66,15 +66,17 @@ class BTDIGGProvider(generic.TorrentProvider):
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         for mode in search_strings.keys():
-        
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 # TODO: Make order configurable. 0: weight, 1: req, 2: added, 3: size, 4: files, 5
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s" %  search_params, logger.DEBUG)
+                    logger.log(u"Search string: %s" %  search_string, logger.DEBUG)
                     
-                searchUrl = self.urls['api'] + "api/private-341ada3245790954/s02?q=" + search_string + "&p=0&order=1"
-                jdata = self.getURL(searchUrl, json=True)
+                searchURL = self.urls['api'] + "api/private-341ada3245790954/s02?q=" + search_string + "&p=0&order=1"
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+                
+                jdata = self.getURL(searchURL, json=True)
                 if not jdata:
                     logger.log("No data returned to be parsed!!!")
                     return []

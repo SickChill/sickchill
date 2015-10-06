@@ -77,6 +77,7 @@ class NyaaProvider(generic.TorrentProvider):
         }
 
         searchURL = self.url + '?page=rss&' + urllib.urlencode(params)
+        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
 
 
         results = []

@@ -32,6 +32,7 @@ from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
 from sickbeard.helpers import sanitizeSceneName
+from sickbeard import tvcache
 
 
 
@@ -44,7 +45,7 @@ class CpasbienProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.public = True
         self.ratio = None
-
+        self.cache = CpasbienCache(self)
         self.url = "http://www.cpasbien.pw"
 
 
@@ -62,13 +63,14 @@ class CpasbienProvider(generic.TorrentProvider):
 
 
         for mode in search_params.keys():
-
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.url + '/recherche/'+search_string.replace('.','-')+'.html'
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
                 data = self.getURL(searchURL)
 
                 if not data:
@@ -94,7 +96,7 @@ class CpasbienProvider(generic.TorrentProvider):
                         for row in resultdiv:
                             try:
                                 link = row.find("a", title=True)
-                                torrent_name = str(link.text).lower().strip()
+                                title = str(link.text).lower().strip()
                                 pageURL = link['href']
 
                                 #downloadTorrentLink = torrentSoup.find("a", title.startswith('Cliquer'))
@@ -103,15 +105,15 @@ class CpasbienProvider(generic.TorrentProvider):
                                 downloadTorrentLink = ('http://www.cpasbien.pw/telechargement/%s' % tmp)
 
                                 if downloadTorrentLink:
+                                    download_url = downloadTorrentLink
 
-                                    torrent_download_url = downloadTorrentLink
                             except (AttributeError, TypeError):
                                     continue
     
-                            if not torrent_name or not torrent_download_url:
+                            if not all([title, download_url]):
                                 continue
 
-                            item = torrent_name, torrent_download_url
+                            item = title, download_url
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -165,5 +167,16 @@ class CpasbienProvider(generic.TorrentProvider):
 
     def seedRatio(self):
         return self.ratio
+
+class CpasbienCache(tvcache.TVCache):
+    def __init__(self, provider):
+
+        tvcache.TVCache.__init__(self, provider)
+
+        self.minTime = 30
+
+    def _getRSSData(self):
+        search_strings = {'RSS': ['']}
+        return {'entries': {}}
 
 provider = CpasbienProvider()

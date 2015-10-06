@@ -102,14 +102,14 @@ class LibertaliaProvider(generic.TorrentProvider):
             return results
 
         for mode in search_params.keys():
-
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urlsearch % (urllib.quote(search_string), self.categories)
-
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
                 data = self.getURL(searchURL)
                 if not data:
                     continue

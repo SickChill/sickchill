@@ -70,10 +70,10 @@ class animenzb(generic.NZBProvider):
             "max": "100"
         }
 
-        search_url = self.url + "rss?" + urllib.urlencode(params)
-
+        searchURL = self.url + "rss?" + urllib.urlencode(params)
+        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)  
         results = []
-        for curItem in self.cache.getRSSFeed(search_url, items=['entries'])['entries'] or []:
+        for curItem in self.cache.getRSSFeed(searchURL, items=['entries'])['entries'] or []:
             (title, url) = self._get_title_and_url(curItem)
 
             if title and url:

@@ -108,7 +108,7 @@ class SCCProvider(generic.TorrentProvider):
             return results
 
         for search_string in [search_params]:
-
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             if mode != 'RSS':
                 logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
@@ -122,6 +122,7 @@ class SCCProvider(generic.TorrentProvider):
 
             for searchURL in searchURLS:
                 try:
+                    logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
                     data = self.getURL(searchURL)
                     time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 except Exception as e:

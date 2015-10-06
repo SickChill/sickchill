@@ -76,6 +76,50 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
         raise AuthException('Your authentication credentials for ' + self.name + ' are missing, check your config.')
 
+    def _get_season_search_strings(self, ep_obj):
+
+        search_string = {'Season': []}
+
+        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
+            for sep in ' ', ' - ':
+                season_string = show_name + sep + 'Series '
+                if ep_obj.show.air_by_date or ep_obj.show.sports:
+                    season_string += str(ep_obj.airdate).split('-')[0]
+                elif ep_obj.show.anime:
+                    season_string += '%d' % ep_obj.scene_absolute_number
+                else:
+                    season_string += '%d' % int(ep_obj.scene_season)
+
+                search_string['Season'].append(re.sub(r'\s+', ' ', season_string.replace('.', ' ').strip()))
+
+        return [search_string]
+
+    def _get_episode_search_strings(self, ep_obj, add_string=''):
+
+        search_string = {'Episode': []}
+
+        if not ep_obj:
+            return []
+
+        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
+            for sep in ' ', ' - ':
+                ep_string = sanitizeSceneName(show_name) + sep
+                if self.show.air_by_date:
+                    ep_string += str(ep_obj.airdate).replace('-', '|')
+                elif self.show.sports:
+                    ep_string += str(ep_obj.airdate).replace('-', '|') + '|' + ep_obj.airdate.strftime('%b')
+                elif self.show.anime:
+                    ep_string += '%i' % int(ep_obj.scene_absolute_number)
+                else:
+                    ep_string += sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season, 'episodenumber': ep_obj.scene_episode}
+
+                if add_string:
+                    ep_string += ' %s' % add_string
+
+                search_string['Episode'].append(re.sub(r'\s+', ' ', ep_string.replace('.', ' ').strip()))
+
+        return [search_string]
+
     def _doLogin(self):
 
         login_params = {'username': self.username, 'password': self.password}
@@ -99,6 +143,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
             return results
 
         for mode in search_strings.keys():
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':

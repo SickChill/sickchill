@@ -110,10 +110,11 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
         if retention or not params['retention']:
             params['retention'] = retention
 
-        search_url = 'https://api.omgwtfnzbs.org/json/?' + urllib.urlencode(params)
+        searchURL = 'https://api.omgwtfnzbs.org/json/?' + urllib.urlencode(params)
         logger.log(u"Search string: % " % params, logger.DEBUG)
+        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
 
-        parsedJSON = self.getURL(search_url, json=True)
+        parsedJSON = self.getURL(searchURL, json=True)
         if not parsedJSON:
             return []
 

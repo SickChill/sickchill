@@ -111,7 +111,8 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 data = self.getURL(self.urls['index'], params=self.search_params)
-                url_searched = self.urls['index'] + "?" + urlencode(self.search_params)
+                searchURL = self.urls['index'] + "?" + urlencode(self.search_params)
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
 
                 if not data:
                     logger.log("No data returned from provider", logger.DEBUG)

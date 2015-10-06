@@ -100,7 +100,7 @@ class T411Provider(generic.TorrentProvider):
             return results
 
         for mode in search_params.keys():
-
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
@@ -108,7 +108,7 @@ class T411Provider(generic.TorrentProvider):
 
                 for sc in self.subcategories:
                     searchURL = self.urls['search'] % (search_string, sc)
-
+                    logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
                     data = self.getURL(searchURL, json=True)
                     if not data:
                         continue

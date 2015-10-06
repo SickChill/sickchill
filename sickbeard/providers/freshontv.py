@@ -135,12 +135,14 @@ class FreshOnTVProvider(generic.TorrentProvider):
             return results
 
         for mode in search_params.keys():
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (freeleech, search_string)
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
                 init_html = self.getURL(searchURL)
                 max_page_number = 0
 

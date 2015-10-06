@@ -122,6 +122,7 @@ class TorrentDayProvider(generic.TorrentProvider):
             return results
 
         for mode in search_params.keys():
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
@@ -168,6 +169,8 @@ class TorrentDayProvider(generic.TorrentProvider):
 
                     items[mode].append(item)
 
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            
             results += items[mode]
 
         return results

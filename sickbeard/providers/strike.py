@@ -59,15 +59,15 @@ class STRIKEProvider(generic.TorrentProvider):
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         for mode in search_strings.keys(): #Mode = RSS, Season, Episode
-
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
                     logger.log(u"Search string: " + search_string.strip(), logger.DEBUG)
 
-                searchUrl = self.url + "api/v2/torrents/search/?category=TV&phrase=" + search_string
-
-                jdata = self.getURL(searchUrl, json=True)
+                searchURL = self.url + "api/v2/torrents/search/?category=TV&phrase=" + search_string
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+                jdata = self.getURL(searchURL, json=True)
                 if not jdata:
                     logger.log("No data returned from provider", logger.DEBUG)
                     return []
