@@ -135,7 +135,7 @@ class LibertaliaProvider(generic.TorrentProvider):
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
                                 items[mode].append(item)
 
-            #For each search mode sort all the items by seeders
+            #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

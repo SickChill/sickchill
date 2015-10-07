@@ -91,7 +91,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
                     logger.log(u"Found result: %s " % title, logger.DEBUG)
                     results.append(result)
 
-        #For each search mode sort all the items by seeders if available
+        #For each search mode sort all the items by seeders if available if available
         results.sort(key=lambda tup: tup[0], reverse=True)
 
         return results

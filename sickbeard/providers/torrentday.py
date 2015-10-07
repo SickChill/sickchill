@@ -169,7 +169,7 @@ class TorrentDayProvider(generic.TorrentProvider):
 
                     items[mode].append(item)
 
-            #For each search mode sort all the items by seeders if available
+            #For each search mode sort all the items by seeders if available if available
             items[mode].sort(key=lambda tup: tup[2], reverse=True)
 
             results += items[mode]

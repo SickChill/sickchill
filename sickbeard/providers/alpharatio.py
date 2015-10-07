@@ -146,7 +146,7 @@ class AlphaRatioProvider(generic.TorrentProvider):
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            item = title, download_url, id, seeders, leechers
+                            item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -155,16 +155,23 @@ class AlphaRatioProvider(generic.TorrentProvider):
                 except Exception, e:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
-            #For each search mode sort all the items by seeders
+            #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 
         return results
+        
+    def _get_size(self, item):
+    
+        title, download_url, size, seeders, leechers = item
+        if not size:
+            size = 0
+        return size
 
     def _get_title_and_url(self, item):
 
-        title, url, id, seeders, leechers = item
+        title, url, size, seeders, leechers = item
 
         if title:
             title = self._clean_title_from_provider(title)
