@@ -20,7 +20,22 @@ $(document).ready(function(){
                 4: { sorter: 'loadingNames' },
                 7: { sorter: 'quality' },
                 9: { sorter: false }
-            }
+            },
+            widgetOptions: (function() {
+                if (metaToBool('sickbeard.FILTER_ROW')) {
+                    return {
+                        filter_columnFilters: true,
+                        filter_hideFilters: true,
+                        filter_saveFilters: true,
+                        columnSelector_mediaquery: false
+                    };
+                } else {
+                    return {
+                        filter_columnFilters: false,
+                        columnSelector_mediaquery: false
+                    };
+                }
+            }())
         });
 
         $('#srRoot').ajaxEpSearch();
