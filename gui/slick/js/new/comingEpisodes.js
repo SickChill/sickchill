@@ -44,10 +44,6 @@ $(document).ready(function(){
         content: '<div id="popover-target"></div>'
     }).on('shown.bs.popover', function () { // bootstrap popover event triggered when the popover opens
         // call this function to copy the column selection code into the popover
-        $.tablesorter.columnSelector.attachTo( $('#showListTableShows'), '#popover-target');
-        if(metaToBool('sickbeard.ANIME_SPLIT_HOME')){
-            $.tablesorter.columnSelector.attachTo( $('#showListTableAnime'), '#popover-target');
-        }
-
+        $.tablesorter.columnSelector.attachTo( $('#showListTable'), '#popover-target');
     });
 });
