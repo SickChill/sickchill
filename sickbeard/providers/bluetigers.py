@@ -94,6 +94,7 @@ class BLUETIGERSProvider(generic.TorrentProvider):
         return True
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
@@ -135,6 +136,9 @@ class BLUETIGERSProvider(generic.TorrentProvider):
 
                 except Exception, e:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                    
+            #For each search mode sort all the items by seeders
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 

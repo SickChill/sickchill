@@ -61,7 +61,6 @@ class CpasbienProvider(generic.TorrentProvider):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-
         for mode in search_params.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
@@ -121,6 +120,10 @@ class CpasbienProvider(generic.TorrentProvider):
 
                 except Exception, e:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+
+            #For each search mode sort all the items by seeders
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            
             results += items[mode]
         return results
 

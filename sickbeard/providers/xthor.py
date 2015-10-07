@@ -60,7 +60,7 @@ class XthorProvider(generic.TorrentProvider):
 
     def _get_title_and_url(self, item):
 
-        title, url = item
+        title, downloadURL, size, seeders, leechers = item
 
         if title:
             title = u'' + title
@@ -130,11 +130,21 @@ class XthorProvider(generic.TorrentProvider):
                             if link:
                                 title = link.text
                                 downloadURL =  self.url + '/' + row.find("a",href=re.compile("download.php"))['href']
-                                item = title, downloadURL
+                                size = 0
+                                seeders = 0
+                                leechers = 0
+                                item = title, downloadURL, size, seeders, leechers
+                                
                                 if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                    
                                 items[mode].append(item)
+
+            #For each search mode sort all the items by seeders if available
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+
             results += items[mode]
+
         return results
 
     def seedRatio(self):

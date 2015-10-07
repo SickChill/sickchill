@@ -57,7 +57,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
         return (min_date, max_date)
 
     def _get_title_and_url(self, item):
-        title, download_url, size, id, seeders, leechers = item
+        title, download_url, size, seeders, leechers, id = item
         if title:
             title = self._clean_title_from_provider(title)
 
@@ -68,7 +68,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
 
 
     def _get_size(self, item):
-        title, download_url, size, id, seeders, leechers = item
+        title, download_url, size, seeders, leechers, id = item
         if not size:
             size = 0
         return size
@@ -115,7 +115,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                     if not all([title, download_url]):
                         continue
                         
-                    item = title, download_url, size, id, seeders, leechers
+                    item = title, download_url, size, seeders, leechers, id
 
                     if mode != 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)

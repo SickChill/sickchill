@@ -134,6 +134,10 @@ class LibertaliaProvider(generic.TorrentProvider):
                                 if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
                                 items[mode].append(item)
+
+            #For each search mode sort all the items by seeders
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+
             results += items[mode]
 
         return results

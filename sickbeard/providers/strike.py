@@ -103,6 +103,7 @@ class STRIKEProvider(generic.TorrentProvider):
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
+
         return results
 
 

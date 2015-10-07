@@ -186,8 +186,9 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
                             # Strip year from the end or we can't parse it!
                             title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
+                            size = 0
 
-                            item = title, download_url, seeders, leechers
+                            item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -205,7 +206,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
     def _get_title_and_url(self, item):
 
-        title, url, seeders, leechers = item
+        title, download_url, size, seeders, leechers = item
 
         if title:
             title = self._clean_title_from_provider(title)

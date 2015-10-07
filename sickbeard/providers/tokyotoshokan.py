@@ -79,6 +79,7 @@ class TokyoToshokanProvider(generic.TorrentProvider):
         return [x.replace('.', ' ') for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
     def _doSearch(self, search_string, search_mode='eponly', epcount=0, age=0, epObj=None):
+
         if self.show and not self.show.is_anime:
             return []
 
@@ -120,7 +121,9 @@ class TokyoToshokanProvider(generic.TorrentProvider):
         except Exception, e:
             logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
-
+        #For each search mode sort all the items by seeders if available
+        results.sort(key=lambda tup: tup[0], reverse=True)
+        
         return results
 
 
