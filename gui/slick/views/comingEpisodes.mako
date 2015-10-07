@@ -23,8 +23,8 @@
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <h1 class="header">${header}</h1>
 <div class="h2footer pull-right">
-% if layout != 'poster':
-    ## <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button> <!-- Not sure why this doesn't work -->
+% if layout == 'list':
+    <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
 % endif
     <span>Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
