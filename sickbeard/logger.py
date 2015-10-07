@@ -206,8 +206,8 @@ class Logger(object):
                     log_data = f.readlines()
 
             for i in range(1, int(sickbeard.LOG_NR)):
-                if os.path.isfile(self.logFile + "." + str(i)) and (len(log_data) <= 500):
-                    with ek(codecs.open, *[self.logFile + "." + str(i), 'r', 'utf-8']) as f:
+                if os.path.isfile(self.logFile + ".%i" % i) and (len(log_data) <= 500):
+                    with ek(codecs.open, *[self.logFile + ".%i" % i, 'r', 'utf-8']) as f:
                         log_data += f.readlines()
 
             log_data = [line for line in reversed(log_data)]
@@ -215,12 +215,10 @@ class Logger(object):
             # parse and submit errors to issue tracker
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
                 try:
-                    title_Error = str(curError.title)
+                    title_Error = ss(curError.title)
                     if not len(title_Error) or title_Error == 'None':
-                        title_Error = re.match(r"^[A-Z0-9\-\[\] :]+::\s*(.*)$", ss(str(curError.message))).group(1)
+                        title_Error = re.match(r"^[A-Z0-9\-\[\] :]+::\s*(.*)$", ss(curError.message)).group(1)
 
-                    # if len(title_Error) > (1024 - len(u"[APP SUBMITTED]: ")):
-                    # 1000 just looks better than 1007 and adds some buffer
                     if len(title_Error) > 1000:
                         title_Error = title_Error[0:1000]
                 except Exception as e:
@@ -267,7 +265,7 @@ class Logger(object):
 
                 issue_found = False
                 for report in reports:
-                    if title_Error == report.title:
+                    if title_Error.rsplit(' :: ')[-1] in report.title:
                         issue_id = report.number
                         if not report.raw_data['locked']:
                             if report.create_comment(message):
