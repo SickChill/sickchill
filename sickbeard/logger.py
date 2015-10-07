@@ -274,9 +274,9 @@ class Logger(object):
 
                 issue_found = False
                 for report in reports:
-                    if title_Error.rsplit(' :: ')[-1] in report.title or
-                    (mako_error and is_mako_error(report.title)) or
-                    (ascii_error and is_ascii_error(report.title)):
+                    if title_Error.rsplit(' :: ')[-1] in report.title or \
+           	         (mako_error and is_mako_error(report.title)) or \
+                	    (ascii_error and is_ascii_error(report.title)):
 
                         issue_id = report.number
                         if not report.raw_data['locked']:
