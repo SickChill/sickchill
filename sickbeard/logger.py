@@ -270,7 +270,7 @@ class Logger(object):
                     return re.search(r"'ascii' codec can't encode character .* in position .*: ordinal not in range.*", title) is not None
 
                 mako_error = is_mako_error(title_Error)
-                ascii_error = is_ascii_error(title_Error):
+                ascii_error = is_ascii_error(title_Error)
 
                 issue_found = False
                 for report in reports:
