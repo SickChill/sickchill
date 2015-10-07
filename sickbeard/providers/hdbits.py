@@ -1,4 +1,4 @@
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -88,6 +88,8 @@ class HDBitsProvider(generic.TorrentProvider):
         return (title, url)
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+
+        #FIXME 
         results = []
 
         logger.log(u"Search string: %s" %  search_params, logger.DEBUG)
@@ -107,7 +109,7 @@ class HDBitsProvider(generic.TorrentProvider):
 
             for item in items:
                 results.append(item)
-
+        #FIXME SORTING
         return results
 
     def findPropers(self, search_date=None):

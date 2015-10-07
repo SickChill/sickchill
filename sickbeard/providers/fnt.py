@@ -2,7 +2,7 @@
 # Author: raver2046 <raver2046@gmail.com> from djoole <bobby.djoole@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage. 
 #
 # Sick Beard is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -66,10 +66,6 @@ class FNTProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def getQuality(self, item, anime=False):
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
-
     def _doLogin(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
@@ -94,6 +90,7 @@ class FNTProvider(generic.TorrentProvider):
         return True
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
@@ -107,7 +104,7 @@ class FNTProvider(generic.TorrentProvider):
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
-        
+
                 self.search_params['recherche'] = search_string
 
                 data = self.getURL(self.urls['search'], params=self.search_params)
@@ -140,6 +137,8 @@ class FNTProvider(generic.TorrentProvider):
                                         defailseedleech = link['mtcontent']
                                         seeders =  int(defailseedleech.split("<font color='#00b72e'>")[1].split("</font>")[0])
                                         leechers = int(defailseedleech.split("<font color='red'>")[1].split("</font>")[0])
+                                        #FIXME
+                                        size = -1
                                     except:
                                         logger.log(u"Unable to parse torrent id & seeders & leechers. Traceback: %s " % traceback.format_exc(), logger.DEBUG)
                                         continue
@@ -153,7 +152,7 @@ class FNTProvider(generic.TorrentProvider):
                                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                         continue
 
-                                    item = title, download_url , id, seeders, leechers
+                                    item = title, download_url, size, seeders, leechers
                                     if mode != 'RSS':
                                         logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -162,21 +161,12 @@ class FNTProvider(generic.TorrentProvider):
                 except Exception, e:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
+            #For each search mode sort all the items by seeders if available
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url, id, seeders, leechers = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return title, url
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

@@ -2,7 +2,7 @@
 # Author: Mr_Orange <mr_orange@hotmail.it>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -71,11 +71,6 @@ class KATProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def _get_size(self, item):
-        #pylint: disable=W0612
-        title, url, info_hash, seeders, leechers, size, pubdate = item
-        return size or -1
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -85,7 +80,7 @@ class KATProvider(generic.TorrentProvider):
             for search_string in search_strings[mode]:
 
                 self.search_params.update({'q': search_string, 'field': ('seeders', 'time_add')[mode == 'RSS']})
-    
+
                 if mode != 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
@@ -113,8 +108,8 @@ class KATProvider(generic.TorrentProvider):
                             # because we want to use magnets if connecting direct to client
                             # so that proxies work.
                             download_url = item['enclosure']['@url']
-                            if sickbeard.TORRENT_METHOD != "blackhole" or 'torcache' not in url:
-                                url = item['torrent:magnetURI']
+                            if sickbeard.TORRENT_METHOD != "blackhole" or 'torcache' not in download_url:
+                                download_url = item['torrent:magnetURI']
 
                             seeders = int(item['torrent:seeds'])
                             leechers = int(item['torrent:peers'])
@@ -126,6 +121,11 @@ class KATProvider(generic.TorrentProvider):
 
                         except (AttributeError, TypeError, KeyError):
                             continue
+
+                        try:
+                            pubdate = datetime.datetime.strptime(item['pubDate'], '%a, %d %b %Y %H:%M:%S +0000')
+                        except Exception:
+                            pubdate = datetime.datetime.today()
 
                         if not all([title, download_url]):
                             continue
@@ -140,12 +140,7 @@ class KATProvider(generic.TorrentProvider):
                             logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                             continue
 
-                        try:
-                            pubdate = datetime.datetime.strptime(item['pubDate'], '%a, %d %b %Y %H:%M:%S +0000')
-                        except Exception:
-                            pubdate = datetime.datetime.today()
-
-                        item = title, url, info_hash, seeders, leechers, size, pubdate
+                        item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -155,24 +150,12 @@ class KATProvider(generic.TorrentProvider):
                     logger.log(u"Failed to parsing " + self.name + " Traceback: " + traceback.format_exc(),
                                logger.WARNING)
 
-            #For each search mode sort all the items by seeders
+            #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-        #pylint: disable=W0612
-        title, url, info_hash, seeders, leechers, size, pubdate = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()-datetime.timedelta(days=1)):
         results = []

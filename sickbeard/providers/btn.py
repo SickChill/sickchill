@@ -2,7 +2,7 @@
 # Author: Daniel Heimans
 # URL: http://code.google.com/p/sickbeard
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -135,7 +135,7 @@ class BTNProvider(generic.TorrentProvider):
                     logger.log(u"Found result: %s " % title, logger.DEBUG)
                     results.append(torrent_info)
 
-
+        #FIXME SORT RESULTS
         return results
 
     def _api_call(self, apikey, params={}, results_per_page=1000, offset=0):

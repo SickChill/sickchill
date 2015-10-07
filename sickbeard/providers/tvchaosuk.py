@@ -1,4 +1,4 @@
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -66,9 +66,6 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
     def isEnabled(self):
         return self.enabled
-
-    def getQuality(self, item, anime=False):
-        return Quality.sceneQuality(item[0], anime)
 
     def _checkAuth(self):
         if self.username and self.password:
@@ -148,7 +145,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
-        
+
                 self.search_params['keywords'] = search_string.strip()
                 data = self.getURL(self.urls['search'], params=self.search_params)
                 url_searched = self.urls['search'] + '?' + urlencode(self.search_params)
@@ -168,7 +165,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
                             if not all([title, download_url]):
                                 continue
-        
+
                             #Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
@@ -187,7 +184,10 @@ class TVChaosUKProvider(generic.TorrentProvider):
                             # Strip year from the end or we can't parse it!
                             title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
 
-                            item = title, download_url, seeders, leechers
+                            #FIXME
+                            size = -1
+
+                            item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -196,24 +196,12 @@ class TVChaosUKProvider(generic.TorrentProvider):
                         except:
                             continue
 
-            #For each search mode sort all the items by seeders
+            #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url, seeders, leechers = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

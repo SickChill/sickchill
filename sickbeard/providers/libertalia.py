@@ -4,7 +4,7 @@
 # based on tpi.py
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ from sickbeard import helpers
 from sickbeard import classes
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
-
+from sickbeard import tvcache
 
 class LibertaliaProvider(generic.TorrentProvider):
 
@@ -62,12 +62,10 @@ class LibertaliaProvider(generic.TorrentProvider):
         self.minseed = None
         self.minleech = None
 
+        self.cache = LibertaliaCache(self)
+
     def isEnabled(self):
         return self.enabled
-
-    def getQuality(self, item, anime=False):
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
 
     def _doLogin(self):
 
@@ -130,10 +128,29 @@ class LibertaliaProvider(generic.TorrentProvider):
                                 title = link.text
                                 recherched=searchURL.replace(".","(.*)").replace(" ","(.*)").replace("'","(.*)")
                                 downloadURL =  row.find("a",href=re.compile("torrent_pass"))['href']
-                                item = title, downloadURL
+                                #FIXME
+                                size = -1
+                                seeders = 1
+                                leechers = 0
+
+                                if not all([title, download_url]):
+                                    continue
+
+                                #Filter unseeded torrent
+                                #if seeders < self.minseed or leechers < self.minleech:
+                                #    if mode != 'RSS':
+                                #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                #    continue
+
+                                item = title, download_url, size, seeders, leechers
                                 if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
+
                                 items[mode].append(item)
+
+            #For each search mode sort all the items by seeders if available
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+
             results += items[mode]
 
         return results
@@ -169,17 +186,15 @@ class LibertaliaProvider(generic.TorrentProvider):
 
         return results
 
-    def _get_title_and_url(self, item):
+class LibertaliaCache(tvcache.TVCache):
+    def __init__(self, provider):
 
-        title, url = item
+        tvcache.TVCache.__init__(self, provider)
 
-        if title:
-            title = u'' + title
-            title = title.replace(' ', '.')
+        self.minTime = 10
 
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
+    def _getRSSData(self):
+        search_strings = {'RSS': ['']}
+        return {'entries': self.provider._doSearch(search_strings)}
 
 provider = LibertaliaProvider()

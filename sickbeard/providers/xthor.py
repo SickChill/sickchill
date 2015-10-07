@@ -2,7 +2,7 @@
 # Author: adaur <adaur.underground@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -57,23 +57,6 @@ class XthorProvider(generic.TorrentProvider):
 
     def isEnabled(self):
         return self.enabled
-
-    def _get_title_and_url(self, item):
-
-        title, url = item
-
-        if title:
-            title = u'' + title
-            title = title.replace(' ', '.')
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
-
-    def getQuality(self, item, anime=False):
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
 
     def _doLogin(self):
 
@@ -130,11 +113,31 @@ class XthorProvider(generic.TorrentProvider):
                             if link:
                                 title = link.text
                                 downloadURL =  self.url + '/' + row.find("a",href=re.compile("download.php"))['href']
-                                item = title, downloadURL
+                                #FIXME
+                                size = -1
+                                seeders = 1
+                                leechers = 0
+        
+                                if not all([title, download_url]):
+                                    continue
+            
+                                #Filter unseeded torrent
+                                #if seeders < self.minseed or leechers < self.minleech:
+                                #    if mode != 'RSS':
+                                #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                #    continue
+
+                                item = title, download_url, size, seeders, leechers
                                 if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
+
                                 items[mode].append(item)
+
+            #For each search mode sort all the items by seeders if available if available
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+
             results += items[mode]
+
         return results
 
     def seedRatio(self):

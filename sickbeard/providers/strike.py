@@ -1,7 +1,7 @@
 # Author: matigonkas
 # URL: https://github.com/SiCKRAGETV/sickrage
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,24 +40,8 @@ class STRIKEProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def _get_title_and_url(self, item):
-        title, download_url, size, seeders, leechers = item
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
-
-
-    def _get_size(self, item):
-        title, download_url, size, seeders, leechers = item
-        return size
-
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
-        
+
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
@@ -83,26 +67,27 @@ class STRIKEProvider(generic.TorrentProvider):
                     title = ('torrent_title' in item and item['torrent_title']) or ''
                     size = ('size' in item and item['size']) or 0
                     download_url = ('magnet_uri' in item and item['magnet_uri']) or ''
-        
+
                     if not all([title, download_url]):
                         continue
-            
+
                     #Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
-        
+
                     if mode != 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
-        
+
                     item = title, download_url, size, seeders, leechers
                     items[mode].append(item)
-                    
-            #For each search mode sort all the items by seeders
+
+            #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
+
         return results
 
 

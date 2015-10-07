@@ -1,7 +1,7 @@
 # Author: Mr_Orange
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -49,11 +49,6 @@ class NyaaProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def getQuality(self, item, anime=False):
-        title = item.get('title')
-        quality = Quality.sceneQuality(title, anime)
-        return quality
-
     def findSearchResults(self, show, episodes, search_mode, manualSearch=False, downCurQuality=False):
         return generic.TorrentProvider.findSearchResults(self, show, episodes, search_mode, manualSearch, downCurQuality)
 
@@ -64,7 +59,7 @@ class NyaaProvider(generic.TorrentProvider):
         return [x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
     def _doSearch(self, search_string, search_mode='eponly', epcount=0, age=0, epObj=None):
-
+        #FIXME
         if self.show and not self.show.is_anime:
             return []
 
@@ -82,16 +77,29 @@ class NyaaProvider(generic.TorrentProvider):
 
         results = []
         for curItem in self.cache.getRSSFeed(searchURL, items=['entries'])['entries'] or []:
-            (title, url) = self._get_title_and_url(curItem)
+            title = curItem[0]
+            download_url = curItem[1]
+            #FIXME
+            size = -1
+            seeders = 1
+            leechers = 0
 
-            if title and url:
-                logger.log(u"Found result: %s " % title, logger.DEBUG)
-                results.append(curItem)
+            if not all([title, download_url]):
+                continue
+
+            #Filter unseeded torrent
+            #if seeders < self.minseed or leechers < self.minleech:
+            #    if mode != 'RSS':
+            #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+            #    continue
+
+            item = title, download_url, size, seeders, leechers
+            logger.log(u"Found result: %s " % title, logger.DEBUG)
+
+            #FIX ME SORTING
+            results.append(curItem)
 
         return results
-
-    def _get_title_and_url(self, item):
-        return generic.TorrentProvider._get_title_and_url(self, item)
 
     def _extract_name_from_filename(self, filename):
         name_regex = '(.*?)\.?(\[.*]|\d+\.TPB)\.torrent$'

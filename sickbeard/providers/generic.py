@@ -2,7 +2,7 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -547,6 +547,31 @@ class TorrentProvider(GenericProvider):
         GenericProvider.__init__(self, name)
 
         self.providerType = GenericProvider.TORRENT
+
+    def getQuality(self, item, anime=False):
+        quality = Quality.sceneQuality(item[0], anime)
+        return quality
+
+    def _get_title_and_url(self, item):
+
+        title = item[0]
+        download_url = item[1]
+
+        if title:
+            title = self._clean_title_from_provider(title)
+        if download_url:
+            download_url = download_url.replace('&amp;', '&')
+
+        return (title, download_url)
+
+
+    def _get_size(self, item):
+
+        size = item[2]
+        if not size:
+            size = -1
+
+        return size
 
     def _get_season_search_strings(self, ep_obj):
 

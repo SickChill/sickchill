@@ -1,7 +1,7 @@
 # Author: duramato <matigonkas@outlook.com>
 # Author: miigotu
 # URL: https://github.com/SiCKRAGETV/sickrage
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -97,24 +97,28 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
                         if not all([title, download_url]):
                             continue
-    
+
                             #Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
                                 logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        items[mode].append((title, download_url, seeders, leechers, size, info_hash))
+                        item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
+
+                        items[mode].append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
+            #For each search mode sort all the items by seeders if available
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+
             results += items[mode]
 
         return results
-
 
     def _magnet_from_details(self, link):
         details = self.getURL(link)
@@ -126,25 +130,6 @@ class ExtraTorrentProvider(generic.TorrentProvider):
             return ''
 
         return match.group(1)
-
-    def _get_title_and_url(self, item):
-        #pylint: disable=W0612
-        title, url, seeders, leechers, size, info_hash = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-
-        return (title, url)
-
-
-    def _get_size(self, item):
-        #pylint: disable=W0612
-        title, url, seeders, leechers, size, info_hash = item
-        return size
 
     def findPropers(self, search_date=datetime.datetime.today()-datetime.timedelta(days=1)):
         results = []

@@ -2,7 +2,7 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -112,10 +112,6 @@ class RarbgProvider(generic.TorrentProvider):
 
         return False
 
-    def getQuality(self, item, anime=False):
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
-
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
@@ -137,7 +133,7 @@ class RarbgProvider(generic.TorrentProvider):
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
-        
+
                 if mode == 'RSS':
                     searchURL = self.urls['listing'] + self.defaultOptions
                 elif mode == 'Season':
@@ -239,8 +235,12 @@ class RarbgProvider(generic.TorrentProvider):
                         try:
                             torrent_title = item['filename']
                             torrent_download = item['download']
+                            #FIXME
+                            size = -1
+                            seeders = 1
+                            leechers = 0
                             if torrent_title and torrent_download:
-                                items[mode].append((torrent_title, torrent_download))
+                                items[mode].append((torrent_title, torrent_download, size, seeders, leechers))
                             else:
                                 logger.log(u'{name} skipping invalid result'.format(name=self.name), logger.DEBUG)
                         except Exception:
@@ -250,25 +250,6 @@ class RarbgProvider(generic.TorrentProvider):
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-        """
-        Retrieves the title and URL data from the item XML node
-
-        item: An elementtree.ElementTree element representing the <item> tag of the RSS feed
-
-        Returns: A tuple containing two strings representing title and URL respectively
-        """
-
-        title, url = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return title, url
 
     def findPropers(self, search_date=datetime.datetime.today()):
 
