@@ -1500,7 +1500,7 @@ class TVEpisode(object):
                 logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
                 return
 
-            subliminal.save_subtitles(foundSubs, directory=subs_path, single=not sickbeard.SUBTITLES_MULTI)
+            subliminal.save_subtitles(foundSubs, directory=subs_path.encode(sickbeard.SYS_ENCODING), single=not sickbeard.SUBTITLES_MULTI)
 
             for video, subs in foundSubs.iteritems():
                 for sub in subs:
