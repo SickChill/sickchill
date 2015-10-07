@@ -2,7 +2,7 @@
 # Modified by jkaberg, https://github.com/jkaberg for SceneAccess
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -104,47 +104,47 @@ class HDTorrentsProvider(generic.TorrentProvider):
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
-    
+
                 if mode != 'RSS':
                     searchURL = self.urls['search'] % (urllib.quote_plus(search_string.replace('.', ' ')), self.categories)
                 else:
-                    searchURL = self.urls['rss'] % self.categories                    
-                
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)    
+                    searchURL = self.urls['rss'] % self.categories
+
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
                 if mode != 'RSS':
                     logger.log(u"Search string: %s" %  search_string, logger.DEBUG)
-    
+
                 data = self.getURL(searchURL)
                 if not data:
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue
-    
+
                 html = soup(data)
                 if not html:
                     logger.log("No html data parsed from provider", logger.DEBUG)
                     continue
-    
+
                 empty = html.find('No torrents here')
                 if empty:
                     logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                     continue
-    
+
                 tables = html.find('table', attrs={'class': 'mainblockcontenttt'})
                 if not tables:
                     logger.log(u"Could not find table of torrents mainblockcontenttt", logger.ERROR)
                     continue
-        
+
                 torrents = tables.findChildren('tr')
                 if not torrents:
                     continue
-    
+
                 # Skip column headers
                 for result in torrents[1:]:
                     try:
                         cells = result.findChildren('td', attrs={'class': re.compile(r'(green|yellow|red|mainblockcontent)')})
                         if not cells:
                             continue
-    
+
                         title = download_url = seeders = leechers = None
                         size = 0
                         for cell in cells:
@@ -154,13 +154,19 @@ class HDTorrentsProvider(generic.TorrentProvider):
                                     download_url = self.urls['home'] % cell.a['href']
                                 if None is seeders and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
                                     seeders = int(cell.text)
+                                    if not seeders:
+                                        seeders = 1
                                 elif None is leechers and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
                                     leechers = int(cell.text)
-    
+                                    if not leechers:
+                                        seeders = 0
+
                                 # Need size for failed downloads handling
                                 if re.match(r'[0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+', cells[7].text):
                                     size = self._convertSize(cells[7].text)
-    
+                                    if not size:
+                                        size = -1
+
                             except:
                                 logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
@@ -172,13 +178,13 @@ class HDTorrentsProvider(generic.TorrentProvider):
                             if mode != 'RSS':
                                 logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
-        
-                        item = title, download_url, seeders, leechers, size
+
+                        item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
-        
+
                         items[mode].append(item)
-            
+
                     except (AttributeError, TypeError, KeyError, ValueError):
                         continue
 
@@ -186,26 +192,8 @@ class HDTorrentsProvider(generic.TorrentProvider):
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
-    
+
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url, seeders, leechers, size = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
-
-    def _get_size(self, item):
-
-        title, url, seeders, leechers, size = item
-
-        return size
 
     def findPropers(self, search_date=datetime.today()):
 

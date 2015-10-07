@@ -2,7 +2,7 @@
 # Author: djoole <bobby.djoole@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage. 
 #
 # Sick Beard is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -63,10 +63,6 @@ class T411Provider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def getQuality(self, item, anime=False):
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
-
     def _doLogin(self):
 
         if self.token is not None:
@@ -126,14 +122,24 @@ class T411Provider(generic.TorrentProvider):
 
                         for torrent in torrents:
                             try:
-                                torrent_name = torrent['name']
+                                title = torrent['name']
                                 torrent_id = torrent['id']
-                                torrent_download_url = (self.urls['download'] % torrent_id).encode('utf8')
+                                download_url = (self.urls['download'] % torrent_id).encode('utf8')
+                                #FIXME
+                                size = -1
+                                seeders = 1
+                                leechers = 0
 
-                                if not torrent_name or not torrent_download_url:
+                                if not all([title, download_url]):
                                     continue
 
-                                item = torrent_name, torrent_download_url
+                                #Filter unseeded torrent
+                                #if seeders < self.minseed or leechers < self.minleech:
+                                #    if mode != 'RSS':
+                                #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                #    continue
+
+                                item = title, download_url, size, seeders, leechers
                                 if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -147,23 +153,11 @@ class T411Provider(generic.TorrentProvider):
                         logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             #For each search mode sort all the items by seeders if available if available
-            items[mode].sort(key=lambda tup: tup[0], reverse=True)
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return title, url
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

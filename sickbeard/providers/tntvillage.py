@@ -1,7 +1,7 @@
 # Author: Giovanni Borri
 # Modified by gborri, https://github.com/gborri for TNTVillage
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -126,11 +126,6 @@ class TNTVillageProvider(generic.TorrentProvider):
 
     def isEnabled(self):
         return self.enabled
-
-    def getQuality(self, item, anime=False):
-
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
 
     def _checkAuth(self):
 
@@ -346,12 +341,14 @@ class TNTVillageProvider(generic.TorrentProvider):
                                     leechers = int(leechers.strip('[]'))
                                     seeders = result.find_all('td')[3].find_all('td')[2].text
                                     seeders = int(seeders.strip('[]'))
+                                    #FIXME
+                                    size = -1
                                 except (AttributeError, TypeError):
                                     continue
 
                                 if not all([title, download_url]):
                                     continue
-            
+
                                 #Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
                                     if mode != 'RSS':
@@ -385,7 +382,7 @@ class TNTVillageProvider(generic.TorrentProvider):
                                 if self._is_season_pack(title):
                                     title = re.sub(r'([Ee][\d{1,2}\-?]+)', '', title)
 
-                                item = title, download_url, id, seeders, leechers
+                                item = title, download_url, size, seeders, leechers
                                 if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -400,18 +397,6 @@ class TNTVillageProvider(generic.TorrentProvider):
                 results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url, id, seeders, leechers = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

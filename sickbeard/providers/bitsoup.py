@@ -1,7 +1,7 @@
 # Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -66,11 +66,6 @@ class BitSoupProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def getQuality(self, item, anime=False):
-
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
-
     def _checkAuth(self):
         if not self.username or not self.password:
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
@@ -110,7 +105,7 @@ class BitSoupProvider(generic.TorrentProvider):
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
-        
+
                 self.search_params['search'] = search_string
 
                 data = self.getURL(self.urls['search'], params=self.search_params)
@@ -142,13 +137,14 @@ class BitSoupProvider(generic.TorrentProvider):
                                 id = int(id)
                                 seeders = int(cells[10].getText())
                                 leechers = int(cells[11].getText())
-                                size = 0
+                                #FIXME
+                                size = -1
                             except (AttributeError, TypeError):
                                 continue
 
                             if not all([title, download_url]):
                                 continue
-        
+
                                 #Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
@@ -170,25 +166,6 @@ class BitSoupProvider(generic.TorrentProvider):
             results += items[mode]
 
         return results
-
-    def _get_size(self, item):
-    
-        title, download_url, size, seeders, leechers = item
-        if not size:
-            size = 0
-        return size
-
-    def _get_title_and_url(self, item):
-
-        title, url, size, seeders, leechers = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

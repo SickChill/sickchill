@@ -2,7 +2,7 @@
 #          adaur <adaur.underground@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage. 
 #
 # Sick Beard is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -70,10 +70,6 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
 
     def isEnabled(self):
         return self.enabled
-
-    def getQuality(self, item, anime=False):
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
 
     def _doLogin(self):
 
@@ -166,13 +162,27 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
                         for row in rows:
                             link = row.find("a", title=True)
                             title = link['title']
+                            #FIXME
+                            size = -1
+                            seeders = 1
+                            leechers = 0
 
                             autogetURL = self.url +'/' + (row.find("li", {"class": "torrents_name"}).find('a')['href'][1:]).replace('#FTD_MENU' ,'&menu=4')
                             r = self.getURL(autogetURL)
                             with BS4Parser(r, features=["html5lib", "permissive"]) as html:
-                                downloadURL = html.find("div", {"class" : "autoget"}).find('a')['href']
-                                item = title, downloadURL
 
+                                download_url = html.find("div", {"class" : "autoget"}).find('a')['href']
+
+                                if not all([title, download_url]):
+                                    continue
+
+                                #Filter unseeded torrent
+                                #if seeders < self.minseed or leechers < self.minleech:
+                                #    if mode != 'RSS':
+                                #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                #    continue
+
+                                item = title, download_url, size, seeders, leechers
                                 if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -184,19 +194,6 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url = item
-
-        if title:
-            title = u'' + title
-            title = title.replace(' ', '.')
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

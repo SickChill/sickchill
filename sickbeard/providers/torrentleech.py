@@ -1,7 +1,7 @@
 # Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -68,11 +68,6 @@ class TorrentLeechProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def getQuality(self, item, anime=False):
-
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
-
     def _doLogin(self):
 
         login_params = {'username': self.username,
@@ -135,19 +130,21 @@ class TorrentLeechProvider(generic.TorrentProvider):
                                 id = int(link['href'].replace('/torrent/', ''))
                                 seeders = int(result.find('td', attrs={'class': 'seeders'}).string)
                                 leechers = int(result.find('td', attrs={'class': 'leechers'}).string)
+                                #FIXME
+                                size = -1
                             except (AttributeError, TypeError):
                                 continue
 
                             if not all([title, download_url]):
                                 continue
-        
+
                             #Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            item = title, download_url, id, seeders, leechers
+                            item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -162,18 +159,6 @@ class TorrentLeechProvider(generic.TorrentProvider):
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url, id, seeders, leechers = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

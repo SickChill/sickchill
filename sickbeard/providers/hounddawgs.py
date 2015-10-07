@@ -1,7 +1,7 @@
 # Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -75,11 +75,6 @@ class HoundDawgsProvider(generic.TorrentProvider):
 
     def isEnabled(self):
         return self.enabled
-
-    def getQuality(self, item, anime=False):
-
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
 
     def _doLogin(self):
 
@@ -165,6 +160,10 @@ class HoundDawgsProvider(generic.TorrentProvider):
 
                                 download_url = self.urls['base_url']+allAs[0].attrs['href']
                                 id = link.replace(self.urls['base_url']+'torrents.php?id=','')
+                                #FIXME
+                                size = -1
+                                seeders = 1
+                                leechers = 0
 
                             except (AttributeError, TypeError):
                                 continue
@@ -172,7 +171,13 @@ class HoundDawgsProvider(generic.TorrentProvider):
                             if not title or not download_url:
                                 continue
 
-                            item = title, download_url
+                            #Filter unseeded torrent
+                            #if seeders < self.minseed or leechers < self.minleech:
+                            #    if mode != 'RSS':
+                            #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            #    continue
+
+                            item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -187,19 +192,6 @@ class HoundDawgsProvider(generic.TorrentProvider):
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url = item
-
-        if title:
-            title = u'' + title
-            title = title.replace(' ', '.')
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

@@ -3,7 +3,7 @@
 #
 #Ported to sickrage by: matigonkas
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage. 
 #
 # Sick Beard is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,22 +47,6 @@ class BTDIGGProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def _get_title_and_url(self, item):
-        title, url, size = item
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
-
-
-    def _get_size(self, item):
-        title, url, size = item
-
-        return size
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
@@ -71,14 +55,13 @@ class BTDIGGProvider(generic.TorrentProvider):
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
-                # TODO: Make order configurable. 0: weight, 1: req, 2: added, 3: size, 4: files, 5
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s" %  search_string, logger.DEBUG)
-                    
+
                 searchURL = self.urls['api'] + "api/private-341ada3245790954/s02?q=" + search_string + "&p=0&order=1"
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
-                
+
                 jdata = self.getURL(searchURL, json=True)
                 if not jdata:
                     logger.log("No data returned to be parsed!!!")
@@ -89,18 +72,28 @@ class BTDIGGProvider(generic.TorrentProvider):
                         title = torrent['name']
                         download_url = torrent['magnet']
                         size = torrent['size']
+                        #FIXME
+                        seeders = 1
+                        leechers = 0
 
                 if not all([title, download_url]):
                     continue
-                
+
+                #Filter unseeded torrent
+                #if seeders < self.minseed or leechers < self.minleech:
+                #    if mode != 'RSS':
+                #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                #    continue
+
+                item = title, download_url, size, seeders, leechers
                 if mode != 'RSS':
                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                items[mode].append((title, download_url, size))
-                
+                items[mode].append(item)
+
             #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
-            
+
             results += items[mode]
 
         return results

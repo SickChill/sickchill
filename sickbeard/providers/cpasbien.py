@@ -2,7 +2,7 @@
 # Author: Guillaume Serre <guillaume.serre@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage. 
 #
 # Sick Beard is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -51,10 +51,6 @@ class CpasbienProvider(generic.TorrentProvider):
 
     def isEnabled(self):
         return self.enabled
-
-    def getQuality(self, item, anime=False):
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
@@ -105,14 +101,18 @@ class CpasbienProvider(generic.TorrentProvider):
 
                                 if downloadTorrentLink:
                                     download_url = downloadTorrentLink
+                                    #FIXME
+                                    size = -1
+                                    seeders = 1
+                                    leechers = 0
 
                             except (AttributeError, TypeError):
                                     continue
-    
+
                             if not all([title, download_url]):
                                 continue
 
-                            item = title, download_url
+                            item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -123,22 +123,10 @@ class CpasbienProvider(generic.TorrentProvider):
 
             #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
-            
+
             results += items[mode]
+
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url = item
-
-        if title:
-            title = u'' + title
-            title = title.replace(' ', '.')
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return title, url
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

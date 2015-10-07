@@ -2,7 +2,7 @@
 # URL: http://code.google.com/p/sickbeard
 # Originally written for SickGear
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
         return True
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
-
+        #FIXME ADD MODE
         self._checkAuth()
         results = []
         params = {}
@@ -85,24 +85,31 @@ class TitansOfTVProvider(generic.TorrentProvider):
                 found_torrents = {}
 
             for result in found_torrents:
-                (title, url) = self._get_title_and_url(result)
+                title = parsedJSON['release_name']
+                id = parsedJSON['id']
+                download_url = self.download_url % (id, self.api_key)
+                #FIXME
+                size = -1
+                seeders = 1
+                leechers = 0
 
-                if title and url:
-                    logger.log(u"Found result: %s " % title, logger.DEBUG)
-                    results.append(result)
+                if not all([title, download_url]):
+                    continue
 
-        #For each search mode sort all the items by seeders if available if available
-        results.sort(key=lambda tup: tup[0], reverse=True)
+                #Filter unseeded torrent
+                #if seeders < self.minseed or leechers < self.minleech:
+                #    if mode != 'RSS':
+                #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                #    continue
+
+                item = title, download_url, size, seeders, leechers
+
+                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                results.append(result)
+
+        #FIXME SORTING
 
         return results
-
-    def _get_title_and_url(self, parsedJSON):
-
-        title = parsedJSON['release_name']
-        id = parsedJSON['id']
-        url = self.download_url % (id, self.api_key)
-
-        return title, url
 
     def _get_season_search_strings(self, ep_obj):
         search_params = {'limit': 100}

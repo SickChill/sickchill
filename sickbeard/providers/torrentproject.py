@@ -1,7 +1,7 @@
 # Author: duramato <matigonkas@outlook.com>
 # URL: https://github.com/SiCKRAGETV/sickrage
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
         self.public = True
-    
+
         self.urls = {'api': u'https://torrentproject.se/',}
         self.url = self.urls['api']
         self.minseed = None
@@ -55,24 +55,6 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
         else:
             max_date = datetime.date(year, month+1, 1) -  datetime.timedelta(days=1)
         return (min_date, max_date)
-
-    def _get_title_and_url(self, item):
-        title, download_url, size, seeders, leechers, id = item
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
-
-
-    def _get_size(self, item):
-        title, download_url, size, seeders, leechers, id = item
-        if not size:
-            size = 0
-        return size
-
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
@@ -114,13 +96,19 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
 
                     if not all([title, download_url]):
                         continue
-                        
-                    item = title, download_url, size, seeders, leechers, id
+
+                    #Filter unseeded torrent
+                    if seeders < self.minseed or leechers < self.minleech:
+                        if mode != 'RSS':
+                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                        continue
+
+                    item = title, download_url, size, seeders, leechers
 
                     if mode != 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
                     items[mode].append(item)
-                    
+
             # For each search mode sort all the items by seeders
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 

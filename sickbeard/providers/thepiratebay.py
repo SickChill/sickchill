@@ -1,7 +1,7 @@
 # Author: Mr_Orange <mr_orange@hotmail.it>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
             for search_string in search_strings[mode]:
 
                 self.search_params.update({'q': search_string.strip()})
-    
+
                 if mode != 'RSS':
                     logger.log(u"Search string: " + search_string, logger.DEBUG)
 
@@ -142,23 +142,6 @@ class ThePirateBayProvider(generic.TorrentProvider):
         elif modifier in 'TiB':
             size = size * 1024**4
         return size
-
-    def _get_size(self, item):
-        # pylint: disable=W0612
-        title, url, size, seeders, leechers = item
-        return size
-
-    def _get_title_and_url(self, item):
-        # pylint: disable=W0612
-        title, url, size, seeders, leechers = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()-datetime.timedelta(days=1)):
 

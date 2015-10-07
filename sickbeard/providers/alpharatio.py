@@ -1,7 +1,7 @@
 # Author: Bill Nasty
 # URL: https://github.com/SiCKRAGETV/SickRage
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -67,11 +67,6 @@ class AlphaRatioProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def getQuality(self, item, anime=False):
-
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
-
     def _doLogin(self):
         login_params = {'username': self.username,
                         'password': self.password,
@@ -108,7 +103,7 @@ class AlphaRatioProvider(generic.TorrentProvider):
 
                 searchURL = self.urls['search'] % (search_string, self.catagories)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
-                
+
                 data = self.getURL(searchURL)
                 if not data:
                     continue
@@ -134,12 +129,14 @@ class AlphaRatioProvider(generic.TorrentProvider):
                                 id = link['href'][-6:]
                                 seeders = cells[len(cells)-2].contents[0]
                                 leechers = cells[len(cells)-1].contents[0]
+                                #FIXME
+                                size = -1
                             except (AttributeError, TypeError):
                                 continue
 
                             if not all([title, download_url]):
                                 continue
-        
+
                             #Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
@@ -161,25 +158,6 @@ class AlphaRatioProvider(generic.TorrentProvider):
             results += items[mode]
 
         return results
-        
-    def _get_size(self, item):
-    
-        title, download_url, size, seeders, leechers = item
-        if not size:
-            size = 0
-        return size
-
-    def _get_title_and_url(self, item):
-
-        title, url, size, seeders, leechers = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()):
 
