@@ -65,6 +65,9 @@ class BTDIGGProvider(generic.TorrentProvider):
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
+        results = []
+        items = {'Season': [], 'Episode': [], 'RSS': []}
+
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
@@ -83,11 +86,20 @@ class BTDIGGProvider(generic.TorrentProvider):
 
                 for torrent in jdata:
                     if not torrent['ff']:
-                        if mode != 'RSS':
-                            logger.log(u"Found result: %s " % torrent['name'], logger.DEBUG)
-                        results.append((torrent['name'], torrent['magnet'], torrent['size']))
-        return results
+                        title = torrent['name']
+                        download_url = torrent['magnet']
+                        size = torrent['size']
 
+                if not all([title, download_url]):
+                    continue
+                
+                if mode != 'RSS':
+                    logger.log(u"Found result: %s " % title, logger.DEBUG)
+
+                items[mode].append((title, download_url, size))
+            results += items[mode]
+
+        return results
 
 class BTDiggCache(tvcache.TVCache):
     def __init__(self, provider):
