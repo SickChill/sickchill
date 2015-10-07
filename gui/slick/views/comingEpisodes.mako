@@ -23,6 +23,9 @@
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <h1 class="header">${header}</h1>
 <div class="h2footer pull-right">
+% if layout != 'poster':
+    ## <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button> <!-- Not sure why this doesn't work -->
+% endif
     <span>Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
             <option value="${srRoot}/setComingEpsLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'poster']} >Poster</option>
@@ -75,10 +78,12 @@
     <thead>
         <tr>
             <th>Airdate (${('local', 'network')[sickbeard.TIMEZONE_DISPLAY == 'network']})</th>
+            <th>Ends</th>
             <th>Show</th>
-            <th nowrap="nowrap">Next Ep</th>
+            <th>Next Ep</th>
             <th>Next Ep Name</th>
             <th>Network</th>
+            <th>Run time</th>
             <th>Quality</th>
             <th>Indexers</th>
             <th>Search</th>
@@ -116,6 +121,11 @@
                 <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
             </td>
 
+            <td align="center">
+                <% ends = sbdatetime.sbdatetime.convert_to_setting(cur_ep_enddate) %>
+                <time datetime="${ends.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(ends)}</time>
+            </td>
+
             <td class="tvShow" nowrap="nowrap"><a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>
 % if int(cur_result['paused']):
                 <span class="pause">[paused]</span>
@@ -137,6 +147,10 @@
 
             <td align="center">
                 ${cur_result['network']}
+            </td>
+
+            <td align="center">
+            ${run_time}min
             </td>
 
             <td align="center">

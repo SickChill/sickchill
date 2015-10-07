@@ -5,22 +5,21 @@ $(document).ready(function(){
         var sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
 
         $('#showListTable:has(tbody tr)').tablesorter({
-            widgets: ['stickyHeaders', 'filter'],
+            widgets: ['stickyHeaders', 'filter', 'columnSelector'],
             sortList: sortList,
             textExtraction: {
                 0: function(node) { return $(node).find('time').attr('datetime'); },
-                5: function(node) { return $(node).find('span').text().toLowerCase(); }
+                1: function(node) { return $(node).find('time').attr('datetime'); },
+                2: function(node) { return $(node).find('span').text().toLowerCase(); },
+                4: function(node) { return $(node).find('span').text().toLowerCase(); }
             },
             headers: {
                 0: { sorter: 'realISODate' },
-                1: { sorter: 'loadingNames' },
-                2: { sorter: false },
-                3: { sorter: false },
+                1: { sorter: 'realISODate' },
+                2: { sorter: 'loadingNames' },
                 4: { sorter: 'loadingNames' },
-                5: { sorter: 'quality' },
-                6: { sorter: false },
-                7: { sorter: false },
-                8: { sorter: false }
+                7: { sorter: 'quality' },
+                9: { sorter: false }
             }
         });
 
@@ -38,4 +37,17 @@ $(document).ready(function(){
             });
         });
     }
+
+    $('#popover').popover({
+        placement: 'bottom',
+        html: true, // required if content has HTML
+        content: '<div id="popover-target"></div>'
+    }).on('shown.bs.popover', function () { // bootstrap popover event triggered when the popover opens
+        // call this function to copy the column selection code into the popover
+        $.tablesorter.columnSelector.attachTo( $('#showListTableShows'), '#popover-target');
+        if(metaToBool('sickbeard.ANIME_SPLIT_HOME')){
+            $.tablesorter.columnSelector.attachTo( $('#showListTableAnime'), '#popover-target');
+        }
+
+    });
 });
