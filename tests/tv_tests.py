@@ -17,12 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import unittest
-import test_lib as test
-
 import sys, os.path
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+import unittest
+
+import test_lib as test
 
 import sickbeard
 from sickbeard.tv import TVEpisode, TVShow

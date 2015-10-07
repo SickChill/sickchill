@@ -19,15 +19,15 @@
 
 from __future__ import with_statement
 
-import unittest
 import sys, os.path
-
-from sickbeard import logger
-from sickrage.helper.exceptions import ex
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import unittest
+
+from sickbeard import logger
+from sickrage.helper.exceptions import ex
 
 def error():
     try:

@@ -18,14 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import glob
-import unittest
 import sys, os.path
 
 tests_dir=os.path.abspath(__file__)[:-len(os.path.basename(__file__))]
 
 sys.path.insert(1, os.path.join(tests_dir, '../lib'))
 sys.path.insert(1, os.path.join(tests_dir, '..'))
+
+import glob
+import unittest
 
 class AllTests(unittest.TestCase):
     #Block issue_submitter_tests to avoid issue tracker spam on every build

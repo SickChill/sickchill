@@ -19,13 +19,13 @@
 
 from __future__ import with_statement
 
-import unittest
-from configobj import ConfigObj
-
 import sys, os.path
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import unittest
+
+from configobj import ConfigObj
 import sickbeard
 
 from sickbeard import providers, tvcache
