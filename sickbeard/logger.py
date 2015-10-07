@@ -215,7 +215,7 @@ class Logger(object):
             # parse and submit errors to issue tracker
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
                 try:
-                    title_Error = ss(curError.title)
+                    title_Error = ss(str(curError.title))
                     if not len(title_Error) or title_Error == 'None':
                         title_Error = re.match(r"^[A-Z0-9\-\[\] :]+::\s*(.*)$", ss(curError.message)).group(1)
 
@@ -263,9 +263,14 @@ class Logger(object):
                 title_Error = u"[APP SUBMITTED]: " + title_Error
                 reports = gh.get_organization(gh_org).get_repo(gh_repo).get_issues(state="all")
 
+                def is_mako_error(title):
+                    return re.search(r'Loaded module.*not found in sys\.modules', title) is not None
+
+                mako_error = is_mako_error(title_Error)
+
                 issue_found = False
                 for report in reports:
-                    if title_Error.rsplit(' :: ')[-1] in report.title:
+                    if title_Error.rsplit(' :: ')[-1] in report.title or mako_error and is_mako_error(report.title):
                         issue_id = report.number
                         if not report.raw_data['locked']:
                             if report.create_comment(message):
