@@ -19,13 +19,13 @@
 
 from __future__ import with_statement
 
-import unittest
-import datetime
-import re
-
 import sys, os.path
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+import datetime
+import unittest
+import re
 
 import test_lib as test
 import sickbeard

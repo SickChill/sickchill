@@ -1,7 +1,7 @@
 # Author: Mr_Orange <mr_orange@hotmail.it>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ from __future__ import with_statement
 
 import re
 import datetime
+from urllib import urlencode
 
 import sickbeard
 from sickbeard.providers import generic
@@ -89,7 +90,9 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: " + search_string, logger.DEBUG)
 
-                data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
+                stupidURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
+                data = self.getURL(stupidURL)
+                #data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
                 if not data:
                     continue
 
