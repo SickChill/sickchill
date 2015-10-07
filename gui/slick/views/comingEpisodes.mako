@@ -121,7 +121,7 @@
                 <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
             </td>
 
-            <td align="center">
+            <td align="center" nowrap="nowrap"> 
                 <% ends = sbdatetime.sbdatetime.convert_to_setting(cur_ep_enddate) %>
                 <time datetime="${ends.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(ends)}</time>
             </td>
