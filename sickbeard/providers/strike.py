@@ -41,7 +41,7 @@ class STRIKEProvider(generic.TorrentProvider):
         return self.enabled
 
     def _get_title_and_url(self, item):
-        title, url, size = item
+        title, download_url, size, seeders, leechers = item
         if title:
             title = self._clean_title_from_provider(title)
 
@@ -52,11 +52,14 @@ class STRIKEProvider(generic.TorrentProvider):
 
 
     def _get_size(self, item):
-        title, url, size = item
+        title, download_url, size, seeders, leechers = item
         return size
 
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+        
+        results = []
+        items = {'Season': [], 'Episode': [], 'RSS': []}
 
         for mode in search_strings.keys(): #Mode = RSS, Season, Episode
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
@@ -78,6 +81,7 @@ class STRIKEProvider(generic.TorrentProvider):
                     seeders = ('seeds' in item and item['seeds']) or 0
                     leechers = ('leeches' in item and item['leeches']) or 0
                     title = ('torrent_title' in item and item['torrent_title']) or ''
+                    size = ('size' in item and item['size']) or 0
                     download_url = ('magnet_uri' in item and item['magnet_uri']) or ''
         
                     if not all([title, download_url]):
@@ -92,13 +96,14 @@ class STRIKEProvider(generic.TorrentProvider):
                     if mode != 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
         
-                    item = title, download_url, seeders, leechers
+                    item = title, download_url, size, seeders, leechers
                     items[mode].append(item)
                     
             #For each search mode sort all the items by seeders
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
+        return results
 
 
 class StrikeCache(tvcache.TVCache):
