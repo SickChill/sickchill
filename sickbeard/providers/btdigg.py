@@ -84,7 +84,7 @@ class BTDIGGProvider(generic.TorrentProvider):
                 for torrent in jdata:
                     if not torrent['ff']:
                         if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+                            logger.log(u"Found result: %s " % torrent['name'], logger.DEBUG)
                         results.append((torrent['name'], torrent['magnet'], torrent['size']))
         return results
 
