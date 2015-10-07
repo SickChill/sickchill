@@ -2,7 +2,7 @@
 # Author: Mr_Orange <mr_orange@hotmail.it>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import traceback
 import re
 import datetime
 import xmltodict
+from urllib import urlencode
 
 import sickbeard
 from sickbeard import logger
@@ -85,7 +86,9 @@ class KATProvider(generic.TorrentProvider):
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
                 try:
-                    data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
+                    stupidURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
+                    data = self.getURL(stupidURL)
+                    #data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
                     if not data:
                         logger.log("No data returned from provider", logger.DEBUG)
                         continue
