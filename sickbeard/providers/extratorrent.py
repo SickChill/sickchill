@@ -78,7 +78,12 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                         logger.log("No data returned from provider", logger.DEBUG)
                         continue
 
-                    data = xmltodict.parse(data)
+                    try:
+                        data = xmltodict.parse(data)
+                    except ExpatError as e:
+                        logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
+                        continue
+
                     if not all([data, 'rss' in data, 'channel' in data['rss'], 'item' in data['rss']['channel']]):
                         logger.log(u"Malformed rss returned, skipping", logger.DEBUG)
                         continue
@@ -111,7 +116,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                         items[mode].append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
 
             #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
