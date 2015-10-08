@@ -79,7 +79,7 @@ class RarbgProvider(generic.TorrentProvider):
 
         self.defaultOptions = self.urlOptions['categories'].format(categories='tv') + \
                                 self.urlOptions['limit'].format(limit='100') + \
-                                self.urlOptions['format'].format(format='json')
+                                self.urlOptions['format'].format(format='json_extended')
 
         self.next_request = datetime.datetime.now()
 
@@ -98,7 +98,7 @@ class RarbgProvider(generic.TorrentProvider):
 
         response = self.getURL(self.urls['token'], timeout=30, json=True)
         if not response:
-            logger.log(u'Unable to connect to %s provider.' % self.name, logger.WARNING)
+            logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
         try:
@@ -107,8 +107,8 @@ class RarbgProvider(generic.TorrentProvider):
                 self.tokenExpireDate = datetime.datetime.now() + datetime.timedelta(minutes=14)
                 return True
         except Exception as e:
-            logger.log(u'%s provider: No token found' % self.name, logger.WARNING)
-            logger.log(u'%s provider: No token found: %s' % (self.name, ex(e)), logger.DEBUG)
+            logger.log(u"No token found", logger.WARNING)
+            logger.log(u"No token found: %s" % repr(e), logger.DEBUG)
 
         return False
 
@@ -161,7 +161,7 @@ class RarbgProvider(generic.TorrentProvider):
                 if self.ranked:
                     searchURL += self.urlOptions['ranked'].format(ranked=int(self.ranked))
 
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG) 
 
                 try:
                     retry = 3
@@ -176,77 +176,85 @@ class RarbgProvider(generic.TorrentProvider):
                         self.next_request = datetime.datetime.now() + datetime.timedelta(seconds=10)
 
                         if not data:
-                            logger.log(u'{name} no data returned.'.format(name=self.name), logger.DEBUG)
+                            logger.log("No data returned from provider", logger.DEBUG)
                             raise GetOutOfLoop
                         if re.search('ERROR', data):
-                            logger.log(u'{name} returned an error.'.format(name=self.name), logger.DEBUG)
+                            logger.log(u"Error returned from provider", logger.DEBUG)
                             raise GetOutOfLoop
                         if re.search('No results found', data):
-                            logger.log(u'{name} no results found.'.format(name=self.name), logger.DEBUG)
+                            logger.log(u"No results found", logger.DEBUG)
                             raise GetOutOfLoop
                         if re.search('Invalid token set!', data):
-                            logger.log(u'{name} Invalid token set!'.format(name=self.name), logger.ERROR)
+                            logger.log(u"Invalid token!", logger.WARNING)
                             return results
                         if re.search('Too many requests per minute. Please try again later!', data):
-                            logger.log(u'{name} Too many requests per minute.'.format(name=self.name), logger.DEBUG)
+                            logger.log(u"Too many requests per minute", logger.WARNING)
                             retry = retry - 1
                             time.sleep(10)
                             continue
                         if re.search('Cant find search_tvdb in database. Are you sure this imdb exists?', data):
-                            logger.log(u'{name} no results found. Search tvdb id do not exist on server.'.format(name=self.name), logger.DEBUG)
+                            logger.log(u"No results found. The tvdb id: %s do not exist on provider" % ep_indexerid, logger.WARNING)
                             raise GetOutOfLoop
                         if re.search('Invalid token. Use get_token for a new one!', data):
-                            logger.log(u'{name} Invalid token, retrieving new token'.format(name=self.name), logger.DEBUG)
+                            logger.log(u"Invalid token, retrieving new token", logger.DEBUG)
                             retry = retry - 1
                             self.token = None
                             self.tokenExpireDate = None
                             if not self._doLogin():
-                                logger.log(u'{name} Failed retrieving new token'.format(name=self.name), logger.DEBUG)
+                                logger.log(u"Failed retrieving new token", logger.DEBUG)
                                 return results
-                            logger.log(u'{name} Using new token'.format(name=self.name), logger.DEBUG)
+                            logger.log(u"Using new token", logger.DEBUG)
                             continue
                         if re.search('<div id="error">.*</div>', data):
-                            logger.log(u'{name} {proxy} does not support https.'.format(name=self.name, proxy=self.proxy.getProxyURL()), logger.DEBUG)
+                            logger.log(u"Proxy %s does not support https" % self.proxy.getProxyURL(), logger.DEBUG)
                             searchURL = searchURL.replace(u'https', 'http')
                             continue
 
                         #No error found break
                         break
                     else:
-                        logger.log(u'{name} Retried 3 times without getting results.'.format(name=self.name), logger.DEBUG)
+                        logger.log(u"Retried 3 times without getting results", logger.DEBUG)
                         continue
                 except GetOutOfLoop:
                     continue
 
                 try:
-                    data = re.search(r'\[\{\"filename\".*\}\]', data)
+                    data = re.search(r'\[\{\"title\".*\}\]', data)
                     if data is not None:
                         data_json = json.loads(data.group())
                     else:
                         data_json = {}
                 except Exception as e:
-                    logger.log(u'{name} json load failed: {traceback_info}'.format(name=self.name, traceback_info=traceback.format_exc()), logger.DEBUG)
-                    logger.log(u'{name} json load failed. Data dump = {data}'.format(name=self.name, data=data), logger.DEBUG)
-                    logger.log(u'{name} json load failed.'.format(name=self.name), logger.ERROR)
+                    logger.log(u"JSON load failed: %s" % traceback.format_exc(), logger.ERROR)
+                    logger.log(u"JSON load failed. Data dump: %s" % data, logger.DEBUG)
                     continue
 
                 try:
                     for item in data_json:
                         try:
-                            torrent_title = item['filename']
-                            torrent_download = item['download']
-                            #FIXME
-                            size = -1
-                            seeders = 1
-                            leechers = 0
-                            if torrent_title and torrent_download:
-                                items[mode].append((torrent_title, torrent_download, size, seeders, leechers))
-                            else:
-                                logger.log(u'{name} skipping invalid result'.format(name=self.name), logger.DEBUG)
+                            title = item['title']
+                            download_url = item['download']
+                            size = item['size']
+                            seeders = item['seeders']
+                            leechers = item['leechers']
+                            pubdate = item['pubdate']
+                            
+                            if not all([title, download_url]):
+                                continue
+
+                            item = title, download_url, size, seeders, leechers
+                            if mode != 'RSS':
+                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                            items[mode].append(item)
+
                         except Exception:
-                            logger.log(u'{name} skipping invalid result: {traceback_info}'.format(name=self.name, traceback_info=traceback.format_exc()), logger.DEBUG)
+                            logger.log(u"Skipping invalid result. JSON item: %s" % item, logger.DEBUG)
+ 
                 except Exception:
-                    logger.log(u'{name} failed parsing data: {traceback_info}'.format(name=self.name, traceback_info=traceback.format_exc()), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+
+            # For each search mode sort all the items by seeders
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
             results += items[mode]
 
         return results
