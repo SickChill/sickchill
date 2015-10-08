@@ -4989,12 +4989,9 @@ class ErrorLogs(WebRoot):
                 logFilter=logFilter, logSearch=logSearch)
 
     def submit_errors(self):
-        if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD):
-            ui.notifications.error("Missing information", "Please set your GitHub username and password in the config.")
-            logger.log(u'Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
-        else:
-            submitter_result, issue_id = logger.submit_errors()
-            logger.log(submitter_result, (logger.INFO, logger.WARNING)[issue_id is None])
-            ui.notifications.message(submitter_result)
+        submitter_result, issue_id = logger.submit_errors()
+        logger.log(submitter_result, (logger.INFO, logger.WARNING)[issue_id is None])
+        submitter_notification = ui.notifications.error if issue_id is None else ui.notifications.message
+        submitter_notification(submitter_result)
 
         return self.redirect("/errorlogs/")
