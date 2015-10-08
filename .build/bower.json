@@ -18,6 +18,7 @@
     "jquery-form": "~3.46.0",
     "jquery-timeago": "~1.4.3",
     "jquery-tokeninput": "~1.7.0",
-    "bootstrap3-typeahead": "~3.1.1"
+    "bootstrap3-typeahead": "~3.1.1",
+    "underscore": "~1.8.3"
   }
 }
