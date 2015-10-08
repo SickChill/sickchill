@@ -357,7 +357,7 @@
         <script type="text/javascript" src="${srRoot}/js/lib/pnotify.custom.min.js?${sbPID}"></script><!-- Needs to be removed -->
         <script type="text/javascript" src="${srRoot}/js/new/parsers.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/new/meta.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/script.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/new/core.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.scrolltopcontrol-1.1.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/browser.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js?${sbPID}"></script>
