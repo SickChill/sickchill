@@ -90,8 +90,9 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: " + search_string, logger.DEBUG)
 
-                stupidURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
-                data = self.getURL(stupidURL)
+                searchURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                data = self.getURL(searchURL)
                 #data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
                 if not data:
                     continue
