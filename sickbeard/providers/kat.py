@@ -86,14 +86,20 @@ class KATProvider(generic.TorrentProvider):
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
                 try:
-                    stupidURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
-                    data = self.getURL(stupidURL)
+                    searchURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
+                    logger.log(u"Search URL: %s" % searchURL, logger.DEBUG) 
+                    data = self.getURL(searchURL)
                     #data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
                     if not data:
                         logger.log("No data returned from provider", logger.DEBUG)
                         continue
 
-                    data = xmltodict.parse(data)
+                    try:
+                        data = xmltodict.parse(data)
+                    except ExpatError as e:
+                        logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
+                        continue
+
                     if not all([data, 'rss' in data, 'channel' in data['rss'], 'item' in data['rss']['channel']]):
                         logger.log(u"Malformed rss returned, skipping", logger.DEBUG)
                         continue
@@ -150,8 +156,7 @@ class KATProvider(generic.TorrentProvider):
                         items[mode].append(item)
 
                 except Exception:
-                    logger.log(u"Failed to parsing " + self.name + " Traceback: " + traceback.format_exc(),
-                               logger.WARNING)
+                    logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
 
             #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
