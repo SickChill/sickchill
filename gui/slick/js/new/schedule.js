@@ -1,17 +1,16 @@
 $(document).ready(function(){
     if(isMeta('sickbeard.COMING_EPS_LAYOUT', ['list'])){
-        var sortCodes = {'date': 0, 'show': 1, 'network': 4};
+        var sortCodes = {'date': 0, 'show': 2, 'network': 5};
         var sort = getMeta('sickbeard.COMING_EPS_SORT');
         var sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
 
         $('#showListTable:has(tbody tr)').tablesorter({
-            widgets: ['stickyHeaders', 'filter', 'columnSelector'],
+            widgets: ['stickyHeaders', 'filter', 'columnSelector', 'saveSort'],
             sortList: sortList,
             textExtraction: {
                 0: function(node) { return $(node).find('time').attr('datetime'); },
                 1: function(node) { return $(node).find('time').attr('datetime'); },
-                2: function(node) { return $(node).find('span').text().toLowerCase(); },
-                4: function(node) { return $(node).find('span').text().toLowerCase(); }
+                7: function(node) { return $(node).find('span').text().toLowerCase(); }
             },
             headers: {
                 0: { sorter: 'realISODate' },
@@ -19,6 +18,7 @@ $(document).ready(function(){
                 2: { sorter: 'loadingNames' },
                 4: { sorter: 'loadingNames' },
                 7: { sorter: 'quality' },
+                8: { sorter: false },
                 9: { sorter: false }
             },
             widgetOptions: (function() {
