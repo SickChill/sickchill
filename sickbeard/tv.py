@@ -492,7 +492,8 @@ class TVShow(object):
         if self.dvdorder != 0:
             lINDEXER_API_PARMS['dvdorder'] = True
 
-        logger.log(u"lINDEXER_API_PARMS: " + str(lINDEXER_API_PARMS), logger.DEBUG)
+        #logger.log(u"lINDEXER_API_PARMS: " + str(lINDEXER_API_PARMS), logger.DEBUG)
+        #Spamming log
         t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
 
         cachedShow = t[self.indexerid]
@@ -500,25 +501,26 @@ class TVShow(object):
 
         for curResult in sqlResults:
 
-            logger.log(u"loadEpisodesFromDB curResult: " + str(curResult), logger.DEBUG)
-            deleteEp = False
-
             curSeason = int(curResult["season"])
             curEpisode = int(curResult["episode"])
+            curShowid = int(curResult['showid'])
+
+            logger.log(u"%s: loading Episodes from DB" % curShowid, logger.DEBUG)
+            deleteEp = False
 
             if curSeason not in cachedSeasons:
                 try:
                     cachedSeasons[curSeason] = cachedShow[curSeason]
                 except sickbeard.indexer_seasonnotfound, e:
-                    logger.log(u"Error when trying to load the episode from " + sickbeard.indexerApi(
-                        self.indexer).name + ": " + e.message, logger.WARNING)
+                    logger.log(u"%s: Error when trying to load the episode from %. Message: %s " %
+                    (curShowid, sickbeard.indexerApi(self.indexer).name, e.message), logger.WARNING)
                     deleteEp = True
 
             if not curSeason in scannedEps:
                 logger.log(u"Not curSeason in scannedEps", logger.DEBUG)
                 scannedEps[curSeason] = {}
 
-            logger.log(u"Loading episode S%02dE%02d from the DB" % (curSeason, curEpisode), logger.DEBUG)
+            logger.log(u"%s: Loading episode S%02dE%02d from the DB" % (curShowid, curSeason, curEpisode), logger.DEBUG)
 
             try:
                 curEp = self.getEpisode(curSeason, curEpisode)
