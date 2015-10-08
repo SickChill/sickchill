@@ -84,33 +84,18 @@ from tornado.ioloop import IOLoop
 from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
 
-route_locks = {}
-
-mako_path = mako_cache = mako_lookup = None
-
-
-class _setupLookup():
-    def __init__(self, *args, **kwargs):
-        global mako_path
-        global mako_cache
-        global mako_lookup
-
-        if not mako_path:
-            mako_path = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")
-        if not mako_cache:
-            mako_cache = os.path.join(sickbeard.CACHE_DIR, 'mako')
-        if not mako_lookup:
-            mako_lookup = TemplateLookup(directories=[mako_path], module_directory=mako_cache, format_exceptions=True)
-
-
 class PageTemplate(MakoTemplate):
-    arguments = {}
 
     def __init__(self, rh, file, *args, **kwargs):
-        _setupLookup()
-        kwargs['filename'] = os.path.join(mako_path, file)
-        kwargs['module_directory'] = mako_cache
-        kwargs['lookup'] = mako_lookup
+        self.arguments = {}
+
+        self.mako_path = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")
+        self.mako_cache = os.path.join(sickbeard.CACHE_DIR, 'mako')
+        self.mako_lookup = TemplateLookup(directories=[self.mako_path], module_directory=self.mako_cache, format_exceptions=True)
+
+        kwargs['filename'] = os.path.join(self.mako_path, file)
+        kwargs['module_directory'] = self.mako_cache
+        kwargs['lookup'] = self.mako_lookup
         kwargs['format_exceptions'] = True
 
         super(PageTemplate, self).__init__(*args, **kwargs)

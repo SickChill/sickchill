@@ -131,3 +131,17 @@ Please follow this process; it's the best way to get your work included in the p
 
 - [Open a Pull Request](https://help.github.com/articles/using-pull-requests) with a
     clear title and description.
+
+
+## Code guidelines
+
+### HTML
+- Use tags and elements appropriate for an HTML5 doctype (e.g., self-closing tags)
+- Use bower components for third-party JS when possible. All other files should be local and not link to a CDN
+- Use [WAI-ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attributes in documentation examples to promote accessibility.
+
+### JS
+
+- All non library files should pass full lint tests using the [atom.io js linter](https://atom.io/packages/linter-jshint)
+- 4 spaces (no tabs)
+- Code shoud be readable since it all gets minified after development is finished
