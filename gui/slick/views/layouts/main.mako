@@ -127,8 +127,8 @@
                             <div style="clear:both;"></div>
                         </li>
 
-                        <li id="NAVcomingEpisodes"${('', ' class="active"')[topmenu == 'comingEpisodes']}>
-                            <a href="${srRoot}/comingEpisodes/">Schedule</a>
+                        <li id="NAVschedule"${('', ' class="active"')[topmenu == 'schedule']}>
+                            <a href="${srRoot}/schedule/">Schedule</a>
                         </li>
 
                         <li id="NAVhistory"${('', ' class="active"')[topmenu == 'history']}>

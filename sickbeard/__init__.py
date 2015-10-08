@@ -654,6 +654,8 @@ def initialize(consoleLogging=True):
         DEBUG = bool(check_setting_int(CFG, 'General', 'debug', 0))
 
         DEFAULT_PAGE = check_setting_str(CFG, 'General', 'default_page', 'home')
+        if DEFAULT_PAGE not in ('home', 'schedule', 'history', 'news', 'IRC'):
+            DEFAULT_PAGE = 'home'
 
         ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
         LOG_DIR = os.path.normpath(os.path.join(DATA_DIR, ACTUAL_LOG_DIR))
