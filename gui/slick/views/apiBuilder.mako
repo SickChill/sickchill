@@ -26,6 +26,25 @@
     <meta name="msapplication-TileImage" content="${srRoot}/images/ico/favicon-144.png">
     <meta name="msapplication-config" content="${srRoot}/css/browserconfig.xml">
 
+    <meta data-var="srRoot" data-content="${srRoot}">
+    <meta data-var="themeSpinner" data-content="${('', '-dark')[sickbeard.THEME_NAME == 'dark']}">
+    <meta data-var="anonURL" data-content="${sickbeard.ANON_REDIRECT}">
+
+    <meta data-var="sickbeard.ANIME_SPLIT_HOME" data-content="${sickbeard.ANIME_SPLIT_HOME}">
+    <meta data-var="sickbeard.COMING_EPS_LAYOUT" data-content="${sickbeard.COMING_EPS_LAYOUT}">
+    <meta data-var="sickbeard.COMING_EPS_SORT" data-content="${sickbeard.COMING_EPS_SORT}">
+    <meta data-var="sickbeard.DATE_PRESET" data-content="${sickbeard.DATE_PRESET}">
+    <meta data-var="sickbeard.FILTER_ROW" data-content="${sickbeard.FILTER_ROW}">
+    <meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
+    <meta data-var="sickbeard.HISTORY_LAYOUT" data-content="${sickbeard.HISTORY_LAYOUT}">
+    <meta data-var="sickbeard.HOME_LAYOUT" data-content="${sickbeard.HOME_LAYOUT}">
+    <meta data-var="sickbeard.POSTER_SORTBY" data-content="${sickbeard.POSTER_SORTBY}">
+    <meta data-var="sickbeard.POSTER_SORTDIR" data-content="${sickbeard.POSTER_SORTDIR}">
+    <meta data-var="sickbeard.ROOT_DIRS" data-content="${sickbeard.ROOT_DIRS}">
+    <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
+    <meta data-var="sickbeard.TIME_PRESET" data-content="${sickbeard.TIME_PRESET}">
+    <meta data-var="sickbeard.TRIM_ZERO" data-content="${sickbeard.TRIM_ZERO}">
+
     <link rel="shortcut icon" href="${srRoot}/images/ico/favicon.ico">
     <link rel="icon" sizes="16x16 32x32 64x64" href="${srRoot}/images/ico/favicon.ico">
     <link rel="icon" type="image/png" sizes="196x196" href="${srRoot}/images/ico/favicon-196.png">
@@ -167,6 +186,8 @@ var commands = ${sorted(commands)};
 var episodes = ${episodes};
 </script>
 <script type="text/javascript" src="${srRoot}/js/_bower.min.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/meta.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/core.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/apibuilder.js?${sbPID}"></script>
 </body>
 </html>
