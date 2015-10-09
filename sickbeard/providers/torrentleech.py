@@ -1,7 +1,7 @@
 # Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
 
         self.url = self.urls['base_url']
 
-        self.categories = "2,26,27,32"
+        self.categories = "2,7,26,27,32,34,35"
 
     def isEnabled(self):
         return self.enabled
