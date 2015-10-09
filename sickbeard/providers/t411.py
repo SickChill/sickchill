@@ -2,7 +2,7 @@
 # Author: djoole <bobby.djoole@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # Sick Beard is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ class T411Provider(generic.TorrentProvider):
 
         self.urls = {'base_url': 'http://www.t411.in/',
                      'search': 'https://api.t411.in/torrents/search/%s?cid=%s&limit=100',
+                     'rss': 'https://api.t411.in/torrents/top/today',
                      'login_page': 'https://api.t411.in/auth',
                      'download': 'https://api.t411.in/torrents/download/%s',
         }
@@ -59,6 +60,10 @@ class T411Provider(generic.TorrentProvider):
         self.url = self.urls['base_url']
 
         self.subcategories = [433, 637, 455, 639]
+
+        self.minseed = 0
+        self.minleech = 0
+        self.confirmed = False
 
     def isEnabled(self):
         return self.enabled
@@ -102,42 +107,49 @@ class T411Provider(generic.TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                for sc in self.subcategories:
-                    searchURL = self.urls['search'] % (search_string, sc)
-                    logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+                searchURLS = ([self.urls['search'] % (search_string, u) for u in self.subcategories], [self.urls['rss']])[mode == 'RSS']
+                for searchURL in searchURLS:
+                    logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
                     data = self.getURL(searchURL, json=True)
                     if not data:
                         continue
-                    try:
 
-                        if 'torrents' not in data:
+                    try:
+                        if 'torrents' not in data and mode != 'RSS':
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
-                        torrents = data['torrents']
+                        torrents = data['torrents'] if mode != 'RSS' else data
 
                         if not torrents:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                         for torrent in torrents:
+                            if mode == 'RSS' and int(torrent['category']) not in self.subcategories:
+                                continue
+
                             try:
                                 title = torrent['name']
                                 torrent_id = torrent['id']
                                 download_url = (self.urls['download'] % torrent_id).encode('utf8')
-                                #FIXME
-                                size = -1
-                                seeders = 1
-                                leechers = 0
-
                                 if not all([title, download_url]):
                                     continue
 
+                                size = int(torrent['size'])
+                                seeders = int(torrent['seeders'])
+                                leechers = int(torrent['leechers'])
+                                verified = bool(torrent['isVerified'])
+
                                 #Filter unseeded torrent
-                                #if seeders < self.minseed or leechers < self.minleech:
-                                #    if mode != 'RSS':
-                                #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                #    continue
+                                if seeders < self.minseed or leechers < self.minleech:
+                                    if mode != 'RSS':
+                                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    continue
+
+                                if self.confirmed and not verified and mode != 'RSS':
+                                    logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
+                                    continue
 
                                 item = title, download_url, size, seeders, leechers
                                 if mode != 'RSS':
@@ -147,6 +159,7 @@ class T411Provider(generic.TorrentProvider):
 
                             except Exception as e:
                                 logger.log(u"Invalid torrent data, skipping result: %s" % torrent, logger.DEBUG)
+                                logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.DEBUG)
                                 continue
 
                     except Exception, e:
