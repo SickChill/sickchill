@@ -32,6 +32,7 @@ from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.common import USER_AGENT
+from xml.parsers.expat import ExpatError
 
 
 class ExtraTorrentProvider(generic.TorrentProvider):

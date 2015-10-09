@@ -34,6 +34,7 @@ from sickbeard import classes
 from sickbeard.common import Quality
 from sickbeard.common import USER_AGENT
 from sickbeard.providers import generic
+from xml.parsers.expat import ExpatError
 from sickbeard.show_name_helpers import allPossibleShowNames, sanitizeSceneName
 
 class KATProvider(generic.TorrentProvider):
