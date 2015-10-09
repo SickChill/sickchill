@@ -2,7 +2,7 @@
 # Author: adaur <adaur.underground@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -112,15 +112,15 @@ class XthorProvider(generic.TorrentProvider):
                             link = row.find("a",href=re.compile("details.php"))
                             if link:
                                 title = link.text
-                                downloadURL =  self.url + '/' + row.find("a",href=re.compile("download.php"))['href']
+                                download_url =  self.url + '/' + row.find("a",href=re.compile("download.php"))['href']
                                 #FIXME
                                 size = -1
                                 seeders = 1
                                 leechers = 0
-        
+
                                 if not all([title, download_url]):
                                     continue
-            
+
                                 #Filter unseeded torrent
                                 #if seeders < self.minseed or leechers < self.minleech:
                                 #    if mode != 'RSS':
