@@ -20,6 +20,7 @@ from __future__ import with_statement
 
 import re
 import datetime
+from urllib import urlencode
 
 import sickbeard
 from sickbeard.providers import generic
@@ -75,60 +76,24 @@ class ThePirateBayProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def _get_season_search_strings(self, ep_obj):
-
-        search_strings = {'Season': []}
-        for show_name in set(allPossibleShowNames(ep_obj.show)):
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                ep_string = show_name + ' ' + str(ep_obj.airdate).split('-')[0]
-                search_strings['Season'].append(ep_string)
-                ep_string = show_name + ' Season ' + str(ep_obj.airdate).split('-')[0]
-            elif ep_obj.show.anime:
-                ep_string = show_name + ' %02d' % ep_obj.scene_absolute_number
-            else:
-                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)
-                search_strings['Season'].append(ep_string)
-                ep_string = show_name + ' Season ' + str(ep_obj.scene_season) + ' -Ep*'
-
-            search_strings['Season'].append(ep_string)
-
-        return [search_strings]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_strings = {'Episode': []}
-        for show_name in set(allPossibleShowNames(ep_obj.show)):
-            ep_string = sanitizeSceneName(show_name) + ' '
-            if ep_obj.show.air_by_date:
-                ep_string += str(ep_obj.airdate).replace('-', ' ')
-            elif ep_obj.show.sports:
-                ep_string += str(ep_obj.airdate).replace('-', '|') + '|' + ep_obj.airdate.strftime('%b')
-            elif ep_obj.show.anime:
-                ep_string += "%02i" % int(ep_obj.scene_absolute_number)
-            else:
-                ep_string += sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                   'episodenumber': ep_obj.scene_episode} + '|' + \
-                sickbeard.config.naming_ep_type[0] % {'seasonnumber': ep_obj.scene_season,
-                                                      'episodenumber': ep_obj.scene_episode}
-
-            if add_string:
-                ep_string += ' %s' % add_string
-
-            search_strings['Episode'].append(re.sub(r'\s+', ' ', ep_string).strip())
-
-        return [search_strings]
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         for mode in search_strings.keys():
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
-                self.search_params.update({'q': search_string.strip()})
-                logger.log(u"Search string: " + search_string.strip(), logger.DEBUG)
 
-                data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
+                self.search_params.update({'q': search_string.strip()})
+
+                if mode != 'RSS':
+                    logger.log(u"Search string: " + search_string, logger.DEBUG)
+
+                searchURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                data = self.getURL(searchURL)
+                #data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
                 if not data:
                     continue
 
@@ -136,32 +101,33 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 matches = re.compile(re_title_url, re.DOTALL).finditer(data)
                 for torrent in matches:
                     title = torrent.group('title')
-                    url = torrent.group('url')
+                    download_url = torrent.group('url')
                     #id = int(torrent.group('id'))
                     size = self._convertSize(torrent.group('size'))
                     seeders = int(torrent.group('seeders'))
                     leechers = int(torrent.group('leechers'))
 
-                    # Continue before we check if we need to log anything,
-                    # if there is no url or title.
-                    if not title or not url:
+                    if not all([title, download_url]):
                         continue
 
                     #Filter unseeded torrent
-                    if not seeders or seeders < self.minseed or leechers < self.minleech:
-                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                    if seeders < self.minseed or leechers < self.minleech:
+                        if mode != 'RSS':
+                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
                     #Accept Torrent only from Good People for every Episode Search
-                    if self.confirmed and re.search(r'(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None:
-                        logger.log(u"ThePirateBay Provider found result " + title + " but that doesn't seem like a trusted result so I'm ignoring it", logger.DEBUG)
+                    if self.confirmed and re.search(r'(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None and mode != 'RSS':
+                        logger.log(u"Found result %s but that doesn't seem like a trusted result so I'm ignoring it" % title, logger.DEBUG)
                         continue
 
-                    item = title, url, size, seeders, leechers
+                    item = title, download_url, size, seeders, leechers
+                    if mode != 'RSS':
+                        logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                     items[mode].append(item)
 
-            #For each search mode sort all the items by seeders
+            #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
@@ -180,23 +146,6 @@ class ThePirateBayProvider(generic.TorrentProvider):
         elif modifier in 'TiB':
             size = size * 1024**4
         return size
-
-    def _get_size(self, item):
-        # pylint: disable=W0612
-        title, url, size, seeders, leechers = item
-        return size
-
-    def _get_title_and_url(self, item):
-        # pylint: disable=W0612
-        title, url, size, seeders, leechers = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-        return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()-datetime.timedelta(days=1)):
 

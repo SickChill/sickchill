@@ -1,11 +1,12 @@
 # coding=utf-8
 
-import locale
-import unittest
 import sys, os.path
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+import locale
+import unittest
 
 import sickbeard
 from sickbeard.helpers import sanitizeFileName

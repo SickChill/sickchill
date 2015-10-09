@@ -1,4 +1,4 @@
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -65,10 +65,7 @@ class HDBitsProvider(generic.TorrentProvider):
 
         if 'status' in parsedJSON and 'message' in parsedJSON:
             if parsedJSON.get('status') == 5:
-                logger.log(u"Incorrect authentication credentials for " + self.name + " : " + parsedJSON['message'],
-                           logger.DEBUG)
-                raise AuthException(
-                    "Your authentication credentials for " + self.name + " are incorrect, check your config.")
+                logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
 
         return True
 
@@ -91,12 +88,13 @@ class HDBitsProvider(generic.TorrentProvider):
         return (title, url)
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+
+        #FIXME 
         results = []
 
-        self._checkAuth()
+        logger.log(u"Search string: %s" %  search_params, logger.DEBUG)
 
-        logger.log(u"Search url: " + self.urls['search'] + " search_params: " + search_params,
-                   logger.DEBUG)
+        self._checkAuth()
 
         parsedJSON = self.getURL(self.urls['search'], post_data=search_params, json=True)
         if not parsedJSON:
@@ -106,12 +104,12 @@ class HDBitsProvider(generic.TorrentProvider):
             if parsedJSON and 'data' in parsedJSON:
                 items = parsedJSON['data']
             else:
-                logger.log(u"Resulting JSON from " + self.name + " isn't correct, not parsing it", logger.ERROR)
+                logger.log(u"Resulting JSON from provider isn't correct, not parsing it", logger.ERROR)
                 items = []
 
             for item in items:
                 results.append(item)
-
+        #FIXME SORTING
         return results
 
     def findPropers(self, search_date=None):

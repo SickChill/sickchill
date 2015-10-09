@@ -1,7 +1,7 @@
 # Author: duramato <matigonkas@outlook.com>
 # Author: miigotu
 # URL: https://github.com/SiCKRAGETV/sickrage
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,69 +59,33 @@ class ExtraTorrentProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def _get_season_search_strings(self, ep_obj):
-
-        search_string = {'Season': []}
-        for show_name in set(show_name_helpers.allPossibleShowNames(ep_obj.show)):
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                ep_string = show_name + ' ' + str(ep_obj.airdate).split('-')[0]
-            elif ep_obj.show.anime:
-                ep_string = show_name + ' ' + "%d" % ep_obj.scene_absolute_number
-            else:
-                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName SXX
-
-            search_string['Season'].append(ep_string.strip())
-
-        return [search_string]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_strings = {'Episode': []}
-
-        if not ep_obj:
-            return []
-
-        for show_name in set(show_name_helpers.allPossibleShowNames(ep_obj.show)):
-            if ep_obj.show.air_by_date:
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                                str(ep_obj.airdate).replace('-', '|')
-            elif ep_obj.show.sports:
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                                str(ep_obj.airdate).replace('-', '|') + '|' + \
-                                ep_obj.airdate.strftime('%b')
-            elif ep_obj.show.anime:
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                                "%i" % int(ep_obj.scene_absolute_number)
-            else:
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode}
-
-            if add_string:
-                ep_string += ' %s' % add_string
-
-            search_strings['Episode'].append(re.sub(r'\s+', ' ', ep_string))
-
-        return [search_strings]
-
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         for mode in search_strings.keys():
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
+
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+
                 try:
                     self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string.strip()})
                     data = self.getURL(self.urls['rss'], params=self.search_params)
                     if not data:
-                        logger.log(u'No response, skipping...', logger.DEBUG)
+                        logger.log("No data returned from provider", logger.DEBUG)
                         continue
 
-                    data = xmltodict.parse(data)
+                    try:
+                        data = xmltodict.parse(data)
+                    except ExpatError as e:
+                        logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
+                        continue
+
                     if not all([data, 'rss' in data, 'channel' in data['rss'], 'item' in data['rss']['channel']]):
-                        logger.log(u'Malformed rss returned, skipping...', logger.DEBUG)
+                        logger.log(u"Malformed rss returned, skipping", logger.DEBUG)
                         continue
 
                     # https://github.com/martinblech/xmltodict/issues/111
@@ -134,20 +98,32 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                         size = int(item['size'])
                         seeders = helpers.tryInt(item['seeders'],0)
                         leechers = helpers.tryInt(item['leechers'],0)
-                        url = item['enclosure']['@url'] if 'enclosure' in item else self._magnet_from_details(item['link'])
+                        download_url = item['enclosure']['@url'] if 'enclosure' in item else self._magnet_from_details(item['link'])
 
-                        if not all([title, url, seeders, seeders >= self.minseed, leechers >= self.minleech, size]):
+                        if not all([title, download_url]):
                             continue
 
-                        items[mode].append((title, url, seeders, leechers, size, info_hash))
+                            #Filter unseeded torrent
+                        if seeders < self.minseed or leechers < self.minleech:
+                            if mode != 'RSS':
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            continue
+
+                        item = title, download_url, size, seeders, leechers
+                        if mode != 'RSS':
+                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+
+                        items[mode].append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
-                    logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
+
+            #For each search mode sort all the items by seeders if available
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 
         return results
-
 
     def _magnet_from_details(self, link):
         details = self.getURL(link)
@@ -159,25 +135,6 @@ class ExtraTorrentProvider(generic.TorrentProvider):
             return ''
 
         return match.group(1)
-
-    def _get_title_and_url(self, item):
-        #pylint: disable=W0612
-        title, url, seeders, leechers, size, info_hash = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = url.replace('&amp;', '&')
-
-
-        return (title, url)
-
-
-    def _get_size(self, item):
-        #pylint: disable=W0612
-        title, url, seeders, leechers, size, info_hash = item
-        return size
 
     def findPropers(self, search_date=datetime.datetime.today()-datetime.timedelta(days=1)):
         results = []

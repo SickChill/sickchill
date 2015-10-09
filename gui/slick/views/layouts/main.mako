@@ -127,8 +127,8 @@
                             <div style="clear:both;"></div>
                         </li>
 
-                        <li id="NAVcomingEpisodes"${('', ' class="active"')[topmenu == 'comingEpisodes']}>
-                            <a href="${srRoot}/comingEpisodes/">Schedule</a>
+                        <li id="NAVschedule"${('', ' class="active"')[topmenu == 'schedule']}>
+                            <a href="${srRoot}/schedule/">Schedule</a>
                         </li>
 
                         <li id="NAVhistory"${('', ' class="active"')[topmenu == 'history']}>
@@ -221,7 +221,9 @@
                                 <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
                                 <li><a href="${srRoot}/home/restart/?pid=${sbPID}" class="confirm restart"><i class="menu-icon-restart"></i>&nbsp;Restart</a></li>
                                 <li><a href="${srRoot}/home/shutdown/?pid=${sbPID}" class="confirm shutdown"><i class="menu-icon-shutdown"></i>&nbsp;Shutdown</a></li>
-                                <li><a href="${srRoot}/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;Logout</a></li>
+                                % if sbLogin != True:
+                                    <li><a href="${srRoot}/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;Logout</a></li>
+                                % endif
                                 <li role="separator" class="divider"></li>
                                 <li><a href="${srRoot}/home/status/"><i class="menu-icon-help"></i>&nbsp;Server Status</a></li>
                             </ul>
@@ -355,7 +357,7 @@
         <script type="text/javascript" src="${srRoot}/js/lib/pnotify.custom.min.js?${sbPID}"></script><!-- Needs to be removed -->
         <script type="text/javascript" src="${srRoot}/js/new/parsers.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/new/meta.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/script.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/new/core.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.scrolltopcontrol-1.1.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/browser.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js?${sbPID}"></script>

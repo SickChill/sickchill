@@ -1,7 +1,7 @@
 # Author: duramato <matigonkas@outlook.com>
 # URL: https://github.com/SiCKRAGETV/sickrage
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
         self.public = True
-        
+
         self.urls = {'api': u'https://torrentproject.se/',}
         self.url = self.urls['api']
         self.minseed = None
@@ -44,11 +44,6 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
 
     def isEnabled(self):
         return self.enabled
-
-
-    def imageName(self):
-        return 'torrentproject.png'
-
 
     def _get_airbydate_season_range(self, season):
         if season == None:
@@ -61,105 +56,65 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
             max_date = datetime.date(year, month+1, 1) -  datetime.timedelta(days=1)
         return (min_date, max_date)
 
+    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
-    def _get_season_search_strings(self, show, season=None):
-        search_string = []
-
-        if not (show and season):
-            return []
-
-        myDB = db.DBConnection()
-
-        if show.air_by_date:
-            (min_date, max_date) = self._get_airbydate_season_range(season)
-            sqlResults = myDB.select("SELECT DISTINCT airdate FROM tv_episodes WHERE showid = ? AND airdate >= ? AND airdate <= ? AND status = ?", [show.tvdbid,  min_date.toordinal(), max_date.toordinal(), WANTED])
-        else:
-            sqlResults = myDB.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? AND season = ? AND status = ?", [show.tvdbid, season, WANTED])
-
-        for sqlEp in sqlResults:
-            for show_name in set(show_name_helpers.allPossibleShowNames(show)):
-                if show.air_by_date:
-                    ep_string = sanitizeSceneName(show_name) +' '+ str(datetime.date.fromordinal(sqlEp["airdate"])).replace('-', '.')
-                    search_string.append(ep_string)
-                else:
-                    ep_string = sanitizeSceneName(show_name) + ' S%02d' % sqlEp["season"]
-                    search_string.append(ep_string)
-
-        return search_string
-
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        if not ep_obj:
-            return []
-
-        search_string = []
-
-        for show_name in set(show_name_helpers.allPossibleShowNames(ep_obj.show)):
-            ep_string = sanitizeSceneName(show_name)
-            if ep_obj.show.air_by_date:
-                ep_string += ' ' + str(ep_obj.airdate).replace('-', '.')
-            else:
-                ep_string += ' ' + naming_ep_type[2] % {'seasonnumber': ep_obj.season, 'episodenumber': ep_obj.episode}
-
-            if len(add_string):
-                ep_string += ' %s' % add_string
-
-            search_string.append(ep_string)
-
-        return search_string
-
-
-    def _get_title_and_url(self, item):
-        title, url, size = item
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = str(url).replace('&amp;', '&')
-
-        return (title, url)
-
-
-    def _get_size(self, item):
-        title, url, size = item
-        logger.log(u'Size: %s' % size, logger.DEBUG)
-
-        return size
-
-
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
-
-        logger.log("Performing Search: {0}".format(search_params))
-
-        searchUrl = self.urls['api'] + "?s=" + search_params + "&out=json"
-		
-        torrents = self.getURL(searchUrl, json=True)
-        del torrents["total_found"]
-		
-		
         results = []
-        for i in torrents:
-            name = torrents[i]["title"]
-            seeders = torrents[i]["seeds"]
-            leechers = torrents[i]["leechs"]
-            if seeders < self.minseed or leechers < self.minleech:
-                logger.log("Torrent doesn't meet minimum seeds & leechers not selecting :   " + name, logger.DEBUG)
-                continue
-            hash = torrents[i]["torrent_hash"]
-            size = torrents[i]["torrent_size"]
-            trackerUrl = self.urls['api'] + "" + hash + "/trackers_json"
-            logger.log(u'The tracker list is: ' + trackerUrl, logger.DEBUG)
-            jdata = self.getURL(trackerUrl, json=True)
-            magnet = "magnet:?xt=urn:btih:" + hash + "&dn=" + name + "".join(["&tr=" + s for s in jdata])
-            logger.log(u'Magnet URL is: ' + magnet, logger.DEBUG)
-            results.append((name, magnet, size))
+        items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        logger.log("URL to be parsed: " + searchUrl, logger.DEBUG)
+        for mode in search_strings.keys(): #Mode = RSS, Season, Episode
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            for search_string in search_strings[mode]:
 
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+
+                searchURL = self.urls['api'] + "?s=" + search_string + "&out=json"
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                torrents = self.getURL(searchURL, json=True)
+                if int(torrents["total_found"]) == 0:
+                    logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                    continue
+                del torrents["total_found"]
+
+                if not torrents:
+                    logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                    continue
+
+                results = []
+                for i in torrents:
+                    title = torrents[i]["title"]
+                    seeders = torrents[i]["seeds"]
+                    leechers = torrents[i]["leechs"]
+                    if seeders < self.minseed or leechers < self.minleech:
+                        logger.log("Torrent doesn't meet minimum seeds & leechers not selecting :   " + title, logger.DEBUG)
+                        continue
+                    hash = torrents[i]["torrent_hash"]
+                    size = torrents[i]["torrent_size"]
+                    trackerUrl = self.urls['api'] + "" + hash + "/trackers_json"
+                    jdata = self.getURL(trackerUrl, json=True)
+                    download_url = "magnet:?xt=urn:btih:" + hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
+
+                    if not all([title, download_url]):
+                        continue
+
+                    #Filter unseeded torrent
+                    if seeders < self.minseed or leechers < self.minleech:
+                        if mode != 'RSS':
+                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                        continue
+
+                    item = title, download_url, size, seeders, leechers
+
+                    if mode != 'RSS':
+                        logger.log(u"Found result: %s " % title, logger.DEBUG)
+                    items[mode].append(item)
+
+            # For each search mode sort all the items by seeders
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+
+            results += items[mode]
 
         return results
-
 
 class TORRENTPROJECTCache(tvcache.TVCache):
     def __init__(self, provider):
@@ -172,6 +127,7 @@ class TORRENTPROJECTCache(tvcache.TVCache):
     def _getRSSData(self):
         # no rss for torrentproject afaik,& can't search with empty string
         # newest results are always > 1 day since added anyways
+        search_strings = {'RSS': ['']}
         return {'entries': {}}
 
 provider = TORRENTPROJECTProvider()

@@ -2,7 +2,7 @@
 # Author: Daniel Heimans
 # URL: http://code.google.com/p/sickbeard
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -62,12 +62,9 @@ class BTNProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'btn.png'
-
     def _checkAuth(self):
         if not self.api_key:
-            raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
+            logger.log(u"Invalid api key. Check your settings", logger.WARNING)
 
         return True
 
@@ -77,8 +74,7 @@ class BTNProvider(generic.TorrentProvider):
             return self._checkAuth()
 
         if 'api-error' in parsedJSON:
-            logger.log(u"Incorrect authentication credentials for " + self.name + " : " + parsedJSON['api-error'],
-                       logger.DEBUG)
+            logger.log(u"Incorrect authentication credentials: % s" % parsedJSON['api-error'], logger.DEBUG)
             raise AuthException(
                 "Your authentication credentials for " + self.name + " are incorrect, check your config.")
 
@@ -98,10 +94,11 @@ class BTNProvider(generic.TorrentProvider):
 
         if search_params:
             params.update(search_params)
+            logger.log(u"Search string: %s" %  search_params, logger.DEBUG)
 
         parsedJSON = self._api_call(apikey, params)
         if not parsedJSON:
-            logger.log(u"No data returned from " + self.name, logger.ERROR)
+            logger.log("No data returned from provider", logger.DEBUG)
             return results
 
         if self._checkAuthFromData(parsedJSON):
@@ -135,8 +132,10 @@ class BTNProvider(generic.TorrentProvider):
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
+                    logger.log(u"Found result: %s " % title, logger.DEBUG)
                     results.append(torrent_info)
 
+        #FIXME SORT RESULTS
         return results
 
     def _api_call(self, apikey, params={}, results_per_page=1000, offset=0):
@@ -150,24 +149,24 @@ class BTNProvider(generic.TorrentProvider):
 
         except jsonrpclib.jsonrpc.ProtocolError, error:
             if error.message == 'Call Limit Exceeded':
-                logger.log(u"You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account.", logger.WARNING)
+                logger.log(u"You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account", logger.WARNING)
             else:
-                logger.log(u"JSON-RPC protocol error while accessing " + self.name + ": " + ex(error), logger.ERROR)
+                logger.log(u"JSON-RPC protocol error while accessing provicer. Error: %s " % repr(error), logger.ERROR)
             parsedJSON = {'api-error': ex(error)}
             return parsedJSON
 
         except socket.timeout:
-            logger.log(u"Timeout while accessing " + self.name, logger.WARNING)
+            logger.log(u"Timeout while accessing provider", logger.WARNING)
 
         except socket.error, error:
             # Note that sometimes timeouts are thrown as socket errors
-            logger.log(u"Socket error while accessing " + self.name + ": " + error[1], logger.ERROR)
+            logger.log(u"Socket error while accessing provider. Error: %s " % error[1], logger.WARNING)
 
         except Exception, error:
             errorstring = str(error)
             if (errorstring.startswith('<') and errorstring.endswith('>')):
                 errorstring = errorstring[1:-1]
-            logger.log(u"Unknown error while accessing " + self.name + ": " + errorstring, logger.ERROR)
+            logger.log(u"Unknown error while accessing provider. Error: %s " % errorstring, logger.WARNING)
 
         return parsedJSON
 
@@ -363,10 +362,10 @@ class BTNProvider(generic.TorrentProvider):
                 myParser = NameParser(False)
                 parse_result = myParser.parse(title)
             except InvalidNameException:
-                logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.DEBUG)  # @UndefinedVariable
+                logger.log(u"Unable to parse the filename %s into a valid episode" % title, logger.DEBUG)
                 continue
             except InvalidShowException:
-                logger.log(u"Unable to parse the filename " + title + " into a valid show", logger.DEBUG)
+                logger.log(u"Unable to parse the filename %s into a valid show" % title, logger.DEBUG)
                 continue
 
             showObj = parse_result.show
@@ -379,14 +378,13 @@ class BTNProvider(generic.TorrentProvider):
                 if search_mode == 'sponly':
                     if len(parse_result.episode_numbers):
                         logger.log(
-                            u"This is supposed to be a season pack search but the result " + title + " is not a valid season pack, skipping it",
-                            logger.DEBUG)
+                            u"This is supposed to be a season pack search but the result %s is not a valid season pack, skipping it" % title, logger.DEBUG)
                         addCacheEntry = True
                     if len(parse_result.episode_numbers) and (
                                     parse_result.season_number not in set([ep.season for ep in episodes]) or not [ep for ep in episodes if
                                                                                  ep.scene_episode in parse_result.episode_numbers]):
                         logger.log(
-                            u"The result " + title + " doesn't seem to be a valid episode that we are trying to snatch, ignoring",
+                            u"The result %s doesn't seem to be a valid episode that we are trying to snatch, ignoring" % title,
                             logger.DEBUG)
                         addCacheEntry = True
                 else:
@@ -400,7 +398,7 @@ class BTNProvider(generic.TorrentProvider):
                     elif len(parse_result.episode_numbers) and not [ep for ep in episodes if
                                                                     ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers]:
                         logger.log(
-                            u"The result " + title + " doesn't seem to be a valid episode that we are trying to snatch, ignoring",
+                            u"The result %s doesn't seem to be a valid episode that we are trying to snatch, ignoring" % title,
                             logger.DEBUG)
                         addCacheEntry = True
 
@@ -411,7 +409,7 @@ class BTNProvider(generic.TorrentProvider):
             else:
                 if not (parse_result.is_air_by_date):
                     logger.log(
-                        u"This is supposed to be a date search but the result " + title + " didn't parse as one, skipping it",
+                        u"This is supposed to be a date search but the result %s didn't parse as one, skipping it" % title,
                         logger.DEBUG)
                     addCacheEntry = True
                 else:
@@ -423,7 +421,7 @@ class BTNProvider(generic.TorrentProvider):
 
                     if len(sql_results) != 1:
                         logger.log(
-                            u"Tried to look up the date for the episode " + title + " but the database didn't give proper results, skipping it",
+                            u"Tried to look up the date for the episode %s but the database didn't give proper results, skipping it" % title,
                             logger.WARNING)
                         addCacheEntry = True
 
@@ -433,7 +431,7 @@ class BTNProvider(generic.TorrentProvider):
 
             # add parsed result to cache for usage later on
             if addCacheEntry:
-                logger.log(u"Adding item from search to cache: " + title, logger.DEBUG)
+                logger.log(u"Adding item from search to cache: %s " % title, logger.DEBUG)
                 ci = self.cache._addCacheEntry(title, url, parse_result=parse_result)
                 if ci is not None:
                     cl.append(ci)
@@ -448,13 +446,11 @@ class BTNProvider(generic.TorrentProvider):
 
             if not wantEp:
                 logger.log(
-                    u"Ignoring result " + title + " because we don't want an episode that is " +
-                    Quality.qualityStrings[
-                        quality], logger.INFO)
+                    u"Ignoring result %s because we don't want an episode that is %s" % (title, Quality.qualityStrings[quality]), logger.DEBUG)
 
                 continue
 
-            logger.log(u"Found result " + title + " at " + url, logger.DEBUG)
+            logger.log(u"Found result: %s " % title, logger.DEBUG)
 
             # make a result object
             epObj = []
@@ -472,11 +468,10 @@ class BTNProvider(generic.TorrentProvider):
 
             if len(epObj) == 1:
                 epNum = epObj[0].episode
-                logger.log(u"Single episode result.", logger.DEBUG)
+                logger.log(u"Single episode result", logger.DEBUG)
             elif len(epObj) > 1:
                 epNum = MULTI_EP_RESULT
-                logger.log(u"Separating multi-episode result to check for later - result contains episodes: " + str(
-                    parse_result.episode_numbers), logger.DEBUG)
+                logger.log(u"Separating multi-episode result to check for later - result contains episodes: %s" % parse_result.episode_numbers,logger.DEBUG)
             elif len(epObj) == 0:
                 epNum = SEASON_RESULT
                 logger.log(u"Separating full season result to check for later", logger.DEBUG)
@@ -513,8 +508,8 @@ class BTNCache(tvcache.TVCache):
         # Set maximum to 24 hours (24 * 60 * 60 = 86400 seconds) of "RSS" data search, older things will need to be done through backlog
         if seconds_since_last_update > 86400:
             logger.log(
-                u"The last known successful update on " + self.provider.name + " was more than 24 hours ago, only trying to fetch the last 24 hours!",
-                logger.WARNING)
+                u"The last known successful update was more than 24 hours ago, only trying to fetch the last 24 hours!",
+                logger.DEBUG)
             seconds_since_last_update = 86400
 
         return {'entries': self.provider._doSearch(search_params=None, age=seconds_since_last_update)}

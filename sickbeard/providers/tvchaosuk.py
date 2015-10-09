@@ -1,4 +1,4 @@
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -67,32 +67,11 @@ class TVChaosUKProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'tvchaosuk.png'
-
-    def getQuality(self, item, anime=False):
-        return Quality.sceneQuality(item[0], anime)
-
     def _checkAuth(self):
         if self.username and self.password:
             return True
 
         raise AuthException('Your authentication credentials for ' + self.name + ' are missing, check your config.')
-
-    def _doLogin(self):
-
-        login_params = {'username': self.username, 'password': self.password}
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
-        if not response:
-            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
-            return False
-
-        if re.search('Error: Username or password incorrect!', response):
-            logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
-            return False
-
-        logger.log(u'Login successful for ' + self.name, logger.DEBUG)
-        return True
 
     def _get_season_search_strings(self, ep_obj):
 
@@ -138,6 +117,20 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
         return [search_string]
 
+    def _doLogin(self):
+
+        login_params = {'username': self.username, 'password': self.password}
+        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        if not response:
+            logger.log(u"Unable to connect to provider", logger.WARNING)
+            return False
+
+        if re.search('Error: Username or password incorrect!', response):
+            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            return False
+
+        return True
+
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
@@ -147,34 +140,36 @@ class TVChaosUKProvider(generic.TorrentProvider):
             return results
 
         for mode in search_strings.keys():
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
-                self.search_params['keywords'] = search_string.strip()
-                logger.log(u'Search string: ' + self.search_params['keywords'] + ' for ' + self.name, logger.DEBUG)
 
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+
+                self.search_params['keywords'] = search_string.strip()
                 data = self.getURL(self.urls['search'], params=self.search_params)
                 url_searched = self.urls['search'] + '?' + urlencode(self.search_params)
 
                 if not data:
-                    logger.log(u'The response from (' + url_searched + ') is empty.',logger.DEBUG)
+                    logger.log("No data returned from provider", logger.DEBUG)
                     continue
-
-                logger.log(u'Search query from (' + url_searched + ') returned data.',logger.DEBUG)
 
                 with BS4Parser(data) as html:
                     torrent_table = html.find(id='listtorrents').find_all('tr')
                     for torrent in torrent_table:
                         try:
                             title = torrent.find(attrs={'class':'tooltip-content'}).text.strip()
-                            url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
+                            download_url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
                             seeders = int(torrent.find(title='Seeders').text.strip())
                             leechers = int(torrent.find(title='Leechers').text.strip())
 
-                            #Filter unseeded torrent
-                            if not seeders or seeders < self.minseed or leechers < self.minleech:
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            if not all([title, download_url]):
                                 continue
 
-                            if not title or not url:
+                            #Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             # Chop off tracker/channel prefix or we cant parse the result!
@@ -189,32 +184,24 @@ class TVChaosUKProvider(generic.TorrentProvider):
                             # Strip year from the end or we can't parse it!
                             title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
 
-                            item = title, url, seeders, leechers
-                            logger.log(u'Found result: ' + title.replace(' ', '.') + ' (' + url + ')', logger.DEBUG)
+                            #FIXME
+                            size = -1
+
+                            item = title, download_url, size, seeders, leechers
+                            if mode != 'RSS':
+                                logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)
 
                         except:
                             continue
 
-            #For each search mode sort all the items by seeders
+            #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url, seeders, leechers = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = str(url).replace('&amp;', '&')
-
-        return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

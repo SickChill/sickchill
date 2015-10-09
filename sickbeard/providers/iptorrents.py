@@ -1,7 +1,7 @@
 # Author: seedboy
 # URL: https://github.com/seedboy
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,6 +52,8 @@ class IPTorrentsProvider(generic.TorrentProvider):
         self.password = None
         self.ratio = None
         self.freeleech = False
+        self.minseed = None
+        self.minleech = None
 
         self.cache = IPTorrentsCache(self)
 
@@ -66,14 +68,6 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
     def isEnabled(self):
         return self.enabled
-
-    def imageName(self):
-        return 'iptorrents.png'
-
-    def getQuality(self, item, anime=False):
-
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
 
     def _checkAuth(self):
 
@@ -92,50 +86,15 @@ class IPTorrentsProvider(generic.TorrentProvider):
         self.getURL(self.urls['login'], timeout=30)
         response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
         if not response:
-            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
+            logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('tries left', response) \
                 or re.search('<title>IPT</title>', response):
-            logger.log(u'Invalid username or password for ' + self.name + ', Check your settings!', logger.ERROR)
+            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_string = {'Episode': []}
-
-        if not ep_obj:
-            return []
-
-        if self.show.air_by_date:
-            for show_name in set(allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', ' ')
-                search_string['Episode'].append(ep_string)
-        elif self.show.sports:
-            for show_name in set(allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', ' ') + '|' + \
-                            ep_obj.airdate.strftime('%b')
-                search_string['Episode'].append(ep_string)
-        elif self.show.anime:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            "%i" % int(ep_obj.scene_absolute_number)
-                search_string['Episode'].append(ep_string)
-        else:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + '|' + \
-                            sickbeard.config.naming_ep_type[0] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
-
-                search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
-
-        return [search_string]
 
     def findSearchResults(self, show, episodes, search_mode, manualSearch=False, downCurQuality=False):
 
@@ -146,7 +105,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
         itemList = []
 
         if search_mode == 'sponly':
-            logger.log(u"This provider doesn't support season pack. Consider setting Season search mode to episodes only and unchecked Season search fallback", logger.WARNING)
+            logger.log(u"Provider doesn't support season pack. Consider setting Season search mode to episodes only and unchecked Season search fallback", logger.WARNING)
             search_mode = 'eponly'
 
         for epObj in episodes:
@@ -195,10 +154,10 @@ class IPTorrentsProvider(generic.TorrentProvider):
                 myParser = NameParser(False)
                 parse_result = myParser.parse(title)
             except InvalidNameException:
-                logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.DEBUG)
+                logger.log(u"Unable to parse the filename %s into a valid episode" % title, logger.DEBUG)
                 continue
             except InvalidShowException:
-                logger.log(u"Unable to parse the filename " + title + " into a valid show", logger.DEBUG)
+                logger.log(u"Unable to parse the filename %s into a valid show" % title, logger.DEBUG)
                 continue
 
             showObj = parse_result.show
@@ -211,14 +170,14 @@ class IPTorrentsProvider(generic.TorrentProvider):
                 if search_mode == 'sponly':
                     if len(parse_result.episode_numbers):
                         logger.log(
-                            u"This is supposed to be a season pack search but the result " + title + " is not a valid season pack, skipping it",
+                            u"This is supposed to be a season pack search but the result %s is not a valid season pack, skipping it" % title,
                             logger.DEBUG)
                         addCacheEntry = True
                     if len(parse_result.episode_numbers) and (
                                     parse_result.season_number not in set([ep.season for ep in episodes]) or not [ep for ep in episodes if
                                                                                  ep.scene_episode in parse_result.episode_numbers]):
                         logger.log(
-                            u"The result " + title + " doesn't seem to be a valid episode that we are trying to snatch, ignoring",
+                            u"The result %s doesn't seem to be a valid episode that we are trying to snatch, ignoring" % title,
                             logger.DEBUG)
                         addCacheEntry = True
                 else:
@@ -226,13 +185,13 @@ class IPTorrentsProvider(generic.TorrentProvider):
                                                                                                      episodes if
                                                                                                      ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers]:
                         logger.log(
-                            u"The result " + title + " doesn't seem to be a valid season that we are trying to snatch, ignoring",
+                            u"The result %s doesn't seem to be a valid season that we are trying to snatch, ignoring" % title,
                             logger.DEBUG)
                         addCacheEntry = True
                     elif len(parse_result.episode_numbers) and not [ep for ep in episodes if
                                                                     ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers]:
                         logger.log(
-                            u"The result " + title + " doesn't seem to be a valid episode that we are trying to snatch, ignoring",
+                            u"The result %s doesn't seem to be a valid episode that we are trying to snatch, ignoring" % title,
                             logger.DEBUG)
                         addCacheEntry = True
 
@@ -243,7 +202,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
             else:
                 if not (parse_result.is_air_by_date):
                     logger.log(
-                        u"This is supposed to be a date search but the result " + title + " didn't parse as one, skipping it",
+                        u"This is supposed to be a date search but the result %s didn't parse as one, skipping it" % title,
                         logger.DEBUG)
                     addCacheEntry = True
                 else:
@@ -255,7 +214,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
                     if len(sql_results) != 1:
                         logger.log(
-                            u"Tried to look up the date for the episode " + title + " but the database didn't give proper results, skipping it",
+                            u"Tried to look up the date for the episode %s but the database didn't give proper results, skipping it" % title,
                             logger.WARNING)
                         addCacheEntry = True
 
@@ -265,7 +224,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
             # add parsed result to cache for usage later on
             if addCacheEntry:
-                logger.log(u"Adding item from search to cache: " + title, logger.DEBUG)
+                logger.log(u"Adding item from search to cache: %s " % title, logger.DEBUG)
                 ci = self.cache._addCacheEntry(title, url, parse_result=parse_result)
                 if ci is not None:
                     cl.append(ci)
@@ -280,13 +239,12 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
             if not wantEp:
                 logger.log(
-                    u"Ignoring result " + title + " because we don't want an episode that is " +
-                    Quality.qualityStrings[
-                        quality], logger.INFO)
+                    u"Ignoring result %s because we don't want an episode that is %s" % (title,Quality.qualityStrings[quality]),
+                    logger.DEBUG)
 
                 continue
 
-            logger.log(u"Found result " + title + " at " + url, logger.DEBUG)
+            logger.log(u"Found result %s at %s " % (title, url), logger.DEBUG)
 
             # make a result object
             epObj = []
@@ -304,11 +262,11 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
             if len(epObj) == 1:
                 epNum = epObj[0].episode
-                logger.log(u"Single episode result.", logger.DEBUG)
+                logger.log(u"Single episode result", logger.DEBUG)
             elif len(epObj) > 1:
                 epNum = MULTI_EP_RESULT
-                logger.log(u"Separating multi-episode result to check for later - result contains episodes: " + str(
-                    parse_result.episode_numbers), logger.DEBUG)
+                logger.log(u"Separating multi-episode result to check for later - result contains episodes: %s " % parse_result.episode_numbers,
+                logger.DEBUG)
             elif len(epObj) == 0:
                 epNum = SEASON_RESULT
                 logger.log(u"Separating full season result to check for later", logger.DEBUG)
@@ -336,15 +294,16 @@ class IPTorrentsProvider(generic.TorrentProvider):
             return results
 
         for mode in search_params.keys():
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
-                if isinstance(search_string, unicode):
-                    search_string = unidecode(search_string)
+
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
                 searchURL = self.urls['search'] % (self.categorie, freeleech, search_string)
                 searchURL += ';o=seeders' if mode != 'RSS' else ''
-
-                logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
 
                 data = self.getURL(searchURL)
                 if not data:
@@ -354,11 +313,11 @@ class IPTorrentsProvider(generic.TorrentProvider):
                     data = re.sub(r'(?im)<button.+?<[\/]button>', '', data, 0)
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                         if not html:
-                            logger.log(u"Invalid HTML data: " + str(data), logger.DEBUG)
+                            logger.log("No data returned from provider", logger.DEBUG)
                             continue
 
                         if html.find(text='No Torrents Found!'):
-                            logger.log(u"No results found for: " + search_string + " (" + searchURL + ")", logger.DEBUG)
+                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                         torrent_table = html.find('table', attrs={'class': 'torrents'})
@@ -366,54 +325,46 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
                         #Continue only if one Release is found
                         if len(torrents) < 2:
-                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                       logger.WARNING)
+                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                         for result in torrents[1:]:
 
                             try:
                                 torrent = result.find_all('td')[1].find('a')
-                                torrent_name = torrent.string
-                                torrent_download_url = self.urls['base_url'] + (result.find_all('td')[3].find('a'))['href']
-                                torrent_details_url = self.urls['base_url'] + torrent['href']
-                                torrent_seeders = int(result.find('td', attrs={'class': 'ac t_seeders'}).string)
-                                ## Not used, perhaps in the future ##
-                                #torrent_id = int(torrent['href'].replace('/details.php?id=', ''))
-                                #torrent_leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).string)
+                                title = torrent.string
+                                download_url = self.urls['base_url'] + (result.find_all('td')[3].find('a'))['href']
+                                details_url = self.urls['base_url'] + torrent['href']
+                                seeders = int(result.find('td', attrs={'class': 'ac t_seeders'}).string)
+                                id = int(torrent['href'].replace('/details.php?id=', ''))
+                                leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).string)
                             except (AttributeError, TypeError):
                                 continue
 
-                            # Filter unseeded torrent and torrents with no name/url
-                            if mode != 'RSS' and torrent_seeders == 0:
+                            if not all([title, download_url]):
                                 continue
 
-                            if not torrent_name or not torrent_download_url:
+                            #Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            item = torrent_name, torrent_download_url
-                            logger.log(u"Found result: " + torrent_name + " (" + torrent_details_url + ")", logger.DEBUG)
+                            item = title, download_url, size, seeders, leechers
+                            if mode != 'RSS':
+                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+
                             items[mode].append(item)
 
                 except Exception, e:
-                    logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+
+            #For each search mode sort all the items by seeders if available
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url = item
-
-        if title:
-            title = u'' + title
-            title = title.replace(' ', '.')
-
-        if url:
-            url = str(url).replace('&amp;', '&')
-
-        return (title, url)
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

@@ -1,6 +1,6 @@
 # Author: Mr_Orange
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -144,9 +144,9 @@ class TorrentRssProvider(generic.TorrentProvider):
             fileOut.close()
             helpers.chmodAsParent(dumpName)
         except IOError, e:
-            logger.log("Unable to save the file: " + ex(e), logger.ERROR)
+            logger.log("Unable to save the file: %s " % repr(e), logger.ERROR)
             return False
-        logger.log(u"Saved custom_torrent html dump " + dumpName + " ", logger.INFO)
+        logger.log(u"Saved custom_torrent html dump %s " % dumpName, logger.INFO)
         return True
 
     def seedRatio(self):
@@ -159,7 +159,7 @@ class TorrentRssCache(tvcache.TVCache):
         self.minTime = 15
 
     def _getRSSData(self):
-        logger.log(u"TorrentRssCache cache update URL: " + self.provider.url, logger.DEBUG)
+        logger.log(u"Cache update URL: %s" % self.provider.url, logger.DEBUG)
 
         if self.provider.cookies:
             self.provider.headers.update({'Cookie': self.provider.cookies})

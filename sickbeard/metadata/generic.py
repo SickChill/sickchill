@@ -292,9 +292,8 @@ class GenericMetadata:
                 indexerid = showXML.find('id')
 
                 root = showXML.getroot()
-
-                if indexerid:
-                    indexerid.text = show_obj.indexerid
+                if indexerid is not None:
+                    indexerid.text = str(show_obj.indexerid)
                 else:
                     etree.SubElement(root, "id").text = str(show_obj.indexerid)
 

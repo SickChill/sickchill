@@ -217,7 +217,7 @@ class Logger(object):
                 try:
                     title_Error = ss(str(curError.title))
                     if not len(title_Error) or title_Error == 'None':
-                        title_Error = re.match(r"^[A-Z0-9\-\[\] :]+::\s*(.*)$", ss(str(curError.message))).group(1)
+                        title_Error = re.match(r"^[A-Z0-9\-\[\] :]+::\s*(.*)$", ss(curError.message)).group(1)
 
                     if len(title_Error) > 1000:
                         title_Error = title_Error[0:1000]
@@ -267,7 +267,7 @@ class Logger(object):
                     return re.search(r'Loaded module.*not found in sys\.modules', title) is not None
 
                 def is_ascii_error(title):
-                    return re.search(r"'ascii' codec can't encode character .* in position .*: ordinal not in range.*", title) is not None
+                    return re.search(r"'.*' codec can't encode character .* in position .*:", title) is not None
 
                 mako_error = is_mako_error(title_Error)
                 ascii_error = is_ascii_error(title_Error)

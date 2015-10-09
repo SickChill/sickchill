@@ -2,7 +2,7 @@
 # Author: raver2046 <raver2046@gmail.com> from djoole <bobby.djoole@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage. 
 #
 # Sick Beard is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -66,13 +66,6 @@ class FNTProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'FNT.png'
-
-    def getQuality(self, item, anime=False):
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
-
     def _doLogin(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
@@ -83,72 +76,21 @@ class FNTProvider(generic.TorrentProvider):
                         'submit' : 'Se loguer'
                        }
 
-        logger.log('Performing authentication to FNT', logger.DEBUG)
         response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
-            logger.log(u'Unable to connect to ' + self.name + ' provider.', logger.ERROR)
+            logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('/account-logout.php', response):
-            logger.log(u'Login to ' + self.name + ' was successful.', logger.DEBUG)
             return True
         else:
-            logger.log(u'Login to ' + self.name + ' was unsuccessful.', logger.DEBUG)
+            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
 
-    def _get_season_search_strings(self, ep_obj):
-
-        search_string = {'Season': []}
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                ep_string = show_name + '.' + str(ep_obj.airdate).split('-')[0]
-            elif ep_obj.show.anime:
-                ep_string = show_name + '.' + "%d" % ep_obj.scene_absolute_number
-            else:
-                ep_string = show_name + '.S%02d' % int(ep_obj.scene_season)  # 1) showName.SXX
-
-            search_string['Season'].append(ep_string)
-
-        return [search_string]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_string = {'Episode': []}
-
-        if not ep_obj:
-            return []
-
-        if self.show.air_by_date:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + '.' + \
-                            str(ep_obj.airdate).replace('-', '|')
-                search_string['Episode'].append(ep_string)
-        elif self.show.sports:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + '.' + \
-                            str(ep_obj.airdate).replace('-', '|') + '|' + \
-                            ep_obj.airdate.strftime('%b')
-                search_string['Episode'].append(ep_string)
-        elif self.show.anime:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + '.' + \
-                            "%i" % int(ep_obj.scene_absolute_number)
-                search_string['Episode'].append(ep_string)
-        else:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + '.' + \
-                            sickbeard.config.naming_ep_type[2] % {
-                                'seasonnumber': ep_obj.scene_season,
-                                'episodenumber': ep_obj.scene_episode
-                                } + ' %s' % add_string
-
-                search_string['Episode'].append(re.sub(r'\s+', '.', ep_string))
-
-        return [search_string]
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
@@ -157,8 +99,12 @@ class FNTProvider(generic.TorrentProvider):
             return results
 
         for mode in search_strings.keys():
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
-                logger.log(u"Search string: " + search_string, logger.DEBUG)
+
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+
                 self.search_params['recherche'] = search_string
 
                 data = self.getURL(self.urls['search'], params=self.search_params)
@@ -170,8 +116,7 @@ class FNTProvider(generic.TorrentProvider):
                         result_table = html.find('table', {'id': 'tablealign3bis'})
 
                         if not result_table:
-                            logger.log(
-                                u"The Data returned from %s does not contain any torrents" % self.name, logger.DEBUG)
+                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                         if result_table:
@@ -183,54 +128,45 @@ class FNTProvider(generic.TorrentProvider):
                                 if link:
                                     try:
                                         title = link.text
-                                        logger.log(u"FNT TITLE : " + title, logger.DEBUG)
                                         download_url = self.urls['base_url'] + "/" + row.find("a", href=re.compile("download\.php"))['href']
                                     except (AttributeError, TypeError):
                                         continue
 
-                                    if not title or not download_url:
-                                        continue
-
                                     try:
                                         id = download_url.replace(self.urls['base_url'] + "/" + 'download.php?id=', '').replace('&amp;dl=oui', '').replace('&dl=oui', '')
-                                        logger.log(u"FNT id du torrent  " + str(id), logger.DEBUG)
                                         defailseedleech = link['mtcontent']
                                         seeders =  int(defailseedleech.split("<font color='#00b72e'>")[1].split("</font>")[0])
-                                        logger.log(u"FNT seeders :  " + str(seeders), logger.DEBUG)
                                         leechers = int(defailseedleech.split("<font color='red'>")[1].split("</font>")[0])
-                                        logger.log(u"FNT leechers :  " + str(leechers), logger.DEBUG)
+                                        #FIXME
+                                        size = -1
                                     except:
-                                        logger.log(u"Unable to parse torrent id & seeders leechers  " + self.name + " Traceback: " + traceback.format_exc(), logger.DEBUG)
+                                        logger.log(u"Unable to parse torrent id & seeders & leechers. Traceback: %s " % traceback.format_exc(), logger.DEBUG)
+                                        continue
+
+                                    if not all([title, download_url]):
                                         continue
 
                                     #Filter unseeded torrent
-                                    if not seeders or seeders < self.minseed or leechers < self.minleech:
-                                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    if seeders < self.minseed or leechers < self.minleech:
+                                        if mode != 'RSS':
+                                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                         continue
 
-                                    item = title, download_url , id, seeders, leechers
-                                    logger.log(u"Found result: " + title.replace(' ','.') + " (" + download_url + ")", logger.DEBUG)
+                                    item = title, download_url, size, seeders, leechers
+                                    if mode != 'RSS':
+                                        logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                                     items[mode].append(item)
 
                 except Exception, e:
-                    logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+
+            #For each search mode sort all the items by seeders if available
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url, id, seeders, leechers = item
-
-        if title:
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = str(url).replace('&amp;', '&')
-
-        return title, url
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

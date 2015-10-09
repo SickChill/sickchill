@@ -1,7 +1,7 @@
 # Author: seedboy
 # URL: https://github.com/seedboy
 #
-# This file is part of SickRage.
+# This file is part of SickRage. 
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -70,14 +70,6 @@ class NextGenProvider(generic.TorrentProvider):
     def isEnabled(self):
         return self.enabled
 
-    def imageName(self):
-        return 'nextgen.png'
-
-    def getQuality(self, item, anime=False):
-
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
-
     def getLoginParams(self):
         return {
             'username': self.username,
@@ -125,56 +117,8 @@ class NextGenProvider(generic.TorrentProvider):
             self.login_opener = None
 
         self.login_opener = None
-        logger.log(u'Failed to login:' + str(error), logger.ERROR)
+        logger.log(u"Failed to login: %s" % error, logger.ERROR)
         return False
-
-    def _get_season_search_strings(self, ep_obj):
-
-        search_string = {'Season': []}
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                ep_string = show_name + ' ' + str(ep_obj.airdate).split('-')[0]
-            elif ep_obj.show.anime:
-                ep_string = show_name + ' ' + "%d" % ep_obj.scene_absolute_number
-            else:
-                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName SXX
-
-            search_string['Season'].append(ep_string)
-
-        return [search_string]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_string = {'Episode': []}
-
-        if not ep_obj:
-            return []
-
-        if self.show.air_by_date:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|')
-                search_string['Episode'].append(ep_string)
-        elif self.show.sports:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|') + '|' + \
-                            ep_obj.airdate.strftime('%b')
-                search_string['Episode'].append(ep_string)
-        elif self.show.anime:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            "%i" % int(ep_obj.scene_absolute_number)
-                search_string['Episode'].append(ep_string)
-        else:
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
-
-                search_string['Episode'].append(re.sub(r'\s+', ' ', ep_string))
-
-        return [search_string]
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
@@ -185,12 +129,14 @@ class NextGenProvider(generic.TorrentProvider):
             return results
 
         for mode in search_params.keys():
-
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
-                logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
+                searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
                 data = self.getURL(searchURL)
                 if not data:
                     continue
@@ -200,8 +146,7 @@ class NextGenProvider(generic.TorrentProvider):
                         resultsTable = html.find('div', attrs={'id': 'torrent-table-wrapper'})
 
                         if not resultsTable:
-                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                       logger.DEBUG)
+                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                         # Collecting entries
@@ -222,53 +167,46 @@ class NextGenProvider(generic.TorrentProvider):
                                     torrentId = (
                                     ((result.find('div', attrs={'id': 'torrent-download'})).find('a'))['href']).replace(
                                         'download.php?id=', '')
-                                    torrent_name = str(torrentName)
-                                    torrent_download_url = (self.urls['download'] % torrentId).encode('utf8')
+                                    title = str(torrentName)
+                                    download_url = (self.urls['download'] % torrentId).encode('utf8')
                                     torrent_details_url = (self.urls['detail'] % torrentId).encode('utf8')
-                                    #torrent_seeders = int(result.find('div', attrs = {'id' : 'torrent-seeders'}).find('a')['class'][0])
+                                    seeders = int(result.find('div', attrs = {'id' : 'torrent-seeders'}).find('a')['class'][0])
                                     ## Not used, perhaps in the future ##
                                     #torrent_id = int(torrent['href'].replace('/details.php?id=', ''))
-                                    #torrent_leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).string)
+                                    leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).string)
+                                    #FIXME
+                                    size = -1
                                 except (AttributeError, TypeError):
                                     continue
 
-                                # Filter unseeded torrent and torrents with no name/url
-                                #if mode != 'RSS' and torrent_seeders == 0:
-                                #    continue
-
-                                if not torrent_name or not torrent_download_url:
+                                if not all([title, download_url]):
                                     continue
 
-                                item = torrent_name, torrent_download_url
-                                logger.log(u"Found result: " + torrent_name.replace(' ','.') + " (" + torrent_details_url + ")",
-                                           logger.DEBUG)
+                                #Filter unseeded torrent
+                                if seeders < self.minseed or leechers < self.minleech:
+                                    if mode != 'RSS':
+                                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    continue
+
+                                item = title, download_url, size, seeders, leechers
+                                if mode != 'RSS':
+                                    logger.log(u"Found result: %s " % title, logger.DEBUG)
+
                                 items[mode].append(item)
 
                         else:
-                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                       logger.WARNING)
+                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                 except Exception, e:
-                    logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),
-                               logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+
+            #For each search mode sort all the items by seeders if available
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url = item
-
-        if title:
-            title = u'' + title
-            title = title.replace(' ', '.')
-
-        if url:
-            url = str(url).replace('&amp;', '&')
-
-        return title, url
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

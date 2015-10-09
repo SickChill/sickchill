@@ -75,11 +75,11 @@
                                 <span class="component-title">Initial page</span>
                                 <span class="component-desc">
                                     <select id="default_page" name="default_page" class="form-control input-sm">
+                                        <option value="home" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'home']}>Shows</option>
+                                        <option value="schedule" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'schedule']}>Schedule</option>
+                                        <option value="history" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'history']}>History</option>
                                         <option value="news" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'news']}>News</option>
                                         <option value="IRC" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'IRC']}>IRC</option>
-                                        <option value="home" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'home']}>Shows</option>
-                                        <option value="comingEpisodes" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'comingEpisodes']}>Schedule</option>
-                                        <option value="history" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'history']}>History</option>
                                     </select>
                                     <span>when launching SickRage interface</span>
                                 </span>

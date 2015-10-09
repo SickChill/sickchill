@@ -415,7 +415,7 @@ class WebRoot(WebHandler):
 
         return self.redirect("/home/displayShow?show=" + show)
 
-    def setComingEpsLayout(self, layout):
+    def setScheduleLayout(self, layout):
         if layout not in ('poster', 'banner', 'list', 'calendar'):
             layout = 'banner'
 
@@ -424,15 +424,15 @@ class WebRoot(WebHandler):
 
         sickbeard.COMING_EPS_LAYOUT = layout
 
-        return self.redirect("/comingEpisodes/")
+        return self.redirect("/schedule/")
 
-    def toggleComingEpsDisplayPaused(self):
+    def toggleScheduleDisplayPaused(self):
 
         sickbeard.COMING_EPS_DISPLAY_PAUSED = not sickbeard.COMING_EPS_DISPLAY_PAUSED
 
-        return self.redirect("/comingEpisodes/")
+        return self.redirect("/schedule/")
 
-    def setComingEpsSort(self, sort):
+    def setScheduleSort(self, sort):
         if sort not in ('date', 'network', 'show'):
             sort = 'date'
 
@@ -442,9 +442,9 @@ class WebRoot(WebHandler):
 
         sickbeard.COMING_EPS_SORT = sort
 
-        return self.redirect("/comingEpisodes/")
+        return self.redirect("/schedule/")
 
-    def comingEpisodes(self, layout=None):
+    def schedule(self, layout=None):
         next_week = datetime.date.today() + datetime.timedelta(days=7)
         next_week1 = datetime.datetime.combine(next_week, datetime.time(tzinfo=network_timezones.sb_timezone))
         results = ComingEpisodes.get_coming_episodes(ComingEpisodes.categories, sickbeard.COMING_EPS_SORT, False)
@@ -454,26 +454,26 @@ class WebRoot(WebHandler):
             {
                 'title': 'Sort by:',
                 'path': {
-                    'Date': 'setComingEpsSort/?sort=date',
-                    'Show': 'setComingEpsSort/?sort=show',
-                    'Network': 'setComingEpsSort/?sort=network',
+                    'Date': 'setScheduleSort/?sort=date',
+                    'Show': 'setScheduleSort/?sort=show',
+                    'Network': 'setScheduleSort/?sort=network',
                 }
             },
             {
                 'title': 'Layout:',
                 'path': {
-                    'Banner': 'setComingEpsLayout/?layout=banner',
-                    'Poster': 'setComingEpsLayout/?layout=poster',
-                    'List': 'setComingEpsLayout/?layout=list',
-                    'Calendar': 'setComingEpsLayout/?layout=calendar',
+                    'Banner': 'setScheduleLayout/?layout=banner',
+                    'Poster': 'setScheduleLayout/?layout=poster',
+                    'List': 'setScheduleLayout/?layout=list',
+                    'Calendar': 'setScheduleLayout/?layout=calendar',
                 }
             },
             {
                 'title': 'View Paused:',
                 'path': {
-                    'Hide': 'toggleComingEpsDisplayPaused'
+                    'Hide': 'toggleScheduleDisplayPaused'
                 } if sickbeard.COMING_EPS_DISPLAY_PAUSED else {
-                    'Show': 'toggleComingEpsDisplayPaused'
+                    'Show': 'toggleScheduleDisplayPaused'
                 }
             },
         ]
@@ -484,9 +484,9 @@ class WebRoot(WebHandler):
         else:
             layout = sickbeard.COMING_EPS_LAYOUT
 
-        t = PageTemplate(rh=self, file='comingEpisodes.mako')
+        t = PageTemplate(rh=self, file='schedule.mako')
         return t.render(submenu=submenu, next_week=next_week1, today=today, results=results, layout=layout,
-                        title='Schedule', header='Schedule', topmenu='comingEpisodes')
+                        title='Schedule', header='Schedule', topmenu='schedule')
 
 
 class CalendarHandler(BaseHandler):
@@ -4866,19 +4866,23 @@ class ErrorLogs(WebRoot):
     def __init__(self, *args, **kwargs):
         super(ErrorLogs, self).__init__(*args, **kwargs)
 
-    def ErrorLogsMenu(self):
+    def ErrorLogsMenu(self, level):
         menu = [
-            {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/', 'requires': self.haveErrors(), 'icon': 'ui-icon ui-icon-trash'},
-            {'title': 'Clear Warnings', 'path': 'errorlogs/clearerrors/?level='+str(logger.WARNING), 'requires': self.haveWarnings(), 'icon': 'ui-icon ui-icon-trash'},
-            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors(), 'class':'sumbiterrors', 'confirm': True, 'icon': 'ui-icon ui-icon-arrowreturnthick-1-n'},
+            {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/', 'requires': self.haveErrors() and level == logger.ERROR, 'icon': 'ui-icon ui-icon-trash'},
+            {'title': 'Clear Warnings', 'path': 'errorlogs/clearerrors/?level='+str(logger.WARNING), 'requires': self.haveWarnings() and level == logger.WARNING, 'icon': 'ui-icon ui-icon-trash'},
+            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors() and level == logger.ERROR, 'class':'sumbiterrors', 'confirm': True, 'icon': 'ui-icon ui-icon-arrowreturnthick-1-n'},
         ]
 
         return menu
 
     def index(self, level=logger.ERROR):
+        try:
+            level = int(level)
+        except:
+            level = logger.ERROR
 
         t = PageTemplate(rh=self, file="errorlogs.mako")
-        return t.render(header="Logs &amp; Errors", title="Logs &amp; Errors", topmenu="system", submenu=self.ErrorLogsMenu(), logLevel=int(level))
+        return t.render(header="Logs &amp; Errors", title="Logs &amp; Errors", topmenu="system", submenu=self.ErrorLogsMenu(level), logLevel=level)
 
     def haveErrors(self):
         if len(classes.ErrorViewer.errors) > 0:
@@ -4980,17 +4984,14 @@ class ErrorLogs(WebRoot):
                 with ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
                         data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 
-        return t.render(header="Log File", title="Logs", topmenu="system", submenu=self.ErrorLogsMenu(),
+        return t.render(header="Log File", title="Logs", topmenu="system",
                 logLines="".join(data), minLevel=minLevel, logNameFilters=logNameFilters,
                 logFilter=logFilter, logSearch=logSearch)
 
     def submit_errors(self):
-        if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD):
-            ui.notifications.error("Missing information", "Please set your GitHub username and password in the config.")
-            logger.log(u'Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
-        else:
-            submitter_result, issue_id = logger.submit_errors()
-            logger.log(submitter_result, (logger.INFO, logger.WARNING)[issue_id is None])
-            ui.notifications.message(submitter_result)
+        submitter_result, issue_id = logger.submit_errors()
+        logger.log(submitter_result, (logger.INFO, logger.WARNING)[issue_id is None])
+        submitter_notification = ui.notifications.error if issue_id is None else ui.notifications.message
+        submitter_notification(submitter_result)
 
         return self.redirect("/errorlogs/")
