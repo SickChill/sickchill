@@ -89,8 +89,10 @@ class IPTorrentsProvider(generic.TorrentProvider):
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
-        if re.search('tries left', response) \
-                or re.search('<title>IPT</title>', response):
+        if re.search('tries left', response):
+            logger.log(u"You tried too often, please try again after 1 hour! Disable IPTorrents for at least 1 hour", logger.WARNING)
+            return False
+        if re.search('Password not correct', response):
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
