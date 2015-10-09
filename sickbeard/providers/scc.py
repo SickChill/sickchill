@@ -97,10 +97,11 @@ class SCCProvider(generic.TorrentProvider):
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
+        results = []
+
         if not self._doLogin():
             return results
 
-        results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         for mode in search_strings.keys():
