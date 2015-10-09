@@ -4,7 +4,7 @@
 # based on tpi.py
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -127,7 +127,7 @@ class LibertaliaProvider(generic.TorrentProvider):
                             if link:
                                 title = link.text
                                 recherched=searchURL.replace(".","(.*)").replace(" ","(.*)").replace("'","(.*)")
-                                downloadURL =  row.find("a",href=re.compile("torrent_pass"))['href']
+                                download_url =  row.find("a",href=re.compile("torrent_pass"))['href']
                                 #FIXME
                                 size = -1
                                 seeders = 1
