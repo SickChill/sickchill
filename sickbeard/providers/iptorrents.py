@@ -1,7 +1,7 @@
 # Author: seedboy
 # URL: https://github.com/seedboy
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -303,7 +303,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
                 searchURL = self.urls['search'] % (self.categorie, freeleech, search_string)
                 searchURL += ';o=seeders' if mode != 'RSS' else ''
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
                 data = self.getURL(searchURL)
                 if not data:
@@ -331,6 +331,8 @@ class IPTorrentsProvider(generic.TorrentProvider):
                         for result in torrents[1:]:
 
                             try:
+                                # FIXME
+                                size = -1
                                 torrent = result.find_all('td')[1].find('a')
                                 title = torrent.string
                                 download_url = self.urls['base_url'] + (result.find_all('td')[3].find('a'))['href']
