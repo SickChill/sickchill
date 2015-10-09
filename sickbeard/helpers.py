@@ -41,13 +41,12 @@ import errno
 import ast
 import operator
 import platform
-from contextlib import closing
-
 import sickbeard
-
 import adba
 import requests
 import certifi
+from contextlib import closing
+from socket import timeout as SocketTimeout
 
 
 try:
@@ -562,8 +561,7 @@ def hardlinkFile(srcFile, destFile):
         ek(link, srcFile, destFile)
         fixSetGroupID(destFile)
     except Exception as e:
-        logger.log(u"Failed to create hardlink of " + srcFile + " at " + destFile + ": " + ex(e) + ". Copying instead",
-                   logger.ERROR)
+        logger.log(u"Failed to create hardlink of %s at %s. Error: %r. Copying instead" % (srcFile, destFile, ex(e)),logger.ERROR)
         copyFile(srcFile, destFile)
 
 
@@ -595,8 +593,8 @@ def moveAndSymlinkFile(srcFile, destFile):
         ek(shutil.move, srcFile, destFile)
         fixSetGroupID(destFile)
         ek(symlink, destFile, srcFile)
-    except Exception:
-        logger.log(u"Failed to create symlink of " + srcFile + " at " + destFile + ". Copying instead", logger.ERROR)
+    except Exception as e:
+        logger.log(u"Failed to create symlink of %s at %s. Error: %r. Copying instead" % (srcFile, destFile, ex(e)),logger.ERROR)
         copyFile(srcFile, destFile)
 
 
@@ -615,7 +613,7 @@ def make_dirs(path):
                 logger.log(u"Folder %s didn't exist, creating it" % path, logger.DEBUG)
                 ek(os.makedirs, path)
             except (OSError, IOError) as e:
-                logger.log(u"Failed creating %s : %s" % (path, ex(e)), logger.ERROR)
+                logger.log(u"Failed creating %s : %r" % (path, ex(e)), logger.ERROR)
                 return False
 
         # not Windows, create all missing folders and set permissions
@@ -639,7 +637,7 @@ def make_dirs(path):
                     # do the library update for synoindex
                     notifiers.synoindex_notifier.addFolder(sofar)
                 except (OSError, IOError) as e:
-                    logger.log(u"Failed creating %s : %s" % (sofar, ex(e)), logger.ERROR)
+                    logger.log(u"Failed creating %s : %r" % (sofar, ex(e)), logger.ERROR)
                     return False
 
     return True
@@ -683,7 +681,7 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
         logger.log(u"Renaming file from %s to %s" % (cur_path, new_path))
         ek(shutil.move, cur_path, new_path)
     except (OSError, IOError) as e:
-        logger.log(u"Failed renaming %s to %s : %s" % (cur_path, new_path, ex(e)), logger.ERROR)
+        logger.log(u"Failed renaming %s to %s : %r" % (cur_path, new_path, ex(e)), logger.ERROR)
         return False
 
     # clean up any old folders that are empty
@@ -719,7 +717,7 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
                 # do the library update for synoindex
                 notifiers.synoindex_notifier.deleteFolder(check_empty_dir)
             except OSError as e:
-                logger.log(u"Unable to delete " + check_empty_dir + ": " + repr(e) + " / " + str(e), logger.WARNING)
+                logger.log(u"Unable to delete %s. Error: %r" % (check_empty_dir, repr(e)), logger.WARNING)
                 break
             check_empty_dir = ek(os.path.dirname, check_empty_dir)
         else:
@@ -865,14 +863,9 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
 
         if len(sqlResults) == 1:
             absolute_number = int(sqlResults[0]["absolute_number"])
-            logger.log(
-                "Found absolute_number:" + str(absolute_number) + " by " + str(season) + "x" + str(episode),
-                logger.DEBUG)
+            logger.log("Found absolute number %s for show %s S%02dE%02d" % (absolute_number, show.name, season, episode), logger.DEBUG)
         else:
-            logger.log(
-                "No entries for absolute number in show: " + show.name + " found using " + str(season) + "x" + str(
-                    episode),
-                logger.DEBUG)
+            logger.log("No entries for absolute number for show %s S%02dE%02d" % (show.name, season, episode), logger.DEBUG)
 
     return absolute_number
 
@@ -1017,7 +1010,7 @@ def backupVersionedFile(old_file, version):
             logger.log(u"Backup done", logger.DEBUG)
             break
         except Exception as e:
-            logger.log(u"Error while trying to back up %s to %s : %s" % (old_file, new_file, ex(e)), logger.WARNING)
+            logger.log(u"Error while trying to back up %s to %s : %r" % (old_file, new_file, ex(e)), logger.WARNING)
             numTries += 1
             time.sleep(1)
             logger.log(u"Trying again.", logger.DEBUG)
@@ -1048,35 +1041,33 @@ def restoreVersionedFile(backup_file, version):
         return False
 
     try:
-        logger.log(
-            u"Trying to backup " + new_file + " to " + new_file + "." + "r" + str(version) + " before restoring backup",
+        logger.log(u"Trying to backup %s to %s.r%s before restoring backup" % (new_file, new_file, version),
             logger.DEBUG)
+
         shutil.move(new_file, new_file + '.' + 'r' + str(version))
     except Exception as e:
-        logger.log(
-            u"Error while trying to backup DB file " + restore_file + " before proceeding with restore: " + ex(e),
+        logger.log(u"Error while trying to backup DB file %s before proceeding with restore: %r" % (restore_file, ex(e)),
             logger.WARNING)
         return False
 
     while not ek(os.path.isfile, new_file):
         if not ek(os.path.isfile, restore_file):
-            logger.log(u"Not restoring, " + restore_file + " doesn't exist", logger.DEBUG)
+            logger.log(u"Not restoring, %s doesn't exist" % restore_file, logger.DEBUG)
             break
 
         try:
-            logger.log(u"Trying to restore " + restore_file + " to " + new_file, logger.DEBUG)
+            logger.log(u"Trying to restore file %s to %s" % (restore_file, new_file), logger.DEBUG)
             shutil.copy(restore_file, new_file)
             logger.log(u"Restore done", logger.DEBUG)
             break
         except Exception as e:
-            logger.log(u"Error while trying to restore " + restore_file + ": " + ex(e), logger.WARNING)
+            logger.log(u"Error while trying to restore file %s. Error: %r" % (restore_file, ex(e)), logger.WARNING)
             numTries += 1
             time.sleep(1)
-            logger.log(u"Trying again.", logger.DEBUG)
+            logger.log(u"Trying again. Attempt #: %s" % numTries, logger.DEBUG)
 
         if numTries >= 10:
-            logger.log(u"Unable to restore " + restore_file + " to " + new_file + " please do it manually.",
-                       logger.ERROR)
+            logger.log(u"Unable to restore file %s to %s" % (restore_file, new_file), logger.WARNING)
             return False
 
     return True
@@ -1247,7 +1238,7 @@ def get_show(name, tryIndexers=False, trySceneExceptions=False):
         if showObj and not fromCache:
             sickbeard.name_cache.addNameToCache(name, showObj.indexerid)
     except Exception as e:
-        logger.log(u"Error when attempting to find show: " + name + " in SickRage: " + str(e), logger.DEBUG)
+        logger.log(u"Error when attempting to find show: %s in SickRage. Error: %r " % (name, repr(e)), logger.DEBUG)
 
     return showObj
 
@@ -1318,11 +1309,11 @@ def set_up_anidb_connection():
         return False
 
     if not sickbeard.ADBA_CONNECTION:
-        anidb_logger = lambda x: logger.log("ANIDB: " + str(x), logger.DEBUG)
+        anidb_logger = lambda x: logger.log("anidb: %s " % x, logger.DEBUG)
         try:
             sickbeard.ADBA_CONNECTION = adba.Connection(keepAlive=True, log=anidb_logger)
         except Exception as e:
-            logger.log(u"anidb exception msg: " + str(e))
+            logger.log(u"anidb exception msg: %r " % repr(e), logger.WARNING)
             return False
 
     try:
@@ -1331,7 +1322,7 @@ def set_up_anidb_connection():
         else:
             return True
     except Exception as e:
-        logger.log(u"anidb exception msg: " + str(e))
+        logger.log(u"anidb exception msg: %r " % repr(e), logger.WARNING)
         return False
 
     return sickbeard.ADBA_CONNECTION.authed()
@@ -1352,7 +1343,7 @@ def makeZip(fileList, archive):
         a.close()
         return True
     except Exception as e:
-        logger.log(u"Zip creation error: " + str(e), logger.ERROR)
+        logger.log(u"Zip creation error: %r " % repr(e), logger.ERROR)
         return False
 
 
@@ -1384,7 +1375,7 @@ def extractZip(archive, targetDir):
         zip_file.close()
         return True
     except Exception as e:
-        logger.log(u"Zip extraction error: " + str(e), logger.ERROR)
+        logger.log(u"Zip extraction error: %r " % repr(e), logger.ERROR)
         return False
 
 
@@ -1405,7 +1396,7 @@ def backupConfigZip(fileList, archive, arcname=None):
         a.close()
         return True
     except Exception as e:
-        logger.log(u"Zip creation error: " + str(e), logger.ERROR)
+        logger.log(u"Zip creation error: %r " % repr(e), logger.ERROR)
         return False
 
 
@@ -1434,7 +1425,7 @@ def restoreConfigZip(archive, targetDir):
         zip_file.close()
         return True
     except Exception as e:
-        logger.log(u"Zip extraction error: " + str(e), logger.ERROR)
+        logger.log(u"Zip extraction error: %r" % ex(e), logger.ERROR)
         shutil.rmtree(targetDir)
         return False
 
@@ -1512,11 +1503,11 @@ def touchFile(fname, atime=None):
                 return True
         except Exception as e:
             if e.errno == errno.ENOSYS:
-                logger.log(u"File air date stamping not available on your OS", logger.DEBUG)
+                logger.log(u"File air date stamping not available on your OS. Please disable setting", logger.DEBUG)
             elif e.errno == errno.EACCES:
                 logger.log(u"File air date stamping failed(Permission denied). Check permissions for file: %s" % fname, logger.ERROR)
             else:
-                logger.log(u"File air date stamping failed. The error is: %s." % ex(e), logger.ERROR)
+                logger.log(u"File air date stamping failed. The error is: %r" % ex(e), logger.ERROR)
 
     return False
 
@@ -1620,8 +1611,8 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
             resp = session.get(url, timeout=timeout, allow_redirects=True, verify=session.verify)
 
         if not resp.ok:
-            logger.log(u"Requested getURL " + url + " returned status code is " + str(
-                resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
+            logger.log(u"Requested getURL %s returned status code is %s: %s" % (url, resp.status_code, codeDescription(resp.status_code)),
+            logger.DEBUG)
             return None
 
         if proxyGlypeProxySSLwarning is not None:
@@ -1629,25 +1620,28 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
                 resp = session.get(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True, verify=session.verify)
 
                 if not resp.ok:
-                    logger.log(u"GlypeProxySSLwarning: Requested getURL " + url + " returned status code is " + str(
-                        resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
+                    logger.log(u"GlypeProxySSLwarning: Requested getURL %s returned status code is %s: %s" % (url, resp.status_code, codeDescription(resp.status_code)),
+                    logger.DEBUG)
                     return None
 
+    except SocketTimeout:
+        logger.log(u"Connection timed out (sockets) accessing getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
+        return None
     except requests.exceptions.HTTPError as e:
-        logger.log(u"HTTP error in getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
+        logger.log(u"HTTP error in getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
     except requests.exceptions.ConnectionError as e:
-        logger.log(u"Connection error to getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
+        logger.log(u"Connection error to getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
     except requests.exceptions.Timeout as e:
-        logger.log(u"Connection timed out accessing getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
+        logger.log(u"Connection timed out accessing getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
     except requests.exceptions.ContentDecodingError:
         logger.log(u"Content-Encoding was gzip, but content was not compressed. getURL: %s" % url, logger.DEBUG)
         logger.log(traceback.format_exc(), logger.DEBUG)
         return None
     except Exception as e:
-        logger.log(u"Unknown exception in getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
+        logger.log(u"Unknown exception in getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         logger.log(traceback.format_exc(), logger.WARNING)
         return None
 
@@ -1676,8 +1670,7 @@ def download_file(url, filename, session=None, headers={}):
     try:
         with closing(session.get(url, allow_redirects=True, verify=session.verify)) as resp:
             if not resp.ok:
-                logger.log(u"Requested download url " + url + " returned status code is " + str(
-                    resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
+                logger.log(u"Requested download url %s returned status code is %s: %s" % ( url, resp.status_code, codeDescription(resp.status_code) ) , logger.DEBUG)
                 return False
 
             try:
@@ -1693,23 +1686,23 @@ def download_file(url, filename, session=None, headers={}):
 
     except requests.exceptions.HTTPError as e:
         _remove_file_failed(filename)
-        logger.log(u"HTTP error " + ex(e) + " while loading download URL " + url, logger.WARNING)
+        logger.log(u"HTTP error %r while loading download URL %s " % (ex(e), url ), logger.WARNING)
         return False
     except requests.exceptions.ConnectionError as e:
         _remove_file_failed(filename)
-        logger.log(u"Connection error " + ex(e) + " while loading download URL " + url, logger.WARNING)
+        logger.log(u"Connection error %r while loading download URL %s " % (ex(e), url), logger.WARNING)
         return False
     except requests.exceptions.Timeout as e:
         _remove_file_failed(filename)
-        logger.log(u"Connection timed out " + ex(e) + " while loading download URL " + url, logger.WARNING)
+        logger.log(u"Connection timed out %r while loading download URL %s " % (ex(e), url ), logger.WARNING)
         return False
     except EnvironmentError as e:
         _remove_file_failed(filename)
-        logger.log(u"Unable to save the file: " + ex(e), logger.WARNING)
+        logger.log(u"Unable to save the file: %r " % ex(e), logger.WARNING)
         return False
     except Exception:
         _remove_file_failed(filename)
-        logger.log(u"Unknown exception while loading download URL " + url + ": " + traceback.format_exc(), logger.WARNING)
+        logger.log(u"Unknown exception while loading download URL %s : %r" % ( url, traceback.format_exc() ), logger.WARNING)
         return False
 
     return True
@@ -1733,7 +1726,7 @@ def get_size(start_path='.'):
             try:
                 total_size += ek(os.path.getsize, fp)
             except OSError as e:
-                logger.log('Unable to get size for file %s Error: %s' % (fp, ex(e)), logger.ERROR)
+                logger.log(u"Unable to get size for file %s Error: %r" % (fp, ex(e)), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
     return total_size
 
@@ -1855,7 +1848,8 @@ def verify_freespace(src, dest, oldfile=None):
     if diskfree > neededspace:
         return True
     else:
-        logger.log("Not enough free space: Needed: " + str(neededspace) + " bytes (" + pretty_filesize(neededspace) + "), found: " + str(diskfree) + " bytes (" + pretty_filesize(diskfree) + ")", logger.WARNING)
+        logger.log("Not enough free space: Needed: %s bytes ( %s ), found: %s bytes ( %s )" % ( neededspace, pretty_filesize(neededspace), diskfree, pretty_filesize(diskfree) ) , 
+        logger.WARNING)
         return False
 
 # https://gist.github.com/thatalextaylor/7408395
