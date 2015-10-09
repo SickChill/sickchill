@@ -1887,14 +1887,14 @@ class CMD_Show(ApiCall):
 
         showDict["language"] = showObj.lang
         showDict["show_name"] = showObj.name
-        showDict["paused"] = showObj.paused
-        showDict["subtitles"] = showObj.subtitles
-        showDict["air_by_date"] = showObj.air_by_date
-        showDict["flatten_folders"] = showObj.flatten_folders
-        showDict["sports"] = showObj.sports
-        showDict["anime"] = showObj.anime
+        showDict["paused"] = (0, 1)[showObj.paused]
+        showDict["subtitles"] = (0, 1)[showObj.subtitles]
+        showDict["air_by_date"] = (0, 1)[showObj.air_by_date]
+        showDict["flatten_folders"] = (0, 1)[showObj.flatten_folders]
+        showDict["sports"] = (0, 1)[showObj.sports]
+        showDict["anime"] = (0, 1)[showObj.anime]
         showDict["airs"] = str(showObj.airs).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
-        showDict["dvdorder"] = showObj.dvdorder
+        showDict["dvdorder"] = (0, 1)[showObj.dvdorder]
 
         if showObj.rls_require_words:
             showDict["rls_require_words"] = showObj.rls_require_words.split(", ")
@@ -1906,8 +1906,8 @@ class CMD_Show(ApiCall):
         else:
             showDict["rls_ignore_words"] = []
 
-        showDict["scene"] = showObj.scene
-        showDict["archive_firstmatch"] = showObj.archive_firstmatch
+        showDict["scene"] = (0, 1)[showObj.scene]
+        showDict["archive_firstmatch"] = (0, 1)[showObj.archive_firstmatch]
 
         showDict["indexerid"] = showObj.indexerid
         showDict["tvdbid"] = helpers.mapIndexersToShow(showObj)[1]
@@ -2793,24 +2793,24 @@ class CMD_Shows(ApiCall):
         shows = {}
         for curShow in sickbeard.showList:
 
-            if self.paused != None and bool(self.paused) != bool(curShow.paused):
+            if self.paused is not None and bool(self.paused) != bool(curShow.paused):
                 continue
 
             indexerShow = helpers.mapIndexersToShow(curShow)
 
             showDict = {
-                "paused": curShow.paused,
+                "paused": (0, 1)[curShow.paused],
                 "quality": get_quality_string(curShow.quality),
                 "language": curShow.lang,
-                "air_by_date": curShow.air_by_date,
-                "sports": curShow.sports,
-                "anime": curShow.anime,
+                "air_by_date": (0, 1)[curShow.air_by_date],
+                "sports": (0, 1)[curShow.sports],
+                "anime": (0, 1)[curShow.anime],
                 "indexerid": curShow.indexerid,
                 "tvdbid": indexerShow[1],
                 "network": curShow.network,
                 "show_name": curShow.name,
                 "status": curShow.status,
-                "subtitles": curShow.subtitles,
+                "subtitles": (0, 1)[curShow.subtitles],
             }
 
             if curShow.nextaired:
@@ -2820,8 +2820,7 @@ class CMD_Shows(ApiCall):
             else:
                 showDict['next_ep_airdate'] = ''
 
-            showDict["cache"] = \
-                CMD_ShowCache((), {"indexerid": curShow.indexerid}).run()["data"]
+            showDict["cache"] = CMD_ShowCache((), {"indexerid": curShow.indexerid}).run()["data"]
             if not showDict["network"]:
                 showDict["network"] = ""
             if self.sort == "name":
