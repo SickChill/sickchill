@@ -186,16 +186,13 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 cur_actor = etree.SubElement(tv_node, "actor")
 
                 cur_actor_name = etree.SubElement(cur_actor, "name")
-                if getattr(actor, 'name', None) is not None:
-                    cur_actor_name.text = actor['name'].strip()
+                cur_actor_name.text = actor['name'].strip()
 
                 cur_actor_role = etree.SubElement(cur_actor, "role")
-                if getattr(actor, 'role', None) is not None:
-                    cur_actor_role.text = actor['role']
+                cur_actor_role.text = actor['role']
 
                 cur_actor_thumb = etree.SubElement(cur_actor, "thumb")
-                if getattr(actor, 'image', None) is not None:
-                    cur_actor_thumb.text = actor['image']
+                cur_actor_thumb.text = actor['image']
 
         # Make it purdy
         helpers.indentXML(tv_node)
