@@ -2,7 +2,7 @@
 # Modified by jkaberg, https://github.com/jkaberg for SceneAccess
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -95,87 +95,95 @@ class SCCProvider(generic.TorrentProvider):
         title = '<title>.+? \| %s</title>' % section
         return re.search(title, text, re.IGNORECASE)
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
-        #FIXME ADD MODE
-        results = data = []
+    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         if not self._doLogin():
             return results
 
-        for search_string in [search_params]:
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+        results = []
+        items = {'Season': [], 'Episode': [], 'RSS': []}
+
+        for mode in search_strings.keys():
             if mode != 'RSS':
-                logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+                logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            for search_string in search_strings[mode]:
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-            searchURLS = []
-            if search_mode == 'sponly':
-                searchURLS += [self.urls['archive'] % (urllib.quote(search_string))]
-            else:
-                searchURLS += [self.urls['search'] % (urllib.quote(search_string), self.categories)]
-                searchURLS += [self.urls['nonscene'] % (urllib.quote(search_string))]
-                searchURLS += [self.urls['foreign'] % (urllib.quote(search_string))]
+                searchURLS = []
+                if search_mode == 'sponly':
+                    searchURLS += [self.urls['archive'] % (urllib.quote(search_string))]
+                else:
+                    searchURLS += [self.urls['search'] % (urllib.quote(search_string), self.categories)]
+                    searchURLS += [self.urls['nonscene'] % (urllib.quote(search_string))]
+                    searchURLS += [self.urls['foreign'] % (urllib.quote(search_string))]
 
-            for searchURL in searchURLS:
-                try:
-                    logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
-                    data = self.getURL(searchURL)
-                    time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-                except Exception as e:
-                    logger.log(u"Unable to fetch data. Error: %s" % repr(e), logger.WARNING)
+                for searchURL in searchURLS:
+                    try:
+                        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                        data = self.getURL(searchURL)
+                        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+                    except Exception as e:
+                        logger.log(u"Unable to fetch data. Error: %s" % repr(e), logger.WARNING)
 
-                if not data:
-                    continue
-
-                with BS4Parser(data, features=["html5lib", "permissive"]) as html:
-                    torrent_table = html.find('table', attrs={'id': 'torrents-table'})
-                    torrent_rows = torrent_table.find_all('tr') if torrent_table else []
-
-                    #Continue only if at least one Release is found
-                    if len(torrent_rows) < 2:
-                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                    if not data:
                         continue
 
-                    for result in torrent_table.find_all('tr')[1:]:
+                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                        torrent_table = html.find('table', attrs={'id': 'torrents-table'})
+                        torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                        try:
-                            link = result.find('td', attrs={'class': 'ttr_name'}).find('a')
-                            all_urls = result.find('td', attrs={'class': 'td_dl'}).find_all('a', limit=2)
-                            # Foreign section contain two links, the others one
-                            if self._isSection('Foreign', data):
-                                url = all_urls[1]
-                            else:
-                                url = all_urls[0]
-
-                            title = link.string
-                            if re.search('\.\.\.', title):
-                                data = self.getURL(self.url + "/" + link['href'])
-                                if data:
-                                    with BS4Parser(data) as details_html:
-                                        title = re.search('(?<=").+(?<!")', details_html.title.string).group(0)
-                            download_url = self.urls['download'] % url['href']
-                            id = int(link['href'].replace('details?id=', ''))
-                            seeders = int(result.find('td', attrs={'class': 'ttr_seeders'}).string)
-                            leechers = int(result.find('td', attrs={'class': 'ttr_leechers'}).string)
-                            #FIXME
-                            size = -1
-                        except (AttributeError, TypeError):
+                        #Continue only if at least one Release is found
+                        if len(torrent_rows) < 2:
+                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
-                        if not all([title, download_url]):
-                            continue
+                        for result in torrent_table.find_all('tr')[1:]:
 
-                        #Filter unseeded torrent
-                        if seeders < self.minseed or leechers < self.minleech:
+                            try:
+                                link = result.find('td', attrs={'class': 'ttr_name'}).find('a')
+                                all_urls = result.find('td', attrs={'class': 'td_dl'}).find_all('a', limit=2)
+                                # Foreign section contain two links, the others one
+                                if self._isSection('Foreign', data):
+                                    url = all_urls[1]
+                                else:
+                                    url = all_urls[0]
+
+                                title = link.string
+                                if re.search('\.\.\.', title):
+                                    data = self.getURL(self.url + "/" + link['href'])
+                                    if data:
+                                        with BS4Parser(data) as details_html:
+                                            title = re.search('(?<=").+(?<!")', details_html.title.string).group(0)
+                                download_url = self.urls['download'] % url['href']
+                                id = int(link['href'].replace('details?id=', ''))
+                                seeders = int(result.find('td', attrs={'class': 'ttr_seeders'}).string)
+                                leechers = int(result.find('td', attrs={'class': 'ttr_leechers'}).string)
+                                #FIXME
+                                size = -1
+                            except (AttributeError, TypeError):
+                                continue
+
+                            if not all([title, download_url]):
+                                continue
+
+                            #Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                continue
+
+                            item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                            continue
+                                logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                        item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+                            items[mode].append(item)
 
-                        results.append(item)
-        #FIX ME SORTING
+            #For each search mode sort all the items by seeders if available
+            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+
+            results += items[mode]
+
         return results
 
     def findPropers(self, search_date=datetime.datetime.today()):
