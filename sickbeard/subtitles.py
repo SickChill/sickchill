@@ -216,10 +216,6 @@ def subtitlesLanguages(video_path):
     else:
         subtitle_languages = scan_subtitle_languages(video_path)
 
-    if (len(subtitle_languages) is 1 and len(wantedLanguages()) is 1) and Language('und') in subtitle_languages:
-        subtitle_languages.remove(Language('und'))
-        subtitle_languages.add(fromietf(wantedLanguages()[0]))
-
     for language in subtitle_languages:
         if hasattr(language, 'opensubtitles') and language.opensubtitles:
             resultList.append(language.opensubtitles)
