@@ -88,7 +88,7 @@ class KATProvider(generic.TorrentProvider):
 
                 try:
                     searchURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
-                    logger.log(u"Search URL: %s" % searchURL, logger.DEBUG) 
+                    logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                     data = self.getURL(searchURL)
                     #data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
                     if not data:
@@ -96,7 +96,8 @@ class KATProvider(generic.TorrentProvider):
                         continue
 
                     try:
-                        data = xmltodict.parse(data)
+                        # Must replace non-breaking space, as there is no xml DTD
+                        data = xmltodict.parse(data.replace('&nbsp;','&#xA0;'))
                     except ExpatError as e:
                         logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
                         continue
