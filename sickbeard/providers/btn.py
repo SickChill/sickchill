@@ -2,7 +2,7 @@
 # Author: Daniel Heimans
 # URL: http://code.google.com/p/sickbeard
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -169,6 +169,11 @@ class BTNProvider(generic.TorrentProvider):
             logger.log(u"Unknown error while accessing provider. Error: %s " % errorstring, logger.WARNING)
 
         return parsedJSON
+
+    def getQuality(self, item, anime=False):
+        title, url = self._get_title_and_url(item)
+        quality = Quality.sceneQuality(title, anime)
+        return quality
 
     def _get_title_and_url(self, parsedJSON):
 
