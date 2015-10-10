@@ -1,7 +1,7 @@
 # Author: duramato <matigonkas@outlook.com>
 # Author: miigotu
 # URL: https://github.com/SiCKRAGETV/sickrage
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -80,7 +80,8 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                         continue
 
                     try:
-                        data = xmltodict.parse(data)
+                        # Must replace non-breaking space, as there is no xml DTD
+                        data = xmltodict.parse(data.replace('&nbsp;','&#xA0;'))
                     except ExpatError as e:
                         logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
                         continue

@@ -248,6 +248,9 @@ def makeSceneSearchString(show, ep_obj):
                     if len(ep_obj.show.release_groups.whitelist) > 0:
                         for keyword in ep_obj.show.release_groups.whitelist:
                             toReturn.append(keyword + '.' + curShow + '.' + curEpString)
+                    elif len(ep_obj.show.release_groups.blacklist) == 0:
+                        # If we have neither whitelist or blacklist we just append what we have
+                        toReturn.append(curShow + '.' + curEpString)
             else:
                 toReturn.append(curShow + '.' + curEpString)
 

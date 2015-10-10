@@ -1075,6 +1075,7 @@ class PostProcessor(object):
             for cur_ep in [ep_obj] + ep_obj.relatedEps:
                 with cur_ep.lock:
                     cur_ep.location = ek(os.path.join, dest_path, new_file_name)
+                    cur_ep.refreshSubtitles()
                     cur_ep.downloadSubtitles(force=True)
 
         # now that processing has finished, we can put the info in the DB. If we do it earlier, then when processing fails, it won't try again.
