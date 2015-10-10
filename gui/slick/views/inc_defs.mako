@@ -3,13 +3,6 @@
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
 %>
 <%def name="renderQualityPill(quality, showTitle=False, overrideClass=None)"><%
-    iQuality = quality & 0xFFFF
-    pQuality = quality >> 16
-
-    # If initial and preferred qualities are the same, show pill as initial quality
-    if iQuality == pQuality:
-        quality = iQuality
-
     # Build a string of quality names to use as title attribute
     if showTitle:
         iQuality, pQuality = Quality.splitQuality(quality)
@@ -28,6 +21,13 @@
         title = ' title="' + cgi.escape(title.rstrip(), True) + '"'
     else:
         title = ""
+
+    iQuality = quality & 0xFFFF
+    pQuality = quality >> 16
+
+    # If initial and preferred qualities are the same, show pill as initial quality
+    if iQuality == pQuality:
+        quality = iQuality
 
     if quality in qualityPresets:
         cssClass = qualityPresetStrings[quality]
