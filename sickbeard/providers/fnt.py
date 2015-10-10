@@ -81,7 +81,7 @@ class FNTProvider(generic.TorrentProvider):
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
-        if re.search('/account-logout.php', response):
+        if not re.search('Pseudo ou mot de passe non valide', response):
             return True
         else:
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
