@@ -2,7 +2,7 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -603,7 +603,7 @@ class TorrentProvider(GenericProvider):
                 ep_string += str(ep_obj.airdate).replace('-', '|') + '|' + \
                         ep_obj.airdate.strftime('%b')
             elif ep_obj.show.anime:
-                ep_string += "%i" % int(ep_obj.scene_absolute_number)
+                ep_string += "%02d" % int(ep_obj.scene_absolute_number)
             else:
                 ep_string += sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
                                                               'episodenumber': ep_obj.scene_episode}
