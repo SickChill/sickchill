@@ -4418,7 +4418,14 @@ class ConfigProviders(Config):
                         kwargs[curTorrentProvider.getID() + '_ranked'])
                 except:
                     curTorrentProvider.ranked = 0
-
+	
+            if hasattr(curTorrentProvider, 'engrelease'):
+                try:
+                    curTorrentProvider.engrelease = config.checkbox_to_value(
+                        kwargs[curTorrentProvider.getID() + '_engrelease'])
+                except:
+                    curTorrentProvider.engrelease = 0
+					
             if hasattr(curTorrentProvider, 'sorting'):
                 try:
                     curTorrentProvider.sorting = str(kwargs[curTorrentProvider.getID() + '_sorting']).strip()

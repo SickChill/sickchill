@@ -77,6 +77,7 @@ class TNTVillageProvider(generic.TorrentProvider):
         self.password = None
         self.ratio = None
         self.cat = None
+        self.engrelease = None
         self.page = 10
         self.subtitle = None
         self.minseed = None
@@ -244,15 +245,28 @@ class TNTVillageProvider(generic.TorrentProvider):
                 continue
 
             if re.search("ita", name.split(sub)[0], re.I):
-                logger.log(u"Found Italian release", logger.DEBUG)
+                logger.log(u"Found Italian release:  " + name, logger.DEBUG)
                 italian = True
                 break
 
         if not subFound and re.search("ita", name, re.I):
-            logger.log(u"Found Italian release", logger.DEBUG)
+            logger.log(u"Found Italian release:  " + name, logger.DEBUG)
             italian = True
 
         return italian
+		
+    def _is_english(self, torrent_rows):
+
+        name = str(torrent_rows.find_all('td')[1].find('b').find('span'))
+        if not name or name is 'None':
+            return False
+
+        english = False
+        if re.search("eng", name, re.I):
+            logger.log(u"Found English release:  " + name, logger.DEBUG)
+            english = True
+
+        return english
 
     def _is_season_pack(self, name):
 
@@ -367,6 +381,10 @@ class TNTVillageProvider(generic.TorrentProvider):
 
                                 if not self._is_italian(result) and not self.subtitle:
                                     logger.log(u"Torrent is subtitled, skipping: %s "  % title, logger.DEBUG)
+                                    continue
+
+                                if self.engrelease and not self._is_english(result):
+                                    logger.log(u"Torrent isnt english audio/subtitled , skipping: %s "  % title, logger.DEBUG)
                                     continue
 
                                 search_show = re.split(r'([Ss][\d{1,2}]+)', search_string)[0]
