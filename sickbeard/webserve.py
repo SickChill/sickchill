@@ -1473,21 +1473,22 @@ class Home(WebRoot):
         return self.redirect("/home/displayShow?show=%i" % show.indexerid)
 
     def deleteShow(self, show=None, full=0):
-        error, show = Show.delete(show, full)
-
-        if error is not None:
-            return self._genericMessage('Error', error)
-
-        ui.notifications.message(
-            '%s has been %s %s' %
-            (
-                show.name,
-                ('deleted', 'trashed')[bool(sickbeard.TRASH_REMOVE_SHOW)],
-                ('(media untouched)', '(with all related media)')[bool(full)]
+        if show:
+            error, show = Show.delete(show, full)
+    
+            if error is not None:
+                return self._genericMessage('Error', error)
+    
+            ui.notifications.message(
+                '%s has been %s %s' %
+                (
+                    show.name,
+                    ('deleted', 'trashed')[bool(sickbeard.TRASH_REMOVE_SHOW)],
+                    ('(media untouched)', '(with all related media)')[bool(full)]
+                )
             )
-        )
-
-        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+    
+            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         # Don't redirect to the default page, so the user can confirm that the show was deleted
         return self.redirect('/home/')
