@@ -853,6 +853,10 @@ class PostProcessor(object):
             self._log(u"File " + self.file_path + " seems to be a directory")
             return False
 
+        if not ek(os.path.exists, self.file_path):
+            self._log(u"File " + self.file_path + " doesn't exist, did unrar fail?")
+            return False
+
         for ignore_file in self.IGNORED_FILESTRINGS:
             if ignore_file in self.file_path:
                 self._log(u"File " + self.file_path + " is ignored type, skipping")
