@@ -142,7 +142,11 @@ class Logger(object):
         meThread = threading.currentThread().getName()
         message = meThread + u" :: " + msg
 
-        # pass exception information if debugging enabled
+        # Change the SSL error to a warning with a link to information about how to fix it.
+        check = re.sub(r'error \[Errno 1\] _ssl.c:\d{3}: error:\d{8}:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error', 'See: http://git.io/vJrkM', message)
+        if check is not message:
+            message = check
+            level = WARNING
 
         if level == ERROR:
             self.logger.exception(message, *args, **kwargs)
@@ -214,6 +218,7 @@ class Logger(object):
 
             # parse and submit errors to issue tracker
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
+
                 try:
                     title_Error = ss(str(curError.title))
                     if not len(title_Error) or title_Error == 'None':
