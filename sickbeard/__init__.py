@@ -1232,6 +1232,11 @@ def initialize(consoleLogging=True):
             if hasattr(curTorrentProvider, 'ranked'):
                 curTorrentProvider.ranked = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                       curTorrentProvider.getID() + '_ranked', 0))
+																	  
+            if hasattr(curTorrentProvider, 'engrelease'):
+                curTorrentProvider.engrelease = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
+                                                                      curTorrentProvider.getID() + '_engrelease', 0))
+																	  
             if hasattr(curTorrentProvider, 'sorting'):
                 curTorrentProvider.sorting = check_setting_str(CFG, curTorrentProvider.getID().upper(),
                                                                    curTorrentProvider.getID() + '_sorting','seeders')
@@ -1785,6 +1790,9 @@ def save_config():
         if hasattr(curTorrentProvider, 'ranked'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_ranked'] = int(
                 curTorrentProvider.ranked)
+        if hasattr(curTorrentProvider, 'engrelease'):
+            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_engrelease'] = int(
+                curTorrentProvider.engrelease)
         if hasattr(curTorrentProvider, 'sorting'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_sorting'] = curTorrentProvider.sorting
         if hasattr(curTorrentProvider, 'ratio'):

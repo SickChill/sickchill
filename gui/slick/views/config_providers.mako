@@ -432,6 +432,18 @@ $('#config-components').tabs();
                         </div>
                         % endif
 
+                        % if hasattr(curTorrentProvider, 'engrelease'):
+                        <div class="field-pair">
+                            <label for="${curTorrentProvider.getID()}_engrelease">
+                                <span class="component-title">English torrents</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_engrelease" id="${curTorrentProvider.getID()}_engrelease" ${('', 'checked="checked"')[bool(curTorrentProvider.engrelease)]} />
+                                    <p>only download english torrents ,or torrents containing english subtitles</p>
+                                </span>
+                            </label>
+                        </div>
+                        % endif
+
                         % if hasattr(curTorrentProvider, 'sorting'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_sorting">
