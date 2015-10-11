@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, division
+from __future__ import division
 from datetime import datetime, timedelta
 import hashlib
 import logging
@@ -110,6 +110,11 @@ class Video(object):
 
     @classmethod
     def fromname(cls, name):
+        """Shortcut for :meth:`fromguess` with a `guess` guessed from the `name`.
+
+        :param str name: name of the video.
+
+        """
         return cls.fromguess(name, guess_file_info(name))
 
     def __repr__(self):
@@ -243,11 +248,6 @@ def search_external_subtitles(path):
     fileroot, fileext = os.path.splitext(filename)
     subtitles = {}
     for p in os.listdir(dirpath):
-        # skip badly encoded filenames
-        if isinstance(p, bytes):  # pragma: no cover
-            logger.error('Skipping badly encoded filename %r in %r', p.decode('utf-8', errors='replace'), dirpath)
-            continue
-
         # keep only valid subtitle filenames
         if not p.startswith(fileroot) or not p.endswith(SUBTITLE_EXTENSIONS):
             continue
@@ -302,6 +302,7 @@ def scan_video(path, subtitles=True, embedded_subtitles=True):
         logger.debug('Size is %d', video.size)
         video.hashes['opensubtitles'] = hash_opensubtitles(path)
         video.hashes['thesubdb'] = hash_thesubdb(path)
+        video.hashes['napiprojekt'] = hash_napiprojekt(path)
         logger.debug('Computed hashes %r', video.hashes)
     else:
         logger.warning('Size is lower than 10MB: hashes not computed')
@@ -390,8 +391,7 @@ def scan_video(path, subtitles=True, embedded_subtitles=True):
 def scan_videos(path, subtitles=True, embedded_subtitles=True):
     """Scan `path` for videos and their subtitles.
 
-    :params path: existing directory path to scan.
-    :type path: str
+    :param str path: existing directory path to scan.
     :param bool subtitles: scan for subtitles with the same name.
     :param bool embedded_subtitles: scan for embedded subtitles.
     :return: the scanned videos.
@@ -409,31 +409,16 @@ def scan_videos(path, subtitles=True, embedded_subtitles=True):
     # walk the path
     videos = []
     for dirpath, dirnames, filenames in os.walk(path):
-        # skip badly encoded directory names
-        if isinstance(dirpath, bytes):  # pragma: no cover
-            logger.error('Skipping badly encoded directory %r', dirpath.decode('utf-8', errors='replace'))
-            continue
-
         logger.debug('Walking directory %s', dirpath)
 
         # remove badly encoded and hidden dirnames
         for dirname in list(dirnames):
-            if isinstance(dirname, bytes):  # pragma: no cover
-                logger.error('Skipping badly encoded dirname %r in %r', dirname.decode('utf-8', errors='replace'),
-                             dirpath)
-                dirnames.remove(dirname)
-            elif dirname.startswith('.'):
+            if dirname.startswith('.'):
                 logger.debug('Skipping hidden dirname %r in %r', dirname, dirpath)
                 dirnames.remove(dirname)
 
         # scan for videos
         for filename in filenames:
-            # skip badly encoded filenames
-            if isinstance(filename, bytes):  # pragma: no cover
-                logger.error('Skipping badly encoded filename %r in %r', filename.decode('utf-8', errors='replace'),
-                             dirpath)
-                continue
-
             # filter on videos
             if not filename.endswith(VIDEO_EXTENSIONS):
                 continue
@@ -509,4 +494,18 @@ def hash_thesubdb(video_path):
         f.seek(-readsize, os.SEEK_END)
         data += f.read(readsize)
 
+    return hashlib.md5(data).hexdigest()
+
+
+def hash_napiprojekt(video_path):
+    """Compute a hash using NapiProjekt's algorithm.
+
+    :param str video_path: path of the video.
+    :return: the hash.
+    :rtype: str
+
+    """
+    readsize = 1024 * 1024 * 10
+    with open(video_path, 'rb') as f:
+        data = f.read(readsize)
     return hashlib.md5(data).hexdigest()

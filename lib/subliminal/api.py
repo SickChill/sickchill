@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from collections import defaultdict
 import io
 import logging
@@ -10,8 +9,7 @@ import socket
 from babelfish import Language
 from pkg_resources import EntryPoint
 import requests
-from stevedore import ExtensionManager
-from stevedore.dispatch import DispatchExtensionManager
+from stevedore import EnabledExtensionManager, ExtensionManager
 
 from .subtitle import compute_score, get_subtitle_path
 
@@ -20,14 +18,10 @@ logger = logging.getLogger(__name__)
 
 class InternalExtensionManager(ExtensionManager):
     """Add support for internal entry points to the :class:`~stevedore.extension.Extensionmanager`
-
     Internal entry points are useful for libraries that ship their own plugins but still keep the entry point open.
-
     All other parameters are passed onwards to the :class:`~stevedore.extension.Extensionmanager` constructor.
-
     :param internal_entry_points: the internal providers
     :type internal_entry_points: list of :class:`~pkg_resources.EntryPoint`
-
     """
     def __init__(self, namespace, internal_entry_points, **kwargs):
         self.internal_entry_points = list(internal_entry_points)
@@ -39,6 +33,7 @@ class InternalExtensionManager(ExtensionManager):
 
 provider_manager = InternalExtensionManager('subliminal.providers', [EntryPoint.parse(ep) for ep in (
     'addic7ed = subliminal.providers.addic7ed:Addic7edProvider',
+    'napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider',
     'opensubtitles = subliminal.providers.opensubtitles:OpenSubtitlesProvider',
     'podnapisi = subliminal.providers.podnapisi:PodnapisiProvider',
     'thesubdb = subliminal.providers.thesubdb:TheSubDBProvider',
@@ -74,8 +69,8 @@ class ProviderPool(object):
         #: Discarded providers
         self.discarded_providers = set()
 
-        #: Dedicated :data:`provider_manager` as :class:`~stevedore.dispatch.DispatchExtensionManager`
-        self.manager = DispatchExtensionManager(provider_manager.namespace, lambda e: e.name in self.providers)
+        #: Dedicated :data:`provider_manager` as :class:`~stevedore.enabled.EnabledExtensionManager`
+        self.manager = EnabledExtensionManager(provider_manager.namespace, lambda e: e.name in self.providers)
 
     def __enter__(self):
         return self
@@ -217,7 +212,7 @@ class ProviderPool(object):
         for subtitle, score in scored_subtitles:
             # check score
             if score < min_score:
-                logger.info('Score %d is below min_score (%d)', (score, min_score))
+                logger.info('Score %d is below min_score (%d)', score, min_score)
                 break
 
             # check downloaded languages
@@ -297,7 +292,6 @@ def list_subtitles(videos, languages, **kwargs):
     :type videos: set of :class:`~subliminal.video.Video`
     :param languages: languages to search for.
     :type languages: set of :class:`~babelfish.language.Language`
-    :param providers: name of providers to use, if not all.
     :return: found subtitles per video.
     :rtype: dict of :class:`~subliminal.video.Video` to list of :class:`~subliminal.subtitle.Subtitle`
 
@@ -334,8 +328,6 @@ def download_subtitles(subtitles, **kwargs):
 
     :param subtitles: subtitles to download.
     :type subtitles: list of :class:`~subliminal.subtitle.Subtitle`
-    :param dict provider_configs: provider configuration as keyword arguments per provider name to pass when.
-        instanciating the :class:`~subliminal.providers.Provider`.
 
     """
     with ProviderPool(**kwargs) as pool:
@@ -356,7 +348,6 @@ def download_best_subtitles(videos, languages, min_score=0, hearing_impaired=Fal
     :type videos: set of :class:`~subliminal.video.Video`
     :param languages: languages to download.
     :type languages: set of :class:`~babelfish.language.Language`
-    :param providers: name of providers to use, if not all.
     :param int min_score: minimum score for a subtitle to be downloaded.
     :param bool hearing_impaired: hearing impaired preference.
     :param bool only_one: download only one subtitle, not one per language.

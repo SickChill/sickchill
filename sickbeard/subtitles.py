@@ -39,6 +39,7 @@ distribution = pkg_resources.Distribution(location=os.path.dirname(os.path.dirna
 entry_points = {
     'subliminal.providers': [
         'addic7ed = subliminal.providers.addic7ed:Addic7edProvider',
+        'napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider',
         'opensubtitles = subliminal.providers.opensubtitles:OpenSubtitlesProvider',
         'podnapisi = subliminal.providers.podnapisi:PodnapisiProvider',
         'thesubdb = subliminal.providers.thesubdb:TheSubDBProvider',
@@ -58,6 +59,7 @@ subliminal.region.configure('dogpile.cache.memory')
 
 provider_urls = {
     'addic7ed': 'http://www.addic7ed.com',
+    'napiprojekt': 'http://www.napiprojekt.pl',
     'opensubtitles': 'http://www.opensubtitles.org',
     'podnapisi': 'http://www.podnapisi.net',
     'thesubdb': 'http://www.thesubdb.com',
@@ -123,7 +125,7 @@ def downloadSubtitles(subtitles_info):
         video = subliminal.scan_video(video_path, subtitles=False, embedded_subtitles=False)
     except Exception:
         logger.log(u'%s: Exception caught in subliminal.scan_video for S%02dE%02d' %
-        (subtitles_info['indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
+        (subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
         return
 
     try:
