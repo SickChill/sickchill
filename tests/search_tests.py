@@ -103,8 +103,8 @@ def test_generator(curData, name, provider, forceSearch):
 
             title, url = provider._get_title_and_url(items[0])
             for word in show.name.split(" "):
-                if not word in title:
-                    print "Show name not in title: %s" % title
+                if not word.lower() in title.lower():
+                    print "Show name not in title: %s. URL: %s" % (title, url)
                     continue
 
             if not url:
