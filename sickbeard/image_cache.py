@@ -28,7 +28,8 @@ from sickrage.helper.exceptions import ShowDirectoryNotFoundException
 
 from hachoir_parser import createParser
 from hachoir_metadata import extractMetadata
-
+from hachoir_core.log import log
+log.use_print = False
 
 class ImageCache:
     def __init__(self):

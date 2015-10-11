@@ -320,6 +320,8 @@ class Quality:
 
         from hachoir_parser import createParser
         from hachoir_metadata import extractMetadata
+        from hachoir_core.log import log
+        log.use_print = False
 
         try:
             parser = createParser(filename)
