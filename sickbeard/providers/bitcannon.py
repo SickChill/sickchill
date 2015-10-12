@@ -61,6 +61,7 @@ class BitCannonProvider(generic.TorrentProvider):
         trackers = (self.getURL(self.urls['trackers'], json=True) or {}).get(u'Trackers', [])
         if not trackers:
             logger.log(u'Could not get tracker list from BitCannon, aborting search')
+            return results
 
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
