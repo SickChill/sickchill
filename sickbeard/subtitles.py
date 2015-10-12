@@ -179,7 +179,7 @@ def wantedLanguages(sqlLike = False):
     return wantedLanguages
 
 def getSubtitlesPath(video_path):
-    if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+    if os.path.isabs(sickbeard.SUBTITLES_DIR):
         new_subtitles_path = sickbeard.SUBTITLES_DIR
     elif sickbeard.SUBTITLES_DIR:    
         new_subtitles_path = ek(os.path.join, ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR)
@@ -202,7 +202,7 @@ def subtitlesLanguages(video_path):
         embedded_subtitle_languages = getEmbeddedLanguages(video_path.encode(sickbeard.SYS_ENCODING))
 
     # Search subtitles with the absolute path
-    if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+    if os.path.isabs(sickbeard.SUBTITLES_DIR):
         video_path = ek(os.path.join, sickbeard.SUBTITLES_DIR, ek(os.path.basename, video_path))
     # Search subtitles with the relative path
     elif sickbeard.SUBTITLES_DIR:
@@ -405,7 +405,7 @@ def run_subs_extra_scripts(epObj, foundSubs):
             subpaths = []
             for sub in subs:
                 subpath = subliminal.subtitle.get_subtitle_path(video.name, sub.language)
-                if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+                if os.path.isabs(sickbeard.SUBTITLES_DIR):
                     subpath = ek(os.path.join, sickbeard.SUBTITLES_DIR, ek(os.path.basename, subpath))
                 elif sickbeard.SUBTITLES_DIR:
                     subpath = ek(os.path.join, ek(os.path.dirname, subpath), sickbeard.SUBTITLES_DIR, ek(os.path.basename, subpath))
