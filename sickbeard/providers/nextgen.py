@@ -51,12 +51,12 @@ class NextGenProvider(generic.TorrentProvider):
 
         self.cache = NextGenCache(self)
 
-        self.urls = {'base_url': 'https://nxgn.org/',
-                'search': 'https://nxgn.org/browse.php?search=%s&cat=0&incldead=0&modes=%s',
-                'login_page': 'https://nxgn.org/login.php',
-                'detail': 'https://nxgn.org/details.php?id=%s',
-                'download': 'https://nxgn.org/download.php?id=%s',
-                'takelogin': 'https://nxgn.org/takelogin.php?csrf=',
+        self.urls = {'base_url': 'https://nxtgn.info/',
+                'search': 'https://nxtgn.info/browse.php?search=%s&cat=0&incldead=0&modes=%s',
+                'login_page': 'https://nxtgn.info/login.php',
+                'detail': 'https://nxtgn.info/details.php?id=%s',
+                'download': 'https://nxtgn.info/download.php?id=%s',
+                'takelogin': 'https://nxtgn.info/takelogin.php?csrf=',
                 }
 
         self.url = self.urls['base_url']
