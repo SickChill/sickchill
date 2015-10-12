@@ -87,6 +87,11 @@ class HDBitsProvider(generic.TorrentProvider):
 
         return (title, url)
 
+    def getQuality(self, item, anime=False):
+        title, url = self._get_title_and_url(item)
+        quality = Quality.sceneQuality(title, anime)
+        return quality
+
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         #FIXME 
