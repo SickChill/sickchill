@@ -21,6 +21,7 @@ import generic
 from sickbeard import classes
 from sickbeard import logger, tvcache
 from sickrage.helper.exceptions import AuthException
+from sickbeard.common import Quality
 
 try:
     import json
