@@ -1435,7 +1435,9 @@ class TVEpisode(object):
 
     def refreshSubtitles(self):
         """Look for subtitles files and refresh the subtitles property"""
-        self.subtitles = subtitles.subtitlesLanguages(self.location)
+        self.subtitles, save_subtitles = subtitles.subtitlesLanguages(self.location)
+        if save_subtitles:
+            self.saveToDB()
 
     def downloadSubtitles(self, force=False):
         if not ek(os.path.isfile, self.location):
