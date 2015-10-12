@@ -147,7 +147,7 @@ def downloadSubtitles(subtitles_info):
         if not sickbeard.EMBEDDED_SUBTITLES_ALL and sickbeard.SUBTITLES_EXTRA_SCRIPTS and video_path.endswith(('.mkv','.mp4')):
             run_subs_extra_scripts(subtitles_info, found_subtitles)
 
-        current_subtitles = subtitlesLanguages(video_path)
+        current_subtitles = subtitlesLanguages(video_path)[0]
         new_subtitles = frozenset(current_subtitles).difference(existing_subtitles)
 
     except Exception as e:
