@@ -1110,29 +1110,33 @@ class PostProcessor(object):
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group, new_ep_version)
 
-        # send notifications
-        notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
-
-        # do the library update for KODI
-        notifiers.kodi_notifier.update_library(ep_obj.show.name)
-
-        # do the library update for Plex
-        notifiers.plex_notifier.update_library(ep_obj)
-
-        # do the library update for EMBY
-        notifiers.emby_notifier.update_library(ep_obj.show)
-
-        # do the library update for NMJ
-        # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
-
-        # do the library update for Synology Indexer
-        notifiers.synoindex_notifier.addFile(ep_obj.location)
-
-        # do the library update for pyTivo
-        notifiers.pytivo_notifier.update_library(ep_obj)
-
-        # do the library update for Trakt
-        notifiers.trakt_notifier.update_library(ep_obj)
+        #If any notification fails, don't stop postProcessor
+        try:
+            # send notifications
+            notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
+    
+            # do the library update for KODI
+            notifiers.kodi_notifier.update_library(ep_obj.show.name)
+    
+            # do the library update for Plex
+            notifiers.plex_notifier.update_library(ep_obj)
+    
+            # do the library update for EMBY
+            notifiers.emby_notifier.update_library(ep_obj.show)
+    
+            # do the library update for NMJ
+            # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
+    
+            # do the library update for Synology Indexer
+            notifiers.synoindex_notifier.addFile(ep_obj.location)
+    
+            # do the library update for pyTivo
+            notifiers.pytivo_notifier.update_library(ep_obj)
+    
+            # do the library update for Trakt
+            notifiers.trakt_notifier.update_library(ep_obj)
+        except:
+            logger.log(u"Some notifications could not be sent. Continuing with postProcessing...")
 
         self._run_extra_scripts(ep_obj)
 
