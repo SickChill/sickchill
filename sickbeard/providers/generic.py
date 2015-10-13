@@ -212,6 +212,11 @@ class GenericProvider:
                 self.headers.update({'Referer': '/'.join(url.split('/')[:3]) + '/'})
 
             logger.log(u"Downloading a result from " + self.name + " at " + url)
+
+            # Support for Jackett/TorzNab
+            if url.endswith(GenericProvider.TORRENT) and filename.endswith(GenericProvider.NZB):
+                filename = filename.rsplit('.', 1)[0] + '.' + GenericProvider.TORRENT
+
             if helpers.download_file(self.proxy._buildURL(url), filename, session=self.session, headers=self.headers):
                 if self._verify_download(filename):
                     logger.log(u"Saved result to " + filename, logger.INFO)
@@ -231,7 +236,7 @@ class GenericProvider:
         """
 
         # primitive verification of torrents, just make sure we didn't get a text file or something
-        if self.providerType == GenericProvider.TORRENT:
+        if file_name.endswith(GenericProvider.TORRENT):
             try:
                 parser = createParser(file_name)
                 if parser:
