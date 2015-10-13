@@ -501,7 +501,7 @@ class TVShow(object):
             curSeason = int(curResult["season"])
             curEpisode = int(curResult["episode"])
             curShowid = int(curResult['showid'])
-            
+
             logger.log(u"%s: loading Episodes from DB" % curShowid, logger.DEBUG)
             deleteEp = False
 
@@ -1435,7 +1435,9 @@ class TVEpisode(object):
 
     def refreshSubtitles(self):
         """Look for subtitles files and refresh the subtitles property"""
-        self.subtitles = subtitles.subtitlesLanguages(self.location)
+        self.subtitles, save_subtitles = subtitles.subtitlesLanguages(self.location)
+        if save_subtitles:
+            self.saveToDB()
 
     def downloadSubtitles(self, force=False):
         if not ek(os.path.isfile, self.location):
@@ -1450,7 +1452,7 @@ class TVEpisode(object):
         #logging.getLogger('subliminal').addHandler(logging.StreamHandler())
         #logging.getLogger('subliminal').setLevel(logging.DEBUG)
 
-        subtitles_info = {'location': self.location, 'subtitles': self.subtitles, 'show.indexerid': self.show.indexerid, 'season': self.season, 
+        subtitles_info = {'location': self.location, 'subtitles': self.subtitles, 'show.indexerid': self.show.indexerid, 'season': self.season,
                           'episode': self.episode, 'name': self.name, 'show.name': self.show.name, 'status': self.status}
 
         self.subtitles, newSubtitles = subtitles.downloadSubtitles(subtitles_info)
@@ -2246,7 +2248,7 @@ class TVEpisode(object):
                 result_name = result_name.replace('%RN', '%S.N.S%0SE%0E.%E.N-' + replace_map['%RG'])
                 result_name = result_name.replace('%rn', '%s.n.s%0se%0e.%e.n-' + replace_map['%RG'].lower())
 
-            logger.log(u"Episode has no release name, replacing it with a generic one: " + result_name, logger.DEBUG)
+            #logger.log(u"Episode has no release name, replacing it with a generic one: " + result_name, logger.DEBUG)
 
         if not replace_map['%RT']:
             result_name = re.sub('([ _.-]*)%RT([ _.-]*)', r'\2', result_name)

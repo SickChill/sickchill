@@ -548,14 +548,22 @@ class TorrentProvider(GenericProvider):
 
         self.providerType = GenericProvider.TORRENT
 
-    def getQuality(self, item, anime=False):
-        quality = Quality.sceneQuality(item[0], anime)
-        return quality
-
     def _get_title_and_url(self, item):
+        from feedparser.feedparser import FeedParserDict
+        if isinstance(item, (dict, FeedParserDict)):
+            title = item.get('title', '')
+            download_url = item.get('url', '')
+            if not download_url:
+                download_url = item.get('link', '')
 
-        title = item[0]
-        download_url = item[1]
+        elif isinstance(item, (list, tuple)) and len(item) > 1:
+            title = item[0]
+            download_url = item[1]
+
+        # Temp global block `DIAMOND` releases
+        if title.endswith('DIAMOND'):
+            logger.log(u'Skipping DIAMOND release for mass fake releases.')
+            title = download_url = u'FAKERELEASE'
 
         if title:
             title = self._clean_title_from_provider(title)
@@ -567,8 +575,14 @@ class TorrentProvider(GenericProvider):
 
     def _get_size(self, item):
 
-        size = item[2]
-        if not size:
+        size = -1
+        if isinstance(item, dict):
+            size = item.get('size', -1)
+        elif isinstance(item, (list, tuple)) and len(item) > 2:
+            size = item[2]
+
+        # Make sure we didn't select seeds/leechers by accident
+        if not size or size < 1024*1024:
             size = -1
 
         return size

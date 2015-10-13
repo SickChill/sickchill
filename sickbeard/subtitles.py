@@ -147,7 +147,7 @@ def downloadSubtitles(subtitles_info):
         if not sickbeard.EMBEDDED_SUBTITLES_ALL and sickbeard.SUBTITLES_EXTRA_SCRIPTS and video_path.endswith(('.mkv','.mp4')):
             run_subs_extra_scripts(subtitles_info, found_subtitles)
 
-        current_subtitles = subtitlesLanguages(video_path)
+        current_subtitles = subtitlesLanguages(video_path)[0]
         new_subtitles = frozenset(current_subtitles).difference(existing_subtitles)
 
     except Exception as e:
@@ -179,7 +179,7 @@ def wantedLanguages(sqlLike = False):
     return wantedLanguages
 
 def getSubtitlesPath(video_path):
-    if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+    if os.path.isabs(sickbeard.SUBTITLES_DIR):
         new_subtitles_path = sickbeard.SUBTITLES_DIR
     elif sickbeard.SUBTITLES_DIR:    
         new_subtitles_path = ek(os.path.join, ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR)
@@ -196,12 +196,13 @@ def getSubtitlesPath(video_path):
 def subtitlesLanguages(video_path):
     """Return a list detected subtitles for the given video file"""
     resultList = []
+    save_subtitles = None
 
     if not sickbeard.EMBEDDED_SUBTITLES_ALL and video_path.endswith('.mkv'):
         embedded_subtitle_languages = getEmbeddedLanguages(video_path.encode(sickbeard.SYS_ENCODING))
 
     # Search subtitles with the absolute path
-    if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+    if os.path.isabs(sickbeard.SUBTITLES_DIR):
         video_path = ek(os.path.join, sickbeard.SUBTITLES_DIR, ek(os.path.basename, video_path))
     # Search subtitles with the relative path
     elif sickbeard.SUBTITLES_DIR:
@@ -215,8 +216,24 @@ def subtitlesLanguages(video_path):
     if not sickbeard.EMBEDDED_SUBTITLES_ALL and video_path.endswith('.mkv'):
         external_subtitle_languages = scan_subtitle_languages(video_path)
         subtitle_languages = external_subtitle_languages.union(embedded_subtitle_languages)
+        if not sickbeard.SUBTITLES_MULTI:
+            currentWantedLanguages = wantedLanguages()
+            if len(currentWantedLanguages) is 1 and Language('und') in external_subtitle_languages:
+                if embedded_subtitle_languages not in currentWantedLanguages and Language('und') in embedded_subtitle_languages:
+                    # TODO: Replace with a checkbox
+                    subtitle_languages.add(fromietf(currentWantedLanguages[0]))
+                    save_subtitles = True
+                elif embedded_subtitle_languages not in currentWantedLanguages and Language('und') not in embedded_subtitle_languages:
+                    subtitle_languages.remove(Language('und'))
+                    subtitle_languages.add(fromietf(currentWantedLanguages[0]))
+                    save_subtitles = True
     else:
         subtitle_languages = scan_subtitle_languages(video_path)
+        if not sickbeard.SUBTITLES_MULTI:
+            if len(wantedLanguages()) is 1 and Language('und') in subtitle_languages:
+                subtitle_languages.remove(Language('und'))
+                subtitle_languages.add(fromietf(wantedLanguages()[0]))
+                save_subtitles = True
 
     for language in subtitle_languages:
         if hasattr(language, 'opensubtitles') and language.opensubtitles:
@@ -233,7 +250,7 @@ def subtitlesLanguages(video_path):
     if ('pob' in defaultLang or 'pb' in defaultLang) and ('pt' not in defaultLang and 'por' not in defaultLang):
             resultList = [x if not x in ['por', 'pt'] else u'pob' for x in resultList]
 
-    return sorted(resultList)
+    return (sorted(resultList), save_subtitles)
 
 def getEmbeddedLanguages(video_path):
     embedded_subtitle_languages = set()
@@ -388,7 +405,7 @@ def run_subs_extra_scripts(epObj, foundSubs):
             subpaths = []
             for sub in subs:
                 subpath = subliminal.subtitle.get_subtitle_path(video.name, sub.language)
-                if sickbeard.SUBTITLES_DIR and ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+                if os.path.isabs(sickbeard.SUBTITLES_DIR):
                     subpath = ek(os.path.join, sickbeard.SUBTITLES_DIR, ek(os.path.basename, subpath))
                 elif sickbeard.SUBTITLES_DIR:
                     subpath = ek(os.path.join, ek(os.path.dirname, subpath), sickbeard.SUBTITLES_DIR, ek(os.path.basename, subpath))

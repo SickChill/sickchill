@@ -226,8 +226,8 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 process_media(path, [video], nzbName, process_method, force, is_priority, result)
 
     else:
-        result.output += logHelper(u"Found temporary sync files, skipping post processing for folder " + str(path), logger.WARNING)
-        result.output += logHelper(u"Sync Files: " + str(SyncFiles) + " in path: " + path, logger.WARNING)
+        result.output += logHelper(u"Found temporary sync files, skipping post processing for folder " + str(path))
+        result.output += logHelper(u"Sync Files: " + str(SyncFiles) + " in path: " + path)
         result.missedfiles.append(path + " : Syncfiles found")
 
     #Process Video File in all TV Subdir
@@ -285,8 +285,8 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                         if delete_folder(processPath, check_empty=True):
                             result.output += logHelper(u"Deleted folder: " + processPath, logger.DEBUG)
             else:
-                result.output += logHelper(u"Found temporary sync files, skipping post processing for folder: " + str(processPath), logger.WARNING)
-                result.output += logHelper(u"Sync Files: " + str(SyncFiles) + " in path: " + processPath, logger.WARNING)
+                result.output += logHelper(u"Found temporary sync files, skipping post processing for folder: " + str(processPath))
+                result.output += logHelper(u"Sync Files: " + str(SyncFiles) + " in path: " + processPath)
                 result.missedfiles.append(processPath + " : Syncfiles found")
 
     if result.aggresult:
