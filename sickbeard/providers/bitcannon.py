@@ -90,7 +90,7 @@ class BitCannonProvider(generic.TorrentProvider):
                         continue
 
                     # Only build the url if we selected it
-                    download_url = 'magnet:?xt=urn:btih:%s&dn=%s&tr=%s' % (info_hash, quote_plus(title), '&tr='.join([quote_plus(x) for x in trackers]))
+                    download_url = u'magnet:?xt=urn:btih:%s&dn=%s&tr=%s' % (info_hash, quote_plus(title.encode('utf-8')).decode('utf-8'), u'&tr='.join([quote_plus(x.encode('utf-8')).decode('utf-8') for x in trackers]))
 
                     item = title, download_url, size, seeders, leechers
                     if mode != 'RSS':
