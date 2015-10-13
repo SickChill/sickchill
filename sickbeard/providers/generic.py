@@ -560,6 +560,11 @@ class TorrentProvider(GenericProvider):
             title = item[0]
             download_url = item[1]
 
+        # Temp global block `DIAMOND` releases
+        if title.endswith('DIAMOND'):
+            logger.log(u'Skipping DIAMOND release for mass fake releases.')
+            title = download_url = u'FAKERELEASE'
+
         if title:
             title = self._clean_title_from_provider(title)
         if download_url:
