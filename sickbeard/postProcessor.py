@@ -850,16 +850,16 @@ class PostProcessor(object):
         self._log(u"Processing " + self.file_path + " (" + str(self.nzb_name) + ")")
 
         if ek(os.path.isdir, self.file_path):
-            self._log(u"File " + self.file_path + " seems to be a directory")
+            self._log(u"File %s seems to be a directory" % self.file_path)
             return False
 
         if not ek(os.path.exists, self.file_path):
-            self._log(u"File " + self.file_path + " doesn't exist, did unrar fail?")
+            self._log(u"File %s doesn't exist, did unrar fail?" % self.file_path)
             return False
 
         for ignore_file in self.IGNORED_FILESTRINGS:
             if ignore_file in self.file_path:
-                self._log(u"File " + self.file_path + " is ignored type, skipping")
+                self._log(u"File %s is ignored type, skipping" % self.file_path)
                 return False
 
         # reset per-file stuff
@@ -871,12 +871,10 @@ class PostProcessor(object):
         # try to find the file info
         (show, season, episodes, quality, version) = self._find_info()
         if not show:
-            self._log(u"This show isn't in your list, you need to add it to SB before post-processing an episode",
-                      logger.WARNING)
+            self._log(u"This show isn't in your list, you need to add it to SR before post-processing an episode")
             raise EpisodePostProcessingFailedException()
         elif season == None or not episodes:
-            self._log(u"Not enough information to determine what episode this is", logger.DEBUG)
-            self._log(u"Quitting post-processing", logger.DEBUG)
+            self._log(u"Not enough information to determine what episode this is. Quitting post-processing")
             return False
 
         # retrieve/create the corresponding TVEpisode objects
@@ -891,7 +889,7 @@ class PostProcessor(object):
         else:
             new_ep_quality = self._get_quality(ep_obj)
 
-        logger.log(u"Quality of the episode we're processing: " + str(new_ep_quality), logger.DEBUG)
+        logger.log(u"Quality of the episode we're processing: %s" new_ep_quality, logger.DEBUG)
 
         # see if this is a priority download (is it snatched, in history, PROPER, or BEST)
         priority_download = self._is_priority(ep_obj, new_ep_quality)
@@ -913,35 +911,33 @@ class PostProcessor(object):
 
             # Not a priority and the quality is lower than what we already have
             if (new_ep_quality < old_ep_quality and new_ep_quality != common.Quality.UNKNOWN) and not existing_file_status == PostProcessor.DOESNT_EXIST:
-                self._log(u"File exists and new file quality is lower than existing, marking it unsafe to replace", logger.DEBUG)
+                self._log(u"File exists and new file quality is lower than existing, marking it unsafe to replace")
                 return False
 
             # if there's an existing file that we don't want to replace stop here
             if existing_file_status == PostProcessor.EXISTS_LARGER:
                 if self.is_proper:
                     self._log(
-                        u"File exists and new file is smaller, new file is a proper/repack, marking it safe to replace",
-                        logger.DEBUG)
+                        u"File exists and new file is smaller, new file is a proper/repack, marking it safe to replace")
                     return True
 
                 else:
-                    self._log(u"File exists and new file is smaller, marking it unsafe to replace", logger.DEBUG)
+                    self._log(u"File exists and new file is smaller, marking it unsafe to replace")
                     return False
 
             elif existing_file_status == PostProcessor.EXISTS_SAME:
-                self._log(u"File exists and new file is same size, marking it unsafe to replace", logger.DEBUG)
+                self._log(u"File exists and new file is same size, marking it unsafe to replace")
                 return False
 
         # if the file is priority then we're going to replace it even if it exists
         else:
             self._log(
-                u"This download is marked a priority download so I'm going to replace an existing file if I find one",
-                logger.DEBUG)
+                u"This download is marked a priority download so I'm going to replace an existing file if I find one")
 
         # try to find out if we have enough space to perform the copy or move action.
         if not helpers.isFileLocked(self.file_path, False):
             if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps):
-                self._log("Not enough space to continue PP, exiting")
+                self._log("Not enough space to continue PP, exiting", logger.WARNING)
                 return False
         else:
             self._log("Unable to determine needed filespace as the source file is locked for access")
