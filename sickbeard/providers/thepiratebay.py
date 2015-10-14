@@ -117,8 +117,9 @@ class ThePirateBayProvider(generic.TorrentProvider):
                         continue
 
                     #Accept Torrent only from Good People for every Episode Search
-                    if self.confirmed and re.search(r'(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None and mode != 'RSS':
-                        logger.log(u"Found result %s but that doesn't seem like a trusted result so I'm ignoring it" % title, logger.DEBUG)
+                    if self.confirmed and re.search(r'(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None:
+                        if mode != 'RSS':
+                            logger.log(u"Found result %s but that doesn't seem like a trusted result so I'm ignoring it" % title, logger.DEBUG)
                         continue
 
                     item = title, download_url, size, seeders, leechers
