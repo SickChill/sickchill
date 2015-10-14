@@ -3996,7 +3996,7 @@ class ConfigPostProcessing(Config):
 
         if len(results) > 0:
             for x in results:
-                logger.log(x, logger.ERROR)
+                logger.log(x, logger.WARNING)
             ui.notifications.error('Error(s) Saving Configuration',
                                    '<br />\n'.join(results))
         else:
