@@ -889,7 +889,7 @@ class PostProcessor(object):
         else:
             new_ep_quality = self._get_quality(ep_obj)
 
-        logger.log(u"Quality of the episode we're processing: %s" new_ep_quality, logger.DEBUG)
+        logger.log(u"Quality of the episode we're processing: %s" % new_ep_quality, logger.DEBUG)
 
         # see if this is a priority download (is it snatched, in history, PROPER, or BEST)
         priority_download = self._is_priority(ep_obj, new_ep_quality)
