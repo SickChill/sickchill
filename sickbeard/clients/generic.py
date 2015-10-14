@@ -44,7 +44,7 @@ class GenericClient(object):
             logger.DEBUG)
 
         if not self.auth:
-            logger.log(self.name + u': Authentication Failed', logger.ERROR)
+            logger.log(self.name + u': Authentication Failed', logger.WARNING)
             return False
         try:
             self.response = self.session.__getattribute__(method)(self.url, params=params, data=data, files=files,
