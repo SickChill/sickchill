@@ -47,7 +47,6 @@ import requests
 import certifi
 from contextlib import closing
 from socket import timeout as SocketTimeout
-from requests.exceptions import ConnectionError
 
 try:
     from io import BytesIO as _StringIO
@@ -1624,16 +1623,13 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
                     logger.DEBUG)
                     return None
 
-    except ConnectionError as e:
-        logger.log(u"No internet available while accessing getURL %s Error: %r" % (url, ex(e)))
-        return None    
     except (SocketTimeout, TypeError) as e:
         logger.log(u"Connection timed out (sockets) accessing getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
     except requests.exceptions.HTTPError as e:
         logger.log(u"HTTP error in getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
-    except requests.exceptions.ConnectionError as e:
+    except (requests.exceptions.ConnectionError, socket.error) as e:
         logger.log(u"Connection error to getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
     except requests.exceptions.Timeout as e:
@@ -1687,9 +1683,6 @@ def download_file(url, filename, session=None, headers={}):
             except Exception:
                 logger.log(u"Problem setting permissions or writing file to: %s" % filename, logger.WARNING)
 
-    except ConnectionError as e:
-        logger.log(u"No internet available while loading download URL %s Error: %r" % (url, ex(e)))
-        return None    
     except (SocketTimeout, TypeError) as e:
         logger.log(u"Connection timed out (sockets) while loading download URL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
@@ -1697,7 +1690,7 @@ def download_file(url, filename, session=None, headers={}):
         _remove_file_failed(filename)
         logger.log(u"HTTP error %r while loading download URL %s " % (ex(e), url ), logger.WARNING)
         return False
-    except requests.exceptions.ConnectionError as e:
+    except (requests.exceptions.ConnectionError, socket.error) as e:
         _remove_file_failed(filename)
         logger.log(u"Connection error %r while loading download URL %s " % (ex(e), url), logger.WARNING)
         return False
