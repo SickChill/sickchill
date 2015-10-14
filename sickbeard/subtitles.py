@@ -115,7 +115,7 @@ def downloadSubtitles(subtitles_info):
     languages = getNeededLanguages(existing_subtitles)
     if not languages:
         logger.log(u'%s: No missing subtitles for S%02dE%02d' % (subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
-        return existing_subtitles, None
+        return (existing_subtitles, None)
 
     subtitles_path = getSubtitlesPath(subtitles_info['location']).encode(sickbeard.SYS_ENCODING)
     video_path = subtitles_info['location'].encode(sickbeard.SYS_ENCODING)
@@ -126,14 +126,14 @@ def downloadSubtitles(subtitles_info):
     except Exception:
         logger.log(u'%s: Exception caught in subliminal.scan_video for S%02dE%02d' %
         (subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
-        return
+        return (existing_subtitles, None)
 
     try:
         # TODO: Add gui option for hearing_impaired parameter ?
         found_subtitles = subliminal.download_best_subtitles([video], languages=languages, hearing_impaired=False, only_one=not sickbeard.SUBTITLES_MULTI, providers=providers)
         if not found_subtitles:
             logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
-            return
+            return (existing_subtitles, None)
 
         subliminal.save_subtitles(video, found_subtitles[video], directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI)
 
@@ -153,7 +153,7 @@ def downloadSubtitles(subtitles_info):
     except Exception as e:
                 logger.log("Error occurred when downloading subtitles for: %s" % video_path)
                 logger.log(traceback.format_exc(), logger.ERROR)
-                return
+                return (existing_subtitles, None)
 
     if sickbeard.SUBTITLES_HISTORY:
         for video, subtitles in found_subtitles.iteritems():

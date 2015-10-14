@@ -1624,7 +1624,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
                     logger.DEBUG)
                     return None
 
-    except SocketTimeout:
+    except (SocketTimeout, TypeError) as e:
         logger.log(u"Connection timed out (sockets) accessing getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
     except requests.exceptions.HTTPError as e:
@@ -1684,6 +1684,9 @@ def download_file(url, filename, session=None, headers={}):
             except Exception:
                 logger.log(u"Problem setting permissions or writing file to: %s" % filename, logger.WARNING)
 
+    except (SocketTimeout, TypeError) as e:
+        logger.log(u"Connection timed out (sockets) while loading download URL %s Error: %r" % (url, ex(e)), logger.WARNING)
+        return None
     except requests.exceptions.HTTPError as e:
         _remove_file_failed(filename)
         logger.log(u"HTTP error %r while loading download URL %s " % (ex(e), url ), logger.WARNING)
