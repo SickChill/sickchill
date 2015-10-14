@@ -1665,11 +1665,12 @@ class TVEpisode(object):
             return
 
         if getattr(myEp, 'episodename', None) is None:
-            logger.log(u"This episode %s - S%02dE%02d has no name on %s" %(self.show.name, season, episode, sickbeard.indexerApi(self.indexer).name))
+            logger.log(u"This episode %s - S%02dE%02d has no name on %s. Setting to an empty string" % (self.show.name, season, episode, sickbeard.indexerApi(self.indexer).name))
+            setattr(myEp, 'episodename', '')
             # if I'm incomplete on TVDB but I once was complete then just delete myself from the DB for now
-            if self.indexerid != -1:
-                self.deleteEpisode()
-            return False
+            #if self.indexerid != -1:
+            #    self.deleteEpisode()
+            #return False
 
         if getattr(myEp, 'absolute_number', None) is None:
             logger.log(u"This episode %s - S%02dE%02d has no absolute number on %s" %(self.show.name, season, episode, sickbeard.indexerApi(self.indexer).name), logger.DEBUG)
