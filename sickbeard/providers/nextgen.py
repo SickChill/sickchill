@@ -1,7 +1,7 @@
 # Author: seedboy
 # URL: https://github.com/seedboy
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,21 +19,18 @@
 import traceback
 import urllib
 import time
-import re
 import datetime
+
 import sickbeard
-import generic
-from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
-from sickbeard import show_name_helpers
-import requests
-from sickbeard.bs4_parser import BS4Parser
-from sickbeard.helpers import sanitizeSceneName
+from sickbeard.common import Quality
+from sickbeard.providers import generic
 
+from sickbeard.bs4_parser import BS4Parser
 
 class NextGenProvider(generic.TorrentProvider):
 
@@ -66,6 +63,9 @@ class NextGenProvider(generic.TorrentProvider):
         self.last_login_check = None
 
         self.login_opener = None
+
+        self.minseed = 0
+        self.minleech = 0
 
     def isEnabled(self):
         return self.enabled
@@ -136,7 +136,7 @@ class NextGenProvider(generic.TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
                 data = self.getURL(searchURL)
                 if not data:
                     continue
@@ -170,10 +170,8 @@ class NextGenProvider(generic.TorrentProvider):
                                     title = str(torrentName)
                                     download_url = (self.urls['download'] % torrentId).encode('utf8')
                                     torrent_details_url = (self.urls['detail'] % torrentId).encode('utf8')
-                                    seeders = int(result.find('div', attrs = {'id' : 'torrent-seeders'}).find('a')['class'][0])
-                                    ## Not used, perhaps in the future ##
-                                    #torrent_id = int(torrent['href'].replace('/details.php?id=', ''))
-                                    leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).string)
+                                    seeders = int(result.find('div', attrs = {'id' : 'torrent-seeders'}).a.text)
+                                    leechers = int(result.find('div', attrs = {'id' : 'torrent-leechers'}).a.text)
                                     #FIXME
                                     size = -1
                                 except (AttributeError, TypeError):
