@@ -48,6 +48,7 @@ import certifi
 from contextlib import closing
 from socket import timeout as SocketTimeout
 
+
 try:
     from io import BytesIO as _StringIO
 except ImportError:
@@ -1629,7 +1630,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
     except requests.exceptions.HTTPError as e:
         logger.log(u"HTTP error in getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
-    except (requests.exceptions.ConnectionError, socket.error) as e:
+    except requests.exceptions.ConnectionError as e:
         logger.log(u"Connection error to getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
     except requests.exceptions.Timeout as e:
@@ -1690,7 +1691,7 @@ def download_file(url, filename, session=None, headers={}):
         _remove_file_failed(filename)
         logger.log(u"HTTP error %r while loading download URL %s " % (ex(e), url ), logger.WARNING)
         return False
-    except (requests.exceptions.ConnectionError, socket.error) as e:
+    except requests.exceptions.ConnectionError as e:
         _remove_file_failed(filename)
         logger.log(u"Connection error %r while loading download URL %s " % (ex(e), url), logger.WARNING)
         return False
