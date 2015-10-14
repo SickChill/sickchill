@@ -115,7 +115,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                     logger.log(u"Search string: %s" %  search_string, logger.DEBUG)
 
                 data = self.getURL(searchURL)
-                if not data:
+                if not data or 'please try later' in data:
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue
 
