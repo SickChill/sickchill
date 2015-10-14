@@ -1228,10 +1228,10 @@ def initialize(consoleLogging=True):
                                                                      curTorrentProvider.getID() + '_proxy_url', '')
             if hasattr(curTorrentProvider, 'confirmed'):
                 curTorrentProvider.confirmed = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                      curTorrentProvider.getID() + '_confirmed', 0))
+                                                                      curTorrentProvider.getID() + '_confirmed', 1))
             if hasattr(curTorrentProvider, 'ranked'):
                 curTorrentProvider.ranked = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                      curTorrentProvider.getID() + '_ranked', 0))
+                                                                      curTorrentProvider.getID() + '_ranked', 1))
 
             if hasattr(curTorrentProvider, 'engrelease'):
                 curTorrentProvider.engrelease = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
@@ -1248,7 +1248,7 @@ def initialize(consoleLogging=True):
                                                              curTorrentProvider.getID() + '_ratio', '')
             if hasattr(curTorrentProvider, 'minseed'):
                 curTorrentProvider.minseed = check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                               curTorrentProvider.getID() + '_minseed', 0)
+                                                               curTorrentProvider.getID() + '_minseed', 1)
             if hasattr(curTorrentProvider, 'minleech'):
                 curTorrentProvider.minleech = check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                 curTorrentProvider.getID() + '_minleech', 0)
@@ -1272,7 +1272,7 @@ def initialize(consoleLogging=True):
             if hasattr(curTorrentProvider, 'enable_backlog'):
                 curTorrentProvider.enable_backlog = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                            curTorrentProvider.getID() + '_enable_backlog',
-                                                                           1))
+                                                                           curTorrentProvider.supportsBacklog))
 
             if hasattr(curTorrentProvider, 'cat'):
                 curTorrentProvider.cat = check_setting_int(CFG, curTorrentProvider.getID().upper(),
@@ -1307,7 +1307,7 @@ def initialize(consoleLogging=True):
             if hasattr(curNzbProvider, 'enable_backlog'):
                 curNzbProvider.enable_backlog = bool(check_setting_int(CFG, curNzbProvider.getID().upper(),
                                                                        curNzbProvider.getID() + '_enable_backlog',
-                                                                       1))
+                                                                       curNzbProvider.supportsBacklog))
 
         if not os.path.isfile(CONFIG_FILE):
             logger.log(u"Unable to find '" + CONFIG_FILE + "', all settings will be default!", logger.DEBUG)
