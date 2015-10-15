@@ -162,11 +162,11 @@ class NextGenProvider(generic.TorrentProvider):
                                 try:
                                     title = result.find('div', attrs={'id': 'torrent-udgivelse2-users'}).a['title']
                                     download_url = self.urls['base_url'] + result.find('div', attrs={'id': 'torrent-download'}).a['id']
-                                    seeders = int(result.find('div', attrs = {'id' : 'torrent-seeders'}).text)
-                                    leechers = int(result.find('div', attrs = {'id' : 'torrent-leechers'}).text)
-                                    size = self._convertSize(result.find('div', attrs = {'id' : 'torrent-size'}).text)
+                                    seeders = int(result.find('div', attrs={'id' : 'torrent-seeders'}).text)
+                                    leechers = int(result.find('div', attrs={'id' : 'torrent-leechers'}).text)
+                                    size = self._convertSize(result.find('div', attrs={'id' : 'torrent-size'}).text)
                                     freeleech = result.find('div', attrs={'id': 'browse-mode-F2L'}) is not None
-                                except (AttributeError, TypeError):
+                                except (AttributeError, TypeError, KeyError):
                                     continue
 
                                 if self.freeleech and not freeleech:
