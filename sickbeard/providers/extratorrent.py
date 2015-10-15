@@ -83,7 +83,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
                     try:
                         # Must replace non-breaking space, as there is no xml DTD
-                        data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data))
+                        data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data).replace('&', '&amp;'))
                     except ExpatError as e:
                         logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
                         continue
