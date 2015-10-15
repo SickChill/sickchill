@@ -97,7 +97,7 @@ class KATProvider(generic.TorrentProvider):
                         continue
 
                     try:
-                        data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data))
+                        data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data).replace('&', '&amp;'))
                     except ExpatError as e:
                         logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
                         continue
