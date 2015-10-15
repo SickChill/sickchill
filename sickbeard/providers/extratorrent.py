@@ -19,9 +19,11 @@
 import re
 import traceback
 import datetime
-import sickbeard
-import xmltodict
 
+import xmltodict
+import HTMLParser
+
+import sickbeard
 from sickbeard.providers import generic
 from sickbeard.common import Quality
 from sickbeard import logger
@@ -81,7 +83,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
                     try:
                         # Must replace non-breaking space, as there is no xml DTD
-                        data = xmltodict.parse(data.replace('&nbsp;','&#xA0;'))
+                        data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data))
                     except ExpatError as e:
                         logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
                         continue

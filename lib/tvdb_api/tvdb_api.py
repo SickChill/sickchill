@@ -22,8 +22,9 @@ import logging
 import zipfile
 import datetime as dt
 import requests
-from requests import exceptions
+
 import xmltodict
+import HTMLParser
 
 try:
     import xml.etree.cElementTree as ElementTree
@@ -617,12 +618,12 @@ class Tvdb:
                 zipdata = StringIO.StringIO()
                 zipdata.write(resp.content)
                 myzipfile = zipfile.ZipFile(zipdata)
-                return xmltodict.parse(myzipfile.read('%s.xml' % language).replace('&nbsp;','&#xA0;'), postprocessor=process)
+                return xmltodict.parse(HTMLParser.HTMLParser().unescape(myzipfile.read('%s.xml' % language)), postprocessor=process)
             except zipfile.BadZipfile:
                 raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
         else:
             try:
-                return xmltodict.parse(resp.content.decode('utf-8').replace('&nbsp;','&#xA0;'), postprocessor=process)
+                return safe_xmltodict.parse(HTMLParser.HTMLParser().unescape(resp.text), postprocessor=process)
             except:
                 return dict([(u'data', None)])
 
