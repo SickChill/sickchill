@@ -165,11 +165,11 @@ $('#config-components').tabs();
                         % endif
 
                         % if hasattr(curNewznabProvider, 'enable_backlog'):
-                        <div class="field-pair">
+                        <div class="field-pair${(' hidden', '')[curNewznabProvider.supportsBacklog]}">
                             <label for="${curNewznabProvider.getID()}_enable_backlog">
                                 <span class="component-title">Enable backlog searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNewznabProvider.getID()}_enable_backlog" id="${curNewznabProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curNewznabProvider.enable_backlog)]}/>
+                                    <input type="checkbox" name="${curNewznabProvider.getID()}_enable_backlog" id="${curNewznabProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curNewznabProvider.enable_backlog and curNewznabProvider.supportsBacklog)]}/>
                                     <p>enable provider to perform backlog searches.</p>
                                 </span>
                             </label>
@@ -252,11 +252,11 @@ $('#config-components').tabs();
                         % endif
 
                         % if hasattr(curNzbProvider, 'enable_backlog'):
-                        <div class="field-pair">
+                        <div class="field-pair${(' hidden', '')[curNzbProvider.supportsBacklog]}">
                             <label for="${curNzbProvider.getID()}_enable_backlog">
                                 <span class="component-title">Enable backlog searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNzbProvider.getID()}_enable_backlog" id="${curNzbProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curNzbProvider.enable_backlog)]}/>
+                                    <input type="checkbox" name="${curNzbProvider.getID()}_enable_backlog" id="${curNzbProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curNzbProvider.enable_backlog and curNzbProvider.supportsBacklog)]}/>
                                     <p>enable provider to perform backlog searches.</p>
                                 </span>
                             </label>
@@ -511,11 +511,11 @@ $('#config-components').tabs();
                         % endif
 
                         % if hasattr(curTorrentProvider, 'enable_backlog'):
-                        <div class="field-pair">
+                        <div class="field-pair${(' hidden', '')[curTorrentProvider.supportsBacklog]}">
                             <label for="${curTorrentProvider.getID()}_enable_backlog">
                                 <span class="component-title">Enable backlog searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_enable_backlog" id="${curTorrentProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curTorrentProvider.enable_backlog)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_enable_backlog" id="${curTorrentProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curTorrentProvider.enable_backlog and curTorrentProvider.supportsBacklog)]}/>
                                     <p>enable provider to perform backlog searches.</p>
                                 </span>
                             </label>

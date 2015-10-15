@@ -502,6 +502,9 @@
             <td class="col-subtitles" align="center">
             % for sub_lang in [subtitles.fromietf(x) for x in epResult["subtitles"].split(',') if epResult["subtitles"]]:
                 <% flag = sub_lang.opensubtitles %>
+                % if (not sickbeard.SUBTITLES_MULTI and len(subtitles.wantedLanguages()) is 1) and subtitles.wantedLanguages()[0] in sub_lang.opensubtitles:
+                    <% flag = 'checkbox' %>
+                % endif
                 <img src="${srRoot}/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${sub_lang.name}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';" />
             % endfor
             </td>

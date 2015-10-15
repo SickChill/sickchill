@@ -303,7 +303,7 @@ class Logger(object):
                     else:
                         submitter_result = u'Failed to create a new issue!'
 
-                if issue_id:
+                if issue_id and curError in classes.ErrorViewer.errors:
                     # clear error from error list
                     classes.ErrorViewer.errors.remove(curError)
 
