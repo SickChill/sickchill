@@ -51,9 +51,6 @@ class NextGenProvider(generic.TorrentProvider):
         self.urls = {'base_url': 'https://nxgn.org/',
                 'search': 'https://nxgn.org/browse.php?search=%s&cat=0&incldead=0&modes=%s',
                 'login_page': 'https://nxgn.org/login.php',
-                'detail': 'https://nxgn.org/details.php?id=%s',
-                'download': 'https://nxgn.org/download.php?id=%s',
-                'takelogin': 'https://nxgn.org/takelogin.php?csrf=',
                 }
 
         self.url = self.urls['base_url']
@@ -66,6 +63,7 @@ class NextGenProvider(generic.TorrentProvider):
 
         self.minseed = 0
         self.minleech = 0
+        self.freeleech = True
 
     def isEnabled(self):
         return self.enabled
@@ -162,19 +160,16 @@ class NextGenProvider(generic.TorrentProvider):
                             for result in entries:
 
                                 try:
-                                    torrentName = \
-                                    ((result.find('div', attrs={'id': 'torrent-udgivelse2-users'})).find('a'))['title']
-                                    torrentId = (
-                                    ((result.find('div', attrs={'id': 'torrent-download'})).find('a'))['href']).replace(
-                                        'download.php?id=', '')
-                                    title = str(torrentName)
-                                    download_url = (self.urls['download'] % torrentId).encode('utf8')
-                                    torrent_details_url = (self.urls['detail'] % torrentId).encode('utf8')
-                                    seeders = int(result.find('div', attrs = {'id' : 'torrent-seeders'}).a.text)
-                                    leechers = int(result.find('div', attrs = {'id' : 'torrent-leechers'}).a.text)
-                                    #FIXME
-                                    size = -1
+                                    title = result.find('div', attrs={'id': 'torrent-udgivelse2-users'}).a['title']
+                                    download_url = self.urls['base_url'] + result.find('div', attrs={'id': 'torrent-download'}).a['id']
+                                    seeders = int(result.find('div', attrs = {'id' : 'torrent-seeders'}).text)
+                                    leechers = int(result.find('div', attrs = {'id' : 'torrent-leechers'}).text)
+                                    size = self._convertSize(result.find('div', attrs = {'id' : 'torrent-size'}).text)
+                                    freeleech = result.find('div', attrs={'id': 'browse-mode-F2L'}) is not None
                                 except (AttributeError, TypeError):
+                                    continue
+
+                                if self.freeleech and not freeleech:
                                     continue
 
                                 if not all([title, download_url]):
@@ -205,6 +200,19 @@ class NextGenProvider(generic.TorrentProvider):
             results += items[mode]
 
         return results
+
+    def _convertSize(self, size):
+        size, modifier = size[:-2], size[-2:]
+        size = float(size)
+        if modifier in 'KB':
+            size = size * 1024
+        elif modifier in 'MB':
+            size = size * 1024**2
+        elif modifier in 'GB':
+            size = size * 1024**3
+        elif modifier in 'TB':
+            size = size * 1024**4
+        return size
 
     def findPropers(self, search_date=datetime.datetime.today()):
 
