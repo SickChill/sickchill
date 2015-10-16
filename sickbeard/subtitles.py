@@ -135,7 +135,7 @@ def downloadSubtitles(subtitles_info):
             logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
             return (existing_subtitles, None)
 
-        subliminal.save_subtitles(video, found_subtitles[video], directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI)
+        subliminal.save_subtitles(video, found_subtitles[video], directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI, encoding='utf-8')
 
         for video, subtitles in found_subtitles.iteritems():
             for subtitle in subtitles:
