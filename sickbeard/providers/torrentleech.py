@@ -102,7 +102,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
                 if mode == 'RSS':
                     searchURL = self.urls['index'] % self.categories
                 else:
-                    searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories)
+                    searchURL = self.urls['search'] % (urllib.quote_plus(search_string.encode('utf-8')), self.categories)
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 data = self.getURL(searchURL)
