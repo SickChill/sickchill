@@ -360,15 +360,6 @@ class TNTVillageProvider(generic.TorrentProvider):
                                 except (AttributeError, TypeError):
                                     continue
 
-                                if not all([title, download_url]):
-                                    continue
-
-                                #Filter unseeded torrent
-                                if seeders < self.minseed or leechers < self.minleech:
-                                    if mode != 'RSS':
-                                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                    continue
-
                                 filename_qt = self._reverseQuality(self._episodeQuality(result))
                                 for text in self.hdtext:
                                     title1 = title
@@ -397,8 +388,17 @@ class TNTVillageProvider(generic.TorrentProvider):
                                     new_title = search_show + ep_params
                                     title = new_title
 
+                                if not all([title, download_url]):
+                                    continue
+
                                 if self._is_season_pack(title):
                                     title = re.sub(r'([Ee][\d{1,2}\-?]+)', '', title)
+
+                                #Filter unseeded torrent
+                                if seeders < self.minseed or leechers < self.minleech:
+                                    if mode != 'RSS':
+                                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    continue
 
                                 item = title, download_url, size, seeders, leechers
                                 if mode != 'RSS':
