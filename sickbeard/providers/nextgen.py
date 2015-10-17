@@ -48,12 +48,9 @@ class NextGenProvider(generic.TorrentProvider):
 
         self.cache = NextGenCache(self)
 
-        self.urls = {'base_url': 'https://nxgn.org/',
-                'search': 'https://nxgn.org/browse.php?search=%s&cat=0&incldead=0&modes=%s',
-                'login_page': 'https://nxgn.org/login.php',
-                'detail': 'https://nxgn.org/details.php?id=%s',
-                'download': 'https://nxgn.org/download.php?id=%s',
-                'takelogin': 'https://nxgn.org/takelogin.php?csrf=',
+        self.urls = {'base_url': 'https://nxtgn.info/',
+                'search': 'https://nxtgn.info/browse.php?search=%s&cat=0&incldead=0&modes=%s',
+                'login_page': 'https://nxtgn.info/login.php',
                 }
 
         self.url = self.urls['base_url']
@@ -66,6 +63,7 @@ class NextGenProvider(generic.TorrentProvider):
 
         self.minseed = 0
         self.minleech = 0
+        self.freeleech = True
 
     def isEnabled(self):
         return self.enabled
@@ -157,44 +155,42 @@ class NextGenProvider(generic.TorrentProvider):
 
                         #Xirg STANDARD TORRENTS
                         #Continue only if one Release is found
-                        if len(entries) > 0:
-
-                            for result in entries:
-
-                                try:
-                                    torrentName = \
-                                    ((result.find('div', attrs={'id': 'torrent-udgivelse2-users'})).find('a'))['title']
-                                    torrentId = (
-                                    ((result.find('div', attrs={'id': 'torrent-download'})).find('a'))['href']).replace(
-                                        'download.php?id=', '')
-                                    title = str(torrentName)
-                                    download_url = (self.urls['download'] % torrentId).encode('utf8')
-                                    torrent_details_url = (self.urls['detail'] % torrentId).encode('utf8')
-                                    seeders = int(result.find('div', attrs = {'id' : 'torrent-seeders'}).a.text)
-                                    leechers = int(result.find('div', attrs = {'id' : 'torrent-leechers'}).a.text)
-                                    #FIXME
-                                    size = -1
-                                except (AttributeError, TypeError):
-                                    continue
-
-                                if not all([title, download_url]):
-                                    continue
-
-                                #Filter unseeded torrent
-                                if seeders < self.minseed or leechers < self.minleech:
-                                    if mode != 'RSS':
-                                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                    continue
-
-                                item = title, download_url, size, seeders, leechers
-                                if mode != 'RSS':
-                                    logger.log(u"Found result: %s " % title, logger.DEBUG)
-
-                                items[mode].append(item)
-
-                        else:
+                        if not entries:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
+
+                        for result in entries:
+
+                            try:
+                                title = result.find('div', attrs={'id': 'torrent-udgivelse2-users'}).a['title']
+
+                                dl = result.find('div', attrs={'id': 'torrent-download'}).a
+                                download_url = self.urls['base_url'] + (dl['href'], dl['id'])['id' in dl]
+
+                                seeders = int(result.find('div', attrs={'id' : 'torrent-seeders'}).text)
+                                leechers = int(result.find('div', attrs={'id' : 'torrent-leechers'}).text)
+                                size = self._convertSize(result.find('div', attrs={'id' : 'torrent-size'}).text)
+                                freeleech = result.find('div', attrs={'id': 'browse-mode-F2L'}) is not None
+                            except (AttributeError, TypeError, KeyError):
+                                continue
+
+                            if self.freeleech and not freeleech:
+                                continue
+
+                            if not all([title, download_url]):
+                                continue
+
+                            #Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                continue
+
+                            item = title, download_url, size, seeders, leechers
+                            if mode != 'RSS':
+                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+
+                            items[mode].append(item)
 
                 except Exception, e:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
@@ -205,6 +201,19 @@ class NextGenProvider(generic.TorrentProvider):
             results += items[mode]
 
         return results
+
+    def _convertSize(self, size):
+        size, modifier = size[:-2], size[-2:]
+        size = float(size)
+        if modifier in 'KB':
+            size = size * 1024
+        elif modifier in 'MB':
+            size = size * 1024**2
+        elif modifier in 'GB':
+            size = size * 1024**3
+        elif modifier in 'TB':
+            size = size * 1024**4
+        return int(size)
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

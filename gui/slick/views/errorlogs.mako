@@ -20,10 +20,10 @@ pre {
 <%
     if logLevel == sickbeard.logger.WARNING:
         errors = classes.WarningViewer.errors
-        title = 'Logs &amp Errors [WARNING]'
+        title = 'WARNING logs'
     else:
         errors = classes.ErrorViewer.errors
-        title = 'Logs &amp Errors [ERROR]'
+        title = 'ERROR logs'
 %>
 <h1 class="header">${title}</h1>
 <div class="align-left"><pre>

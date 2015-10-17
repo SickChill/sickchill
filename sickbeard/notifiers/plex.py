@@ -66,7 +66,7 @@ class PLEXNotifier:
         enc_command = urllib.urlencode(command)
         logger.log(u'PLEX: Encoded API command: ' + enc_command, logger.DEBUG)
 
-        url = u'http://%s/xbmcCmds/xbmcHttp/?%s' % (host, enc_command)
+        url = u'https://%s/xbmcCmds/xbmcHttp/?%s' % (host, enc_command)
         try:
             req = urllib2.Request(url)
             # if we have a password, use authentication
@@ -219,7 +219,7 @@ class PLEXNotifier:
             hosts_failed = []
             for cur_host in host_list:
 
-                url = 'http://%s/library/sections%s' % (cur_host, token_arg)
+                url = 'https://%s/library/sections%s' % (cur_host, token_arg)
                 try:
                     xml_tree = etree.parse(urllib.urlopen(url))
                     media_container = xml_tree.getroot()
@@ -261,7 +261,7 @@ class PLEXNotifier:
             host_list = []
             for section_key, cur_host in hosts_try.iteritems():
 
-                url = 'http://%s/library/sections/%s/refresh%s' % (cur_host, section_key, token_arg)
+                url = 'https://%s/library/sections/%s/refresh%s' % (cur_host, section_key, token_arg)
                 try:
                     force and urllib.urlopen(url)
                     host_list.append(cur_host)
