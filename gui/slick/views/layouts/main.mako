@@ -1,12 +1,10 @@
 <%!
-    import sickbeard
     import datetime
-    from sickbeard import db, network_timezones
-    from sickbeard.common import Quality, SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import qualityPresets, qualityPresetStrings
-    import calendar
-    from time import time
     import re
+    import sickbeard
+    from sickbeard import network_timezones
+    from sickrage.show.Show import Show
+    from time import time
 
     # resource module is unix only
     has_resource_module = True
@@ -283,51 +281,20 @@
         <footer>
             <div class="footer clearfix">
             <%
-                myDB = db.DBConnection()
-                today = str(datetime.date.today().toordinal())
-                status_quality = '(%s)' % ','.join([str(quality) for quality in Quality.SNATCHED + Quality.SNATCHED_PROPER])
-                status_download = '(%s)' % ','.join([str(quality) for quality in Quality.DOWNLOADED + Quality.ARCHIVED])
-
-                sql_statement = 'SELECT ' \
-                + '(SELECT COUNT(*) FROM tv_episodes WHERE season > 0 AND episode > 0 AND airdate > 1 AND status IN %s) AS ep_snatched, ' % status_quality \
-                + '(SELECT COUNT(*) FROM tv_episodes WHERE season > 0 AND episode > 0 AND airdate > 1 AND status IN %s) AS ep_downloaded, ' % status_download \
-                + '(SELECT COUNT(*) FROM tv_episodes WHERE season > 0 AND episode > 0 AND airdate > 1 AND ((airdate <= %s AND (status = %s OR status = %s)) ' % (today, str(SKIPPED), str(WANTED)) \
-                + ' OR (status IN %s) OR (status IN %s))) AS ep_total FROM tv_episodes tv_eps LIMIT 1' % (status_quality, status_download)
-
-                sql_result = myDB.select(sql_statement)
-
-                shows_total = len(sickbeard.showList)
-                shows_active = len([show for show in sickbeard.showList if show.paused == 0 and show.status == "Continuing"])
-
-                if sql_result:
-                    ep_snatched = sql_result[0]['ep_snatched']
-                    ep_downloaded = sql_result[0]['ep_downloaded']
-                    ep_total = sql_result[0]['ep_total']
-                else:
-                    ep_snatched = 0
-                    ep_downloaded = 0
-                    ep_total = 0
-
+                stats = Show.overall_stats()
+                ep_downloaded = stats['episodes']['downloaded']
+                ep_snatched = stats['episodes']['snatched']
+                ep_total = stats['episodes']['total']
                 ep_percentage = '' if ep_total == 0 else '(<span class="footerhighlight">%s%%</span>)' % re.sub(r'(\d+)(\.\d)\d+', r'\1\2', str((float(ep_downloaded)/float(ep_total))*100))
-
-                try:
-                    localRoot = srRoot
-                except NotFound:
-                    localRoot = ''
-
-                try:
-                    localheader = header
-                except NotFound:
-                    localheader = ''
             %>
-                <span class="footerhighlight">${shows_total}</span> Shows (<span class="footerhighlight">${shows_active}</span> Active)
+                <span class="footerhighlight">${stats['shows']['total']}</span> Shows (<span class="footerhighlight">${stats['shows']['active']}</span> Active)
                 | <span class="footerhighlight">${ep_downloaded}</span>
 
                 % if ep_snatched:
-                <span class="footerhighlight"><a href="${localRoot}/manage/episodeStatuses?whichStatus=2" title="View overview of snatched episodes">+${ep_snatched}</a></span> Snatched
+                <span class="footerhighlight"><a href="${srRoot}/manage/episodeStatuses?whichStatus=2" title="View overview of snatched episodes">+${ep_snatched}</a></span> Snatched
                 % endif
 
-                        &nbsp;/&nbsp;<span class="footerhighlight">${ep_total}</span> Episodes Downloaded ${ep_percentage}
+                &nbsp;/&nbsp;<span class="footerhighlight">${ep_total}</span> Episodes Downloaded ${ep_percentage}
                 | Daily Search: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span>
                 | Backlog Search: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span>
 

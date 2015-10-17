@@ -2842,21 +2842,15 @@ class CMD_ShowsStats(ApiCall):
 
     def run(self):
         """ Get the global shows and episodes statistics """
-        stats = {}
+        stats = Show.overall_stats()
 
-        myDB = db.DBConnection()
-        today = str(datetime.date.today().toordinal())
-        stats["shows_total"] = len(sickbeard.showList)
-        stats["shows_active"] = len(
-            [show for show in sickbeard.showList if show.paused == 0 and "Unknown" not in show.status and "Ended" not in show.status])
-        stats["ep_downloaded"] = myDB.select("SELECT COUNT(*) FROM tv_episodes WHERE status IN (" + ",".join(
-            [str(show) for show in Quality.DOWNLOADED + Quality.ARCHIVED]) + ") AND season != 0 and episode != 0 AND airdate <= " + today + "")[0][0]
-        stats["ep_snatched"] = myDB.select("SELECT COUNT(*) FROM tv_episodes WHERE status IN (" + ",".join(
-            [str(show) for show in Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ") AND season != 0 and episode != 0 AND airdate <= " + today + "")[0][0]
-        stats["ep_total"] = myDB.select("SELECT COUNT(*) FROM tv_episodes WHERE season != 0 AND episode != 0 AND (airdate != 1 OR status IN (" + ",".join(
-            [str(show) for show in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.ARCHIVED]) + ")) AND airdate <= " + today + " AND status != " + str(IGNORED) + "")[0][0]
-
-        return _responds(RESULT_SUCCESS, stats)
+        return _responds(RESULT_SUCCESS, {
+            'ep_downloaded': stats['episodes']['downloaded'],
+            'ep_snatched': stats['episodes']['snatched'],
+            'ep_total': stats['episodes']['total'],
+            'shows_active': stats['shows']['active'],
+            'shows_total': stats['shows']['total'],
+        })
 
 # WARNING: never define a cmd call string that contains a "_" (underscore)
 # this is reserved for cmd indexes used while cmd chaining
