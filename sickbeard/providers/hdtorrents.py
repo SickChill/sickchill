@@ -30,7 +30,7 @@ from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickrage.helper.exceptions import AuthException
 import requests
-from BeautifulSoup import BeautifulSoup as soup
+from bs4 import BeautifulSoup
 from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
 from datetime import datetime
@@ -119,7 +119,18 @@ class HDTorrentsProvider(generic.TorrentProvider):
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue
 
-                html = soup(data)
+                # Search result page contains some invalid html that prevents html parser from returning all data.
+                # We cut everything before the table that contains the data we are interested in thus eliminating
+                # the invalid html portions
+                try:
+                    index = data.lower().index('<table class="mainblockcontenttt"')
+                except ValueError:
+                    logger.log(u"Could not find table of torrents mainblockcontenttt", logger.ERROR)
+                    continue
+
+                data = data[index:]
+
+                html = BeautifulSoup(data, 'html5lib')
                 if not html:
                     logger.log("No html data parsed from provider", logger.DEBUG)
                     continue
@@ -145,27 +156,30 @@ class HDTorrentsProvider(generic.TorrentProvider):
                         if not cells:
                             continue
 
-                        title = download_url = seeders = leechers = None
-                        size = 0
+                        title = download_url = seeders = leechers = size = None
                         for cell in cells:
                             try:
                                 if None is title and cell.get('title') and cell.get('title') in 'Download':
                                     title = re.search('f=(.*).torrent', cell.a['href']).group(1).replace('+', '.')
                                     download_url = self.urls['home'] % cell.a['href']
+                                    continue
                                 if None is seeders and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
                                     seeders = int(cell.text)
                                     if not seeders:
                                         seeders = 1
+                                        continue
                                 elif None is leechers and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
                                     leechers = int(cell.text)
                                     if not leechers:
-                                        seeders = 0
+                                        leechers = 0
+                                        continue
 
                                 # Need size for failed downloads handling
-                                if re.match(r'[0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+', cells[7].text):
-                                    size = self._convertSize(cells[7].text)
-                                    if not size:
-                                        size = -1
+                                if size is None:
+                                    if re.match(r'[0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+', cell.text):
+                                        size = self._convertSize(cell.text)
+                                        if not size:
+                                            size = -1
 
                             except:
                                 logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
