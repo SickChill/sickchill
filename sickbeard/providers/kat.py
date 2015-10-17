@@ -82,7 +82,7 @@ class KATProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                self.search_params.update({'q': search_string, 'field': ('seeders', 'time_add')[mode == 'RSS']})
+                self.search_params.update({'q': search_string.encode('utf-8'), 'field': ('seeders', 'time_add')[mode == 'RSS']})
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
