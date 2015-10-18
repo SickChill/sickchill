@@ -33,18 +33,26 @@
                     <li><a href="#core-component-group2">Episode Naming</a></li>
                     <li><a href="#core-component-group3">Metadata</a></li>
                 </ul>
-
                 <div id="core-component-group1" class="component-group">
-
                     <div class="component-group-desc">
                         <h3>Post-Processing</h3>
                         <p>Settings that dictate how SickRage should process completed downloads.</p>
                     </div>
-
                     <fieldset class="component-group-list">
                         <div class="field-pair">
+                            <input type="checkbox" name="process_automatically" id="process_automatically" ${('', 'checked="checked"')[bool(sickbeard.PROCESS_AUTOMATICALLY)]}/>
+                            <label for="process_automatically">
+                                <span class="component-title">Enable</span>
+                                <span class="component-desc">Enable the automatic post processor to scan and process any files in your <i>Post Processing Dir</i>?</span>
+                            </label>
+                            <label class="nocheck" for="process_automatically">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc"><b>NOTE:</b> Do not use if you use an external PostProcesing script</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
                             <label class="nocheck" for="tv_download_dir">
-                                <span class="component-title">TV Download Dir</span>
+                                <span class="component-title">Post Processing Dir</span>
                                 <input type="text" name="tv_download_dir" id="tv_download_dir" value="${sickbeard.TV_DOWNLOAD_DIR}" class="form-control input-sm input350" />
                             </label>
                             <label class="nocheck">
@@ -53,21 +61,12 @@
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><b>NOTE:</b> Please use seperate downloading and completed folders in your download client if possible. Also, if you keep seeding torrents after they finish, please set Process Method to 'copy' instead of move to prevent errors while moving files.</span>
-                            </label>
-                            <label class="nocheck">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><b>NOTE:</b> Use only if not using SABnzbd+ post processing.</span>
-                            </label>
-                            <label class="nocheck">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Or if SABnzbd+ and SickRage are on different PCs.</span>
+                                <span class="component-desc"><b>NOTE:</b> Please use seperate downloading and completed folders in your download client if possible.</span>
                             </label>
                         </div>
-
                         <div class="field-pair">
                             <label class="nocheck" for="process_method">
-                                <span class="component-title">Process Episode Method:</span>
+                                <span class="component-title">Processing Method:</span>
                                 <span class="component-desc">
                                     <select name="process_method" id="process_method" class="form-control input-sm">
                                         <% process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"} %>
@@ -79,7 +78,45 @@
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">What method should be used to put file in the TV directory?</span>
+                                <span class="component-desc">What method should be used to put files into the library?</span>
+                            </label>
+                            <label class="nocheck">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc"><b>NOTE:</b> If you keep seeding torrents after they finish, please avoid the 'move' processing method to prevent errors.</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
+                            <label class="nocheck">
+                                <span class="component-title">Auto Post-Processing Frequency</span>
+                                <input type="number" min="10" name="autopostprocesser_frequency" id="autopostprocesser_frequency" value="${sickbeard.AUTOPOSTPROCESSER_FREQUENCY}" class="form-control input-sm input75" />
+                            </label>
+                            <label class="nocheck">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">Time in minutes to check for new files to auto post-process (min 10)</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
+                            <input type="checkbox" name="postpone_if_sync_files" id="postpone_if_sync_files" ${('', 'checked="checked"')[bool(sickbeard.POSTPONE_IF_SYNC_FILES)]}/>
+                            <label for="postpone_if_sync_files">
+                                <span class="component-title">Postpone post processing</span>
+                                <span class="component-desc">Wait to process a folder if sync files are present.</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
+                            <label class="nocheck">
+                                <span class="component-title">Sync File Extensions</span>
+                                <input type="text" name="sync_files" id="sync_files" value="${sickbeard.SYNC_FILES}" class="form-control input-sm input350" />
+                            </label>
+                            <label class="nocheck">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">comma seperated list of extensions SickRage ignores when Post Processing</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
+                            <input type="checkbox" name="rename_episodes" id="rename_episodes" ${('', 'checked="checked"')[bool(sickbeard.RENAME_EPISODES)]}/>
+                            <label for="rename_episodes">
+                                <span class="component-title">Rename Episodes</span>
+                                <span class="component-desc">Rename episode using the Episode Naming settings?</span>
                             </label>
                         </div>
                         <div class="field-pair">
@@ -97,39 +134,6 @@
                             </label>
                         </div>
                         <div class="field-pair">
-                            <input type="checkbox" name="del_rar_contents" id="del_rar_contents" ${('', 'checked="checked"')[bool(sickbeard.DELRARCONTENTS)]}/>
-                            <label for="del_rar_contents">
-                                <span class="component-title">Delete RAR contents</span>
-                                <span class="component-desc">Delete content of RAR files, even if Process Method not set to move?</span>
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="nocheck">
-                                <span class="component-title">Extra Scripts</span>
-                                <input type="text" name="extra_scripts" value="${'|'.join(sickbeard.EXTRA_SCRIPTS)}" class="form-control input-sm input350" />
-                            </label>
-                            <label class="nocheck">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><b>NOTE:</b></span>
-                            </label>
-                            <label class="nocheck">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">
-                                    <ul>
-                                        <li>See <a href="https://github.com/SiCKRAGETV/sickrage-issues/wiki/Post-Processing"><font color='red'><b>Wiki</b></font></a> for a script arguments description.</li>
-                                        <li>Additional scripts separated by <b>|</b>.</li>
-                                        <li>Scripts are called after SickRage's own post-processing.</li>
-                                        <li>For any scripted languages, include the interpreter executable before the script. See the following example:</li>
-                                        <ul>
-                                            <li>For Windows: <pre>C:\Python27\pythonw.exe C:\Script\test.py</pre></li>
-                                            <li>For Linux: <pre>python /Script/test.py</pre></li>
-                                        </ul>
-                                    </ul>
-                                </span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
                             <input type="checkbox" name="move_associated_files" id="move_associated_files" ${('', 'checked="checked"')[bool(sickbeard.MOVE_ASSOCIATED_FILES)]}/>
                             <label for="move_associated_files">
                                 <span class="component-title">Move Associated Files</span>
@@ -137,39 +141,12 @@
                             </label>
                         </div>
                         <div class="field-pair">
-                            <label class="nocheck">
-                                <span class="component-title">Sync File Extensions</span>
-                                <input type="text" name="sync_files" id="sync_files" value="${sickbeard.SYNC_FILES}" class="form-control input-sm input350" />
-                            </label>
-                            <label class="nocheck">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">comma seperated list of extensions SickRage ignores when Post Processing</span>
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <input type="checkbox" name="postpone_if_sync_files" id="postpone_if_sync_files" ${('', 'checked="checked"')[bool(sickbeard.POSTPONE_IF_SYNC_FILES)]}/>
-                            <label for="postpone_if_sync_files">
-                                <span class="component-title">Postpone post processing</span>
-                                <span class="component-desc">if sync files are present in the TV download dir</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
                             <input type="checkbox" name="nfo_rename" id="nfo_rename" ${('', 'checked="checked"')[bool(sickbeard.NFO_RENAME)]}/>
                             <label for="nfo_rename">
                                 <span class="component-title">Rename .nfo file</span>
                                 <span class="component-desc">Rename the original .nfo file to .nfo-orig to avoid conflicts?</span>
                             </label>
                         </div>
-
-                        <div class="field-pair">
-                            <input type="checkbox" name="rename_episodes" id="rename_episodes" ${('', 'checked="checked"')[bool(sickbeard.RENAME_EPISODES)]}/>
-                            <label for="rename_episodes">
-                                <span class="component-title">Rename Episodes</span>
-                                <span class="component-desc">Rename episode using the Episode Naming settings?</span>
-                            </label>
-                        </div>
-
                         <div class="field-pair">
                             <input type="checkbox" name="airdate_episodes" id="airdate_episodes" ${('', 'checked="checked"')[bool(sickbeard.AIRDATE_EPISODES)]}/>
                             <label for="airdate_episodes">
@@ -181,46 +158,6 @@
                                 <span class="component-desc"><b>NOTE:</b> Some systems may ignore this feature.</span>
                             </label>
                         </div>
-
-                        <div class="field-pair">
-                            <input type="checkbox" name="process_automatically" id="process_automatically" ${('', 'checked="checked"')[bool(sickbeard.PROCESS_AUTOMATICALLY)]}/>
-                            <label for="process_automatically">
-                                <span class="component-title">Scan and Process</span>
-                                <span class="component-desc">Scan and post-process any files in your <i>TV Download Dir</i>?</span>
-                            </label>
-                            <label class="nocheck" for="process_automatically">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><b>NOTE:</b> Do not use if you use PostProcesing external script</span>
-                            </label>
-                            <label class="nocheck">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">eg. NZBMedia w/ NZBGET, sabToSickbeard w/ SABnzbd+!</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <input type="checkbox" name="no_delete" id="no_delete" ${('', 'checked="checked"')[bool(sickbeard.NO_DELETE)]}/>
-                            <label for="no_delete">
-                                <span class="component-title">Don't delete empty folders</span>
-                                <span class="component-desc">Leave empty folders when Post Processing?</span>
-                            </label>
-                            <label class="nocheck" for="no_delete">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><b>NOTE:</b> Can be overridden using manual Post Processing</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label class="nocheck">
-                                <span class="component-title">Auto Post-Processing Frequency</span>
-                                <input type="text" name="autopostprocesser_frequency" id="autopostprocesser_frequency" value="${sickbeard.AUTOPOSTPROCESSER_FREQUENCY}" class="form-control input-sm input75" />
-                            </label>
-                            <label class="nocheck">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Time in minutes to check for new files to auto post-process (eg. 10)</span>
-                            </label>
-                        </div>
-
                         <div class="field-pair">
                             <input id="unpack" type="checkbox" name="unpack" ${('', 'checked="checked"')[bool(sickbeard.UNPACK)]} />
                             <label for="unpack">
@@ -232,7 +169,24 @@
                                 <span class="component-desc"><b>NOTE:</b> Only working with RAR archive</span>
                             </label>
                         </div>
-
+                        <div class="field-pair">
+                            <input type="checkbox" name="del_rar_contents" id="del_rar_contents" ${('', 'checked="checked"')[bool(sickbeard.DELRARCONTENTS)]}/>
+                            <label for="del_rar_contents">
+                                <span class="component-title">Delete RAR contents</span>
+                                <span class="component-desc">Delete content of RAR files, even if Process Method not set to move?</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
+                            <input type="checkbox" name="no_delete" id="no_delete" ${('', 'checked="checked"')[bool(sickbeard.NO_DELETE)]}/>
+                            <label for="no_delete">
+                                <span class="component-title">Don't delete empty folders</span>
+                                <span class="component-desc">Leave empty folders when Post Processing?</span>
+                            </label>
+                            <label class="nocheck" for="no_delete">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc"><b>NOTE:</b> Can be overridden using manual Post Processing</span>
+                            </label>
+                        </div>
                         <div class="field-pair">
                             <input id="use_failed_downloads" type="checkbox" class="enabler" name="use_failed_downloads" ${('', 'checked="checked"')[bool(sickbeard.USE_FAILED_DOWNLOADS)]}/>
                             <label for="use_failed_downloads">
@@ -243,7 +197,6 @@
                                 <span class="component-title">&nbsp;</span>
                             </label>
                         </div>
-
                         <div id="content_use_failed_downloads">
                             <div class="field-pair">
                                 <input id="delete_failed" type="checkbox" name="delete_failed" ${('', 'checked="checked"')[bool(sickbeard.DELETE_FAILED)]}/>
@@ -256,14 +209,20 @@
                                     <span class="component-desc"><b>NOTE:</b> This only works if Use Failed Downloads is enabled.</span>
                                 </label>
                             </div>
-
                         </div>
-
+                        <div class="field-pair">
+                            <label class="nocheck">
+                                <span class="component-title">Extra Scripts</span>
+                                <input type="text" name="extra_scripts" value="${'|'.join(sickbeard.EXTRA_SCRIPTS)}" class="form-control input-sm input350" />
+                            </label>
+                            <label class="nocheck">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">See <a href="https://github.com/SiCKRAGETV/sickrage-issues/wiki/Post-Processing#extra-scripts"><font color='red'><b>Wiki</b></font></a> for script arguments description and usage.</span>
+                            </label>
+                        </div>
                         <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
-
                     </fieldset>
                 </div><!-- /component-group1 //-->
-
                 <div id="core-component-group2" class="component-group">
 
                     <div class="component-group-desc">
