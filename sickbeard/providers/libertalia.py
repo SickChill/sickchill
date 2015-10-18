@@ -53,7 +53,7 @@ class LibertaliaProvider(generic.TorrentProvider):
         self.url = "https://libertalia.me"
         self.urlsearch = "https://libertalia.me/torrents.php?name=%s%s"
 
-        self.categories = "&cat%5B%5D=9"
+        self.categories = "&cat%5B%5D=9&cat%5B%5D=10"
 
         self.enabled = False
         self.username = None
