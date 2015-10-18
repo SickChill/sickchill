@@ -585,8 +585,8 @@ class Tvdb:
             raise tvdb_error("Connection error " + str(e.message) + " while loading URL " + str(url))
         except requests.exceptions.Timeout, e:
             raise tvdb_error("Connection timed out " + str(e.message) + " while loading URL " + str(url))
-        except Exception:
-            raise tvdb_error("Unknown exception while loading URL " + url + ": " + traceback.format_exc())
+        except Exception as e:
+            raise tvdb_error("Unknown exception while loading URL " + url + ": " + repr(e))
 
         def process(path, key, value):
             key = key.lower()
