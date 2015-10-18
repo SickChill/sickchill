@@ -307,7 +307,7 @@ class QueueItemAdd(ShowQueueItem):
                 return
         except Exception, e:
             logger.log(u"Show name with ID %s doesn't exist on %s anymore. If you are using trakt, it will be removed from your TRAKT watchlist. If you are adding manually, try removing the nfo and adding again" %
-                (self.indexer_id,sickbeard.indexerApi(self.indexer).name) , logger.ERROR)
+                (self.indexer_id,sickbeard.indexerApi(self.indexer).name) , logger.WARNING)
 
             ui.notifications.error("Unable to add show",
                                    "Unable to look up the show in " + self.showDir + " on " + str(sickbeard.indexerApi(
