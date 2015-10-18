@@ -198,13 +198,13 @@ class TIVOMetadata(generic.GenericMetadata):
                     ep_obj.show.indexer).name + "... has it been removed? Should I delete from db?")
                 return None
 
-            if getattr(myEp, 'firstaired', None) is None and ep_obj.season == 0:
+            if ep_obj.season == 0 and not getattr(myEp, 'firstaired', None):
                 myEp["firstaired"] = str(datetime.date.fromordinal(1))
 
-            if getattr(myEp, 'episodename', None) is None or getattr(myEp, 'firstaired', None) is None:
+            if not (getattr(myEp, 'episodename', None) and getattr(myEp, 'firstaired', None)):
                 return None
 
-            if getattr(myShow, 'seriesname', None) is not None:
+            if getattr(myShow, 'seriesname', None):
                 data += ("title : " + myShow["seriesname"] + "\n")
                 data += ("seriesTitle : " + myShow["seriesname"] + "\n")
 
@@ -240,11 +240,11 @@ class TIVOMetadata(generic.GenericMetadata):
 
             # Usually starts with "SH" and followed by 6-8 digits.
             # Tivo uses zap2it for thier data, so the series id is the zap2it_id.
-            if getattr(myShow, 'zap2it_id', None) is not None:
+            if getattr(myShow, 'zap2it_id', None):
                 data += ("seriesId : " + myShow["zap2it_id"] + "\n")
 
             # This is the call sign of the channel the episode was recorded from.
-            if getattr(myShow, 'network', None) is not None:
+            if getattr(myShow, 'network', None):
                 data += ("callsign : " + myShow["network"] + "\n")
 
             # This must be entered as yyyy-mm-ddThh:mm:ssZ (the t is capitalized and never changes, the Z is also
@@ -254,13 +254,13 @@ class TIVOMetadata(generic.GenericMetadata):
                 data += ("originalAirDate : " + str(curEpToWrite.airdate) + "T00:00:00Z\n")
 
             # This shows up at the beginning of the description on the Program screen and on the Details screen.
-            if getattr(myShow, 'actors', None) is not None:
-                for actor in myShow["actors"].split('|'):
-                    if actor:
-                        data += ("vActor : " + actor + "\n")
+            if getattr(myShow, '_actors', None):
+                for actor in myShow["_actors"]:
+                    if 'name' in actor and actor['name'].strip():
+                        data += ("vActor : " + actor['name'].strip() + "\n")
 
             # This is shown on both the Program screen and the Details screen.
-            if getattr(myEp, 'rating', None) is not None:
+            if getattr(myEp, 'rating', None):
                 try:
                     rating = float(myEp['rating'])
                 except ValueError:
@@ -272,7 +272,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
             # This is shown on both the Program screen and the Details screen.
             # It uses the standard TV rating system of: TV-Y7, TV-Y, TV-G, TV-PG, TV-14, TV-MA and TV-NR.
-            if getattr(myShow, 'contentrating', None) is not None:
+            if getattr(myShow, 'contentrating', None):
                 data += ("tvRating : " + str(myShow["contentrating"]) + "\n")
 
             # This field can be repeated as many times as necessary or omitted completely.
