@@ -71,6 +71,15 @@
                         </div>
 
                         <div class="field-pair">
+                            <label for="">
+                                <span class="component-title">Archive on first match</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" id="archive_firstmatch" name="archive_firstmatch" ${('', 'checked="checked"')[show.archive_firstmatch == 1]} /> archive episode after the first best match is found from your archive quality list
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
                             <label for="defaultEpStatusSelect">
                                 <span class="component-title">Default Episode Status</span>
                                 <span class="component-desc">
@@ -189,15 +198,6 @@
                 <div class="component-group">
                     <h3>Advanced Settings</h3>
                     <fieldset class="component-group-list">
-
-                        <div class="field-pair">
-                            <label for="">
-                                <span class="component-title">Archive on first match</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" id="archive_firstmatch" name="archive_firstmatch" ${('', 'checked="checked"')[show.archive_firstmatch == 1]} /> archive episode after the first best match is found from your archive quality list
-                                </span>
-                            </label>
-                        </div>
 
                         <div class="field-pair">
                             <label for="rls_ignore_words">
