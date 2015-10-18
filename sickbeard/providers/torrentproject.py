@@ -82,9 +82,16 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                     hash = torrents[i]["torrent_hash"]
                     size = int(torrents[i]["torrent_size"])
 
-                    trackerUrl = self.urls['api'] + "" + hash + "/trackers_json"
-                    jdata = self.getURL(trackerUrl, json=True)
-                    download_url = "magnet:?xt=urn:btih:" + hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
+                    if seeders < 10 :
+                        logger.log("Torrent has less than 10 seeds getting dyn trackers: " + title, logger.DEBUG)
+                        trackerUrl = self.urls['api'] + "" + hash + "/trackers_json"
+                        jdata = self.getURL(trackerUrl, json=True)
+                        download_url = "magnet:?xt=urn:btih:" + hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
+                        logger.log("Dyn Magnet: " + download_url, logger.DEBUG)
+                    else:
+                        #logger.log("Torrent has more than 10 seeds using hard coded trackers", logger.DEBUG)
+                        download_url = "magnet:?xt=urn:btih:" + hash + "&dn=" + title + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.publicbt.com:80&tr=http://tracker.coppersurfer.tk:6969/announce&tr=http://genesis.1337x.org:1337/announce&tr=http://nemesis.1337x.org/announce&tr=http://erdgeist.org/arts/software/opentracker/announce&tr=http://tracker.ccc.de/announce&tr=http://www.eddie4.nl:6969/announce&tr=http://tracker.leechers-paradise.org:6969/announce"					
+				
 
                     if not all([title, download_url]):
                         continue
