@@ -1313,11 +1313,11 @@ class Home(WebRoot):
 
             if showObj.is_anime:
                 return t.render(show=show, scene_exceptions=scene_exceptions, groups=groups, whitelist=whitelist,
-                                blacklist=blacklist, title='Edit Shows', header='Edit Shows')
+                                blacklist=blacklist, title='Edit Show', header='Edit Show')
             else:
-                return t.render(show=show, scene_exceptions=scene_exceptions, title='Edit Shows', header='Edit Shows')
+                return t.render(show=show, scene_exceptions=scene_exceptions, title='Edit Show', header='Edit Show')
 
-        flatten_folders = config.checkbox_to_value(flatten_folders)
+        flatten_folders = not config.checkbox_to_value(flatten_folders) # UI inverts this value
         dvdorder = config.checkbox_to_value(dvdorder)
         archive_firstmatch = config.checkbox_to_value(archive_firstmatch)
         paused = config.checkbox_to_value(paused)
