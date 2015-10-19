@@ -1,7 +1,7 @@
 # Author: Bill Nasty
 # URL: https://github.com/SiCKRAGETV/SickRage
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,21 +18,11 @@
 
 import re
 import traceback
-import datetime
 
-import sickbeard
-import generic
-
-from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import db
-from sickbeard import classes
-from sickbeard import helpers
-from sickbeard import show_name_helpers
+from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
-from unidecode import unidecode
-from sickbeard.helpers import sanitizeSceneName
 
 
 class AlphaRatioProvider(generic.TorrentProvider):
@@ -54,11 +44,10 @@ class AlphaRatioProvider(generic.TorrentProvider):
         self.cache = AlphaRatioCache(self)
 
         self.urls = {'base_url': 'http://alpharatio.cc/',
-                'login': 'http://alpharatio.cc/login.php',
-                'detail': 'http://alpharatio.cc/torrents.php?torrentid=%s',
-                'search': 'http://alpharatio.cc/torrents.php?searchstr=%s%s',
-                'download': 'http://alpharatio.cc/%s',
-                }
+                     'login': 'http://alpharatio.cc/login.php',
+                     'detail': 'http://alpharatio.cc/torrents.php?torrentid=%s',
+                     'search': 'http://alpharatio.cc/torrents.php?searchstr=%s%s',
+                     'download': 'http://alpharatio.cc/%s'}
 
         self.catagories = "&filter_cat[1]=1&filter_cat[2]=1&filter_cat[3]=1&filter_cat[4]=1&filter_cat[5]=1"
 
@@ -71,10 +60,9 @@ class AlphaRatioProvider(generic.TorrentProvider):
         login_params = {'username': self.username,
                         'password': self.password,
                         'remember_me': 'on',
-                        'login': 'submit',
-        }
+                        'login': 'submit'}
 
-        response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -102,7 +90,7 @@ class AlphaRatioProvider(generic.TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (search_string, self.catagories)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
                 data = self.getURL(searchURL)
                 if not data:
@@ -120,13 +108,12 @@ class AlphaRatioProvider(generic.TorrentProvider):
 
                         for result in torrent_rows[1:]:
                             cells = result.find_all('td')
-                            link = result.find('a', attrs = {'dir': 'ltr'})
-                            url = result.find('a', attrs = {'title': 'Download'})
+                            link = result.find('a', attrs={'dir': 'ltr'})
+                            url = result.find('a', attrs={'title': 'Download'})
 
                             try:
                                 title = link.contents[0]
                                 download_url = self.urls['download'] % (url['href'])
-                                id = link['href'][-6:]
                                 seeders = cells[len(cells)-2].contents[0]
                                 leechers = cells[len(cells)-1].contents[0]
                                 #FIXME
@@ -150,7 +137,7 @@ class AlphaRatioProvider(generic.TorrentProvider):
                             items[mode].append(item)
 
                 except Exception, e:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
             #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
@@ -159,43 +146,14 @@ class AlphaRatioProvider(generic.TorrentProvider):
 
         return results
 
-    def findPropers(self, search_date=datetime.datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        if not sqlResults:
-            return []
-
-        for sqlshow in sqlResults:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(searchString[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
-
-        return results
-
     def seedRatio(self):
         return self.ratio
 
 class AlphaRatioCache(tvcache.TVCache):
 
-    def __init__(self, provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # only poll AlphaRatio every 20 minutes max
         self.minTime = 20
