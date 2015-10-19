@@ -30,10 +30,11 @@ from sickrage.helper.exceptions import ex
 
 
 class SNI_Tests(unittest.TestCase):
+    self_signed_cert_providers = ["Womble's Index", "Libertalia"]
     def test_SNI_URLS(self):
         print ''
         #Just checking all providers - we should make this error on non-existent urls.
-        for provider in providers.makeProviderList():
+        for provider in [provider for provider in providers.makeProviderList() if provider.name not in self.self_signed_cert_providers]:
             print 'Checking %s' % provider.name
             try:
                 requests.head(provider.url, verify=certifi.where(), timeout=5)
@@ -45,7 +46,6 @@ class SNI_Tests(unittest.TestCase):
                     raise
                 else:
                     print  'Cannot verify certificate for %s' % provider.name
-                    pass
             except Exception:
                 pass
 
