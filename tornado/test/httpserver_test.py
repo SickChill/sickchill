@@ -32,6 +32,7 @@ def read_stream_body(stream, callback):
     """Reads an HTTP response from `stream` and runs callback with its
     headers and body."""
     chunks = []
+
     class Delegate(HTTPMessageDelegate):
         def headers_received(self, start_line, headers):
             self.headers = headers
@@ -161,19 +162,22 @@ class BadSSLOptionsTest(unittest.TestCase):
         application = Application()
         module_dir = os.path.dirname(__file__)
         existing_certificate = os.path.join(module_dir, 'test.crt')
+        existing_key = os.path.join(module_dir, 'test.key')
 
-        self.assertRaises(ValueError, HTTPServer, application, ssl_options={
-                          "certfile": "/__mising__.crt",
+        self.assertRaises((ValueError, IOError),
+                          HTTPServer, application, ssl_options={
+                              "certfile": "/__mising__.crt",
                           })
-        self.assertRaises(ValueError, HTTPServer, application, ssl_options={
-                          "certfile": existing_certificate,
-                          "keyfile": "/__missing__.key"
+        self.assertRaises((ValueError, IOError),
+                          HTTPServer, application, ssl_options={
+                              "certfile": existing_certificate,
+                              "keyfile": "/__missing__.key"
                           })
 
         # This actually works because both files exist
         HTTPServer(application, ssl_options={
                    "certfile": existing_certificate,
-                   "keyfile": existing_certificate
+                   "keyfile": existing_key,
                    })
 
 
@@ -589,6 +593,7 @@ class KeepAliveTest(AsyncHTTPTestCase):
         class HelloHandler(RequestHandler):
             def get(self):
                 self.finish('Hello world')
+
             def post(self):
                 self.finish('Hello world')
 
@@ -863,6 +868,7 @@ class StreamingChunkSizeTest(AsyncHTTPTestCase):
     def test_chunked_compressed(self):
         compressed = self.compress(self.BODY)
         self.assertGreater(len(compressed), 20)
+
         def body_producer(write):
             write(compressed[:20])
             write(compressed[20:])
@@ -1052,6 +1058,15 @@ class LegacyInterfaceTest(AsyncHTTPTestCase):
         # delegate interface, and writes its response via request.write
         # instead of request.connection.write_headers.
         def handle_request(request):
+            self.http1 = request.version.startswith("HTTP/1.")
+            if not self.http1:
+                # This test will be skipped if we're using HTTP/2,
+                # so just close it out cleanly using the modern interface.
+                request.connection.write_headers(
+                    ResponseStartLine('', 200, 'OK'),
+                    HTTPHeaders())
+                request.connection.finish()
+                return
             message = b"Hello world"
             request.write(utf8("HTTP/1.1 200 OK\r\n"
                                "Content-Length: %d\r\n\r\n" % len(message)))
@@ -1061,4 +1076,6 @@ class LegacyInterfaceTest(AsyncHTTPTestCase):
 
     def test_legacy_interface(self):
         response = self.fetch('/')
+        if not self.http1:
+            self.skipTest("requires HTTP/1.x")
         self.assertEqual(response.body, b"Hello world")

@@ -7,7 +7,7 @@ from tornado.httpclient import HTTPResponse, HTTPError, AsyncHTTPClient, main, _
 from tornado import httputil
 from tornado.http1connection import HTTP1Connection, HTTP1ConnectionParameters
 from tornado.iostream import StreamClosedError
-from tornado.netutil import Resolver, OverrideResolver
+from tornado.netutil import Resolver, OverrideResolver, _client_ssl_defaults
 from tornado.log import gen_log
 from tornado import stack_context
 from tornado.tcpclient import TCPClient
@@ -50,9 +50,6 @@ class SimpleAsyncHTTPClient(AsyncHTTPClient):
     """Non-blocking HTTP client with no external dependencies.
 
     This class implements an HTTP 1.1 client on top of Tornado's IOStreams.
-    It does not currently implement all applicable parts of the HTTP
-    specification, but it does enough to work with major web service APIs.
-
     Some features found in the curl-based AsyncHTTPClient are not yet
     supported.  In particular, proxies are not supported, connections
     are not reused, and callers cannot select the network interface to be
@@ -60,25 +57,39 @@ class SimpleAsyncHTTPClient(AsyncHTTPClient):
     """
     def initialize(self, io_loop, max_clients=10,
                    hostname_mapping=None, max_buffer_size=104857600,
-                   resolver=None, defaults=None, max_header_size=None):
+                   resolver=None, defaults=None, max_header_size=None,
+                   max_body_size=None):
         """Creates a AsyncHTTPClient.
 
         Only a single AsyncHTTPClient instance exists per IOLoop
         in order to provide limitations on the number of pending connections.
-        force_instance=True may be used to suppress this behavior.
+        ``force_instance=True`` may be used to suppress this behavior.
 
-        max_clients is the number of concurrent requests that can be
-        in progress.  Note that this arguments are only used when the
-        client is first created, and will be ignored when an existing
-        client is reused.
+        Note that because of this implicit reuse, unless ``force_instance``
+        is used, only the first call to the constructor actually uses
+        its arguments. It is recommended to use the ``configure`` method
+        instead of the constructor to ensure that arguments take effect.
 
-        hostname_mapping is a dictionary mapping hostnames to IP addresses.
+        ``max_clients`` is the number of concurrent requests that can be
+        in progress; when this limit is reached additional requests will be
+        queued. Note that time spent waiting in this queue still counts
+        against the ``request_timeout``.
+
+        ``hostname_mapping`` is a dictionary mapping hostnames to IP addresses.
         It can be used to make local DNS changes when modifying system-wide
-        settings like /etc/hosts is not possible or desirable (e.g. in
+        settings like ``/etc/hosts`` is not possible or desirable (e.g. in
         unittests).
 
-        max_buffer_size is the number of bytes that can be read by IOStream. It
-        defaults to 100mb.
+        ``max_buffer_size`` (default 100MB) is the number of bytes
+        that can be read into memory at once. ``max_body_size``
+        (defaults to ``max_buffer_size``) is the largest response body
+        that the client will accept.  Without a
+        ``streaming_callback``, the smaller of these two limits
+        applies; with a ``streaming_callback`` only ``max_body_size``
+        does.
+
+        .. versionchanged:: 4.2
+           Added the ``max_body_size`` argument.
         """
         super(SimpleAsyncHTTPClient, self).initialize(io_loop,
                                                       defaults=defaults)
@@ -88,6 +99,7 @@ class SimpleAsyncHTTPClient(AsyncHTTPClient):
         self.waiting = {}
         self.max_buffer_size = max_buffer_size
         self.max_header_size = max_header_size
+        self.max_body_size = max_body_size
         # TCPClient could create a Resolver for us, but we have to do it
         # ourselves to support hostname_mapping.
         if resolver:
@@ -135,10 +147,14 @@ class SimpleAsyncHTTPClient(AsyncHTTPClient):
                 release_callback = functools.partial(self._release_fetch, key)
                 self._handle_request(request, release_callback, callback)
 
+    def _connection_class(self):
+        return _HTTPConnection
+
     def _handle_request(self, request, release_callback, final_callback):
-        _HTTPConnection(self.io_loop, self, request, release_callback,
-                        final_callback, self.max_buffer_size, self.tcp_client,
-                        self.max_header_size)
+        self._connection_class()(
+            self.io_loop, self, request, release_callback,
+            final_callback, self.max_buffer_size, self.tcp_client,
+            self.max_header_size, self.max_body_size)
 
     def _release_fetch(self, key):
         del self.active[key]
@@ -166,7 +182,7 @@ class _HTTPConnection(httputil.HTTPMessageDelegate):
 
     def __init__(self, io_loop, client, request, release_callback,
                  final_callback, max_buffer_size, tcp_client,
-                 max_header_size):
+                 max_header_size, max_body_size):
         self.start_time = io_loop.time()
         self.io_loop = io_loop
         self.client = client
@@ -176,6 +192,7 @@ class _HTTPConnection(httputil.HTTPMessageDelegate):
         self.max_buffer_size = max_buffer_size
         self.tcp_client = tcp_client
         self.max_header_size = max_header_size
+        self.max_body_size = max_body_size
         self.code = None
         self.headers = None
         self.chunks = []
@@ -220,12 +237,24 @@ class _HTTPConnection(httputil.HTTPMessageDelegate):
 
     def _get_ssl_options(self, scheme):
         if scheme == "https":
+            if self.request.ssl_options is not None:
+                return self.request.ssl_options
+            # If we are using the defaults, don't construct a
+            # new SSLContext.
+            if (self.request.validate_cert and
+                    self.request.ca_certs is None and
+                    self.request.client_cert is None and
+                    self.request.client_key is None):
+                return _client_ssl_defaults
             ssl_options = {}
             if self.request.validate_cert:
                 ssl_options["cert_reqs"] = ssl.CERT_REQUIRED
             if self.request.ca_certs is not None:
                 ssl_options["ca_certs"] = self.request.ca_certs
-            else:
+            elif not hasattr(ssl, 'create_default_context'):
+                # When create_default_context is present,
+                # we can omit the "ca_certs" parameter entirely,
+                # which avoids the dependency on "certifi" for py34.
                 ssl_options["ca_certs"] = _default_ca_certs()
             if self.request.client_key is not None:
                 ssl_options["keyfile"] = self.request.client_key
@@ -317,9 +346,9 @@ class _HTTPConnection(httputil.HTTPMessageDelegate):
             body_present = (self.request.body is not None or
                             self.request.body_producer is not None)
             if ((body_expected and not body_present) or
-                (body_present and not body_expected)):
+                    (body_present and not body_expected)):
                 raise ValueError(
-                    'Body must %sbe None for method %s (unelss '
+                    'Body must %sbe None for method %s (unless '
                     'allow_nonstandard_methods is true)' %
                     ('not ' if body_expected else '', self.request.method))
         if self.request.expect_100_continue:
@@ -336,14 +365,7 @@ class _HTTPConnection(httputil.HTTPMessageDelegate):
             self.request.headers["Accept-Encoding"] = "gzip"
         req_path = ((self.parsed.path or '/') +
                     (('?' + self.parsed.query) if self.parsed.query else ''))
-        self.stream.set_nodelay(True)
-        self.connection = HTTP1Connection(
-            self.stream, True,
-            HTTP1ConnectionParameters(
-                no_keep_alive=True,
-                max_header_size=self.max_header_size,
-                decompress=self.request.decompress_response),
-            self._sockaddr)
+        self.connection = self._create_connection(stream)
         start_line = httputil.RequestStartLine(self.request.method,
                                                req_path, '')
         self.connection.write_headers(start_line, self.request.headers)
@@ -352,10 +374,21 @@ class _HTTPConnection(httputil.HTTPMessageDelegate):
         else:
             self._write_body(True)
 
+    def _create_connection(self, stream):
+        stream.set_nodelay(True)
+        connection = HTTP1Connection(
+            stream, True,
+            HTTP1ConnectionParameters(
+                no_keep_alive=True,
+                max_header_size=self.max_header_size,
+                max_body_size=self.max_body_size,
+                decompress=self.request.decompress_response),
+            self._sockaddr)
+        return connection
+
     def _write_body(self, start_read):
         if self.request.body is not None:
             self.connection.write(self.request.body)
-            self.connection.finish()
         elif self.request.body_producer is not None:
             fut = self.request.body_producer(self.connection.write)
             if is_future(fut):
@@ -366,7 +399,7 @@ class _HTTPConnection(httputil.HTTPMessageDelegate):
                         self._read_response()
                 self.io_loop.add_future(fut, on_body_written)
                 return
-            self.connection.finish()
+        self.connection.finish()
         if start_read:
             self._read_response()
 
