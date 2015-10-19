@@ -315,7 +315,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
     :return: True if dir is valid for processing, False if not
     """
 
-    IGNORED_FOLDERS = ['.@__thumb', '@eaDir']
+    IGNORED_FOLDERS = ['.AppleDouble', '.@__thumb', '@eaDir']
     folder_name = ek(os.path.basename, dirName)
     if folder_name in IGNORED_FOLDERS:
         return False
