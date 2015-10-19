@@ -35,9 +35,8 @@ from sickbeard import naming
 from sickbeard import subtitles
 from sickbeard import network_timezones
 from sickbeard.providers import newznab, rsstorrent
-from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
+from sickbeard.common import Quality, Overview, statusStrings, cpu_presets
 from sickbeard.common import SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
-from sickbeard.common import SD, HD720p, HD1080p
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
 from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
@@ -83,6 +82,7 @@ from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
+
 
 class PageTemplate(MakoTemplate):
 
@@ -1313,11 +1313,11 @@ class Home(WebRoot):
 
             if showObj.is_anime:
                 return t.render(show=show, scene_exceptions=scene_exceptions, groups=groups, whitelist=whitelist,
-                                blacklist=blacklist, title='Edit Shows', header='Edit Shows')
+                                blacklist=blacklist, title='Edit Show', header='Edit Show')
             else:
-                return t.render(show=show, scene_exceptions=scene_exceptions, title='Edit Shows', header='Edit Shows')
+                return t.render(show=show, scene_exceptions=scene_exceptions, title='Edit Show', header='Edit Show')
 
-        flatten_folders = config.checkbox_to_value(flatten_folders)
+        flatten_folders = not config.checkbox_to_value(flatten_folders) # UI inverts this value
         dvdorder = config.checkbox_to_value(dvdorder)
         archive_firstmatch = config.checkbox_to_value(archive_firstmatch)
         paused = config.checkbox_to_value(paused)
@@ -1475,10 +1475,10 @@ class Home(WebRoot):
     def deleteShow(self, show=None, full=0):
         if show:
             error, show = Show.delete(show, full)
-    
+
             if error is not None:
                 return self._genericMessage('Error', error)
-    
+
             ui.notifications.message(
                 '%s has been %s %s' %
                 (
@@ -1487,7 +1487,7 @@ class Home(WebRoot):
                     ('(media untouched)', '(with all related media)')[bool(full)]
                 )
             )
-    
+
             time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         # Don't redirect to the default page, so the user can confirm that the show was deleted
@@ -4422,14 +4422,14 @@ class ConfigProviders(Config):
                         kwargs[curTorrentProvider.getID() + '_ranked'])
                 except:
                     curTorrentProvider.ranked = 0
-	
+
             if hasattr(curTorrentProvider, 'engrelease'):
                 try:
                     curTorrentProvider.engrelease = config.checkbox_to_value(
                         kwargs[curTorrentProvider.getID() + '_engrelease'])
                 except:
                     curTorrentProvider.engrelease = 0
-					
+
             if hasattr(curTorrentProvider, 'sorting'):
                 try:
                     curTorrentProvider.sorting = str(kwargs[curTorrentProvider.getID() + '_sorting']).strip()

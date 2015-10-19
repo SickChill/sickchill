@@ -18,6 +18,9 @@
 
 import sickbeard
 
+from datetime import date
+from sickbeard.common import Quality, SKIPPED, WANTED
+from sickbeard.db import DBConnection
 from sickbeard.helpers import findCertainShow
 from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, ex
 from sickrage.helper.exceptions import MultipleShowObjectsException
@@ -49,6 +52,48 @@ class Show:
             return ex(exception), show
 
         return None, show
+
+    @staticmethod
+    def overall_stats():
+        db = DBConnection()
+        shows = sickbeard.showList
+        today = str(date.today().toordinal())
+
+        downloaded_status = Quality.DOWNLOADED + Quality.ARCHIVED
+        snatched_status = Quality.SNATCHED + Quality.SNATCHED_PROPER
+        total_status = [SKIPPED, WANTED]
+
+        results = db.select(
+            'SELECT airdate, status '
+            'FROM tv_episodes '
+            'WHERE season > 0 '
+            'AND episode > 0 '
+            'AND airdate > 1'
+        )
+
+        stats = {
+            'episodes': {
+                'downloaded': 0,
+                'snatched': 0,
+                'total': 0,
+            },
+            'shows': {
+                'active': len([show for show in shows if show.paused == 0 and show.status == 'Continuing']),
+                'total': len(shows),
+            },
+        }
+
+        for result in results:
+            if result['status'] in downloaded_status:
+                stats['episodes']['downloaded'] += 1
+                stats['episodes']['total'] += 1
+            elif result['status'] in snatched_status:
+                stats['episodes']['snatched'] += 1
+                stats['episodes']['total'] += 1
+            elif result['airdate'] <= today and result['status'] in total_status:
+                stats['episodes']['total'] += 1
+
+        return stats
 
     @staticmethod
     def pause(indexer_id, pause=None):

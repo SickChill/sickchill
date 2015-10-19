@@ -42,7 +42,6 @@ class ThePirateBayProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.public = True
 
-        self.enabled = False
         self.ratio = None
         self.confirmed = True
         self.minseed = None

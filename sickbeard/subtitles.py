@@ -135,7 +135,11 @@ def downloadSubtitles(subtitles_info):
             logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
             return (existing_subtitles, None)
 
-        subliminal.save_subtitles(video, found_subtitles[video], directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI, encoding='utf-8')
+        for index, subtitle in enumerate(found_subtitles[video]):
+            encoding = subliminal.subtitle.Subtitle.guess_encoding(subtitle)
+            found_subtitles[video][index].encoding = encoding
+
+        subliminal.save_subtitles(video, found_subtitles[video], directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI)
 
         for video, subtitles in found_subtitles.iteritems():
             for subtitle in subtitles:
@@ -218,7 +222,7 @@ def subtitlesLanguages(video_path):
         subtitle_languages = external_subtitle_languages.union(embedded_subtitle_languages)
         if not sickbeard.SUBTITLES_MULTI:
             currentWantedLanguages = wantedLanguages()
-            if len(currentWantedLanguages) is 1 and Language('und') in external_subtitle_languages:
+            if len(currentWantedLanguages) == 1 and Language('und') in external_subtitle_languages:
                 if embedded_subtitle_languages not in currentWantedLanguages and Language('und') in embedded_subtitle_languages:
                     # TODO: Replace with a checkbox
                     subtitle_languages.add(fromietf(currentWantedLanguages[0]))
@@ -230,7 +234,7 @@ def subtitlesLanguages(video_path):
     else:
         subtitle_languages = scan_subtitle_languages(video_path)
         if not sickbeard.SUBTITLES_MULTI:
-            if len(wantedLanguages()) is 1 and Language('und') in subtitle_languages:
+            if len(wantedLanguages()) == 1 and Language('und') in subtitle_languages:
                 subtitle_languages.remove(Language('und'))
                 subtitle_languages.add(fromietf(wantedLanguages()[0]))
                 save_subtitles = True

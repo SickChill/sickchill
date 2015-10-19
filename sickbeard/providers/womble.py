@@ -25,7 +25,6 @@ from sickbeard import tvcache
 class WombleProvider(generic.NZBProvider):
     def __init__(self):
         generic.NZBProvider.__init__(self, "Womble's Index")
-        self.enabled = False
         self.public = True
         self.cache = WombleCache(self)
         self.urls = {'base_url': 'https://newshost.co.za/'}
@@ -36,8 +35,8 @@ class WombleProvider(generic.NZBProvider):
 
 
 class WombleCache(tvcache.TVCache):
-    def __init__(self, provider):
-        tvcache.TVCache.__init__(self, provider)
+    def __init__(self, provider_obj):
+        tvcache.TVCache.__init__(self, provider_obj)
         # only poll Womble's Index every 15 minutes max
         self.minTime = 15
 

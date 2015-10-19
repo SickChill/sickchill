@@ -151,8 +151,8 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
 
 
 class OmgwtfnzbsCache(tvcache.TVCache):
-    def __init__(self, provider):
-        tvcache.TVCache.__init__(self, provider)
+    def __init__(self, provider_obj):
+        tvcache.TVCache.__init__(self, provider_obj)
         self.minTime = 20
 
     def _get_title_and_url(self, item):

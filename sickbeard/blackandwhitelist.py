@@ -19,6 +19,7 @@
 
 import sickbeard
 from sickbeard import db, logger, helpers
+from adba.aniDBerrors import AniDBCommandTimeoutError
 
 class BlackAndWhiteList(object):
     blacklist = []
@@ -145,13 +146,19 @@ def short_group_names(groups):
     shortGroupList = []
     if helpers.set_up_anidb_connection():
         for groupName in groups:
-            group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
-            for line in group.datalines:
-                if line["shortname"]:
-                    shortGroupList.append(line["shortname"])
-                else:
-                    if not groupName in shortGroupList:
-                        shortGroupList.append(groupName)
+            try:
+                group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
+            except AniDBCommandTimeoutError:
+                logger.log(u"Timeout while loading group from AniDB. Trying next group", logger.DEBUG)
+            except:
+                logger.log(u"Failed while loading group from AniDB. Trying next group", logger.DEBUG)
+            else:
+                for line in group.datalines:
+                    if line["shortname"]:
+                        shortGroupList.append(line["shortname"])
+                    else:
+                        if not groupName in shortGroupList:
+                            shortGroupList.append(groupName)
     else:
         shortGroupList = groups
     return shortGroupList

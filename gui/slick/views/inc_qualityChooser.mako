@@ -3,9 +3,6 @@
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
 %>
 
-<div class="field-pair">
-    <label for="qualityPreset">
-
 <%
 if not show is UNDEFINED:
     __quality = int(show.quality)
@@ -18,18 +15,13 @@ bestQualities = qualities[1]
 %>
 
 <% overall_quality = Quality.combineQualities(anyQualities, bestQualities) %>
-<span class="component-title">Preferred quality of episodes to be download</span>
-<span class="component-desc">
 <% selected = None %>
 <select id="qualityPreset" class="form-control form-control-inline input-sm">
-<option value="0">Custom</option>
-% for curPreset in sorted(qualityPresets):
-<option value="${curPreset}" ${('', 'selected="selected"')[curPreset == overall_quality]} ${('', 'style="padding-left: 15px;"')[qualityPresetStrings[curPreset].endswith("0p")]}>${qualityPresetStrings[curPreset]}</option>
-% endfor
+    <option value="0">Custom</option>
+    % for curPreset in sorted(qualityPresets):
+        <option value="${curPreset}" ${('', 'selected="selected"')[curPreset == overall_quality]} ${('', 'style="padding-left: 15px;"')[qualityPresetStrings[curPreset].endswith("0p")]}>${qualityPresetStrings[curPreset]}</option>
+    % endfor
 </select>
-</span>
-    </label>
-</div>
 
 <div id="customQualityWrapper">
     <div id="customQuality">

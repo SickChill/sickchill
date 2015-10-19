@@ -1,2 +1,0 @@
-mako
-pyopenssl==0.13.1

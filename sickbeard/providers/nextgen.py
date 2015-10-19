@@ -248,9 +248,9 @@ class NextGenProvider(generic.TorrentProvider):
 
 
 class NextGenCache(tvcache.TVCache):
-    def __init__(self, provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # Only poll NextGen every 10 minutes max
         self.minTime = 10
