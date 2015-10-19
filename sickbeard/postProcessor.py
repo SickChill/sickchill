@@ -55,7 +55,7 @@ class PostProcessor(object):
     EXISTS_SMALLER = 3
     DOESNT_EXIST = 4
 
-    IGNORED_FILESTRINGS = ["/.AppleDouble/", ".DS_Store"]
+    IGNORED_FILESTRINGS = [".AppleDouble", ".DS_Store"]
 
     def __init__(self, file_path, nzb_name=None, process_method=None, is_priority=None):
         """
@@ -1110,25 +1110,25 @@ class PostProcessor(object):
         try:
             # send notifications
             notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
-    
+
             # do the library update for KODI
             notifiers.kodi_notifier.update_library(ep_obj.show.name)
-    
+
             # do the library update for Plex
             notifiers.plex_notifier.update_library(ep_obj)
-    
+
             # do the library update for EMBY
             notifiers.emby_notifier.update_library(ep_obj.show)
-    
+
             # do the library update for NMJ
             # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
-    
+
             # do the library update for Synology Indexer
             notifiers.synoindex_notifier.addFile(ep_obj.location)
-    
+
             # do the library update for pyTivo
             notifiers.pytivo_notifier.update_library(ep_obj)
-    
+
             # do the library update for Trakt
             notifiers.trakt_notifier.update_library(ep_obj)
         except:
