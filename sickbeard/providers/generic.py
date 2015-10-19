@@ -440,7 +440,7 @@ class GenericProvider:
                     actual_season = parse_result.season_number
                     actual_episodes = parse_result.episode_numbers
             else:
-                if not (parse_result.is_air_by_date):
+                if not parse_result.is_air_by_date:
                     logger.log(
                         u"This is supposed to be a date search but the result " + title + " didn't parse as one, skipping it",
                         logger.DEBUG)
@@ -638,6 +638,33 @@ class TorrentProvider(GenericProvider):
             title = u'' + title.replace(' ', '.')
         return title
 
+    def findPropers(self, search_date=datetime.datetime.today()):
+
+        results = []
+
+        myDB = db.DBConnection()
+        sqlResults = myDB.select(
+            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
+            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
+            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
+            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
+            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
+        )
+
+        if not sqlResults:
+            return []
+
+        for sqlshow in sqlResults:
+            show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
+            if show:
+                curEp = show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
+                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
+
+                for item in self._doSearch(searchString[0]):
+                    title, url = self._get_title_and_url(item)
+                    results.append(classes.Proper(title, url, datetime.datetime.today(), show))
+
+        return results
 
 class ProviderProxy:
     def __init__(self):

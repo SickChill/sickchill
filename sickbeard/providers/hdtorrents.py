@@ -2,7 +2,7 @@
 # Modified by jkaberg, https://github.com/jkaberg for SceneAccess
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -258,7 +258,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
             size = size * 1024**3
         elif modifier in 'TB':
             size = size * 1024**4
-        return size
+        return int(size)
 
 class HDTorrentsCache(tvcache.TVCache):
     def __init__(self, provider):
