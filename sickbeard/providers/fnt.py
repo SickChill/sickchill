@@ -2,7 +2,7 @@
 # Author: raver2046 <raver2046@gmail.com> from djoole <bobby.djoole@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # Sick Beard is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,20 +19,12 @@
 
 import traceback
 import re
-import datetime
-from requests.auth import AuthBase
-import sickbeard
-import generic
 import requests
-from sickbeard.bs4_parser import BS4Parser
-from sickbeard.common import Quality
+
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import show_name_helpers
-from sickbeard import db
-from sickbeard import helpers
-from sickbeard import classes
-from sickbeard.helpers import sanitizeSceneName
+from sickbeard.providers import generic
+from sickbeard.bs4_parser import BS4Parser
 
 
 class FNTProvider(generic.TorrentProvider):
@@ -120,26 +112,25 @@ class FNTProvider(generic.TorrentProvider):
                             continue
 
                         if result_table:
-                            rows = result_table.findAll("tr", {"class" : "ligntorrent"} )
+                            rows = result_table.findAll("tr", {"class" : "ligntorrent"})
 
                             for row in rows:
-                                link = row.findAll('td')[1].find("a", href=re.compile("fiche_film") )
+                                link = row.findAll('td')[1].find("a", href=re.compile("fiche_film"))
 
                                 if link:
                                     try:
                                         title = link.text
-                                        download_url = self.urls['base_url'] + "/" + row.find("a", href=re.compile("download\.php"))['href']
+                                        download_url = self.urls['base_url'] + "/" + row.find("a", href=re.compile(r"download\.php"))['href']
                                     except (AttributeError, TypeError):
                                         continue
 
                                     try:
-                                        id = download_url.replace(self.urls['base_url'] + "/" + 'download.php?id=', '').replace('&amp;dl=oui', '').replace('&dl=oui', '')
-                                        defailseedleech = link['mtcontent']
-                                        seeders =  int(defailseedleech.split("<font color='#00b72e'>")[1].split("</font>")[0])
-                                        leechers = int(defailseedleech.split("<font color='red'>")[1].split("</font>")[0])
+                                        detailseedleech = link['mtcontent']
+                                        seeders = int(detailseedleech.split("<font color='#00b72e'>")[1].split("</font>")[0])
+                                        leechers = int(detailseedleech.split("<font color='red'>")[1].split("</font>")[0])
                                         #FIXME
                                         size = -1
-                                    except:
+                                    except Exception:
                                         logger.log(u"Unable to parse torrent id & seeders & leechers. Traceback: %s " % traceback.format_exc(), logger.DEBUG)
                                         continue
 
@@ -168,51 +159,13 @@ class FNTProvider(generic.TorrentProvider):
 
         return results
 
-    def findPropers(self, search_date=datetime.datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        if not sqlResults:
-            return []
-
-        for sqlshow in sqlResults:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(searchString[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
-
-        return results
-
     def seedRatio(self):
         return self.ratio
 
 
-class FNTAuth(AuthBase):
-    """Attaches HTTP Authentication to the given Request object."""
-    def __init__(self, token):
-        self.token = token
-
-    def __call__(self, r):
-        r.headers['Authorization'] = self.token
-        return r
-
-
 class FNTCache(tvcache.TVCache):
-    def __init__(self, provider):
-        tvcache.TVCache.__init__(self, provider)
+    def __init__(self, provider_obj):
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # Only poll FNT every 10 minutes max
         self.minTime = 10
