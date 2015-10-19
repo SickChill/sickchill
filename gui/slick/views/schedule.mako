@@ -233,11 +233,13 @@
             % endif
         % endif
     % elif 'date' == sort:
-        <% cur_ep_airdate = cur_result['localtime'].date() %>
+        <%
+            cur_ep_airdate = cur_result['localtime'].date()
+            cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = run_time)
+        %>
 
         % if cur_segment != cur_ep_airdate:
             %if run_time:
-                <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = run_time) %>
                 % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
                         <br /><h2 class="day">Missed</h2>
                 <% missed_header = True %>
