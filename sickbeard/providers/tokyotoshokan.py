@@ -120,8 +120,8 @@ class TokyoToshokanProvider(generic.TorrentProvider):
 
 
 class TokyoToshokanCache(tvcache.TVCache):
-    def __init__(self, provider):
-        tvcache.TVCache.__init__(self, provider)
+    def __init__(self, provider_obj):
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # only poll NyaaTorrents every 15 minutes max
         self.minTime = 15

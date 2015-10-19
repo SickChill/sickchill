@@ -217,8 +217,8 @@ class T411Auth(AuthBase):
 
 
 class T411Cache(tvcache.TVCache):
-    def __init__(self, provider):
-        tvcache.TVCache.__init__(self, provider)
+    def __init__(self, provider_obj):
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # Only poll T411 every 10 minutes max
         self.minTime = 10

@@ -35,8 +35,8 @@ class WombleProvider(generic.NZBProvider):
 
 
 class WombleCache(tvcache.TVCache):
-    def __init__(self, provider):
-        tvcache.TVCache.__init__(self, provider)
+    def __init__(self, provider_obj):
+        tvcache.TVCache.__init__(self, provider_obj)
         # only poll Womble's Index every 15 minutes max
         self.minTime = 15
 

@@ -197,9 +197,9 @@ class HDBitsProvider(generic.TorrentProvider):
 
 
 class HDBitsCache(tvcache.TVCache):
-    def __init__(self, provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # only poll HDBits every 15 minutes max
         self.minTime = 15

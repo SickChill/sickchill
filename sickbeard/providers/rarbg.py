@@ -291,9 +291,9 @@ class RarbgProvider(generic.TorrentProvider):
 
 
 class RarbgCache(tvcache.TVCache):
-    def __init__(self, provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # only poll RARbg every 15 minutes max
         self.minTime = 5

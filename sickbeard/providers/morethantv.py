@@ -231,9 +231,9 @@ class MoreThanTVProvider(generic.TorrentProvider):
 
 
 class MoreThanTVCache(tvcache.TVCache):
-    def __init__(self, provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # poll delay in minutes
         self.minTime = 20

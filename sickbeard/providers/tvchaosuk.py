@@ -234,9 +234,9 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
 
 class TVChaosUKCache(tvcache.TVCache):
-    def __init__(self, provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # only poll TVChaosUK every 20 minutes max
         self.minTime = 20

@@ -186,9 +186,9 @@ class LibertaliaProvider(generic.TorrentProvider):
         return results
 
 class LibertaliaCache(tvcache.TVCache):
-    def __init__(self, provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         self.minTime = 10
 
