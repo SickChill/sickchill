@@ -9,6 +9,7 @@ from tornado.testing import ExpectLog
 from tornado.test.util import unittest
 from tornado.util import u
 
+import copy
 import datetime
 import logging
 import time
@@ -237,14 +238,14 @@ Foo: even
         # and cpython's unicodeobject.c (which defines the implementation
         # of unicode_type.splitlines(), and uses a different list than TR13).
         newlines = [
-            u('\u001b'), # VERTICAL TAB
-            u('\u001c'), # FILE SEPARATOR
-            u('\u001d'), # GROUP SEPARATOR
-            u('\u001e'), # RECORD SEPARATOR
-            u('\u0085'), # NEXT LINE
-            u('\u2028'), # LINE SEPARATOR
-            u('\u2029'), # PARAGRAPH SEPARATOR
-            ]
+            u('\u001b'),  # VERTICAL TAB
+            u('\u001c'),  # FILE SEPARATOR
+            u('\u001d'),  # GROUP SEPARATOR
+            u('\u001e'),  # RECORD SEPARATOR
+            u('\u0085'),  # NEXT LINE
+            u('\u2028'),  # LINE SEPARATOR
+            u('\u2029'),  # PARAGRAPH SEPARATOR
+        ]
         for newline in newlines:
             # Try the utf8 and latin1 representations of each newline
             for encoding in ['utf8', 'latin1']:
@@ -278,7 +279,25 @@ Foo: even
                          [('Cr', 'cr\rMore: more'),
                           ('Crlf', 'crlf'),
                           ('Lf', 'lf'),
-                         ])
+                          ])
+
+    def test_copy(self):
+        all_pairs = [('A', '1'), ('A', '2'), ('B', 'c')]
+        h1 = HTTPHeaders()
+        for k, v in all_pairs:
+            h1.add(k, v)
+        h2 = h1.copy()
+        h3 = copy.copy(h1)
+        h4 = copy.deepcopy(h1)
+        for headers in [h1, h2, h3, h4]:
+            # All the copies are identical, no matter how they were
+            # constructed.
+            self.assertEqual(list(sorted(headers.get_all())), all_pairs)
+        for headers in [h2, h3, h4]:
+            # Neither the dict or its member lists are reused.
+            self.assertIsNot(headers, h1)
+            self.assertIsNot(headers.get_list('A'), h1.get_list('A'))
+
 
 
 class FormatTimestampTest(unittest.TestCase):

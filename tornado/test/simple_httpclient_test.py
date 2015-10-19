@@ -8,11 +8,12 @@ import logging
 import os
 import re
 import socket
+import ssl
 import sys
 
 from tornado import gen
 from tornado.httpclient import AsyncHTTPClient
-from tornado.httputil import HTTPHeaders
+from tornado.httputil import HTTPHeaders, ResponseStartLine
 from tornado.ioloop import IOLoop
 from tornado.log import gen_log
 from tornado.netutil import Resolver, bind_sockets
@@ -20,7 +21,7 @@ from tornado.simple_httpclient import SimpleAsyncHTTPClient, _default_ca_certs
 from tornado.test.httpclient_test import ChunkHandler, CountdownHandler, HelloWorldHandler
 from tornado.test import httpclient_test
 from tornado.testing import AsyncHTTPTestCase, AsyncHTTPSTestCase, AsyncTestCase, ExpectLog
-from tornado.test.util import skipOnTravis, skipIfNoIPv6, refusing_port
+from tornado.test.util import skipOnTravis, skipIfNoIPv6, refusing_port, unittest
 from tornado.web import RequestHandler, Application, asynchronous, url, stream_request_body
 
 
@@ -97,15 +98,18 @@ class HostEchoHandler(RequestHandler):
 
 
 class NoContentLengthHandler(RequestHandler):
-    @gen.coroutine
+    @asynchronous
     def get(self):
-        # Emulate the old HTTP/1.0 behavior of returning a body with no
-        # content-length.  Tornado handles content-length at the framework
-        # level so we have to go around it.
-        stream = self.request.connection.stream
-        yield stream.write(b"HTTP/1.0 200 OK\r\n\r\n"
-                           b"hello")
-        stream.close()
+        if self.request.version.startswith('HTTP/1'):
+            # Emulate the old HTTP/1.0 behavior of returning a body with no
+            # content-length.  Tornado handles content-length at the framework
+            # level so we have to go around it.
+            stream = self.request.connection.detach()
+            stream.write(b"HTTP/1.0 200 OK\r\n\r\n"
+                               b"hello")
+            stream.close()
+        else:
+            self.finish('HTTP/1 required')
 
 
 class EchoPostHandler(RequestHandler):
@@ -190,9 +194,6 @@ class SimpleHTTPClientTestMixin(object):
                          max_redirects=3)
             response = self.wait()
             response.rethrow()
-
-    def test_default_certificates_exist(self):
-        open(_default_ca_certs()).close()
 
     def test_gzip(self):
         # All the tests in this file should be using gzip, but this test
@@ -359,7 +360,10 @@ class SimpleHTTPClientTestMixin(object):
 
     def test_no_content_length(self):
         response = self.fetch("/no_content_length")
-        self.assertEquals(b"hello", response.body)
+        if response.body == b"HTTP/1 required":
+            self.skipTest("requires HTTP/1.x")
+        else:
+            self.assertEquals(b"hello", response.body)
 
     def sync_body_producer(self, write):
         write(b'1234')
@@ -432,6 +436,33 @@ class SimpleHTTPSClientTestCase(SimpleHTTPClientTestMixin, AsyncHTTPSTestCase):
                                      defaults=dict(validate_cert=False),
                                      **kwargs)
 
+    def test_ssl_options(self):
+        resp = self.fetch("/hello", ssl_options={})
+        self.assertEqual(resp.body, b"Hello world!")
+
+    @unittest.skipIf(not hasattr(ssl, 'SSLContext'),
+                     'ssl.SSLContext not present')
+    def test_ssl_context(self):
+        resp = self.fetch("/hello",
+                          ssl_options=ssl.SSLContext(ssl.PROTOCOL_SSLv23))
+        self.assertEqual(resp.body, b"Hello world!")
+
+    def test_ssl_options_handshake_fail(self):
+        with ExpectLog(gen_log, "SSL Error|Uncaught exception",
+                       required=False):
+            resp = self.fetch(
+                "/hello", ssl_options=dict(cert_reqs=ssl.CERT_REQUIRED))
+        self.assertRaises(ssl.SSLError, resp.rethrow)
+
+    @unittest.skipIf(not hasattr(ssl, 'SSLContext'),
+                     'ssl.SSLContext not present')
+    def test_ssl_context_handshake_fail(self):
+        with ExpectLog(gen_log, "SSL Error|Uncaught exception"):
+            ctx = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+            ctx.verify_mode = ssl.CERT_REQUIRED
+            resp = self.fetch("/hello", ssl_options=ctx)
+        self.assertRaises(ssl.SSLError, resp.rethrow)
+
 
 class CreateAsyncHTTPClientTestCase(AsyncTestCase):
     def setUp(self):
@@ -467,6 +498,12 @@ class CreateAsyncHTTPClientTestCase(AsyncTestCase):
 
 class HTTP100ContinueTestCase(AsyncHTTPTestCase):
     def respond_100(self, request):
+        self.http1 = request.version.startswith('HTTP/1.')
+        if not self.http1:
+            request.connection.write_headers(ResponseStartLine('', 200, 'OK'),
+                                             HTTPHeaders())
+            request.connection.finish()
+            return
         self.request = request
         self.request.connection.stream.write(
             b"HTTP/1.1 100 CONTINUE\r\n\r\n",
@@ -483,11 +520,20 @@ class HTTP100ContinueTestCase(AsyncHTTPTestCase):
 
     def test_100_continue(self):
         res = self.fetch('/')
+        if not self.http1:
+            self.skipTest("requires HTTP/1.x")
         self.assertEqual(res.body, b'A')
 
 
 class HTTP204NoContentTestCase(AsyncHTTPTestCase):
     def respond_204(self, request):
+        self.http1 = request.version.startswith('HTTP/1.')
+        if not self.http1:
+            # Close the request cleanly in HTTP/2; it will be skipped anyway.
+            request.connection.write_headers(ResponseStartLine('', 200, 'OK'),
+                                             HTTPHeaders())
+            request.connection.finish()
+            return
         # A 204 response never has a body, even if doesn't have a content-length
         # (which would otherwise mean read-until-close).  Tornado always
         # sends a content-length, so we simulate here a server that sends
@@ -495,14 +541,18 @@ class HTTP204NoContentTestCase(AsyncHTTPTestCase):
         #
         # Tests of a 204 response with a Content-Length header are included
         # in SimpleHTTPClientTestMixin.
-        request.connection.stream.write(
+        stream = request.connection.detach()
+        stream.write(
             b"HTTP/1.1 204 No content\r\n\r\n")
+        stream.close()
 
     def get_app(self):
         return self.respond_204
 
     def test_204_no_content(self):
         resp = self.fetch('/')
+        if not self.http1:
+            self.skipTest("requires HTTP/1.x")
         self.assertEqual(resp.code, 204)
         self.assertEqual(resp.body, b'')
 
@@ -581,3 +631,49 @@ class MaxHeaderSizeTest(AsyncHTTPTestCase):
         with ExpectLog(gen_log, "Unsatisfiable read"):
             response = self.fetch('/large')
         self.assertEqual(response.code, 599)
+
+
+class MaxBodySizeTest(AsyncHTTPTestCase):
+    def get_app(self):
+        class SmallBody(RequestHandler):
+            def get(self):
+                self.write("a"*1024*64)
+
+        class LargeBody(RequestHandler):
+            def get(self):
+                self.write("a"*1024*100)
+
+        return Application([('/small', SmallBody),
+                            ('/large', LargeBody)])
+
+    def get_http_client(self):
+        return SimpleAsyncHTTPClient(io_loop=self.io_loop, max_body_size=1024*64)
+
+    def test_small_body(self):
+        response = self.fetch('/small')
+        response.rethrow()
+        self.assertEqual(response.body, b'a'*1024*64)
+
+    def test_large_body(self):
+        with ExpectLog(gen_log, "Malformed HTTP message from None: Content-Length too long"):
+            response = self.fetch('/large')
+        self.assertEqual(response.code, 599)
+
+
+class MaxBufferSizeTest(AsyncHTTPTestCase):
+    def get_app(self):
+
+        class LargeBody(RequestHandler):
+            def get(self):
+                self.write("a"*1024*100)
+
+        return Application([('/large', LargeBody)])
+
+    def get_http_client(self):
+        # 100KB body with 64KB buffer
+        return SimpleAsyncHTTPClient(io_loop=self.io_loop, max_body_size=1024*100, max_buffer_size=1024*64)
+
+    def test_large_body(self):
+        response = self.fetch('/large')
+        response.rethrow()
+        self.assertEqual(response.body, b'a'*1024*100)
