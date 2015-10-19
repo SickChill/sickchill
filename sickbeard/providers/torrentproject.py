@@ -90,7 +90,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                         logger.log("Dyn Magnet: " + download_url, logger.DEBUG)
                     else:
                         #logger.log("Torrent has more than 10 seeds using hard coded trackers", logger.DEBUG)
-                        download_url = "magnet:?xt=urn:btih:" + hash + "&dn=" + title + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.publicbt.com:80&tr=http://tracker.coppersurfer.tk:6969/announce&tr=http://genesis.1337x.org:1337/announce&tr=http://nemesis.1337x.org/announce&tr=http://erdgeist.org/arts/software/opentracker/announce&tr=http://tracker.ccc.de/announce&tr=http://www.eddie4.nl:6969/announce&tr=http://tracker.leechers-paradise.org:6969/announce"					
+                        download_url = "magnet:?xt=urn:btih:" + hash + "&dn=" + title + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://open.demonii.com:1337&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969"					
 				
 
                     if not all([title, download_url]):
