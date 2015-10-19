@@ -59,7 +59,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['api'] + "?s=%s&out=json" % quote_plus(search_string.encode('utf-8'))
+                searchURL = self.urls['api'] + "?s=%s&out=json&filter=2101" % quote_plus(search_string.encode('utf-8'))
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
                 torrents = self.getURL(searchURL, json=True)
                 if not (torrents and "total_found" in torrents and int(torrents["total_found"]) > 0):
