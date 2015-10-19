@@ -24,7 +24,7 @@ from sickrage.helper.exceptions import ex
 # parse_qsl moved to urlparse module in v2.6
 try:
     from urlparse import parse_qsl  #@UnusedImport
-except:
+except ImportError:
     from cgi import parse_qsl  #@Reimport
 
 import oauth2 as oauth
@@ -128,7 +128,7 @@ class TwitterNotifier:
         api = twitter.Api(username, password, access_token_key, access_token_secret)
 
         try:
-            api.PostUpdate(message.encode('utf8'))
+            api.PostUpdate(message.encode('utf8')[:139])
         except Exception, e:
             logger.log(u"Error Sending Tweet: " + ex(e), logger.ERROR)
             return False
@@ -148,7 +148,7 @@ class TwitterNotifier:
         api = twitter.Api(username, password, access_token_key, access_token_secret)
 
         try:
-            api.PostDirectMessage(dmdest, message.encode('utf8'))
+            api.PostDirectMessage(dmdest, message.encode('utf8')[:139])
         except Exception, e:
             logger.log(u"Error Sending Tweet (DM): " + ex(e), logger.ERROR)
             return False
