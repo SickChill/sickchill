@@ -1,7 +1,7 @@
 # Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,21 +18,11 @@
 
 import re
 import traceback
-import datetime
-import sickbeard
-import generic
 
-from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import db
-from sickbeard import classes
-from sickbeard import helpers
-from sickbeard import show_name_helpers
-from sickbeard.helpers import sanitizeSceneName
+from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.exceptions import AuthException
-
 
 class BitSoupProvider(generic.TorrentProvider):
     def __init__(self):
@@ -80,7 +70,7 @@ class BitSoupProvider(generic.TorrentProvider):
             'ssl': 'yes'
             }
 
-        response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -119,8 +109,8 @@ class BitSoupProvider(generic.TorrentProvider):
 
                         #Continue only if one Release is found
                         if len(torrent_rows) < 2:
-                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
-                             continue
+                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                            continue
 
                         for result in torrent_rows[1:]:
                             cells = result.find_all('td')
@@ -128,13 +118,8 @@ class BitSoupProvider(generic.TorrentProvider):
                             link = cells[1].find('a')
                             download_url = self.urls['download'] % cells[2].find('a')['href']
 
-                            id = link['href']
-                            id = id.replace('details.php?id=','')
-                            id = id.replace('&hit=1', '')
-
                             try:
                                 title = link.getText()
-                                id = int(id)
                                 seeders = int(cells[10].getText())
                                 leechers = int(cells[11].getText())
                                 #FIXME
@@ -158,7 +143,7 @@ class BitSoupProvider(generic.TorrentProvider):
                             items[mode].append(item)
 
                 except Exception, e:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
             #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
@@ -167,40 +152,14 @@ class BitSoupProvider(generic.TorrentProvider):
 
         return results
 
-    def findPropers(self, search_date=datetime.datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        for sqlshow in sqlResults or []:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(searchString[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
-
-        return results
-
     def seedRatio(self):
         return self.ratio
 
 
 class BitSoupCache(tvcache.TVCache):
-    def __init__(self, provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # only poll TorrentBytes every 20 minutes max
         self.minTime = 20
