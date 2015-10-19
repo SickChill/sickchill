@@ -268,7 +268,7 @@ class Quality:
         if checkName([r"([sp]d.?tv|hd.?tv|dsr|tv(rip|mux)|satrip).(xvid|x26[45]|h.?26[45])"], all) and not checkName([r"(720|1080)[pi]"], all) and\
                 not checkName([r"hr.ws.pdtv.x26[45]"], any):
             ret = Quality.SDTV
-        elif checkName([r"web.?dl|web(rip|mux)", r"xvid|x26[45]|h.?26[45]"], all) and not checkName([r"(720|1080)[pi]"], all):
+        elif checkName([r"web.?dl|web(rip|mux|hd)", r"xvid|x26[45]|h.?26[45]"], all) and not checkName([r"(720|1080)[pi]"], all):
             ret = Quality.SDTV
         elif checkName([r"(dvd(rip|mux)|b[rd](rip|mux)|blue?-?ray)(.ws)?.(xvid|divx|[xh].?26[45])"], any) and not checkName([r"(720|1080)[pi]"], all):
             ret = Quality.SDDVD
@@ -279,9 +279,9 @@ class Quality:
             ret = Quality.RAWHDTV
         elif checkName([r"1080p", r"hd.?tv", r"[xh].?26[45]"], all):
             ret = Quality.FULLHDTV
-        elif checkName([r"720p", r"web.?dl|web(rip|mux)"], all) or checkName([r"720p", r"itunes", r"[xh].?26[45]"], all):
+        elif checkName([r"720p", r"web.?dl|web(rip|mux|hd)"], all) or checkName([r"720p", r"itunes", r"[xh].?26[45]"], all):
             ret = Quality.HDWEBDL
-        elif checkName([r"1080p", r"web.?dl|web(rip|mux)"], all) or checkName([r"1080p", r"itunes", r"[xh].?26[45]"], all):
+        elif checkName([r"1080p", r"web.?dl|web(rip|mux|hd)"], all) or checkName([r"1080p", r"itunes", r"[xh].?26[45]"], all):
             ret = Quality.FULLHDWEBDL
         elif checkName([r"720p", r"blue?-?ray|hddvd|b[rd](rip|mux)", r"[xh].?26[45]"], all):
             ret = Quality.HDBLURAY
@@ -362,8 +362,8 @@ class Quality:
             return Quality.UNKNOWN
 
         base_filename = os.path.basename(filename)
-        bluray = re.search(r'b[rd]rip|blue?-?ray', base_filename, re.I) is not None
-        webdl = re.search(r'web.?dl|webrip', base_filename, re.I) is not None
+        bluray = re.search(r"blue?-?ray|hddvd|b[rd](rip|mux)", base_filename, re.I) is not None
+        webdl = re.search(r"web.?dl|web(rip|mux|hd)", base_filename, re.I) is not None
 
         ret = Quality.UNKNOWN
         if height > 1000:
