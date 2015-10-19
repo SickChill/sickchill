@@ -1502,7 +1502,7 @@ class Home(WebRoot):
 
         # This is a refresh error
         if error is not None:
-            ui.notifications.error('Unable to refresh this show.', ex(error))
+            ui.notifications.error('Unable to refresh this show.', error)
 
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
