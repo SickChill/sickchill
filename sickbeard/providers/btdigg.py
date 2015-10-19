@@ -93,9 +93,9 @@ class BTDIGGProvider(generic.TorrentProvider):
         return results
 
 class BTDiggCache(tvcache.TVCache):
-    def __init__(self, providerObj):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, providerObj)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # set this 0 to suppress log line, since we aren't updating it anyways
         self.minTime = 0

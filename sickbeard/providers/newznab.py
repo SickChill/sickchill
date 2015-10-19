@@ -71,7 +71,6 @@ class NewznabProvider(generic.NZBProvider):
         else:
             self.catIDs = '5030,5040'
 
-        self.enabled = True
         self.supportsBacklog = True
 
         self.default = False
@@ -346,9 +345,9 @@ class NewznabProvider(generic.NZBProvider):
 
 
 class NewznabCache(tvcache.TVCache):
-    def __init__(self, provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # only poll newznab providers every 30 minutes
         self.minTime = 30

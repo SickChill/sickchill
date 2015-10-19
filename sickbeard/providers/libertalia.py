@@ -55,7 +55,6 @@ class LibertaliaProvider(generic.TorrentProvider):
 
         self.categories = "&cat%5B%5D=9&cat%5B%5D=10"
 
-        self.enabled = False
         self.username = None
         self.password = None
         self.ratio = None
@@ -187,9 +186,9 @@ class LibertaliaProvider(generic.TorrentProvider):
         return results
 
 class LibertaliaCache(tvcache.TVCache):
-    def __init__(self, provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         self.minTime = 10
 

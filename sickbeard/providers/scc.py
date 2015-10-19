@@ -45,7 +45,6 @@ class SCCProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.public = False
 
-        self.enabled = False
         self.username = None
         self.password = None
         self.ratio = None
@@ -221,9 +220,9 @@ class SCCProvider(generic.TorrentProvider):
 
 
 class SCCCache(tvcache.TVCache):
-    def __init__(self, provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # only poll SCC every 20 minutes max
         self.minTime = 20

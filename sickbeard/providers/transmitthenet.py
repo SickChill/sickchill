@@ -1,4 +1,4 @@
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
         self.public = False
-        self.enabled = False
         self.username = None
         self.password = None
         self.ratio = None
@@ -107,7 +106,7 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
                 data = self.getURL(self.urls['index'], params=self.search_params)
                 searchURL = self.urls['index'] + "?" + urlencode(self.search_params)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
                 if not data:
                     logger.log("No data returned from provider", logger.DEBUG)
@@ -197,8 +196,8 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
 
 class TransmitTheNetCache(tvcache.TVCache):
-    def __init__(self, provider):
-        tvcache.TVCache.__init__(self, provider)
+    def __init__(self, provider_obj):
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # Only poll TransmitTheNet every 20 minutes max
         self.minTime = 20

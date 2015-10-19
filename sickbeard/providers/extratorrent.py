@@ -18,23 +18,15 @@
 
 import re
 import traceback
-import datetime
-
 import xmltodict
 import HTMLParser
+from xml.parsers.expat import ExpatError
 
-import sickbeard
-from sickbeard.providers import generic
-from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import db
-from sickbeard import classes
 from sickbeard import helpers
-from sickbeard import show_name_helpers
-from sickbeard.helpers import sanitizeSceneName
 from sickbeard.common import USER_AGENT
-from xml.parsers.expat import ExpatError
+from sickbeard.providers import generic
 
 
 class ExtraTorrentProvider(generic.TorrentProvider):
@@ -50,7 +42,6 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
         self.public = True
-        self.enabled = False
         self.ratio = None
         self.minseed = None
         self.minleech = None
@@ -75,14 +66,13 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 try:
-                    self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string.encode('utf-8').strip()})
+                    self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string})
                     data = self.getURL(self.urls['rss'], params=self.search_params)
                     if not data:
                         logger.log("No data returned from provider", logger.DEBUG)
                         continue
 
                     try:
-                        # Must replace non-breaking space, as there is no xml DTD
                         data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data).replace('&', '&amp;'))
                     except ExpatError as e:
                         logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
@@ -98,10 +88,10 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
                     for item in entries:
                         title = item['title']
-                        info_hash = item['info_hash']
+                       # info_hash = item['info_hash']
                         size = int(item['size'])
-                        seeders = helpers.tryInt(item['seeders'],0)
-                        leechers = helpers.tryInt(item['leechers'],0)
+                        seeders = helpers.tryInt(item['seeders'], 0)
+                        leechers = helpers.tryInt(item['leechers'], 0)
                         download_url = item['enclosure']['@url'] if 'enclosure' in item else self._magnet_from_details(item['link'])
 
                         if not all([title, download_url]):
@@ -140,36 +130,14 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
         return match.group(1)
 
-    def findPropers(self, search_date=datetime.datetime.today()-datetime.timedelta(days=1)):
-        results = []
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        for sqlshow in sqlResults or []:
-            show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if show:
-                curEp = show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-                searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-                for item in self._doSearch(searchStrings[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), show))
-
-        return results
-
     def seedRatio(self):
         return self.ratio
 
 
 class ExtraTorrentCache(tvcache.TVCache):
-    def __init__(self, _provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, _provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         self.minTime = 30
 

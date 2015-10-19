@@ -111,9 +111,9 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
         return results
 
 class TORRENTPROJECTCache(tvcache.TVCache):
-    def __init__(self, provider):
+    def __init__(self, provider_obj):
 
-        tvcache.TVCache.__init__(self, provider)
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # set this 0 to suppress log line, since we aren't updating it anyways
         self.minTime = 0

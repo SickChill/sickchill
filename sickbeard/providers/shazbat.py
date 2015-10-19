@@ -1,7 +1,7 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@ class ShazbatProvider(generic.TorrentProvider):
         self.supportsBacklog = False
         self.public = False
 
-        self.enabled = False
         self.passkey = None
         self.ratio = None
         self.options = None
@@ -64,8 +63,8 @@ class ShazbatProvider(generic.TorrentProvider):
 
 
 class ShazbatCache(tvcache.TVCache):
-    def __init__(self, provider):
-        tvcache.TVCache.__init__(self, provider)
+    def __init__(self, provider_obj):
+        tvcache.TVCache.__init__(self, provider_obj)
 
         # only poll Shazbat feed every 15 minutes max
         self.minTime = 15
