@@ -8,6 +8,8 @@ branches:
   except:
     - master
 
+install: pip install -U pyOpenSSL
+
 cache: pip
 
 before_script:
