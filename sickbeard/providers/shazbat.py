@@ -1,7 +1,7 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@ class ShazbatProvider(generic.TorrentProvider):
         self.supportsBacklog = False
         self.public = False
 
-        self.enabled = False
         self.passkey = None
         self.ratio = None
         self.options = None

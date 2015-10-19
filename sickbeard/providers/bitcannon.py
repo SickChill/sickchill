@@ -31,7 +31,6 @@ class BitCannonProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.public = True
 
-        self.enabled = False
         self.minseed = None
         self.minleech = None
         self.ratio = 0

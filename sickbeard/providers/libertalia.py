@@ -55,7 +55,6 @@ class LibertaliaProvider(generic.TorrentProvider):
 
         self.categories = "&cat%5B%5D=9&cat%5B%5D=10"
 
-        self.enabled = False
         self.username = None
         self.password = None
         self.ratio = None

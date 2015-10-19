@@ -1,7 +1,7 @@
 # Author: Mr_Orange
 # URL: https://github.com/mr-orange/Sick-Beard
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@ class SpeedCDProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.public = False
 
-        self.enabled = False
         self.username = None
         self.password = None
         self.ratio = None

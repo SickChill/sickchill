@@ -1,7 +1,7 @@
 # Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -45,7 +45,6 @@ class FreshOnTVProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.public = False
 
-        self.enabled = False
         self._uid = None
         self._hash = None
         self.username = None
@@ -137,7 +136,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (freeleech, search_string)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
                 init_html = self.getURL(searchURL)
                 max_page_number = 0
 

@@ -37,7 +37,6 @@ class NyaaProvider(generic.TorrentProvider):
         self.public = True
         self.supportsAbsoluteNumbering = True
         self.anime_only = True
-        self.enabled = False
         self.ratio = None
 
         self.cache = NyaaCache(self)

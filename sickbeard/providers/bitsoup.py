@@ -40,7 +40,6 @@ class BitSoupProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
         self.public = False
-        self.enabled = False
         self.username = None
         self.password = None
         self.ratio = None

@@ -71,7 +71,6 @@ class NewznabProvider(generic.NZBProvider):
         else:
             self.catIDs = '5030,5040'
 
-        self.enabled = True
         self.supportsBacklog = True
 
         self.default = False

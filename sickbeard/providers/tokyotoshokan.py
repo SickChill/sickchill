@@ -1,7 +1,7 @@
 # Author: Mr_Orange
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@ class TokyoToshokanProvider(generic.TorrentProvider):
         self.public = True
         self.supportsAbsoluteNumbering = True
         self.anime_only = True
-        self.enabled = False
         self.ratio = None
 
         self.cache = TokyoToshokanCache(self)
@@ -74,7 +73,7 @@ class TokyoToshokanProvider(generic.TorrentProvider):
         }
 
         searchURL = self.url + 'search.php?' + urllib.urlencode(params)
-        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
         data = self.getURL(searchURL)
 
         if not data:
@@ -85,7 +84,7 @@ class TokyoToshokanProvider(generic.TorrentProvider):
             with BS4Parser(data, features=["html5lib", "permissive"]) as soup:
                 torrent_table = soup.find('table', attrs={'class': 'listing'})
                 torrent_rows = torrent_table.find_all('tr') if torrent_table else []
-                if torrent_rows: 
+                if torrent_rows:
                     if torrent_rows[0].find('td', attrs={'class': 'centertext'}):
                         a = 1
                     else:

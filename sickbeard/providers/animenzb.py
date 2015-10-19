@@ -40,8 +40,6 @@ class animenzb(generic.NZBProvider):
         self.supportsAbsoluteNumbering = True
         self.anime_only = True
 
-        self.enabled = False
-
         self.cache = animenzbCache(self)
 
         self.urls = {'base_url': 'http://animenzb.com//'}
@@ -71,7 +69,7 @@ class animenzb(generic.NZBProvider):
         }
 
         searchURL = self.url + "rss?" + urllib.urlencode(params)
-        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)  
+        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
         results = []
         for curItem in self.cache.getRSSFeed(searchURL, items=['entries'])['entries'] or []:
             (title, url) = self._get_title_and_url(curItem)
@@ -82,7 +80,7 @@ class animenzb(generic.NZBProvider):
 
         #For each search mode sort all the items by seeders if available if available
         results.sort(key=lambda tup: tup[0], reverse=True)
-        
+
         return results
 
     def findPropers(self, date=None):

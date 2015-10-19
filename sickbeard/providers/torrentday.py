@@ -1,6 +1,6 @@
 # Author: Mr_Orange <mr_orange@hotmail.it>
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@ class TorrentDayProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.public = False
 
-        self.enabled = False
         self._uid = None
         self._hash = None
         self.username = None

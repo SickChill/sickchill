@@ -42,7 +42,6 @@ class BTNProvider(generic.TorrentProvider):
         self.public = False
         self.supportsAbsoluteNumbering = True
 
-        self.enabled = False
         self.api_key = None
         self.ratio = None
 

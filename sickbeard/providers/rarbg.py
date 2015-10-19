@@ -2,7 +2,7 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@ class RarbgProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, "Rarbg")
 
-        self.enabled = False
         self.supportsBacklog = True
         self.public = True
         self.ratio = None
@@ -161,7 +160,7 @@ class RarbgProvider(generic.TorrentProvider):
                 if self.ranked:
                     searchURL += self.urlOptions['ranked'].format(ranked=int(self.ranked))
 
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG) 
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
                 try:
                     retry = 3
@@ -238,7 +237,7 @@ class RarbgProvider(generic.TorrentProvider):
                             seeders = item['seeders']
                             leechers = item['leechers']
                             pubdate = item['pubdate']
-                            
+
                             if not all([title, download_url]):
                                 continue
 
@@ -249,7 +248,7 @@ class RarbgProvider(generic.TorrentProvider):
 
                         except Exception:
                             logger.log(u"Skipping invalid result. JSON item: %s" % item, logger.DEBUG)
- 
+
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
