@@ -188,7 +188,7 @@ class SCCCache(tvcache.TVCache):
         self.minTime = 20
 
     def _getRSSData(self):
-        search_params = u''
-        return {'entries': self.provider._doSearch(search_params)}
+        search_strings = {'RSS': ['']}
+        return {'entries': self.provider._doSearch(search_strings)}
 
 provider = SCCProvider()
