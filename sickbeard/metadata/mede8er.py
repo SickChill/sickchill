@@ -21,7 +21,7 @@ import os.path
 
 import sickbeard
 
-import mediabrowser
+from sickbeard.metadata import mediabrowser
 
 from sickbeard import logger, helpers
 from sickrage.helper.common import dateFormat
@@ -134,7 +134,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         # check for title and id
         if not (getattr(myShow, 'seriesname', None) and getattr(myShow, 'id', None)):
-            logger.log(u"Incomplete info for show with id " + str(show_ID) + " on " + sickbeard.indexerApi(
+            logger.log(u"Incomplete info for show with id " + str(show_obj.indexerid) + " on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", skipping it", logger.ERROR)
             return False
 
@@ -158,7 +158,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                 if year_text:
                     year = etree.SubElement(tv_node, "year")
                     year.text = year_text
-            except:
+            except Exception:
                 pass
 
         if getattr(myShow, 'overview', None):
@@ -284,7 +284,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                         if year_text:
                             year = etree.SubElement(episode, "year")
                             year.text = year_text
-                    except:
+                    except Exception:
                         pass
 
                 if getattr(myShow, "overview", None):
@@ -314,15 +314,15 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                     director.text = myEp['director']
 
                 if getattr(myEp, 'writer', None):
-                    credits = etree.SubElement(episode, "credits")
-                    credits.text = myEp['writer']
+                    writer = etree.SubElement(episode, "credits")
+                    writer.text = myEp['writer']
 
                 if getattr(myShow, '_actors', None) or getattr(myEp, 'gueststars', None):
                     cast = etree.SubElement(episode, "cast")
                     if getattr(myEp, 'gueststars', None) and isinstance( myEp['gueststars'], basestring):
                         for actor in (x.strip() for x in  myEp['gueststars'].split('|') if x.strip()):
                             cur_actor = etree.SubElement(cast, "actor")
-                            cur_actor_name.text = actor
+                            cur_actor.text = actor
 
                     if getattr(myShow, '_actors', None):
                         for actor in myShow['_actors']:
