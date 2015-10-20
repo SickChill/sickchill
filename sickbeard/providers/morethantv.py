@@ -48,8 +48,6 @@ class MoreThanTVProvider(generic.TorrentProvider):
         self.minleech = None
         self.freeleech = False
 
-        self.cache = MoreThanTVCache(self)
-
         self.urls = {'base_url': 'https://www.morethan.tv/',
                      'login': 'https://www.morethan.tv/login.php',
                      'detail': 'https://www.morethan.tv/torrents.php?id=%s',
@@ -59,6 +57,10 @@ class MoreThanTVProvider(generic.TorrentProvider):
         self.url = self.urls['base_url']
 
         self.cookies = None
+
+        self.proper_strings = ['PROPER', 'REPACK']
+
+        self.cache = MoreThanTVCache(self)
 
     def isEnabled(self):
         return self.enabled

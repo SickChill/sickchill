@@ -34,14 +34,11 @@ class TorrentLeechProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
-
         self.username = None
         self.password = None
         self.ratio = None
         self.minseed = None
         self.minleech = None
-
-        self.cache = TorrentLeechCache(self)
 
         self.urls = {'base_url': 'https://torrentleech.org/',
                      'login': 'https://torrentleech.org/user/account/login/',
@@ -53,6 +50,10 @@ class TorrentLeechProvider(generic.TorrentProvider):
         self.url = self.urls['base_url']
 
         self.categories = "2,7,26,27,32,34,35"
+
+        self.proper_strings = ['PROPER', 'REPACK']
+
+        self.cache = TorrentLeechCache(self)
 
     def isEnabled(self):
         return self.enabled

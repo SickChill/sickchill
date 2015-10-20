@@ -31,15 +31,12 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
-
         self.username = None
         self.password = None
         self.ratio = None
         self.freeleech = False
         self.minseed = None
         self.minleech = None
-
-        self.cache = SpeedCDCache(self)
 
         self.urls = {'base_url': 'http://speed.cd/',
                      'login': 'http://speed.cd/take_login.php',
@@ -50,6 +47,10 @@ class SpeedCDProvider(generic.TorrentProvider):
         self.url = self.urls['base_url']
 
         self.categories = {'Season': {'c14': 1}, 'Episode': {'c2': 1, 'c49': 1}, 'RSS': {'c14': 1, 'c2': 1, 'c49': 1}}
+
+        self.proper_strings = ['PROPER', 'REPACK']
+
+        self.cache = SpeedCDCache(self)
 
     def isEnabled(self):
         return self.enabled

@@ -88,6 +88,8 @@ class GenericProvider:
 
         shuffle(self.btCacheURLS)
 
+        self.proper_strings = ['PROPER|REPACK']
+
     def getID(self):
         return GenericProvider.makeID(self.name)
 
@@ -635,9 +637,7 @@ class TorrentProvider(GenericProvider):
         return [search_string]
 
     def _clean_title_from_provider(self, title):
-        if title:
-            title = u'' + title.replace(' ', '.')
-        return title
+        return (title or '').replace(' ', '.')
 
     def findPropers(self, search_date=datetime.datetime.today()):
 
@@ -648,22 +648,19 @@ class TorrentProvider(GenericProvider):
             'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
             ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
             ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
+            ' AND e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED + Quality.SNATCHED]) + ')'
         )
 
-        if not sqlResults:
-            return []
-
-        for sqlshow in sqlResults:
+        for sqlshow in sqlResults or []:
             show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
             if show:
                 curEp = show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
+                for term in self.proper_strings:
+                    searchString = self._get_episode_search_strings(curEp, add_string=term)
 
-                for item in self._doSearch(searchString[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), show))
+                    for item in self._doSearch(searchString[0]):
+                        title, url = self._get_title_and_url(item)
+                        results.append(classes.Proper(title, url, datetime.datetime.today(), show))
 
         return results
 

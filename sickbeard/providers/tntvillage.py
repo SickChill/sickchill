@@ -61,7 +61,6 @@ class TNTVillageProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
-
         self._uid = None
         self._hash = None
         self.username = None
@@ -101,15 +100,18 @@ class TNTVillageProvider(generic.TorrentProvider):
                      'search_page' : 'http://forum.tntvillage.scambioetico.org/?act=allreleases&st={0}&{1}',
                      'download' : 'http://forum.tntvillage.scambioetico.org/index.php?act=Attach&type=post&id=%s'}
 
-        self.sub_string = ['sub', 'softsub']
-
         self.url = self.urls['base_url']
 
-        self.cache = TNTVillageCache(self)
+        self.cookies = None
+
+        self.sub_string = ['sub', 'softsub']
+
+        self.proper_strings = ['PROPER', 'REPACK']
 
         self.categories = "cat=29"
 
-        self.cookies = None
+        self.cache = TNTVillageCache(self)
+
 
     def isEnabled(self):
         return self.enabled
