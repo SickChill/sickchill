@@ -203,9 +203,9 @@
                 <td>TV Download Directory</td>
                 <td>${sickbeard.TV_DOWNLOAD_DIR}</td>
                 % if tvdirFree is not False:
-                <td>${tvdirFree} MB</td>
+                <td align="middle">${tvdirFree}</td>
                 % else:
-                <td><i>Missing</i></td>
+                <td align="middle"><i>Missing</i></td>
                 % endif
             </tr>
             % endif
@@ -214,9 +214,9 @@
                 % for cur_dir in rootDir:
                     <td>${cur_dir}</td>
                     % if rootDir[cur_dir] is not False:
-                        <td>${rootDir[cur_dir]} MB</td>
+                        <td align="middle">${rootDir[cur_dir]}</td>
                     % else:
-                        <td><i>Missing</i></td>
+                        <td align="middle"><i>Missing</i></td>
                     % endif
             </tr>
             % endfor
