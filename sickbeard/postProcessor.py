@@ -810,18 +810,18 @@ class PostProcessor(object):
 
         old_ep_status, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
 
-        # if SB downloaded this on purpose we likely have a priority download
+        # if SR downloaded this on purpose we likely have a priority download
         if self.in_history or ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
             # if the episode is still in a snatched status, then we can assume we want this
             if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
-                self._log(u"SB snatched this episode and it is not processed before", logger.DEBUG)
+                self._log(u"SR snatched this episode and it is not processed before", logger.DEBUG)
                 return True
             # if it's not snatched, we only want it if the new quality is higher or if it's a proper of equal or higher quality
             if new_ep_quality > old_ep_quality and new_ep_quality != common.Quality.UNKNOWN:
-                self._log(u"SB snatched this episode and it is a higher quality so I'm marking it as priority", logger.DEBUG)
+                self._log(u"SR snatched this episode and it is a higher quality so I'm marking it as priority", logger.DEBUG)
                 return True
             if self.is_proper and new_ep_quality >= old_ep_quality and new_ep_quality != common.Quality.UNKNOWN:
-                self._log(u"SB snatched this episode and it is a proper of equal or higher quality so I'm marking it as priority", logger.DEBUG)
+                self._log(u"SR snatched this episode and it is a proper of equal or higher quality so I'm marking it as priority", logger.DEBUG)
                 return True
             return False
 
