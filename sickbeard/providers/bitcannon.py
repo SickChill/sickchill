@@ -112,7 +112,7 @@ class BitCannonCache(tvcache.TVCache):
 
     def _getRSSData(self):
         return {'entries': []}
-        #search_params = {'RSS': ['']}
-        #return {'entries': self.provider._doSearch(search_params)}
+        #search_strings = {'RSS': ['']}
+        #return {'entries': self.provider._doSearch(search_strings)}
 
 provider = BitCannonProvider()
