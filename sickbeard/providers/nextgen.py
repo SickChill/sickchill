@@ -19,15 +19,9 @@
 import traceback
 import urllib
 import time
-import datetime
 
-import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import db
-from sickbeard import classes
-from sickbeard import helpers
-from sickbeard.common import Quality
 from sickbeard.providers import generic
 
 from sickbeard.bs4_parser import BS4Parser
@@ -39,9 +33,8 @@ class NextGenProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "NextGen")
 
         self.supportsBacklog = True
-        self.public = False
 
-        self.enabled = False
+
         self.username = None
         self.password = None
         self.ratio = None
@@ -49,9 +42,8 @@ class NextGenProvider(generic.TorrentProvider):
         self.cache = NextGenCache(self)
 
         self.urls = {'base_url': 'https://nxtgn.info/',
-                'search': 'https://nxtgn.info/browse.php?search=%s&cat=0&incldead=0&modes=%s',
-                'login_page': 'https://nxtgn.info/login.php',
-                }
+                     'search': 'https://nxtgn.info/browse.php?search=%s&cat=0&incldead=0&modes=%s',
+                     'login_page': 'https://nxtgn.info/login.php'}
 
         self.url = self.urls['base_url']
 
@@ -163,10 +155,7 @@ class NextGenProvider(generic.TorrentProvider):
 
                             try:
                                 title = result.find('div', attrs={'id': 'torrent-udgivelse2-users'}).a['title']
-
-                                dl = result.find('div', attrs={'id': 'torrent-download'}).a
-                                download_url = self.urls['base_url'] + (dl['href'], dl['id'])['id' in dl]
-
+                                download_url = self.urls['base_url'] + result.find('div', attrs={'id': 'torrent-download'}).a['href']
                                 seeders = int(result.find('div', attrs={'id' : 'torrent-seeders'}).text)
                                 leechers = int(result.find('div', attrs={'id' : 'torrent-leechers'}).text)
                                 size = self._convertSize(result.find('div', attrs={'id' : 'torrent-size'}).text)
@@ -214,34 +203,6 @@ class NextGenProvider(generic.TorrentProvider):
         elif modifier in 'TB':
             size = size * 1024**4
         return int(size)
-
-    def findPropers(self, search_date=datetime.datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        if not sqlResults:
-            return []
-
-        for sqlshow in sqlResults:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(searchString[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
-
-        return results
 
     def seedRatio(self):
         return self.ratio

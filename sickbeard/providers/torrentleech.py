@@ -18,21 +18,12 @@
 
 import re
 import traceback
-import datetime
 import urllib
-import sickbeard
-import generic
 
-from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import db
-from sickbeard import classes
-from sickbeard import helpers
-from sickbeard import show_name_helpers
+from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
-from unidecode import unidecode
-from sickbeard.helpers import sanitizeSceneName
 
 
 class TorrentLeechProvider(generic.TorrentProvider):
@@ -42,9 +33,8 @@ class TorrentLeechProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "TorrentLeech")
 
         self.supportsBacklog = True
-        self.public = False
 
-        self.enabled = False
+
         self.username = None
         self.password = None
         self.ratio = None
@@ -54,12 +44,11 @@ class TorrentLeechProvider(generic.TorrentProvider):
         self.cache = TorrentLeechCache(self)
 
         self.urls = {'base_url': 'https://torrentleech.org/',
-                'login': 'https://torrentleech.org/user/account/login/',
-                'detail': 'https://torrentleech.org/torrent/%s',
-                'search': 'https://torrentleech.org/torrents/browse/index/query/%s/categories/%s',
-                'download': 'https://torrentleech.org%s',
-                'index': 'https://torrentleech.org/torrents/browse/index/categories/%s',
-                }
+                     'login': 'https://torrentleech.org/user/account/login/',
+                     'detail': 'https://torrentleech.org/torrent/%s',
+                     'search': 'https://torrentleech.org/torrents/browse/index/query/%s/categories/%s',
+                     'download': 'https://torrentleech.org%s',
+                     'index': 'https://torrentleech.org/torrents/browse/index/categories/%s'}
 
         self.url = self.urls['base_url']
 
@@ -73,10 +62,9 @@ class TorrentLeechProvider(generic.TorrentProvider):
         login_params = {'username': self.username,
                         'password': self.password,
                         'remember_me': 'on',
-                        'login': 'submit',
-                        }
+                        'login': 'submit'}
 
-        response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -127,7 +115,6 @@ class TorrentLeechProvider(generic.TorrentProvider):
                                 url = result.find('td', attrs={'class': 'quickdownload'}).find('a')
                                 title = link.string
                                 download_url = self.urls['download'] % url['href']
-                                id = int(link['href'].replace('/torrent/', ''))
                                 seeders = int(result.find('td', attrs={'class': 'seeders'}).string)
                                 leechers = int(result.find('td', attrs={'class': 'leechers'}).string)
                                 #FIXME
@@ -157,35 +144,6 @@ class TorrentLeechProvider(generic.TorrentProvider):
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
-
-        return results
-
-    def findPropers(self, search_date=datetime.datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        if not sqlResults:
-            return []
-
-        for sqlshow in sqlResults:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(searchString[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 

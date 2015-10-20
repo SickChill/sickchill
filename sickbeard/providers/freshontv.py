@@ -34,7 +34,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "FreshOnTV")
 
         self.supportsBacklog = True
-        self.public = False
+
 
         self._uid = None
         self._hash = None

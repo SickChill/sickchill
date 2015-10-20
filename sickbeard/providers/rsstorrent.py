@@ -1,6 +1,6 @@
 # Author: Mr_Orange
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,11 +37,10 @@ class TorrentRssProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, name)
         self.cache = TorrentRssCache(self)
 
-        self.urls = {'base_url': re.sub('\/$', '', url)}
+        self.urls = {'base_url': re.sub(r'\/$', '', url)}
 
         self.url = self.urls['base_url']
 
-        self.enabled = True
         self.ratio = None
         self.supportsBacklog = False
 
