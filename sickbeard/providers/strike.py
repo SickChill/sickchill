@@ -1,7 +1,7 @@
 # Author: matigonkas
 # URL: https://github.com/SiCKRAGETV/sickrage
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,14 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import datetime
-import generic
-
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import show_name_helpers
-from sickbeard.config import naming_ep_type
-from sickbeard.helpers import sanitizeSceneName
+from sickbeard.providers import generic
 
 class STRIKEProvider(generic.TorrentProvider):
 
@@ -53,7 +48,7 @@ class STRIKEProvider(generic.TorrentProvider):
                     logger.log(u"Search string: " + search_string.strip(), logger.DEBUG)
 
                 searchURL = self.url + "api/v2/torrents/search/?category=TV&phrase=" + search_string
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
                 jdata = self.getURL(searchURL, json=True)
                 if not jdata:
                     logger.log("No data returned from provider", logger.DEBUG)

@@ -17,22 +17,20 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
+from datetime import datetime
 
 import sickbeard
-import generic
-
 from sickbeard import tvcache
 from sickbeard import classes
 from sickbeard import logger
 from sickbeard import show_name_helpers
-from datetime import datetime
-from sickrage.helper.exceptions import AuthException
+from sickbeard.providers import generic
 
 
 class OmgwtfnzbsProvider(generic.NZBProvider):
     def __init__(self):
         generic.NZBProvider.__init__(self, "omgwtfnzbs")
-        self.enabled = False
+
         self.username = None
         self.api_key = None
         self.cache = OmgwtfnzbsCache(self)
@@ -41,7 +39,7 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
         self.url = self.urls['base_url']
 
         self.supportsBacklog = True
-        self.public = False
+
 
     def isEnabled(self):
         return self.enabled
@@ -141,7 +139,7 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
                     title, url = self._get_title_and_url(item)
                     try:
                         result_date = datetime.fromtimestamp(int(item['usenetage']))
-                    except:
+                    except Exception:
                         result_date = None
 
                     if result_date:

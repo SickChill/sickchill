@@ -17,7 +17,6 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import traceback
 from sickbeard.providers import generic
 from sickbeard import logger
 from sickbeard import tvcache
@@ -30,7 +29,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "IPTorrents")
 
         self.supportsBacklog = True
-        self.public = False
+
 
         self.username = None
         self.password = None

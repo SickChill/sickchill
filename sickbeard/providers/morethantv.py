@@ -1,7 +1,7 @@
 # Author: Seamus Wassman
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,22 +21,14 @@
 # are some mistakes or things I could have done better.
 
 import re
+import requests
 import traceback
-import datetime
-import sickbeard
-import generic
-from sickbeard.common import Quality
+
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import db
-from sickbeard import classes
-from sickbeard import helpers
-from sickbeard import show_name_helpers
-from sickrage.helper.exceptions import AuthException
-import requests
+from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
-from unidecode import unidecode
-from sickbeard.helpers import sanitizeSceneName
+from sickrage.helper.exceptions import AuthException
 
 
 class MoreThanTVProvider(generic.TorrentProvider):
@@ -46,9 +38,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "MoreThanTV")
 
         self.supportsBacklog = True
-        self.public = False
 
-        self.enabled = False
         self._uid = None
         self._hash = None
         self.username = None
@@ -61,11 +51,10 @@ class MoreThanTVProvider(generic.TorrentProvider):
         self.cache = MoreThanTVCache(self)
 
         self.urls = {'base_url': 'https://www.morethan.tv/',
-                'login': 'https://www.morethan.tv/login.php',
-                'detail': 'https://www.morethan.tv/torrents.php?id=%s',
-                'search': 'https://www.morethan.tv/torrents.php?tags_type=1&order_by=time&order_way=desc&action=basic&searchsubmit=1&searchstr=%s',
-                'download': 'https://www.morethan.tv/torrents.php?action=download&id=%s',
-                }
+                     'login': 'https://www.morethan.tv/login.php',
+                     'detail': 'https://www.morethan.tv/torrents.php?id=%s',
+                     'search': 'https://www.morethan.tv/torrents.php?tags_type=1&order_by=time&order_way=desc&action=basic&searchsubmit=1&searchstr=%s',
+                     'download': 'https://www.morethan.tv/torrents.php?action=download&id=%s'}
 
         self.url = self.urls['base_url']
 
@@ -90,10 +79,9 @@ class MoreThanTVProvider(generic.TorrentProvider):
         else:
             login_params = {'username': self.username,
                             'password': self.password,
-                            'login': 'submit'
-            }
+                            'login': 'submit'}
 
-            response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+            response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
             if not response:
                 logger.log(u"Unable to connect to provider", logger.WARNING)
                 return False
@@ -122,7 +110,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (search_string)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
                 # returns top 15 results by default, expandable in user profile to 100
                 data = self.getURL(searchURL)
@@ -142,17 +130,13 @@ class MoreThanTVProvider(generic.TorrentProvider):
                         # skip colheader
                         for result in torrent_rows[1:]:
                             cells = result.findChildren('td')
-
-                            link = cells[1].find('a', attrs = {'title': 'Download'})
-
-                            link_str = str(link['href'])
+                            link = cells[1].find('a', attrs={'title': 'Download'})
 
                             #skip if torrent has been nuked due to poor quality
                             if cells[1].find('img', alt='Nuked') != None:
                                 continue
-                            torrent_id_long = link['href'].replace('torrents.php?action=download&id=', '')
-                            id = torrent_id_long.split('&', 1)[0]
 
+                            torrent_id_long = link['href'].replace('torrents.php?action=download&id=', '')
 
                             try:
                                 if link.has_key('title'):
@@ -194,35 +178,6 @@ class MoreThanTVProvider(generic.TorrentProvider):
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
-
-        return results
-
-    def findPropers(self, search_date=datetime.datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        if not sqlResults:
-            return []
-
-        for sqlshow in sqlResults:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(searchString[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 

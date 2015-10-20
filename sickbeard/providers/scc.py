@@ -18,23 +18,15 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import datetime
 import time
+import urllib
 
 import sickbeard
-import generic
-import urllib
-from sickbeard.common import Quality, cpu_presets
+from sickbeard.common import cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import db
-from sickbeard import classes
-from sickbeard import helpers
-from sickbeard import show_name_helpers
+from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
-from unidecode import unidecode
-from sickbeard.helpers import sanitizeSceneName
-
 
 class SCCProvider(generic.TorrentProvider):
 
@@ -43,7 +35,7 @@ class SCCProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "SceneAccess")
 
         self.supportsBacklog = True
-        self.public = False
+
 
         self.username = None
         self.password = None
@@ -54,14 +46,13 @@ class SCCProvider(generic.TorrentProvider):
         self.cache = SCCCache(self)
 
         self.urls = {'base_url': 'https://sceneaccess.eu',
-                'login': 'https://sceneaccess.eu/login',
-                'detail': 'https://www.sceneaccess.eu/details?id=%s',
-                'search': 'https://sceneaccess.eu/browse?search=%s&method=1&%s',
-                'nonscene': 'https://sceneaccess.eu/nonscene?search=%s&method=1&c44=44&c45=44',
-                'foreign': 'https://sceneaccess.eu/foreign?search=%s&method=1&c34=34&c33=33',
-                'archive': 'https://sceneaccess.eu/archive?search=%s&method=1&c26=26',
-                'download': 'https://www.sceneaccess.eu/%s',
-                }
+                     'login': 'https://sceneaccess.eu/login',
+                     'detail': 'https://www.sceneaccess.eu/details?id=%s',
+                     'search': 'https://sceneaccess.eu/browse?search=%s&method=1&%s',
+                     'nonscene': 'https://sceneaccess.eu/nonscene?search=%s&method=1&c44=44&c45=44',
+                     'foreign': 'https://sceneaccess.eu/foreign?search=%s&method=1&c34=34&c33=33',
+                     'archive': 'https://sceneaccess.eu/archive?search=%s&method=1&c26=26',
+                     'download': 'https://www.sceneaccess.eu/%s'}
 
         self.url = self.urls['base_url']
 
@@ -74,24 +65,23 @@ class SCCProvider(generic.TorrentProvider):
 
         login_params = {'username': self.username,
                         'password': self.password,
-                        'submit': 'come on in',
-        }
+                        'submit': 'come on in'}
 
 
-        response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
-        if re.search('Username or password incorrect', response) \
-                or re.search('<title>SceneAccess \| Login</title>', response):
+        if re.search(r'Username or password incorrect', response) \
+                or re.search(r'<title>SceneAccess \| Login</title>', response):
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
 
     def _isSection(self, section, text):
-        title = '<title>.+? \| %s</title>' % section
+        title = r'<title>.+? \| %s</title>' % section
         return re.search(title, text, re.IGNORECASE)
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
@@ -150,13 +140,12 @@ class SCCProvider(generic.TorrentProvider):
                                     url = all_urls[0]
 
                                 title = link.string
-                                if re.search('\.\.\.', title):
+                                if re.search(r'\.\.\.', title):
                                     data = self.getURL(self.url + "/" + link['href'])
                                     if data:
                                         with BS4Parser(data) as details_html:
                                             title = re.search('(?<=").+(?<!")', details_html.title.string).group(0)
                                 download_url = self.urls['download'] % url['href']
-                                id = int(link['href'].replace('details?id=', ''))
                                 seeders = int(result.find('td', attrs={'class': 'ttr_seeders'}).string)
                                 leechers = int(result.find('td', attrs={'class': 'ttr_leechers'}).string)
                                 #FIXME
@@ -183,35 +172,6 @@ class SCCProvider(generic.TorrentProvider):
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
-
-        return results
-
-    def findPropers(self, search_date=datetime.datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        if not sqlResults:
-            return []
-
-        for sqlshow in sqlResults:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(searchString[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 
