@@ -33,7 +33,6 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
-
         self.username = None
         self.password = None
         self.ratio = None
@@ -48,9 +47,11 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
         self.url = self.urls['base_url']
 
+        self.categories = "&category[]=59&category[]=60&category[]=30&category[]=38"
+        self.proper_strings = ['PROPER', 'REPACK']
+
         self.cache = HDTorrentsCache(self)
 
-        self.categories = "&category[]=59&category[]=60&category[]=30&category[]=38"
 
     def isEnabled(self):
         return self.enabled

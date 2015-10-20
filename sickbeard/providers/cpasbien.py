@@ -34,9 +34,11 @@ class CpasbienProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.public = True
         self.ratio = None
-        self.cache = CpasbienCache(self)
         self.url = "http://www.cpasbien.pw"
 
+        self.proper_strings = ['PROPER', 'REPACK']
+
+        self.cache = CpasbienCache(self)
 
     def isEnabled(self):
         return self.enabled

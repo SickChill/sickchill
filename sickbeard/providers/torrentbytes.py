@@ -34,14 +34,11 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
-
         self.username = None
         self.password = None
         self.ratio = None
         self.minseed = None
         self.minleech = None
-
-        self.cache = TorrentBytesCache(self)
 
         self.urls = {'base_url': 'https://www.torrentbytes.net',
                      'login': 'https://www.torrentbytes.net/takelogin.php',
@@ -52,6 +49,10 @@ class TorrentBytesProvider(generic.TorrentProvider):
         self.url = self.urls['base_url']
 
         self.categories = "&c41=1&c33=1&c38=1&c32=1&c37=1"
+
+        self.proper_strings = ['PROPER', 'REPACK']
+
+        self.cache = TorrentBytesCache(self)
 
     def isEnabled(self):
         return self.enabled

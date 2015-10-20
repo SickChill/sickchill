@@ -71,6 +71,8 @@ class RarbgProvider(generic.TorrentProvider):
                                 self.urlOptions['limit'].format(limit='100') + \
                                 self.urlOptions['format'].format(format='json_extended')
 
+        self.proper_strings = ['{{PROPER|REPACK}}']
+
         self.next_request = datetime.datetime.now()
 
         self.headers.update({'User-Agent': USER_AGENT})
