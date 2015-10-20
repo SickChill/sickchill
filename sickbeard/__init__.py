@@ -537,6 +537,7 @@ EXTRA_SCRIPTS = []
 
 IGNORE_WORDS = "german,french,core2hd,dutch,swedish,reenc,MrLss"
 REQUIRE_WORDS = ""
+IGNORED_SUBS_LIST = "dk,fin,heb,kor,nor,nordic,pl,swe"
 SYNC_FILES = "!sync,lftp-pget-status,part,bts,!qb"
 
 CALENDAR_UNPROTECTED = False
@@ -604,7 +605,7 @@ def initialize(consoleLogging=True):
             NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, NFO_RENAME, \
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, DISPLAY_FILESIZE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, FILTER_ROW, \
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, \
-            METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, REQUIRE_WORDS, CALENDAR_UNPROTECTED, NO_RESTART, CREATE_MISSING_SHOW_DIRS, \
+            METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, NO_RESTART, CREATE_MISSING_SHOW_DIRS, \
             ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, subtitlesFinderScheduler, \
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
@@ -1145,6 +1146,7 @@ def initialize(consoleLogging=True):
 
         IGNORE_WORDS = check_setting_str(CFG, 'General', 'ignore_words', IGNORE_WORDS)
         REQUIRE_WORDS = check_setting_str(CFG, 'General', 'require_words', REQUIRE_WORDS)
+        IGNORED_SUBS_LIST = check_setting_str(CFG, 'General', 'ignored_subs_list', IGNORED_SUBS_LIST)
 
         CALENDAR_UNPROTECTED = bool(check_setting_int(CFG, 'General', 'calendar_unprotected', 0))
 
@@ -1754,6 +1756,7 @@ def save_config():
     new_config['General']['git_path'] = GIT_PATH
     new_config['General']['ignore_words'] = IGNORE_WORDS
     new_config['General']['require_words'] = REQUIRE_WORDS
+    new_config['General']['ignored_subs_list'] = IGNORED_SUBS_LIST
     new_config['General']['calendar_unprotected'] = int(CALENDAR_UNPROTECTED)
     new_config['General']['no_restart'] = int(NO_RESTART)
     new_config['General']['developer'] = int(DEVELOPER)

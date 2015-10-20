@@ -34,12 +34,14 @@ from name_parser.parser import NameParser, InvalidNameException, InvalidShowExce
 
 resultFilters = [
     "sub(bed|ed|pack|s)",
-    "(dk|fin|heb|kor|nor|nordic|pl|swe)sub(bed|ed|s)?",
     "(dir|sample|sub|nfo)fix",
     "sample",
     "(dvd)?extras",
     "dub(bed)?"
 ]
+
+if hasattr('General','ignored_subs_list') and sickbeard.IGNORED_SUBS_LIST:
+    resultFilters.append("(" + sickbeard.IGNORED_SUBS_LIST.replace(",", "|") + ")sub(bed|ed|s)?")
 
 
 def containsAtLeastOneWord(name, words):
