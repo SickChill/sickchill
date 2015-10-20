@@ -125,6 +125,19 @@
                         </div>
 
                         <div class="field-pair">
+                            <label>
+                                <span class="component-title">Ignore language names in subbed results</span>
+                                <span class="component-desc">
+                                    <input type="text" name="ignored_subs_list" value="${sickbeard.IGNORED_SUBS_LIST}" class="form-control input-sm input350" />
+                                    <div class="clear-left">Ignore subbed releases based on language names <br />
+                                    Example: "dk" will ignore words: dksub, dksubs, dksubbed, dksubed <br />
+                                    separate languages with a comma, e.g. "lang1,lang2,lang3
+                                    </div>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
                             <label for="allow_high_priority">
                                 <span class="component-title">Allow high priority</span>
                                 <span class="component-desc">
