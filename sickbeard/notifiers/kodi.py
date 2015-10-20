@@ -130,7 +130,7 @@ class KODINotifier:
 
             kodiapi = self._get_kodi_version(curHost, username, password)
             if kodiapi:
-                if (kodiapi <= 4):
+                if kodiapi <= 4:
                     logger.log(u"Detected KODI version <= 11, using KODI HTTP API", logger.DEBUG)
                     command = {'command': 'ExecBuiltIn',
                                'parameter': 'Notification(' + title.encode("utf-8") + ',' + message.encode(
@@ -143,7 +143,7 @@ class KODINotifier:
                     command = '{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{"title":"%s","message":"%s", "image": "%s"},"id":1}' % (
                         title.encode("utf-8"), message.encode("utf-8"), self.sr_logo_url)
                     notifyResult = self._send_to_kodi_json(command, curHost, username, password)
-                    if notifyResult.get('result'):
+                    if notifyResult and notifyResult.get('result'):
                         result += curHost + ':' + notifyResult["result"].decode(sickbeard.SYS_ENCODING)
             else:
                 if sickbeard.KODI_ALWAYS_ON or force:
@@ -172,7 +172,7 @@ class KODINotifier:
 
         kodiapi = self._get_kodi_version(host, sickbeard.KODI_USERNAME, sickbeard.KODI_PASSWORD)
         if kodiapi:
-            if (kodiapi <= 4):
+            if kodiapi <= 4:
                 # try to update for just the show, if it fails, do full update if enabled
                 if not self._update_library(host, showName) and sickbeard.KODI_UPDATE_FULL:
                     logger.log(u"Single show update failed, falling back to full update", logger.DEBUG)
@@ -222,7 +222,7 @@ class KODINotifier:
             return False
 
         for key in command:
-            if type(command[key]) == unicode:
+            if isinstance(command[key], unicode):
                 command[key] = command[key].encode('utf-8')
 
         enc_command = urllib.urlencode(command)
@@ -240,7 +240,12 @@ class KODINotifier:
             else:
                 logger.log(u"Contacting KODI via url: " + ss(url), logger.DEBUG)
 
-            response = urllib2.urlopen(req)
+            try:
+                response = urllib2.urlopen(req)
+            except (httplib.BadStatusLine, urllib2.URLError) as e:
+                logger.log(u"Couldn't contact KODI HTTP at %r : %r" % (url, ex(e)), logger.DEBUG)
+                return False
+
             result = response.read().decode(sickbeard.SYS_ENCODING)
             response.close()
 
@@ -248,8 +253,7 @@ class KODINotifier:
             return result
 
         except Exception as e:
-            logger.log(u"Warning: Couldn't contact KODI HTTP at " + ss(url) + " " + str(e),
-                       logger.WARNING)
+            logger.log(u"Couldn't contact KODI HTTP at %r : %r" % (url, ex(e)), logger.DEBUG)
             return False
 
     def _update_library(self, host=None, showName=None):
@@ -466,7 +470,7 @@ class KODINotifier:
             del shows
 
             # we didn't find the show (exact match), thus revert to just doing a full update if enabled
-            if (tvshowid == -1):
+            if tvshowid == -1:
                 logger.log(u'Exact show name not matched in KODI TV show list', logger.DEBUG)
                 return False
 
@@ -532,10 +536,10 @@ class KODINotifier:
         if sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notify_kodi(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
-    def notify_git_update(self, new_version = "??"):
+    def notify_git_update(self, new_version="??"):
         if sickbeard.USE_KODI:
-            update_text=common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-            title=common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
+            title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify_kodi(update_text + new_version, title)
 
     def test_notify(self, host, username, password):
