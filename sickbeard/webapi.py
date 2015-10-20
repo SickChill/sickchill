@@ -477,15 +477,8 @@ class TVDBShorthandWrapper(ApiCall):
 
 
 # ###############################
-# helper functions         #
+#       helper functions        #
 # ###############################
-
-def _sizeof_fmt(num):
-    for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
-        if num < 1024.00:
-            return "%3.2f %s" % (num, x)
-        num /= 1024.00
-
 
 def _is_int(data):
     try:
@@ -762,7 +755,7 @@ class CMD_Episode(ApiCall):
         status, quality = Quality.splitCompositeStatus(int(episode["status"]))
         episode["status"] = _get_status_Strings(status)
         episode["quality"] = get_quality_string(quality)
-        episode["file_size_human"] = _sizeof_fmt(episode["file_size"])
+        episode["file_size_human"] = helpers.pretty_filesize(episode["file_size"])
 
         return _responds(RESULT_SUCCESS, episode)
 

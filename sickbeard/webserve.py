@@ -63,6 +63,7 @@ from sickrage.show.History import History as HistoryTool
 from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
+
 from versionChecker import CheckVersion
 
 import requests

@@ -457,26 +457,6 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
 
     return (None, None, None)
 
-
-def sizeof_fmt(num):
-    """
-    >>> sizeof_fmt(2)
-    '2.0 bytes'
-    >>> sizeof_fmt(1024)
-    '1.0 KB'
-    >>> sizeof_fmt(2048)
-    '2.0 KB'
-    >>> sizeof_fmt(2**20)
-    '1.0 MB'
-    >>> sizeof_fmt(1234567)
-    '1.2 MB'
-    """
-    for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
-        if num < 1024.0:
-            return "%3.1f %s" % (num, x)
-        num /= 1024.0
-
-
 def listMediaFiles(path):
     """
     Get a list of files possibly containing media in a path
@@ -1758,24 +1738,10 @@ def generateApiKey():
 
 def pretty_filesize(file_bytes):
     """Return humanly formatted sizes from bytes"""
-
-    file_bytes = float(file_bytes)
-    if file_bytes >= 1099511627776:
-        terabytes = file_bytes / 1099511627776
-        size = '%.2f TB' % terabytes
-    elif file_bytes >= 1073741824:
-        gigabytes = file_bytes / 1073741824
-        size = '%.2f GB' % gigabytes
-    elif file_bytes >= 1048576:
-        megabytes = file_bytes / 1048576
-        size = '%.2f MB' % megabytes
-    elif file_bytes >= 1024:
-        kilobytes = file_bytes / 1024
-        size = '%.2f KB' % kilobytes
-    else:
-        size = '%.2f b' % file_bytes
-
-    return size
+    for mod in ['B', 'KB', 'MB', 'GB', 'TB', 'PB']:
+        if file_bytes < 1024.00:
+            return "%3.2f %s" % (file_bytes, mod)
+        file_bytes /= 1024.00
 
 if __name__ == '__main__':
     import doctest
@@ -1851,7 +1817,7 @@ def verify_freespace(src, dest, oldfile=None):
     if diskfree > neededspace:
         return True
     else:
-        logger.log("Not enough free space: Needed: %s bytes ( %s ), found: %s bytes ( %s )" % ( neededspace, pretty_filesize(neededspace), diskfree, pretty_filesize(diskfree) ) , 
+        logger.log("Not enough free space: Needed: %s bytes ( %s ), found: %s bytes ( %s )" % ( neededspace, pretty_filesize(neededspace), diskfree, pretty_filesize(diskfree) ) ,
         logger.WARNING)
         return False
 
@@ -1910,17 +1876,16 @@ def isFileLocked(checkfile, writeLockCheck=False):
 
 def getDiskSpaceUsage(diskPath=None):
     '''
-    returns the free space in MB for a given path or False if no path given
+    returns the free space in human readable bytes for a given path or False if no path given
     :param diskPath: the filesystem path being checked
     '''
-
     if diskPath and os.path.exists(diskPath):
         if platform.system() == 'Windows':
             free_bytes = ctypes.c_ulonglong(0)
             ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(diskPath), None, None, ctypes.pointer(free_bytes))
-            return free_bytes.value / 1024 / 1024
+            return pretty_filesize(free_bytes.value)
         else:
             st = os.statvfs(diskPath)
-            return st.f_bavail * st.f_frsize / 1024 / 1024
+            return pretty_filesize(st.f_bavail * st.f_frsize)
     else:
         return False
