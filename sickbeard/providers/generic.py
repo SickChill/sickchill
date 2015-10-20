@@ -296,7 +296,7 @@ class GenericProvider:
             title = u'' + title.replace(' ', '.')
 
         url = item.get('link')
-        if url:
+        if url and not url.startswith('magnet'):
             url = url.replace('&amp;', '&')
 
         return title, url
