@@ -2541,7 +2541,7 @@ class TVEpisode(object):
             min = int((airs.group(2), min)[None is airs.group(2)])
         airtime = datetime.time(hr, min)
 
-        if sickbeard.TIMEZONE_DISPLAY == 'local':
+        if sickbeard.FILE_TIMESTAMP_TIMEZONE == 'local':
             airdatetime = sbdatetime.sbdatetime.convert_to_setting( network_timezones.parse_date_time(datetime.date.toordinal(self.airdate), self.show.airs, self.show.network))
         else:
             airdatetime = datetime.datetime.combine(self.airdate, airtime).replace(tzinfo=tzlocal())
