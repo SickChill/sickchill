@@ -297,7 +297,7 @@ class GenericProvider:
 
         url = item.get('link')
         if url:
-            url = url.replace('&amp;', '&')
+            url = url.replace('&amp;', '&').replace('%26tr%3D', '&tr=')
 
         return title, url
 
