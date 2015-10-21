@@ -168,7 +168,12 @@ def snatchEpisode(result, endStatus=SNATCHED):
             sql_l.append(curEpObj.get_sql())
 
         if curEpObj.status not in Quality.DOWNLOADED:
-            notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN') + " from " + result.provider.name)
+            try:
+                notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN') + " from " + result.provider.name)
+            except:
+                # Without this, when notification fail, it crashes the snatch thread and SR will
+                # keep snatching until notification is sent
+                logger.log(u"Failed to send snatch notification", logger.DEBUG)
 
             trakt_data.append((curEpObj.season, curEpObj.episode))
 
