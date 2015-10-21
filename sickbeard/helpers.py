@@ -541,7 +541,8 @@ def hardlinkFile(srcFile, destFile):
         ek(link, srcFile, destFile)
         fixSetGroupID(destFile)
     except Exception as e:
-        logger.log(u"Failed to create hardlink of %s at %s. Error: %r. Copying instead" % (srcFile, destFile, ex(e)),logger.ERROR)
+        logger.log(u"Failed to create hardlink of %s at %s. Error: %r. Copying instead" 
+        % (srcFile, destFile, ex(e)), logger.ERROR)
         copyFile(srcFile, destFile)
 
 
@@ -574,7 +575,8 @@ def moveAndSymlinkFile(srcFile, destFile):
         fixSetGroupID(destFile)
         ek(symlink, destFile, srcFile)
     except Exception as e:
-        logger.log(u"Failed to create symlink of %s at %s. Error: %r. Copying instead" % (srcFile, destFile, ex(e)),logger.ERROR)
+        logger.log(u"Failed to create symlink of %s at %s. Error: %r. Copying instead" 
+        % (srcFile, destFile, ex(e)), logger.ERROR)
         copyFile(srcFile, destFile)
 
 
@@ -1021,13 +1023,13 @@ def restoreVersionedFile(backup_file, version):
         return False
 
     try:
-        logger.log(u"Trying to backup %s to %s.r%s before restoring backup" % (new_file, new_file, version),
-            logger.DEBUG)
+        logger.log(u"Trying to backup %s to %s.r%s before restoring backup" 
+        % (new_file, new_file, version), logger.DEBUG)
 
         shutil.move(new_file, new_file + '.' + 'r' + str(version))
     except Exception as e:
-        logger.log(u"Error while trying to backup DB file %s before proceeding with restore: %r" % (restore_file, ex(e)),
-            logger.WARNING)
+        logger.log(u"Error while trying to backup DB file %s before proceeding with restore: %r" 
+        % (restore_file, ex(e)), logger.WARNING)
         return False
 
     while not ek(os.path.isfile, new_file):
@@ -1591,8 +1593,8 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
             resp = session.get(url, timeout=timeout, allow_redirects=True, verify=session.verify)
 
         if not resp.ok:
-            logger.log(u"Requested getURL %s returned status code is %s: %s" % (url, resp.status_code, codeDescription(resp.status_code)),
-            logger.DEBUG)
+            logger.log(u"Requested getURL %s returned status code is %s: %s" 
+            % (url, resp.status_code, codeDescription(resp.status_code)), logger.DEBUG)
             return None
 
         if proxyGlypeProxySSLwarning is not None:
@@ -1600,8 +1602,8 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
                 resp = session.get(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True, verify=session.verify)
 
                 if not resp.ok:
-                    logger.log(u"GlypeProxySSLwarning: Requested getURL %s returned status code is %s: %s" % (url, resp.status_code, codeDescription(resp.status_code)),
-                    logger.DEBUG)
+                    logger.log(u"GlypeProxySSLwarning: Requested getURL %s returned status code is %s: %s" 
+                    % (url, resp.status_code, codeDescription(resp.status_code)), logger.DEBUG)
                     return None
 
     except (SocketTimeout, TypeError) as e:
@@ -1650,7 +1652,8 @@ def download_file(url, filename, session=None, headers={}):
     try:
         with closing(session.get(url, allow_redirects=True, verify=session.verify)) as resp:
             if not resp.ok:
-                logger.log(u"Requested download url %s returned status code is %s: %s" % ( url, resp.status_code, codeDescription(resp.status_code) ) , logger.DEBUG)
+                logger.log(u"Requested download url %s returned status code is %s: %s" 
+                % (url, resp.status_code, codeDescription(resp.status_code)), logger.DEBUG)
                 return False
 
             try:
@@ -1665,11 +1668,12 @@ def download_file(url, filename, session=None, headers={}):
                 logger.log(u"Problem setting permissions or writing file to: %s" % filename, logger.WARNING)
 
     except (SocketTimeout, TypeError) as e:
+        _remove_file_failed(filename)
         logger.log(u"Connection timed out (sockets) while loading download URL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
     except requests.exceptions.HTTPError as e:
         _remove_file_failed(filename)
-        logger.log(u"HTTP error %r while loading download URL %s " % (ex(e), url ), logger.WARNING)
+        logger.log(u"HTTP error %r while loading download URL %s " % (ex(e), url), logger.WARNING)
         return False
     except requests.exceptions.ConnectionError as e:
         _remove_file_failed(filename)
@@ -1677,7 +1681,7 @@ def download_file(url, filename, session=None, headers={}):
         return False
     except requests.exceptions.Timeout as e:
         _remove_file_failed(filename)
-        logger.log(u"Connection timed out %r while loading download URL %s " % (ex(e), url ), logger.WARNING)
+        logger.log(u"Connection timed out %r while loading download URL %s " % (ex(e), url), logger.WARNING)
         return False
     except EnvironmentError as e:
         _remove_file_failed(filename)
@@ -1685,7 +1689,7 @@ def download_file(url, filename, session=None, headers={}):
         return False
     except Exception:
         _remove_file_failed(filename)
-        logger.log(u"Unknown exception while loading download URL %s : %r" % ( url, traceback.format_exc() ), logger.WARNING)
+        logger.log(u"Unknown exception while loading download URL %s : %r" % (url, traceback.format_exc()), logger.WARNING)
         return False
 
     return True
@@ -1817,8 +1821,8 @@ def verify_freespace(src, dest, oldfile=None):
     if diskfree > neededspace:
         return True
     else:
-        logger.log("Not enough free space: Needed: %s bytes ( %s ), found: %s bytes ( %s )" % ( neededspace, pretty_filesize(neededspace), diskfree, pretty_filesize(diskfree) ) ,
-        logger.WARNING)
+        logger.log("Not enough free space: Needed: %s bytes ( %s ), found: %s bytes ( %s )" 
+        % (neededspace, pretty_filesize(neededspace), diskfree, pretty_filesize(diskfree)), logger.WARNING)
         return False
 
 # https://gist.github.com/thatalextaylor/7408395
