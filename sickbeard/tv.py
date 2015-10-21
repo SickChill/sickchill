@@ -509,7 +509,7 @@ class TVShow(object):
                 try:
                     cachedSeasons[curSeason] = cachedShow[curSeason]
                 except sickbeard.indexer_seasonnotfound, e:
-                    logger.log(u"%s: Error when trying to load the episode from %. Message: %s " %
+                    logger.log(u"%s: Error when trying to load the episode from s%. Message: %s " %
                     (curShowid, sickbeard.indexerApi(self.indexer).name, e.message), logger.WARNING)
                     deleteEp = True
 
