@@ -265,15 +265,14 @@ class Quality:
 
             return ret
 
-        if checkName([r"([sp]d.?tv|hd.?tv|dsr|tv(rip|mux)|satrip).(xvid|x26[45]|h.?26[45])"], all) and not checkName([r"(720|1080)[pi]"], all) and\
-                not checkName([r"hr.ws.pdtv.x26[45]"], any):
+        if (checkName([r"480p|web.?dl|web(rip|mux|hd)|[sph]d.?tv|dsr|tv(rip|mux)|satrip", r"xvid|divx|[xh].?26[45]"], all)
+                and not checkName([r"(720|1080)[pi]"], all) and not checkName([r"hr.ws.pdtv.[xh].?26[45]"], any)):
             ret = Quality.SDTV
-        elif checkName([r"web.?dl|web(rip|mux|hd)", r"xvid|x26[45]|h.?26[45]"], all) and not checkName([r"(720|1080)[pi]"], all):
-            ret = Quality.SDTV
-        elif checkName([r"(dvd(rip|mux)|b[rd](rip|mux)|blue?-?ray)(.ws)?.(xvid|divx|[xh].?26[45])"], any) and not checkName([r"(720|1080)[pi]"], all):
+        elif (checkName([r"dvd(rip|mux)|b[rd](rip|mux)|blue?-?ray", r"xvid|divx|[xh].?26[45]"], any)
+              and not checkName([r"(720|1080)[pi]"], all) and not checkName([r"hr.ws.pdtv.[xh].?26[45]"], any)):
             ret = Quality.SDDVD
-        elif checkName([r"720p", r"hd.?tv", r"[xh].?26[45]"], all) or checkName([r"hr.ws.pdtv.[xh].?26[45]"], any) and not checkName(
-                [r"1080[pi]"], all):
+        elif (checkName([r"720p", r"hd.?tv", r"[xh].?26[45]"], all) or checkName([r"hr.ws.pdtv.[xh].?26[45]"], any)
+              and not checkName([r"1080[pi]"], all)):
             ret = Quality.HDTV
         elif checkName([r"720p|1080i", r"hd.?tv", r"mpeg-?2"], all) or checkName([r"1080[pi].hdtv", r"h.?26[45]"], all):
             ret = Quality.RAWHDTV
