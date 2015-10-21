@@ -21,6 +21,7 @@ import sickbeard
 import traceback
 import pkg_resources
 import subliminal
+import io
 import subprocess
 from sickbeard.common import *
 from sickbeard import logger
@@ -39,6 +40,7 @@ distribution = pkg_resources.Distribution(location=os.path.dirname(os.path.dirna
 entry_points = {
     'subliminal.providers': [
         'addic7ed = subliminal.providers.addic7ed:Addic7edProvider',
+        'legendastv = subliminal.providers.legendastv:LegendasTvProvider',
         'napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider',
         'opensubtitles = subliminal.providers.opensubtitles:OpenSubtitlesProvider',
         'podnapisi = subliminal.providers.podnapisi:PodnapisiProvider',
@@ -47,9 +49,12 @@ entry_points = {
     ],
     'babelfish.language_converters': [
         'addic7ed = subliminal.converters.addic7ed:Addic7edConverter',
+        'legendastv = subliminal.converters.legendastv:LegendasTvConverter',
+        'thesubdb = subliminal.converters.thesubdb:TheSubDBConverter',
         'tvsubtitles = subliminal.converters.tvsubtitles:TVsubtitlesConverter'
     ]
 }
+
 distribution._ep_map = pkg_resources.EntryPoint.parse_map(entry_points, distribution)
 pkg_resources.working_set.add(distribution)
 
@@ -57,8 +62,13 @@ provider_manager.ENTRY_POINT_CACHE.pop('subliminal.providers')
 
 subliminal.region.configure('dogpile.cache.memory')
 
+provider_configs = {'addic7ed': {'username': sickbeard.ADDIC7ED_USER, 'password': sickbeard.ADDIC7ED_PASS},
+                    'legendastv': {'username': sickbeard.LEGENDASTV_USER, 'password': sickbeard.LEGENDASTV_PASS},
+                    'opensubtitles': {'username': sickbeard.OPENSUBTITLES_USER, 'password': sickbeard.OPENSUBTITLES_PASS}}
+
 provider_urls = {
     'addic7ed': 'http://www.addic7ed.com',
+    'legendastv': 'http://www.legendas.tv',
     'napiprojekt': 'http://www.napiprojekt.pl',
     'opensubtitles': 'http://www.opensubtitles.org',
     'podnapisi': 'http://www.podnapisi.net',
@@ -128,25 +138,24 @@ def downloadSubtitles(subtitles_info):
         (subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
         return (existing_subtitles, None)
 
+    pool = subliminal.api.ProviderPool(providers=providers, provider_configs=provider_configs)
+    subtitles_list = pool.list_subtitles(video, languages)
+
     try:
         # TODO: Add gui option for hearing_impaired parameter ?
-        found_subtitles = subliminal.download_best_subtitles([video], languages=languages, hearing_impaired=False, only_one=not sickbeard.SUBTITLES_MULTI, providers=providers)
+        found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages, hearing_impaired=False, only_one=not sickbeard.SUBTITLES_MULTI)
         if not found_subtitles:
             logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
             return (existing_subtitles, None)
 
-        for index, subtitle in enumerate(found_subtitles[video]):
-            encoding = subliminal.subtitle.Subtitle.guess_encoding(subtitle)
-            found_subtitles[video][index].encoding = encoding
+        for subtitle in found_subtitles:
+            # Force subtitle encoding to utf-8 for some languages
+            if subtitle.language.alpha3 == 'pol':
+                setattr(subtitle, 'encoding', 'utf-8')
+            elif subtitle.language.alpha3 == 'bul':
+                setattr(subtitle, 'encoding', 'utf-8')
 
-        subliminal.save_subtitles(video, found_subtitles[video], directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI)
-
-        for video, subtitles in found_subtitles.iteritems():
-            for subtitle in subtitles:
-                new_video_path = subtitles_path + "/" + video.name.rsplit("/", 1)[-1]
-                new_subtitles_path = subliminal.subtitle.get_subtitle_path(new_video_path, subtitle.language if sickbeard.SUBTITLES_MULTI else None)
-                sickbeard.helpers.chmodAsParent(new_subtitles_path)
-                sickbeard.helpers.fixSetGroupID(new_subtitles_path)
+        save_subtitles(video, found_subtitles, directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI)
 
         if not sickbeard.EMBEDDED_SUBTITLES_ALL and sickbeard.SUBTITLES_EXTRA_SCRIPTS and video_path.endswith(('.mkv','.mp4')):
             run_subs_extra_scripts(subtitles_info, found_subtitles)
@@ -160,12 +169,48 @@ def downloadSubtitles(subtitles_info):
                 return (existing_subtitles, None)
 
     if sickbeard.SUBTITLES_HISTORY:
-        for video, subtitles in found_subtitles.iteritems():
-            for subtitle in subtitles:
-                logger.log(u'history.logSubtitle %s, %s' % (subtitle.provider_name, subtitle.language.opensubtitles), logger.DEBUG)
-                history.logSubtitle(subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode'], subtitles_info['status'], subtitle)
+        for subtitle in found_subtitles:
+            logger.log(u'history.logSubtitle %s, %s' % (subtitle.provider_name, subtitle.language.opensubtitles), logger.DEBUG)
+            history.logSubtitle(subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode'], subtitles_info['status'], subtitle)
 
     return (current_subtitles, new_subtitles)
+
+def save_subtitles(video, subtitles, single=False, directory=None):
+    saved_subtitles = []
+    for subtitle in subtitles:
+        # check content
+        if subtitle.content is None:
+            logger.log("Skipping subtitle %r: no content" % subtitle, logger.DEBUG)
+            continue
+
+        # check language
+        if subtitle.language in set(s.language for s in saved_subtitles):
+            logger.log("Skipping subtitle %r: language already saved" % subtitle, logger.DEBUG)
+            continue
+
+        # create subtitle path
+        subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, None if single else subtitle.language)
+        if directory is not None:
+            subtitle_path = os.path.join(directory, os.path.split(subtitle_path)[1])
+
+        # save content as is or in the specified encoding
+        logger.log("Saving %r to %r" % (subtitle, subtitle_path), logger.DEBUG)
+        if subtitle.encoding:
+            with io.open(subtitle_path, 'w', encoding=subtitle.encoding) as f:
+                f.write(subtitle.text)
+        else:
+            with io.open(subtitle_path, 'wb') as f:
+                f.write(subtitle.content)
+
+        # chmod and set group for the saved subtitle
+        sickbeard.helpers.chmodAsParent(subtitle_path)
+        sickbeard.helpers.fixSetGroupID(subtitle_path)
+
+        # check single
+        if single:
+            break
+
+    return saved_subtitles
 
 def getNeededLanguages(current_subtitles):
     languages = set()
@@ -224,7 +269,6 @@ def subtitlesLanguages(video_path):
             currentWantedLanguages = wantedLanguages()
             if len(currentWantedLanguages) == 1 and Language('und') in external_subtitle_languages:
                 if embedded_subtitle_languages not in currentWantedLanguages and Language('und') in embedded_subtitle_languages:
-                    # TODO: Replace with a checkbox
                     subtitle_languages.add(fromietf(currentWantedLanguages[0]))
                     save_subtitles = True
                 elif embedded_subtitle_languages not in currentWantedLanguages and Language('und') not in embedded_subtitle_languages:
@@ -259,7 +303,7 @@ def subtitlesLanguages(video_path):
 def getEmbeddedLanguages(video_path):
     embedded_subtitle_languages = set()
     try:
-        with open(video_path, 'rb') as f:
+        with io.open(video_path, 'rb') as f:
             mkv = MKV(f)
             if mkv.subtitle_tracks:
                 for st in mkv.subtitle_tracks:
