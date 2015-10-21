@@ -43,3 +43,16 @@ Automatic Video Library Manager for TV Shows. It watches for new episodes of you
 #### Important
 Before using this with your existing database (sickbeard.db) please make a backup copy of it and delete any other database files such as cache.db and failed.db if present<br/>
 We HIGHLY recommend starting out with no database files at all to make this a fresh start but the choice is at your own risk
+
+###Supported providers
+
+A full list can be found here: [Link](https://github.com/SiCKRAGETV/sickrage-issues/wiki/SickRage-Search-Providers)
+
+###Special Thanks to: 
+![image](https://rarbg.com/favicon.ico)[RARBG](rarbg.to)
+![image](https://torrentproject.se/favicon.ico)[TorrentProject](https://torrentproject.se/about)
+![image](https://thepiratebay.la/favicon.ico)[ThePirateBay](https://thepiratebay.la/)
+![image](http://kat.cr/favicon.ico)[KickAssTorrents](https://kat.cr)
+![image](https://nzb.cat/favicon.ico)[NZB.cat](https://nzb.cat/)
+![image](https://nzbgeek.info/favicon.ico)[NZBGeek](https://nzbgeek.info)
+![image](https://raw.githubusercontent.com/SiCKRAGETV/SickRage/master/gui/slick/images/providers/dognzb.png)[DOGnzb](dognzb.cr)
