@@ -20,6 +20,7 @@ from urllib import quote_plus
 
 from sickbeard import logger
 from sickbeard import tvcache
+from sickbeard import helpers
 from sickbeard.providers import generic
 from sickbeard.common import USER_AGENT
 
