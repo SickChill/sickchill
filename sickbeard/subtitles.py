@@ -247,7 +247,7 @@ def getSubtitlesPath(video_path):
 def subtitlesLanguages(video_path):
     """Return a list detected subtitles for the given video file"""
     resultList = []
-    _save_subtitles = None
+    should_save_subtitles = None
 
     if not sickbeard.EMBEDDED_SUBTITLES_ALL and video_path.endswith('.mkv'):
         embedded_subtitle_languages = getEmbeddedLanguages(video_path.encode(sickbeard.SYS_ENCODING))
@@ -272,18 +272,18 @@ def subtitlesLanguages(video_path):
             if len(currentWantedLanguages) == 1 and Language('und') in external_subtitle_languages:
                 if embedded_subtitle_languages not in currentWantedLanguages and Language('und') in embedded_subtitle_languages:
                     subtitle_languages.add(fromietf(currentWantedLanguages[0]))
-                    _save_subtitles = True
+                    should_save_subtitles = True
                 elif embedded_subtitle_languages not in currentWantedLanguages and Language('und') not in embedded_subtitle_languages:
                     subtitle_languages.remove(Language('und'))
                     subtitle_languages.add(fromietf(currentWantedLanguages[0]))
-                    _save_subtitles = True
+                    should_save_subtitles = True
     else:
         subtitle_languages = scan_subtitle_languages(video_path)
         if not sickbeard.SUBTITLES_MULTI:
             if len(wantedLanguages()) == 1 and Language('und') in subtitle_languages:
                 subtitle_languages.remove(Language('und'))
                 subtitle_languages.add(fromietf(wantedLanguages()[0]))
-                _save_subtitles = True
+                should_save_subtitles = True
 
     for language in subtitle_languages:
         if hasattr(language, 'opensubtitles') and language.opensubtitles:
@@ -300,7 +300,7 @@ def subtitlesLanguages(video_path):
     if ('pob' in defaultLang or 'pb' in defaultLang) and ('pt' not in defaultLang and 'por' not in defaultLang):
         resultList = [x if not x in ['por', 'pt'] else u'pob' for x in resultList]
 
-    return (sorted(resultList), _save_subtitles)
+    return (sorted(resultList), should_save_subtitles)
 
 def getEmbeddedLanguages(video_path):
     embedded_subtitle_languages = set()
