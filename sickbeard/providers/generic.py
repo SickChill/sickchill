@@ -291,11 +291,11 @@ class GenericProvider:
         Returns: A tuple containing two strings representing title and URL respectively
         """
 
-        title = item.get('title')
+        title = item.get('title', '')
         if title:
             title = u'' + title.replace(' ', '.')
 
-        url = item.get('link')
+        url = item.get('link', '')
         if url:
             url = url.replace('&amp;', '&').replace('%26tr%3D', '&tr=')
 
@@ -303,18 +303,8 @@ class GenericProvider:
 
     def _get_size(self, item):
         """Gets the size from the item"""
-        if self.providerType != GenericProvider.NZB:
-            logger.log(u"Torrent Generic providers doesn't have _get_size() implemented yet", logger.DEBUG)
-            return -1
-        else:
-            size = item.get('links')[1].get('length')
-            if size:
-                size = int(size)
-                return size
-            else:
-                logger.log(u"Size was not found in your provider response", logger.DEBUG)
-                return -1
-
+        logger.log(u"Provider type doesn't have _get_size() implemented yet", logger.ERROR)
+        return -1
 
     def findSearchResults(self, show, episodes, search_mode, manualSearch=False, downCurQuality=False):
 
@@ -548,6 +538,17 @@ class NZBProvider(GenericProvider):
         GenericProvider.__init__(self, name)
 
         self.providerType = GenericProvider.NZB
+
+    def _get_size(self, item):
+        try:
+            size = item.get('links')[1].get('length', -1)
+        except IndexError:
+            size = -1
+
+        if not size:
+            logger.log(u"Size was not found in your provider response", logger.DEBUG)
+
+        return int(size)
 
 
 class TorrentProvider(GenericProvider):
