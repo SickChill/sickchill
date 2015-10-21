@@ -17,22 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
-import re
-import datetime
 import time
+import traceback
 from requests.auth import AuthBase
-import sickbeard
-import generic
 
-from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import show_name_helpers
-from sickbeard import db
-from sickbeard import helpers
-from sickbeard import classes
-from sickbeard.helpers import sanitizeSceneName
+from sickbeard.providers import generic
 
 
 class T411Provider(generic.TorrentProvider):
@@ -40,8 +31,7 @@ class T411Provider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "T411")
 
         self.supportsBacklog = True
-        self.public = False
-        self.enabled = False
+
         self.username = None
         self.password = None
         self.ratio = None
@@ -54,8 +44,7 @@ class T411Provider(generic.TorrentProvider):
                      'search': 'https://api.t411.in/torrents/search/%s?cid=%s&limit=100',
                      'rss': 'https://api.t411.in/torrents/top/today',
                      'login_page': 'https://api.t411.in/auth',
-                     'download': 'https://api.t411.in/torrents/download/%s',
-        }
+                     'download': 'https://api.t411.in/torrents/download/%s'}
 
         self.url = self.urls['base_url']
 
@@ -169,36 +158,6 @@ class T411Provider(generic.TorrentProvider):
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
-
-        return results
-
-    def findPropers(self, search_date=datetime.datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        if not sqlResults:
-            return []
-
-        for sqlshow in sqlResults:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                searchResults = self._doSearch(searchString[0])
-                for item in searchResults:
-                    title, url = self._get_title_and_url(item)
-                    if title and url:
-                        results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 

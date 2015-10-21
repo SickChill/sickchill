@@ -19,22 +19,15 @@
 
 import traceback
 import re
-import generic
 import datetime
 import json
 import time
 
-
-import sickbeard
-from sickbeard.common import Quality, USER_AGENT
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import show_name_helpers
-from sickbeard import db
-from sickbeard import helpers
-from sickbeard import classes
+from sickbeard.providers import generic
+from sickbeard.common import USER_AGENT
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
-from sickrage.helper.exceptions import ex
 
 
 class GetOutOfLoop(Exception):
@@ -61,24 +54,24 @@ class RarbgProvider(generic.TorrentProvider):
                      'listing': u'http://torrentapi.org/pubapi_v2.php?mode=list&app_id=sickrage',
                      'search': u'http://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_string={search_string}',
                      'search_tvdb': u'http://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_tvdb={tvdb}&search_string={search_string}',
-                     'api_spec': u'https://rarbg.com/pubapi/apidocs.txt',
-                     }
+                     'api_spec': u'https://rarbg.com/pubapi/apidocs.txt'}
 
         self.url = self.urls['listing']
 
         self.urlOptions = {'categories': '&category={categories}',
-                        'seeders': '&min_seeders={min_seeders}',
-                        'leechers': '&min_leechers={min_leechers}',
-                        'sorting' : '&sort={sorting}',
-                        'limit': '&limit={limit}',
-                        'format': '&format={format}',
-                        'ranked': '&ranked={ranked}',
-                        'token': '&token={token}',
-        }
+                           'seeders': '&min_seeders={min_seeders}',
+                           'leechers': '&min_leechers={min_leechers}',
+                           'sorting' : '&sort={sorting}',
+                           'limit': '&limit={limit}',
+                           'format': '&format={format}',
+                           'ranked': '&ranked={ranked}',
+                           'token': '&token={token}'}
 
         self.defaultOptions = self.urlOptions['categories'].format(categories='tv') + \
                                 self.urlOptions['limit'].format(limit='100') + \
                                 self.urlOptions['format'].format(format='json_extended')
+
+        self.proper_strings = ['{{PROPER|REPACK}}']
 
         self.next_request = datetime.datetime.now()
 
@@ -255,34 +248,6 @@ class RarbgProvider(generic.TorrentProvider):
             # For each search mode sort all the items by seeders
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
             results += items[mode]
-
-        return results
-
-    def findPropers(self, search_date=datetime.datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        if not sqlResults:
-            return []
-
-        for sqlshow in sqlResults:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(searchString[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 

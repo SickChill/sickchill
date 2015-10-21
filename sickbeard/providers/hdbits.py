@@ -34,9 +34,8 @@ class HDBitsProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "HDBits")
 
         self.supportsBacklog = True
-        self.public = False
 
-        self.enabled = False
+
         self.username = None
         self.passkey = None
         self.ratio = None

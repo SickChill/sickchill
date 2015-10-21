@@ -18,23 +18,13 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import sickbeard
-import generic
 import urllib
-from sickbeard.common import Quality
-from sickbeard import logger
-from sickbeard import tvcache
-from sickbeard import db
-from sickbeard import classes
-from sickbeard import helpers
-from sickbeard import show_name_helpers
-from sickrage.helper.exceptions import AuthException
 import requests
 from bs4 import BeautifulSoup
-from unidecode import unidecode
-from sickbeard.helpers import sanitizeSceneName
-from datetime import datetime
-import traceback
+
+from sickbeard import logger
+from sickbeard import tvcache
+from sickbeard.providers import generic
 
 class HDTorrentsProvider(generic.TorrentProvider):
     def __init__(self):
@@ -42,7 +32,6 @@ class HDTorrentsProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "HDTorrents")
 
         self.supportsBacklog = True
-        self.public = False
 
         self.username = None
         self.password = None
@@ -54,14 +43,15 @@ class HDTorrentsProvider(generic.TorrentProvider):
                      'login': 'https://hd-torrents.org/login.php',
                      'search': 'https://hd-torrents.org/torrents.php?search=%s&active=1&options=0%s',
                      'rss': 'https://hd-torrents.org/torrents.php?search=&active=1&options=0%s',
-                     'home': 'https://hd-torrents.org/%s'
-        }
+                     'home': 'https://hd-torrents.org/%s'}
 
         self.url = self.urls['base_url']
 
+        self.categories = "&category[]=59&category[]=60&category[]=30&category[]=38"
+        self.proper_strings = ['PROPER', 'REPACK']
+
         self.cache = HDTorrentsCache(self)
 
-        self.categories = "&category[]=59&category[]=60&category[]=30&category[]=38"
 
     def isEnabled(self):
         return self.enabled
@@ -82,7 +72,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                         'pwd': self.password,
                         'submit': 'Confirm'}
 
-        response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -181,7 +171,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                                         if not size:
                                             size = -1
 
-                            except:
+                            except Exception:
                                 logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
                         if not all([title, download_url]):
@@ -206,41 +196,6 @@ class HDTorrentsProvider(generic.TorrentProvider):
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
-
-        return results
-
-    def findPropers(self, search_date=datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        if not sqlResults:
-            return []
-
-        for sqlshow in sqlResults:
-            self.show = curshow = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if not self.show: continue
-            curEp = curshow.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-
-            proper_searchString = self._get_episode_search_strings(curEp, add_string='PROPER')
-
-            for item in self._doSearch(proper_searchString[0]):
-                title, url = self._get_title_and_url(item)
-                results.append(classes.Proper(title, url, datetime.today(), self.show))
-
-            repack_searchString = self._get_episode_search_strings(curEp, add_string='REPACK')
-
-            for item in self._doSearch(repack_searchString[0]):
-                title, url = self._get_title_and_url(item)
-                results.append(classes.Proper(title, url, datetime.today(), self.show))
 
         return results
 

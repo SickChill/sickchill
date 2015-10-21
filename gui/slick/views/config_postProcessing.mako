@@ -159,6 +159,22 @@
                             </label>
                         </div>
                         <div class="field-pair">
+                            <label class="nocheck" for="file_timestamp_timezone">
+                                <span class="component-title">Timezone for File Date:</span>
+                                <span class="component-desc">
+                                    <select name="file_timestamp_timezone" id="file_timestamp_timezone" class="form-control input-sm">
+                                        % for curTimezone in ('local','network'):
+                                        <option value="${curTimezone}" ${('', 'selected="selected"')[sickbeard.FILE_TIMESTAMP_TIMEZONE == curTimezone]}>${curTimezone}</option>
+                                        % endfor
+                                    </select>
+                                </span>
+                            </label>
+                            <label class="nocheck">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">What timezone should be used to change File Date?</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
                             <input id="unpack" type="checkbox" name="unpack" ${('', 'checked="checked"')[bool(sickbeard.UNPACK)]} />
                             <label for="unpack">
                                 <span class="component-title">Unpack</span>

@@ -30,10 +30,6 @@ import HTMLParser
 import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import helpers
-from sickbeard import db
-from sickbeard import classes
-from sickbeard.common import Quality
 from sickbeard.common import USER_AGENT
 from sickbeard.providers import generic
 from xml.parsers.expat import ExpatError
@@ -46,7 +42,6 @@ class KATProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.public = True
 
-        self.enabled = False
         self.confirmed = True
         self.ratio = None
         self.minseed = None
@@ -165,33 +160,6 @@ class KATProvider(generic.TorrentProvider):
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
-
-        return results
-
-    def findPropers(self, search_date=datetime.datetime.today()-datetime.timedelta(days=1)):
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate, s.indexer FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        for sqlshow in sqlResults or []:
-            show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if show:
-                curEp = show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-
-                searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(searchStrings[0]):
-                    title, url = self._get_title_and_url(item)
-                    pubdate = item[6]
-
-                    results.append(classes.Proper(title, url, pubdate, show))
 
         return results
 

@@ -19,12 +19,9 @@
 import urllib
 import traceback
 
-import generic
-
-from sickbeard import show_name_helpers
 from sickbeard import logger
-from sickbeard.common import Quality
 from sickbeard import tvcache
+from sickbeard.providers import generic
 from sickbeard import show_name_helpers
 from sickbeard.bs4_parser import BS4Parser
 
@@ -50,9 +47,6 @@ class TokyoToshokanProvider(generic.TorrentProvider):
 
     def seedRatio(self):
         return self.ratio
-
-    def findSearchResults(self, show, episodes, search_mode, manualSearch=False, downCurQuality=False):
-        return generic.TorrentProvider.findSearchResults(self, show, episodes, search_mode, manualSearch, downCurQuality)
 
     def _get_season_search_strings(self, ep_obj):
         return [x.replace('.', ' ') for x in show_name_helpers.makeSceneSeasonSearchString(self.show, ep_obj)]

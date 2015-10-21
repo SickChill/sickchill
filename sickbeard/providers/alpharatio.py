@@ -32,7 +32,6 @@ class AlphaRatioProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "AlphaRatio")
 
         self.supportsBacklog = True
-        self.public = False
 
         self.username = None
         self.password = None
@@ -40,17 +39,19 @@ class AlphaRatioProvider(generic.TorrentProvider):
         self.minseed = None
         self.minleech = None
 
-        self.cache = AlphaRatioCache(self)
-
         self.urls = {'base_url': 'http://alpharatio.cc/',
                      'login': 'http://alpharatio.cc/login.php',
                      'detail': 'http://alpharatio.cc/torrents.php?torrentid=%s',
                      'search': 'http://alpharatio.cc/torrents.php?searchstr=%s%s',
                      'download': 'http://alpharatio.cc/%s'}
 
+        self.url = self.urls['base_url']
+
         self.catagories = "&filter_cat[1]=1&filter_cat[2]=1&filter_cat[3]=1&filter_cat[4]=1&filter_cat[5]=1"
 
-        self.url = self.urls['base_url']
+        self.proper_strings = ['PROPER', 'REPACK']
+
+        self.cache = AlphaRatioCache(self)
 
     def isEnabled(self):
         return self.enabled

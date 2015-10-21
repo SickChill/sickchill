@@ -15,21 +15,13 @@
 
 import re
 import traceback
-import datetime
-import sickbeard
-import generic
+from urllib import urlencode
 
-from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import db
-from sickbeard import classes
-from sickbeard import helpers
-from sickbeard import show_name_helpers
-from sickbeard.helpers import sanitizeSceneName
 from sickbeard.bs4_parser import BS4Parser
+from sickbeard.providers import generic
 from sickrage.helper.exceptions import AuthException
-from urllib import urlencode
 
 
 class TransmitTheNetProvider(generic.TorrentProvider):
@@ -45,7 +37,7 @@ class TransmitTheNetProvider(generic.TorrentProvider):
         self.url = self.urls['base_url']
 
         self.supportsBacklog = True
-        self.public = False
+
         self.username = None
         self.password = None
         self.ratio = None
@@ -133,7 +125,6 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
                             title = torrent_row.find('a', {"data-src": True})['data-src'].rsplit('.', 1)[0]
                             download_href = torrent_row.find('img', {"alt": 'Download Torrent'}).findParent()['href']
-                            id = torrent_row.find('a', {"data-src": True})['href'].split("&id=", 1)[1]
                             seeders = int(torrent_row.findAll('a', {'title': 'Click here to view peers details'})[0].text.strip())
                             leechers = int(torrent_row.findAll('a', {'title': 'Click here to view peers details'})[1].text.strip())
                             download_url = self.urls['base_url'] + download_href
@@ -155,39 +146,13 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
                             items[mode].append(item)
 
-                except:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
-
-        return results
-
-    def findPropers(self, search_date=datetime.datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        for sqlshow in sqlResults or []:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(searchString[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 

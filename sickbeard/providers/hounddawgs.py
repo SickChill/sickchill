@@ -1,7 +1,7 @@
 # Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,19 +18,11 @@
 
 import re
 import traceback
-import datetime
-import sickbeard
-import generic
-from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import db
-from sickbeard import classes
-from sickbeard import helpers
-from sickbeard import show_name_helpers
 from sickbeard.bs4_parser import BS4Parser
-from sickbeard.helpers import sanitizeSceneName
 
+from sickbeard.providers import generic
 
 class HoundDawgsProvider(generic.TorrentProvider):
 
@@ -39,9 +31,7 @@ class HoundDawgsProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "HoundDawgs")
 
         self.supportsBacklog = True
-        self.public = False
 
-        self.enabled = False
         self.username = None
         self.password = None
         self.ratio = None
@@ -51,9 +41,8 @@ class HoundDawgsProvider(generic.TorrentProvider):
         self.cache = HoundDawgsCache(self)
 
         self.urls = {'base_url': 'https://hounddawgs.org/',
-		        'search': 'https://hounddawgs.org/torrents.php',
-                'login': 'https://hounddawgs.org/login.php',
-        }
+                     'search': 'https://hounddawgs.org/torrents.php',
+                     'login': 'https://hounddawgs.org/login.php'}
 
         self.url = self.urls['base_url']
 
@@ -81,11 +70,10 @@ class HoundDawgsProvider(generic.TorrentProvider):
         login_params = {'username': self.username,
                         'password': self.password,
                         'keeplogged': 'on',
-                        'login': 'Login',
-        }
+                        'login': 'Login'}
 
         self.getURL(self.urls['base_url'], timeout=30)
-        response = self.getURL(self.urls['login'],  post_data=login_params, timeout=30)
+        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -118,7 +106,7 @@ class HoundDawgsProvider(generic.TorrentProvider):
                 data = self.getURL(self.urls['search'], params=self.search_params)
 
                 strTableStart = "<table class=\"torrent_table"
-                startTableIndex=data.find(strTableStart)
+                startTableIndex = data.find(strTableStart)
                 trimmedData = data[startTableIndex:]
                 if not trimmedData:
                     continue
@@ -144,7 +132,7 @@ class HoundDawgsProvider(generic.TorrentProvider):
                             allAs = (torrent[1]).find_all('a')
 
                             try:
-                                link = self.urls['base_url'] + allAs[2].attrs['href']
+                                #link = self.urls['base_url'] + allAs[2].attrs['href']
                                 #url = result.find('td', attrs={'class': 'quickdownload'}).find('a')
                                 title = allAs[2].string
                                 #Trimming title so accepted by scene check(Feature has been rewuestet i forum)
@@ -159,7 +147,6 @@ class HoundDawgsProvider(generic.TorrentProvider):
                                 title = title.replace("Subs.", "")
 
                                 download_url = self.urls['base_url']+allAs[0].attrs['href']
-                                id = link.replace(self.urls['base_url']+'torrents.php?id=','')
                                 #FIXME
                                 size = -1
                                 seeders = 1
@@ -190,35 +177,6 @@ class HoundDawgsProvider(generic.TorrentProvider):
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
-
-        return results
-
-    def findPropers(self, search_date=datetime.datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        if not sqlResults:
-            return []
-
-        for sqlshow in sqlResults:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-
-                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(searchString[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 

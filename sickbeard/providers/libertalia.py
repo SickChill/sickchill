@@ -20,24 +20,14 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import datetime
-import sickbeard
-import generic
-
 import requests
 import cookielib
 import urllib
 
-from sickbeard.bs4_parser import BS4Parser
-from sickbeard.common import Quality
 from sickbeard import logger
-from sickbeard import show_name_helpers
-from sickbeard import db
-from sickbeard import helpers
-from sickbeard import classes
-from unidecode import unidecode
-from sickbeard.helpers import sanitizeSceneName
 from sickbeard import tvcache
+from sickbeard.providers import generic
+from sickbeard.bs4_parser import BS4Parser
 
 class LibertaliaProvider(generic.TorrentProvider):
 
@@ -46,7 +36,6 @@ class LibertaliaProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "Libertalia")
 
         self.supportsBacklog = True
-        self.public = False
 
         self.cj = cookielib.CookieJar()
 
@@ -72,10 +61,9 @@ class LibertaliaProvider(generic.TorrentProvider):
             return True
 
         login_params = {'username': self.username,
-                            'password': self.password
-        }
+                        'password': self.password}
 
-        response = self.getURL(self.url + '/login.php',  post_data=login_params, timeout=30)
+        response = self.getURL(self.url + '/login.php', post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -112,21 +100,21 @@ class LibertaliaProvider(generic.TorrentProvider):
                     continue
 
                 with BS4Parser(data, features=["html5lib", "permissive"]) as html:
-                    resultsTable = html.find("table", { "class" : "torrent_table"  })
+                    resultsTable = html.find("table", {"class" : "torrent_table"})
                     if resultsTable:
-                        rows = resultsTable.findAll("tr" ,  {"class" : "torrent_row  new  "}  )  # torrent_row new
+                        rows = resultsTable.findAll("tr", {"class" : "torrent_row  new  "})  # torrent_row new
 
                         for row in rows:
 
                             #bypass first row because title only
-                            columns = row.find('td', {"class" : "torrent_name"} )
-                            isvfclass = row.find('td', {"class" : "sprite-vf"} )
-                            isvostfrclass = row.find('td', {"class" : "sprite-vostfr"} )
-                            link = columns.find("a",  href=re.compile("torrents"))
+                            columns = row.find('td', {"class" : "torrent_name"})
+                           # isvfclass = row.find('td', {"class" : "sprite-vf"})
+                            #isvostfrclass = row.find('td', {"class" : "sprite-vostfr"})
+                            link = columns.find("a", href=re.compile("torrents"))
                             if link:
                                 title = link.text
-                                recherched=searchURL.replace(".","(.*)").replace(" ","(.*)").replace("'","(.*)")
-                                download_url =  row.find("a",href=re.compile("torrent_pass"))['href']
+                                #recherched = searchURL.replace(".", "(.*)").replace(" ", "(.*)").replace("'", "(.*)")
+                                download_url = row.find("a", href=re.compile("torrent_pass"))['href']
                                 #FIXME
                                 size = -1
                                 seeders = 1
@@ -157,33 +145,6 @@ class LibertaliaProvider(generic.TorrentProvider):
     def seedRatio(self):
         return self.ratio
 
-    def findPropers(self, search_date=datetime.datetime.today()):
-
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        if not sqlResults:
-            return []
-
-        for sqlshow in sqlResults:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-                search_params = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-
-                for item in self._doSearch(search_params[0]):
-                    title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
-
-        return results
 
 class LibertaliaCache(tvcache.TVCache):
     def __init__(self, provider_obj):
