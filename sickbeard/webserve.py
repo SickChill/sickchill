@@ -4801,7 +4801,8 @@ class ConfigSubtitles(Config):
 
     def saveSubtitles(self, use_subtitles=None, subtitles_plugins=None, subtitles_languages=None, subtitles_dir=None,
                       service_order=None, subtitles_history=None, subtitles_finder_frequency=None,
-                      subtitles_multi=None, embedded_subtitles_all=None, subtitles_extra_scripts=None):
+                      subtitles_multi=None, embedded_subtitles_all=None, subtitles_extra_scripts=None,
+                      addic7ed_user=None, addic7ed_pass=None, legendastv_user=None, legendastv_pass=None, opensubtitles_user=None, opensubtitles_pass=None):
 
         results = []
 
@@ -4826,6 +4827,13 @@ class ConfigSubtitles(Config):
 
         sickbeard.SUBTITLES_SERVICES_LIST = subtitles_services_list
         sickbeard.SUBTITLES_SERVICES_ENABLED = subtitles_services_enabled
+
+        sickbeard.ADDIC7ED_USER = addic7ed_user or ''
+        sickbeard.ADDIC7ED_PASS = addic7ed_pass or ''
+        sickbeard.LEGENDASTV_USER = legendastv_user or ''
+        sickbeard.LEGENDASTV_PASS = legendastv_pass or ''
+        sickbeard.OPENSUBTITLES_USER = opensubtitles_user or ''
+        sickbeard.OPENSUBTITLES_PASS = opensubtitles_pass or ''
 
         sickbeard.save_config()
 
