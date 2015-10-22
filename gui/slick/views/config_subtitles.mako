@@ -112,6 +112,15 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                     </label>
                                 </div>
                                 <div class="field-pair">
+                                    <label class="clearfix" for="subtitles_hearing_impaired">
+                                        <span class="component-title">Hearing Impaired Subtitles</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" name="subtitles_hearing_impaired" id="subtitles_hearing_impaired" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_HEARING_IMPAIRED)]}/>
+                                            <p>Download hearing impaired style subtitles?</p>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="field-pair">
                                     <label class="nocheck">
                                         <span class="component-title">Extra Scripts</span>
                                            <input type="text" name="subtitles_extra_scripts" value="<%'|'.join(sickbeard.SUBTITLES_EXTRA_SCRIPTS)%>" class="form-control input-sm input350" />
@@ -197,7 +206,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                 <label class="nocheck" for="${curService['name']}_pass">
                                     <span class="component-title">${curService['name'].capitalize()} Password</span>
                                     <span class="component-desc">
-                                        <input type="text" name="${curService['name']}_pass" id="${curService['name']}_pass" value="${providerLoginDict[curService['name']]['pass']}" class="form-control input-sm input300" />
+                                        <input type="password" name="${curService['name']}_pass" id="${curService['name']}_pass" value="${providerLoginDict[curService['name']]['pass']}" class="form-control input-sm input300" />
                                     </span>
                                 </label>
                             </div>

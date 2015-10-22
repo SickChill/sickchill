@@ -144,8 +144,7 @@ def downloadSubtitles(subtitles_info):
     subtitles_list = pool.list_subtitles(video, languages)
 
     try:
-        # TODO: Add gui option for hearing_impaired parameter ?
-        found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages, hearing_impaired=False, only_one=not sickbeard.SUBTITLES_MULTI)
+        found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED, only_one=not sickbeard.SUBTITLES_MULTI)
         if not found_subtitles:
             logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
             return (existing_subtitles, None)
