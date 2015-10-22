@@ -313,6 +313,7 @@
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.cookiejar.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.json-2.2.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.selectboxes.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/lib/jquery.tokeninput.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter-2.17.7.min.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter.widgets-2.17.7.min.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter.widget-columnSelector-2.17.7.js?${sbPID}"></script><!-- Can't be added to bower -->
