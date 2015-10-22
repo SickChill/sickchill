@@ -137,6 +137,7 @@ def remove_non_release_groups(name):
                        r'\[rarbg\]$':       'searchre',
                        r'\[eztv\]$':        'searchre',
                        r'\[ettv\]$':        'searchre',
+                       r'\[cttv\]$':        'searchre',
                        r'\[vtv\]$':         'searchre',
                        r'\[EtHD\]$':        'searchre',
                        r'\[GloDLS\]$':      'searchre',
