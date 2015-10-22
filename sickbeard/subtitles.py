@@ -148,13 +148,6 @@ def downloadSubtitles(subtitles_info):
             logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
             return (existing_subtitles, None)
 
-        for subtitle in found_subtitles:
-            # Force subtitle encoding to utf-8 for some languages
-            if subtitle.language.alpha3 == 'pol':
-                setattr(subtitle, 'encoding', 'utf-8')
-            elif subtitle.language.alpha3 == 'bul':
-                setattr(subtitle, 'encoding', 'utf-8')
-
         save_subtitles(video, found_subtitles, directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI)
 
         if not sickbeard.EMBEDDED_SUBTITLES_ALL and sickbeard.SUBTITLES_EXTRA_SCRIPTS and video_path.endswith(('.mkv', '.mp4')):
@@ -180,12 +173,12 @@ def save_subtitles(video, subtitles, single=False, directory=None):
     for subtitle in subtitles:
         # check content
         if subtitle.content is None:
-            logger.log("Skipping subtitle %r: no content" % subtitle, logger.DEBUG)
+            logger.log("Skipping subtitle for %s: no content" % video.name, logger.DEBUG)
             continue
 
         # check language
         if subtitle.language in set(s.language for s in saved_subtitles):
-            logger.log("Skipping subtitle %r: language already saved" % subtitle, logger.DEBUG)
+            logger.log("Skipping subtitle for %s: language already saved" % video.name, logger.DEBUG)
             continue
 
         # create subtitle path
@@ -194,7 +187,7 @@ def save_subtitles(video, subtitles, single=False, directory=None):
             subtitle_path = os.path.join(directory, os.path.split(subtitle_path)[1])
 
         # save content as is or in the specified encoding
-        logger.log("Saving %r to %r" % (subtitle, subtitle_path), logger.DEBUG)
+        logger.log("Saving subtitle for %s to %s" % (video.name, subtitle_path), logger.DEBUG)
         if subtitle.encoding:
             with io.open(subtitle_path, 'w', encoding=subtitle.encoding) as f:
                 f.write(subtitle.text)
@@ -319,7 +312,7 @@ def getEmbeddedLanguages(video_path):
             else:
                 logger.log('MKV has no subtitle track', logger.DEBUG)
     except MalformedMKVError:
-        logger.log('MKV seems to be malformed, ignoring embedded subtitles', logger.WARNING)
+        logger.log('MKV seems to be malformed, ignoring embedded subtitles', logger.INFO)
 
     return embedded_subtitle_languages
 
