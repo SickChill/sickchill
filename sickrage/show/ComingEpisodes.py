@@ -63,7 +63,7 @@ class ComingEpisodes:
         today = date.today().toordinal()
         next_week = (date.today() + timedelta(days=7)).toordinal()
         recently = (date.today() - timedelta(days=sickbeard.COMING_EPS_MISSED_RANGE)).toordinal()
-        qualities_list = Quality.DOWNLOADED + Quality.SNATCHED + Quality.ARCHIVED + [IGNORED]
+        qualities_list = Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST + Quality.SNATCHED_PROPER + Quality.ARCHIVED + [IGNORED]
 
         db = DBConnection()
         fields_to_select = ', '.join(
@@ -83,7 +83,7 @@ class ComingEpisodes:
 
         done_shows_list = [int(result['showid']) for result in results]
         placeholder = ','.join(['?'] * len(done_shows_list))
-        placeholder2 = ','.join(['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED))
+        placeholder2 = ','.join(['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST + Quality.SNATCHED_PROPER))
 
         results += db.select(
             'SELECT %s ' % fields_to_select +
@@ -98,7 +98,7 @@ class ComingEpisodes:
                                                   'AND inner_e.airdate >= ? '
                                                   'ORDER BY inner_e.airdate ASC LIMIT 1) '
                                                   'AND e.status NOT IN (' + placeholder2 + ')',
-            done_shows_list + [next_week] + Quality.DOWNLOADED + Quality.SNATCHED
+            done_shows_list + [next_week] + Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST + Quality.SNATCHED_PROPER
         )
 
         results += db.select(
