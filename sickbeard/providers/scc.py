@@ -134,8 +134,7 @@ class SCCProvider(generic.TorrentProvider):
                             download_url = self.urls['download'] % url['href']
                             seeders = int(result.find('td', attrs={'class': 'ttr_seeders'}).string)
                             leechers = int(result.find('td', attrs={'class': 'ttr_leechers'}).string)
-                            #FIXME
-                            size = -1
+                            size = self._convertSize(result.find('td', attrs={'class': 'ttr_size'}).contents[0])
                         except (AttributeError, TypeError):
                             continue
 
@@ -163,6 +162,19 @@ class SCCProvider(generic.TorrentProvider):
 
     def seedRatio(self):
         return self.ratio
+
+    def _convertSize(self, size):
+        size, base = size.split()
+        size = float(size)
+        if base in 'KB':
+            size = size * 1024
+        elif base in 'MB':
+            size = size * 1024**2
+        elif base in 'GB':
+            size = size * 1024**3
+        elif base in 'TB':
+            size = size * 1024**4
+        return int(size)
 
 
 class SCCCache(tvcache.TVCache):
