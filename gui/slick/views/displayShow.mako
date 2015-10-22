@@ -477,7 +477,7 @@
                 % endif
             </td>
             <td class="col-airdate">
-                % if int(epResult['airdate']) != 1:
+                % if int(epResult['airdate']) > 1 and show.network and show.airs:
                     ## Lets do this exactly like ComingEpisodes and History
                     <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
                     <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
