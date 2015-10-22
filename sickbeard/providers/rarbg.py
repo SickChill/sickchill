@@ -260,8 +260,8 @@ class RarbgCache(tvcache.TVCache):
 
         tvcache.TVCache.__init__(self, provider_obj)
 
-        # only poll RARbg every 15 minutes max
-        self.minTime = 5
+        # only poll RARBG every 10 minutes max
+        self.minTime = 10
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}

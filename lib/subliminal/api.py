@@ -33,6 +33,7 @@ class InternalExtensionManager(ExtensionManager):
 
 provider_manager = InternalExtensionManager('subliminal.providers', [EntryPoint.parse(ep) for ep in (
     'addic7ed = subliminal.providers.addic7ed:Addic7edProvider',
+    'legendastv = subliminal.providers.legendastv:LegendasTvProvider',
     'napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider',
     'opensubtitles = subliminal.providers.opensubtitles:OpenSubtitlesProvider',
     'podnapisi = subliminal.providers.podnapisi:PodnapisiProvider',
