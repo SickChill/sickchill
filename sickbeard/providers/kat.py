@@ -107,7 +107,7 @@ class KATProvider(generic.TorrentProvider):
 
                     for item in entries:
                         try:
-                            title = item['title']
+                            title = item['title'].decode('utf-8')
 
                             # Use the torcache link kat provides,
                             # unless it is not torcache or we are not using blackhole

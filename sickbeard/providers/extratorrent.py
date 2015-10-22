@@ -87,7 +87,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                     entries = entries if isinstance(entries, list) else [entries]
 
                     for item in entries:
-                        title = item['title']
+                        title = item['title'].decode('utf-8')
                        # info_hash = item['info_hash']
                         size = int(item['size'])
                         seeders = helpers.tryInt(item['seeders'], 0)
