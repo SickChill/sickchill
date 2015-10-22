@@ -74,7 +74,6 @@ provider_urls = {
     'tvsubtitles': 'http://www.tvsubtitles.net'
 }
 
-SINGLE = 'und'
 
 def sortedServiceList():
     newList = []
@@ -294,11 +293,6 @@ def subtitlesLanguages(video_path):
         elif hasattr(language, 'alpha2') and language.alpha2:
             resultList.append(language.alpha2)
 
-    defaultLang = wantedLanguages()
-
-    if ('pob' in defaultLang or 'pb' in defaultLang) and ('pt' not in defaultLang and 'por' not in defaultLang):
-        resultList = [x if not x in ['por', 'pt'] else u'pob' for x in resultList]
-
     return (sorted(resultList), should_save_subtitles)
 
 def getEmbeddedLanguages(video_path):
@@ -339,6 +333,8 @@ def scan_subtitle_languages(path):
                 subtitles.add(Language.fromopensubtitles(os.path.splitext(p)[0][-2:]))
             elif os.path.splitext(p)[0].endswith(language_extensions) and len(os.path.splitext(p)[0].rsplit('.', 1)[1]) is 3:
                 subtitles.add(Language.fromopensubtitles(os.path.splitext(p)[0][-3:]))
+            elif os.path.splitext(p)[0].endswith('pt-BR') and len(os.path.splitext(p)[0].rsplit('.', 1)[1]) is 5:
+                subtitles.add(Language.fromopensubtitles('pob'))
             else:
                 subtitles.add(Language('und'))
 
@@ -374,7 +370,7 @@ class SubtitlesFinder():
         # get episodes on which we want subtitles
         # criteria is:
         #  - show subtitles = 1
-        #  - episode subtitles != config wanted languages or SINGLE (depends on config multi)
+        #  - episode subtitles != config wanted languages or 'und' (depends on config multi)
         #  - search count < 2 and diff(airdate, now) > 1 week : now -> 1d
         #  - search count < 7 and diff(airdate, now) <= 1 week : now -> 4h -> 8h -> 16h -> 1d -> 1d -> 1d
 
