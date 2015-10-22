@@ -542,7 +542,7 @@ def hardlinkFile(srcFile, destFile):
         fixSetGroupID(destFile)
     except Exception as e:
         logger.log(u"Failed to create hardlink of %s at %s. Error: %r. Copying instead" 
-        % (srcFile, destFile, ex(e)), logger.ERROR)
+        % (srcFile, destFile, ex(e)), logger.WARNING)
         copyFile(srcFile, destFile)
 
 
@@ -576,7 +576,7 @@ def moveAndSymlinkFile(srcFile, destFile):
         ek(symlink, destFile, srcFile)
     except Exception as e:
         logger.log(u"Failed to create symlink of %s at %s. Error: %r. Copying instead" 
-        % (srcFile, destFile, ex(e)), logger.ERROR)
+        % (srcFile, destFile, ex(e)), logger.WARNING)
         copyFile(srcFile, destFile)
 
 
