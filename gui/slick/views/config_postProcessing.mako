@@ -384,6 +384,21 @@
                                           <td>%Q_N</td>
                                           <td>720p_BluRay</td>
                                         </tr>
+                                        <tr>
+                                          <td class="align-right"><b>Scene Quality:</b></td>
+                                          <td>%SQN</td>
+                                          <td>720p HDTV x264</td>
+                                        </tr>
+                                        <tr class="even">
+                                          <td>&nbsp;</td>
+                                          <td>%SQ.N</td>
+                                          <td>720p.HDTV.x264</td>
+                                        </tr>
+                                        <tr>
+                                          <td>&nbsp;</td>
+                                          <td>%SQ_N</td>
+                                          <td>720p_HDTV_x264</td>
+                                        </tr>
                                         <tr class="even">
                                           <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="Multi-EP style is ignored"></i> <b>Release Name:</b></td>
                                           <td>%RN</td>
