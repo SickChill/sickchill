@@ -203,7 +203,7 @@ class PostProcessor(object):
                 continue
 
             # Exclude .rar files from associated list
-            if re.search('(^.+\.(rar|r\d+)$)', associated_file_path):
+            if re.search(r'(^.+\.(rar|r\d+)$)', associated_file_path):
                 continue
 
             if ek(os.path.isfile, associated_file_path):
@@ -443,7 +443,7 @@ class PostProcessor(object):
         # search the database for a possible match and return immediately if we find one
         myDB = db.DBConnection()
         for curName in names:
-            search_name = re.sub("[\.\-\ ]", "_", curName)
+            search_name = re.sub(r"[\.\-\ ]", "_", curName)
             sql_results = myDB.select("SELECT * FROM history WHERE resource LIKE ?", [search_name])
 
             if len(sql_results) == 0:
@@ -479,7 +479,7 @@ class PostProcessor(object):
 
         # remember whether it's a proper
         if parse_result.extra_info:
-            self.is_proper = re.search('(^|[\. _-])(proper|repack)([\. _-]|$)', parse_result.extra_info, re.I) != None
+            self.is_proper = re.search(r'(^|[\. _-])(proper|repack)([\. _-]|$)', parse_result.extra_info, re.I) != None
 
         # if the result is complete then remember that for later
         # if the result is complete then set release name
@@ -487,7 +487,7 @@ class PostProcessor(object):
                                          or parse_result.air_date) and parse_result.release_group:
 
             if not self.release_name:
-                self.release_name = helpers.remove_extension(ek(os.path.basename, parse_result.original_name))
+                self.release_name = helpers.remove_non_release_groups(helpers.remove_extension(ek(os.path.basename, parse_result.original_name)))
 
         else:
             logger.log(u"Parse result not sufficient (all following have to be set). will not save release name",
@@ -744,7 +744,7 @@ class PostProcessor(object):
                 return ep_quality
 
         # Try getting quality from the episode (snatched) status
-        if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER:
+        if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER  + common.Quality.SNATCHED_BEST:
             oldStatus, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
             if ep_quality != common.Quality.UNKNOWN:
                 self._log(
