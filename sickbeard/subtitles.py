@@ -140,13 +140,14 @@ def downloadSubtitles(subtitles_info):
                         'opensubtitles': {'username': sickbeard.OPENSUBTITLES_USER, 'password': sickbeard.OPENSUBTITLES_PASS}}
 
     pool = subliminal.api.ProviderPool(providers=providers, provider_configs=provider_configs)
-    subtitles_list = pool.list_subtitles(video, languages)
 
     try:
-        found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED, only_one=not sickbeard.SUBTITLES_MULTI)
-        if not found_subtitles:
+        subtitles_list = pool.list_subtitles(video, languages)
+        if not subtitles_list:
             logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
             return (existing_subtitles, None)
+
+        found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED, only_one=not sickbeard.SUBTITLES_MULTI)
 
         save_subtitles(video, found_subtitles, directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI)
 
