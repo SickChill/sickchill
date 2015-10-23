@@ -95,12 +95,12 @@
 </div>
 
 <div class="optionWrapper clearfix">
-<span class="selectTitle">Flatten Folders <span class="separator">*</span></span>
+<span class="selectTitle">Season folders<span class="separator">*</span></span>
     <div class="selectChoices">
         <select id="edit_flatten_folders" name="flatten_folders" class="form-control form-control-inline input-sm">
             <option value="keep" ${('', 'selected="selected"')[flatten_folders_value == None]}>&lt; keep &gt;</option>
-            <option value="enable" ${('', 'selected="selected"')[flatten_folders_value == 1]}>enable</option>
-            <option value="disable" ${('', 'selected="selected"')[flatten_folders_value == 0]}>disable</option>
+            <option value="disable" ${('', 'selected="selected"')[flatten_folders_value == 1]}>disable</option>
+            <option value="enable" ${('', 'selected="selected"')[flatten_folders_value == 0]}>enable</option>
         </select>
     </div>
 </div>
