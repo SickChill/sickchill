@@ -312,7 +312,7 @@ def getEmbeddedLanguages(video_path):
             else:
                 logger.log('MKV has no subtitle track', logger.DEBUG)
     except MalformedMKVError:
-        logger.log('MKV seems to be malformed, ignoring embedded subtitles', logger.INFO)
+        logger.log('MKV seems to be malformed ( %s ), ignoring embedded subtitles' % video_path, logger.INFO)
 
     return embedded_subtitle_languages
 
