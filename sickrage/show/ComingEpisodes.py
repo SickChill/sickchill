@@ -19,7 +19,7 @@
 import sickbeard
 
 from datetime import date, timedelta
-from sickbeard.common import IGNORED, Quality, WANTED
+from sickbeard.common import IGNORED, Quality, WANTED, UNAIRED
 from sickbeard.db import DBConnection
 from sickbeard.network_timezones import parse_date_time
 from sickbeard.sbdatetime import sbdatetime
@@ -108,9 +108,9 @@ class ComingEpisodes:
             'AND s.indexer_id = e.showid '
             'AND airdate < ? '
             'AND airdate >= ? '
-            'AND e.status = ? '
+            'AND e.status IN (?,?) '
             'AND e.status NOT IN (' + ','.join(['?'] * len(qualities_list)) + ')',
-            [today, recently, WANTED] + qualities_list
+            [today, recently, WANTED, UNAIRED] + qualities_list
         )
 
         results = [dict(result) for result in results]

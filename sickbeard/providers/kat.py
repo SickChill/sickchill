@@ -92,7 +92,7 @@ class KATProvider(generic.TorrentProvider):
                         continue
 
                     try:
-                        data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data).replace('&', '&amp;'))
+                        data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data.encode('utf-8')).replace('&', '&amp;'))
                     except ExpatError as e:
                         logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
                         continue
@@ -107,7 +107,7 @@ class KATProvider(generic.TorrentProvider):
 
                     for item in entries:
                         try:
-                            title = item['title']
+                            title = item['title'].decode('utf-8')
 
                             # Use the torcache link kat provides,
                             # unless it is not torcache or we are not using blackhole

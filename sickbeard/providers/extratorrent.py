@@ -73,7 +73,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                         continue
 
                     try:
-                        data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data).replace('&', '&amp;'))
+                        data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data.encode('utf-8')).replace('&', '&amp;'))
                     except ExpatError as e:
                         logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
                         continue
@@ -87,7 +87,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                     entries = entries if isinstance(entries, list) else [entries]
 
                     for item in entries:
-                        title = item['title']
+                        title = item['title'].decode('utf-8')
                        # info_hash = item['info_hash']
                         size = int(item['size'])
                         seeders = helpers.tryInt(item['seeders'], 0)

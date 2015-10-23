@@ -74,7 +74,6 @@ provider_urls = {
     'tvsubtitles': 'http://www.tvsubtitles.net'
 }
 
-SINGLE = 'und'
 
 def sortedServiceList():
     newList = []
@@ -149,13 +148,6 @@ def downloadSubtitles(subtitles_info):
             logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (subtitles_info['show.indexerid'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
             return (existing_subtitles, None)
 
-        for subtitle in found_subtitles:
-            # Force subtitle encoding to utf-8 for some languages
-            if subtitle.language.alpha3 == 'pol':
-                setattr(subtitle, 'encoding', 'utf-8')
-            elif subtitle.language.alpha3 == 'bul':
-                setattr(subtitle, 'encoding', 'utf-8')
-
         save_subtitles(video, found_subtitles, directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI)
 
         if not sickbeard.EMBEDDED_SUBTITLES_ALL and sickbeard.SUBTITLES_EXTRA_SCRIPTS and video_path.endswith(('.mkv', '.mp4')):
@@ -181,12 +173,12 @@ def save_subtitles(video, subtitles, single=False, directory=None):
     for subtitle in subtitles:
         # check content
         if subtitle.content is None:
-            logger.log("Skipping subtitle %r: no content" % subtitle, logger.DEBUG)
+            logger.log("Skipping subtitle for %s: no content" % video.name, logger.DEBUG)
             continue
 
         # check language
         if subtitle.language in set(s.language for s in saved_subtitles):
-            logger.log("Skipping subtitle %r: language already saved" % subtitle, logger.DEBUG)
+            logger.log("Skipping subtitle for %s: language already saved" % video.name, logger.DEBUG)
             continue
 
         # create subtitle path
@@ -195,7 +187,7 @@ def save_subtitles(video, subtitles, single=False, directory=None):
             subtitle_path = os.path.join(directory, os.path.split(subtitle_path)[1])
 
         # save content as is or in the specified encoding
-        logger.log("Saving %r to %r" % (subtitle, subtitle_path), logger.DEBUG)
+        logger.log("Saving subtitle for %s to %s" % (video.name, subtitle_path), logger.DEBUG)
         if subtitle.encoding:
             with io.open(subtitle_path, 'w', encoding=subtitle.encoding) as f:
                 f.write(subtitle.text)
@@ -294,11 +286,6 @@ def subtitlesLanguages(video_path):
         elif hasattr(language, 'alpha2') and language.alpha2:
             resultList.append(language.alpha2)
 
-    defaultLang = wantedLanguages()
-
-    if ('pob' in defaultLang or 'pb' in defaultLang) and ('pt' not in defaultLang and 'por' not in defaultLang):
-        resultList = [x if not x in ['por', 'pt'] else u'pob' for x in resultList]
-
     return (sorted(resultList), should_save_subtitles)
 
 def getEmbeddedLanguages(video_path):
@@ -325,7 +312,7 @@ def getEmbeddedLanguages(video_path):
             else:
                 logger.log('MKV has no subtitle track', logger.DEBUG)
     except MalformedMKVError:
-        logger.log('MKV seems to be malformed, ignoring embedded subtitles', logger.WARNING)
+        logger.log('MKV seems to be malformed, ignoring embedded subtitles', logger.INFO)
 
     return embedded_subtitle_languages
 
@@ -339,6 +326,8 @@ def scan_subtitle_languages(path):
                 subtitles.add(Language.fromopensubtitles(os.path.splitext(p)[0][-2:]))
             elif os.path.splitext(p)[0].endswith(language_extensions) and len(os.path.splitext(p)[0].rsplit('.', 1)[1]) is 3:
                 subtitles.add(Language.fromopensubtitles(os.path.splitext(p)[0][-3:]))
+            elif os.path.splitext(p)[0].endswith('pt-BR') and len(os.path.splitext(p)[0].rsplit('.', 1)[1]) is 5:
+                subtitles.add(Language.fromopensubtitles('pob'))
             else:
                 subtitles.add(Language('und'))
 
@@ -374,7 +363,7 @@ class SubtitlesFinder():
         # get episodes on which we want subtitles
         # criteria is:
         #  - show subtitles = 1
-        #  - episode subtitles != config wanted languages or SINGLE (depends on config multi)
+        #  - episode subtitles != config wanted languages or 'und' (depends on config multi)
         #  - search count < 2 and diff(airdate, now) > 1 week : now -> 1d
         #  - search count < 7 and diff(airdate, now) <= 1 week : now -> 4h -> 8h -> 16h -> 1d -> 1d -> 1d
 
