@@ -17,26 +17,23 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
 import time
 import datetime
 import operator
 import threading
 import traceback
-import re
-
-from search import pickBestResult
 
 import sickbeard
 
 from sickbeard import db
 from sickbeard import helpers, logger
-from sickbeard import search
-
+from sickbeard.search import snatchEpisode
+from sickbeard.search import pickBestResult
 from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, Quality, cpu_presets
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.show.History import History
-
-from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 
 class ProperFinder:
@@ -100,7 +97,7 @@ class ProperFinder:
 
             # if they haven't been added by a different provider than add the proper to the list
             for x in curPropers:
-                if not re.search('(^|[\. _-])(proper|repack)([\. _-]|$)', x.name, re.I):
+                if not re.search(r'(^|[\. _-])(proper|repack)([\. _-]|$)', x.name, re.I):
                     logger.log(u'findPropers returned a non-proper, we have caught and skipped it.', logger.DEBUG)
                     continue
 
@@ -262,7 +259,7 @@ class ProperFinder:
                 result.content = curProper.content
 
                 # snatch it
-                search.snatchEpisode(result, SNATCHED_PROPER)
+                snatchEpisode(result, SNATCHED_PROPER)
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
     def _genericName(self, name):
