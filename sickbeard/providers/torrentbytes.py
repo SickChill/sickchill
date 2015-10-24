@@ -39,6 +39,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.freeleech = False
 
         self.urls = {'base_url': 'https://www.torrentbytes.net',
                      'login': 'https://www.torrentbytes.net/takelogin.php',
@@ -114,6 +115,16 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
                             full_id = link['href'].replace('details.php?id=', '')
                             torrent_id = full_id.split("&")[0]
+
+                            #Free leech torrents are marked with green [F L] in the title (i.e. <font color=green>[F&nbsp;L]</font>)
+                            freeleechTag = cells[1].find('font', attrs={'color': 'green'})
+                            if freeleechTag and freeleechTag.text == u'[F\xa0L]':
+                                isFreeleechTorrent = True
+                            else:
+                                isFreeleechTorrent = False
+
+                            if self.freeleech and not isFreeleechTorrent:
+                                continue
 
                             try:
                                 if link.has_key('title'):
