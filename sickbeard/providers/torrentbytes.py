@@ -1,4 +1,4 @@
-# Author: Idan Gutman
+﻿# Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
 # This file is part of SickRage.
@@ -39,6 +39,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.freeleech = False
 
         self.urls = {'base_url': 'https://www.torrentbytes.net',
                      'login': 'https://www.torrentbytes.net/takelogin.php',
@@ -98,21 +99,32 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
                 try:
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
-                        torrent_table = html.find('table', attrs={'border': '1'})
-                        torrent_rows = torrent_table.find_all('tr') if torrent_table else []
-
                         #Continue only if one Release is found
-                        if len(torrent_rows) < 2:
+                        empty = html.find('Nothing found!')
+                        if empty:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
+                        torrent_table = html.find('table', attrs={'border': '1'})
+                        torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+
                         for result in torrent_rows[1:]:
                             cells = result.find_all('td')
-
+                            size = None
                             link = cells[1].find('a', attrs={'class': 'index'})
 
                             full_id = link['href'].replace('details.php?id=', '')
                             torrent_id = full_id.split("&")[0]
+
+                            #Free leech torrents are marked with green [F L] in the title (i.e. <font color=green>[F&nbsp;L]</font>)
+                            freeleechTag = cells[1].find('font', attrs={'color': 'green'})
+                            if freeleechTag and freeleechTag.text == u'[F\xa0L]':
+                                isFreeleechTorrent = True
+                            else:
+                                isFreeleechTorrent = False
+
+                            if self.freeleech and not isFreeleechTorrent:
+                                continue
 
                             try:
                                 if link.has_key('title'):
@@ -121,9 +133,15 @@ class TorrentBytesProvider(generic.TorrentProvider):
                                     title = link.contents[0]
                                 download_url = self.urls['download'] % (torrent_id, link.contents[0])
                                 seeders = int(cells[8].find('span').contents[0])
-                                leechers = int(cells[9].find('span').contents[0])
-                                #FIXME
-                                size = -1
+                                leechers = int(cells[9].find('span').contents[0])       
+                                                         
+                                # Need size for failed downloads handling
+                                if size is None:
+                                    if re.match(r'[0-9]+,?\.?[0-9]*[KkMmGg]+[Bb]+', cells[6].text):
+                                        size = self._convertSize(cells[6].text)
+                                        if not size:
+                                            size = -1
+                               
                             except (AttributeError, TypeError):
                                 continue
 
@@ -154,6 +172,20 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
     def seedRatio(self):
         return self.ratio
+    
+    def _convertSize(self, sizeString):
+        size = sizeString[:-2]
+        modifier = sizeString[-2:]
+        size = float(size)
+        if modifier in 'KB':
+            size = size * 1024
+        elif modifier in 'MB':
+            size = size * 1024**2
+        elif modifier in 'GB':
+            size = size * 1024**3
+        elif modifier in 'TB':
+            size = size * 1024**4
+        return int(size)
 
 
 class TorrentBytesCache(tvcache.TVCache):

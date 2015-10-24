@@ -17,18 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
+import datetime
+import requests
 from dateutil import tz
-from dateutil import zoneinfo
 
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import logger
-from sickrage.helper.encoding import ek
-from os.path import basename, join, isfile
-import os
-import re
-import datetime
-import requests
 
 # regex to parse time (12/24 hour format)
 time_regex = re.compile(r'(\d{1,2})(([:.](\d{2,2}))? ?([PA][. ]? ?M)|[:.](\d{2,2}))\b', flags=re.IGNORECASE)
@@ -39,121 +35,13 @@ network_dict = None
 
 sb_timezone = tz.tzlocal()
 
-
-# helper to remove failed temp download
-def _remove_zoneinfo_failed(filename):
-    try:
-        ek(os.remove, filename)
-    except:
-        pass
-
-
-# helper to remove old unneeded zoneinfo files
-def _remove_old_zoneinfo():
-    """
-    Removes zoneinfo tar.gz file from repository, as we do not need it
-    """
-    if zoneinfo.ZONEINFOFILE is not None:
-        cur_zoneinfo = ek(basename, zoneinfo.ZONEINFOFILE)
-    else:
-        return
-
-    cur_file = helpers.real_path(ek(join, ek(os.path.dirname, zoneinfo.__file__), cur_zoneinfo))
-    for (path, dirs, files) in ek(os.walk, helpers.real_path(ek(os.path.dirname, zoneinfo.__file__))):
-        for filename in files:
-            if filename.endswith('.tar.gz'):
-                file_w_path = ek(join, path, filename)
-                if file_w_path != cur_file and ek(isfile, file_w_path):
-                    try:
-                        ek(os.remove, file_w_path)
-                        logger.log(u'Delete unneeded old zoneinfo File: %s' % file_w_path)
-                    except:
-                        logger.log(u'Unable to delete: %s' % file_w_path, logger.WARNING)
-
-
-# update the dateutil zoneinfo
-def _update_zoneinfo():
-    """
-    Request new zoneinfo directly from repository
-    """
-    global sb_timezone
-    sb_timezone = tz.tzlocal()
-    url_zv = 'http://sickragetv.github.io/sb_network_timezones/zoneinfo.txt'
-    try:
-        url_data = helpers.getURL(url_zv, session=requests.Session())
-        if not url_data:
-            raise
-
-        # Filename of existing zoneinfo
-        if zoneinfo.ZONEINFOFILE is not None:
-            cur_zoneinfo = ek(basename, zoneinfo.ZONEINFOFILE)
-        else:
-            cur_zoneinfo = None
-
-        # Filename and hash of new zoneinfo
-        (new_zoneinfo, zoneinfo_md5) = url_data.strip().rsplit(u' ')
-    except Exception as e:
-        logger.log(u'Loading zoneinfo.txt failed, this can happen from time to time. Unable to get URL: %s' %
-                url_zv, logger.WARNING)
-        return
-
-    if (cur_zoneinfo is not None) and (new_zoneinfo == cur_zoneinfo):
-        return
-
-    # now load the new zoneinfo
-    url_tar = u'http://sickragetv.github.io/sb_network_timezones/%s' % new_zoneinfo
-
-    zonefile = helpers.real_path(ek(join, ek(os.path.dirname, zoneinfo.__file__), new_zoneinfo))
-    zonefile_tmp = re.sub(r'\.tar\.gz$', '.tmp', zonefile)
-
-    if ek(os.path.exists, zonefile_tmp):
-        try:
-            ekk(os.remove, zonefile_tmp)
-        except:
-            logger.log(u'Unable to delete: %s' % zonefile_tmp, logger.WARNING)
-            return
-
-    if not helpers.download_file(url_tar, zonefile_tmp, session=requests.Session()):
-        return
-
-    if not ek(os.path.exists, zonefile_tmp):
-        logger.log(u'Download of %s failed.' % zonefile_tmp, logger.WARNING)
-        return
-
-    new_hash = str(helpers.md5_for_file(zonefile_tmp))
-
-    if zoneinfo_md5.upper() == new_hash.upper():
-        logger.log(u'Updating timezone info with new one: %s' % new_zoneinfo, logger.INFO)
-        try:
-            # remove the old zoneinfo file
-            if cur_zoneinfo is not None:
-                old_file = helpers.real_path(
-                    ek(join, ek(os.path.dirname, zoneinfo.__file__), cur_zoneinfo))
-                if ek(os.path.exists, old_file):
-                    ek(os.remove, old_file)
-            # rename downloaded file
-            ek(os.rename, zonefile_tmp, zonefile)
-            # load the new zoneinfo
-            reload(zoneinfo)
-            sb_timezone = tz.tzlocal()
-        except:
-            _remove_zoneinfo_failed(zonefile_tmp)
-            return
-    else:
-        _remove_zoneinfo_failed(zonefile_tmp)
-        logger.log(u'MD5 hash does not match: %s File: %s' % (zoneinfo_md5.upper(), new_hash.upper()), logger.WARNING)
-        return
-
-
 # update the network timezone table
 def update_network_dict():
     """Update timezone information from SR repositories"""
-    _remove_old_zoneinfo()
-    _update_zoneinfo()
 
     url = 'http://sickragetv.github.io/sb_network_timezones/network_timezones.txt'
     url_data = helpers.getURL(url, session=requests.Session())
-    if url_data is None:
+    if not url_data:
         logger.log(u'Updating network timezones failed, this can happen from time to time. URL: %s' % url, logger.WARNING)
         load_network_dict()
         return
@@ -204,14 +92,15 @@ def load_network_dict():
             update_network_dict()
             cur_network_list = my_db.select('SELECT * FROM network_timezones;')
         d = dict(cur_network_list)
-    except:
+    except Exception:
         d = {}
+    # pylint: disable=W0603
     global network_dict
     network_dict = d
 
 
 # get timezone of a network or return default timezone
-def get_network_timezone(network, network_dict):
+def get_network_timezone(network, _network_dict):
     """
     Get a timezone of a network from a given network dict
 
@@ -223,20 +112,11 @@ def get_network_timezone(network, network_dict):
         return sb_timezone
 
     try:
-        if zoneinfo.ZONEINFOFILE is not None:
-            try:
-                n_t = tz.gettz(network_dict[network])
-            except:
-                return sb_timezone
-
-            if n_t is not None:
-                return n_t
-            else:
-                return sb_timezone
-        else:
-            return sb_timezone
-    except:
+        n_t = tz.gettz(_network_dict[network])
+    except Exception:
         return sb_timezone
+
+    return n_t if n_t is not None else sb_timezone
 
 
 # parse date and time string into local time
@@ -249,8 +129,10 @@ def parse_date_time(d, t, network):
     :param network: network to use as base
     :return: datetime object containing local time
     """
-    if network_dict is None:
+
+    if not network_dict:
         load_network_dict()
+
     mo = time_regex.search(t)
     if mo is not None and len(mo.groups()) >= 5:
         if mo.group(5) is not None:
@@ -264,14 +146,14 @@ def parse_date_time(d, t, network):
                         hr += 12
                     elif am_regex.search(ap) is not None and hr == 12:
                         hr -= 12
-            except:
+            except Exception:
                 hr = 0
                 m = 0
         else:
             try:
                 hr = helpers.tryInt(mo.group(1))
                 m = helpers.tryInt(mo.group(6))
-            except:
+            except Exception:
                 hr = 0
                 m = 0
     else:
@@ -286,7 +168,7 @@ def parse_date_time(d, t, network):
         foreign_timezone = get_network_timezone(network, network_dict)
         foreign_naive = datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=foreign_timezone)
         return foreign_naive
-    except:
+    except Exception:
         return datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=sb_timezone)
 
 
