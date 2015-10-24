@@ -18,7 +18,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import urllib
+from six.moves import urllib
 import requests
 from bs4 import BeautifulSoup
 
@@ -118,9 +118,9 @@ class HDTorrentsProvider(generic.TorrentProvider):
                     logger.log(u"Could not find table of torrents mainblockcontenttt", logger.ERROR)
                     continue
 
-                data = data[index:]
+                data = urllib.unquote(data[index:].encode('utf-8')).decode('utf-8')
 
-                html = BeautifulSoup(data.encode('utf-8'), 'html5lib')
+                html = BeautifulSoup(data, 'html5lib')
                 if not html:
                     logger.log("No html data parsed from provider", logger.DEBUG)
                     continue
