@@ -111,7 +111,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (search_string)
+                searchURL = self.urls['search'] % (search_string.replace('(', '').replace(')', ''))
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
                 # returns top 15 results by default, expandable in user profile to 100
