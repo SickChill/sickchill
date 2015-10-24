@@ -1,50 +1,75 @@
 # -*- coding:iso-8859-1 -*-
 """
-Copyright (c) 2003-2007  Gustavo Niemeyer <gustavo@niemeyer.net>
+This module offers a generic date/time string parser which is able to parse
+most known formats to represent a date and/or time.
 
-This module offers extensions to the standard Python
-datetime module.
+This module attempts to be forgiving with regards to unlikely input formats,
+returning a datetime object even for dates which are ambiguous. If an element
+of a date/time stamp is omitted, the following rules are applied:
+- If AM or PM is left unspecified, a 24-hour clock is assumed, however, an hour
+  on a 12-hour clock (``0 <= hour <= 12``) *must* be specified if AM or PM is
+  specified.
+- If a time zone is omitted, a timezone-naive datetime is returned.
+
+If any other elements are missing, they are taken from the
+:class:`datetime.datetime` object passed to the parameter ``default``. If this
+results in a day number exceeding the valid number of days per month, one can
+fall back to the last day of the month by setting ``fallback_on_invalid_day``
+parameter to ``True``.
+
+Also provided is the ``smart_defaults`` option, which attempts to fill in the
+missing elements from context. If specified, the logic is:
+- If the omitted element is smaller than the largest specified element, select
+  the *earliest* time matching the specified conditions; so ``"June 2010"`` is
+  interpreted as ``June 1, 2010 0:00:00``) and the (somewhat strange)
+  ``"Feb 1997 3:15 PM"`` is interpreted as ``February 1, 1997 15:15:00``.
+- If the element is larger than the largest specified element, select the
+  *most recent* time matching the specified conditions (e.g parsing ``"May"``
+  in June 2015 returns the date May 1st, 2015, whereas parsing it in April 2015
+  returns May 1st 2014). If using the ``date_in_future`` flag, this logic is
+  inverted, and instead the *next* time matching the specified conditions is
+  returned.
+
+Additional resources about date/time string formats can be found below:
+
+- `A summary of the international standard date and time notation
+  <http://www.cl.cam.ac.uk/~mgk25/iso-time.html>`_
+- `W3C Date and Time Formats <http://www.w3.org/TR/NOTE-datetime>`_
+- `Time Formats (Planetary Rings Node) <http://pds-rings.seti.org/tools/time_formats.html>`_
+- `CPAN ParseDate module
+  <http://search.cpan.org/~muir/Time-modules-2013.0912/lib/Time/ParseDate.pm>`_
+- `Java SimpleDateFormat Class
+  <https://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html>`_
 """
 from __future__ import unicode_literals
-__license__ = "Simplified BSD"
-
 
 import datetime
 import string
 import time
-import sys
-import os
 import collections
-
-try:
-    from io import StringIO
-except ImportError:
-    from io import StringIO
+import re
+from io import StringIO
+from calendar import monthrange, isleap
 
 from six import text_type, binary_type, integer_types
 
 from . import relativedelta
 from . import tz
 
-
 __all__ = ["parse", "parserinfo"]
 
 
-# Some pointers:
-#
-# http://www.cl.cam.ac.uk/~mgk25/iso-time.html
-# http://www.iso.ch/iso/en/prods-services/popstds/datesandtime.html
-# http://www.w3.org/TR/NOTE-datetime
-# http://ringmaster.arc.nasa.gov/tools/time_formats.html
-# http://search.cpan.org/author/MUIR/Time-modules-2003.0211/lib/Time/ParseDate.pm
-# http://stein.cshl.org/jade/distrib/docs/java.text.SimpleDateFormat.html
-
-
 class _timelex(object):
+    # Fractional seconds are sometimes split by a comma
+    _split_decimal = re.compile("([\.,])")
 
     def __init__(self, instream):
+        if isinstance(instream, binary_type):
+            instream = instream.decode()
+
         if isinstance(instream, text_type):
             instream = StringIO(instream)
+
         self.instream = instream
         self.wordchars = ('abcdfeghijklmnopqrstuvwxyz'
                           'ABCDEFGHIJKLMNOPQRSTUVWXYZ_'
@@ -57,25 +82,47 @@ class _timelex(object):
         self.eof = False
 
     def get_token(self):
+        """
+        This function breaks the time string into lexical units (tokens), which
+        can be parsed by the parser. Lexical units are demarcated by changes in
+        the character set, so any continuous string of letters is considered
+        one unit, any continuous string of numbers is considered one unit.
+
+        The main complication arises from the fact that dots ('.') can be used
+        both as separators (e.g. "Sep.20.2009") or decimal points (e.g.
+        "4:30:21.447"). As such, it is necessary to read the full context of
+        any dot-separated strings before breaking it into tokens; as such, this
+        function maintains a "token stack", for when the ambiguous context
+        demands that multiple tokens be parsed at once.
+        """
         if self.tokenstack:
             return self.tokenstack.pop(0)
+
         seenletters = False
         token = None
         state = None
         wordchars = self.wordchars
         numchars = self.numchars
         whitespace = self.whitespace
+
         while not self.eof:
+            # We only realize that we've reached the end of a token when we
+            # find a character that's not part of the current token - since
+            # that character may be part of the next token, it's stored in the
+            # charstack.
             if self.charstack:
                 nextchar = self.charstack.pop(0)
             else:
                 nextchar = self.instream.read(1)
                 while nextchar == '\x00':
                     nextchar = self.instream.read(1)
+
             if not nextchar:
                 self.eof = True
                 break
             elif not state:
+                # First character of the token - determines if we're starting
+                # to parse a word, a number or something else.
                 token = nextchar
                 if nextchar in wordchars:
                     state = 'a'
@@ -83,10 +130,12 @@ class _timelex(object):
                     state = '0'
                 elif nextchar in whitespace:
                     token = ' '
-                    break # emit token
+                    break  # emit token
                 else:
-                    break # emit token
+                    break  # emit token
             elif state == 'a':
+                # If we've already started reading a word, we keep reading
+                # letters until we find something that's not part of a word.
                 seenletters = True
                 if nextchar in wordchars:
                     token += nextchar
@@ -95,17 +144,21 @@ class _timelex(object):
                     state = 'a.'
                 else:
                     self.charstack.append(nextchar)
-                    break # emit token
+                    break  # emit token
             elif state == '0':
+                # If we've already started reading a number, we keep reading
+                # numbers until we find something that doesn't fit.
                 if nextchar in numchars:
                     token += nextchar
-                elif nextchar == '.':
+                elif nextchar == '.' or (nextchar == ',' and len(token) >= 2):
                     token += nextchar
                     state = '0.'
                 else:
                     self.charstack.append(nextchar)
-                    break # emit token
+                    break  # emit token
             elif state == 'a.':
+                # If we've seen some letters and a dot separator, continue
+                # parsing, and the tokens will be broken up later.
                 seenletters = True
                 if nextchar == '.' or nextchar in wordchars:
                     token += nextchar
@@ -114,8 +167,10 @@ class _timelex(object):
                     state = '0.'
                 else:
                     self.charstack.append(nextchar)
-                    break # emit token
+                    break  # emit token
             elif state == '0.':
+                # If we've seen at least one dot separator, keep going, we'll
+                # break up the tokens later.
                 if nextchar == '.' or nextchar in numchars:
                     token += nextchar
                 elif nextchar in wordchars and token[-1] == '.':
@@ -123,15 +178,19 @@ class _timelex(object):
                     state = 'a.'
                 else:
                     self.charstack.append(nextchar)
-                    break # emit token
-        if (state in ('a.', '0.') and
-            (seenletters or token.count('.') > 1 or token[-1] == '.')):
-            l = token.split('.')
+                    break  # emit token
+
+        if (state in ('a.', '0.') and (seenletters or token.count('.') > 1 or
+                                       token[-1] in '.,')):
+            l = self._split_decimal.split(token)
             token = l[0]
             for tok in l[1:]:
-                self.tokenstack.append('.')
                 if tok:
                     self.tokenstack.append(tok)
+
+        if state == '0.' and token.count('.') == 0:
+            token = token.replace(',', '.')
+
         return token
 
     def __iter__(self):
@@ -141,6 +200,7 @@ class _timelex(object):
         token = self.get_token()
         if token is None:
             raise StopIteration
+
         return token
 
     def next(self):
@@ -170,6 +230,22 @@ class _resultbase(object):
 
 
 class parserinfo(object):
+    """
+    Class which handles what inputs are accepted. Subclass this to customize
+    the language and acceptable values for each parameter.
+
+    :param dayfirst:
+            Whether to interpret the first value in an ambiguous 3-integer date
+            (e.g. 01/05/09) as the day (``True``) or month (``False``). If
+            ``yearfirst`` is set to ``True``, this distinguishes between YDM
+            and YMD. Default is ``False``.
+
+    :param yearfirst:
+            Whether to interpret the first value in an ambiguous 3-integer date
+            (e.g. 01/05/09) as the year. If ``True``, the first number is taken
+            to be the year, otherwise the last number is taken to be the year.
+            Default is ``False``.
+    """
 
     # m from a.m/p.m, t from ISO T separator
     JUMP = [" ", ".", ",", ";", "-", "/", "'",
@@ -183,18 +259,18 @@ class parserinfo(object):
                 ("Fri", "Friday"),
                 ("Sat", "Saturday"),
                 ("Sun", "Sunday")]
-    MONTHS   = [("Jan", "January"),
-                ("Feb", "February"),
-                ("Mar", "March"),
-                ("Apr", "April"),
-                ("May", "May"),
-                ("Jun", "June"),
-                ("Jul", "July"),
-                ("Aug", "August"),
-                ("Sep", "Sept", "September"),
-                ("Oct", "October"),
-                ("Nov", "November"),
-                ("Dec", "December")]
+    MONTHS = [("Jan", "January"),
+              ("Feb", "February"),
+              ("Mar", "March"),
+              ("Apr", "April"),
+              ("May", "May"),
+              ("Jun", "June"),
+              ("Jul", "July"),
+              ("Aug", "August"),
+              ("Sep", "Sept", "September"),
+              ("Oct", "October"),
+              ("Nov", "November"),
+              ("Dec", "December")]
     HMS = [("h", "hour", "hours"),
            ("m", "minute", "minutes"),
            ("s", "second", "seconds")]
@@ -204,7 +280,7 @@ class parserinfo(object):
     PERTAIN = ["of"]
     TZOFFSET = {}
 
-    def __init__(self, dayfirst=False, yearfirst=False):
+    def __init__(self, dayfirst=False, yearfirst=False, smart_defaults=False):
         self._jump = self._convert(self.JUMP)
         self._weekdays = self._convert(self.WEEKDAYS)
         self._months = self._convert(self.MONTHS)
@@ -215,14 +291,14 @@ class parserinfo(object):
 
         self.dayfirst = dayfirst
         self.yearfirst = yearfirst
+        self.smart_defaults = smart_defaults
 
         self._year = time.localtime().tm_year
-        self._century = self._year//100*100
+        self._century = self._year // 100 * 100
 
     def _convert(self, lst):
         dct = {}
-        for i in range(len(lst)):
-            v = lst[i]
+        for i, v in enumerate(lst):
             if isinstance(v, tuple):
                 for v in v:
                     dct[v.lower()] = i
@@ -244,7 +320,7 @@ class parserinfo(object):
     def month(self, name):
         if len(name) >= 3:
             try:
-                return self._months[name.lower()]+1
+                return self._months[name.lower()] + 1
             except KeyError:
                 pass
         return None
@@ -270,12 +346,13 @@ class parserinfo(object):
     def tzoffset(self, name):
         if name in self._utczone:
             return 0
+
         return self.TZOFFSET.get(name)
 
     def convertyear(self, year):
         if year < 100:
             year += self._century
-            if abs(year-self._year) >= 50:
+            if abs(year - self._year) >= 50:
                 if year < self._year:
                     year += 100
                 else:
@@ -286,6 +363,7 @@ class parserinfo(object):
         # move to info
         if res.year is not None:
             res.year = self.convertyear(res.year)
+
         if res.tzoffset == 0 and not res.tzname or res.tzname == 'Z':
             res.tzname = "UTC"
             res.tzoffset = 0
@@ -295,37 +373,211 @@ class parserinfo(object):
 
 
 class parser(object):
-
     def __init__(self, info=None):
         self.info = info or parserinfo()
 
-    def parse(self, timestr, default=None,
-                    ignoretz=False, tzinfos=None,
-                    **kwargs):
-        if not default:
+    def parse(self, timestr, default=None, ignoretz=False, tzinfos=None,
+              smart_defaults=None, date_in_future=False, 
+              fallback_on_invalid_day=None, **kwargs):
+        """
+        Parse the date/time string into a :class:`datetime.datetime` object.
+
+        :param timestr:
+            Any date/time string using the supported formats.
+
+        :param default:
+            The default datetime object, if this is a datetime object and not
+            ``None``, elements specified in ``timestr`` replace elements in the
+            default object, unless ``smart_defaults`` is set to ``True``, in
+            which case to the extent necessary, timestamps are calculated
+            relative to this date.
+
+        :param smart_defaults:
+            If using smart defaults, the ``default`` parameter is treated as
+            the effective parsing date/time, and the context of the datetime
+            string is determined relative to ``default``. If ``None``, this
+            parameter is inherited from the :class:`parserinfo` object.
+
+        :param date_in_future:
+            If ``smart_defaults`` is ``True``, the parser assumes by default
+            that the timestamp refers to a date in the past, and will return
+            the beginning of the most recent timespan which matches the time
+            string (e.g. if ``default`` is March 3rd, 2013,  "Feb" parses to
+            "Feb 1, 2013" and "May 3" parses to May 3rd, 2012). Setting this
+            parameter to ``True`` inverts this assumption, and returns the
+            beginning of the *next* matching timespan.
+
+        :param fallback_on_invalid_day:
+            If specified ``True``, an otherwise invalid date such as "Feb 30"
+            or "June 32" falls back to the last day of the month. If specified
+            as "False", the parser is strict about parsing otherwise valid
+            dates that would turn up as invalid because of the fallback rules
+            (e.g. "Feb 2010" run with a default of January 30, 2010 and
+            ``smartparser`` set to ``False`` would would throw an error, rather
+            than falling back to the end of February). If ``None`` or
+            unspecified, the date falls back to the most recent valid date only
+            if the invalid date is created as a result of an unspecified day in
+            the time string.
+
+        :param ignoretz:
+            If set ``True``, time zones in parsed strings are ignored and a
+            naive :class:`datetime.datetime` object is returned.
+
+        :param tzinfos:
+            Additional time zone names / aliases which may be present in the
+            string. This argument maps time zone names (and optionally offsets
+            from those time zones) to time zones. This parameter can be a
+            dictionary with timezone aliases mapping time zone names to time
+            zones or a function taking two parameters (``tzname`` and
+            ``tzoffset``) and returning a time zone.
+
+            The timezones to which the names are mapped can be an integer
+            offset from UTC in minutes or a :class:`tzinfo` object.
+
+            .. doctest::
+               :options: +NORMALIZE_WHITESPACE
+
+                >>> from dateutil.parser import parse
+                >>> from dateutil.tz import gettz
+                >>> tzinfos = {"BRST": -10800, "CST": gettz("America/Chicago")}
+                >>> parse("2012-01-19 17:21:00 BRST", tzinfos=tzinfos)
+                datetime.datetime(2012, 1, 19, 17, 21, tzinfo=tzoffset(u'BRST', -10800))
+                >>> parse("2012-01-19 17:21:00 CST", tzinfos=tzinfos)
+                datetime.datetime(2012, 1, 19, 17, 21,
+                                  tzinfo=tzfile('/usr/share/zoneinfo/America/Chicago'))
+
+            This parameter is ignored if ``ignoretz`` is set.
+
+        :param **kwargs:
+            Keyword arguments as passed to ``_parse()``.
+
+        :return:
+            Returns a :class:`datetime.datetime` object or, if the
+            ``fuzzy_with_tokens`` option is ``True``, returns a tuple, the
+            first element being a :class:`datetime.datetime` object, the second
+            a tuple containing the fuzzy tokens.
+
+        :raises ValueError:
+            Raised for invalid or unknown string format, if the provided
+            :class:`tzinfo` is not in a valid format, or if an invalid date
+            would be created.
+
+        :raises OverFlowError:
+            Raised if the parsed date exceeds the largest valid C integer on
+            your system.
+        """
+
+        if smart_defaults is None:
+            smart_defaults = self.info.smart_defaults
+
+        if default is None:
+            effective_dt = datetime.datetime.now()
             default = datetime.datetime.now().replace(hour=0, minute=0,
                                                       second=0, microsecond=0)
-
+        else:
+            effective_dt = default
 
         res, skipped_tokens = self._parse(timestr, **kwargs)
 
         if res is None:
-            raise ValueError("unknown string format")
+            raise ValueError("Unknown string format")
+
         repl = {}
-        for attr in ["year", "month", "day", "hour",
-                     "minute", "second", "microsecond"]:
+        for attr in ("year", "month", "day", "hour",
+                     "minute", "second", "microsecond"):
             value = getattr(res, attr)
             if value is not None:
                 repl[attr] = value
+
+        # Choose the correct fallback position if requested by the
+        # ``smart_defaults`` parameter.
+        if smart_defaults:
+            # Determine if it refers to this year, last year or next year
+            if res.year is None:
+                if res.month is not None:
+                    # Explicitly deal with leap year problems
+                    if res.month == 2 and (res.day is not None and
+                                           res.day == 29):
+
+                        ly_offset = 4 if date_in_future else -4
+                        next_year = 4 * (default.year // 4)
+
+                        if date_in_future:
+                            next_year += ly_offset
+
+                        if not isleap(next_year):
+                            next_year += ly_offset
+
+                        if not isleap(default.year):
+                            default = default.replace(year=next_year)
+                    elif date_in_future:
+                        next_year = default.year + 1
+                    else:
+                        next_year = default.year - 1
+
+                    if ((res.month == default.month and res.day is not None and
+                         ((res.day < default.day and date_in_future) or
+                          (res.day > default.day and not date_in_future))) or
+                        ((res.month < default.month and date_in_future) or
+                         (res.month > default.month and not date_in_future))):
+
+                        default = default.replace(year=next_year)
+
+            # Select a proper month
+            if res.month is None:
+                if res.year is not None:
+                    default = default.replace(month=1)
+
+                # I'm not sure if this is even possible.
+                if res.day is not None:
+                    if res.day < default.day and date_in_future:
+                        default += datetime.timedelta(months=1)
+                    elif res.day > default.day and not date_in_future:
+                        default -= datetime.timedelta(months=1)
+
+            if res.day is None:
+                # Determine if it's today, tomorrow or yesterday.
+                if res.year is None and res.month is None:
+                    t_repl = {}
+                    for key, val in repl.iteritems():
+                        if key in ('hour', 'minute', 'second', 'microsecond'):
+                            t_repl[key] = val
+
+                    stime = effective_dt.replace(**t_repl)
+
+                    if stime < effective_dt and date_in_future:
+                        default += datetime.timedelta(days=1)
+                    elif stime > effective_dt and not date_in_future:
+                        default -= datetime.timedelta(days=1)
+                else:
+                    # Otherwise it's the beginning of the month
+                    default = default.replace(day=1)
+
+        if fallback_on_invalid_day or (fallback_on_invalid_day is None and
+                                       'day' not in repl):
+            # If the default day exceeds the last day of the month, fall back to
+            # the end of the month.
+            cyear = default.year if res.year is None else res.year
+            cmonth = default.month if res.month is None else res.month
+            cday = default.day if res.day is None else res.day
+
+            if cday > monthrange(cyear, cmonth)[1]:
+                repl['day'] = monthrange(cyear, cmonth)[1]
+
         ret = default.replace(**repl)
+
         if res.weekday is not None and not res.day:
             ret = ret+relativedelta.relativedelta(weekday=res.weekday)
+
         if not ignoretz:
-            if isinstance(tzinfos, collections.Callable) or tzinfos and res.tzname in tzinfos:
+            if (isinstance(tzinfos, collections.Callable) or
+                    tzinfos and res.tzname in tzinfos):
+
                 if isinstance(tzinfos, collections.Callable):
                     tzdata = tzinfos(res.tzname, res.tzoffset)
                 else:
                     tzdata = tzinfos.get(res.tzname)
+
                 if isinstance(tzdata, datetime.tzinfo):
                     tzinfo = tzdata
                 elif isinstance(tzdata, text_type):
@@ -333,8 +585,8 @@ class parser(object):
                 elif isinstance(tzdata, integer_types):
                     tzinfo = tz.tzoffset(res.tzname, tzdata)
                 else:
-                    raise ValueError("offset must be tzinfo subclass, " \
-                                      "tz string, or int offset")
+                    raise ValueError("Offset must be tzinfo subclass, "
+                                     "tz string, or int offset.")
                 ret = ret.replace(tzinfo=tzinfo)
             elif res.tzname and res.tzname in time.tzname:
                 ret = ret.replace(tzinfo=tz.tzlocal())
@@ -343,28 +595,70 @@ class parser(object):
             elif res.tzoffset:
                 ret = ret.replace(tzinfo=tz.tzoffset(res.tzname, res.tzoffset))
 
-        if skipped_tokens:
+        if kwargs.get('fuzzy_with_tokens', False):
             return ret, skipped_tokens
-
-        return ret
+        else:
+            return ret
 
     class _result(_resultbase):
         __slots__ = ["year", "month", "day", "weekday",
                      "hour", "minute", "second", "microsecond",
-                     "tzname", "tzoffset"]
+                     "tzname", "tzoffset", "ampm"]
 
-    def _parse(self, timestr, dayfirst=None, yearfirst=None, fuzzy=False, fuzzy_with_tokens=False):
+    def _parse(self, timestr, dayfirst=None, yearfirst=None, fuzzy=False,
+               fuzzy_with_tokens=False):
+        """
+        Private method which performs the heavy lifting of parsing, called from
+        ``parse()``, which passes on its ``kwargs`` to this function.
+
+        :param timestr:
+            The string to parse.
+
+        :param dayfirst:
+            Whether to interpret the first value in an ambiguous 3-integer date
+            (e.g. 01/05/09) as the day (``True``) or month (``False``). If
+            ``yearfirst`` is set to ``True``, this distinguishes between YDM
+            and YMD. If set to ``None``, this value is retrieved from the
+            current :class:`parserinfo` object (which itself defaults to
+            ``False``).
+
+        :param yearfirst:
+            Whether to interpret the first value in an ambiguous 3-integer date
+            (e.g. 01/05/09) as the year. If ``True``, the first number is taken
+            to be the year, otherwise the last number is taken to be the year.
+            If this is set to ``None``, the value is retrieved from the current
+            :class:`parserinfo` object (which itself defaults to ``False``).
+
+        :param fuzzy:
+            Whether to allow fuzzy parsing, allowing for string like "Today is
+            January 1, 2047 at 8:21:00AM".
+
+        :param fuzzy_with_tokens:
+            If ``True``, ``fuzzy`` is automatically set to True, and the parser
+            will return a tuple where the first element is the parsed
+            :class:`datetime.datetime` datetimestamp and the second element is
+            a tuple containing the portions of the string which were ignored:
+
+            .. doctest::
+
+                >>> from dateutil.parser import parse
+                >>> parse("Today is January 1, 2047 at 8:21:00AM", fuzzy_with_tokens=True)
+                (datetime.datetime(2011, 1, 1, 8, 21), (u'Today is ', u' ', u'at '))
+
+        """
         if fuzzy_with_tokens:
             fuzzy = True
 
         info = self.info
+
         if dayfirst is None:
             dayfirst = info.dayfirst
+
         if yearfirst is None:
             yearfirst = info.yearfirst
-        res = self._result()
-        l = _timelex.split(timestr)
 
+        res = self._result()
+        l = _timelex.split(timestr)         # Splits the timestr into tokens
 
         # keep up with the last token skipped so we can recombine
         # consecutively skipped tokens (-2 for when i begins at 0).
@@ -372,7 +666,6 @@ class parser(object):
         skipped_tokens = list()
 
         try:
-
             # year/month/day list
             ymd = []
 
@@ -394,17 +687,21 @@ class parser(object):
                     # Token is a number
                     len_li = len(l[i])
                     i += 1
+
                     if (len(ymd) == 3 and len_li in (2, 4)
-                        and (i >= len_l or (l[i] != ':' and
-                                            info.hms(l[i]) is None))):
+                        and res.hour is None and (i >= len_l or (l[i] != ':' and
+                                                  info.hms(l[i]) is None))):
                         # 19990101T23[59]
                         s = l[i-1]
                         res.hour = int(s[:2])
+
                         if len_li == 4:
                             res.minute = int(s[2:])
+
                     elif len_li == 6 or (len_li > 6 and l[i-1].find('.') == 6):
                         # YYMMDD or HHMMSS[.ss]
                         s = l[i-1]
+
                         if not ymd and l[i-1].find('.') == -1:
                             ymd.append(info.convertyear(int(s[:2])))
                             ymd.append(int(s[2:4]))
@@ -414,12 +711,14 @@ class parser(object):
                             res.hour = int(s[:2])
                             res.minute = int(s[2:4])
                             res.second, res.microsecond = _parsems(s[4:])
+
                     elif len_li == 8:
                         # YYYYMMDD
                         s = l[i-1]
                         ymd.append(int(s[:4]))
                         ymd.append(int(s[4:6]))
                         ymd.append(int(s[6:]))
+
                     elif len_li in (12, 14):
                         # YYYYMMDDhhmm[ss]
                         s = l[i-1]
@@ -428,30 +727,42 @@ class parser(object):
                         ymd.append(int(s[6:8]))
                         res.hour = int(s[8:10])
                         res.minute = int(s[10:12])
+
                         if len_li == 14:
                             res.second = int(s[12:])
+
                     elif ((i < len_l and info.hms(l[i]) is not None) or
                           (i+1 < len_l and l[i] == ' ' and
                            info.hms(l[i+1]) is not None)):
+
                         # HH[ ]h or MM[ ]m or SS[.ss][ ]s
                         if l[i] == ' ':
                             i += 1
+
                         idx = info.hms(l[i])
+
                         while True:
                             if idx == 0:
                                 res.hour = int(value)
-                                if value%1:
-                                    res.minute = int(60*(value%1))
+
+                                if value % 1:
+                                    res.minute = int(60*(value % 1))
+
                             elif idx == 1:
                                 res.minute = int(value)
-                                if value%1:
-                                    res.second = int(60*(value%1))
+
+                                if value % 1:
+                                    res.second = int(60*(value % 1))
+
                             elif idx == 2:
                                 res.second, res.microsecond = \
                                     _parsems(value_repr)
+
                             i += 1
+
                             if i >= len_l or idx == 2:
                                 break
+
                             # 12h00
                             try:
                                 value_repr = l[i]
@@ -461,37 +772,49 @@ class parser(object):
                             else:
                                 i += 1
                                 idx += 1
+
                                 if i < len_l:
                                     newidx = info.hms(l[i])
+
                                     if newidx is not None:
                                         idx = newidx
-                    elif i == len_l and l[i-2] == ' ' and info.hms(l[i-3]) is not None:
+
+                    elif (i == len_l and l[i-2] == ' ' and
+                          info.hms(l[i-3]) is not None):
                         # X h MM or X m SS
                         idx = info.hms(l[i-3]) + 1
+
                         if idx == 1:
                             res.minute = int(value)
-                            if value%1:
-                                res.second = int(60*(value%1))
+
+                            if value % 1:
+                                res.second = int(60*(value % 1))
                             elif idx == 2:
                                 res.second, res.microsecond = \
-                                        _parsems(value_repr)
+                                    _parsems(value_repr)
                                 i += 1
+
                     elif i+1 < len_l and l[i] == ':':
                         # HH:MM[:SS[.ss]]
                         res.hour = int(value)
                         i += 1
                         value = float(l[i])
                         res.minute = int(value)
-                        if value%1:
-                            res.second = int(60*(value%1))
+
+                        if value % 1:
+                            res.second = int(60*(value % 1))
+
                         i += 1
+
                         if i < len_l and l[i] == ':':
                             res.second, res.microsecond = _parsems(l[i+1])
                             i += 2
+
                     elif i < len_l and l[i] in ('-', '/', '.'):
                         sep = l[i]
                         ymd.append(int(value))
                         i += 1
+
                         if i < len_l and not info.jump(l[i]):
                             try:
                                 # 01-01[-01]
@@ -499,47 +822,57 @@ class parser(object):
                             except ValueError:
                                 # 01-Jan[-01]
                                 value = info.month(l[i])
+
                                 if value is not None:
                                     ymd.append(value)
                                     assert mstridx == -1
                                     mstridx = len(ymd)-1
                                 else:
-                                    return None
+                                    return None, None
+
                             i += 1
+
                             if i < len_l and l[i] == sep:
                                 # We have three members
                                 i += 1
                                 value = info.month(l[i])
+
                                 if value is not None:
                                     ymd.append(value)
                                     mstridx = len(ymd)-1
                                     assert mstridx == -1
                                 else:
                                     ymd.append(int(l[i]))
+
                                 i += 1
                     elif i >= len_l or info.jump(l[i]):
                         if i+1 < len_l and info.ampm(l[i+1]) is not None:
                             # 12 am
                             res.hour = int(value)
+
                             if res.hour < 12 and info.ampm(l[i+1]) == 1:
                                 res.hour += 12
                             elif res.hour == 12 and info.ampm(l[i+1]) == 0:
                                 res.hour = 0
+
                             i += 1
                         else:
                             # Year, month or day
                             ymd.append(int(value))
                         i += 1
                     elif info.ampm(l[i]) is not None:
+
                         # 12am
                         res.hour = int(value)
+
                         if res.hour < 12 and info.ampm(l[i]) == 1:
                             res.hour += 12
                         elif res.hour == 12 and info.ampm(l[i]) == 0:
                             res.hour = 0
                         i += 1
+
                     elif not fuzzy:
-                        return None
+                        return None, None
                     else:
                         i += 1
                     continue
@@ -557,6 +890,7 @@ class parser(object):
                     ymd.append(value)
                     assert mstridx == -1
                     mstridx = len(ymd)-1
+
                     i += 1
                     if i < len_l:
                         if l[i] in ('-', '/'):
@@ -565,11 +899,13 @@ class parser(object):
                             i += 1
                             ymd.append(int(l[i]))
                             i += 1
+
                             if i < len_l and l[i] == sep:
                                 # Jan-01-99
                                 i += 1
                                 ymd.append(int(l[i]))
                                 i += 1
+
                         elif (i+3 < len_l and l[i] == l[i+2] == ' '
                               and info.pertain(l[i+1])):
                             # Jan of 01
@@ -588,17 +924,47 @@ class parser(object):
                 # Check am/pm
                 value = info.ampm(l[i])
                 if value is not None:
-                    if value == 1 and res.hour < 12:
-                        res.hour += 12
-                    elif value == 0 and res.hour == 12:
-                        res.hour = 0
+                    # For fuzzy parsing, 'a' or 'am' (both valid English words)
+                    # may erroneously trigger the AM/PM flag. Deal with that
+                    # here.
+                    val_is_ampm = True
+
+                    # If there's already an AM/PM flag, this one isn't one.
+                    if fuzzy and res.ampm is not None:
+                        val_is_ampm = False
+
+                    # If AM/PM is found and hour is not, raise a ValueError
+                    if res.hour is None:
+                        if fuzzy:
+                            val_is_ampm = False
+                        else:
+                            raise ValueError('No hour specified with ' +
+                                             'AM or PM flag.')
+                    elif not 0 <= res.hour <= 12:
+                        # If AM/PM is found, it's a 12 hour clock, so raise 
+                        # an error for invalid range
+                        if fuzzy:
+                            val_is_ampm = False
+                        else:
+                            raise ValueError('Invalid hour specified for ' +
+                                             '12-hour clock.')
+
+                    if val_is_ampm:
+                        if value == 1 and res.hour < 12:
+                            res.hour += 12
+                        elif value == 0 and res.hour == 12:
+                            res.hour = 0
+
+                        res.ampm = value
+
                     i += 1
                     continue
 
                 # Check for a timezone name
                 if (res.hour is not None and len(l[i]) <= 5 and
-                    res.tzname is None and res.tzoffset is None and
-                    not [x for x in l[i] if x not in string.ascii_uppercase]):
+                        res.tzname is None and res.tzoffset is None and
+                        not [x for x in l[i] if x not in
+                             string.ascii_uppercase]):
                     res.tzname = l[i]
                     res.tzoffset = info.tzoffset(res.tzname)
                     i += 1
@@ -623,6 +989,7 @@ class parser(object):
                     signal = (-1, 1)[l[i] == '+']
                     i += 1
                     len_li = len(l[i])
+
                     if len_li == 4:
                         # -0300
                         res.tzoffset = int(l[i][:2])*3600+int(l[i][2:])*60
@@ -634,8 +1001,9 @@ class parser(object):
                         # -[0]3
                         res.tzoffset = int(l[i][:2])*3600
                     else:
-                        return None
+                        return None, None
                     i += 1
+
                     res.tzoffset *= signal
 
                     # Look for a timezone name between parenthesis
@@ -643,7 +1011,7 @@ class parser(object):
                         info.jump(l[i]) and l[i+1] == '(' and l[i+3] == ')' and
                         3 <= len(l[i+2]) <= 5 and
                         not [x for x in l[i+2]
-                                if x not in string.ascii_uppercase]):
+                             if x not in string.ascii_uppercase]):
                         # -0300 (BRST)
                         res.tzname = l[i+2]
                         i += 4
@@ -651,7 +1019,7 @@ class parser(object):
 
                 # Check jumps
                 if not (info.jump(l[i]) or fuzzy):
-                    return None
+                    return None, None
 
                 if last_skipped_token_i == i - 1:
                     # recombine the tokens
@@ -666,17 +1034,19 @@ class parser(object):
             len_ymd = len(ymd)
             if len_ymd > 3:
                 # More than three members!?
-                return None
+                return None, None
             elif len_ymd == 1 or (mstridx != -1 and len_ymd == 2):
                 # One member, or two members with a month string
                 if mstridx != -1:
                     res.month = ymd[mstridx]
                     del ymd[mstridx]
+
                 if len_ymd > 1 or mstridx == -1:
                     if ymd[0] > 31:
                         res.year = ymd[0]
                     else:
                         res.day = ymd[0]
+
             elif len_ymd == 2:
                 # Two members with numbers
                 if ymd[0] > 31:
@@ -691,7 +1061,8 @@ class parser(object):
                 else:
                     # 01-13
                     res.month, res.day = ymd
-            if len_ymd == 3:
+
+            elif len_ymd == 3:
                 # Three members
                 if mstridx == 0:
                     res.month, res.day, res.year = ymd
@@ -704,6 +1075,7 @@ class parser(object):
                         # Give precendence to day-first, since
                         # two-digit years is usually hand-written.
                         res.day, res.month, res.year = ymd
+
                 elif mstridx == 2:
                     # WTF!?
                     if ymd[1] > 31:
@@ -712,6 +1084,7 @@ class parser(object):
                     else:
                         # 99-01-Jan
                         res.year, res.day, res.month = ymd
+
                 else:
                     if ymd[0] > 31 or \
                        (yearfirst and ymd[1] <= 12 and ymd[2] <= 31):
@@ -725,23 +1098,114 @@ class parser(object):
                         res.month, res.day, res.year = ymd
 
         except (IndexError, ValueError, AssertionError):
-            return None
+            return None, None
 
         if not info.validate(res):
-            return None
+            return None, None
 
         if fuzzy_with_tokens:
             return res, tuple(skipped_tokens)
-
-        return res, None
+        else:
+            return res, None
 
 DEFAULTPARSER = parser()
+
+
 def parse(timestr, parserinfo=None, **kwargs):
-    # Python 2.x support: datetimes return their string presentation as
-    # bytes in 2.x and unicode in 3.x, so it's reasonable to expect that
-    # the parser will get both kinds. Internally we use unicode only.
-    if isinstance(timestr, binary_type):
-        timestr = timestr.decode()
+    """
+
+    Parse a string in one of the supported formats, using the
+    ``parserinfo`` parameters.
+
+    :param timestr:
+        A string containing a date/time stamp.
+
+    :param parserinfo:
+        A :class:`parserinfo` object containing parameters for the parser.
+        If ``None``, the default arguments to the :class:`parserinfo`
+        constructor are used.
+
+    The ``**kwargs`` parameter takes the following keyword arguments:
+
+    :param default:
+        The default datetime object, if this is a datetime object and not
+        ``None``, elements specified in ``timestr`` replace elements in the
+        default object.
+
+    :param ignoretz:
+        If set ``True``, time zones in parsed strings are ignored and a naive
+        :class:`datetime` object is returned.
+
+    :param tzinfos:
+            Additional time zone names / aliases which may be present in the
+            string. This argument maps time zone names (and optionally offsets
+            from those time zones) to time zones. This parameter can be a
+            dictionary with timezone aliases mapping time zone names to time
+            zones or a function taking two parameters (``tzname`` and
+            ``tzoffset``) and returning a time zone.
+
+            The timezones to which the names are mapped can be an integer
+            offset from UTC in minutes or a :class:`tzinfo` object.
+
+            .. doctest::
+               :options: +NORMALIZE_WHITESPACE
+
+                >>> from dateutil.parser import parse
+                >>> from dateutil.tz import gettz
+                >>> tzinfos = {"BRST": -10800, "CST": gettz("America/Chicago")}
+                >>> parse("2012-01-19 17:21:00 BRST", tzinfos=tzinfos)
+                datetime.datetime(2012, 1, 19, 17, 21, tzinfo=tzoffset(u'BRST', -10800))
+                >>> parse("2012-01-19 17:21:00 CST", tzinfos=tzinfos)
+                datetime.datetime(2012, 1, 19, 17, 21,
+                                  tzinfo=tzfile('/usr/share/zoneinfo/America/Chicago'))
+
+            This parameter is ignored if ``ignoretz`` is set.
+
+    :param dayfirst:
+        Whether to interpret the first value in an ambiguous 3-integer date
+        (e.g. 01/05/09) as the day (``True``) or month (``False``). If
+        ``yearfirst`` is set to ``True``, this distinguishes between YDM and
+        YMD. If set to ``None``, this value is retrieved from the current
+        :class:`parserinfo` object (which itself defaults to ``False``).
+
+    :param yearfirst:
+        Whether to interpret the first value in an ambiguous 3-integer date
+        (e.g. 01/05/09) as the year. If ``True``, the first number is taken to
+        be the year, otherwise the last number is taken to be the year. If
+        this is set to ``None``, the value is retrieved from the current
+        :class:`parserinfo` object (which itself defaults to ``False``).
+
+    :param fuzzy:
+        Whether to allow fuzzy parsing, allowing for string like "Today is
+        January 1, 2047 at 8:21:00AM".
+
+    :param fuzzy_with_tokens:
+        If ``True``, ``fuzzy`` is automatically set to True, and the parser
+        will return a tuple where the first element is the parsed
+        :class:`datetime.datetime` datetimestamp and the second element is
+        a tuple containing the portions of the string which were ignored:
+
+        .. doctest::
+
+            >>> from dateutil.parser import parse
+            >>> parse("Today is January 1, 2047 at 8:21:00AM", fuzzy_with_tokens=True)
+            (datetime.datetime(2011, 1, 1, 8, 21), (u'Today is ', u' ', u'at '))
+
+    :return:
+        Returns a :class:`datetime.datetime` object or, if the
+        ``fuzzy_with_tokens`` option is ``True``, returns a tuple, the
+        first element being a :class:`datetime.datetime` object, the second
+        a tuple containing the fuzzy tokens.
+
+    :raises ValueError:
+        Raised for invalid or unknown string format, if the provided
+        :class:`tzinfo` is not in a valid format, or if an invalid date
+        would be created.
+
+    :raises OverFlowError:
+        Raised if the parsed date exceeds the largest valid C integer on
+        your system.
+    """
     if parserinfo:
         return parser(parserinfo).parse(timestr, **kwargs)
     else:
@@ -779,7 +1243,7 @@ class _tzparser(object):
                 # BRST+3[BRDT[+2]]
                 j = i
                 while j < len_l and not [x for x in l[j]
-                                            if x in "0123456789:,-+"]:
+                                         if x in "0123456789:,-+"]:
                     j += 1
                 if j != i:
                     if not res.stdabbr:
@@ -789,8 +1253,8 @@ class _tzparser(object):
                         offattr = "dstoffset"
                         res.dstabbr = "".join(l[i:j])
                     i = j
-                    if (i < len_l and
-                        (l[i] in ('+', '-') or l[i][0] in "0123456789")):
+                    if (i < len_l and (l[i] in ('+', '-') or l[i][0] in
+                                       "0123456789")):
                         if l[i] in ('+', '-'):
                             # Yes, that's right.  See the TZ variable
                             # documentation.
@@ -801,8 +1265,8 @@ class _tzparser(object):
                         len_li = len(l[i])
                         if len_li == 4:
                             # -0300
-                            setattr(res, offattr,
-                                    (int(l[i][:2])*3600+int(l[i][2:])*60)*signal)
+                            setattr(res, offattr, (int(l[i][:2])*3600 +
+                                                   int(l[i][2:])*60)*signal)
                         elif i+1 < len_l and l[i+1] == ':':
                             # -03:00
                             setattr(res, offattr,
@@ -822,7 +1286,8 @@ class _tzparser(object):
 
             if i < len_l:
                 for j in range(i, len_l):
-                    if l[j] == ';': l[j] = ','
+                    if l[j] == ';':
+                        l[j] = ','
 
                 assert l[i] == ','
 
@@ -831,7 +1296,7 @@ class _tzparser(object):
             if i >= len_l:
                 pass
             elif (8 <= l.count(',') <= 9 and
-                not [y for x in l[i:] if x != ','
+                  not [y for x in l[i:] if x != ','
                        for y in x if y not in "0123456789"]):
                 # GMT0BST,3,0,30,3600,10,0,26,7200[,3600]
                 for x in (res.start, res.end):
@@ -845,7 +1310,7 @@ class _tzparser(object):
                     i += 2
                     if value:
                         x.week = value
-                        x.weekday = (int(l[i])-1)%7
+                        x.weekday = (int(l[i])-1) % 7
                     else:
                         x.day = int(l[i])
                     i += 2
@@ -861,7 +1326,7 @@ class _tzparser(object):
             elif (l.count(',') == 2 and l[i:].count('/') <= 2 and
                   not [y for x in l[i:] if x not in (',', '/', 'J', 'M',
                                                      '.', '-', ':')
-                         for y in x if y not in "0123456789"]):
+                       for y in x if y not in "0123456789"]):
                 for x in (res.start, res.end):
                     if l[i] == 'J':
                         # non-leap year day (1 based)
@@ -880,7 +1345,7 @@ class _tzparser(object):
                         i += 1
                         assert l[i] in ('-', '.')
                         i += 1
-                        x.weekday = (int(l[i])-1)%7
+                        x.weekday = (int(l[i])-1) % 7
                     else:
                         # year day (zero based)
                         x.yday = int(l[i])+1
@@ -921,6 +1386,8 @@ class _tzparser(object):
 
 
 DEFAULTTZPARSER = _tzparser()
+
+
 def _parsetz(tzstr):
     return DEFAULTTZPARSER.parse(tzstr)
 
