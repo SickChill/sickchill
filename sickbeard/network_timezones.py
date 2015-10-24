@@ -53,8 +53,8 @@ def _remove_old_zoneinfo():
     """
     Removes zoneinfo tar.gz file from repository, as we do not need it
     """
-    if zoneinfo.ZONEINFOFILE is not None:
-        cur_zoneinfo = ek(basename, zoneinfo.ZONEINFOFILE)
+    if zoneinfo.ZONEFILENAME is not None:
+        cur_zoneinfo = ek(basename, zoneinfo.ZONEFILENAME)
     else:
         return
 
@@ -85,8 +85,8 @@ def _update_zoneinfo():
             raise
 
         # Filename of existing zoneinfo
-        if zoneinfo.ZONEINFOFILE is not None:
-            cur_zoneinfo = ek(basename, zoneinfo.ZONEINFOFILE)
+        if zoneinfo.ZONEFILENAME is not None:
+            cur_zoneinfo = ek(basename, zoneinfo.ZONEFILENAME)
         else:
             cur_zoneinfo = None
 
@@ -223,7 +223,7 @@ def get_network_timezone(network, network_dict):
         return sb_timezone
 
     try:
-        if zoneinfo.ZONEINFOFILE is not None:
+        if zoneinfo.ZONEFILENAME is not None:
             try:
                 n_t = tz.gettz(network_dict[network])
             except:
