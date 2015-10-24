@@ -96,7 +96,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    searchURL = self.urls['search'] % (urllib.quote_plus(search_string.replace('.', ' ')), self.categories)
+                    searchURL = self.urls['search'] % (urllib.quote_plus(search_string), self.categories)
                 else:
                     searchURL = self.urls['rss'] % self.categories
 
@@ -120,7 +120,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
                 data = data[index:]
 
-                html = BeautifulSoup(data, 'html5lib')
+                html = BeautifulSoup(data.encode('utf-8'), 'html5lib')
                 if not html:
                     logger.log("No html data parsed from provider", logger.DEBUG)
                     continue
@@ -151,6 +151,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                             try:
                                 if None is title and cell.get('title') and cell.get('title') in 'Download':
                                     title = re.search('f=(.*).torrent', cell.a['href']).group(1).replace('+', '.')
+                                    title = title.decode('utf-8')
                                     download_url = self.urls['home'] % cell.a['href']
                                     continue
                                 if None is seeders and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
