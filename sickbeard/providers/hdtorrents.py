@@ -18,7 +18,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from six.moves import urllib
+import urllib
 import requests
 from bs4 import BeautifulSoup
 
