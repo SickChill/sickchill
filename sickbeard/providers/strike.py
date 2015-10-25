@@ -28,7 +28,7 @@ class STRIKEProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.public = True
         self.url = 'https://getstrike.net/'
-
+        self.ratio = 0
         self.cache = StrikeCache(self)
         self.minseed, self.minleech = 2 * [None]
 
@@ -84,6 +84,10 @@ class STRIKEProvider(generic.TorrentProvider):
             results += items[mode]
 
         return results
+
+
+    def seedRatio(self):
+        return self.ratio
 
 
 class StrikeCache(tvcache.TVCache):
