@@ -30,7 +30,7 @@ class BTDIGGProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
         self.public = True
-
+        self.ratio = 0
         self.urls = {'url': u'https://btdigg.org/',
                      'api': u'https://api.btdigg.org/'}
 
@@ -91,6 +91,9 @@ class BTDIGGProvider(generic.TorrentProvider):
             results += items[mode]
 
         return results
+
+    def seedRatio(self):
+        return self.ratio
 
 class BTDiggCache(tvcache.TVCache):
     def __init__(self, provider_obj):
