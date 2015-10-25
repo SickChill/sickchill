@@ -92,6 +92,9 @@ class NextGenProvider(generic.TorrentProvider):
         try:
             login_params = self.getLoginParams()
             data = self.getURL(self.urls['login_page'])
+            if not data:
+                return False
+
             with BS4Parser(data) as bs:
                 csrfraw = bs.find('form', attrs={'id': 'login'})['action']
                 output = self.getURL(self.urls['base_url'] + csrfraw, post_data=login_params)
