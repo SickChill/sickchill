@@ -151,6 +151,7 @@ def remove_non_release_groups(name):
                        r'\.Renc$':          'searchre',
                        r'-NZBGEEK$':        'searchre',
                        r'-Siklopentan$':    'searchre',
+                       r'-\SpastikusTV\]$':                 'searchre',
                        r'-RP$':                             'searchre',
                        r'-20-40$':                          'searchre',
                        r'\.\[www\.usabit\.com\]$':          'searchre',
