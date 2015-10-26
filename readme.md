@@ -49,7 +49,7 @@ We HIGHLY recommend starting out with no database files at all to make this a fr
 A full list can be found here: [Link](https://github.com/SiCKRAGETV/sickrage-issues/wiki/SickRage-Search-Providers)
 
 ###Special Thanks to: 
-![image](https://rarbg.com/favicon.ico)[RARBG](rarbg.to)
+![image](https://rarbg.com/favicon.ico)[RARBG](https://rarbg.to)
 ![image](https://torrentproject.se/favicon.ico)[TorrentProject](https://torrentproject.se/about)
 ![image](https://thepiratebay.la/favicon.ico)[ThePirateBay](https://thepiratebay.la/)
 ![image](http://kat.cr/favicon.ico)[KickAssTorrents](https://kat.cr)
