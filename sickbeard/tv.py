@@ -2112,35 +2112,6 @@ class TVEpisode(object):
                 name = helpers.remove_non_release_groups(helpers.remove_extension(name))
             return name
 
-        def release_codec(name):
-            if hasattr(self, 'location') and self.location:
-                codecList = ['xvid', 'x264', 'x265', 'h264', 'x 264', 'x 265', 'h 264', 'x.264', 'x.265', 'h.264', 'divx']
-                found_codec = None
-
-                for codec in codecList:
-                    if codec in name.lower():
-                        found_codec = codec
-
-                if found_codec:
-                    if codecList[0] in found_codec:
-                        found_codec = 'XviD'
-                    elif codecList[1] or codecList[4] or codecList[7] in found_codec:
-                        found_codec = codecList[1]
-                    elif codecList[2] or codecList[5] or codecList[8] in found_codec:
-                        found_codec = codecList[2]
-                    elif codecList[3] or codecList[6] or codecList[9] in found_codec:
-                        found_codec = codecList[3]
-                    elif codecList[10] in found_codec:
-                        found_codec = 'DivX'
-
-                    logger.log(u"Found following codec for " + name + ": " + found_codec, logger.DEBUG)
-                    return " " + found_codec
-                else:
-                    logger.log(u"Couldn't find any codec for " + name + ". Codec information won't be added.", logger.DEBUG)
-                    return ""
-            else:
-                return ""
-
         def release_group(show, name):
             if name:
                 name = helpers.remove_non_release_groups(helpers.remove_extension(name))
@@ -2166,7 +2137,9 @@ class TVEpisode(object):
             show_name = self.show.name
 
         # try to get the release encoder to comply with scene naming standards
-        encoder = release_codec(self.release_name)
+        encoder = Quality.sceneQualityFromName(self.release_name, epQual)
+        if encoder:
+            logger.log(u"Found codec for '" + show_name + ": " + ep_name + "'.", logger.DEBUG)
 
         #try to get the release group
         rel_grp = {};
