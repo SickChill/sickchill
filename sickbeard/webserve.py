@@ -2995,11 +2995,13 @@ class Manage(Home, WebRoot):
 
         showIDs = toEdit.split("|")
         showList = []
+        showNames = []
         for curID in showIDs:
             curID = int(curID)
             showObj = helpers.findCertainShow(sickbeard.showList, curID)
             if showObj:
                 showList.append(showObj)
+                showNames.append(showObj.name)
 
         archive_firstmatch_all_same = True
         last_archive_firstmatch = None
@@ -3115,7 +3117,7 @@ class Manage(Home, WebRoot):
         air_by_date_value = last_air_by_date if air_by_date_all_same else None
         root_dir_list = root_dir_list
 
-        return t.render(showList=toEdit, archive_firstmatch_value=archive_firstmatch_value, default_ep_status_value=default_ep_status_value,
+        return t.render(showList=toEdit, showNames=showNames, archive_firstmatch_value=archive_firstmatch_value, default_ep_status_value=default_ep_status_value,
                         paused_value=paused_value, anime_value=anime_value, flatten_folders_value=flatten_folders_value,
                         quality_value=quality_value, subtitles_value=subtitles_value, scene_value=scene_value, sports_value=sports_value,
                         air_by_date_value=air_by_date_value, root_dir_list=root_dir_list, title='Mass Edit', header='Mass Edit', topmenu='manage')

@@ -34,13 +34,25 @@
 <input type="hidden" name="toEdit" value="${showList}" />
 
 <div class="optionWrapper">
+<h5>Selected shows</h5>
+    <select id="showNames" name="showNames" size="${len(showNames)}">
+    % for curName in sorted(showNames):
+    <option disabled value="${curName}">${curName}</option>
+    % endfor
+    </select>
+</div>
+
+<div class="optionWrapper">
     <span class="selectTitle">Root Directories <span class="separator">*</span></span><br />
     % for cur_dir in root_dir_list:
         <% cur_index = root_dir_list.index(cur_dir) %>
         <div>
+            From: ${cur_dir}<br />
+            To:&nbsp&nbsp&nbsp&nbsp&nbsp<span id="display_new_root_dir_${cur_index}">${cur_dir}</span>
+        </div>
+        <div>
             <input class="btn edit_root_dir" type="button" class="edit_root_dir" id="edit_root_dir_${cur_index}" value="Edit" />
             <input class="btn delete_root_dir" type="button" class="delete_root_dir" id="delete_root_dir_${cur_index}" value="Delete" />
-            ${cur_dir} => <span id="display_new_root_dir_${cur_index}">${cur_dir}</span>
         </div>
         <input type="hidden" name="orig_root_dir_${cur_index}" value="${cur_dir}" />
         <input type="text" style="display: none" name="new_root_dir_${cur_index}" id="new_root_dir_${cur_index}" class="new_root_dir" value="${cur_dir}" />
