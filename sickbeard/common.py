@@ -409,7 +409,7 @@ class Quality:
     @staticmethod
     def sceneQualityFromName(name, quality):
         """
-        Get a status object from filename
+        Get scene naming parameters from filename and quality
 
         :param name: Filename to check
         :param quality: int of quality to make sure we get the right rip type
