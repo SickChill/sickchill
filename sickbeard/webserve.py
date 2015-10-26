@@ -1,4 +1,4 @@
-# Author: Nic Wolfe <nic@wolfeden.ca>
+﻿# Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
 # This file is part of SickRage.
@@ -4413,6 +4413,12 @@ class ConfigProviders(Config):
                     curTorrentProvider.passkey = str(kwargs[curTorrentProvider.getID() + '_passkey']).strip()
                 except:
                     curTorrentProvider.passkey = None
+                    
+            if hasattr(curTorrentProvider, 'pin'):
+                try:
+                    curTorrentProvider.pin = str(kwargs[curTorrentProvider.getID() + '_pin']).strip()
+                except:
+                    curTorrentProvider.pin = None
 
             if hasattr(curTorrentProvider, 'confirmed'):
                 try:

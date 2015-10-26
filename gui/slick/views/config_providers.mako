@@ -368,6 +368,17 @@ $('#config-components').tabs();
                             </label>
                         </div>
                         % endif
+						
+                        % if hasattr(curTorrentProvider, 'pin'):
+                        <div class="field-pair">
+                            <label for="${curTorrentProvider.getID()}_pin">
+                                <span class="component-title">Pin:</span>
+                                <span class="component-desc">
+                                    <input type="text" name="${curTorrentProvider.getID()}_pin" id="${curTorrentProvider.getID()}_pin" value="${curTorrentProvider.pin}" class="form-control input-sm input100" />
+                                </span>
+                            </label>
+                        </div>
+                        % endif
 
                         % if hasattr(curTorrentProvider, 'ratio'):
                         <div class="field-pair">
