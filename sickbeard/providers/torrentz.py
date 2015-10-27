@@ -75,8 +75,6 @@ class TORRENTZProvider(generic.TorrentProvider):
                     logger.log('Seems to be down right now!')
                     continue
 
-                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-
                 if not data.startswith("<?xml"):
                     logger.log('Wrong data returned from: ' + search_url, logger.DEBUG)
                     continue
@@ -91,23 +89,25 @@ class TORRENTZProvider(generic.TorrentProvider):
                     logger.log(u"Malformed rss returned, skipping", logger.DEBUG)
                     continue
 
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+
                 # https://github.com/martinblech/xmltodict/issues/111
                 entries = data['rss']['channel']['item']
                 entries = entries if isinstance(entries, list) else [entries]
 
                 for item in entries:
-                    if 'tv' not in item['category']:
+                    if 'tv' not in item.get('category', ''):
                         continue
 
-                    title = item['title'].rsplit(' ', 1)[0].replace(' ', '.')
-                    t_hash = item['guid'].rsplit('/', 1)[-1]
+                    title = item.get('title', '').rsplit(' ', 1)[0].replace(' ', '.')
+                    t_hash = item.get('guid', '').rsplit('/', 1)[-1]
 
                     if not all([title, t_hash]):
                         continue
 
                     # TODO: Add method to generic provider for building magnet from hash.
                     download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://open.demonii.com:1337&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969"
-                    size, seeders, leechers = self._split_description(item['description'])
+                    size, seeders, leechers = self._split_description(item.get('description', ''))
 
                     #Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
@@ -116,8 +116,6 @@ class TORRENTZProvider(generic.TorrentProvider):
                         continue
 
                     items[mode].append((title, download_url, size, seeders, leechers))
-
-                del data
 
             #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
