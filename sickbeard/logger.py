@@ -279,14 +279,20 @@ class Logger(object):
                     #[APP SUBMITTED]: 'charmap' codec can't decode byte 0x00 in position 00: character maps to <undefined>
                     return re.search(r".* codec can't .*code .* in position .*:", title) is not None
 
+                def is_malformed_error(title):
+                    #[APP SUBMITTED]: not well-formed (invalid token): line 0, column 0
+                    re.search(r".* not well-formed \(invalid token\): line .* column .*", title) is not None
+
                 mako_error = is_mako_error(title_Error)
                 ascii_error = is_ascii_error(title_Error)
+                malformed_error = is_malformed_error(title_Error)
 
                 issue_found = False
                 for report in reports:
                     if title_Error.rsplit(' :: ')[-1] in report.title or \
            	         (mako_error and is_mako_error(report.title)) or \
-                	    (ascii_error and is_ascii_error(report.title)):
+                        (malformed_error and is_malformed_error(report.title)) or \
+                            (ascii_error and is_ascii_error(report.title)):
 
                         issue_id = report.number
                         if not report.raw_data['locked']:
