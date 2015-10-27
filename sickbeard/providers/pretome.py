@@ -1,4 +1,4 @@
-﻿# Author: Nick Sologoub
+# Author: Nick Sologoub
 # URL: http://code.google.com/p/sickbeard/
 #
 # This file is part of SickRage.
@@ -46,7 +46,7 @@ class PretomeProvider(generic.TorrentProvider):
                      'login': 'https://pretome.info/takelogin.php',
                      'detail': 'https://pretome.info/details.php?id=%s',
                      'search': 'https://pretome.info/browse.php?search=%s%s',
-                     'download': 'https://pretome.info/download.php/%s/%s.torrent'}        
+                     'download': 'https://pretome.info/download.php/%s/%s.torrent'}
 
         self.url = self.urls['base_url']
 
@@ -58,7 +58,7 @@ class PretomeProvider(generic.TorrentProvider):
 
     def isEnabled(self):
         return self.enabled
-    
+
     def _checkAuth(self):
 
         if not self.username or not self.password or not self.pin:
@@ -119,31 +119,31 @@ class PretomeProvider(generic.TorrentProvider):
                             continue
 
                         torrent_rows = torrent_table.find_all('tr', attrs={'class': 'browse'})
-                        
+
                         for result in torrent_rows:
                             cells = result.find_all('td')
-                            size = None        
+                            size = None
                             link = cells[1].find('a', attrs={'style': 'font-size: 1.25em; font-weight: bold;'})
 
                             torrent_id = link['href'].replace('details.php?id=', '')
-        
+
                             try:
                                 if link.has_key('title'):
                                     title = link['title']
                                 else:
                                     title = link.contents[0]
-           
+
                                 download_url = self.urls['download'] % (torrent_id, link.contents[0])
                                 seeders = int(cells[9].contents[0])
-                                leechers = int(cells[10].contents[0])       
-                                                         
+                                leechers = int(cells[10].contents[0])
+
                                 # Need size for failed downloads handling
                                 if size is None:
                                     if re.match(r'[0-9]+,?\.?[0-9]*[KkMmGg]+[Bb]+', cells[7].text):
                                         size = self._convertSize(cells[7].text)
                                         if not size:
                                             size = -1
-                               
+
                             except (AttributeError, TypeError):
                                 continue
 
@@ -174,7 +174,7 @@ class PretomeProvider(generic.TorrentProvider):
 
     def seedRatio(self):
         return self.ratio
-    
+
     def _convertSize(self, sizeString):
         size = sizeString[:-2]
         modifier = sizeString[-2:]
