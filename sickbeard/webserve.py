@@ -1291,7 +1291,7 @@ class Home(WebRoot):
 
         showObj.exceptions = sickbeard.scene_exceptions.get_scene_exceptions(showObj.indexerid)
 
-        if quality_preset:
+        if helpers.tryInt(quality_preset, None):
             bestQualities = []
 
         if not location and not anyQualities and not bestQualities and not flatten_folders:
@@ -2624,7 +2624,7 @@ class HomeAddShows(Home):
 
         if not anyQualities:
             anyQualities = []
-        if not bestQualities or quality_preset:
+        if not bestQualities or helpers.tryInt(quality_preset, None):
             bestQualities = []
         if type(anyQualities) != list:
             anyQualities = [anyQualities]
@@ -3127,7 +3127,7 @@ class Manage(Home, WebRoot):
 
 
     def massEditSubmit(self, archive_firstmatch=None, paused=None, default_ep_status=None,
-                       anime=None, sports=None, scene=None, flatten_folders=None, quality_preset=False,
+                       anime=None, sports=None, scene=None, flatten_folders=None, quality_preset=None,
                        subtitles=None, air_by_date=None, anyQualities=[], bestQualities=[], toEdit=None, *args,
                        **kwargs):
 
@@ -3212,7 +3212,7 @@ class Manage(Home, WebRoot):
 
             if quality_preset == 'keep':
                 anyQualities, bestQualities = Quality.splitQuality(showObj.quality)
-            elif int(quality_preset):
+            elif helpers.tryInt(quality_preset, None):
                 bestQualities = []
 
             exceptions_list = []
