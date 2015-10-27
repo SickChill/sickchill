@@ -910,7 +910,7 @@ class PostProcessor(object):
         if not priority_download:
 
             # Not a priority and the quality is lower than what we already have
-            if (new_ep_quality < old_ep_quality and new_ep_quality != common.Quality.UNKNOWN) and not existing_file_status == PostProcessor.DOESNT_EXIST:
+            if (new_ep_quality < old_ep_quality and old_ep_quality != common.Quality.UNKNOWN) and not existing_file_status == PostProcessor.DOESNT_EXIST:
                 self._log(u"File exists and new file quality is lower than existing, marking it unsafe to replace")
                 return False
 
