@@ -1,4 +1,4 @@
-# Author: Nic Wolfe <nic@wolfeden.ca>
+﻿# Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
 # This file is part of SickRage.
@@ -58,7 +58,8 @@ __all__ = ['womble',
            'torrentproject',
            'extratorrent',
            'bitcannon',
-           'torrentz'
+           'torrentz',
+           'pretome'
 ]
 
 import sickbeard
