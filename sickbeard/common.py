@@ -141,7 +141,7 @@ class Quality:
     sceneQualityStrings = {NONE: "N/A",
                       UNKNOWN: "Unknown",
                       SDTV: "HDTV",
-                      SDDVD: "BDRip",
+                      SDDVD: "",
                       HDTV: "720p HDTV",
                       RAWHDTV: "1080i HDTV",
                       FULLHDTV: "1080p HDTV",
@@ -405,6 +405,67 @@ class Quality:
                 return (status - q * 100, q)
 
         return (status, Quality.NONE)
+
+    @staticmethod
+    def sceneQualityFromName(name, quality):
+        """
+        Get scene naming parameters from filename and quality
+
+        :param name: Filename to check
+        :param quality: int of quality to make sure we get the right rip type
+        :return: encoder type for scene quality naming
+        """
+        codecList = ['xvid', 'divx']
+        x264List = ['x264', 'x 264', 'x.264']
+        h264List = ['h264', 'h 264', 'h.264', 'avc']
+        x265List = ['x265', 'x 265', 'x.265']
+        h265List = ['h265', 'h 265', 'h.265', 'hevc']
+        codecList.extend(x264List + h264List + x265List + h265List)
+
+        found_codecs = {}
+        found_codec = None
+
+        for codec in codecList:
+            if codec in name.lower():
+                found_codecs[name.lower().rfind(codec)] = codec
+
+        if found_codecs:
+            sorted_codecs = sorted(found_codecs, reverse=True)
+            found_codec = found_codecs[list(sorted_codecs)[0]]
+
+        # 2 corresponds to SDDVD quality
+        if quality == 2:
+            if re.search(r"bd(|.|-| )(rip|mux)", name.lower()):
+              rip_type = " BDRip"
+            elif re.search(r"dvd(|.|-| )(rip|mux)", name.lower()):
+                rip_type = " DVDRip"
+            elif re.search(r"web(|.|-| )(rip|mux)", name.lower()):
+                rip_type = " WEBRip"
+            else:
+                rip_type = ""
+
+        if found_codec:
+            if codecList[0] in found_codec:
+                found_codec = 'XviD'
+            elif codecList[1] in found_codec:
+                found_codec = 'DivX'
+            elif found_codec in x264List:
+                found_codec = x264List[0]
+            elif found_codec in h264List:
+                found_codec = h264List[0]
+            elif found_codec in x265List:
+                found_codec = x265List[0]
+            elif found_codec in h265List:
+                found_codec = h265List[0]
+
+            if quality == 2:
+                return rip_type + " " + found_codec
+            else:
+                return " " + found_codec
+        elif quality == 2:
+            return rip_type
+        else:
+            return ""
 
     @staticmethod
     def statusFromName(name, assume=True, anime=False):

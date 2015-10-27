@@ -46,7 +46,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
         self.ratio = None
         self.minseed = None
         self.minleech = None
-        self.freeleech = False
+        # self.freeleech = False
 
         self.urls = {'base_url': 'https://www.morethan.tv/',
                      'login': 'https://www.morethan.tv/login.php',
@@ -81,7 +81,8 @@ class MoreThanTVProvider(generic.TorrentProvider):
         else:
             login_params = {'username': self.username,
                             'password': self.password,
-                            'login': 'submit'}
+                            'login': 'Log in',
+                            'keeplogged': '1'}
 
             response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
             if not response:
@@ -99,7 +100,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        freeleech = '3' if self.freeleech else '0'
+        # freeleech = '3' if self.freeleech else '0'
 
         if not self._doLogin():
             return results
@@ -111,7 +112,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (search_string)
+                searchURL = self.urls['search'] % (search_string.replace('(', '').replace(')', ''))
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
                 # returns top 15 results by default, expandable in user profile to 100
@@ -151,8 +152,9 @@ class MoreThanTVProvider(generic.TorrentProvider):
 
                                 leechers = cells[7].contents[0]
 
-                                #FIXME
                                 size = -1
+                                if re.match(r'\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]', cells[4].contents[0]):
+                                    size = self._convertSize(cells[4].text.strip())
 
                             except (AttributeError, TypeError):
                                 continue
@@ -186,6 +188,22 @@ class MoreThanTVProvider(generic.TorrentProvider):
     def seedRatio(self):
         return self.ratio
 
+    def _convertSize(self, sizeString):
+        size = sizeString[:-2].strip()
+        modifier = sizeString[-2:].upper()
+        try:
+            size = float(size)
+            if modifier in 'KB':
+                size = size * 1024
+            elif modifier in 'MB':
+                size = size * 1024**2
+            elif modifier in 'GB':
+                size = size * 1024**3
+            elif modifier in 'TB':
+                size = size * 1024**4
+        except Exception:
+            size = -1
+        return int(size)
 
 class MoreThanTVCache(tvcache.TVCache):
     def __init__(self, provider_obj):

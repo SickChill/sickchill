@@ -31,7 +31,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
         self.public = True
-
+        self.ratio = 0
         self.urls = {'api': u'https://torrentproject.se/',}
         self.url = self.urls['api']
         self.headers.update({'User-Agent': USER_AGENT})
@@ -112,6 +112,10 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
             results += items[mode]
 
         return results
+
+    def seedRatio(self):
+        return self.ratio
+
 
 class TORRENTPROJECTCache(tvcache.TVCache):
     def __init__(self, provider_obj):
