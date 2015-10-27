@@ -238,6 +238,10 @@ def isMediaFile(filename):
     if re.search(r'(^|[\W_])(sample\d*)[\W_]', filename, re.I):
         return False
 
+    # ignore RARBG release intro
+    if re.search(r'^RARBG\.\W+\.(mp4|avi|txt)$', filename, re.I):
+        return False
+
     # ignore MAC OS's retarded "resource fork" files
     if filename.startswith('._'):
         return False
@@ -543,7 +547,7 @@ def hardlinkFile(srcFile, destFile):
         ek(link, srcFile, destFile)
         fixSetGroupID(destFile)
     except Exception as e:
-        logger.log(u"Failed to create hardlink of %s at %s. Error: %r. Copying instead" 
+        logger.log(u"Failed to create hardlink of %s at %s. Error: %r. Copying instead"
         % (srcFile, destFile, ex(e)), logger.WARNING)
         copyFile(srcFile, destFile)
 
@@ -577,7 +581,7 @@ def moveAndSymlinkFile(srcFile, destFile):
         fixSetGroupID(destFile)
         ek(symlink, destFile, srcFile)
     except Exception as e:
-        logger.log(u"Failed to create symlink of %s at %s. Error: %r. Copying instead" 
+        logger.log(u"Failed to create symlink of %s at %s. Error: %r. Copying instead"
         % (srcFile, destFile, ex(e)), logger.WARNING)
         copyFile(srcFile, destFile)
 
@@ -1025,12 +1029,12 @@ def restoreVersionedFile(backup_file, version):
         return False
 
     try:
-        logger.log(u"Trying to backup %s to %s.r%s before restoring backup" 
+        logger.log(u"Trying to backup %s to %s.r%s before restoring backup"
         % (new_file, new_file, version), logger.DEBUG)
 
         shutil.move(new_file, new_file + '.' + 'r' + str(version))
     except Exception as e:
-        logger.log(u"Error while trying to backup DB file %s before proceeding with restore: %r" 
+        logger.log(u"Error while trying to backup DB file %s before proceeding with restore: %r"
         % (restore_file, ex(e)), logger.WARNING)
         return False
 
@@ -1595,7 +1599,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
             resp = session.get(url, timeout=timeout, allow_redirects=True, verify=session.verify)
 
         if not resp.ok:
-            logger.log(u"Requested getURL %s returned status code is %s: %s" 
+            logger.log(u"Requested getURL %s returned status code is %s: %s"
             % (url, resp.status_code, codeDescription(resp.status_code)), logger.DEBUG)
             return None
 
@@ -1604,7 +1608,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
                 resp = session.get(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True, verify=session.verify)
 
                 if not resp.ok:
-                    logger.log(u"GlypeProxySSLwarning: Requested getURL %s returned status code is %s: %s" 
+                    logger.log(u"GlypeProxySSLwarning: Requested getURL %s returned status code is %s: %s"
                     % (url, resp.status_code, codeDescription(resp.status_code)), logger.DEBUG)
                     return None
 
@@ -1654,7 +1658,7 @@ def download_file(url, filename, session=None, headers={}):
     try:
         with closing(session.get(url, allow_redirects=True, verify=session.verify)) as resp:
             if not resp.ok:
-                logger.log(u"Requested download url %s returned status code is %s: %s" 
+                logger.log(u"Requested download url %s returned status code is %s: %s"
                 % (url, resp.status_code, codeDescription(resp.status_code)), logger.DEBUG)
                 return False
 
@@ -1823,7 +1827,7 @@ def verify_freespace(src, dest, oldfile=None):
     if diskfree > neededspace:
         return True
     else:
-        logger.log("Not enough free space: Needed: %s bytes ( %s ), found: %s bytes ( %s )" 
+        logger.log("Not enough free space: Needed: %s bytes ( %s ), found: %s bytes ( %s )"
         % (neededspace, pretty_filesize(neededspace), diskfree, pretty_filesize(diskfree)), logger.WARNING)
         return False
 
