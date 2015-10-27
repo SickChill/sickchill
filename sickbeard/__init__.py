@@ -1,4 +1,4 @@
-# Author: Nic Wolfe <nic@wolfeden.ca>
+﻿# Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
 # This file is part of SickRage.
@@ -40,7 +40,7 @@ from sickbeard.providers.generic import GenericProvider
 from sickbeard.providers import btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, torrentz, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, nextgen, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, \
     frenchtorrentdb, freshontv, titansoftv, libertalia, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
-    scenetime, btdigg, strike, transmitthenet, tvchaosuk, bitcannon
+    scenetime, btdigg, strike, transmitthenet, tvchaosuk, bitcannon, pretome
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
@@ -1245,6 +1245,9 @@ def initialize(consoleLogging=True):
             if hasattr(curTorrentProvider, 'passkey'):
                 curTorrentProvider.passkey = check_setting_str(CFG, curTorrentProvider.getID().upper(),
                                                                curTorrentProvider.getID() + '_passkey', '', censor_log=True)
+            if hasattr(curTorrentProvider, 'pin'):
+                curTorrentProvider.pin = check_setting_str(CFG, curTorrentProvider.getID().upper(),
+                                                               curTorrentProvider.getID() + '_pin', '', censor_log=True)
             if hasattr(curTorrentProvider, 'proxy'):
                 curTorrentProvider.proxy.enabled = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                           curTorrentProvider.getID() + '_proxy', 0))
@@ -1811,6 +1814,9 @@ def save_config():
         if hasattr(curTorrentProvider, 'passkey'):
             new_config[curTorrentProvider.getID().upper()][
                 curTorrentProvider.getID() + '_passkey'] = curTorrentProvider.passkey
+        if hasattr(curTorrentProvider, 'pin'):
+            new_config[curTorrentProvider.getID().upper()][
+                curTorrentProvider.getID() + '_pin'] = curTorrentProvider.pin
         if hasattr(curTorrentProvider, 'confirmed'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_confirmed'] = int(
                 curTorrentProvider.confirmed)

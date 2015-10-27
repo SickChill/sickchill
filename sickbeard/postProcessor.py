@@ -164,12 +164,15 @@ class PostProcessor(object):
         if not file_path:
             return []
 
+        # don't confuse glob with chars we didn't mean to use
+        globbable_file_path = helpers.fixGlob(file_path)
+
         file_path_list = []
 
         if subfolders:
-            base_name = ek(os.path.basename, file_path).rpartition('.')[0]
+            base_name = ek(os.path.basename, globbable_file_path).rpartition('.')[0]
         else:
-            base_name = file_path.rpartition('.')[0]
+            base_name = globbable_file_path.rpartition('.')[0]
 
         if not base_name_only:
             base_name = base_name + '.'
@@ -178,20 +181,17 @@ class PostProcessor(object):
         if not base_name:
             return []
 
-        # don't confuse glob with chars we didn't mean to use
-        base_name = re.sub(r'[\[\]\*\?]', r'[\g<0>]', base_name)
-
         if subfolders: # subfolders are only checked in show folder, so names will always be exactly alike
-            filelist = ek(recursive_glob, ek(os.path.dirname, file_path), base_name + '*') # just create the list of all files starting with the basename
+            filelist = recursive_glob(ek(os.path.dirname, globbable_file_path), base_name + '*') # just create the list of all files starting with the basename
         else: # this is called when PP, so we need to do the filename check case-insensitive
             filelist = []
 
-            checklist = ek(glob.glob, helpers.fixGlob(ek(os.path.join, ek(os.path.dirname, file_path), '*'))) # get a list of all the files in the folder
+            checklist = glob.glob(ek(os.path.join, ek(os.path.dirname, globbable_file_path), '*')) # get a list of all the files in the folder
             for filefound in checklist: # loop through all the files in the folder, and check if they are the same name even when the cases don't match
                 file_name = filefound.rpartition('.')[0]
                 if not base_name_only:
                     file_name = file_name + '.'
-                if file_name.lower() == base_name.lower(): # if there's no difference in the filename add it to the filelist
+                if file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'): # if there's no difference in the filename add it to the filelist
                     filelist.append(filefound)
 
         for associated_file_path in filelist:
@@ -910,7 +910,7 @@ class PostProcessor(object):
         if not priority_download:
 
             # Not a priority and the quality is lower than what we already have
-            if (new_ep_quality < old_ep_quality and new_ep_quality != common.Quality.UNKNOWN) and not existing_file_status == PostProcessor.DOESNT_EXIST:
+            if (new_ep_quality < old_ep_quality and old_ep_quality != common.Quality.UNKNOWN) and not existing_file_status == PostProcessor.DOESNT_EXIST:
                 self._log(u"File exists and new file quality is lower than existing, marking it unsafe to replace")
                 return False
 
