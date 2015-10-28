@@ -40,7 +40,6 @@ class PretomeProvider(generic.TorrentProvider):
         self.ratio = None
         self.minseed = None
         self.minleech = None
-        self.freeleech = False
 
         self.urls = {'base_url': 'https://pretome.info',
                      'login': 'https://pretome.info/takelogin.php',
