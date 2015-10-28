@@ -147,6 +147,14 @@ class Logger(object):
         if check is not message:
             message = check
             level = WARNING
+        
+        #Avoid open issues when user only need to clear cache to fix issue    
+        if re.search(r"_mako\'$",message):
+            #'C__SickRage_gui_slick_views_schedule_mako' 
+            #'_usr_local_sickrage_var_SickRage_gui_slick_views_schedule_mako'
+            #'_volume1___plugins_AppCentral_sickbeard_tvrage_SickBeard_TVRage_gui_slick_views_schedule_mako'
+            message = 'Please stop SickRage and delete \SickRage\cache\mako folder. You can see cache folder location in SickRage Help&Info menu'
+            level = WARNING            
 
         if level == ERROR:
             self.logger.exception(message, *args, **kwargs)
