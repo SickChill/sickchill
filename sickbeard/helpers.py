@@ -143,6 +143,7 @@ def remove_non_release_groups(name):
                        r'\[GloDLS\]$':      'searchre',
                        r'\[silv4\]$':       'searchre',
                        r'\[Seedbox\]$':     'searchre',
+                       r'\[PublicHD\]$':    'searchre',
                        r'\[AndroidTwoU\]$': 'searchre',
                        r'\.\[BT\]$':        'searchre',
                        r' \[1044\]$':       'searchre',
@@ -158,15 +159,17 @@ def remove_non_release_groups(name):
                        r'^\[www\.Cpasbien\.pe\] ':          'searchre',
                        r'^\[www\.Cpasbien\.com\] ':         'searchre',
                        r'^\[ www\.Cpasbien\.pw \] ':        'searchre',
+                       r'^\.www\.Cpasbien\.pw':            'searchre',
+                       r'^\[www\.newpct1\.com\]':            'searchre',
                        r'^\[ www\.Cpasbien\.com \] ':       'searchre',
                        r'- \{ www\.SceneTime\.com \}$':     'searchre',
                        r'^\{ www\.SceneTime\.com \} - ':    'searchre',
-                       r'- \[ www\.torrentday\.com \]$':    'searchre',
-                       r'^\[ www\.TorrentDay\.com \] - ':   'searchre',
                        r'^\[www\.frenchtorrentdb\.com\] ':  'searchre',
                        r'^\]\.\[www\.tensiontorrent.com\] - ':      'searchre',
                        r'^\]\.\[ www\.tensiontorrent.com \] - ':    'searchre',
                        r'\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
+                       r'- \[ www\.torrentday\.com \]$':            'searchre',
+                       r'^\[ www\.TorrentDay\.com \] - ':           'searchre',
                       }
 
     _name = name
