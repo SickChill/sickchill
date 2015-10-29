@@ -83,12 +83,10 @@ date_presets = ('%Y-%m-%d',
                 '%A, %b %d, %Y',
                 '%B %d, %Y',
                 '%a, %B %d, %Y',
-                '%A, %B %d, %Y'
-)
+                '%A, %B %d, %Y')
 
 time_presets = ('%I:%M:%S %p',
-                '%H:%M:%S'
-)
+                '%H:%M:%S')
 
 # helper class
 class static_or_instance(object):
@@ -108,20 +106,11 @@ class sbdatetime(datetime.datetime):
     def convert_to_setting(self, dt=None):
         try:
             if sickbeard.TIMEZONE_DISPLAY == 'local':
-                if self is None:
-                    return dt.astimezone(sb_timezone)
-                else:
-                    return self.astimezone(sb_timezone)
+                return dt.astimezone(sb_timezone) if self is None else self.astimezone(sb_timezone)
             else:
-                if self is None:
-                    return dt
-                else:
-                    return self
-        except:
-            if self is None:
-                return dt
-            else:
-                return self
+                return dt if self is None else self
+        except Exception:
+            return dt if self is None else self
 
     # display Time in SickRage Format
     @static_or_instance
@@ -136,17 +125,19 @@ class sbdatetime(datetime.datetime):
         :return: time string
         """
 
-        try:locale.setlocale(locale.LC_TIME, '')
-        except:pass
+        try:
+            locale.setlocale(locale.LC_TIME, '')
+        except Exception:
+            pass
 
         try:
             if sbdatetime.has_locale:
                 locale.setlocale(locale.LC_TIME, 'en_US')
-        except Exception as e:
+        except Exception:
             try:
                 if sbdatetime.has_locale:
                     locale.setlocale(locale.LC_TIME, sbdatetime.en_US_norm)
-            except:
+            except Exception:
                 sbdatetime.has_locale = False
 
         strt = ''
@@ -170,10 +161,10 @@ class sbdatetime(datetime.datetime):
             try:
                 if sbdatetime.has_locale:
                     locale.setlocale(locale.LC_TIME, '')
-            except:
+            except Exception:
                 sbdatetime.has_locale = False
 
-            return strt
+        return strt
 
     # display Date in SickRage Format
     @static_or_instance
@@ -189,7 +180,7 @@ class sbdatetime(datetime.datetime):
 
         try:
             locale.setlocale(locale.LC_TIME, '')
-        except:
+        except Exception:
             pass
 
         strd = ''
@@ -209,10 +200,10 @@ class sbdatetime(datetime.datetime):
 
             try:
                 locale.setlocale(locale.LC_TIME, '')
-            except:
+            except Exception:
                 pass
 
-            return strd
+        return strd
 
     # display Datetime in SickRage Format
     @static_or_instance
@@ -230,7 +221,7 @@ class sbdatetime(datetime.datetime):
 
         try:
             locale.setlocale(locale.LC_TIME, '')
-        except:
+        except Exception:
             pass
 
         strd = ''
@@ -244,11 +235,11 @@ class sbdatetime(datetime.datetime):
                     try:
                         if sbdatetime.has_locale:
                             locale.setlocale(locale.LC_TIME, 'en_US')
-                    except:
+                    except Exception:
                         try:
                             if sbdatetime.has_locale:
                                 locale.setlocale(locale.LC_TIME, sbdatetime.en_US_norm)
-                        except:
+                        except Exception:
                             sbdatetime.has_locale = False
                     if t_preset is not None:
                         strd += u', ' + dt.strftime(t_preset)
@@ -264,11 +255,11 @@ class sbdatetime(datetime.datetime):
                 try:
                     if sbdatetime.has_locale:
                         locale.setlocale(locale.LC_TIME, 'en_US')
-                except:
+                except Exception:
                     try:
                         if sbdatetime.has_locale:
                             locale.setlocale(locale.LC_TIME, sbdatetime.en_US_norm)
-                    except:
+                    except Exception:
                         sbdatetime.has_locale = False
                 if t_preset is not None:
                     strd += u', ' + self.strftime(t_preset)
@@ -280,7 +271,7 @@ class sbdatetime(datetime.datetime):
             try:
                 if sbdatetime.has_locale:
                     locale.setlocale(locale.LC_TIME, '')
-            except:
+            except Exception:
                 sbdatetime.has_locale = False
 
-            return strd
+        return strd
