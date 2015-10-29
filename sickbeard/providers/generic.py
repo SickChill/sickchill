@@ -621,10 +621,9 @@ class TorrentProvider(GenericProvider):
         for show_name in set(show_name_helpers.allPossibleShowNames(ep_obj.show)):
             ep_string = show_name + ' '
             if ep_obj.show.air_by_date:
-                ep_string += str(ep_obj.airdate).replace('-', '|')
+                ep_string += str(ep_obj.airdate).replace('-', ' ')
             elif ep_obj.show.sports:
-                ep_string += str(ep_obj.airdate).replace('-', '|') + '|' + \
-                        ep_obj.airdate.strftime('%b')
+                ep_string += str(ep_obj.airdate).replace('-', ' ') + ('|', ' ')[len(self.proper_strings) > 1] + ep_obj.airdate.strftime('%b')
             elif ep_obj.show.anime:
                 ep_string += "%02d" % int(ep_obj.scene_absolute_number)
             else:
