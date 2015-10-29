@@ -2524,20 +2524,15 @@ class TVEpisode(object):
 
         """
 
-        if sickbeard.FILE_TIMESTAMP_TIMEZONE == 'local' and self.show.network:
-            airdatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(datetime.date.toordinal(self.airdate), self.show.airs, self.show.network))
-        else:
-            hour = minutes = 0
-            airs = re.search(r'.*?(\d{1,2})(?::\s*?(\d{2}))?\s*(pm)?', self.show.airs, re.I)
-            if airs:
-                hour = int(airs.group(1))
-                hour = (hour + 12, hour)[None is airs.group(3) or hour > 12]
-                hour %= 24
-                minutes = int((airs.group(2), 0)[not airs.group(2)])
-            airtime = datetime.time(hour, minutes)
-            airdatetime = datetime.datetime.combine(self.airdate, airtime).replace(tzinfo=network_timezones.sb_timezone)
+        if not self.show.airs and self.show.network:
+            return
 
-        filemtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location)).replace(tzinfo=network_timezones.sb_timezone)
+        airdatetime = network_timezones.parse_date_time(self.airdate, self.show.airs, self.show.network)
+
+        if sickbeard.FILE_TIMESTAMP_TIMEZONE == 'local':
+            airdatetime = airdatetime.astimezone(network_timezones.sb_timezone)
+
+        filemtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location)).replace(network_timezones.sb_timezone)
 
         if filemtime != airdatetime:
             import time
