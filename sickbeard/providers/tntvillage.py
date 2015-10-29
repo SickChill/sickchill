@@ -258,7 +258,7 @@ class TNTVillageProvider(generic.TorrentProvider):
     def _is_season_pack(self, name):
 
         try:
-            myParser = NameParser(tryIndexers=True, trySceneExceptions=True)
+            myParser = NameParser(tryIndexers=True)
             parse_result = myParser.parse(name)
         except InvalidNameException:
             logger.log(u"Unable to parse the filename %s into a valid episode" % name, logger.DEBUG)
