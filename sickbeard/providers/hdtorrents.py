@@ -21,8 +21,8 @@ import re
 import urllib
 import requests
 import traceback
-from bs4 import BeautifulSoup
 
+from sickbeard.bs4_parser import BS4Parser
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.providers import generic
@@ -119,80 +119,80 @@ class HDTorrentsProvider(generic.TorrentProvider):
                     logger.log(u"Could not find table of torrents mainblockcontenttt", logger.ERROR)
                     continue
 
-                data = urllib.unquote(data[index:].encode('utf-8')).decode('utf-8')
+                data = urllib.unquote(data[index:].encode('utf-8')).decode('utf-8').replace('\t', '')
 
-                html = BeautifulSoup(data, 'html5lib')
-                if not html:
-                    logger.log("No html data parsed from provider", logger.DEBUG)
-                    continue
-
-                empty = html.find('No torrents here')
-                if empty:
-                    logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
-                    continue
-
-                tables = html.find('table', attrs={'class': 'mainblockcontenttt'})
-                if not tables:
-                    logger.log(u"Could not find table of torrents mainblockcontenttt", logger.ERROR)
-                    continue
-
-                torrents = tables.findChildren('tr')
-                if not torrents:
-                    continue
-
-                # Skip column headers
-                for result in torrents[1:]:
-                    try:
-                        cells = result.findChildren('td', attrs={'class': re.compile(r'(green|yellow|red|mainblockcontent)')})
-                        if not cells:
-                            continue
-
-                        title = download_url = seeders = leechers = size = None
-                        for cell in cells:
-                            try:
-                                if None is title and cell.get('title') and cell.get('title') in 'Download':
-                                    title = re.search('f=(.*).torrent', cell.a['href']).group(1).replace('+', '.')
-                                    title = title.decode('utf-8')
-                                    download_url = self.urls['home'] % cell.a['href']
-                                    continue
-                                if None is seeders and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
-                                    seeders = int(cell.text)
-                                    if not seeders:
-                                        seeders = 1
-                                        continue
-                                elif None is leechers and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
-                                    leechers = int(cell.text)
-                                    if not leechers:
-                                        leechers = 0
-                                        continue
-
-                                # Need size for failed downloads handling
-                                if size is None:
-                                    if re.match(r'[0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+', cell.text):
-                                        size = self._convertSize(cell.text)
-                                        if not size:
-                                            size = -1
-
-                            except Exception:
-                                logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
-
-                        if not all([title, download_url]):
-                            continue
-
-                        #Filter unseeded torrent
-                        if seeders < self.minseed or leechers < self.minleech:
-                            if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                            continue
-
-                        item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
-
-                        items[mode].append(item)
-
-                    except (AttributeError, TypeError, KeyError, ValueError):
+                with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    if not html:
+                        logger.log("No html data parsed from provider", logger.DEBUG)
                         continue
+
+                    empty = html.find('No torrents here')
+                    if empty:
+                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        continue
+
+                    tables = html.find('table', attrs={'class': 'mainblockcontenttt'})
+                    if not tables:
+                        logger.log(u"Could not find table of torrents mainblockcontenttt", logger.ERROR)
+                        continue
+
+                    torrents = tables.findChildren('tr')
+                    if not torrents:
+                        continue
+
+                    # Skip column headers
+                    for result in torrents[1:]:
+                        try:
+                            cells = result.findChildren('td', attrs={'class': re.compile(r'(green|yellow|red|mainblockcontent)')})
+                            if not cells:
+                                continue
+
+                            title = download_url = seeders = leechers = size = None
+                            for cell in cells:
+                                try:
+                                    if None is title and cell.get('title') and cell.get('title') in 'Download':
+                                        title = re.search('f=(.*).torrent', cell.a['href']).group(1).replace('+', '.')
+                                        title = title.decode('utf-8')
+                                        download_url = self.urls['home'] % cell.a['href']
+                                        continue
+                                    if None is seeders and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
+                                        seeders = int(cell.text)
+                                        if not seeders:
+                                            seeders = 1
+                                            continue
+                                    elif None is leechers and cell.get('class')[0] and cell.get('class')[0] in 'green' 'yellow' 'red':
+                                        leechers = int(cell.text)
+                                        if not leechers:
+                                            leechers = 0
+                                            continue
+
+                                    # Need size for failed downloads handling
+                                    if size is None:
+                                        if re.match(r'[0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+', cell.text):
+                                            size = self._convertSize(cell.text)
+                                            if not size:
+                                                size = -1
+
+                                except Exception:
+                                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+
+                            if not all([title, download_url]):
+                                continue
+
+                            #Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                continue
+
+                            item = title, download_url, size, seeders, leechers
+                            if mode != 'RSS':
+                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+
+                            items[mode].append(item)
+
+                        except (AttributeError, TypeError, KeyError, ValueError):
+                            continue
 
             #For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
