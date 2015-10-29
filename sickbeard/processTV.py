@@ -371,14 +371,14 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
     #check if the dir have at least one tv video file
     for video in videoFiles:
         try:
-            NameParser(trySceneExceptions=True).parse(video, cache_result=False)
+            NameParser().parse(video, cache_result=False)
             return True
         except (InvalidNameException, InvalidShowException):
             pass
 
     for dir in allDirs:
         try:
-            NameParser(trySceneExceptions=True).parse(dir, cache_result=False)
+            NameParser().parse(dir, cache_result=False)
             return True
         except (InvalidNameException, InvalidShowException):
             pass
@@ -389,7 +389,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
 
         for packed in packedFiles:
             try:
-                NameParser(trySceneExceptions=True).parse(packed, cache_result=False)
+                NameParser().parse(packed, cache_result=False)
                 return True
             except (InvalidNameException, InvalidShowException):
                 pass
@@ -506,7 +506,7 @@ def already_postprocessed(dirName, videofile, force, result):
 
         #Needed if we have downloaded the same episode @ different quality
         #But we need to make sure we check the history of the episode we're going to PP, and not others
-        np = NameParser(dirName, tryIndexers=True, trySceneExceptions=True)
+        np = NameParser(dirName, tryIndexers=True)
         try: #if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
             parse_result = np.parse(dirName)
         except: #ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
