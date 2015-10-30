@@ -79,6 +79,10 @@ class TORRENTZProvider(generic.TorrentProvider):
                     logger.log('Wrong data returned from: ' + search_url, logger.DEBUG)
                     continue
 
+                if not data.startswith('<?xml'):
+                    logger.log(u'Expected xml but got something else, is your proxy failing?', logger.INFO)
+                    continue
+
                 try:
                     data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data.encode('utf-8')).replace('&', '&amp;'))
                 except ExpatError:

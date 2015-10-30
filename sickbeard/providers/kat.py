@@ -91,6 +91,10 @@ class KATProvider(generic.TorrentProvider):
                         logger.log("No data returned from provider", logger.DEBUG)
                         continue
 
+                    if not data.startswith('<?xml'):
+                        logger.log(u'Expected xml but got something else, is your proxy failing?', logger.INFO)
+                        continue
+
                     try:
                         data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data.encode('utf-8')).replace('&', '&amp;'))
                     except ExpatError as e:
