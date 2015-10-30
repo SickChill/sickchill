@@ -9,7 +9,9 @@
 import re
 from mako import exceptions
 
+
 class PythonPrinter(object):
+
     def __init__(self, stream):
         # indentation counter
         self.indent = 0
@@ -80,10 +82,11 @@ class PythonPrinter(object):
             self._flush_adjusted_lines()
             self.in_indent_lines = True
 
-        if (line is None or
-            re.match(r"^\s*#",line) or
+        if (
+            line is None or
+            re.match(r"^\s*#", line) or
             re.match(r"^\s*$", line)
-            ):
+        ):
             hastext = False
         else:
             hastext = True
@@ -91,9 +94,10 @@ class PythonPrinter(object):
         is_comment = line and len(line) and line[0] == '#'
 
         # see if this line should decrease the indentation level
-        if (not is_comment and
+        if (
+            not is_comment and
             (not hastext or self._is_unindentor(line))
-            ):
+        ):
 
             if self.indent > 0:
                 self.indent -= 1
@@ -102,7 +106,7 @@ class PythonPrinter(object):
                 # module wont compile.
                 if len(self.indent_detail) == 0:
                     raise exceptions.SyntaxException(
-                                    "Too many whitespace closures")
+                        "Too many whitespace closures")
                 self.indent_detail.pop()
 
         if line is None:
@@ -172,18 +176,18 @@ class PythonPrinter(object):
 
         # should we decide that its not good enough, heres
         # more stuff to check.
-        #keyword = match.group(1)
+        # keyword = match.group(1)
 
         # match the original indent keyword
-        #for crit in [
+        # for crit in [
         #   (r'if|elif', r'else|elif'),
         #   (r'try', r'except|finally|else'),
         #   (r'while|for', r'else'),
-        #]:
+        # ]:
         #   if re.match(crit[0], indentor) and re.match(crit[1], keyword):
         #        return True
 
-        #return False
+        # return False
 
     def _indent_line(self, line, stripspace=''):
         """indent the given line according to the current indent level.

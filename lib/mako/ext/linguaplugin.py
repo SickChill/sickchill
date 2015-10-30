@@ -7,6 +7,7 @@ from mako import compat
 
 
 class LinguaMakoExtractor(Extractor, MessageExtractor):
+
     '''Mako templates'''
     extensions = ['.mako']
     default_config = {
@@ -25,10 +26,14 @@ class LinguaMakoExtractor(Extractor, MessageExtractor):
     def process_python(self, code, code_lineno, translator_strings):
         source = code.getvalue().strip()
         if source.endswith(compat.b(':')):
-            source += compat.b(' pass')
-            code = io.BytesIO(source)
+            if source in (compat.b('try:'), compat.b('else:')) or source.startswith(compat.b('except')):
+                source = compat.b('') # Ignore try/except and else
+            elif source.startswith(compat.b('elif')):
+                source = source[2:] # Replace "elif" with "if"
+            source += compat.b('pass')
+        code = io.BytesIO(source)
         for msg in self.python_extractor(
-                self.filename, self.options, code, code_lineno):
+                self.filename, self.options, code, code_lineno -1):
             if translator_strings:
                 msg = Message(msg.msgctxt, msg.msgid, msg.msgid_plural,
                               msg.flags,

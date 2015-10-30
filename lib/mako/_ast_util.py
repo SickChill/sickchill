@@ -30,7 +30,7 @@
     :copyright: Copyright 2008 by Armin Ronacher.
     :license: Python License.
 """
-from _ast import *
+from _ast import *  # noqa
 from mako.compat import arg_stringname
 
 BOOLOP_SYMBOLS = {
@@ -246,6 +246,7 @@ def walk(node):
 
 
 class NodeVisitor(object):
+
     """
     Walks the abstract syntax tree and call visitor functions for every node
     found.  The visitor functions may return values which will be forwarded
@@ -290,6 +291,7 @@ class NodeVisitor(object):
 
 
 class NodeTransformer(NodeVisitor):
+
     """
     Walks the abstract syntax tree and allows modifications of nodes.
 
@@ -349,6 +351,7 @@ class NodeTransformer(NodeVisitor):
 
 
 class SourceGenerator(NodeVisitor):
+
     """
     This visitor is able to transform a well formed syntax tree into python
     sourcecode.  For more details have a look at the docstring of the
@@ -388,6 +391,7 @@ class SourceGenerator(NodeVisitor):
 
     def signature(self, node):
         want_comma = []
+
         def write_comma():
             if want_comma:
                 self.write(', ')
@@ -460,6 +464,7 @@ class SourceGenerator(NodeVisitor):
 
     def visit_ClassDef(self, node):
         have_args = []
+
         def paren_or_comma():
             if have_args:
                 self.write(', ')
@@ -481,11 +486,11 @@ class SourceGenerator(NodeVisitor):
                 paren_or_comma()
                 self.write(keyword.arg + '=')
                 self.visit(keyword.value)
-            if node.starargs is not None:
+            if getattr(node, "starargs", None):
                 paren_or_comma()
                 self.write('*')
                 self.visit(node.starargs)
-            if node.kwargs is not None:
+            if getattr(node, "kwargs", None):
                 paren_or_comma()
                 self.write('**')
                 self.visit(node.kwargs)
@@ -631,6 +636,7 @@ class SourceGenerator(NodeVisitor):
 
     def visit_Call(self, node):
         want_comma = []
+
         def write_comma():
             if want_comma:
                 self.write(', ')
@@ -646,11 +652,11 @@ class SourceGenerator(NodeVisitor):
             write_comma()
             self.write(keyword.arg + '=')
             self.visit(keyword.value)
-        if node.starargs is not None:
+        if getattr(node, "starargs", None):
             write_comma()
             self.write('*')
             self.visit(node.starargs)
-        if node.kwargs is not None:
+        if getattr(node, "kwargs", None):
             write_comma()
             self.write('**')
             self.visit(node.kwargs)

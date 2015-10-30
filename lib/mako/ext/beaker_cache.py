@@ -15,6 +15,7 @@ _beaker_cache = None
 
 
 class BeakerCacheImpl(CacheImpl):
+
     """A :class:`.CacheImpl` provided for the Beaker caching system.
 
     This plugin is used by default, based on the default
