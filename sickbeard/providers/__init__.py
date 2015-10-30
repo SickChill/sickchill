@@ -60,7 +60,8 @@ __all__ = ['womble',
            'bitcannon',
            'torrentz',
            'pretome',
-           'gftracker'
+           'gftracker',
+           'hdspace'
 ]
 
 import sickbeard
