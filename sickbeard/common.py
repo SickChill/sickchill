@@ -139,16 +139,16 @@ class Quality:
                       FULLHDBLURAY: "1080p BluRay"}
 
     sceneQualityStrings = {NONE: "N/A",
-                      UNKNOWN: "Unknown",
-                      SDTV: "HDTV",
-                      SDDVD: "",
-                      HDTV: "720p HDTV",
-                      RAWHDTV: "1080i HDTV",
-                      FULLHDTV: "1080p HDTV",
-                      HDWEBDL: "720p WEB-DL",
-                      FULLHDWEBDL: "1080p WEB-DL",
-                      HDBLURAY: "720p BluRay",
-                      FULLHDBLURAY: "1080p BluRay"}
+                           UNKNOWN: "Unknown",
+                           SDTV: "HDTV",
+                           SDDVD: "",
+                           HDTV: "720p HDTV",
+                           RAWHDTV: "1080i HDTV",
+                           FULLHDTV: "1080p HDTV",
+                           HDWEBDL: "720p WEB-DL",
+                           FULLHDWEBDL: "1080p WEB-DL",
+                           HDBLURAY: "720p BluRay",
+                           FULLHDBLURAY: "1080p BluRay"}
 
     combinedQualityStrings = {ANYHDTV: "HDTV",
                               ANYWEBDL: "WEB-DL",
@@ -435,12 +435,10 @@ class Quality:
 
         # 2 corresponds to SDDVD quality
         if quality == 2:
-            if re.search(r"bd(|.|-| )(rip|mux)", name.lower()):
-              rip_type = " BDRip"
+            if re.search(r"b[rd](|.|-| )(rip|mux)", name.lower()):
+                rip_type = " BDRip"
             elif re.search(r"dvd(|.|-| )(rip|mux)", name.lower()):
                 rip_type = " DVDRip"
-            elif re.search(r"web(|.|-| )(rip|mux)", name.lower()):
-                rip_type = " WEBRip"
             else:
                 rip_type = ""
 
