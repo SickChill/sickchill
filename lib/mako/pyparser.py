@@ -41,11 +41,11 @@ def parse(code, mode='exec', **exception_kwargs):
         return _ast_util.parse(code, '<unknown>', mode)
     except Exception:
         raise exceptions.SyntaxException(
-                    "(%s) %s (%r)" % (
-                        compat.exception_as().__class__.__name__,
-                        compat.exception_as(),
-                        code[0:50]
-                    ), **exception_kwargs)
+            "(%s) %s (%r)" % (
+                compat.exception_as().__class__.__name__,
+                compat.exception_as(),
+                code[0:50]
+            ), **exception_kwargs)
 
 
 class FindIdentifiers(_ast_util.NodeVisitor):
@@ -186,10 +186,10 @@ class FindTuple(_ast_util.NodeVisitor):
             self.listener.args.append(ExpressionGenerator(n).value())
             self.listener.declared_identifiers = \
                 self.listener.declared_identifiers.union(
-                                                p.declared_identifiers)
+                    p.declared_identifiers)
             self.listener.undeclared_identifiers = \
                 self.listener.undeclared_identifiers.union(
-                                                p.undeclared_identifiers)
+                    p.undeclared_identifiers)
 
 
 class ParseFunc(_ast_util.NodeVisitor):
@@ -221,6 +221,7 @@ class ParseFunc(_ast_util.NodeVisitor):
             self.listener.kwdefaults = node.args.kw_defaults
         self.listener.varargs = node.args.vararg
         self.listener.kwargs = node.args.kwarg
+
 
 class ExpressionGenerator(object):
 

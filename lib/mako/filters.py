@@ -9,7 +9,7 @@ import re
 import codecs
 
 from mako.compat import quote_plus, unquote_plus, codepoint2name, \
-        name2codepoint
+    name2codepoint
 
 from mako import compat
 
@@ -23,6 +23,7 @@ xml_escapes = {
 
 # XXX: &quot; is valid in HTML and XML
 #      &apos; is not valid HTML, but is valid XML
+
 
 def legacy_html_escape(s):
     """legacy HTML escape for non-unicode mode."""
@@ -40,17 +41,21 @@ try:
 except ImportError:
     html_escape = legacy_html_escape
 
+
 def xml_escape(string):
     return re.sub(r'([&<"\'>])', lambda m: xml_escapes[m.group()], string)
+
 
 def url_escape(string):
     # convert into a list of octets
     string = string.encode("utf8")
     return quote_plus(string)
 
+
 def legacy_url_escape(string):
     # convert into a list of octets
     return quote_plus(string)
+
 
 def url_unescape(string):
     text = unquote_plus(string)
@@ -58,11 +63,13 @@ def url_unescape(string):
         text = text.decode("utf8")
     return text
 
+
 def trim(string):
     return string.strip()
 
 
 class Decode(object):
+
     def __getattr__(self, key):
         def decode(x):
             if isinstance(x, compat.text_type):
@@ -77,12 +84,15 @@ decode = Decode()
 
 _ASCII_re = re.compile(r'\A[\x00-\x7f]*\Z')
 
+
 def is_ascii_str(text):
     return isinstance(text, str) and _ASCII_re.match(text)
 
 ################################################################
 
+
 class XMLEntityEscaper(object):
+
     def __init__(self, codepoint2name, name2codepoint):
         self.codepoint2entity = dict([(c, compat.text_type('&%s;' % n))
                                       for c, n in codepoint2name.items()])
@@ -101,7 +111,6 @@ class XMLEntityEscaper(object):
             return self.codepoint2entity[codepoint]
         except (KeyError, IndexError):
             return '&#x%X;' % codepoint
-
 
     __escapable = re.compile(r'["&<>]|[^\x00-\x7f]')
 
@@ -198,4 +207,3 @@ if compat.py3k:
 NON_UNICODE_ESCAPES = DEFAULT_ESCAPES.copy()
 NON_UNICODE_ESCAPES['h'] = 'filters.legacy_html_escape'
 NON_UNICODE_ESCAPES['u'] = 'filters.legacy_url_escape'
-

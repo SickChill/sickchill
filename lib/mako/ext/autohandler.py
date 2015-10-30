@@ -25,7 +25,10 @@ or with custom autohandler filename:
 
 """
 
-import posixpath, os, re
+import posixpath
+import os
+import re
+
 
 def autohandler(template, context, name='autohandler'):
     lookup = context.lookup
@@ -42,24 +45,24 @@ def autohandler(template, context, name='autohandler'):
         if path != _template_uri and _file_exists(lookup, path):
             if not lookup.filesystem_checks:
                 return lookup._uri_cache.setdefault(
-                            (autohandler, _template_uri, name), path)
+                    (autohandler, _template_uri, name), path)
             else:
                 return path
         if len(tokens) == 1:
             break
         tokens[-2:] = [name]
- 
+
     if not lookup.filesystem_checks:
         return lookup._uri_cache.setdefault(
-                            (autohandler, _template_uri, name), None)
+            (autohandler, _template_uri, name), None)
     else:
         return None
 
+
 def _file_exists(lookup, path):
-    psub = re.sub(r'^/', '',path)
+    psub = re.sub(r'^/', '', path)
     for d in lookup.directories:
         if os.path.exists(d + '/' + psub):
             return True
     else:
         return False
- 
