@@ -2527,7 +2527,11 @@ class TVEpisode(object):
         if not self.show.airs and self.show.network:
             return
 
-        airdatetime = network_timezones.parse_date_time(self.airdate, self.show.airs, self.show.network)
+        airdate_ordinal = self.airdate.toordinal()
+        if airdate_ordinal < 1:
+            return
+
+        airdatetime = network_timezones.parse_date_time(airdate_ordinal, self.show.airs, self.show.network)
 
         if sickbeard.FILE_TIMESTAMP_TIMEZONE == 'local':
             airdatetime = airdatetime.astimezone(network_timezones.sb_timezone)

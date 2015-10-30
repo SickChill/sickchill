@@ -167,7 +167,7 @@ def parse_date_time(d, t, network):
         hr = 0
         m = 0
 
-    te = datetime.datetime.fromordinal(helpers.tryInt(d))
+    te = datetime.datetime.fromordinal(helpers.tryInt(d) or 1)
     try:
         foreign_timezone = get_network_timezone(network, network_dict)
         foreign_naive = datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=foreign_timezone)
