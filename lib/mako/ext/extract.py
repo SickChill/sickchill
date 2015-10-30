@@ -5,6 +5,7 @@ from mako import parsetree
 
 
 class MessageExtractor(object):
+
     def process_file(self, fileobj):
         template_node = lexer.Lexer(
             fileobj.read(),
@@ -15,6 +16,7 @@ class MessageExtractor(object):
     def extract_nodes(self, nodes):
         translator_comments = []
         in_translator_comments = False
+        input_encoding = self.config['encoding'] or 'ascii'
         comment_tags = list(
             filter(None, re.split(r'\s+', self.config['comment-tags'])))
 
@@ -75,13 +77,18 @@ class MessageExtractor(object):
                 comment[1] for comment in translator_comments]
 
             if isinstance(code, compat.text_type):
-                code = code.encode('ascii', 'backslashreplace')
+                code = code.encode(input_encoding, 'backslashreplace')
 
             used_translator_comments = False
-            code = compat.byte_buffer(code)
+            # We add extra newline to work around a pybabel bug
+            # (see python-babel/babel#274, parse_encoding dies if the first
+            # input string of the input is non-ascii)
+            # Also, because we added it, we have to subtract one from
+            # node.lineno
+            code = compat.byte_buffer(compat.b('\n') + code)
 
             for message in self.process_python(
-                    code, node.lineno, translator_strings):
+                    code, node.lineno - 1, translator_strings):
                 yield message
                 used_translator_comments = True
 

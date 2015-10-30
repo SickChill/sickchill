@@ -5,15 +5,16 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 from pygments.lexers.web import \
-     HtmlLexer, XmlLexer, JavascriptLexer, CssLexer
+    HtmlLexer, XmlLexer, JavascriptLexer, CssLexer
 from pygments.lexers.agile import PythonLexer, Python3Lexer
 from pygments.lexer import DelegatingLexer, RegexLexer, bygroups, \
-     include, using
+    include, using
 from pygments.token import \
-     Text, Comment, Operator, Keyword, Name, String, Other
+    Text, Comment, Operator, Keyword, Name, String, Other
 from pygments.formatters.html import HtmlFormatter
 from pygments import highlight
 from mako import compat
+
 
 class MakoLexer(RegexLexer):
     name = 'Mako'
@@ -27,15 +28,15 @@ class MakoLexer(RegexLexer):
             (r'(\s*)(\%(?!%))([^\n]*)(\n|\Z)',
              bygroups(Text, Comment.Preproc, using(PythonLexer), Other)),
             (r'(\s*)(##[^\n]*)(\n|\Z)',
-              bygroups(Text, Comment.Preproc, Other)),
+             bygroups(Text, Comment.Preproc, Other)),
             (r'''(?s)<%doc>.*?</%doc>''', Comment.Preproc),
             (r'(<%)([\w\.\:]+)',
-              bygroups(Comment.Preproc, Name.Builtin), 'tag'),
+             bygroups(Comment.Preproc, Name.Builtin), 'tag'),
             (r'(</%)([\w\.\:]+)(>)',
-              bygroups(Comment.Preproc, Name.Builtin, Comment.Preproc)),
+             bygroups(Comment.Preproc, Name.Builtin, Comment.Preproc)),
             (r'<%(?=([\w\.\:]+))', Comment.Preproc, 'ondeftags'),
             (r'(<%(?:!?))(.*?)(%>)(?s)',
-              bygroups(Comment.Preproc, using(PythonLexer), Comment.Preproc)),
+             bygroups(Comment.Preproc, using(PythonLexer), Comment.Preproc)),
             (r'(\$\{)(.*?)(\})',
              bygroups(Comment.Preproc, using(PythonLexer), Comment.Preproc)),
             (r'''(?sx)
@@ -79,7 +80,8 @@ class MakoHtmlLexer(DelegatingLexer):
 
     def __init__(self, **options):
         super(MakoHtmlLexer, self).__init__(HtmlLexer, MakoLexer,
-                                              **options)
+                                            **options)
+
 
 class MakoXmlLexer(DelegatingLexer):
     name = 'XML+Mako'
@@ -87,7 +89,8 @@ class MakoXmlLexer(DelegatingLexer):
 
     def __init__(self, **options):
         super(MakoXmlLexer, self).__init__(XmlLexer, MakoLexer,
-                                             **options)
+                                           **options)
+
 
 class MakoJavascriptLexer(DelegatingLexer):
     name = 'JavaScript+Mako'
@@ -95,7 +98,8 @@ class MakoJavascriptLexer(DelegatingLexer):
 
     def __init__(self, **options):
         super(MakoJavascriptLexer, self).__init__(JavascriptLexer,
-                                                    MakoLexer, **options)
+                                                  MakoLexer, **options)
+
 
 class MakoCssLexer(DelegatingLexer):
     name = 'CSS+Mako'
@@ -103,11 +107,13 @@ class MakoCssLexer(DelegatingLexer):
 
     def __init__(self, **options):
         super(MakoCssLexer, self).__init__(CssLexer, MakoLexer,
-                                             **options)
+                                           **options)
 
 
 pygments_html_formatter = HtmlFormatter(cssclass='syntax-highlighted',
                                         linenos=True)
+
+
 def syntax_highlight(filename='', language=None):
     mako_lexer = MakoLexer()
     if compat.py3k:
@@ -119,4 +125,3 @@ def syntax_highlight(filename='', language=None):
                                         pygments_html_formatter)
     return lambda string: highlight(string, python_lexer,
                                     pygments_html_formatter)
-
