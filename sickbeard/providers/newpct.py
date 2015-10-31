@@ -1,4 +1,4 @@
-# Author: Cblazquez <cblazquez@gmail.com>
+# Author: CristianBB
 # Greetings to Mr. Pine-apple
 #
 # URL: http://code.google.com/p/sickbeard/
@@ -76,24 +76,6 @@ class newpctProvider(generic.TorrentProvider):
         
     def isEnabled(self):
         return self.enabled
-    
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_string = {'Episode': []}
-
-        if not ep_obj:
-            return []
-
-        #search_string['Episode'].append(ep_obj.show.name)
-        
-        #Newpct search api by don't works fine by episode, search will be done only by show name
-        #Add exceptions to posibble show names
-        name_exceptions = list(set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
-                               
-        for cur_exception in name_exceptions:
-            search_string['Episode'].append(cur_exception)
-
-        return [search_string]
     
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
