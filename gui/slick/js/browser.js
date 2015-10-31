@@ -146,7 +146,7 @@
                 };
         }
 
-        var initialDir, path, callback, ls = false;
+        var path, callback, ls = false;
         // if the text field is empty and we're given a key then populate it with the last browsed value from localStorage
         try { ls = !!(localStorage.getItem); } catch (e) {}
         if (ls && options.key) {
@@ -167,13 +167,11 @@
 
         };
 
-        initialDir = options.field.val() || (options.key && path) || '';
-
-        options = $.extend(options, {initialDir: initialDir});
-
         // append the browse button and give it a click behaviour
         return options.field.addClass('fileBrowserField').after($('<input type="button" value="Browse&hellip;" class="btn btn-inline fileBrowser" />').click(function () {
-            $(this).nFileBrowser(callback, options);
+            var initialDir = options.field.val() || (options.key && path) || '';
+            var optionsWithInitialDir = $.extend({}, options, {initialDir: initialDir});
+            $(this).nFileBrowser(callback, optionsWithInitialDir);
             return false;
         }));
     };
