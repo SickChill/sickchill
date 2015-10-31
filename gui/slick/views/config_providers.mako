@@ -455,7 +455,7 @@ $('#config-components').tabs();
                         </div>
                         % endif
 
-						% if hasattr(curTorrentProvider, 'onlyspasearch'):
+                        % if hasattr(curTorrentProvider, 'onlyspasearch'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_onlyspasearch">
                                 <span class="component-title">For Spanish torrents</span>
