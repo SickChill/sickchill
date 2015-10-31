@@ -914,9 +914,9 @@ class TVShow(object):
         if self.imdbid:
             logger.log(str(self.indexerid) + u": Loading show info from IMDb", logger.DEBUG)
 
-            imdbTv = i.get_movie(str(re.sub("[^0-9]", "", self.imdbid)))
+            imdbTv = i.get_movie(str(re.sub(r"[^0-9]", "", self.imdbid)))
 
-            for key in [x for x in imdb_info if x.replace('_', ' ') in imdbTv]:
+            for key in [x for x in imdb_info.keys() if x.replace('_', ' ') in imdbTv.keys()]:
                 # Store only the first value for string type
                 if isinstance(imdb_info[key], basestring) and isinstance(imdbTv.get(key), list):
                     imdb_info[key] = imdbTv.get(key.replace('_', ' '))[0]
