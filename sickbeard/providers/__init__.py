@@ -61,7 +61,8 @@ __all__ = ['womble',
            'torrentz',
            'pretome',
            'gftracker',
-           'hdspace'
+           'hdspace',
+           'newpct'
 ]
 
 import sickbeard
