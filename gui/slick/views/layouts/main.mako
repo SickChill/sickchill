@@ -109,8 +109,9 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
                         <li id="NAVhome" class="navbar-split dropdown${('', ' active')[topmenu == 'home']}">
-                            <a href="${srRoot}/home/" class="dropdown-toggle">Shows</a>
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
+                            <a href="${srRoot}/home/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">Shows
+                            <b class="caret"></b>
+                            </a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/home/"><i class="menu-icon-home"></i>&nbsp;Show List</a></li>
                                 <li><a href="${srRoot}/home/addShows/"><i class="menu-icon-addshow"></i>&nbsp;Add Shows</a></li>
@@ -134,8 +135,9 @@
                         </li>
 
                         <li id="NAVmanage" class="navbar-split dropdown${('', ' active')[topmenu == 'manage']}">
-                            <a href="${srRoot}/manage/episodeStatuses/" class="dropdown-toggle">Manage</a>
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
+                            <a href="${srRoot}/manage/episodeStatuses/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">Manage
+                            <b class="caret"></b>
+                            </a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/manage/"><i class="menu-icon-manage"></i>&nbsp;Mass Update</a></li>
                                 <li><a href="${srRoot}/manage/backlogOverview/"><i class="menu-icon-backlog-view"></i>&nbsp;Backlog Overview</a></li>
@@ -164,8 +166,9 @@
                         </li>
 
                         <li id="NAVconfig" class="navbar-split dropdown${('', ' active')[topmenu == 'config']}">
-                            <a href="${srRoot}/config/" class="dropdown-toggle"><span class="visible-xs">Config</span><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" /></a>
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
+                            <a href="${srRoot}/config/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs">Config</span><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" />
+                            <b class="caret"></b>
+                            </a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/config/"><i class="menu-icon-help"></i>&nbsp;Help &amp; Info</a></li>
                                 <li><a href="${srRoot}/config/general/"><i class="menu-icon-config"></i>&nbsp;General</a></li>
@@ -200,8 +203,9 @@
                                 toolsBadge = ''
                         %>
                         <li id="NAVsystem" class="navbar-split dropdown${('', ' active')[topmenu == 'system']}">
-                            <a href="${srRoot}/home/status/" class="dropdown-toggle"><span class="visible-xs">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${toolsBadge}</a>
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
+                            <a href="${srRoot}/home/status/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${toolsBadge}
+                            <b class="caret"></b>
+                            </a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/news/"><i class="menu-icon-help"></i>&nbsp;News${newsBadge}</a></li>
                                 <li><a href="${srRoot}/IRC/"><i class="menu-icon-help"></i>&nbsp;IRC</a></li>
