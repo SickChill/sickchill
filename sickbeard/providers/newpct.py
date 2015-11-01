@@ -26,6 +26,7 @@ from sickbeard.providers import generic
 from sickbeard.common import USER_AGENT
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard import scene_exceptions
+from ctypes.test.test_sizes import SizesTestCase
 
 
 class newpctProvider(generic.TorrentProvider):
@@ -121,14 +122,16 @@ class newpctProvider(generic.TorrentProvider):
                             for row in torrent_table:
                                 try:
                                     if iteration < num_results:
+                                        torrent_size = row.findAll('td')[2]
                                         torrent_row = row.findAll('a')[1]
                                              
                                         download_url = torrent_row.get('href')
                                         title_raw = torrent_row.get('title')
+                                        size = self._convertSize(torrent_size.text)
                                         
                                         title = self._processTittle(title_raw)
                                         
-                                        item = title, download_url
+                                        item = title, download_url, size
                                         logger.log(u"Found result: %s " % title, logger.DEBUG)
         
                                         items[mode].append(item)
@@ -145,38 +148,43 @@ class newpctProvider(generic.TorrentProvider):
             logger.log(u"Show info is not spanish, skipping provider search", logger.DEBUG)
         
         return results
+    
+    def _convertSize(self, size):
+        size, modifier = size.split(' ')
+        size = float(size)
+        if modifier in 'KB':
+            size = size * 1024
+        elif modifier in 'MB':
+            size = size * 1024**2
+        elif modifier in 'GB':
+            size = size * 1024**3
+        elif modifier in 'TB':
+            size = size * 1024**4
+        return size
 
     def _processTittle(self, title):
         
         title = title.replace('Descargar ', '')
         
-        #Show title
-        show_name = title[0:title.find(' - ')]
-        
-        #episode numbers in format 212 (season 2, ep. number 12)
-        ini_str = title.find('[Cap.') + 5
-        end_str = title.find(']', ini_str)
-        
-        ini_epnumber = end_str - 2
-        end_epnumber = end_str 
-        epnumber = title[ini_epnumber:end_epnumber]
-        
-        ini_season = ini_str
-        end_season = ini_epnumber
-        season = title[ini_season:end_season]
-        
         #Quality
-        if title.find('[HDTV 1080p]') > 0:
-            quality = '1080p HDTV x264'
-        elif title.find('HDTV') > 0:
-            quality = '720p HDTV x264'
-        elif title.find('DVD') > 0 or title.find('BDrip') > 0:
-            quality = 'HDTV'
-        else:
-            quality = 'Unknown'
-                    
-        title = show_name + ' - ' + season + 'x' + epnumber + ' (' + quality + ') ' + self.append_identifier
-               
+        title = title.replace('[HDTV]', '[720p HDTV x264]')
+        title = title.replace('[HDTV 720p AC3 5.1]', '[720p HDTV x264]')
+        title = title.replace('[HDTV 1080p AC3 5.1]', '[1080p HDTV x264]')
+        title = title.replace('[DVDRIP]', '[DVDrip x264]')
+        title = title.replace('[DVD Rip]', '[DVDrip x264]')
+        title = title.replace('[DVDrip]', '[DVDrip x264]')
+        title = title.replace('[BLuRayRip]', '[720p BlueRay x264]')
+        title = title.replace('[BRrip]', '[720p BlueRay x264]')
+        title = title.replace('[BDrip]', '[720p BlueRay x264]')
+        title = title.replace('[BluRay Rip]', '[720p BlueRay x264]')
+        title = title.replace('[BluRay 720p]', '[720p BlueRay x264]')
+        title = title.replace('[BluRay 1080p]', '[1080p BlueRay x264]')
+        title = title.replace('[BluRay MicroHD]', '[1080p BlueRay x264]')
+        title = title.replace('[MicroHD 1080p]', '[1080p BlueRay x264]')
+         
+        #Append identifier
+        title = title + self.append_identifier
+              
         return title 
 
 

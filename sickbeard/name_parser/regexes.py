@@ -114,6 +114,17 @@ normal_regexes = [
      (?P<season_num>\d{1,2})                     # 1
      (?P<ep_num>\d{2})$                          # 02
      '''),
+                  
+    ('newpct',
+    # Example: Sobrenatural - Temporada 10 [HDTV][Cap.1023][Espanol Castellano] 
+     r'''
+     (?P<series_name>.+?)                      # Showw_Name: "Sobrenatural"
+     (?:.-.+\d{1,2}.\[)                        # Separator and junk: " - Temporada 10 ["
+     (?P<extra_info>.+)                        # Quality: "HDTV"
+     (?:\]\[.+\.)                              # junk: "][Cap."
+     (?P<season_num>\d{1,2})                   # Season number: "10"
+     (?P<ep_num>\d{2})(?:])                    # Episode number: "23"
+     '''),
 
     ('verbose',
      # Show Name Season 1 Episode 2 Ep Name
