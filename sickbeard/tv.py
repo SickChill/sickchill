@@ -1239,7 +1239,7 @@ class TVShow(object):
                     self.qualitiesToString(bestQualities),
                     self.qualitiesToString([quality])), logger.DEBUG)
 
-        if quality not in anyQualities + bestQualities:
+        if quality not in anyQualities + bestQualities or quality is UNKNOWN:
             logger.log(u"Don't want this quality, ignoring found episode", logger.DEBUG)
             return False
 
@@ -1264,26 +1264,22 @@ class TVShow(object):
         curStatus, curQuality = Quality.splitCompositeStatus(epStatus)
 
         # if it's one of these then we want it as long as it's in our allowed initial qualities
-        if quality in anyQualities + bestQualities:
-            if epStatus in (WANTED, SKIPPED):
-                logger.log(u"Existing episode status is wanted or skipped, getting found episode", logger.DEBUG)
+        if epStatus in (WANTED, SKIPPED, UNKNOWN):
+            logger.log(u"Existing episode status is wanted/skipped/unknown, getting found episode", logger.DEBUG)
+            return True
+        elif manualSearch:
+            if (downCurQuality and quality >= curQuality) or (not downCurQuality and quality > curQuality):
+                logger.log(
+                    u"Usually ignoring found episode, but forced search allows the quality, getting found episode",
+                    logger.DEBUG)
                 return True
-            elif manualSearch:
-                if (downCurQuality and quality >= curQuality) or (not downCurQuality and quality > curQuality):
-                    logger.log(
-                        u"Usually ignoring found episode, but forced search allows the quality, getting found episode",
-                        logger.DEBUG)
-                    return True
-            else:
-                logger.log(u"Quality is on wanted list, need to check if it's better than existing quality",
-                           logger.DEBUG)
 
         # if we are re-downloading then we only want it if it's in our bestQualities list and better than what we have, or we only have one bestQuality and we do not have that quality yet
-        if curStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER and quality in bestQualities and (quality > curQuality or curQuality not in bestQualities):
+        if epStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER and quality in bestQualities and (quality > curQuality or curQuality not in bestQualities):
             logger.log(u"Episode already exists but the found episode quality is wanted more, getting found episode",
                        logger.DEBUG)
             return True
-        elif curStatus == Quality.UNKNOWN and manualSearch:
+        elif curQuality == Quality.UNKNOWN and manualSearch:
             logger.log(u"Episode already exists but quality is Unknown, getting found episode",
                        logger.DEBUG)
             return True
