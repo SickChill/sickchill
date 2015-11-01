@@ -37,7 +37,16 @@ $(document).ready(function () {
         }
     });
 
-    $('.dropdown-toggle').dropdownHover();
+    // hack alert: if we don't have a touchscreen, and we are already hovering the mouse, then click should link instead of toggle
+    if ((navigator.maxTouchPoints || 0) < 2) {
+        $('.dropdown-toggle').on('click', function(e) {
+            var $this = $(this);
+            if ($this.attr('aria-expanded') === 'true') {
+                window.location.href = $this.attr('href');
+            }
+        });
+    }
+
     if(metaToBool('sickbeard.FUZZY_DATING')){
         $.timeago.settings.allowFuture = true;
         $.timeago.settings.strings = {
