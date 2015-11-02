@@ -8,7 +8,7 @@ branches:
   except:
     - master
 
-install: pip install -U pyOpenSSL
+install: echo "Nothing required!"
 
 cache: pip
 
