@@ -18,7 +18,6 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=W0703
 
-from __future__ import with_statement
 import os
 import re
 import sys
