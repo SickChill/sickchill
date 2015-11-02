@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import with_statement
 
 import time
 import traceback
@@ -55,20 +54,20 @@ class SearchQueue(generic_queue.GenericQueue):
             if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)) and cur_item.segment == segment:
                 return True
         return False
-    
+
     def is_show_in_queue(self, show):
         for cur_item in self.queue:
             if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)) and cur_item.show.indexerid == show:
                 return True
         return False
-    
+
     def get_all_ep_from_queue(self, show):
         ep_obj_list = []
         for cur_item in self.queue:
             if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)) and str(cur_item.show.indexerid) == show:
                 ep_obj_list.append(cur_item)
         return ep_obj_list
-    
+
     def pause_backlog(self):
         self.min_priority = generic_queue.QueuePriorities.HIGH
 
@@ -84,7 +83,7 @@ class SearchQueue(generic_queue.GenericQueue):
         if isinstance(self.currentItem, (ManualSearchQueueItem, FailedQueueItem)):
             return True
         return False
-    
+
     def is_backlog_in_progress(self):
         for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, BacklogQueueItem):
@@ -174,7 +173,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         try:
             logger.log("Beginning manual search for: [" + self.segment.prettyName() + "]")
             self.started = True
-            
+
             searchResult = search.searchProviders(self.show, [self.segment], True, self.downCurQuality)
 
             if searchResult:
@@ -193,10 +192,10 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
-        
+
         ### Keep a list with the 100 last executed searches
         fifo(MANUAL_SEARCH_HISTORY, self, MANUAL_SEARCH_HISTORY_SIZE)
-        
+
         if self.success is None:
             self.success = False
 
@@ -250,23 +249,25 @@ class FailedQueueItem(generic_queue.QueueItem):
     def run(self):
         generic_queue.QueueItem.run(self)
         self.started = True
-        
+
         try:
             for epObj in self.segment:
-            
+
                 logger.log(u"Marking episode as bad: [" + epObj.prettyName() + "]")
-                
+
                 failed_history.markFailed(epObj)
-    
+
                 (release, provider) = failed_history.findRelease(epObj)
                 if release:
                     failed_history.logFailed(release)
                     history.logFailed(epObj, release, provider)
-    
+
                 failed_history.revertEpisode(epObj)
                 logger.log("Beginning failed download search for: [" + epObj.prettyName() + "]")
 
-            searchResult = search.searchProviders(self.show, self.segment, True, self.downCurQuality)
+            # If it is wanted, self.downCurQuality doesnt matter
+            # if it isnt wanted, we need to make sure to not overwrite the existing ep that we reverted to!
+            searchResult = search.searchProviders(self.show, self.segment, True, False)
 
             if searchResult:
                 for result in searchResult:
@@ -281,7 +282,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                 #logger.log(u"No valid episode found to retry for: [" + self.segment.prettyName() + "]")
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
-            
+
         ### Keep a list with the 100 last executed searches
         fifo(MANUAL_SEARCH_HISTORY, self, MANUAL_SEARCH_HISTORY_SIZE)
 
@@ -289,7 +290,7 @@ class FailedQueueItem(generic_queue.QueueItem):
             self.success = False
 
         self.finish()
-        
+
 def fifo(myList, item, maxSize = 100):
     if len(myList) >= maxSize:
         myList.pop(0)

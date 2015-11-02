@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import with_statement
 
 import datetime
 import threading
@@ -79,19 +78,15 @@ class DailySearcher():
                 logger.log(u"ERROR: expected to find a single show matching " + str(sqlEp['showid']))
                 continue
 
-            try:
-                end_time = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(sqlEp['airdate'], show.airs,
-                                                             show.network)) + datetime.timedelta(
-                    minutes=helpers.tryInt(show.runtime, 60))
-                #Keep this for future debug
-                #logger.log(u"Show %s ends at %s and now it is %s. Runtime is %s and airs %s" % (show.name, end_time, curTime, show.runtime, show.airs),logger.DEBUG )
+            if show.airs and show.network:
+                # This is how you assure it is always converted to local time
+                air_time = network_timezones.parse_date_time(sqlEp['airdate'], show.airs, show.network).astimezone(network_timezones.sb_timezone)
 
-                # filter out any episodes that haven't aried yet
-                if end_time > curTime:
+                # filter out any episodes that haven't started airing yet,
+                # but set them to the default status while they are airing
+                # so they are snatched faster
+                if air_time > curTime:
                     continue
-            except:
-                # if an error occured assume the episode hasn't aired yet
-                continue
 
             ep = show.getEpisode(int(sqlEp["season"]), int(sqlEp["episode"]))
             with ep.lock:

@@ -21,6 +21,7 @@ import re
 import datetime
 import requests
 from dateutil import tz
+from os import name as osname
 
 from sickbeard import db
 from sickbeard import helpers
@@ -33,7 +34,10 @@ pm_regex = re.compile(r'(P[. ]? ?M)', flags=re.IGNORECASE)
 
 network_dict = None
 
-sb_timezone = tz.tzlocal()
+if osname == 'nt' and tz.tzwinlocal is not None:
+    sb_timezone = tz.tzwinlocal()
+else:
+    sb_timezone = tz.tzlocal()
 
 # update the network timezone table
 def update_network_dict():
@@ -88,7 +92,7 @@ def load_network_dict():
     try:
         my_db = db.DBConnection('cache.db')
         cur_network_list = my_db.select('SELECT * FROM network_timezones;')
-        if cur_network_list is None or len(cur_network_list) < 1:
+        if not cur_network_list:
             update_network_dict()
             cur_network_list = my_db.select('SELECT * FROM network_timezones;')
         d = dict(cur_network_list)
@@ -163,7 +167,7 @@ def parse_date_time(d, t, network):
         hr = 0
         m = 0
 
-    te = datetime.datetime.fromordinal(helpers.tryInt(d))
+    te = datetime.datetime.fromordinal(helpers.tryInt(d) or 1)
     try:
         foreign_timezone = get_network_timezone(network, network_dict)
         foreign_naive = datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=foreign_timezone)
