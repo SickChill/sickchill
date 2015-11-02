@@ -917,7 +917,7 @@ class TVShow(object):
 
             for key in [x for x in imdb_info.keys() if x.replace('_', ' ') in imdbTv.keys()]:
                 # Store only the first value for string type
-                if isinstance(imdb_info[key], basestring) and isinstance(imdbTv.get(key), list):
+                if isinstance(imdb_info[key], basestring) and isinstance(imdbTv.get(key.replace('_', ' ')), list):
                     imdb_info[key] = imdbTv.get(key.replace('_', ' '))[0]
                 else:
                     imdb_info[key] = imdbTv.get(key.replace('_', ' '))
