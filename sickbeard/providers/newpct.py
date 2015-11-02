@@ -18,15 +18,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import with_statement
-
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.providers import generic
 from sickbeard.common import USER_AGENT
 from sickbeard.bs4_parser import BS4Parser
-from sickbeard import scene_exceptions
-from ctypes.test.test_sizes import SizesTestCase
 
 
 class newpctProvider(generic.TorrentProvider):
@@ -129,7 +125,7 @@ class newpctProvider(generic.TorrentProvider):
                                         title_raw = torrent_row.get('title')
                                         size = self._convertSize(torrent_size.text)
                                         
-                                        title = self._processTittle(title_raw)
+                                        title = self._processTitle(title_raw)
                                         
                                         item = title, download_url, size
                                         logger.log(u"Found result: %s " % title, logger.DEBUG)
@@ -162,7 +158,7 @@ class newpctProvider(generic.TorrentProvider):
             size = size * 1024**4
         return size
 
-    def _processTittle(self, title):
+    def _processTitle(self, title):
         
         title = title.replace('Descargar ', '')
         
