@@ -249,6 +249,7 @@
         
         </div>
 
+        <br />
         <input id="submit" type="submit" value="Save Changes" class="btn pull-left config_submitter button">
         </form>
     </div>
