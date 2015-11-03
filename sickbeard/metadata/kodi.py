@@ -16,11 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import generic
-import kodi_12plus
-
 import os
 
+from sickbeard.metadata import generic
+from sickbeard.metadata import kodi_12plus
 from sickbeard import helpers
 from sickrage.helper.encoding import ek
 
@@ -90,7 +89,8 @@ class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):
     def create_season_all_banner(self, show_obj):
         pass
 
-    def get_episode_thumb_path(self, ep_obj):
+    @staticmethod
+    def get_episode_thumb_path(ep_obj):
         """
         Returns the path where the episode thumbnail should be stored. Defaults to
         the same path as the episode file but with a .tbn extension.
@@ -104,7 +104,8 @@ class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):
 
         return tbn_filename
 
-    def get_season_poster_path(self, show_obj, season):
+    @staticmethod
+    def get_season_poster_path(show_obj, season):
         """
         Returns the full path to the file for a given season poster.
 

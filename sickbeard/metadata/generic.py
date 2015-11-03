@@ -40,7 +40,7 @@ import fanart
 from fanart.core import Request as fanartRequest
 
 
-class GenericMetadata:
+class GenericMetadata(object):
     """
     Base class for all metadata providers. Default behavior is meant to mostly
     follow KODI 12+ metadata standards. Has support for:
@@ -56,17 +56,10 @@ class GenericMetadata:
     - season all banner
     """
 
-    def __init__(self,
-                 show_metadata=False,
-                 episode_metadata=False,
-                 fanart=False,
-                 poster=False,
-                 banner=False,
-                 episode_thumbnails=False,
-                 season_posters=False,
-                 season_banners=False,
-                 season_all_poster=False,
-                 season_all_banner=False):
+    def __init__(self, show_metadata=False, episode_metadata=False, fanart=False,
+                 poster=False, banner=False, episode_thumbnails=False,
+                 season_posters=False, season_banners=False,
+                 season_all_poster=False, season_all_banner=False):
 
         self.name = "Generic"
 
@@ -102,8 +95,8 @@ class GenericMetadata:
 
     @staticmethod
     def makeID(name):
-        name_id = re.sub("[+]", "plus", name)
-        name_id = re.sub("[^\w\d_]", "_", name_id).lower()
+        name_id = re.sub(r"[+]", "plus", name)
+        name_id = re.sub(r"[^\w\d_]", "_", name_id).lower()
         return name_id
 
     def set_config(self, string):
@@ -181,7 +174,7 @@ class GenericMetadata:
         return ek(os.path.join, show_obj.location, self._show_metadata_filename)
 
     def get_episode_file_path(self, ep_obj):
-        return helpers.replaceExtension(ep_obj.location, self._ep_nfo_extension)
+        return ek(helpers.replaceExtension, ep_obj.location, self._ep_nfo_extension)
 
     def get_fanart_path(self, show_obj):
         return ek(os.path.join, show_obj.location, self.fanart_name)
@@ -192,7 +185,8 @@ class GenericMetadata:
     def get_banner_path(self, show_obj):
         return ek(os.path.join, show_obj.location, self.banner_name)
 
-    def get_episode_thumb_path(self, ep_obj):
+    @staticmethod
+    def get_episode_thumb_path(ep_obj):
         """
         Returns the path where the episode thumbnail should be stored.
         ep_obj: a TVEpisode instance for which to create the thumbnail
@@ -210,7 +204,8 @@ class GenericMetadata:
 
         return tbn_filename
 
-    def get_season_poster_path(self, show_obj, season):
+    @staticmethod
+    def get_season_poster_path(show_obj, season):
         """
         Returns the full path to the file for a given season poster.
 
@@ -227,7 +222,8 @@ class GenericMetadata:
 
         return ek(os.path.join, show_obj.location, season_poster_filename + '-poster.jpg')
 
-    def get_season_banner_path(self, show_obj, season):
+    @staticmethod
+    def get_season_banner_path(show_obj, season):
         """
         Returns the full path to the file for a given season banner.
 
@@ -250,6 +246,7 @@ class GenericMetadata:
     def get_season_all_banner_path(self, show_obj):
         return ek(os.path.join, show_obj.location, self.season_all_banner_name)
 
+    # pylint: disable=W0613,R0201
     def _show_data(self, show_obj):
         """
         This should be overridden by the implementing class. It should
@@ -257,6 +254,7 @@ class GenericMetadata:
         """
         return None
 
+    # pylint: disable=W0613,R0201
     def _ep_data(self, ep_obj):
         """
         This should be overridden by the implementing class. It should
@@ -285,7 +283,7 @@ class GenericMetadata:
 
             nfo_file_path = self.get_show_file_path(show_obj)
             try:
-                with ek(open, nfo_file_path, 'r') as xmlFileObj:
+                with open(nfo_file_path, 'r') as xmlFileObj:
                     showXML = etree.ElementTree(file=xmlFileObj)
 
                 indexerid = showXML.find('id')
@@ -336,7 +334,7 @@ class GenericMetadata:
     def create_season_posters(self, show_obj):
         if self.season_posters and show_obj:
             result = []
-            for season, episodes in show_obj.episodes.iteritems():  # @UnusedVariable
+            for season, _ in show_obj.episodes.iteritems():  # @UnusedVariable
                 if not self._has_season_poster(show_obj, season):
                     logger.log(u"Metadata provider " + self.name + " creating season posters for " + show_obj.name,
                                logger.DEBUG)
@@ -347,7 +345,7 @@ class GenericMetadata:
     def create_season_banners(self, show_obj):
         if self.season_banners and show_obj:
             result = []
-            for season, episodes in show_obj.episodes.iteritems():  # @UnusedVariable
+            for season, _ in show_obj.episodes.iteritems():  # @UnusedVariable
                 if not self._has_season_banner(show_obj, season):
                     logger.log(u"Metadata provider " + self.name + " creating season banners for " + show_obj.name,
                                logger.DEBUG)
@@ -425,7 +423,7 @@ class GenericMetadata:
 
             logger.log(u"Writing show nfo file to " + nfo_file_path, logger.DEBUG)
 
-            nfo_file = ek(open, nfo_file_path, 'w')
+            nfo_file = open(nfo_file_path, 'w')
 
             data.write(nfo_file, encoding="utf-8")
             nfo_file.close()
@@ -470,7 +468,7 @@ class GenericMetadata:
 
             logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
 
-            nfo_file = ek(open, nfo_file_path, 'w')
+            nfo_file = open(nfo_file_path, 'w')
 
             data.write(nfo_file, encoding="utf-8")
             nfo_file.close()
@@ -598,7 +596,7 @@ class GenericMetadata:
                 continue
 
             # Just grab whatever's there for now
-            art_id, season_url = cur_season_art.popitem()  # @UnusedVariable
+            _, season_url = cur_season_art.popitem()  # @UnusedVariable
 
             season_poster_file_path = self.get_season_poster_path(show_obj, cur_season)
 
@@ -647,7 +645,7 @@ class GenericMetadata:
                 continue
 
             # Just grab whatever's there for now
-            art_id, season_url = cur_season_art.popitem()  # @UnusedVariable
+            _, season_url = cur_season_art.popitem()  # @UnusedVariable
 
             season_banner_file_path = self.get_season_banner_path(show_obj, cur_season)
 
@@ -695,7 +693,7 @@ class GenericMetadata:
 
         return self._write_image(banner_data, banner_path)
 
-    def _write_image(self, image_data, image_path, obj = None):
+    def _write_image(self, image_data, image_path, obj=None):
         """
         Saves the data in image_data to the location image_path. Returns True/False
         to represent success or failure.
@@ -721,7 +719,7 @@ class GenericMetadata:
                 ek(os.makedirs, image_dir)
                 helpers.chmodAsParent(image_dir)
 
-            outFile = ek(open, image_path, 'wb')
+            outFile = open(image_path, 'wb')
             outFile.write(image_data)
             outFile.close()
             helpers.chmodAsParent(image_path)
@@ -931,16 +929,11 @@ class GenericMetadata:
         logger.log(u"Loading show info from metadata file in " + folder, logger.DEBUG)
 
         try:
-            with ek(open, metadata_path, 'r') as xmlFileObj:
+            with open(metadata_path, 'r') as xmlFileObj:
                 showXML = etree.ElementTree(file=xmlFileObj)
 
-            if showXML.findtext('title') == None \
-                    or (showXML.findtext('tvdbid') == None
-                        and showXML.findtext('id') == None):
-                logger.log(u"Invalid info in tvshow.nfo (missing name or id):" \
-                           + str(showXML.findtext('title')) + " " \
-                           + str(showXML.findtext('tvdbid')) + " " \
-                           + str(showXML.findtext('id')))
+            if showXML.findtext('title') == None or (showXML.findtext('tvdbid') == None and showXML.findtext('id') == None):
+                logger.log(u"Invalid info in tvshow.nfo (missing name or id): %s %s %s" % (showXML.findtext('title'), showXML.findtext('tvdbid'), showXML.findtext('id')))
                 return empty_return
 
             name = showXML.findtext('title')
@@ -1002,17 +995,18 @@ class GenericMetadata:
                     if types[type] and getattr(result, types[type]):
                         return "{0}{1}{2}".format(base_url, max_size, result[types[type]])
 
-        except Exception as e:
+        except Exception:
             pass
 
         logger.log(u"Could not find any " + type + " images on TMDB for " + show.name, logger.INFO)
 
     def _retrieve_show_images_from_fanart(self, show, type, thumb=False):
-        types = {'poster': fanart.TYPE.TV.POSTER,
-                 'banner': fanart.TYPE.TV.BANNER,
-                 'poster_thumb': fanart.TYPE.TV.POSTER,
-                 'banner_thumb': fanart.TYPE.TV.BANNER,
-                 'fanart': fanart.TYPE.TV.BACKGROUND,
+        types = {
+            'poster': fanart.TYPE.TV.POSTER,
+            'banner': fanart.TYPE.TV.BANNER,
+            'poster_thumb': fanart.TYPE.TV.POSTER,
+            'banner_thumb': fanart.TYPE.TV.BANNER,
+            'fanart': fanart.TYPE.TV.BACKGROUND,
         }
 
         try:
@@ -1032,7 +1026,7 @@ class GenericMetadata:
                 if thumb:
                     url = re.sub('/fanart/', '/preview/', url)
                 return url
-        except Exception as e:
+        except Exception:
             pass
 
         logger.log(u"Could not find any " + type + " images on Fanart.tv for " + show.name, logger.INFO)

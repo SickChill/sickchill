@@ -86,7 +86,7 @@ class TIVOMetadata(generic.GenericMetadata):
         # no show metadata generated, we abort this lookup function
         return (None, None, None)
 
-    def create_show_metadata(self, show_obj, force=False):
+    def create_show_metadata(self, show_obj):
         pass
 
     def update_show_indexer_metadata(self, show_obj):
@@ -107,7 +107,8 @@ class TIVOMetadata(generic.GenericMetadata):
     def create_episode_thumb(self, ep_obj):
         pass
 
-    def get_episode_thumb_path(self, ep_obj):
+    @staticmethod
+    def get_episode_thumb_path(ep_obj):
         pass
 
     def create_season_posters(self, ep_obj):
@@ -192,9 +193,8 @@ class TIVOMetadata(generic.GenericMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(
-                    curEpToWrite.episode) + " on " + sickbeard.indexerApi(
-                    ep_obj.show.indexer).name + "... has it been removed? Should I delete from db?")
+                logger.log(u"Unable to find episode %dx%d on %s... has it been removed? Should I delete from db?" %
+                           (curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
                 return None
 
             if ep_obj.season == 0 and not getattr(myEp, 'firstaired', None):
@@ -320,7 +320,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
             logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
 
-            with ek(open, nfo_file_path, 'w') as nfo_file:
+            with open(nfo_file_path, 'w') as nfo_file:
                 # Calling encode directly, b/c often descriptions have wonky characters.
                 nfo_file.write(data.encode("utf-8"))
 
