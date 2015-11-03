@@ -1270,7 +1270,7 @@ def initialize(consoleLogging=True):
 
             if hasattr(curTorrentProvider, 'append_identifier'):
                 curTorrentProvider.append_identifier = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                         curTorrentProvider.getID() + '_append_identifier', '[' + curTorrentProvider.name + ']')
+                                                                         curTorrentProvider.getID() + '_append_identifier', '')
 
             if hasattr(curTorrentProvider, 'sorting'):
                 curTorrentProvider.sorting = check_setting_str(CFG, curTorrentProvider.getID().upper(),
