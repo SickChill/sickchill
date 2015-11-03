@@ -594,6 +594,17 @@
                         </div>
 
                         <div class="field-pair">
+                            <label for="calendar_icons">
+                                <span class="component-title">Google Calendar Icons</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" name="calendar_icons" id="calendar_icons" ${('', 'checked="checked"')[bool(sickbeard.CALENDAR_ICONS)]}/>
+                                    <p>show an icon next to exported calendar events in Google Calendar.</p>
+                                </span>
+
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
                             <label>
                                 <span class="component-title">Proxy host</span>
                                 <span class="component-desc">
