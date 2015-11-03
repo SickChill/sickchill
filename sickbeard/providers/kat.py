@@ -20,7 +20,6 @@
 
 import traceback
 
-import datetime
 from urllib import urlencode
 
 import xmltodict
@@ -50,8 +49,7 @@ class KATProvider(generic.TorrentProvider):
 
         self.urls = {
             'base_url': 'https://kat.cr/',
-            'search': 'https://kat.cr/usearch/',
-            'rss': 'https://kat.cr/tv/',
+            'search': 'https://kat.cr/%s/',
         }
 
         self.url = self.urls['base_url']
@@ -72,25 +70,23 @@ class KATProvider(generic.TorrentProvider):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-#       select the correct category
-        if self.show.anime:
-            self.search_params.update({'category': 'anime'})
-            logger.log("search param 'category': 'anime' instead of 'tv' ", logger.DEBUG)
-        else:
-            self.search_params.update({'category': 'tv'})
-            logger.log("search param 'category': 'tv' ", logger.DEBUG)
-			
+        # select the correct category
+        anime = (self.show and self.show.anime) or (epObj and epObj.show and epObj.show.anime) or False
+        self.search_params['category'] = ('tv', 'anime')[anime]
+
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                self.search_params.update({'q': search_string.encode('utf-8'), 'field': ('seeders', 'time_add')[mode == 'RSS']})
+                self.search_params['q'] = search_string.encode('utf-8') if mode != 'RSS' else ''
+                self.search_params['field'] = 'seeders' if mode != 'RSS' else 'time_add'
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
+                url_fmt_string = 'usearch' if mode != 'RSS' else search_string
                 try:
-                    searchURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
+                    searchURL = self.urls['search'] % url_fmt_string + '?' + urlencode(self.search_params)
                     logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                     data = self.getURL(searchURL)
                     #data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
@@ -104,7 +100,7 @@ class KATProvider(generic.TorrentProvider):
 
                     try:
                         data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data.encode('utf-8')).replace('&', '&amp;'))
-                    except ExpatError as e:
+                    except ExpatError:
                         logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
                         continue
 
@@ -139,11 +135,6 @@ class KATProvider(generic.TorrentProvider):
                         except (AttributeError, TypeError, KeyError):
                             continue
 
-                        try:
-                            pubdate = datetime.datetime.strptime(item['pubDate'], '%a, %d %b %Y %H:%M:%S +0000')
-                        except Exception:
-                            pubdate = datetime.datetime.today()
-
                         if not all([title, download_url]):
                             continue
 
@@ -158,7 +149,7 @@ class KATProvider(generic.TorrentProvider):
                                 logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                             continue
 
-                        item = title, download_url, size, seeders, leechers
+                        item = title, download_url, size, seeders, leechers, info_hash
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -187,7 +178,7 @@ class KATCache(tvcache.TVCache):
         self.minTime = 20
 
     def _getRSSData(self):
-        search_params = {'RSS': ['']}
+        search_params = {'RSS': ['tv', 'anime']}
         return {'entries': self.provider._doSearch(search_params)}
 
 provider = KATProvider()
