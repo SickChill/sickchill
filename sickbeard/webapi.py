@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-
+# pylint: disable=W0223,E0202
 
 import os
 import time
@@ -40,7 +40,7 @@ from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
 
-from versionChecker import CheckVersion
+from sickbeard.versionChecker import CheckVersion
 from sickbeard import db, logger, ui, helpers
 from sickbeard import search_queue
 from sickbeard import image_cache
@@ -143,17 +143,19 @@ class ApiHandler(RequestHandler):
         else:
             outputCallback = outputCallbackDict['default']
 
-        try:self.finish(outputCallback(outDict))
-        except:pass
+        try:
+            self.finish(outputCallback(outDict))
+        except Exception:
+            pass
 
-    def _out_as_image(self, dict):
-        self.set_header('Content-Type', dict['image'].get_media_type())
-        return dict['image'].get_media()
+    def _out_as_image(self, _dict):
+        self.set_header('Content-Type', _dict['image'].get_media_type())
+        return _dict['image'].get_media()
 
-    def _out_as_json(self, dict):
+    def _out_as_json(self, _dict):
         self.set_header("Content-Type", "application/json;charset=UTF-8")
         try:
-            out = json.dumps(dict, ensure_ascii=False, sort_keys=True)
+            out = json.dumps(_dict, ensure_ascii=False, sort_keys=True)
             callback = self.get_query_argument('callback', None) or self.get_query_argument('jsonp', None)
             if callback is not None:
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
@@ -298,26 +300,26 @@ class ApiCall(ApiHandler):
         except AttributeError:
             self._optionalParams = []
 
-        for paramDict, type in [(self._requiredParams, "requiredParameters"),
-                                (self._optionalParams, "optionalParameters")]:
+        for paramDict, paramType in [(self._requiredParams, "requiredParameters"),
+                                     (self._optionalParams, "optionalParameters")]:
 
-            if type in self._help:
+            if paramType in self._help:
                 for paramName in paramDict:
-                    if not paramName in self._help[type]:
-                        self._help[type][paramName] = {}
+                    if not paramName in self._help[paramType]:
+                        self._help[paramType][paramName] = {}
                     if paramDict[paramName]["allowedValues"]:
-                        self._help[type][paramName]["allowedValues"] = paramDict[paramName]["allowedValues"]
+                        self._help[paramType][paramName]["allowedValues"] = paramDict[paramName]["allowedValues"]
                     else:
-                        self._help[type][paramName]["allowedValues"] = "see desc"
-                    self._help[type][paramName]["defaultValue"] = paramDict[paramName]["defaultValue"]
-                    self._help[type][paramName]["type"] = paramDict[paramName]["type"]
+                        self._help[paramType][paramName]["allowedValues"] = "see desc"
+                    self._help[paramType][paramName]["defaultValue"] = paramDict[paramName]["defaultValue"]
+                    self._help[paramType][paramName]["type"] = paramDict[paramName]["type"]
 
             elif paramDict:
                 for paramName in paramDict:
-                    self._help[type] = {}
-                    self._help[type][paramName] = paramDict[paramName]
+                    self._help[paramType] = {}
+                    self._help[paramType][paramName] = paramDict[paramName]
             else:
-                self._help[type] = {}
+                self._help[paramType] = {}
         msg = "No description available"
         if "desc" in self._help:
             msg = self._help["desc"]
@@ -330,10 +332,10 @@ class ApiCall(ApiHandler):
             msg = "The required parameters: '" + "','".join(self._missing) + "' where not set"
         return _responds(RESULT_ERROR, msg=msg)
 
-    def check_params(self, args, kwargs, key, default, required, type, allowedValues):
-        # TODO: explain this
+    def check_params(self, args, kwargs, key, default, required, arg_type, allowedValues):
+
         """ function to check passed params for the shorthand wrapper
-            and to detect missing/required param
+            and to detect missing/required params
         """
 
         # auto-select indexer
@@ -346,7 +348,7 @@ class ApiCall(ApiHandler):
         missing = True
         orgDefault = default
 
-        if type == "bool":
+        if arg_type == "bool":
             allowedValues = [0, 1]
 
         if args:
@@ -364,7 +366,7 @@ class ApiCall(ApiHandler):
                 self._missing = []
                 self._requiredParams = {key: {"allowedValues": allowedValues,
                                               "defaultValue": orgDefault,
-                                              "type": type}}
+                                              "type": arg_type}}
 
             if missing and key not in self._missing:
                 self._missing.append(key)
@@ -372,25 +374,25 @@ class ApiCall(ApiHandler):
             try:
                 self._optionalParams[key] = {"allowedValues": allowedValues,
                                              "defaultValue": orgDefault,
-                                             "type": type}
+                                             "type": arg_type}
             except AttributeError:
                 self._optionalParams = {}
                 self._optionalParams[key] = {"allowedValues": allowedValues,
                                              "defaultValue": orgDefault,
-                                             "type": type}
+                                             "type": arg_type}
 
         if default:
-            default = self._check_param_type(default, key, type)
-            if type == "bool":
-                type = []
+            default = self._check_param_type(default, key, arg_type)
+            if arg_type == "bool":
+                arg_type = []
             self._check_param_value(default, key, allowedValues)
 
         return default, args
 
-    def _check_param_type(self, value, name, type):
-        """ checks if value can be converted / parsed to type
+    def _check_param_type(self, value, name, arg_type):
+        """ checks if value can be converted / parsed to arg_type
             will raise an error on failure
-            or will convert it to type and return new converted value
+            or will convert it to arg_type and return new converted value
             can check for:
             - int: will be converted into int
             - bool: will be converted to False / True
@@ -399,12 +401,12 @@ class ApiCall(ApiHandler):
             - ignore: will ignore it, just like "string"
         """
         error = False
-        if type == "int":
+        if arg_type == "int":
             if _is_int(value):
                 value = int(value)
             else:
                 error = True
-        elif type == "bool":
+        elif arg_type == "bool":
             if value in ("0", "1"):
                 value = bool(int(value))
             elif value in ("true", "True", "TRUE"):
@@ -413,19 +415,19 @@ class ApiCall(ApiHandler):
                 value = False
             elif value not in (True, False):
                 error = True
-        elif type == "list":
+        elif arg_type == "list":
             value = value.split("|")
-        elif type == "string":
+        elif arg_type == "string":
             pass
-        elif type == "ignore":
+        elif arg_type == "ignore":
             pass
         else:
-            logger.log(u'API :: Invalid param type: "%s" can not be checked. Ignoring it.' % str(type), logger.ERROR)
+            logger.log(u'API :: Invalid param type: "%s" can not be checked. Ignoring it.' % str(arg_type), logger.ERROR)
 
         if error:
             # this is a real ApiError !!
             raise ApiError(u'param "%s" with given value "%s" could not be parsed into "%s"'
-                           % (str(name), str(value), str(type)))
+                           % (str(name), str(value), str(arg_type)))
 
         return value
 
@@ -488,13 +490,13 @@ def _is_int(data):
         return True
 
 
-def _rename_element(dict, oldKey, newKey):
+def _rename_element(dict_obj, oldKey, newKey):
     try:
-        dict[newKey] = dict[oldKey]
-        del dict[oldKey]
+        dict_obj[newKey] = dict_obj[oldKey]
+        del dict_obj[oldKey]
     except (ValueError, TypeError, NameError):
         pass
-    return dict
+    return dict_obj
 
 
 def _responds(result_type, data=None, msg=""):
@@ -590,7 +592,7 @@ def _getRootDirs():
         valid = 1
         try:
             ek(os.listdir, root_dir)
-        except:
+        except Exception:
             valid = 0
         default = 0
         if root_dir is default_dir:
@@ -967,7 +969,7 @@ class CMD_SubtitleSearch(ApiCall):
 
         try:
             subtitles = epObj.downloadSubtitles()
-        except:
+        except Exception:
             return _responds(RESULT_FAILURE, msg='Unable to find subtitles')
 
         # return the correct json value
@@ -1209,7 +1211,7 @@ class CMD_Logs(ApiCall):
             with ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
                 data = f.readlines()
 
-        regex = "^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
+        regex = r"^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
 
         finalData = []
 
@@ -1350,14 +1352,14 @@ class CMD_SickBeardAddRootDir(ApiCall):
             # clean up the list - replace %xx escapes by their single-character equivalent
             root_dirs = [urllib.unquote_plus(x) for x in root_dirs]
             for x in root_dirs:
-                if (x == self.location):
+                if x == self.location:
                     location_matched = 1
-                    if (self.default == 1):
+                    if self.default == 1:
                         index = root_dirs.index(self.location)
                     break
 
-        if (location_matched == 0):
-            if (self.default == 1):
+        if location_matched == 0:
+            if self.default == 1:
                 root_dirs.insert(0, self.location)
             else:
                 root_dirs.append(self.location)
@@ -1505,7 +1507,7 @@ class CMD_SickBeardGetMessages(ApiCall):
 
     def run(self):
         messages = []
-        for cur_notification in ui.notifications.get_notifications(self.rh.request.remote_ip):
+        for cur_notification in ui.notifications.get_notifications(self.request.remote_ip):
             messages.append({"title": cur_notification.title,
                              "message": cur_notification.message,
                              "type": cur_notification.type})
@@ -1707,6 +1709,8 @@ class CMD_SickBeardSearchTVRAGE(CMD_SickBeardSearchIndexers):
     }
 
     def __init__(self, args, kwargs):
+        # Leave this one as APICall so it doesnt try and search anything
+        # pylint: disable=W0233,W0231
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):
@@ -1855,9 +1859,10 @@ class CMD_Show(ApiCall):
         if not showObj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        showDict = {}
-        showDict["season_list"] = CMD_ShowSeasonList((), {"indexerid": self.indexerid}).run()["data"]
-        showDict["cache"] = CMD_ShowCache((), {"indexerid": self.indexerid}).run()["data"]
+        showDict = {
+            "season_list": CMD_ShowSeasonList((), {"indexerid": self.indexerid}).run()["data"],
+            "cache": CMD_ShowCache((), {"indexerid": self.indexerid}).run()["data"]
+        }
 
         genreList = []
         if showObj.genre:
@@ -2118,9 +2123,10 @@ class CMD_ShowAddNew(ApiCall):
                 if statusStrings[status].lower() == str(self.status).lower():
                     self.status = status
                     break
-            # TODO: check if obsolete
-            if not self.status in statusStrings.statusStrings:
+
+            if self.status not in statusStrings.statusStrings:
                 raise ApiError("Invalid Status")
+
             # only allow the status options we want
             if int(self.status) not in (WANTED, SKIPPED, IGNORED):
                 return _responds(RESULT_FAILURE, msg="Status prohibited")
@@ -2134,9 +2140,10 @@ class CMD_ShowAddNew(ApiCall):
                 if statusStrings[status].lower() == str(self.future_status).lower():
                     self.future_status = status
                     break
-            # TODO: check if obsolete
-            if not self.future_status in statusStrings.statusStrings:
+
+            if self.future_status not in statusStrings.statusStrings:
                 raise ApiError("Invalid Status")
+
             # only allow the status options we want
             if int(self.future_status) not in (WANTED, SKIPPED, IGNORED):
                 return _responds(RESULT_FAILURE, msg="Status prohibited")
@@ -2759,7 +2766,7 @@ class CMD_ShowUpdate(ApiCall):
             sickbeard.showQueueScheduler.action.updateShow(showObj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has queued to be updated")
         except CantUpdateShowException as e:
-            logger.log("API::Unable to update show: {0}".format(str(e)),logger.DEBUG)
+            logger.log("API::Unable to update show: {0}".format(str(e)), logger.DEBUG)
             return _responds(RESULT_FAILURE, msg="Unable to update " + str(showObj.name))
 
 
