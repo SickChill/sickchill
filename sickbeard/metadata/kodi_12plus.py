@@ -130,7 +130,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         # check for title and id
         if not (getattr(myShow, 'seriesname', None) and getattr(myShow, 'id', None)):
             logger.log(u"Incomplete info for show with id " + str(show_ID) + " on " + sickbeard.indexerApi(
-                show_obj.indexer).name + ", skipping it", logger.ERROR)
+                show_obj.indexer).name + ", skipping it")
             return False
 
         title = etree.SubElement(tv_node, "title")
