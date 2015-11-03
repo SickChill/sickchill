@@ -92,6 +92,10 @@ def sendNZB(nzb, proper=False):
         if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
             addToTop = True
             nzbgetprio = sickbeard.NZBGET_PRIORITY
+        else:
+            category = sickbeard.NZBGET_CATEGORY_BACKLOG
+            if nzb.show.is_anime:
+                category = sickbeard.NZBGET_CATEGORY_ANIME_BACKLOG
 
     if nzb.quality != Quality.UNKNOWN:
         dupescore = nzb.quality * 100
