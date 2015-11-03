@@ -72,6 +72,14 @@ class KATProvider(generic.TorrentProvider):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
+#       select the correct category
+        if self.show.anime:
+            self.search_params.update({'category': 'anime'})
+            logger.log("search param 'category': 'anime' instead of 'tv' ", logger.DEBUG)
+        else:
+            self.search_params.update({'category': 'tv'})
+            logger.log("search param 'category': 'tv' ", logger.DEBUG)
+			
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
