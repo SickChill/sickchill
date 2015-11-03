@@ -749,10 +749,15 @@ class CMD_Episode(ApiCall):
             episode["location"] = episode["location"][showPathLength:]
         elif not showPath:  # show dir is broken ... episode path will be empty
             episode["location"] = ""
+
         # convert stuff to human form
-        episode['airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(
-            network_timezones.parse_date_time(int(episode['airdate']), showObj.airs, showObj.network)),
-                                                           d_preset=dateFormat)
+        if helpers.tryInt(episode['airdate'], 1) > 693595: # 1900
+            episode['airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(
+                network_timezones.parse_date_time(int(episode['airdate']), showObj.airs, showObj.network)),
+                                                               d_preset=dateFormat)
+        else:
+            episode['airdate'] = 'Never'
+
         status, quality = Quality.splitCompositeStatus(int(episode["status"]))
         episode["status"] = _get_status_Strings(status)
         episode["quality"] = get_quality_string(quality)
@@ -1915,7 +1920,7 @@ class CMD_Show(ApiCall):
             showDict["network"] = ""
         showDict["status"] = showObj.status
 
-        if showObj.nextaired:
+        if helpers.tryInt(showObj.nextaired, 1) > 693595:
             dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(
                 network_timezones.parse_date_time(showObj.nextaired, showDict['airs'], showDict['network']))
             showDict['airs'] = sbdatetime.sbdatetime.sbftime(dtEpisodeAirs, t_preset=timeFormat).lstrip('0').replace(
@@ -2529,9 +2534,12 @@ class CMD_ShowSeasons(ApiCall):
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
                 row["status"] = _get_status_Strings(status)
                 row["quality"] = get_quality_string(quality)
-                dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(
-                    network_timezones.parse_date_time(row['airdate'], showObj.airs, showObj.network))
-                row['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
+                if helpers.tryInt(row['airdate'], 1) > 693595: # 1900
+                    dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(
+                        network_timezones.parse_date_time(row['airdate'], showObj.airs, showObj.network))
+                    row['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
+                else:
+                    row['airdate'] = 'Never'
                 curSeason = int(row["season"])
                 curEpisode = int(row["episode"])
                 del row["season"]
@@ -2553,9 +2561,12 @@ class CMD_ShowSeasons(ApiCall):
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
                 row["status"] = _get_status_Strings(status)
                 row["quality"] = get_quality_string(quality)
-                dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(
-                    network_timezones.parse_date_time(row['airdate'], showObj.airs, showObj.network))
-                row['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
+                if helpers.tryInt(row['airdate'], 1) > 693595: # 1900
+                    dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(
+                        network_timezones.parse_date_time(row['airdate'], showObj.airs, showObj.network))
+                    row['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
+                else:
+                    row['airdate'] = 'Never'
                 if not curEpisode in seasons:
                     seasons[curEpisode] = {}
                 seasons[curEpisode] = row
@@ -2812,7 +2823,7 @@ class CMD_Shows(ApiCall):
                 "subtitles": (0, 1)[curShow.subtitles],
             }
 
-            if curShow.nextaired:
+            if helpers.tryInt(curShow.nextaired, 1) > 693595: # 1900
                 dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(
                     network_timezones.parse_date_time(curShow.nextaired, curShow.airs, showDict['network']))
                 showDict['next_ep_airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
