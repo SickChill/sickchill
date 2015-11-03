@@ -15,11 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import generic
 import datetime
 
 import sickbeard
-
+from sickbeard.metadata import generic
 from sickbeard import logger, helpers
 from sickrage.helper.common import dateFormat
 from sickrage.helper.exceptions import ex, ShowNotFoundException
@@ -131,7 +130,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         # check for title and id
         if not (getattr(myShow, 'seriesname', None) and getattr(myShow, 'id', None)):
             logger.log(u"Incomplete info for show with id " + str(show_ID) + " on " + sickbeard.indexerApi(
-                show_obj.indexer).name + ", skipping it", logger.ERROR)
+                show_obj.indexer).name + ", skipping it")
             return False
 
         title = etree.SubElement(tv_node, "title")
@@ -147,7 +146,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 if year_text:
                     year = etree.SubElement(tv_node, "year")
                     year.text = year_text
-            except:
+            except Exception:
                 pass
 
         if getattr(myShow, 'overview', None):
@@ -246,9 +245,9 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(
-                    curEpToWrite.episode) + " on " + sickbeard.indexerApi(
-                    ep_obj.show.indexer).name + ".. has it been removed? Should I delete from db?")
+                logger.log(u"Unable to find episode %dx%d on %s... has it been removed? Should I delete from db?" %
+                           (curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
+
                 return None
 
             if not getattr(myEp, 'firstaired', None):
@@ -321,7 +320,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 rating = etree.SubElement(episode, "rating")
                 rating.text = myEp['rating']
 
-            if getattr(myEp, 'gueststars', None) and isinstance( myEp['gueststars'], basestring):
+            if getattr(myEp, 'gueststars', None) and isinstance(myEp['gueststars'], basestring):
                 for actor in (x.strip() for x in  myEp['gueststars'].split('|') if x.strip()):
                     cur_actor = etree.SubElement(episode, "actor")
                     cur_actor_name = etree.SubElement(cur_actor, "name")

@@ -61,17 +61,11 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                  season_all_poster=False,
                  season_all_banner=False):
 
-        mediabrowser.MediaBrowserMetadata.__init__(self,
-                                         show_metadata,
-                                         episode_metadata,
-                                         fanart,
-                                         poster,
-                                         banner,
-                                         episode_thumbnails,
-                                         season_posters,
-                                         season_banners,
-                                         season_all_poster,
-                                         season_all_banner)
+        mediabrowser.MediaBrowserMetadata.__init__(
+            self, show_metadata, episode_metadata, fanart,
+            poster, banner, episode_thumbnails, season_posters,
+            season_banners, season_all_poster, season_all_banner
+        )
 
         self.name = "Mede8er"
 
@@ -92,7 +86,8 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
     def get_episode_file_path(self, ep_obj):
         return helpers.replaceExtension(ep_obj.location, self._ep_nfo_extension)
 
-    def get_episode_thumb_path(self, ep_obj):
+    @staticmethod
+    def get_episode_thumb_path(ep_obj):
         return helpers.replaceExtension(ep_obj.location, 'jpg')
 
     def _show_data(self, show_obj):
@@ -135,7 +130,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
         # check for title and id
         if not (getattr(myShow, 'seriesname', None) and getattr(myShow, 'id', None)):
             logger.log(u"Incomplete info for show with id " + str(show_obj.indexerid) + " on " + sickbeard.indexerApi(
-                show_obj.indexer).name + ", skipping it", logger.ERROR)
+                show_obj.indexer).name + ", skipping it")
             return False
 
         SeriesName = etree.SubElement(tv_node, "title")
@@ -253,7 +248,8 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(curEpToWrite.episode) + " on tvdb... has it been removed? Should I delete from db?")
+                logger.log(u"Unable to find episode %dx%d on %s... has it been removed? Should I delete from db?" %
+                           (curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
                 return None
 
             if curEpToWrite == ep_obj:
@@ -319,7 +315,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
                 if getattr(myShow, '_actors', None) or getattr(myEp, 'gueststars', None):
                     cast = etree.SubElement(episode, "cast")
-                    if getattr(myEp, 'gueststars', None) and isinstance( myEp['gueststars'], basestring):
+                    if getattr(myEp, 'gueststars', None) and isinstance(myEp['gueststars'], basestring):
                         for actor in (x.strip() for x in  myEp['gueststars'].split('|') if x.strip()):
                             cur_actor = etree.SubElement(cast, "actor")
                             cur_actor.text = actor
@@ -381,7 +377,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
             logger.log(u"Writing show nfo file to " + nfo_file_path, logger.DEBUG)
 
-            nfo_file = ek(open, nfo_file_path, 'w')
+            nfo_file = open(nfo_file_path, 'w')
 
             data.write(nfo_file, encoding="UTF-8")
             nfo_file.close()
@@ -426,7 +422,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
             logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
 
-            nfo_file = ek(open, nfo_file_path, 'w')
+            nfo_file = open(nfo_file_path, 'w')
 
             data.write(nfo_file, encoding="UTF-8")
             nfo_file.close()

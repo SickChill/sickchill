@@ -22,7 +22,7 @@ import re
 
 import sickbeard
 
-import generic
+from sickbeard.metadata import generic
 
 from sickbeard import logger, helpers
 
@@ -124,7 +124,8 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
         return xml_file_path
 
-    def get_episode_thumb_path(self, ep_obj):
+    @staticmethod
+    def get_episode_thumb_path(ep_obj):
         """
         Returns a full show dir/metadata/episode.jpg path for MediaBrowser
         episode thumbs.
@@ -141,7 +142,8 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
         return tbn_file_path
 
-    def get_season_poster_path(self, show_obj, season):
+    @staticmethod
+    def get_season_poster_path(show_obj, season):
         """
         Season thumbs for MediaBrowser go in Show Dir/Season X/folder.jpg
 
@@ -151,7 +153,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         dir_list = [x for x in ek(os.listdir, show_obj.location) if
                     ek(os.path.isdir, ek(os.path.join, show_obj.location, x))]
 
-        season_dir_regex = '^Season\s+(\d+)$'
+        season_dir_regex = r'^Season\s+(\d+)$'
 
         season_dir = None
 
@@ -181,7 +183,8 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
         return ek(os.path.join, show_obj.location, season_dir, 'folder.jpg')
 
-    def get_season_banner_path(self, show_obj, season):
+    @staticmethod
+    def get_season_banner_path(show_obj, season):
         """
         Season thumbs for MediaBrowser go in Show Dir/Season X/banner.jpg
 
@@ -191,7 +194,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         dir_list = [x for x in ek(os.listdir, show_obj.location) if
                     ek(os.path.isdir, ek(os.path.join, show_obj.location, x))]
 
-        season_dir_regex = '^Season\s+(\d+)$'
+        season_dir_regex = r'^Season\s+(\d+)$'
 
         season_dir = None
 
@@ -262,7 +265,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         # check for title and id
         if not (getattr(myShow, 'seriesname', None) and getattr(myShow, 'id', None)):
             logger.log(u"Incomplete info for show with id " + str(show_obj.indexerid) + " on " + sickbeard.indexerApi(
-                show_obj.indexer).name + ", skipping it", logger.ERROR)
+                show_obj.indexer).name + ", skipping it")
             return False
 
         if getattr(myShow, 'id', None):
@@ -325,7 +328,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 if year_text:
                     ProductionYear = etree.SubElement(tv_node, "ProductionYear")
                     ProductionYear.text = year_text
-            except:
+            except Exception:
                 pass
 
         if getattr(myShow, 'runtime', None):
@@ -434,9 +437,8 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(
-                    curEpToWrite.episode) + " on " + sickbeard.indexerApi(
-                    ep_obj.show.indexer).name + ".. has it been removed? Should I delete from db?")
+                logger.log(u"Unable to find episode %dx%d on %s... has it been removed? Should I delete from db?" %
+                           (curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
                 return None
 
             if curEpToWrite == ep_obj:
@@ -520,7 +522,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 Language = etree.SubElement(episode, "Language")
                 try:
                     Language.text = myEp['language']
-                except:
+                except Exception:
                     Language.text = sickbeard.INDEXER_DEFAULT_LANGUAGE  # tvrage api doesn't provide language so we must assume a value here
 
                 thumb = etree.SubElement(episode, "filename")

@@ -4473,6 +4473,19 @@ class ConfigProviders(Config):
                 except Exception:
                     curTorrentProvider.engrelease = 0
 
+            if hasattr(curTorrentProvider, 'onlyspasearch'):
+                try:
+                    curTorrentProvider.onlyspasearch = config.checkbox_to_value(
+                        kwargs[curTorrentProvider.getID() + '_onlyspasearch'])
+                except:
+                    curTorrentProvider.onlyspasearch = 0
+
+            if hasattr(curTorrentProvider, 'append_identifier'):
+                try:
+                    curTorrentProvider.append_identifier = str(kwargs[curTorrentProvider.getID() + '_append_identifier']).strip()
+                except:
+                    curTorrentProvider.append_identifier = None
+
             if hasattr(curTorrentProvider, 'sorting'):
                 try:
                     curTorrentProvider.sorting = str(kwargs[curTorrentProvider.getID() + '_sorting']).strip()

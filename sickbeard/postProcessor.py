@@ -94,6 +94,8 @@ class PostProcessor(object):
 
         self.version = None
 
+        self.anidbEpisode = None
+
     def _log(self, message, level=logger.INFO):
         """
         A wrapper for the internal logger which also keeps track of messages and saves them to a string for later.
@@ -155,7 +157,7 @@ class PostProcessor(object):
         """
         def recursive_glob(treeroot, pattern):
             results = []
-            for base, dirs, files in os.walk(treeroot):
+            for base, _, files in os.walk(treeroot):
                 goodfiles = fnmatch.filter(files, pattern)
                 results.extend(os.path.join(base, f) for f in goodfiles)
             return results
@@ -164,7 +166,7 @@ class PostProcessor(object):
             return []
 
         # don't confuse glob with chars we didn't mean to use
-        globbable_file_path = helpers.fixGlob(file_path)
+        globbable_file_path = ek(helpers.fixGlob, file_path)
 
         file_path_list = []
 
@@ -246,7 +248,7 @@ class PostProcessor(object):
                     self._log('Read only mode on file ' + cur_file + ' Will try to make it writeable', logger.DEBUG)
                     try:
                         ek(os.chmod, cur_file, stat.S_IWRITE)
-                    except:
+                    except Exception:
                         self._log(u'Cannot change permissions of ' + cur_file, logger.WARNING)
 
                 ek(os.remove, cur_file)
@@ -297,7 +299,7 @@ class PostProcessor(object):
             # check if file have subtitles language
             if os.path.splitext(cur_extension)[1][1:] in common.subtitleExtensions:
                 cur_lang = os.path.splitext(cur_extension)[0]
-                if cur_lang in subtitles.wantedLanguages():
+                if cur_lang in sickbeard.subtitles.wantedLanguages():
                     cur_extension = cur_lang + os.path.splitext(cur_extension)[1]
 
             # replace .nfo with .nfo-orig to avoid conflicts
@@ -391,7 +393,7 @@ class PostProcessor(object):
                 self._log("Unable to link file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
                 raise
 
-        self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_hard_link)
+        self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_hard_link, subtitles=subtitles)
 
     def _moveAndSymlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
         """
@@ -414,7 +416,7 @@ class PostProcessor(object):
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files,
-                                      action=_int_move_and_sym_link)
+                                      action=_int_move_and_sym_link, subtitles=subtitles)
 
     def _history_lookup(self):
         """
@@ -497,7 +499,7 @@ class PostProcessor(object):
             logger.log(u" or Parse result(air_date): " + str(parse_result.air_date), logger.DEBUG)
             logger.log(u"Parse result(release_group): " + str(parse_result.release_group), logger.DEBUG)
 
-    def _analyze_name(self, name, file=True):
+    def _analyze_name(self, name):
         """
         Takes a name and tries to figure out a show, season, and episode from it.
 
@@ -517,7 +519,7 @@ class PostProcessor(object):
         name = helpers.remove_non_release_groups(helpers.remove_extension(name))
 
         # parse the name to break it into show name, season, and episode
-        np = NameParser(file, tryIndexers=True)
+        np = NameParser(True, tryIndexers=True)
         parse_result = np.parse(name)
 
         # show object
@@ -576,22 +578,23 @@ class PostProcessor(object):
         episodes = []
 
         # try to look up the nzb in history
-        attempt_list = [self._history_lookup,
+        attempt_list = [
+            self._history_lookup,
 
-                        # try to analyze the nzb name
-                        lambda: self._analyze_name(self.nzb_name),
+            # try to analyze the nzb name
+            lambda: self._analyze_name(self.nzb_name),
 
-                        # try to analyze the file name
-                        lambda: self._analyze_name(self.file_name),
+            # try to analyze the file name
+            lambda: self._analyze_name(self.file_name),
 
-                        # try to analyze the dir name
-                        lambda: self._analyze_name(self.folder_name),
+            # try to analyze the dir name
+            lambda: self._analyze_name(self.folder_name),
 
-                        # try to analyze the file + dir names together
-                        lambda: self._analyze_name(self.file_path),
+            # try to analyze the file + dir names together
+            lambda: self._analyze_name(self.file_path),
 
-                        # try to analyze the dir + file name together as one name
-                        lambda: self._analyze_name(self.folder_name + u' ' + self.file_name)
+            # try to analyze the dir + file name together as one name
+            lambda: self._analyze_name(self.folder_name + u' ' + self.file_name)
         ]
 
         # attempt every possible method to get our info
@@ -644,8 +647,9 @@ class PostProcessor(object):
                         season = int(sql_result[0][0])
                         episodes = [int(sql_result[0][1])]
                     else:
-                        self._log(u"Unable to find episode with date " + str(episodes[0]) + u" for show " + str(
-                        show.indexerid) + u", skipping", logger.DEBUG)
+                        self._log(
+                            u"Unable to find episode with date " +
+                            str(episodes[0]) + u" for show " + str(show.indexerid) + u", skipping", logger.DEBUG)
                         # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
                         episodes = []
                         continue
@@ -714,7 +718,7 @@ class PostProcessor(object):
 
         # if there is a quality available in the status then we don't need to bother guessing from the filename
         if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
-            oldStatus, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
+            _, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
             if ep_quality != common.Quality.UNKNOWN:
                 self._log(
                     u"The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality],
@@ -744,7 +748,7 @@ class PostProcessor(object):
 
         # Try getting quality from the episode (snatched) status
         if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER  + common.Quality.SNATCHED_BEST:
-            oldStatus, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
+            _, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
             if ep_quality != common.Quality.UNKNOWN:
                 self._log(
                     u"The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality],
@@ -761,7 +765,6 @@ class PostProcessor(object):
                 ep_quality] + ", using that", logger.DEBUG)
             return ep_quality
 
-        test = str(ep_quality)
         return ep_quality
 
     def _run_extra_scripts(self, ep_obj):
@@ -785,7 +788,7 @@ class PostProcessor(object):
             try:
                 p = subprocess.Popen(script_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                      stderr=subprocess.STDOUT, cwd=sickbeard.PROG_DIR)
-                out, err = p.communicate()  # @UnusedVariable
+                out, _ = p.communicate()  # @UnusedVariable
                 self._log(u"Script result: " + str(out), logger.DEBUG)
 
             except OSError, e:
@@ -807,7 +810,7 @@ class PostProcessor(object):
         if self.is_priority:
             return True
 
-        old_ep_status, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
+        _, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
 
         # if SR downloaded this on purpose we likely have a priority download
         if self.in_history or ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
@@ -878,7 +881,7 @@ class PostProcessor(object):
 
         # retrieve/create the corresponding TVEpisode objects
         ep_obj = self._get_ep_obj(show, season, episodes)
-        old_ep_status, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
+        _, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
 
         # get the quality of the episode we're processing
         if quality and not common.Quality.qualityStrings[quality] == 'Unknown':
@@ -1130,7 +1133,7 @@ class PostProcessor(object):
 
             # do the library update for Trakt
             notifiers.trakt_notifier.update_library(ep_obj)
-        except:
+        except Exception:
             logger.log(u"Some notifications could not be sent. Continuing with postProcessing...")
 
         self._run_extra_scripts(ep_obj)

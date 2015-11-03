@@ -22,7 +22,7 @@ import re
 
 import sickbeard
 
-import generic
+from sickbeard.metadata import generic
 
 from sickbeard import logger, helpers
 from sickrage.helper.common import dateFormat
@@ -95,7 +95,7 @@ class WDTVMetadata(generic.GenericMetadata):
         # no show metadata generated, we abort this lookup function
         return (None, None, None)
 
-    def create_show_metadata(self, show_obj, force=False):
+    def create_show_metadata(self, show_obj):
         pass
 
     def update_show_indexer_metadata(self, show_obj):
@@ -119,7 +119,8 @@ class WDTVMetadata(generic.GenericMetadata):
     def create_season_all_banner(self, show_obj):
         pass
 
-    def get_episode_thumb_path(self, ep_obj):
+    @staticmethod
+    def get_episode_thumb_path(ep_obj):
         """
         Returns the path where the episode thumbnail should be stored. Defaults to
         the same path as the episode file but with a .metathumb extension.
@@ -133,7 +134,8 @@ class WDTVMetadata(generic.GenericMetadata):
 
         return tbn_filename
 
-    def get_season_poster_path(self, show_obj, season):
+    @staticmethod
+    def get_season_poster_path(show_obj, season):
         """
         Season thumbs for WDTV go in Show Dir/Season X/folder.jpg
 
@@ -143,7 +145,7 @@ class WDTVMetadata(generic.GenericMetadata):
         dir_list = [x for x in ek(os.listdir, show_obj.location) if
                     ek(os.path.isdir, ek(os.path.join, show_obj.location, x))]
 
-        season_dir_regex = '^Season\s+(\d+)$'
+        season_dir_regex = r'^Season\s+(\d+)$'
 
         season_dir = None
 
@@ -210,9 +212,8 @@ class WDTVMetadata(generic.GenericMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(
-                    curEpToWrite.episode) + " on " + sickbeard.indexerApi(
-                    ep_obj.show.indexer).name + "... has it been removed? Should I delete from db?")
+                logger.log(u"Unable to find episode %dx%d on %s... has it been removed? Should I delete from db?" %
+                           (curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
                 return None
 
             if ep_obj.season == 0 and not getattr(myEp, 'firstaired', None):
@@ -258,7 +259,7 @@ class WDTVMetadata(generic.GenericMetadata):
                     if year_text:
                         year = etree.SubElement(episode, "year")
                         year.text = year_text
-                except:
+                except Exception:
                     pass
 
             if curEpToWrite.season != 0 and getattr(myShow, 'runtime', None):
