@@ -297,7 +297,7 @@ class NewznabProvider(generic.NZBProvider):
                 break
 
             if offset != params['offset']:
-                logger.log("Tell your newznab provider to fix their bloody newznab responses")
+                logger.log(u"Tell your newznab provider to fix their bloody newznab responses")
                 break
 
             params['offset'] += params['limit']
@@ -368,7 +368,7 @@ class NewznabCache(tvcache.TVCache):
         while (datetime.datetime.now() - self.last_search).seconds < 5:
             time.sleep(1)
 
-        logger.log("Cache update URL: %s " % rss_url, logger.DEBUG)
+        logger.log(u"Cache update URL: %s " % rss_url, logger.DEBUG)
         data = self.getRSSFeed(rss_url)
 
         self.last_search = datetime.datetime.now()

@@ -71,7 +71,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
         parsedJSON = self.getURL(searchURL, json=True)  # do search
 
         if not parsedJSON:
-            logger.log("No data returned from provider", logger.DEBUG)
+            logger.log(u"No data returned from provider", logger.DEBUG)
             return results
 
         if self._checkAuthFromData(parsedJSON):

@@ -77,7 +77,7 @@ def sendNZB(nzb):
         if nzb.provider.getID() == 'newzbin':
             id = nzb.provider.getIDFromURL(nzb.url)
             if not id:
-                logger.log("Unable to send NZB to sab, can't find ID in URL " + str(nzb.url), logger.ERROR)
+                logger.log(u"Unable to send NZB to sab, can't find ID in URL " + str(nzb.url), logger.ERROR)
                 return False
             params['mode'] = 'addid'
             params['name'] = id

@@ -23,8 +23,6 @@
 # pylint: disable=W0703
 # Catching too general exception
 
-from __future__ import with_statement
-
 import codecs
 
 codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else None)
@@ -47,6 +45,7 @@ if sys.version_info < (2, 7):
     print "Sorry, requires Python 2.7.x"
     sys.exit(1)
 
+# https://mail.python.org/pipermail/python-dev/2014-September/136300.html
 if sys.version_info >= (2, 7, 9):
     import ssl
     # pylint: disable=W0212
@@ -66,6 +65,7 @@ from sickbeard.event_queue import Events
 from configobj import ConfigObj
 from sickrage.helper.encoding import ek
 
+# http://bugs.python.org/issue7980#msg221094
 throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
@@ -165,48 +165,29 @@ class SickRage(object):
         sickbeard.PROG_DIR = os.path.dirname(sickbeard.MY_FULLNAME)
         sickbeard.DATA_DIR = sickbeard.PROG_DIR
         sickbeard.MY_ARGS = sys.argv[1:]
-        sickbeard.SYS_ENCODING = None
 
         try:
             locale.setlocale(locale.LC_ALL, "")
             sickbeard.SYS_ENCODING = locale.getpreferredencoding()
         except (locale.Error, IOError):
-            pass
-
-        # For OSes that are poorly configured I'll just randomly force UTF-8
-        if not sickbeard.SYS_ENCODING or sickbeard.SYS_ENCODING in ('ANSI_X3.4-1968', 'US-ASCII', 'ASCII'):
             sickbeard.SYS_ENCODING = 'UTF-8'
 
-        if not hasattr(sys, "setdefaultencoding"):
-            reload(sys)
-
-        if sys.platform == 'win32':
-            # pylint: disable=E1101
-            # An object is accessed for a non-existent member.
-            if sys.getwindowsversion()[0] >= 6 and sys.stdout.encoding == 'cp65001':
-                sickbeard.SYS_ENCODING = 'UTF-8'
-
-        try:
-            # pylint: disable=E1101
-            # An object is accessed for a non-existent member.
-            # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
-            sys.setdefaultencoding(sickbeard.SYS_ENCODING)
-        except Exception:
-            sys.exit("Sorry, you MUST add the SickRage folder to the PYTHONPATH environment variable\n" +
-                     "or find another way to force Python to use " + sickbeard.SYS_ENCODING + " for string encoding.")
+        # pylint: disable=E1101
+        if not sickbeard.SYS_ENCODING or sickbeard.SYS_ENCODING.lower() in ('ansi_x3.4-1968', 'us-ascii', 'ascii', 'charmap') or \
+            (sys.platform.startswith('win') and sys.getwindowsversion()[0] >= 6 and str(sys.stdout.encoding).lower() in ('cp65001', 'charmap')):
+            sickbeard.SYS_ENCODING = 'UTF-8'
 
         # Need console logging for SickBeard.py and SickBeard-console.exe
         self.consoleLogging = (not hasattr(sys, "frozen")) or (sickbeard.MY_NAME.lower().find('-console') > 0)
 
         # Rename the main thread
-        threading.currentThread().name = "MAIN"
+        threading.currentThread().name = u"MAIN"
 
         try:
-            # pylint: disable=W0612
-            # Unused variable
-            opts, args = getopt.getopt(sys.argv[1:], "hqdp::",
-                                       ['help', 'quiet', 'nolaunch', 'daemon', 'pidfile=', 'port=',
-                                        'datadir=', 'config=', 'noresize'])  # @UnusedVariable
+            opts, _ = getopt.getopt(
+                sys.argv[1:], "hqdp::",
+                ['help', 'quiet', 'nolaunch', 'daemon', 'pidfile=', 'port=', 'datadir=', 'config=', 'noresize']
+            )
         except getopt.GetoptError:
             sys.exit(self.help_message())
 
@@ -524,7 +505,7 @@ class SickRage(object):
 
             # shutdown web server
             if self.webserver:
-                logger.log("Shutting down Tornado")
+                logger.log(u"Shutting down Tornado")
                 self.webserver.shutDown()
 
                 try:

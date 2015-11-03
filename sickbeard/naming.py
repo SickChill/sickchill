@@ -222,7 +222,7 @@ def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=Fal
         logger.log(u"Unable to parse " + new_name + ", not valid", logger.DEBUG)
         return False
 
-    logger.log("The name " + new_name + " parsed into " + str(result), logger.DEBUG)
+    logger.log(u"The name " + new_name + " parsed into " + str(result), logger.DEBUG)
 
     if abd or sports:
         if result.air_date != ep.airdate:

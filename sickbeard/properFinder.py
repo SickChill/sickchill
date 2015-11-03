@@ -189,12 +189,12 @@ class ProperFinder:
                 oldRelease_group = (sqlResults[0]["release_group"])
 
                 if oldVersion > -1 and oldVersion < bestResult.version:
-                    logger.log("Found new anime v" + str(bestResult.version) + " to replace existing v" + str(oldVersion))
+                    logger.log(u"Found new anime v" + str(bestResult.version) + " to replace existing v" + str(oldVersion))
                 else:
                     continue
 
                 if oldRelease_group != bestResult.release_group:
-                    logger.log("Skipping proper from release group: " + bestResult.release_group + ", does not match existing release group: " + oldRelease_group)
+                    logger.log(u"Skipping proper from release group: " + bestResult.release_group + ", does not match existing release group: " + oldRelease_group)
                     continue
 
             # if the show is in our list and there hasn't been a proper already added for that particular episode then add it to our list of propers

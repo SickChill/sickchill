@@ -148,19 +148,19 @@ class GenericClient(object):
                 result.hash = b16encode(b32decode(result.hash)).lower()
         else:
             if not result.content:
-                logger.log('Torrent without content', logger.ERROR)
+                logger.log(u'Torrent without content', logger.ERROR)
                 raise Exception('Torrent without content')
 
             try:
                 torrent_bdecode = bdecode(result.content)
             except BTFailure as e:
-                logger.log('Unable to bdecode torrent', logger.ERROR)
-                logger.log('Torrent bencoded data: {0}'.format(str(result.content)), logger.DEBUG)
+                logger.log(u'Unable to bdecode torrent', logger.ERROR)
+                logger.log(u'Torrent bencoded data: {0}'.format(str(result.content)), logger.DEBUG)
                 raise
             try:
                 info = torrent_bdecode["info"]
             except Exception as e:
-                logger.log('Unable to find info field in torrent', logger.ERROR)
+                logger.log(u'Unable to find info field in torrent', logger.ERROR)
                 raise
             result.hash = sha1(bencode(info)).hexdigest()
 

@@ -106,7 +106,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
                     data = re.sub(r'(?im)<button.+?<[\/]button>', '', data, 0)
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                         if not html:
-                            logger.log("No data returned from provider", logger.DEBUG)
+                            logger.log(u"No data returned from provider", logger.DEBUG)
                             continue
 
                         if html.find(text='No Torrents Found!'):

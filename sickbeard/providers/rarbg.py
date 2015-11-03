@@ -165,7 +165,7 @@ class RarbgProvider(generic.TorrentProvider):
                         self.next_request = datetime.datetime.now() + datetime.timedelta(seconds=10)
 
                         if not data:
-                            logger.log("No data returned from provider", logger.DEBUG)
+                            logger.log(u"No data returned from provider", logger.DEBUG)
                             raise GetOutOfLoop
                         if re.search('ERROR', data):
                             logger.log(u"Error returned from provider", logger.DEBUG)

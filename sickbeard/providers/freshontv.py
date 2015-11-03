@@ -126,7 +126,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                 max_page_number = 0
 
                 if not init_html:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 try:

@@ -73,7 +73,7 @@ class ProwlNotifier:
 
         title = "SickRage"
 
-        logger.log("PROWL: Sending notice with details: event=\"%s\", message=\"%s\", priority=%s, api=%s" % (event, message, prowl_priority, prowl_api), logger.DEBUG)
+        logger.log(u"PROWL: Sending notice with details: event=\"%s\", message=\"%s\", priority=%s, api=%s" % (event, message, prowl_priority, prowl_api), logger.DEBUG)
 
         http_handler = HTTPSConnection("api.prowlapp.com")
 

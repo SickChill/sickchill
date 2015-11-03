@@ -69,11 +69,11 @@ class TORRENTZProvider(generic.TorrentProvider):
                 logger.log(search_url)
                 data = self.getURL(search_url)
                 if not data:
-                    logger.log('Seems to be down right now!')
+                    logger.log(u'Seems to be down right now!')
                     continue
 
                 if not data.startswith("<?xml"):
-                    logger.log('Wrong data returned from: ' + search_url, logger.DEBUG)
+                    logger.log(u'Wrong data returned from: ' + search_url, logger.DEBUG)
                     continue
 
                 if not data.startswith('<?xml'):

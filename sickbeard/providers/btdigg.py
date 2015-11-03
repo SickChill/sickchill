@@ -55,7 +55,7 @@ class BTDIGGProvider(generic.TorrentProvider):
 
                 jdata = self.getURL(searchURL, json=True)
                 if not jdata:
-                    logger.log("No data returned to be parsed!!!")
+                    logger.log(u"No data returned to be parsed!!!")
                     return []
 
                 for torrent in jdata:

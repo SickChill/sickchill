@@ -158,7 +158,7 @@ def downloadSubtitles(subtitles_info):
         new_subtitles = frozenset(current_subtitles).difference(existing_subtitles)
 
     except Exception:
-        logger.log("Error occurred when downloading subtitles for: %s" % video_path)
+        logger.log(u"Error occurred when downloading subtitles for: %s" % video_path)
         logger.log(traceback.format_exc(), logger.ERROR)
         return (existing_subtitles, None)
 
@@ -174,12 +174,12 @@ def save_subtitles(video, subtitles, single=False, directory=None):
     for subtitle in subtitles:
         # check content
         if subtitle.content is None:
-            logger.log("Skipping subtitle for %s: no content" % video.name, logger.DEBUG)
+            logger.log(u"Skipping subtitle for %s: no content" % video.name, logger.DEBUG)
             continue
 
         # check language
         if subtitle.language in set(s.language for s in saved_subtitles):
-            logger.log("Skipping subtitle for %s: language already saved" % video.name, logger.DEBUG)
+            logger.log(u"Skipping subtitle for %s: language already saved" % video.name, logger.DEBUG)
             continue
 
         # create subtitle path
@@ -188,7 +188,7 @@ def save_subtitles(video, subtitles, single=False, directory=None):
             subtitle_path = os.path.join(directory, os.path.split(subtitle_path)[1])
 
         # save content as is or in the specified encoding
-        logger.log("Saving subtitle for %s to %s" % (video.name, subtitle_path), logger.DEBUG)
+        logger.log(u"Saving subtitle for %s to %s" % (video.name, subtitle_path), logger.DEBUG)
         if subtitle.encoding:
             with io.open(subtitle_path, 'w', encoding=subtitle.encoding) as f:
                 f.write(subtitle.text)
@@ -300,20 +300,20 @@ def getEmbeddedLanguages(video_path):
                         try:
                             embedded_subtitle_languages.add(Language.fromalpha3b(st.language))
                         except BabelfishError:
-                            logger.log('Embedded subtitle track is not a valid language', logger.DEBUG)
+                            logger.log(u'Embedded subtitle track is not a valid language', logger.DEBUG)
                             embedded_subtitle_languages.add(Language('und'))
                     elif st.name:
                         try:
                             embedded_subtitle_languages.add(Language.fromname(st.name))
                         except BabelfishError:
-                            logger.log('Embedded subtitle track is not a valid language', logger.DEBUG)
+                            logger.log(u'Embedded subtitle track is not a valid language', logger.DEBUG)
                             embedded_subtitle_languages.add(Language('und'))
                     else:
                         embedded_subtitle_languages.add(Language('und'))
             else:
-                logger.log('MKV has no subtitle track', logger.DEBUG)
+                logger.log(u'MKV has no subtitle track', logger.DEBUG)
     except MalformedMKVError:
-        logger.log('MKV seems to be malformed ( %s ), ignoring embedded subtitles' % video_path, logger.INFO)
+        logger.log(u'MKV seems to be malformed ( %s ), ignoring embedded subtitles' % video_path, logger.INFO)
 
     return embedded_subtitle_languages
 
@@ -381,7 +381,7 @@ class SubtitlesFinder():
             'AND e.location != ""', [today, wantedLanguages(True)])
 
         if len(sqlResults) == 0:
-            logger.log('No subtitles to download', logger.INFO)
+            logger.log(u'No subtitles to download', logger.INFO)
             return
 
         rules = self._getRules()
@@ -389,7 +389,7 @@ class SubtitlesFinder():
         for epToSub in sqlResults:
 
             if not ek(os.path.isfile, epToSub['location']):
-                logger.log('Episode file does not exist, cannot download subtitles for episode %dx%d of show %s' % (epToSub['season'], epToSub['episode'], epToSub['show_name']), logger.DEBUG)
+                logger.log(u'Episode file does not exist, cannot download subtitles for episode %dx%d of show %s' % (epToSub['season'], epToSub['episode'], epToSub['show_name']), logger.DEBUG)
                 continue
 
             # Old shows rule
@@ -398,7 +398,7 @@ class SubtitlesFinder():
                 # Recent shows rule
                     (epToSub['airdate_daydiff'] <= 7 and epToSub['searchcount'] < 7 and now - datetime.datetime.strptime(epToSub['lastsearch'], dateTimeFormat) > datetime.timedelta(hours=rules['new'][epToSub['searchcount']]))):
 
-                logger.log('Downloading subtitles for episode %dx%d of show %s' % (epToSub['season'], epToSub['episode'], epToSub['show_name']), logger.DEBUG)
+                logger.log(u'Downloading subtitles for episode %dx%d of show %s' % (epToSub['season'], epToSub['episode'], epToSub['show_name']), logger.DEBUG)
 
                 showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(epToSub['showid']))
                 if not showObj:

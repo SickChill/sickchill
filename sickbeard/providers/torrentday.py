@@ -115,7 +115,7 @@ class TorrentDayProvider(generic.TorrentProvider):
 
                 parsedJSON = self.getURL(self.urls['search'], post_data=post_data, json=True)
                 if not parsedJSON:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 try:

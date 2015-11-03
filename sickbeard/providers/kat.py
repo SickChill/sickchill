@@ -88,7 +88,7 @@ class KATProvider(generic.TorrentProvider):
                     data = self.getURL(searchURL)
                     # data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
                     if not data:
-                        logger.log("No data returned from provider", logger.DEBUG)
+                        logger.log(u"No data returned from provider", logger.DEBUG)
                         continue
 
                     if not data.startswith('<?xml'):

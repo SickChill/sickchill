@@ -98,7 +98,7 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
                 if not data:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 try:

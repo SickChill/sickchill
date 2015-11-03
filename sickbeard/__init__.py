@@ -683,7 +683,7 @@ def initialize(consoleLogging=True):
             gh = Github(user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
         except Exception as e:
             gh = None
-            logger.log('Unable to setup GitHub properly. GitHub will not be available. Error: %s' % ex(e), logger.WARNING)
+            logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: %s' % ex(e), logger.WARNING)
 
         # git reset on update
         GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 1))

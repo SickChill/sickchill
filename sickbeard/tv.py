@@ -261,7 +261,7 @@ class TVShow(object):
                 logger.log(
                     "Found episode by absolute_number %s which is S%02dE%02d" % (absolute_number, season or 0, episode or 0), logger.DEBUG)
             elif len(sqlResults) > 1:
-                logger.log("Multiple entries for absolute number: " + str(
+                logger.log(u"Multiple entries for absolute number: " + str(
                     absolute_number) + " in show: " + self.name + " found ", logger.ERROR)
                 return None
             else:
@@ -453,7 +453,7 @@ class TVShow(object):
                     try:
                         curEpisode.refreshSubtitles()
                     except Exception:
-                        logger.log("%s: Could not refresh subtitles" % self.indexerid, logger.ERROR)
+                        logger.log(u"%s: Could not refresh subtitles" % self.indexerid, logger.ERROR)
                         logger.log(traceback.format_exc(), logger.DEBUG)
 
                 sql_l.append(curEpisode.get_sql())
@@ -573,7 +573,7 @@ class TVShow(object):
                     if not ep:
                         raise EpisodeNotFoundException
                 except EpisodeNotFoundException:
-                    logger.log("%s: %s object for S%02dE%02d is incomplete, skipping this episode" % (self.indexerid, sickbeard.indexerApi(self.indexer).name, season or 0, episode or 0))
+                    logger.log(u"%s: %s object for S%02dE%02d is incomplete, skipping this episode" % (self.indexerid, sickbeard.indexerApi(self.indexer).name, season or 0, episode or 0))
                     continue
                 else:
                     try:
@@ -583,7 +583,7 @@ class TVShow(object):
                         continue
 
                 with ep.lock:
-                    logger.log("%s: Loading info from %s for episode S%02dE%02d" % (self.indexerid, sickbeard.indexerApi(self.indexer).name, season or 0, episode or 0), logger.DEBUG)
+                    logger.log(u"%s: Loading info from %s for episode S%02dE%02d" % (self.indexerid, sickbeard.indexerApi(self.indexer).name, season or 0, episode or 0), logger.DEBUG)
                     ep.loadFromIndexer(season, episode, tvapi=t)
 
                     sql_l.append(ep.get_sql())
@@ -640,7 +640,7 @@ class TVShow(object):
             return None
 
         if not len(parse_result.episode_numbers):
-            logger.log("parse_result: " + str(parse_result))
+            logger.log(u"parse_result: " + str(parse_result))
             logger.log(u"No episode number found in " + file + ", ignoring it", logger.WARNING)
             return None
 
@@ -654,7 +654,7 @@ class TVShow(object):
 
             episode = int(curEpNum)
 
-            logger.log("%s: %s parsed to %s S%02dE%02d" % (self.indexerid, file, self.name, season or 0, episode or 0), logger.DEBUG)
+            logger.log(u"%s: %s parsed to %s S%02dE%02d" % (self.indexerid, file, self.name, season or 0, episode or 0), logger.DEBUG)
 
             checkQualityAgain = False
             same_file = False
@@ -1021,7 +1021,7 @@ class TVShow(object):
                 file_attribute = ek(os.stat, self.location)[0]
                 if not file_attribute & stat.S_IWRITE:
                     # File is read-only, so make it writeable
-                    logger.log('Attempting to make writeable the read only folder %s' % self._location, logger.DEBUG)
+                    logger.log(u'Attempting to make writeable the read only folder %s' % self._location, logger.DEBUG)
                     try:
                         ek(os.chmod, self.location, stat.S_IWRITE)
                     except Exception:
@@ -1125,19 +1125,19 @@ class TVShow(object):
             logger.log(str(self.indexerid) + ": Show dir doesn't exist, can't download subtitles", logger.DEBUG)
             return
 
-        logger.log("%s: Downloading subtitles" % self.indexerid, logger.DEBUG)
+        logger.log(u"%s: Downloading subtitles" % self.indexerid, logger.DEBUG)
 
         try:
             episodes = self.getAllEpisodes(has_location=True)
             if not episodes:
-                logger.log("%s: No episodes to download subtitles for %s" % (self.indexerid, self.name), logger.DEBUG)
+                logger.log(u"%s: No episodes to download subtitles for %s" % (self.indexerid, self.name), logger.DEBUG)
                 return
 
             for episode in episodes:
                 episode.downloadSubtitles(force=force)
 
         except Exception:
-            logger.log("%s: Error occurred when downloading subtitles for %s" % (self.indexerid, self.name), logger.DEBUG)
+            logger.log(u"%s: Error occurred when downloading subtitles for %s" % (self.indexerid, self.name), logger.DEBUG)
             logger.log(traceback.format_exc(), logger.ERROR)
 
     def saveToDB(self, forceSave=False):

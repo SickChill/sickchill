@@ -139,7 +139,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
                 # url_searched = self.urls['search'] + '?' + urlencode(self.search_params)
 
                 if not data:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 with BS4Parser(data) as html:

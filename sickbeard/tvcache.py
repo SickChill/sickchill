@@ -137,7 +137,7 @@ class TVCache(object):
         handlers = []
 
         if sickbeard.PROXY_SETTING:
-            logger.log("Using global proxy for url: " + url, logger.DEBUG)
+            logger.log(u"Using global proxy for url: " + url, logger.DEBUG)
             scheme, address = urllib2.splittype(sickbeard.PROXY_SETTING)
             address = sickbeard.PROXY_SETTING if scheme else 'http://' + sickbeard.PROXY_SETTING
             handlers = [urllib2.ProxyHandler({'http': address, 'https': address})]

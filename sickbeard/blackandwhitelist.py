@@ -61,7 +61,7 @@ class BlackAndWhiteList(object):
         self._del_all_keywords('blacklist')
         self._add_keywords('blacklist', values)
         self.blacklist = values
-        logger.log('Blacklist set to: %s' % self.blacklist, logger.DEBUG)
+        logger.log(u'Blacklist set to: %s' % self.blacklist, logger.DEBUG)
 
     def set_white_keywords(self, values):
         """
@@ -72,7 +72,7 @@ class BlackAndWhiteList(object):
         self._del_all_keywords('whitelist')
         self._add_keywords('whitelist', values)
         self.whitelist = values
-        logger.log('Whitelist set to: %s' % self.whitelist, logger.DEBUG)
+        logger.log(u'Whitelist set to: %s' % self.whitelist, logger.DEBUG)
 
     def _del_all_keywords(self, table):
         """
@@ -99,7 +99,8 @@ class BlackAndWhiteList(object):
         for result in sqlResults:
             groups.append(result["keyword"])
 
-        logger.log('BWL: ' + str(self.show_id) + ' loaded keywords from ' + table + ': ' + str(groups), logger.DEBUG)
+        logger.log(u'BWL: ' + str(self.show_id) + ' loaded keywords from ' + table + ': ' + str(groups), logger.DEBUG)
+
         return groups
 
     def is_valid(self, result):
@@ -109,6 +110,7 @@ class BlackAndWhiteList(object):
         :param result: Result to analyse
         :return: False if result is not allowed in white/blacklist, True if it is
         """
+
         if self.whitelist or self.blacklist:
             if not result.release_group:
                 logger.log('Failed to detect release group, invalid result', logger.DEBUG)
@@ -125,14 +127,14 @@ class BlackAndWhiteList(object):
             else:
                 black_result = True
 
-            logger.log('Whitelist check passed: %s. Blacklist check passed: %s' % (white_result, black_result), logger.DEBUG)
+            logger.log(u'Whitelist check passed: %s. Blacklist check passed: %s' % (white_result, black_result), logger.DEBUG)
 
             if white_result and black_result:
                 return True
             else:
                 return False
         else:
-            logger.log('No Whitelist and  Blacklist defined, check passed.', logger.DEBUG)
+            logger.log(u'No Whitelist and  Blacklist defined, check passed.', logger.DEBUG)
             return True
 
 

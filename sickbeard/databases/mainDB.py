@@ -111,7 +111,7 @@ class MainSanityCheck(db.DBSanityCheck):
                     (tvrage_show['location'], duplicate[0]['location'], tvrage_show['location'], duplicate[0]['show_name']), logger.WARNING)
                 continue
 
-            logger.log('Mapping %s to tvdb id %i' % (tvrage_show['show_name'], mapping[0]['mindexer_id']))
+            logger.log(u'Mapping %s to tvdb id %i' % (tvrage_show['show_name'], mapping[0]['mindexer_id']))
 
             self.connection.action(
                 "UPDATE tv_shows SET indexer=%i, indexer_id=%i WHERE indexer_id=%i" %
@@ -124,7 +124,7 @@ class MainSanityCheck(db.DBSanityCheck):
                     (INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
                 )
 
-            logger.log('Please perform a full update on %s' % tvrage_show['show_name'], logger.WARNING)
+            logger.log(u'Please perform a full update on %s' % tvrage_show['show_name'], logger.WARNING)
 
 
     def fix_duplicate_shows(self, column='indexer_id'):
@@ -275,12 +275,12 @@ class MainSanityCheck(db.DBSanityCheck):
         for sqlResult in sqlResults:
             langs = []
 
-            logger.log("Checking subtitle codes for episode_id: %s, codes: %s" %
+            logger.log(u"Checking subtitle codes for episode_id: %s, codes: %s" %
                 (sqlResult['episode_id'], sqlResult['subtitles']), logger.DEBUG)
 
             for subcode in sqlResult['subtitles'].split(','):
                 if not len(subcode) is 3 or not subcode in validLanguages:
-                    logger.log("Fixing subtitle codes for episode_id: %s, invalid code: %s" %
+                    logger.log(u"Fixing subtitle codes for episode_id: %s, invalid code: %s" %
                         (sqlResult['episode_id'], subcode), logger.DEBUG)
                     continue
 

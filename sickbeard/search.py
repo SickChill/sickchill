@@ -215,7 +215,7 @@ def pickBestResult(results, show):
             if not show.release_groups.is_valid(cur_result):
                 continue
 
-        logger.log("Quality of " + cur_result.name + " is " + Quality.qualityStrings[cur_result.quality])
+        logger.log(u"Quality of " + cur_result.name + " is " + Quality.qualityStrings[cur_result.quality])
 
         anyQualities, bestQualities = Quality.splitQuality(show.quality)
 
