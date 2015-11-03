@@ -467,18 +467,6 @@ $('#config-components').tabs();
                         </div>
                         % endif
 
-                        % if hasattr(curTorrentProvider, 'append_identifier'):
-                        <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_append_identifier">
-                                <span class="component-title">Append identifier:</span>
-                                <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_append_identifier" id="${curTorrentProvider.getID()}_append_identifier" value="${curTorrentProvider.append_identifier}" class="form-control input-sm input350" />
-                                    <p>Append an identifier to every episode snatched by this provider. Usefull in combination with "Required Words" on show configuration if you want to download certain shows only from this provider.</p>
-                                </span>
-                            </label>
-                        </div>
-                        % endif
-
                         % if hasattr(curTorrentProvider, 'sorting'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_sorting">

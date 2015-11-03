@@ -558,6 +558,9 @@ class CalendarHandler(BaseHandler):
                 ical += 'DTEND:' + air_date_time_end.strftime(
                     "%Y%m%d") + 'T' + air_date_time_end.strftime(
                         "%H%M%S") + 'Z\r\n'
+                if sickbeard.CALENDAR_ICONS:
+                    ical += 'X-GOOGLE-CALENDAR-CONTENT-ICON:https://lh3.googleusercontent.com/-Vp_3ZosvTgg/VjiFu5BzQqI/AAAAAAAA_TY/3ZL_1bC0Pgw/s16-Ic42/SickRage.png\r\n'
+                    ical += 'X-GOOGLE-CALENDAR-CONTENT-DISPLAY:CHIP\r\n'
                 ical += u'SUMMARY: {0} - {1}x{2} - {3}\r\n'.format(
                     show['show_name'], episode['season'], episode['episode'], episode['name']
                 )
@@ -3638,7 +3641,7 @@ class ConfigGeneral(Config):
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
                     proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,
-                    calendar_unprotected=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
+                    calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
                     filter_row=None, fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None,
                     git_reset=None, git_username=None, git_password=None, git_autoissues=None, display_all_seasons=None):
@@ -3677,6 +3680,7 @@ class ConfigGeneral(Config):
         sickbeard.GIT_PATH = git_path
         sickbeard.GIT_REMOTE = git_remote
         sickbeard.CALENDAR_UNPROTECTED = config.checkbox_to_value(calendar_unprotected)
+        sickbeard.CALENDAR_ICONS = config.checkbox_to_value(calendar_icons)
         sickbeard.NO_RESTART = config.checkbox_to_value(no_restart)
         sickbeard.DEBUG = config.checkbox_to_value(debug)
         sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
@@ -3712,9 +3716,7 @@ class ConfigGeneral(Config):
             sickbeard.TIME_PRESET_W_SECONDS = time_preset
             sickbeard.TIME_PRESET = sickbeard.TIME_PRESET_W_SECONDS.replace(u":%S", u"")
 
-        #Force all users to use local
-        #sickbeard.TIMEZONE_DISPLAY = timezone_display
-        sickbeard.TIMEZONE_DISPLAY = 'local'
+        sickbeard.TIMEZONE_DISPLAY = timezone_display
 
 
         if not config.change_LOG_DIR(log_dir, web_log):
@@ -4483,12 +4485,6 @@ class ConfigProviders(Config):
                         kwargs[curTorrentProvider.getID() + '_onlyspasearch'])
                 except:
                     curTorrentProvider.onlyspasearch = 0
-
-            if hasattr(curTorrentProvider, 'append_identifier'):
-                try:
-                    curTorrentProvider.append_identifier = str(kwargs[curTorrentProvider.getID() + '_append_identifier']).strip()
-                except:
-                    curTorrentProvider.append_identifier = None
 
             if hasattr(curTorrentProvider, 'sorting'):
                 try:

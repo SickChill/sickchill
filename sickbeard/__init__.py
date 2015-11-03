@@ -546,6 +546,7 @@ IGNORED_SUBS_LIST = "dk,fin,heb,kor,nor,nordic,pl,swe"
 SYNC_FILES = "!sync,lftp-pget-status,part,bts,!qb"
 
 CALENDAR_UNPROTECTED = False
+CALENDAR_ICONS = False
 NO_RESTART = False
 
 TMDB_API_KEY = 'edc5f123313769de83a71e157758030b'
@@ -610,7 +611,7 @@ def initialize(consoleLogging=True):
             NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, NFO_RENAME, \
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, FILTER_ROW, \
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, \
-            METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, NO_RESTART, \
+            METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
             USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, subtitlesFinderScheduler, \
             SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, OPENSUBTITLES_USER, OPENSUBTITLES_PASS, \
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, \
@@ -1168,6 +1169,7 @@ def initialize(consoleLogging=True):
         IGNORED_SUBS_LIST = check_setting_str(CFG, 'General', 'ignored_subs_list', IGNORED_SUBS_LIST)
 
         CALENDAR_UNPROTECTED = bool(check_setting_int(CFG, 'General', 'calendar_unprotected', 0))
+        CALENDAR_ICONS = bool(check_setting_int(CFG, 'General', 'calendar_icons', 0))
 
         NO_RESTART = bool(check_setting_int(CFG, 'General', 'no_restart', 0))
 
@@ -1264,11 +1266,7 @@ def initialize(consoleLogging=True):
 
             if hasattr(curTorrentProvider, 'onlyspasearch'):
                 curTorrentProvider.onlyspasearch = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                          curTorrentProvider.getID() + '_onlyspasearch', 1))
-
-            if hasattr(curTorrentProvider, 'append_identifier'):
-                curTorrentProvider.append_identifier = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                         curTorrentProvider.getID() + '_append_identifier', '[' + curTorrentProvider.name + ']')
+                                                                          curTorrentProvider.getID() + '_onlyspasearch', 0))
 
             if hasattr(curTorrentProvider, 'sorting'):
                 curTorrentProvider.sorting = check_setting_str(CFG, curTorrentProvider.getID().upper(),
@@ -1777,6 +1775,7 @@ def save_config():
     new_config['General']['require_words'] = REQUIRE_WORDS
     new_config['General']['ignored_subs_list'] = IGNORED_SUBS_LIST
     new_config['General']['calendar_unprotected'] = int(CALENDAR_UNPROTECTED)
+    new_config['General']['calendar_icons'] = int(CALENDAR_ICONS)
     new_config['General']['no_restart'] = int(NO_RESTART)
     new_config['General']['developer'] = int(DEVELOPER)
     new_config['General']['display_all_seasons'] = int(DISPLAY_ALL_SEASONS)
@@ -1824,9 +1823,6 @@ def save_config():
         if hasattr(curTorrentProvider, 'onlyspasearch'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_onlyspasearch'] = int(
                 curTorrentProvider.onlyspasearch)
-        if hasattr(curTorrentProvider, 'append_identifier'):
-            new_config[curTorrentProvider.getID().upper()][
-                curTorrentProvider.getID() + '_append_identifier'] = curTorrentProvider.append_identifier
         if hasattr(curTorrentProvider, 'sorting'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_sorting'] = curTorrentProvider.sorting
         if hasattr(curTorrentProvider, 'ratio'):

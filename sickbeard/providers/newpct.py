@@ -35,7 +35,6 @@ class newpctProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
         self.onlyspasearch = None
-        self.append_identifier = None
         self.cache = newpctCache(self)
 
         self.urls = {
@@ -172,9 +171,6 @@ class newpctProvider(generic.TorrentProvider):
         title = title.replace('[BluRay 1080p]', '[1080p BlueRay x264]')
         title = title.replace('[BluRay MicroHD]', '[1080p BlueRay x264]')
         title = title.replace('[MicroHD 1080p]', '[1080p BlueRay x264]')
-
-        #Append identifier
-        title = title + self.append_identifier
 
         return title
 
