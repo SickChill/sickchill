@@ -3712,9 +3712,7 @@ class ConfigGeneral(Config):
             sickbeard.TIME_PRESET_W_SECONDS = time_preset
             sickbeard.TIME_PRESET = sickbeard.TIME_PRESET_W_SECONDS.replace(u":%S", u"")
 
-        #Force all users to use local
-        #sickbeard.TIMEZONE_DISPLAY = timezone_display
-        sickbeard.TIMEZONE_DISPLAY = 'local'
+        sickbeard.TIMEZONE_DISPLAY = timezone_display
 
 
         if not config.change_LOG_DIR(log_dir, web_log):
