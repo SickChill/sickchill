@@ -10,7 +10,6 @@
 
     myDB = db.DBConnection()
     today = str(datetime.date.today().toordinal())
-    layout = sickbeard.HOME_LAYOUT
 
     status_quality  = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ')'
     status_download = '(' + ','.join([str(x) for x in Quality.DOWNLOADED + Quality.ARCHIVED]) + ')'
@@ -54,24 +53,24 @@
 % endif
 
 <div id="HomeLayout" class="pull-right hidden-print" style="margin-top: -40px;">
-    % if layout != 'poster':
+    % if sickbeard.HOME_LAYOUT != 'poster':
         <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
     % endif
     <span> Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[layout == 'poster']}>Poster</option>
-            <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[layout == 'small']}>Small Poster</option>
-            <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[layout == 'banner']}>Banner</option>
-            <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[layout == 'simple']}>Simple</option>
+            <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
+            <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
+            <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
+            <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
         </select>
-        % if layout != 'poster':
+        % if sickbeard.HOME_LAYOUT != 'poster':
         Search:
             <input class="search form-control form-control-inline input-sm input200" type="search" data-column="2" placeholder="Search Show Name">
             <button type="button" class="resetsorting btn btn-inline">Reset Search</button>
         % endif
     </span>
 
-    % if layout == 'poster':
+    % if sickbeard.HOME_LAYOUT == 'poster':
     &nbsp;
     <span> Sort By:
         <select id="postersort" class="form-control form-control-inline input-sm">
@@ -99,8 +98,8 @@
     % if curListType == "Anime":
         <h1 class="header">Anime List</h1>
     % endif
-% if layout == 'poster':
-<div id="${('container', 'container-anime')[curListType == 'Anime' and layout == 'poster']}" class="clearfix">
+% if sickbeard.HOME_LAYOUT == 'poster':
+<div id="${('container', 'container-anime')[curListType == 'Anime' and sickbeard.HOME_LAYOUT == 'poster']}" class="clearfix">
 <div class="posterview">
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
     % if curLoadingShow.show == None:
@@ -220,7 +219,7 @@
                 </td>
 
                 <td class="show-table">
-                    % if layout != 'simple':
+                    % if sickbeard.HOME_LAYOUT != 'simple':
                         % if curShow.network:
                             <span title="${curShow.network}"><img class="show-network-image" src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
                         % else:
@@ -377,28 +376,28 @@
         <td align="center" class="nowrap"></td>
     % endif
 
-    % if layout == 'small':
+    % if sickbeard.HOME_LAYOUT == 'small':
         <td class="tvShow">
-            <div class="imgsmallposter ${layout}">
+            <div class="imgsmallposter ${sickbeard.HOME_LAYOUT}">
                 <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}" title="${curShow.name}">
-                    <img src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="${layout}" alt="${curShow.indexerid}"/>
+                    <img src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="${sickbeard.HOME_LAYOUT}" alt="${curShow.indexerid}"/>
                 </a>
                 <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
             </div>
         </td>
-    % elif layout == 'banner':
+    % elif sickbeard.HOME_LAYOUT == 'banner':
         <td>
             <span style="display: none;">${curShow.name}</span>
-            <div class="imgbanner ${layout}">
+            <div class="imgbanner ${sickbeard.HOME_LAYOUT}">
                 <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">
-                <img src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
+                <img src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${sickbeard.HOME_LAYOUT}" alt="${curShow.indexerid}" title="${curShow.name}"/>
             </div>
         </td>
-    % elif layout == 'simple':
+    % elif sickbeard.HOME_LAYOUT == 'simple':
         <td class="tvShow"><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
     % endif
 
-    % if layout != 'simple':
+    % if sickbeard.HOME_LAYOUT != 'simple':
         <td align="center">
         % if curShow.network:
             <span title="${curShow.network}" class="hidden-print"><img id="network" width="54" height="27" src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
