@@ -84,7 +84,7 @@ class TORRENTZProvider(generic.TorrentProvider):
                     continue
 
                 try:
-                    data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data.encode('utf-8')).replace('&', '&amp;'))
+                    data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data.encode('utf-8')).decode('utf-8').replace('&', '&amp;'))
                 except ExpatError:
                     logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
                     continue
