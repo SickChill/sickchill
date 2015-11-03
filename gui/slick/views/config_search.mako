@@ -276,6 +276,16 @@
 
                             <div class="field-pair">
                                 <label>
+                                    <span class="component-title">Use SABnzbd category (backlog episodes)</span>
+                                    <span class="component-desc">
+                                        <input type="text" name="sab_category_backlog" id="sab_category_backlog" value="${sickbeard.SAB_CATEGORY_BACKLOG}" class="form-control input-sm input200" />
+                                        <p>add downloads of old episodes to this category (e.g. TV)</p>
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="field-pair">
+                                <label>
                                     <span class="component-title">Use SABnzbd category for anime</span>
                                     <span class="component-desc">
                                         <input type="text" name="sab_category_anime" id="sab_category_anime" value="${sickbeard.SAB_CATEGORY_ANIME}" class="form-control input-sm input200" />
@@ -283,6 +293,18 @@
                                     </span>
                                 </label>
                             </div>
+
+
+                            <div class="field-pair">
+                                <label>
+                                    <span class="component-title">Use SABnzbd category for anime (backlog episodes)</span>
+                                    <span class="component-desc">
+                                        <input type="text" name="sab_category_anime_backlog" id="sab_category_anime_backlog" value="${sickbeard.SAB_CATEGORY_ANIME_BACKLOG}" class="form-control input-sm input200" />
+                                        <p>add anime downloads of old episodes to this category (e.g. anime)</p>
+                                    </span>
+                                </label>
+                            </div>
+
                             % if sickbeard.ALLOW_HIGH_PRIORITY == True:
                             <div class="field-pair">
                                 <label for="sab_forced">
@@ -350,10 +372,30 @@
 
                             <div class="field-pair">
                                 <label>
+                                    <span class="component-title">Use NZBget category (backlog episodes)</span>
+                                    <span class="component-desc">
+                                        <input type="text" name="nzbget_category_backlog" id="nzbget_category_backlog" value="${sickbeard.NZBGET_CATEGORY_BACKLOG}" class="form-control input-sm input200" />
+                                        <p>send downloads of old episodes marked this category (e.g. TV)</p>
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="field-pair">
+                                <label>
                                     <span class="component-title">Use NZBget category for anime</span>
                                     <span class="component-desc">
                                         <input type="text" name="nzbget_category_anime" id="nzbget_category_anime" value="${sickbeard.NZBGET_CATEGORY_ANIME}" class="form-control input-sm input200" />
                                         <p>send anime downloads marked this category (e.g. anime)</p>
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="field-pair">
+                                <label>
+                                    <span class="component-title">Use NZBget category for anime (backlog episodes)</span>
+                                    <span class="component-desc">
+                                        <input type="text" name="nzbget_category_anime_backlog" id="nzbget_category_anime_backlog" value="${sickbeard.NZBGET_CATEGORY_ANIME_BACKLOG}" class="form-control input-sm input200" />
+                                        <p>send anime downloads of old episodes marked this category (e.g. anime)</p>
                                     </span>
                                 </label>
                             </div>
