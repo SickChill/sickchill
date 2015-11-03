@@ -28,8 +28,7 @@ import unittest
 from configobj import ConfigObj
 import sickbeard
 
-from sickbeard import providers, tvcache
-from sickbeard import db
+from sickbeard import db, providers
 from sickbeard.databases import mainDB
 from sickbeard.databases import cache_db, failed_db
 from sickbeard.tv import TVEpisode
@@ -146,7 +145,7 @@ class TestDBConnection(db.DBConnection, object):
         super(TestDBConnection, self).__init__(dbFileName)
 
 class TestCacheDBConnection(TestDBConnection, object):
-     def __init__(self, providerName):
+    def __init__(self, providerName):
         db.DBConnection.__init__(self, os.path.join(TESTDIR, TESTCACHEDBNAME))
 
         # Create the table if it's not already there

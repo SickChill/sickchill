@@ -5,7 +5,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import datetime
 import unittest
 
-import test_lib as test
+from tests import test_lib as test
 
 import sickbeard
 from sickbeard import tv
@@ -67,8 +67,9 @@ simple_test_cases = {
         'show.name.2010.123.source.quality.etc-group': parser.ParseResult(None, 'show name 2010', 1, [23], 'source.quality.etc', 'group'),
         'show.name.2010.222.123.source.quality.etc-group': parser.ParseResult(None, 'show name 2010.222', 1, [23], 'source.quality.etc', 'group'),
         'Show.Name.102': parser.ParseResult(None, 'Show Name', 1, [2]),
-        'the.event.401.hdtv-lol': parser.ParseResult(None, 'the event', 4, [1], 'hdtv', 'lol'),
-        'show.name.2010.special.hdtv-blah': None
+        'the.event.401.hdtv-group': parser.ParseResult(None, 'the event', 4, [1], 'hdtv', 'group'),
+        'show.name.2010.special.hdtv-blah': None,
+        'show.ex-name.102.hdtv-group': parser.ParseResult(None, 'show ex-name', 1, [2], 'hdtv', 'group'),
     },
 
     'stupid': {
@@ -89,7 +90,7 @@ simple_test_cases = {
         'Show.Name.Part.1.and.Part.2.Blah-Group': parser.ParseResult(None, 'Show Name', None, [1, 2], 'Blah', 'Group'),
         'Show.Name.Part.IV.Source.Quality.Etc-Group': parser.ParseResult(None, 'Show Name', None, [4], 'Source.Quality.Etc', 'Group'),
         'Deconstructed.E07.1080i.HDTV.DD5.1.MPEG2-TrollHD': parser.ParseResult(None, 'Deconstructed', None, [7], '1080i.HDTV.DD5.1.MPEG2', 'TrollHD'),
-        'Show.Name.E23.WEB-DL': parser.ParseResult(None, 'Show Name', None, [23], 'WEB-DL')
+        'Show.Name.E23.WEB-DL': parser.ParseResult(None, 'Show Name', None, [23], 'WEB-DL'),
     },
 
     'no_season_multi_ep': {
