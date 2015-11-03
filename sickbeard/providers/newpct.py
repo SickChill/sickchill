@@ -31,7 +31,7 @@ from sickbeard.bs4_parser import BS4Parser
 class newpctProvider(generic.TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "Newpct_(Spanish)")
+        generic.TorrentProvider.__init__(self, "Newpct")
 
         self.supportsBacklog = True
         self.onlyspasearch = None
