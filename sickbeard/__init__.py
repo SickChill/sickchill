@@ -1268,10 +1268,6 @@ def initialize(consoleLogging=True):
                 curTorrentProvider.onlyspasearch = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                           curTorrentProvider.getID() + '_onlyspasearch', 0))
 
-            if hasattr(curTorrentProvider, 'append_identifier'):
-                curTorrentProvider.append_identifier = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                         curTorrentProvider.getID() + '_append_identifier', '')
-
             if hasattr(curTorrentProvider, 'sorting'):
                 curTorrentProvider.sorting = check_setting_str(CFG, curTorrentProvider.getID().upper(),
                                                                curTorrentProvider.getID() + '_sorting', 'seeders')
@@ -1827,9 +1823,6 @@ def save_config():
         if hasattr(curTorrentProvider, 'onlyspasearch'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_onlyspasearch'] = int(
                 curTorrentProvider.onlyspasearch)
-        if hasattr(curTorrentProvider, 'append_identifier'):
-            new_config[curTorrentProvider.getID().upper()][
-                curTorrentProvider.getID() + '_append_identifier'] = curTorrentProvider.append_identifier
         if hasattr(curTorrentProvider, 'sorting'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_sorting'] = curTorrentProvider.sorting
         if hasattr(curTorrentProvider, 'ratio'):
