@@ -557,7 +557,7 @@ class TorrentProvider(GenericProvider):
         self.providerType = GenericProvider.TORRENT
 
     def _get_title_and_url(self, item):
-        from feedparser.feedparser import FeedParserDict
+        from feedparser.util import FeedParserDict
         if isinstance(item, (dict, FeedParserDict)):
             title = item.get('title', '')
             download_url = item.get('url', '')

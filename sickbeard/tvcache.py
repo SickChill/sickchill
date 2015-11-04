@@ -28,7 +28,7 @@ from sickbeard import db
 from sickbeard import logger
 from sickbeard.common import Quality
 from sickbeard import helpers
-from sickbeard.rssfeeds import RSSFeeds
+from sickbeard.rssfeeds import getFeed
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import show_name_helpers
 from sickrage.helper.encoding import ss
@@ -148,7 +148,7 @@ class TVCache():
         elif 'Referer' in self.provider.headers:
             self.provider.headers.pop('Referer')
 
-        return RSSFeeds(self.providerID).getFeed(
+        return getFeed(
             self.provider.proxy._buildURL(url),
             post_data,
             self.provider.headers,
@@ -392,4 +392,3 @@ class TVCache():
         self.setLastSearch()
 
         return neededEps
-
