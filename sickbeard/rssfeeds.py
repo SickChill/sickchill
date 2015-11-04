@@ -1,18 +1,14 @@
-from six.moves import urllib
-
-import urlparse
 import re
+import urlparse
 from feedparser.api import parse
+from feedparser.util import FeedParserDict
 
 from sickbeard import logger
 from sickrage.helper.exceptions import ex
 
-def getFeed(url, post_data=None, request_headers=None, items=None, handlers=[]):
+def getFeed(url, request_headers=None, handlers=None):
     parsed = list(urlparse.urlparse(url))
     parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-
-    if post_data:
-        url += urllib.parse.urlencode(post_data)
 
     try:
         feed = parse(url, False, False, request_headers, handlers=handlers)
@@ -29,3 +25,5 @@ def getFeed(url, post_data=None, request_headers=None, items=None, handlers=[]):
 
     except Exception as e:
         logger.log(u'RSS error: ' + ex(e), logger.DEBUG)
+
+    return FeedParserDict()

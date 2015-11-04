@@ -23,16 +23,15 @@ import itertools
 import urllib2
 
 import sickbeard
-
 from sickbeard import db
 from sickbeard import logger
-from sickbeard.common import Quality
 from sickbeard import helpers
+from sickbeard.common import Quality
 from sickbeard.rssfeeds import getFeed
-from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import show_name_helpers
 from sickrage.helper.encoding import ss
 from sickrage.helper.exceptions import AuthException, ex
+from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 
 class CacheDBConnection(db.DBConnection):
@@ -74,7 +73,7 @@ class CacheDBConnection(db.DBConnection):
                 raise
 
 
-class TVCache():
+class TVCache(object):
     def __init__(self, provider):
         self.provider = provider
         self.providerID = self.provider.getID()
@@ -134,7 +133,7 @@ class TVCache():
         except Exception, e:
             logger.log(u"Error while searching " + self.provider.name + ", skipping: " + repr(e), logger.DEBUG)
 
-    def getRSSFeed(self, url, post_data=None, items=[]):
+    def getRSSFeed(self, url):
         handlers = []
 
         if self.provider.proxy.isEnabled():
@@ -150,9 +149,7 @@ class TVCache():
 
         return getFeed(
             self.provider.proxy._buildURL(url),
-            post_data,
-            self.provider.headers,
-            items,
+            request_headers=self.provider.headers,
             handlers=handlers)
 
     def _translateTitle(self, title):
@@ -297,14 +294,15 @@ class TVCache():
         neededEps = self.findNeededEpisodes(episode, manualSearch, downCurQuality)
         return neededEps[episode] if episode in neededEps else []
 
-    def listPropers(self, date=None, delimiter="."):
+    def listPropers(self, date=None):
         myDB = self._getDB()
         sql = "SELECT * FROM [" + self.providerID + "] WHERE name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
 
         if date != None:
             sql += " AND time >= " + str(int(time.mktime(date.timetuple())))
 
-        return filter(lambda x: x['indexerid'] != 0, myDB.select(sql))
+        propers_results = myDB.select(sql)
+        return [x for x in propers_results if x['indexerid']]
 
 
     def findNeededEpisodes(self, episode, manualSearch=False, downCurQuality=False):
