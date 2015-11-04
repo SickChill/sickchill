@@ -175,6 +175,8 @@ class TVCache(object):
                 u"The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable",
                 logger.DEBUG)
 
+        return False
+
     def _getLastUpdate(self):
         myDB = self._getDB()
         sqlResults = myDB.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.providerID])
