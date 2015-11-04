@@ -3,7 +3,7 @@ import requests
 
 INDEXER_TVDB = 1
 
-#Must keep
+# Must keep
 INDEXER_TVRAGE = 2
 
 initConfig = {}

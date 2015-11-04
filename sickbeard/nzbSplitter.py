@@ -76,7 +76,7 @@ def getSeasonNZBs(name, urlData, season):
             xmlns = xmlnsMatch.group(1)
         match = re.search(regex, curFile.get("subject"), re.I)
         if not match:
-            #print curFile.get("subject"), "doesn't match", regex
+            # print curFile.get("subject"), "doesn't match", regex
             continue
         curEp = match.group(1)
         if curEp not in epFiles:

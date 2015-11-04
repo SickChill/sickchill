@@ -53,7 +53,7 @@ class TransmissionAPI(GenericClient):
 
         self.session.headers.update({'x-transmission-session-id': self.auth})
 
-        #Validating Transmission authorization
+        # Validating Transmission authorization
         post_data = json.dumps({'arguments': {},
                                 'method': 'session-get',
         })

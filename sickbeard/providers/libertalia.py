@@ -105,16 +105,16 @@ class LibertaliaProvider(generic.TorrentProvider):
                         rows = resultsTable.findAll("tr", {"class" : re.compile("torrent_row(.*)?")})
                         for row in rows:
 
-                            #bypass first row because title only
+                            # bypass first row because title only
                             columns = row.find('td', {"class" : "torrent_name"})
-                           # isvfclass = row.find('td', {"class" : "sprite-vf"})
-                            #isvostfrclass = row.find('td', {"class" : "sprite-vostfr"})
+                            # isvfclass = row.find('td', {"class" : "sprite-vf"})
+                            # isvostfrclass = row.find('td', {"class" : "sprite-vostfr"})
                             link = columns.find("a", href=re.compile("torrents"))
                             if link:
                                 title = link.text
-                                #recherched = searchURL.replace(".", "(.*)").replace(" ", "(.*)").replace("'", "(.*)")
+                                # recherched = searchURL.replace(".", "(.*)").replace(" ", "(.*)").replace("'", "(.*)")
                                 download_url = row.find("a", href=re.compile("torrent_pass"))['href']
-                                #FIXME
+                                # FIXME
                                 size = -1
                                 seeders = 1
                                 leechers = 0
@@ -122,8 +122,8 @@ class LibertaliaProvider(generic.TorrentProvider):
                                 if not all([title, download_url]):
                                     continue
 
-                                #Filter unseeded torrent
-                                #if seeders < self.minseed or leechers < self.minleech:
+                                # Filter unseeded torrent
+                                # if seeders < self.minseed or leechers < self.minleech:
                                 #    if mode != 'RSS':
                                 #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 #    continue
@@ -134,7 +134,7 @@ class LibertaliaProvider(generic.TorrentProvider):
 
                                 items[mode].append(item)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

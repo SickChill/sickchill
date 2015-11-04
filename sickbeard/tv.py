@@ -277,7 +277,7 @@ class TVShow(object):
             if noCreate:
                 return None
 
-            #logger.log(str(self.indexerid) + u": An object for episode S%02dE%02d didn't exist in the cache, trying to create it" % (season or 0, episode or 0), logger.DEBUG)
+            # logger.log(str(self.indexerid) + u": An object for episode S%02dE%02d didn't exist in the cache, trying to create it" % (season or 0, episode or 0), logger.DEBUG)
 
             if file:
                 ep = TVEpisode(self, season, episode, file)
@@ -483,8 +483,8 @@ class TVShow(object):
         if self.dvdorder != 0:
             lINDEXER_API_PARMS['dvdorder'] = True
 
-        #logger.log(u"lINDEXER_API_PARMS: " + str(lINDEXER_API_PARMS), logger.DEBUG)
-        #Spamming log
+        # logger.log(u"lINDEXER_API_PARMS: " + str(lINDEXER_API_PARMS), logger.DEBUG)
+        # Spamming log
         t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
 
         cachedShow = t[self.indexerid]
@@ -607,7 +607,7 @@ class TVShow(object):
 
         for cur_provider in sickbeard.metadata_provider_dict.values():
 
-            #logger.log(u"Running metadata routines for " + cur_provider.name, logger.DEBUG)
+            # logger.log(u"Running metadata routines for " + cur_provider.name, logger.DEBUG)
 
             fanart_result = cur_provider.create_fanart(self) or fanart_result
             poster_result = cur_provider.create_poster(self) or poster_result
@@ -1435,10 +1435,10 @@ class TVEpisode(object):
 
         logger.log(u"%s: Downloading subtitles for S%02dE%02d" % (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
 
-        #logging.getLogger('subliminal.api').addHandler(logging.StreamHandler())
-        #logging.getLogger('subliminal.api').setLevel(logging.DEBUG)
-        #logging.getLogger('subliminal').addHandler(logging.StreamHandler())
-        #logging.getLogger('subliminal').setLevel(logging.DEBUG)
+        # logging.getLogger('subliminal.api').addHandler(logging.StreamHandler())
+        # logging.getLogger('subliminal.api').setLevel(logging.DEBUG)
+        # logging.getLogger('subliminal').addHandler(logging.StreamHandler())
+        # logging.getLogger('subliminal').setLevel(logging.DEBUG)
 
         subtitles_info = {'location': self.location, 'subtitles': self.subtitles, 'show.indexerid': self.show.indexerid, 'season': self.season,
                           'episode': self.episode, 'name': self.name, 'show.name': self.show.name, 'status': self.status}
@@ -1644,10 +1644,10 @@ class TVEpisode(object):
         if getattr(myEp, 'episodename', None) is None:
             logger.log(u"This episode %s - S%02dE%02d has no name on %s. Setting to an empty string" % (self.show.name, season or 0, episode or 0, sickbeard.indexerApi(self.indexer).name))
             setattr(myEp, 'episodename', '')
-            # if I'm incomplete on TVDB but I once was complete then just delete myself from the DB for now
-            #if self.indexerid != -1:
-            #    self.deleteEpisode()
-            #return False
+            # # if I'm incomplete on TVDB but I once was complete then just delete myself from the DB for now
+            # if self.indexerid != -1:
+            #     self.deleteEpisode()
+            # return False
 
         if getattr(myEp, 'absolute_number', None) is None:
             logger.log(u"This episode %s - S%02dE%02d has no absolute number on %s" %(self.show.name, season or 0, episode or 0, sickbeard.indexerApi(self.indexer).name), logger.DEBUG)
@@ -2114,18 +2114,18 @@ class TVEpisode(object):
         if encoder:
             logger.log(u"Found codec for '" + show_name + ": " + ep_name + "'.", logger.DEBUG)
 
-        #try to get the release group
+        # try to get the release group
         rel_grp = {}
         rel_grp["SiCKRAGE"] = 'SiCKRAGE'
-        if hasattr(self, 'location'): #from the location name
+        if hasattr(self, 'location'):  # from the location name
             rel_grp['location'] = release_group(self.show, self.location)
             if not rel_grp['location']:
                 del rel_grp['location']
-        if hasattr(self, '_release_group'): #from the release group field in db
+        if hasattr(self, '_release_group'):  # from the release group field in db
             rel_grp['database'] = self._release_group
             if not rel_grp['database']:
                 del rel_grp['database']
-        if hasattr(self, 'release_name'): #from the release name field in db
+        if hasattr(self, 'release_name'):  # from the release name field in db
             rel_grp['release_name'] = release_group(self.show, self.release_name)
             if not rel_grp['release_name']:
                 del rel_grp['release_name']
@@ -2216,10 +2216,10 @@ class TVEpisode(object):
         # if there's no release group in the db, let the user know we replaced it
         if not hasattr(self, '_release_group') and not replace_map['%RG'] == 'SiCKRAGE':
             logger.log(u"Episode has no release group, replacing it with '" + replace_map['%RG'] + "'", logger.DEBUG)
-            self._release_group = replace_map['%RG'] #if release_group is not in the db, put it there
+            self._release_group = replace_map['%RG']  # if release_group is not in the db, put it there
         elif not self._release_group and not replace_map['%RG'] == 'SiCKRAGE':
             logger.log(u"Episode has no release group, replacing it with '" + replace_map['%RG'] + "'", logger.DEBUG)
-            self._release_group = replace_map['%RG'] #if release_group is not in the db, put it there
+            self._release_group = replace_map['%RG']  # if release_group is not in the db, put it there
 
         # if there's no release name then replace it with a reasonable facsimile
         if not replace_map['%RN']:
@@ -2236,7 +2236,7 @@ class TVEpisode(object):
                 result_name = result_name.replace('%RN', '%S.N.S%0SE%0E.%E.N-' + replace_map['%RG'])
                 result_name = result_name.replace('%rn', '%s.n.s%0se%0e.%e.n-' + replace_map['%RG'].lower())
 
-            #logger.log(u"Episode has no release name, replacing it with a generic one: " + result_name, logger.DEBUG)
+            # logger.log(u"Episode has no release name, replacing it with a generic one: " + result_name, logger.DEBUG)
 
         if not replace_map['%RT']:
             result_name = re.sub('([ _.-]*)%RT([ _.-]*)', r'\2', result_name)
@@ -2457,7 +2457,7 @@ class TVEpisode(object):
         related_files = postProcessor.PostProcessor(self.location).list_associated_files(
             self.location, base_name_only=True, subfolders=True)
 
-        #This is wrong. Cause of pp not moving subs.
+        # This is wrong. Cause of pp not moving subs.
         if self.show.subtitles and sickbeard.SUBTITLES_DIR != '':
             related_subs = postProcessor.PostProcessor(self.location).list_associated_files(sickbeard.SUBTITLES_DIR,
                                                                                             subtitles_only=True, subfolders=True)
@@ -2470,11 +2470,11 @@ class TVEpisode(object):
 
         # move related files
         for cur_related_file in related_files:
-            #We need to fix something here because related files can be in subfolders and the original code doesn't handle this (at all)
+            # We need to fix something here because related files can be in subfolders and the original code doesn't handle this (at all)
             cur_related_dir = ek(os.path.dirname, ek(os.path.abspath, cur_related_file))
             subfolder = cur_related_dir.replace(ek(os.path.dirname, ek(os.path.abspath, self.location)), '')
-            #We now have a subfolder. We need to add that to the absolute_proper_path.
-            #First get the absolute proper-path dir
+            # We now have a subfolder. We need to add that to the absolute_proper_path.
+            # First get the absolute proper-path dir
             proper_related_dir = ek(os.path.dirname, ek(os.path.abspath, absolute_proper_path + file_ext))
             proper_related_path = absolute_proper_path.replace(proper_related_dir, proper_related_dir + subfolder)
 

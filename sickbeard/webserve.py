@@ -158,8 +158,8 @@ class BaseHandler(RequestHandler):
 
         super(BaseHandler, self).__init__(*args, **kwargs)
 
-    #def set_default_headers(self):
-        #self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    # def set_default_headers(self):
+    #     self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
     def write_error(self, status_code, **kwargs):
         # handle 404 http errors
@@ -393,7 +393,7 @@ class WebRoot(WebHandler):
             layout = 'poster'
 
         sickbeard.HOME_LAYOUT = layout
-        #Dont redirect to default page so user can see new layout
+        # Don't redirect to default page so user can see new layout
         return self.redirect("/home/")
 
     @staticmethod
@@ -2653,7 +2653,7 @@ class HomeAddShows(Home):
                 logger.log(u"Unable to create the folder " + show_dir + ", can't add the show", logger.ERROR)
                 ui.notifications.error("Unable to add show",
                                        "Unable to create the folder " + show_dir + ", can't add the show")
-                #Dont redirect to default page because user wants to see the new show
+                # Don't redirect to default page because user wants to see the new show
                 return self.redirect("/home/")
             else:
                 helpers.chmodAsParent(show_dir)
@@ -3708,8 +3708,8 @@ class ConfigGeneral(Config):
         sickbeard.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
         sickbeard.GIT_USERNAME = git_username
         sickbeard.GIT_PASSWORD = git_password
-        #sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
-        #Force GIT_RESET
+        # sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
+        # Force GIT_RESET
         sickbeard.GIT_RESET = 1
         sickbeard.GIT_AUTOISSUES = config.checkbox_to_value(git_autoissues)
         sickbeard.GIT_PATH = git_path

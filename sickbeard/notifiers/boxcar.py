@@ -92,7 +92,7 @@ class BoxcarNotifier:
                     # i dont know if this is true or false ... its neither but i also dont know how we got here in the first place
                     return False
 
-                #HTTP status 401 if the user doesn't have the service added
+                # HTTP status 401 if the user doesn't have the service added
                 else:
                     subscribeNote = self._sendBoxcar(msg, title, email, True)
                     if subscribeNote:

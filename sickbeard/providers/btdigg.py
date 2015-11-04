@@ -1,7 +1,7 @@
 # Author: Jodi Jones <venom@gen-x.co.nz>
 # URL: http://code.google.com/p/sickbeard/
 #
-#Ported to sickrage by: matigonkas
+# Ported to sickrage by: matigonkas
 #
 # This file is part of SickRage.
 #
@@ -66,15 +66,15 @@ class BTDIGGProvider(generic.TorrentProvider):
                         title = torrent['name']
                         download_url = torrent['magnet']
                         size = torrent['size']
-                        #FIXME
+                        # FIXME
                         seeders = 1
                         leechers = 0
 
                         if not all([title, download_url]):
                             continue
 
-                        #Filter unseeded torrent
-                        #if seeders < self.minseed or leechers < self.minleech:
+                        # Filter unseeded torrent
+                        # if seeders < self.minseed or leechers < self.minleech:
                         #    if mode != 'RSS':
                         #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         #    continue
@@ -85,7 +85,7 @@ class BTDIGGProvider(generic.TorrentProvider):
 
                         items[mode].append(item)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

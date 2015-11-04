@@ -31,7 +31,7 @@ def getWinDrives():
     from ctypes import windll
 
     drives = []
-    bitmask = windll.kernel32.GetLogicalDrives()  #@UndefinedVariable
+    bitmask = windll.kernel32.GetLogicalDrives()  # @UndefinedVariable
     for letter in string.uppercase:
         if bitmask & 1:
             drives.append(letter)

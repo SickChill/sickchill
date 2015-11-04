@@ -58,7 +58,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
         return True
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
-        #FIXME ADD MODE
+        # FIXME ADD MODE
         self._checkAuth()
         results = []
         params = {}
@@ -88,7 +88,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
                 title = parsedJSON['release_name']
                 id = parsedJSON['id']
                 download_url = self.download_url % (id, self.api_key)
-                #FIXME
+                # FIXME
                 size = -1
                 seeders = 1
                 leechers = 0
@@ -96,8 +96,8 @@ class TitansOfTVProvider(generic.TorrentProvider):
                 if not all([title, download_url]):
                     continue
 
-                #Filter unseeded torrent
-                #if seeders < self.minseed or leechers < self.minleech:
+                # Filter unseeded torrent
+                # if seeders < self.minseed or leechers < self.minleech:
                 #    if mode != 'RSS':
                 #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                 #    continue
@@ -107,7 +107,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
                 logger.log(u"Found result: %s " % title, logger.DEBUG)
                 results.append(result)
 
-        #FIXME SORTING
+        # FIXME SORTING
 
         return results
 

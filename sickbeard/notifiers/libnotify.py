@@ -29,7 +29,7 @@ def diagnose():
     user-readable message indicating possible issues.
     '''
     try:
-        from gi.repository import Notify #@UnusedImport
+        from gi.repository import Notify  # @UnusedImport
     except ImportError:
         return (u"<p>Error: gir-notify isn't installed. On Ubuntu/Debian, install the "
                 u"<a href=\"apt:gir1.2-notify-0.7\">gir1.2-notify-0.7</a> or "

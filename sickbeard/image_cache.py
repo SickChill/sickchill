@@ -250,7 +250,7 @@ class ImageCache:
             return False
 
         # retrieve the image from indexer using the generic metadata class
-        #TODO: refactor
+        # TODO: refactor
         metadata_generator = GenericMetadata()
         img_data = metadata_generator._retrieve_show_image(img_type_name, show_obj)
         result = metadata_generator._write_image(img_data, dest_path)

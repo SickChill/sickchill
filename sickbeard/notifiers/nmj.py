@@ -87,7 +87,7 @@ class NMJNotifier:
 
     def notify_snatch(self, ep_name):
         return False
-        #Not implemented: Start the scanner when snatched does not make any sense
+        # Not implemented: Start the scanner when snatched does not make any sense
 
     def notify_download(self, ep_name):
         if sickbeard.USE_NMJ:

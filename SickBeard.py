@@ -175,7 +175,7 @@ class SickRage(object):
             reload(sys)
 
         if sys.platform == 'win32':
-            #pylint: disable=E1101
+            # pylint: disable=E1101
             if sys.getwindowsversion()[0] >= 6 and sys.stdout.encoding == 'cp65001':
                 sickbeard.SYS_ENCODING = 'UTF-8'
 
@@ -388,8 +388,8 @@ class SickRage(object):
         if sickbeard.USE_FAILED_DOWNLOADS:
             failed_history.trimHistory()
 
-        # Check for metadata indexer updates for shows (Disabled until we use api)
-        #sickbeard.showUpdateScheduler.forceRun()
+        # # Check for metadata indexer updates for shows (Disabled until we use api)
+        # sickbeard.showUpdateScheduler.forceRun()
 
         # Launch browser
         if sickbeard.LAUNCH_BROWSER and not (self.noLaunch or self.runAsDaemon):
@@ -541,11 +541,11 @@ class SickRage(object):
                     if '--nolaunch' not in popen_list:
                         popen_list += ['--nolaunch']
                     logger.log(u"Restarting SickRage with " + str(popen_list))
-                    logger.shutdown() #shutdown the logger to make sure it's released the logfile BEFORE it restarts SR.
+                    logger.shutdown()  # shutdown the logger to make sure it's released the logfile BEFORE it restarts SR.
                     subprocess.Popen(popen_list, cwd=os.getcwd())
 
         # system exit
-        logger.shutdown() #Make sure the logger has stopped, just in case
+        logger.shutdown()  # Make sure the logger has stopped, just in case
         # pylint: disable=W0212
         os._exit(0)
 

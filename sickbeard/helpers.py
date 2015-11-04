@@ -457,7 +457,7 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
             if not (seriesname and series_id):
                 continue
             ShowObj = findCertainShow(sickbeard.showList, int(series_id))
-            #Check if we can find the show in our list (if not, it's not the right show)
+            # Check if we can find the show in our list (if not, it's not the right show)
             if (indexer_id is None) and (ShowObj is not None) and (ShowObj.indexerid == int(series_id)):
                 return (seriesname, i, int(series_id))
             elif (indexer_id is not None) and (int(indexer_id) == int(series_id)):
@@ -646,7 +646,7 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
     :param old_path_length: The length of media file path (old name) WITHOUT THE EXTENSION
     """
 
-    #new_dest_dir, new_dest_name = os.path.split(new_path)  # @UnusedVariable
+    # new_dest_dir, new_dest_name = os.path.split(new_path)  # @UnusedVariable
 
     if old_path_length == 0 or old_path_length > len(cur_path):
         # approach from the right
@@ -1220,12 +1220,12 @@ def get_show(name, tryIndexers=False):
             fromCache = True
             showObj = findCertainShow(sickbeard.showList, int(cache))
 
-        #try indexers
+        # try indexers
         if not showObj and tryIndexers:
             showObj = findCertainShow(sickbeard.showList,
                                       searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
 
-        #try scene exceptions
+        # try scene exceptions
         if not showObj:
             ShowID = sickbeard.scene_exceptions.get_scene_exception_by_name(name)[0]
             if ShowID:

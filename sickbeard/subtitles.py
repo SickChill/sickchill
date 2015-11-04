@@ -102,7 +102,7 @@ def sortedServiceList():
 def getEnabledServiceList():
     return [x['name'] for x in sortedServiceList() if x['enabled']]
 
-#Hack around this for now.
+# Hack around this for now.
 def fromietf(language):
     return Language.fromopensubtitles(language)
 

@@ -99,7 +99,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
                 try:
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
-                        #Continue only if one Release is found
+                        # Continue only if one Release is found
                         empty = html.find('Nothing found!')
                         if empty:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
@@ -116,7 +116,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
                             full_id = link['href'].replace('details.php?id=', '')
                             torrent_id = full_id.split("&")[0]
 
-                            #Free leech torrents are marked with green [F L] in the title (i.e. <font color=green>[F&nbsp;L]</font>)
+                            # Free leech torrents are marked with green [F L] in the title (i.e. <font color=green>[F&nbsp;L]</font>)
                             freeleechTag = cells[1].find('font', attrs={'color': 'green'})
                             if freeleechTag and freeleechTag.text == u'[F\xa0L]':
                                 isFreeleechTorrent = True
@@ -148,7 +148,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
                             if not all([title, download_url]):
                                 continue
 
-                            #Filter unseeded torrent
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -163,7 +163,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
                 except Exception, e:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

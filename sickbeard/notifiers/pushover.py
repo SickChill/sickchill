@@ -106,7 +106,7 @@ class PushoverNotifier:
             # For HTTP status code 401's, it is because you are passing in either an invalid token, or the user has not added your service.
             elif e.code == 401:
 
-                #HTTP status 401 if the user doesn't have the service added
+                # HTTP status 401 if the user doesn't have the service added
                 subscribeNote = self._sendPushover(msg, title, sound=sound, userKey=userKey, apiKey=apiKey)
                 if subscribeNote:
                     logger.log("Subscription sent", logger.DEBUG)

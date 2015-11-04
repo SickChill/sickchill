@@ -45,7 +45,7 @@ class Boxcar2Notifier:
         """
 
         # build up the URL and parameters
-	#more info goes here - https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification
+        # more info goes here - https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification
         msg = msg.strip()
         curUrl = API_URL
 

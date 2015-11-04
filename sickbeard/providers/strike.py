@@ -40,7 +40,7 @@ class STRIKEProvider(generic.TorrentProvider):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        for mode in search_strings.keys(): #Mode = RSS, Season, Episode
+        for mode in search_strings.keys():  # Mode = RSS, Season, Episode
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
@@ -66,7 +66,7 @@ class STRIKEProvider(generic.TorrentProvider):
                     if not all([title, download_url]):
                         continue
 
-                    #Filter unseeded torrent
+                    # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -78,7 +78,7 @@ class STRIKEProvider(generic.TorrentProvider):
                     item = title, download_url, size, seeders, leechers
                     items[mode].append(item)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

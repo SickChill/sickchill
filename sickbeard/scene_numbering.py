@@ -218,7 +218,7 @@ def set_scene_numbering(indexer_id, indexer, season=None, episode=None, absolute
             "UPDATE scene_numbering SET scene_absolute_number = ? WHERE indexer = ? and indexer_id = ? and absolute_number = ?",
             [sceneAbsolute, indexer, indexer_id, absolute_number])
 
-    #Reload data from DB so that cache and db are in sync
+    # Reload data from DB so that cache and db are in sync
     show = helpers.findCertainShow(sickbeard.showList, indexer_id)
     show.flushEpisodes()
 

@@ -130,7 +130,7 @@ class T411Provider(generic.TorrentProvider):
                                 leechers = int(torrent['leechers'])
                                 verified = bool(torrent['isVerified'])
 
-                                #Filter unseeded torrent
+                                # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
                                     if mode != 'RSS':
                                         logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -154,7 +154,7 @@ class T411Provider(generic.TorrentProvider):
                     except Exception, e:
                         logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
-            #For each search mode sort all the items by seeders if available if available
+            # For each search mode sort all the items by seeders if available if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
