@@ -78,7 +78,7 @@ class NameParser(object):
     def _compile_regexes(self, regexMode):
         if regexMode == self.ANIME_REGEX:
             dbg_str = u"ANIME"
-            uncompiled_regex = [regexes.anime_regexes, regexes.normal_regexes]
+            uncompiled_regex = [regexes.anime_regexes]
         elif regexMode == self.NORMAL_REGEX:
             dbg_str = u"NORMAL"
             uncompiled_regex = [regexes.normal_regexes]
