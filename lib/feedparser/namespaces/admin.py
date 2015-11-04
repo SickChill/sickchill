@@ -1,8 +1,9 @@
+# Support for the administrative elements extension
 # Copyright 2010-2015 Kurt McKee <contactme@kurtmckee.org>
 # Copyright 2002-2008 Mark Pilgrim
 # All rights reserved.
 #
-# This file is part of feedparser.
+# This file is a part of feedparser.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -23,22 +24,32 @@
 # INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE."""
+# POSSIBILITY OF SUCH DAMAGE.
 
 from __future__ import absolute_import, unicode_literals
 
-__author__ = 'Kurt McKee <contactme@kurtmckee.org>'
-__license__ = 'BSD 2-clause'
-__version__ = '5.2.1'
+from ..util import FeedParserDict
 
-# HTTP "User-Agent" header to send to servers when downloading feeds.
-# If you are embedding feedparser in a larger application, you should
-# change this to your application name and URL.
-USER_AGENT = "feedparser/%s +https://github.com/kurtmckee/feedparser/" % __version__
+class Namespace(object):
+    # RDF Site Summary 1.0 Modules: Administrative
+    # http://web.resource.org/rss/1.0/modules/admin/
 
-from . import api
-from .api import parse
-from .datetimes import registerDateHandler
-from .exceptions import *
+    supported_namespaces = {
+        'http://webns.net/mvcb/': 'admin',
+    }
 
-api.USER_AGENT = USER_AGENT
+    def _start_admin_generatoragent(self, attrsD):
+        self.push('generator', 1)
+        value = self._getAttribute(attrsD, 'rdf:resource')
+        if value:
+            self.elementstack[-1][2].append(value)
+        self.pop('generator')
+        self._getContext()['generator_detail'] = FeedParserDict({'href': value})
+
+    def _start_admin_errorreportsto(self, attrsD):
+        self.push('errorreportsto', 1)
+        value = self._getAttribute(attrsD, 'rdf:resource')
+        if value:
+            self.elementstack[-1][2].append(value)
+        self.pop('errorreportsto')
+
