@@ -92,7 +92,6 @@ class SickRage(object):
         self.log_dir = None
         self.consoleLogging = True
 
-
     @staticmethod
     def help_message():
         """
@@ -127,7 +126,6 @@ class SickRage(object):
 
     @staticmethod
     def fix_clients_nonsense():
-
         filenames = [
             "sickbeard/clients/download_station.py",
             "sickbeard/clients/utorrent.py",
@@ -140,11 +138,13 @@ class SickRage(object):
 
         for filename in filenames:
             filename = ek(os.path.join, sickbeard.PROG_DIR, filename)
+
             try:
                 if ek(os.path.exists, filename):
                     ek(os.remove, filename)
             except Exception:
                 pass
+
             try:
                 if ek(os.path.exists, filename + "c"):
                     ek(os.remove, filename + "c")
@@ -422,7 +422,6 @@ class SickRage(object):
         # Daemons traditionally run with umask 0 anyways and this should not have repercussions
         os.umask(0)
 
-
         # Make the child a session-leader by detaching from the terminal
         try:
             pid = os.fork()  # @UndefinedVariable - only available in UNIX
@@ -436,6 +435,7 @@ class SickRage(object):
         if self.CREATEPID:
             pid = str(os.getpid())
             logger.log(u"Writing PID: " + pid + " to " + str(self.PIDFILE))
+
             try:
                 file(self.PIDFILE, 'w').write("%s\n" % pid)
             except IOError, e:
@@ -460,7 +460,6 @@ class SickRage(object):
         try:
             if os.path.exists(PIDFILE):
                 os.remove(PIDFILE)
-
         except (IOError, OSError):
             return False
 
@@ -471,7 +470,6 @@ class SickRage(object):
         """
         Populates the showList with shows from the database
         """
-
         logger.log(u"Loading initial show list", logger.DEBUG)
 
         myDB = db.DBConnection()
@@ -517,6 +515,7 @@ class SickRage(object):
             if self.webserver:
                 logger.log("Shutting down Tornado")
                 self.webserver.shutDown()
+
                 try:
                     self.webserver.join(10)
                 except Exception:
