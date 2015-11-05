@@ -21,6 +21,7 @@ import sickbeard
 from sickbeard import db, logger, helpers
 from adba.aniDBerrors import AniDBCommandTimeoutError
 
+
 class BlackAndWhiteList(object):
     blacklist = []
     whitelist = []
@@ -133,8 +134,10 @@ class BlackAndWhiteList(object):
             logger.log('No Whitelist and  Blacklist defined, check passed.', logger.DEBUG)
             return True
 
+
 class BlackWhitelistNoShowIDException(Exception):
     'No show_id was given'
+
 
 def short_group_names(groups):
     """
