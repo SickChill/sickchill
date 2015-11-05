@@ -133,7 +133,7 @@ class HDSpaceProvider(generic.TorrentProvider):
                 # Skip column headers
                 for result in torrents[1:]:
                     if len(result.contents) < 10:
-                        #skip extraneous rows at the end
+                        # skip extraneous rows at the end
                         continue
 
                     try:
@@ -147,7 +147,7 @@ class HDSpaceProvider(generic.TorrentProvider):
                         if not all([title, download_url]):
                             continue
 
-                        #Filter unseeded torrent
+                        # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
                                 logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -162,7 +162,7 @@ class HDSpaceProvider(generic.TorrentProvider):
                     except (AttributeError, TypeError, KeyError, ValueError):
                         continue
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

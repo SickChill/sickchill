@@ -209,7 +209,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
         result.result = True
 
-        #Don't Link media when the media is extracted from a rar in the same path
+        # Don't Link media when the media is extracted from a rar in the same path
         if process_method in ('hardlink', 'symlink') and videoInRar:
             process_media(path, videoInRar, nzbName, 'move', force, is_priority, result)
             delete_files(path, rarContent, result)
@@ -229,7 +229,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
         result.output += logHelper(u"Sync Files: " + str(SyncFiles) + " in path: " + path)
         result.missedfiles.append(path + " : Syncfiles found")
 
-    #Process Video File in all TV Subdir
+    # Process Video File in all TV Subdir
     for dir in [x for x in dirs if validateDir(path, x, nzbNameOriginal, failed, result)]:
 
         result.result = True
@@ -257,7 +257,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 if notwantedFiles:
                     result.output += logHelper(u"Found unwanted files: " + str(notwantedFiles), logger.DEBUG)
 
-                #Don't Link media when the media is extracted from a rar in the same path
+                # Don't Link media when the media is extracted from a rar in the same path
                 if process_method in ('hardlink', 'symlink') and videoInRar:
                     process_media(processPath, videoInRar, nzbName, 'move', force, is_priority, result)
                     process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force,
@@ -271,9 +271,9 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 else:
                     process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result)
 
-                    #Delete all file not needed
+                    # Delete all file not needed
                     if process_method != "move" or not result.result \
-                            or (type == "manual" and not delete_on):  #Avoid to delete files if is Manual PostProcessing
+                            or (type == "manual" and not delete_on):  # Avoid to delete files if is Manual PostProcessing
                         continue
 
                     delete_files(processPath, notwantedFiles, result)
@@ -367,7 +367,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
     videoFiles = filter(helpers.isMediaFile, allFiles)
     allDirs.append(dirName)
 
-    #check if the dir have at least one tv video file
+    # check if the dir have at least one tv video file
     for video in videoFiles:
         try:
             NameParser().parse(video, cache_result=False)
@@ -383,7 +383,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
             pass
 
     if sickbeard.UNPACK:
-        #Search for packed release
+        # Search for packed release
         packedFiles = filter(helpers.isRarFile, allFiles)
 
         for packed in packedFiles:
@@ -494,27 +494,27 @@ def already_postprocessed(dirName, videofile, force, result):
     myDB = db.DBConnection()
     sqlResult = myDB.select("SELECT * FROM tv_episodes WHERE release_name = ?", [dirName])
     if sqlResult:
-        #result.output += logHelper(u"You're trying to post process a dir that's already been processed, skipping", logger.DEBUG)
+        # result.output += logHelper(u"You're trying to post process a dir that's already been processed, skipping", logger.DEBUG)
         return True
 
     else:
         sqlResult = myDB.select("SELECT * FROM tv_episodes WHERE release_name = ?", [videofile.rpartition('.')[0]])
         if sqlResult:
-            #result.output += logHelper(u"You're trying to post process a video that's already been processed, skipping", logger.DEBUG)
+            # result.output += logHelper(u"You're trying to post process a video that's already been processed, skipping", logger.DEBUG)
             return True
 
-        #Needed if we have downloaded the same episode @ different quality
-        #But we need to make sure we check the history of the episode we're going to PP, and not others
+        # Needed if we have downloaded the same episode @ different quality
+        # But we need to make sure we check the history of the episode we're going to PP, and not others
         np = NameParser(dirName, tryIndexers=True)
-        try: #if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
+        try:  # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
             parse_result = np.parse(dirName)
-        except: #ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
+        except:  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
             parse_result = False
 
 
-        search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid" #This part is always the same
+        search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same
         search_sql += " WHERE history.season=tv_episodes.season and history.episode=tv_episodes.episode"
-        #If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
+        # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
         if parse_result and (parse_result.show.indexerid and parse_result.episode_numbers and parse_result.season_number):
             search_sql += " and tv_episodes.showid = '" + str(parse_result.show.indexerid) + "' and tv_episodes.season = '" + str(parse_result.season_number) + "' and tv_episodes.episode = '" + str(parse_result.episode_numbers[0]) + "'"
 
@@ -522,7 +522,7 @@ def already_postprocessed(dirName, videofile, force, result):
         search_sql += " and history.resource LIKE ?"
         sqlResult = myDB.select(search_sql, [u'%' + videofile])
         if sqlResult:
-            #result.output += logHelper(u"You're trying to post process a video that's already been processed, skipping", logger.DEBUG)
+            # result.output += logHelper(u"You're trying to post process a video that's already been processed, skipping", logger.DEBUG)
             return True
 
     return False

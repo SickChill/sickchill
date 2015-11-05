@@ -82,7 +82,7 @@ class newpctProvider(generic.TorrentProvider):
 
         lang_info = '' if not epObj or not epObj.show else epObj.show.lang
 
-        #Only search if user conditions are true
+        # Only search if user conditions are true
         if self.onlyspasearch and lang_info != 'es':
             logger.log(u"Show info is not spanish, skipping provider search", logger.DEBUG)
             return results
@@ -156,7 +156,7 @@ class newpctProvider(generic.TorrentProvider):
 
         title = title.replace('Descargar ', '')
 
-        #Quality
+        # Quality
         title = title.replace('[HDTV]', '[720p HDTV x264]')
         title = title.replace('[HDTV 720p AC3 5.1]', '[720p HDTV x264]')
         title = title.replace('[HDTV 1080p AC3 5.1]', '[1080p HDTV x264]')

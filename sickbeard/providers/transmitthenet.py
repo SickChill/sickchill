@@ -128,13 +128,13 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                             seeders = int(torrent_row.findAll('a', {'title': 'Click here to view peers details'})[0].text.strip())
                             leechers = int(torrent_row.findAll('a', {'title': 'Click here to view peers details'})[1].text.strip())
                             download_url = self.urls['base_url'] + download_href
-                            #FIXME
+                            # FIXME
                             size = -1
 
                             if not all([title, download_url]):
                                 continue
 
-                            #Filter unseeded torrent
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)

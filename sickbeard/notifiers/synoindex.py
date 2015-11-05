@@ -54,7 +54,7 @@ class synoIndexNotifier:
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                      cwd=sickbeard.PROG_DIR)
-                out, err = p.communicate()  #@UnusedVariable
+                out, err = p.communicate()  # @UnusedVariable
                 logger.log(u"Script result: " + str(out), logger.DEBUG)
             except OSError, e:
                 logger.log(u"Unable to run synoindex: " + ex(e), logger.ERROR)
@@ -79,7 +79,7 @@ class synoIndexNotifier:
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                      cwd=sickbeard.PROG_DIR)
-                out, err = p.communicate()  #@UnusedVariable
+                out, err = p.communicate()  # @UnusedVariable
                 logger.log(u"Script result: " + str(out), logger.DEBUG)
             except OSError, e:
                 logger.log(u"Unable to run synoindex: " + ex(e), logger.ERROR)

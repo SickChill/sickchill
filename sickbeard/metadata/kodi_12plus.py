@@ -305,8 +305,8 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 thumb = etree.SubElement(episode, "thumb")
                 thumb.text = myEp['filename'].strip()
 
-            #watched = etree.SubElement(episode, "watched")
-            #watched.text = 'false'
+            # watched = etree.SubElement(episode, "watched")
+            # watched.text = 'false'
 
             if getattr(myEp, 'writer', None):
                 credits = etree.SubElement(episode, "credits")

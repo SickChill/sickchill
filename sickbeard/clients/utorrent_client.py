@@ -31,8 +31,8 @@ class uTorrentAPI(GenericClient):
 
     def _request(self, method='get', params={}, files=None):
 
-        #Workaround for uTorrent 2.2.1
-        #Need a odict but only supported in 2.7+ and sickrage is 2.6+
+        # Workaround for uTorrent 2.2.1
+        # Need a odict but only supported in 2.7+ and sickrage is 2.6+
         ordered_params = {'token': self.auth}
 
         for k,v in params.iteritems():

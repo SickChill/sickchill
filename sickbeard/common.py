@@ -89,7 +89,7 @@ ARCHIVED = 6  # episodes that you don't have locally (counts toward download com
 IGNORED = 7  # episodes that you don't want included in your download stats
 SNATCHED_PROPER = 9  # qualified with quality
 SUBTITLED = 10  # qualified with quality
-FAILED = 11  #episode downloaded or snatched we don't want
+FAILED = 11  # episode downloaded or snatched we don't want
 SNATCHED_BEST = 12  # episode redownloaded using best quality
 
 NAMING_REPEAT = 1
@@ -221,7 +221,7 @@ class Quality:
         :return: Quality prefix
         """
 
-        #Try Scene names first
+        # Try Scene names first
         quality = Quality.sceneQuality(name, anime)
         if quality != Quality.UNKNOWN:
             return quality

@@ -128,7 +128,7 @@ class BTNProvider(generic.TorrentProvider):
                     logger.log(u"Found result: %s " % title, logger.DEBUG)
                     results.append(torrent_info)
 
-        #FIXME SORT RESULTS
+        # FIXME SORT RESULTS
         return results
 
     def _api_call(self, apikey, params={}, results_per_page=1000, offset=0):

@@ -127,7 +127,7 @@ class FNTProvider(generic.TorrentProvider):
                                         detailseedleech = link['mtcontent']
                                         seeders = int(detailseedleech.split("<font color='#00b72e'>")[1].split("</font>")[0])
                                         leechers = int(detailseedleech.split("<font color='red'>")[1].split("</font>")[0])
-                                        #FIXME
+                                        # FIXME
                                         size = -1
                                     except Exception:
                                         logger.log(u"Unable to parse torrent id & seeders & leechers. Traceback: %s " % traceback.format_exc(), logger.DEBUG)
@@ -136,7 +136,7 @@ class FNTProvider(generic.TorrentProvider):
                                     if not all([title, download_url]):
                                         continue
 
-                                    #Filter unseeded torrent
+                                    # Filter unseeded torrent
                                     if seeders < self.minseed or leechers < self.minleech:
                                         if mode != 'RSS':
                                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -151,7 +151,7 @@ class FNTProvider(generic.TorrentProvider):
                 except Exception, e:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

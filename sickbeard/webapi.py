@@ -96,8 +96,8 @@ class ApiHandler(RequestHandler):
     def __init__(self, *args, **kwargs):
         super(ApiHandler, self).__init__(*args, **kwargs)
 
-    #def set_default_headers(self):
-        #self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    # def set_default_headers(self):
+    #     self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
     def get(self, *args, **kwargs):
         kwargs = self.request.arguments

@@ -76,7 +76,7 @@ class BitCannonProvider(generic.TorrentProvider):
                     leechers = swarm.get(u'Leechers', 0)
                     size = item.get(u'Size', -1)
 
-                    #Filter unseeded torrent
+                    # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -91,7 +91,7 @@ class BitCannonProvider(generic.TorrentProvider):
 
                     items[mode].append(item)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
@@ -112,7 +112,7 @@ class BitCannonCache(tvcache.TVCache):
 
     def _getRSSData(self):
         return {'entries': []}
-        #search_strings = {'RSS': ['']}
-        #return {'entries': self.provider._doSearch(search_strings)}
+        # search_strings = {'RSS': ['']}
+        # return {'entries': self.provider._doSearch(search_strings)}
 
 provider = BitCannonProvider()

@@ -84,7 +84,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 searchURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 data = self.getURL(searchURL)
-                #data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
+                # data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
                 if not data:
                     continue
 
@@ -93,7 +93,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 for torrent in matches:
                     title = torrent.group('title')
                     download_url = torrent.group('url')
-                    #id = int(torrent.group('id'))
+                    # id = int(torrent.group('id'))
                     size = self._convertSize(torrent.group('size'))
                     seeders = int(torrent.group('seeders'))
                     leechers = int(torrent.group('leechers'))
@@ -101,13 +101,13 @@ class ThePirateBayProvider(generic.TorrentProvider):
                     if not all([title, download_url]):
                         continue
 
-                    #Filter unseeded torrent
+                    # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
-                    #Accept Torrent only from Good People for every Episode Search
+                    # Accept Torrent only from Good People for every Episode Search
                     if self.confirmed and re.search(r'(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None:
                         if mode != 'RSS':
                             logger.log(u"Found result %s but that doesn't seem like a trusted result so I'm ignoring it" % title, logger.DEBUG)
@@ -119,7 +119,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
                     items[mode].append(item)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

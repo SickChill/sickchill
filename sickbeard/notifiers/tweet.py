@@ -23,9 +23,9 @@ from sickrage.helper.exceptions import ex
 
 # parse_qsl moved to urlparse module in v2.6
 try:
-    from urlparse import parse_qsl  #@UnusedImport
+    from urlparse import parse_qsl  # @UnusedImport
 except ImportError:
-    from cgi import parse_qsl  #@Reimport
+    from cgi import parse_qsl  # @Reimport
 
 import oauth2 as oauth
 import pythontwitter as twitter
@@ -63,7 +63,7 @@ class TwitterNotifier:
 
     def _get_authorization(self):
 
-        signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()  #@UnusedVariable
+        signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()  # @UnusedVariable
         oauth_consumer = oauth.Consumer(key=self.consumer_key, secret=self.consumer_secret)
         oauth_client = oauth.Client(oauth_consumer)
 
@@ -93,7 +93,7 @@ class TwitterNotifier:
 
         logger.log('Generating and signing request for an access token using key ' + key, logger.DEBUG)
 
-        signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()  #@UnusedVariable
+        signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()  # @UnusedVariable
         oauth_consumer = oauth.Consumer(key=self.consumer_key, secret=self.consumer_secret)
         logger.log('oauth_consumer: ' + str(oauth_consumer), logger.DEBUG)
         oauth_client = oauth.Client(oauth_consumer, token)

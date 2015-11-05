@@ -52,10 +52,10 @@ class GrowlNotifier:
 
     def _send_growl(self, options, message=None):
 
-        #Send Notification
+        # Send Notification
         notice = gntp.GNTPNotice()
 
-        #Required
+        # Required
         notice.add_header('Application-Name', options['app'])
         notice.add_header('Notification-Name', options['name'])
         notice.add_header('Notification-Title', options['title'])
@@ -63,7 +63,7 @@ class GrowlNotifier:
         if options['password']:
             notice.set_password(options['password'])
 
-        #Optional
+        # Optional
         if options['sticky']:
             notice.add_header('Notification-Sticky', options['sticky'])
         if options['priority']:
@@ -169,7 +169,7 @@ class GrowlNotifier:
         opts['app'] = 'SickRage'
         opts['debug'] = False
 
-        #Send Registration
+        # Send Registration
         register = gntp.GNTPRegister()
         register.add_header('Application-Name', opts['app'])
         register.add_header('Application-Icon', self.sr_logo_url)

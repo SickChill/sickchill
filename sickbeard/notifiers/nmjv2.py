@@ -33,7 +33,7 @@ except ImportError:
 class NMJv2Notifier:
     def notify_snatch(self, ep_name):
         return False
-        #Not implemented: Start the scanner when snatched does not make any sense
+        # Not implemented: Start the scanner when snatched does not make any sense
 
     def notify_download(self, ep_name):
         self._notifyNMJ()
@@ -104,7 +104,7 @@ class NMJv2Notifier:
         Returns: True if the request succeeded, False otherwise
         """
 
-        #if a host is provided then attempt to open a handle to that URL
+        # if a host is provided then attempt to open a handle to that URL
         try:
             url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=&arg3=update_all"
             logger.log(u"NMJ scan update command sent to host: %s" % (host), logger.DEBUG)

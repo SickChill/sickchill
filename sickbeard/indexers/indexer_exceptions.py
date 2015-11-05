@@ -1,9 +1,9 @@
 #!/usr/bin/env python2.7
 # encoding:utf-8
-#author:echel0n
-#project:indexer_api
-#repository:http://github.com/echel0n/Sick-Beard
-#license:unlicense (http://unlicense.org/)
+# author:echel0n
+# project:indexer_api
+# repository:http://github.com/echel0n/Sick-Beard
+# license:unlicense (http://unlicense.org/)
 
 """Custom exceptions used or raised by indexer_api"""
 

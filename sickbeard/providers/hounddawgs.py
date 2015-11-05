@@ -132,10 +132,10 @@ class HoundDawgsProvider(generic.TorrentProvider):
                             allAs = (torrent[1]).find_all('a')
 
                             try:
-                                #link = self.urls['base_url'] + allAs[2].attrs['href']
-                                #url = result.find('td', attrs={'class': 'quickdownload'}).find('a')
+                                # link = self.urls['base_url'] + allAs[2].attrs['href']
+                                # url = result.find('td', attrs={'class': 'quickdownload'}).find('a')
                                 title = allAs[2].string
-                                #Trimming title so accepted by scene check(Feature has been rewuestet i forum)
+                                # Trimming title so accepted by scene check(Feature has been rewuestet i forum)
                                 title = title.replace("custom.", "")
                                 title = title.replace("CUSTOM.", "")
                                 title = title.replace("Custom.", "")
@@ -147,7 +147,7 @@ class HoundDawgsProvider(generic.TorrentProvider):
                                 title = title.replace("Subs.", "")
 
                                 download_url = self.urls['base_url']+allAs[0].attrs['href']
-                                #FIXME
+                                # FIXME
                                 size = -1
                                 seeders = 1
                                 leechers = 0
@@ -158,8 +158,8 @@ class HoundDawgsProvider(generic.TorrentProvider):
                             if not title or not download_url:
                                 continue
 
-                            #Filter unseeded torrent
-                            #if seeders < self.minseed or leechers < self.minleech:
+                            # Filter unseeded torrent
+                            # if seeders < self.minseed or leechers < self.minleech:
                             #    if mode != 'RSS':
                             #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             #    continue
@@ -173,7 +173,7 @@ class HoundDawgsProvider(generic.TorrentProvider):
                 except Exception, e:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

@@ -78,7 +78,7 @@ class animenzb(generic.NZBProvider):
                 results.append(curItem)
                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-        #For each search mode sort all the items by seeders if available if available
+        # For each search mode sort all the items by seeders if available if available
         results.sort(key=lambda tup: tup[0], reverse=True)
 
         return results

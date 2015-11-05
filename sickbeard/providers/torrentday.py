@@ -133,13 +133,13 @@ class TorrentDayProvider(generic.TorrentProvider):
                     download_url = self.urls['download'] % ( torrent['id'], torrent['fname'])
                     seeders = int(torrent['seed'])
                     leechers = int(torrent['leech'])
-                    #FIXME
+                    # FIXME
                     size = -1
 
                     if not all([title, download_url]):
                         continue
 
-                    #Filter unseeded torrent
+                    # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -151,7 +151,7 @@ class TorrentDayProvider(generic.TorrentProvider):
 
                     items[mode].append(item)
 
-            #For each search mode sort all the items by seeders if available if available
+            # For each search mode sort all the items by seeders if available if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

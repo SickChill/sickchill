@@ -47,7 +47,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        for mode in search_strings.keys(): #Mode = RSS, Season, Episode
+        for mode in search_strings.keys():  # Mode = RSS, Season, Episode
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
@@ -92,7 +92,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                             download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://open.demonii.com:1337&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969"
                             logger.log("Result has less than 10 seeds but not using Dyn Magnet becouse its from RSS" + title, logger.DEBUG)
                     else:
-                        #logger.log("Torrent has more than 10 seeds using hard coded trackers", logger.DEBUG)
+                        # logger.log("Torrent has more than 10 seeds using hard coded trackers", logger.DEBUG)
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://open.demonii.com:1337&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969"
 
 

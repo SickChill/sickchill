@@ -147,11 +147,11 @@ class Logger(object):
             message = check
             level = WARNING
         
-        #Avoid open issues when user only need to clear cache to fix issue    
+        # Avoid open issues when user only need to clear cache to fix issue
         if re.search(r"_mako\'$",message):
-            #'C__SickRage_gui_slick_views_schedule_mako' 
-            #'_usr_local_sickrage_var_SickRage_gui_slick_views_schedule_mako'
-            #'_volume1___plugins_AppCentral_sickbeard_tvrage_SickBeard_TVRage_gui_slick_views_schedule_mako'
+            # 'C__SickRage_gui_slick_views_schedule_mako'
+            # '_usr_local_sickrage_var_SickRage_gui_slick_views_schedule_mako'
+            # '_volume1___plugins_AppCentral_sickbeard_tvrage_SickBeard_TVRage_gui_slick_views_schedule_mako'
             message = 'Please stop SickRage and delete \SickRage\cache\mako folder. You can see cache folder location in SickRage Help&Info menu'
             level = WARNING            
 
@@ -276,18 +276,18 @@ class Logger(object):
                 reports = gh.get_organization(gh_org).get_repo(gh_repo).get_issues(state="all")
 
                 def is_mako_error(title):
-                    #[APP SUBMITTED]: Loaded module _home_pi_SickRage_gui_slick_views_home_mako not found in sys.modules
-                    #[APP SUBMITTED]: Loaded module _opt_sickbeard_gui_slick_views_home_mako not found in sys.modules
-                    #[APP SUBMITTED]: Loaded module D__TV_SickRage_gui_slick_views_home_mako not found in sys.modules
+                    # [APP SUBMITTED]: Loaded module _home_pi_SickRage_gui_slick_views_home_mako not found in sys.modules
+                    # [APP SUBMITTED]: Loaded module _opt_sickbeard_gui_slick_views_home_mako not found in sys.modules
+                    # [APP SUBMITTED]: Loaded module D__TV_SickRage_gui_slick_views_home_mako not found in sys.modules
                     return re.search(r".* Loaded module .* not found in sys\.modules", title) is not None
 
                 def is_ascii_error(title):
-                    #[APP SUBMITTED]: 'ascii' codec can't encode characters in position 00-00: ordinal not in range(128)
-                    #[APP SUBMITTED]: 'charmap' codec can't decode byte 0x00 in position 00: character maps to <undefined>
+                    # [APP SUBMITTED]: 'ascii' codec can't encode characters in position 00-00: ordinal not in range(128)
+                    # [APP SUBMITTED]: 'charmap' codec can't decode byte 0x00 in position 00: character maps to <undefined>
                     return re.search(r".* codec can't .*code .* in position .*:", title) is not None
 
                 def is_malformed_error(title):
-                    #[APP SUBMITTED]: not well-formed (invalid token): line 0, column 0
+                    # [APP SUBMITTED]: not well-formed (invalid token): line 0, column 0
                     re.search(r".* not well-formed \(invalid token\): line .* column .*", title) is not None
 
                 mako_error = is_mako_error(title_Error)

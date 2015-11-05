@@ -106,7 +106,7 @@ class BitSoupProvider(generic.TorrentProvider):
                         torrent_table = html.find('table', attrs={'class': 'koptekst'})
                         torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                        #Continue only if one Release is found
+                        # Continue only if one Release is found
                         if len(torrent_rows) < 2:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
@@ -121,7 +121,7 @@ class BitSoupProvider(generic.TorrentProvider):
                                 title = link.getText()
                                 seeders = int(cells[10].getText())
                                 leechers = int(cells[11].getText())
-                                #FIXME
+                                # FIXME
                                 size = -1
                             except (AttributeError, TypeError):
                                 continue
@@ -129,7 +129,7 @@ class BitSoupProvider(generic.TorrentProvider):
                             if not all([title, download_url]):
                                 continue
 
-                                #Filter unseeded torrent
+                                # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -144,7 +144,7 @@ class BitSoupProvider(generic.TorrentProvider):
                 except Exception, e:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

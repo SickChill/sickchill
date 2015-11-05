@@ -119,7 +119,7 @@ class RarbgProvider(generic.TorrentProvider):
             ep_indexerid = None
             ep_indexer = None
 
-        for mode in search_params.keys(): #Mode = RSS, Season, Episode
+        for mode in search_params.keys():  # Mode = RSS, Season, Episode
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
@@ -202,7 +202,7 @@ class RarbgProvider(generic.TorrentProvider):
                             searchURL = searchURL.replace(u'https', 'http')
                             continue
 
-                        #No error found break
+                        # No error found break
                         break
                     else:
                         logger.log(u"Retried 3 times without getting results", logger.DEBUG)

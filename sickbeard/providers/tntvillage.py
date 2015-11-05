@@ -322,7 +322,7 @@ class TNTVillageProvider(generic.TorrentProvider):
                             torrent_table = html.find('table', attrs={'class' : 'copyright'})
                             torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                            #Continue only if one Release is found
+                            # Continue only if one Release is found
                             if len(torrent_rows) < 3:
                                 logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                                 last_page = 1
@@ -341,7 +341,7 @@ class TNTVillageProvider(generic.TorrentProvider):
                                     leechers = int(leechers.strip('[]'))
                                     seeders = result.find_all('td')[3].find_all('td')[2].text
                                     seeders = int(seeders.strip('[]'))
-                                    #FIXME
+                                    # FIXME
                                     size = -1
                                 except (AttributeError, TypeError):
                                     continue
@@ -380,7 +380,7 @@ class TNTVillageProvider(generic.TorrentProvider):
                                 if self._is_season_pack(title):
                                     title = re.sub(r'([Ee][\d{1,2}\-?]+)', '', title)
 
-                                #Filter unseeded torrent
+                                # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
                                     if mode != 'RSS':
                                         logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -395,7 +395,7 @@ class TNTVillageProvider(generic.TorrentProvider):
                     except Exception:
                         logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
-                #For each search mode sort all the items by seeders if available if available
+                # For each search mode sort all the items by seeders if available if available
                 items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
                 results += items[mode]

@@ -14,7 +14,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-#from urllib import urlencode
+# from urllib import urlencode
 
 import sickbeard
 from sickbeard import logger
@@ -139,7 +139,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
                 self.search_params['keywords'] = search_string.strip()
                 data = self.getURL(self.urls['search'], params=self.search_params)
-                #url_searched = self.urls['search'] + '?' + urlencode(self.search_params)
+                # url_searched = self.urls['search'] + '?' + urlencode(self.search_params)
 
                 if not data:
                     logger.log("No data returned from provider", logger.DEBUG)
@@ -157,7 +157,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
                             if not all([title, download_url]):
                                 continue
 
-                            #Filter unseeded torrent
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -175,7 +175,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
                             # Strip year from the end or we can't parse it!
                             title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
 
-                            #FIXME
+                            # FIXME
                             size = -1
 
                             item = title, download_url, size, seeders, leechers
@@ -187,7 +187,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
                         except Exception:
                             continue
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

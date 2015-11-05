@@ -205,7 +205,7 @@ class ShowQueueItem(generic_queue.QueueItem):
 
     def isInQueue(self):
         return self in sickbeard.showQueueScheduler.action.queue + [
-            sickbeard.showQueueScheduler.action.currentItem]  #@UndefinedVariable
+            sickbeard.showQueueScheduler.action.currentItem]  # @UndefinedVariable
 
     def _getName(self):
         return str(self.show.indexerid)
@@ -306,8 +306,8 @@ class QueueItemAdd(ShowQueueItem):
                 return
         except Exception, e:
             logger.log(u"Error while loading information from indexer %s. Error: %r" % (self.indexer_id,sickbeard.indexerApi(self.indexer).name, ex(e)),logger.ERROR)
-            #logger.log(u"Show name with ID %s doesn't exist on %s anymore. If you are using trakt, it will be removed from your TRAKT watchlist. If you are adding manually, try removing the nfo and adding again" %
-            #    (self.indexer_id,sickbeard.indexerApi(self.indexer).name) , logger.WARNING)
+            # logger.log(u"Show name with ID %s doesn't exist on %s anymore. If you are using trakt, it will be removed from your TRAKT watchlist. If you are adding manually, try removing the nfo and adding again" %
+            #            (self.indexer_id, sickbeard.indexerApi(self.indexer).name), logger.WARNING)
 
             ui.notifications.error("Unable to add show",
                                    "Unable to look up the show in " + self.showDir + " on " + str(sickbeard.indexerApi(
@@ -365,13 +365,13 @@ class QueueItemAdd(ShowQueueItem):
                 if self.whitelist:
                     self.show.release_groups.set_white_keywords(self.whitelist)
 
-            # be smartish about this
-            #if self.show.genre and "talk show" in self.show.genre.lower():
-            #    self.show.air_by_date = 1
-            #if self.show.genre and "documentary" in self.show.genre.lower():
-            #    self.show.air_by_date = 0
-            #if self.show.classification and "sports" in self.show.classification.lower():
-            #    self.show.sports = 1
+            # # be smartish about this
+            # if self.show.genre and "talk show" in self.show.genre.lower():
+            #     self.show.air_by_date = 1
+            # if self.show.genre and "documentary" in self.show.genre.lower():
+            #     self.show.air_by_date = 0
+            # if self.show.classification and "sports" in self.show.classification.lower():
+            #     self.show.sports = 1
 
         except sickbeard.indexer_exception, e:
             logger.log(

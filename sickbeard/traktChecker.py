@@ -370,7 +370,7 @@ class TraktChecker():
             indexer_id = int(str(show_el))
             show = self.ShowWatchlist[trakt_id][show_el]
 
-            #logger.log(u"Checking Show: %s %s %s" % (trakt_id, indexer_id, show['title']),logger.DEBUG)
+            # logger.log(u"Checking Show: %s %s %s" % (trakt_id, indexer_id, show['title']),logger.DEBUG)
             if int(sickbeard.TRAKT_METHOD_ADD) != 2:
                 self.addDefaultShow(indexer, indexer_id, show['title'], SKIPPED)
             else:
@@ -470,7 +470,7 @@ class TraktChecker():
          Check in the Watchlist or CollectionList for Show
          Is the Show, Season and Episode in the trakt_id list (tvdb / tvrage)
         """
-        #logger.log(u"Checking Show: %s %s %s " % (trakt_id, showid, List),logger.DEBUG)
+        # logger.log(u"Checking Show: %s %s %s " % (trakt_id, showid, List),logger.DEBUG)
 
         if "Collection" == List:
             try:
@@ -658,7 +658,7 @@ class TraktChecker():
             if season not in uniqueSeasons[showid]:
                 uniqueSeasons[showid].append(season)
 
-        #build the query
+        # build the query
         showList = []
         seasonsList = {}
         for searchedShow in uniqueShows:
