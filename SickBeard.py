@@ -495,7 +495,7 @@ class SickRage(object):
             for filename in filesList:
                 srcFile = os.path.join(srcDir, filename)
                 dstFile = os.path.join(dstDir, filename)
-                bakFile = os.path.join(dstDir, '{0}.bak-{1}'.format(filename, datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S')))
+                bakFile = os.path.join(dstDir, '{0}.bak-{1}'.format(filename, datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
                 if os.path.isfile(dstFile):
                     shutil.move(dstFile, bakFile)
                 shutil.move(srcFile, dstFile)
