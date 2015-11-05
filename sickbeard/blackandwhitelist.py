@@ -38,7 +38,7 @@ class BlackAndWhiteList(object):
         logger.log(u'Building black and white list for ' + str(self.show_id), logger.DEBUG)
         self.blacklist = self._load_list('blacklist')
         self.whitelist = self._load_list('whitelist')
-        
+
     def _add_keywords(self, table, values):
         """
         DB: Adds keywords into database for current show
@@ -48,7 +48,7 @@ class BlackAndWhiteList(object):
         """
         myDB = db.DBConnection()
         for value in values:
-            myDB.action('INSERT INTO [' + table + '] (show_id, keyword) VALUES (?,?)', [self.show_id, value]) 
+            myDB.action('INSERT INTO [' + table + '] (show_id, keyword) VALUES (?,?)', [self.show_id, value])
 
     def set_black_keywords(self, values):
         """
@@ -70,7 +70,7 @@ class BlackAndWhiteList(object):
         self._del_all_keywords('whitelist')
         self._add_keywords('whitelist', values)
         self.whitelist = values
-        logger.log('Whitelist set to: %s' % self.whitelist, logger.DEBUG)            
+        logger.log('Whitelist set to: %s' % self.whitelist, logger.DEBUG)
 
     def _del_all_keywords(self, table):
         """
@@ -79,8 +79,8 @@ class BlackAndWhiteList(object):
         :param table: SQL table remove keywords from
         """
         myDB = db.DBConnection()
-        myDB.action('DELETE FROM [' + table + '] WHERE show_id = ?', [self.show_id])        
-        
+        myDB.action('DELETE FROM [' + table + '] WHERE show_id = ?', [self.show_id])
+
     def _load_list(self, table):
         """
         DB: Fetch keywords for current show
@@ -96,7 +96,7 @@ class BlackAndWhiteList(object):
         groups = []
         for result in sqlResults:
             groups.append(result["keyword"])
-            
+
         logger.log('BWL: ' + str(self.show_id) + ' loaded keywords from ' + table + ': ' + str(groups), logger.DEBUG)
         return groups
 
@@ -107,10 +107,11 @@ class BlackAndWhiteList(object):
         :param result: Result to analyse
         :return: False if result is not allowed in white/blacklist, True if it is
         """
-        if not result.release_group:
-            logger.log('Failed to detect release group, invalid result', logger.DEBUG)
-            return False
         if self.whitelist or self.blacklist:
+            if not result.release_group:
+                logger.log('Failed to detect release group, invalid result', logger.DEBUG)
+                return False
+
             if result.release_group.lower() in [x.lower() for x in self.whitelist]:
                 white_result = True
             elif not self.whitelist:
@@ -125,13 +126,13 @@ class BlackAndWhiteList(object):
             logger.log('Whitelist check passed: %s. Blacklist check passed: %s' % (white_result, black_result), logger.DEBUG)
 
             if white_result and black_result:
-                 return True 
+                return True
             else:
-                 return False
+                return False
         else:
             logger.log('No Whitelist and  Blacklist defined, check passed.', logger.DEBUG)
-            return True 
-             
+            return True
+
 class BlackWhitelistNoShowIDException(Exception):
     'No show_id was given'
 
@@ -150,7 +151,7 @@ def short_group_names(groups):
                 group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
             except AniDBCommandTimeoutError:
                 logger.log(u"Timeout while loading group from AniDB. Trying next group", logger.DEBUG)
-            except:
+            except Exception:
                 logger.log(u"Failed while loading group from AniDB. Trying next group", logger.DEBUG)
             else:
                 for line in group.datalines:
