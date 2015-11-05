@@ -34,8 +34,8 @@ from name_parser.parser import NameParser, InvalidNameException, InvalidShowExce
 
 resultFilters = [
     "sub(bed|ed|pack|s)",
-    "(dir|sample|sub|nfo)fix",
-    "sample",
+    "(dir|sub|nfo)fix",
+    "(?<!shomin.)sample",
     "(dvd)?extras",
     "dub(bed)?"
 ]
