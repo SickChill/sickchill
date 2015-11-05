@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.tv
 # Git: https://github.com/SiCKRAGETV/SickRage.git
@@ -87,18 +88,19 @@ def fixGlob(path):
     path = re.sub(r'\[', '[[]', path)
     return re.sub(r'(?<!\[)\]', '[]]', path)
 
+
 def indentXML(elem, level=0):
-    '''
+    """
     Does our pretty printing, makes Matt very happy
-    '''
-    i = "\n" + level*"  "
+    """
+    i = "\n" + level * "  "
     if len(elem):
         if not elem.text or not elem.text.strip():
             elem.text = i + "  "
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
         for elem in elem:
-            indentXML(elem, level+1)
+            indentXML(elem, level + 1)
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
     else:
@@ -158,8 +160,8 @@ def remove_non_release_groups(name):
                        r'^\[www\.Cpasbien\.pe\] ':          'searchre',
                        r'^\[www\.Cpasbien\.com\] ':         'searchre',
                        r'^\[ www\.Cpasbien\.pw \] ':        'searchre',
-                       r'^\.www\.Cpasbien\.pw':            'searchre',
-                       r'^\[www\.newpct1\.com\]':            'searchre',
+                       r'^\.www\.Cpasbien\.pw':             'searchre',
+                       r'^\[www\.newpct1\.com\]':           'searchre',
                        r'^\[ www\.Cpasbien\.com \] ':       'searchre',
                        r'- \{ www\.SceneTime\.com \}$':     'searchre',
                        r'^\{ www\.SceneTime\.com \} - ':    'searchre',
@@ -169,7 +171,7 @@ def remove_non_release_groups(name):
                        r'\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
                        r'- \[ www\.torrentday\.com \]$':            'searchre',
                        r'^\[ www\.TorrentDay\.com \] - ':           'searchre',
-                      }
+                       }
 
     _name = name
     for remove_string, remove_type in removeWordsList.iteritems():
@@ -211,6 +213,7 @@ def notTorNZBFile(filename):
 
     return not (filename.endswith(".torrent") or filename.endswith(".nzb"))
 
+
 def isSyncFile(filename):
     """
     Returns true if filename is a syncfile, indicating filesystem may be in flux
@@ -220,7 +223,7 @@ def isSyncFile(filename):
     """
 
     extension = filename.rpartition(".")[2].lower()
-    #if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
+    # if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
     syncfiles = sickbeard.SYNC_FILES
     if extension in syncfiles.split(",") or filename.startswith('.syncthing'):
         return True
@@ -306,7 +309,7 @@ def sanitizeFileName(name):
     # remove bad chars from the filename
     name = re.sub(r'[\\/\*]', '-', name)
     name = re.sub(r'[:"<>|?]', '', name)
-    name = re.sub(ur'\u2122', '', name) # Trade Mark Sign
+    name = re.sub(ur'\u2122', '', name)  # Trade Mark Sign
 
     # remove leading/trailing periods and spaces
     name = name.strip(' .')
@@ -351,6 +354,7 @@ def findCertainShow(showList, indexerid):
         return results[0]
     elif len(results) > 1:
         raise MultipleShowObjectsException()
+
 
 def makeDir(path):
     """
@@ -459,14 +463,15 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
             ShowObj = findCertainShow(sickbeard.showList, int(series_id))
             # Check if we can find the show in our list (if not, it's not the right show)
             if (indexer_id is None) and (ShowObj is not None) and (ShowObj.indexerid == int(series_id)):
-                return (seriesname, i, int(series_id))
+                return seriesname, i, int(series_id)
             elif (indexer_id is not None) and (int(indexer_id) == int(series_id)):
-                return (seriesname, i, int(indexer_id))
+                return seriesname, i, int(indexer_id)
 
         if indexer:
             break
 
-    return (None, None, None)
+    return None, None, None
+
 
 def listMediaFiles(path):
     """
@@ -815,7 +820,7 @@ def fixSetGroupID(childPath):
 
         try:
             ek(os.chown, childPath, -1, parentGID)  # @UndefinedVariable - only available on UNIX
-            logger.log(u"Respecting the set-group-ID bit on the parent directory for %s" % (childPath), logger.DEBUG)
+            logger.log(u"Respecting the set-group-ID bit on the parent directory for %s" % childPath, logger.DEBUG)
         except OSError:
             logger.log(
                 u"Failed to respect the set-group-ID bit on the parent directory for %s (setting group ID %i)" % (
@@ -881,7 +886,7 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
                 episodes.append(ep.episode)
                 season = ep.season  # this will always take the last found season so eps that cross the season border are not handeled well
 
-    return (season, episodes)
+    return season, episodes
 
 
 def sanitizeSceneName(name, anime=False):
@@ -944,6 +949,7 @@ def arithmeticEval(s):
             raise Exception('Unsupported type {}'.format(node))
 
     return _eval(node.body)
+
 
 def create_https_certificates(ssl_cert, ssl_key):
     """
@@ -1117,6 +1123,7 @@ def get_lan_ip():
     except Exception:
         return socket.gethostname()
 
+
 def check_url(url):
     """
     Check if a URL exists without downloading the whole file.
@@ -1158,6 +1165,7 @@ To add a new encryption_version:
 
 # Key Generators
 unique_key1 = hex(uuid.getnode() ** 2)  # Used in encryption v1
+
 
 # Encryption Functions
 def encrypt(data, encryption_version=0, _decrypt=False):
@@ -1306,7 +1314,9 @@ def set_up_anidb_connection():
         return False
 
     if not sickbeard.ADBA_CONNECTION:
-        anidb_logger = lambda x: logger.log("anidb: %s " % x, logger.DEBUG)
+        def anidb_logger(msg):
+            return logger.log("anidb: %s " % msg, logger.DEBUG)
+
         try:
             sickbeard.ADBA_CONNECTION = adba.Connection(keepAlive=True, log=anidb_logger)
         except Exception as e:
@@ -1413,7 +1423,7 @@ def restoreConfigZip(archive, targetDir):
             def path_leaf(path):
                 head, tail = os.path.split(path)
                 return tail or os.path.basename(head)
-            bakFilename = '{0}-{1}'.format(path_leaf(targetDir), datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S'))
+            bakFilename = '{0}-{1}'.format(path_leaf(targetDir), datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
             shutil.move(targetDir, os.path.join(os.path.dirname(targetDir), bakFilename))
 
         zip_file = zipfile.ZipFile(archive, 'r', allowZip64=True)
@@ -1493,7 +1503,7 @@ def touchFile(fname, atime=None):
     :return: True on success, False on failure
     """
 
-    if None != atime:
+    if atime is not None:
         try:
             with file(fname, 'a'):
                 os.utime(fname, (atime, atime))
@@ -1526,7 +1536,8 @@ def _getTempDir():
         except ImportError:
             return os.path.join(tempfile.gettempdir(), "sickrage")
 
-    return os.path.join(tempfile.gettempdir(), "sickrage-%s" % (uid))
+    return os.path.join(tempfile.gettempdir(), "sickrage-%s" % uid)
+
 
 def codeDescription(status_code):
     """
@@ -1553,7 +1564,7 @@ def _setUpSession(session, headers):
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions'), use_dir_lock=True), cache_etags=False)
 
     # request session clear residual referer
-    if 'Referer' in session.headers and not 'Referer' in headers:
+    if 'Referer' in session.headers and 'Referer' not in headers:
         session.headers.pop('Referer')
 
     # request session headers
@@ -1564,7 +1575,7 @@ def _setUpSession(session, headers):
     session.verify = certifi.where() if sickbeard.SSL_VERIFY else False
 
     # request session proxies
-    if not 'Referer' in session.headers and sickbeard.PROXY_SETTING:
+    if 'Referer' not in session.headers and sickbeard.PROXY_SETTING:
         logger.log("Using proxy: " + sickbeard.PROXY_SETTING, logger.DEBUG)
         scheme, address = urllib2.splittype(sickbeard.PROXY_SETTING)
         address = sickbeard.PROXY_SETTING if scheme else 'http://' + sickbeard.PROXY_SETTING
@@ -1755,6 +1766,7 @@ def generateApiKey():
     logger.log(u"New API generated")
     return m.hexdigest()
 
+
 def pretty_filesize(file_bytes):
     """Return humanly formatted sizes from bytes"""
     for mod in ['B', 'KB', 'MB', 'GB', 'TB', 'PB']:
@@ -1766,15 +1778,18 @@ if __name__ == '__main__':
     import doctest
     doctest.testmod()
 
+
 def remove_article(text=''):
     """Remove the english articles from a text string"""
 
     return re.sub(r'(?i)^(?:(?:A(?!\s+to)n?)|The)\s(\w)', r'\1', text)
 
+
 def generateCookieSecret():
     """Generate a new cookie secret"""
 
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
+
 
 def verify_freespace(src, dest, oldfile=None):
     """
@@ -1801,8 +1816,7 @@ def verify_freespace(src, dest, oldfile=None):
         import sys
 
         def disk_usage(path):
-            _, total, free = ctypes.c_ulonglong(), ctypes.c_ulonglong(), \
-                               ctypes.c_ulonglong()
+            _, total, free = ctypes.c_ulonglong(), ctypes.c_ulonglong(), ctypes.c_ulonglong()
             if sys.version_info >= (3,) or isinstance(path, unicode):
                 fun = ctypes.windll.kernel32.GetDiskFreeSpaceExW
             else:
@@ -1840,6 +1854,7 @@ def verify_freespace(src, dest, oldfile=None):
                    % (neededspace, pretty_filesize(neededspace), diskfree, pretty_filesize(diskfree)), logger.WARNING)
         return False
 
+
 # https://gist.github.com/thatalextaylor/7408395
 def pretty_time_delta(seconds):
     sign_string = '-' if seconds < 0 else ''
@@ -1860,8 +1875,9 @@ def pretty_time_delta(seconds):
 
     return time_delta
 
+
 def isFileLocked(checkfile, writeLockCheck=False):
-    '''
+    """
     Checks to see if a file is locked. Performs three checks
         1. Checks if the file even exists
         2. Attempts to open the file for reading. This will determine if the file has a write lock.
@@ -1871,7 +1887,7 @@ def isFileLocked(checkfile, writeLockCheck=False):
             or deleted.
     :param file: the file being checked
     :param writeLockCheck: when true will check if the file is locked for writing (prevents move operations)
-    '''
+    """
 
     checkfile = ek(os.path.abspath, checkfile)
 
@@ -1896,11 +1912,12 @@ def isFileLocked(checkfile, writeLockCheck=False):
 
     return False
 
+
 def getDiskSpaceUsage(diskPath=None):
-    '''
+    """
     returns the free space in human readable bytes for a given path or False if no path given
     :param diskPath: the filesystem path being checked
-    '''
+    """
     if diskPath and os.path.exists(diskPath):
         if platform.system() == 'Windows':
             free_bytes = ctypes.c_ulonglong(0)
