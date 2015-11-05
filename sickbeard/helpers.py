@@ -237,7 +237,7 @@ def isMediaFile(filename):
     """
 
     # ignore samples
-    if re.search(r'(^|[\W_])(sample\d*)[\W_]', filename, re.I):
+    if re.search(r'(^|[\W_])(?<!shomin.)(sample\d*)[\W_]', filename, re.I):
         return False
 
     # ignore RARBG release intro
