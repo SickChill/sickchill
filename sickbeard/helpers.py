@@ -1501,7 +1501,7 @@ def touchFile(fname, atime=None):
     :return: True on success, False on failure
     """
 
-    if None != atime:
+    if atime is not None:
         try:
             with file(fname, 'a'):
                 os.utime(fname, (atime, atime))
