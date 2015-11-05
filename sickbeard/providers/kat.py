@@ -48,8 +48,8 @@ class KATProvider(generic.TorrentProvider):
         self.cache = KATCache(self)
 
         self.urls = {
-            'base_url': 'https://kat.cr/',
-            'search': 'https://kat.cr/%s/',
+            'base_url': 'https://kickass.unblocked.la/',
+            'search': base_url + '%s/',
         }
 
         self.url = self.urls['base_url']
