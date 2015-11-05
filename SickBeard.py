@@ -1,4 +1,5 @@
 #!/usr/bin/env python2.7
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
