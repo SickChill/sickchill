@@ -1,4 +1,5 @@
 #!/usr/bin/env python2.7
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -20,6 +21,7 @@
 # Check needed software dependencies to nudge users to fix their setup
 
 # pylint: disable=W0703
+# Catching too general exception
 
 from __future__ import with_statement
 
@@ -48,6 +50,7 @@ if sys.version_info < (2, 7):
 if sys.version_info >= (2, 7, 9):
     import ssl
     # pylint: disable=W0212
+    # Access to a protected member of a client class
     ssl._create_default_https_context = ssl._create_unverified_context
 
 import locale
@@ -71,6 +74,7 @@ signal.signal(signal.SIGTERM, sickbeard.sig_handler)
 
 class SickRage(object):
     # pylint: disable=R0902
+    # Too many instance attributes
     def __init__(self):
         # system event callback for shutdown/restart
         sickbeard.events = Events(self.shutdown)
@@ -91,7 +95,6 @@ class SickRage(object):
 
         self.log_dir = None
         self.consoleLogging = True
-
 
     @staticmethod
     def help_message():
@@ -127,7 +130,6 @@ class SickRage(object):
 
     @staticmethod
     def fix_clients_nonsense():
-
         filenames = [
             "sickbeard/clients/download_station.py",
             "sickbeard/clients/utorrent.py",
@@ -140,11 +142,13 @@ class SickRage(object):
 
         for filename in filenames:
             filename = ek(os.path.join, sickbeard.PROG_DIR, filename)
+
             try:
                 if ek(os.path.exists, filename):
                     ek(os.remove, filename)
             except Exception:
                 pass
+
             try:
                 if ek(os.path.exists, filename + "c"):
                     ek(os.remove, filename + "c")
@@ -152,6 +156,8 @@ class SickRage(object):
                 pass
 
     # pylint: disable=R0912,R0915
+    # Too many branches
+    # Too many statements
     def start(self):
         # do some preliminary stuff
         sickbeard.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
@@ -176,11 +182,13 @@ class SickRage(object):
 
         if sys.platform == 'win32':
             # pylint: disable=E1101
+            # An object is accessed for a non-existent member.
             if sys.getwindowsversion()[0] >= 6 and sys.stdout.encoding == 'cp65001':
                 sickbeard.SYS_ENCODING = 'UTF-8'
 
         try:
             # pylint: disable=E1101
+            # An object is accessed for a non-existent member.
             # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
             sys.setdefaultencoding(sickbeard.SYS_ENCODING)
         except Exception:
@@ -195,6 +203,7 @@ class SickRage(object):
 
         try:
             # pylint: disable=W0612
+            # Unused variable
             opts, args = getopt.getopt(sys.argv[1:], "hqdp::",
                                        ['help', 'quiet', 'nolaunch', 'daemon', 'pidfile=', 'port=',
                                         'datadir=', 'config=', 'noresize'])  # @UnusedVariable
@@ -404,6 +413,8 @@ class SickRage(object):
         Fork off as a daemon
         """
         # pylint: disable=E1101,W0212
+        # An object is accessed for a non-existent member.
+        # Access to a protected member of a client class
         # Make a non-session-leader child process
         try:
             pid = os.fork()  # @UndefinedVariable - only available in UNIX
@@ -422,7 +433,6 @@ class SickRage(object):
         # Daemons traditionally run with umask 0 anyways and this should not have repercussions
         os.umask(0)
 
-
         # Make the child a session-leader by detaching from the terminal
         try:
             pid = os.fork()  # @UndefinedVariable - only available in UNIX
@@ -436,6 +446,7 @@ class SickRage(object):
         if self.CREATEPID:
             pid = str(os.getpid())
             logger.log(u"Writing PID: " + pid + " to " + str(self.PIDFILE))
+
             try:
                 file(self.PIDFILE, 'w').write("%s\n" % pid)
             except IOError, e:
@@ -460,7 +471,6 @@ class SickRage(object):
         try:
             if os.path.exists(PIDFILE):
                 os.remove(PIDFILE)
-
         except (IOError, OSError):
             return False
 
@@ -471,7 +481,6 @@ class SickRage(object):
         """
         Populates the showList with shows from the database
         """
-
         logger.log(u"Loading initial show list", logger.DEBUG)
 
         myDB = db.DBConnection()
@@ -497,7 +506,7 @@ class SickRage(object):
             for filename in filesList:
                 srcFile = os.path.join(srcDir, filename)
                 dstFile = os.path.join(dstDir, filename)
-                bakFile = os.path.join(dstDir, '{0}.bak-{1}'.format(filename, datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S')))
+                bakFile = os.path.join(dstDir, '{0}.bak-{1}'.format(filename, datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
                 if os.path.isfile(dstFile):
                     shutil.move(dstFile, bakFile)
                 shutil.move(srcFile, dstFile)
@@ -517,6 +526,7 @@ class SickRage(object):
             if self.webserver:
                 logger.log("Shutting down Tornado")
                 self.webserver.shutDown()
+
                 try:
                     self.webserver.join(10)
                 except Exception:
@@ -547,6 +557,7 @@ class SickRage(object):
         # system exit
         logger.shutdown()  # Make sure the logger has stopped, just in case
         # pylint: disable=W0212
+        # Access to a protected member of a client class
         os._exit(0)
 
 
