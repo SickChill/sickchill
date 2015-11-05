@@ -136,7 +136,7 @@ class BlackAndWhiteList(object):
 
 
 class BlackWhitelistNoShowIDException(Exception):
-    'No show_id was given'
+    """No show_id was given"""
 
 
 def short_group_names(groups):
