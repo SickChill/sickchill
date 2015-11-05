@@ -109,7 +109,7 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
                         <li id="NAVhome" class="navbar-split dropdown${('', ' active')[topmenu == 'home']}">
-                            <a href="${srRoot}/home/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">Shows
+                            <a href="${srRoot}/home/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>Shows</span>
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
@@ -135,7 +135,7 @@
                         </li>
 
                         <li id="NAVmanage" class="navbar-split dropdown${('', ' active')[topmenu == 'manage']}">
-                            <a href="${srRoot}/manage/episodeStatuses/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">Manage
+                            <a href="${srRoot}/manage/episodeStatuses/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>Manage</span>
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
@@ -166,7 +166,7 @@
                         </li>
 
                         <li id="NAVconfig" class="navbar-split dropdown${('', ' active')[topmenu == 'config']}">
-                            <a href="${srRoot}/config/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Config</span><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" />
+                            <a href="${srRoot}/config/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Config</span><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" />
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
@@ -203,7 +203,7 @@
                                 toolsBadge = ''
                         %>
                         <li id="NAVsystem" class="navbar-split dropdown${('', ' active')[topmenu == 'system']}">
-                            <a href="${srRoot}/home/status/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${toolsBadge}
+                            <a href="${srRoot}/home/status/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${toolsBadge}
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
