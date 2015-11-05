@@ -52,7 +52,7 @@ name_sports_presets = (
 )
 
 
-class TVShow:
+class TVShow(object):
     def __init__(self):
         self.name = "Show Name"
         self.genre = "Comedy"
@@ -218,7 +218,7 @@ def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=Fal
 
     try:
         result = parser.parse(new_name)
-    except Exception, e:
+    except Exception:
         logger.log(u"Unable to parse " + new_name + ", not valid", logger.DEBUG)
         return False
 

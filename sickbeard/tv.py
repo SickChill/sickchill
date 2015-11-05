@@ -2214,12 +2214,13 @@ class TVEpisode(object):
         result_name = pattern
 
         # if there's no release group in the db, let the user know we replaced it
-        if not hasattr(self, '_release_group') and not replace_map['%RG'] == 'SiCKRAGE':
-            logger.log(u"Episode has no release group, replacing it with '" + replace_map['%RG'] + "'", logger.DEBUG)
-            self._release_group = replace_map['%RG'] #if release_group is not in the db, put it there
-        elif not self._release_group and not replace_map['%RG'] == 'SiCKRAGE':
-            logger.log(u"Episode has no release group, replacing it with '" + replace_map['%RG'] + "'", logger.DEBUG)
-            self._release_group = replace_map['%RG'] #if release_group is not in the db, put it there
+        if replace_map['%RG'] and replace_map['%RG'] != 'SiCKRAGE':
+            if not hasattr(self, '_release_group'):
+                logger.log(u"Episode has no release group, replacing it with '" + replace_map['%RG'] + "'", logger.DEBUG)
+                self._release_group = replace_map['%RG']  # if release_group is not in the db, put it there
+            elif not self._release_group:
+                logger.log(u"Episode has no release group, replacing it with '" + replace_map['%RG'] + "'", logger.DEBUG)
+                self._release_group = replace_map['%RG']  # if release_group is not in the db, put it there
 
         # if there's no release name then replace it with a reasonable facsimile
         if not replace_map['%RN']:
