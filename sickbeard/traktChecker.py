@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Frank Fenton
 # URL: http://code.google.com/p/sickbeard/
 #
