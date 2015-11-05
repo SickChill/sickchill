@@ -1421,7 +1421,7 @@ def restoreConfigZip(archive, targetDir):
             def path_leaf(path):
                 head, tail = os.path.split(path)
                 return tail or os.path.basename(head)
-            bakFilename = '{0}-{1}'.format(path_leaf(targetDir), datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S'))
+            bakFilename = '{0}-{1}'.format(path_leaf(targetDir), datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
             shutil.move(targetDir, os.path.join(os.path.dirname(targetDir), bakFilename))
 
         zip_file = zipfile.ZipFile(archive, 'r', allowZip64=True)
