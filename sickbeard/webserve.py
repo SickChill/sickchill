@@ -3391,7 +3391,7 @@ class Manage(Home, WebRoot):
             webui_url = '/'.join(s.strip('/') for s in (webui_url, 'gui/'))
         if sickbeard.TORRENT_METHOD == 'download_station':
             if helpers.check_url(webui_url + 'download/'):
-                webui_url = webui_url + 'download/'
+                webui_url += 'download/'
             else:
                 info_download_station = '<p>To have a better experience please set the Download Station alias as <code>download</code>, you can check this setting in the Synology DSM <b>Control Panel</b> > <b>Application Portal</b>. Make sure you allow DSM to be embedded with iFrames too in <b>Control Panel</b> > <b>DSM Settings</b> > <b>Security</b>.</p><br/><p>There is more information about this available <a href="https://github.com/midgetspy/Sick-Beard/pull/338">here</a>.</p><br/>'
 
