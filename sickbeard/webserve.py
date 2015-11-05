@@ -1111,7 +1111,7 @@ class Home(WebRoot):
         checkversion = CheckVersion()
         backup = checkversion._runbackup()
 
-        if backup == True:
+        if backup is True:
 
             if sickbeard.versionCheckScheduler.action.update():
                 # do a hard restart
@@ -2713,7 +2713,7 @@ class HomeAddShows(Home):
                 split_vals = cur_dir.split('|')
                 if len(split_vals) < 3:
                     dirs_only.append(cur_dir)
-            if not '|' in cur_dir:
+            if '|' not in cur_dir:
                 dirs_only.append(cur_dir)
             else:
                 indexer, show_dir, indexer_id, show_name = self.split_extra_show(cur_dir)
@@ -4172,7 +4172,7 @@ class ConfigProviders(Config):
         if not key:
             error += "\nNo Provider Api key specified"
 
-        if error <> "":
+        if error != "":
             return json.dumps({'success': False, 'error': error})
 
         # Get list with Newznabproviders
