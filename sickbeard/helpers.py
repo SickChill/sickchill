@@ -1535,7 +1535,7 @@ def codeDescription(status_code):
     if status_code in clients.http_error_code:
         return clients.http_error_code[status_code]
     else:
-        logger.log(u"Unknown error code. Please submit an issue", logger.WARNING)
+        logger.log(u"Unknown error code: %s. Please submit an issue" % status_code , logger.ERROR)
         return 'unknown'
 
 
