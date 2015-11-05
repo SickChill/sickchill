@@ -87,18 +87,19 @@ def fixGlob(path):
     path = re.sub(r'\[', '[[]', path)
     return re.sub(r'(?<!\[)\]', '[]]', path)
 
+
 def indentXML(elem, level=0):
     '''
     Does our pretty printing, makes Matt very happy
     '''
-    i = "\n" + level*"  "
+    i = "\n" + level * "  "
     if len(elem):
         if not elem.text or not elem.text.strip():
             elem.text = i + "  "
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
         for elem in elem:
-            indentXML(elem, level+1)
+            indentXML(elem, level + 1)
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
     else:
@@ -158,8 +159,8 @@ def remove_non_release_groups(name):
                        r'^\[www\.Cpasbien\.pe\] ':          'searchre',
                        r'^\[www\.Cpasbien\.com\] ':         'searchre',
                        r'^\[ www\.Cpasbien\.pw \] ':        'searchre',
-                       r'^\.www\.Cpasbien\.pw':            'searchre',
-                       r'^\[www\.newpct1\.com\]':            'searchre',
+                       r'^\.www\.Cpasbien\.pw':             'searchre',
+                       r'^\[www\.newpct1\.com\]':           'searchre',
                        r'^\[ www\.Cpasbien\.com \] ':       'searchre',
                        r'- \{ www\.SceneTime\.com \}$':     'searchre',
                        r'^\{ www\.SceneTime\.com \} - ':    'searchre',
@@ -211,6 +212,7 @@ def notTorNZBFile(filename):
 
     return not (filename.endswith(".torrent") or filename.endswith(".nzb"))
 
+
 def isSyncFile(filename):
     """
     Returns true if filename is a syncfile, indicating filesystem may be in flux
@@ -220,7 +222,7 @@ def isSyncFile(filename):
     """
 
     extension = filename.rpartition(".")[2].lower()
-    #if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
+    # if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
     syncfiles = sickbeard.SYNC_FILES
     if extension in syncfiles.split(",") or filename.startswith('.syncthing'):
         return True
@@ -306,7 +308,7 @@ def sanitizeFileName(name):
     # remove bad chars from the filename
     name = re.sub(r'[\\/\*]', '-', name)
     name = re.sub(r'[:"<>|?]', '', name)
-    name = re.sub(ur'\u2122', '', name) # Trade Mark Sign
+    name = re.sub(ur'\u2122', '', name)  # Trade Mark Sign
 
     # remove leading/trailing periods and spaces
     name = name.strip(' .')
@@ -351,6 +353,7 @@ def findCertainShow(showList, indexerid):
         return results[0]
     elif len(results) > 1:
         raise MultipleShowObjectsException()
+
 
 def makeDir(path):
     """
@@ -467,6 +470,7 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
             break
 
     return (None, None, None)
+
 
 def listMediaFiles(path):
     """
@@ -945,6 +949,7 @@ def arithmeticEval(s):
 
     return _eval(node.body)
 
+
 def create_https_certificates(ssl_cert, ssl_key):
     """
     Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key'
@@ -1117,6 +1122,7 @@ def get_lan_ip():
     except Exception:
         return socket.gethostname()
 
+
 def check_url(url):
     """
     Check if a URL exists without downloading the whole file.
@@ -1158,6 +1164,7 @@ To add a new encryption_version:
 
 # Key Generators
 unique_key1 = hex(uuid.getnode() ** 2)  # Used in encryption v1
+
 
 # Encryption Functions
 def encrypt(data, encryption_version=0, _decrypt=False):
@@ -1528,6 +1535,7 @@ def _getTempDir():
 
     return os.path.join(tempfile.gettempdir(), "sickrage-%s" % (uid))
 
+
 def codeDescription(status_code):
     """
     Returns the description of the URL error code
@@ -1755,6 +1763,7 @@ def generateApiKey():
     logger.log(u"New API generated")
     return m.hexdigest()
 
+
 def pretty_filesize(file_bytes):
     """Return humanly formatted sizes from bytes"""
     for mod in ['B', 'KB', 'MB', 'GB', 'TB', 'PB']:
@@ -1766,15 +1775,18 @@ if __name__ == '__main__':
     import doctest
     doctest.testmod()
 
+
 def remove_article(text=''):
     """Remove the english articles from a text string"""
 
     return re.sub(r'(?i)^(?:(?:A(?!\s+to)n?)|The)\s(\w)', r'\1', text)
 
+
 def generateCookieSecret():
     """Generate a new cookie secret"""
 
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
+
 
 def verify_freespace(src, dest, oldfile=None):
     """
@@ -1840,6 +1852,7 @@ def verify_freespace(src, dest, oldfile=None):
                    % (neededspace, pretty_filesize(neededspace), diskfree, pretty_filesize(diskfree)), logger.WARNING)
         return False
 
+
 # https://gist.github.com/thatalextaylor/7408395
 def pretty_time_delta(seconds):
     sign_string = '-' if seconds < 0 else ''
@@ -1859,6 +1872,7 @@ def pretty_time_delta(seconds):
         time_delta += ' %ds' % seconds
 
     return time_delta
+
 
 def isFileLocked(checkfile, writeLockCheck=False):
     '''
@@ -1895,6 +1909,7 @@ def isFileLocked(checkfile, writeLockCheck=False):
             return True
 
     return False
+
 
 def getDiskSpaceUsage(diskPath=None):
     '''
