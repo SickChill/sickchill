@@ -1562,7 +1562,7 @@ def _setUpSession(session, headers):
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions'), use_dir_lock=True), cache_etags=False)
 
     # request session clear residual referer
-    if 'Referer' in session.headers and not 'Referer' in headers:
+    if 'Referer' in session.headers and 'Referer' not in headers:
         session.headers.pop('Referer')
 
     # request session headers
@@ -1573,7 +1573,7 @@ def _setUpSession(session, headers):
     session.verify = certifi.where() if sickbeard.SSL_VERIFY else False
 
     # request session proxies
-    if not 'Referer' in session.headers and sickbeard.PROXY_SETTING:
+    if 'Referer' not in session.headers and sickbeard.PROXY_SETTING:
         logger.log("Using proxy: " + sickbeard.PROXY_SETTING, logger.DEBUG)
         scheme, address = urllib2.splittype(sickbeard.PROXY_SETTING)
         address = sickbeard.PROXY_SETTING if scheme else 'http://' + sickbeard.PROXY_SETTING
