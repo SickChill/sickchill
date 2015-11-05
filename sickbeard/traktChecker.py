@@ -200,7 +200,7 @@ class TraktChecker():
                     if self._checkInList(trakt_id, str(cur_episode["showid"]), str(cur_episode["season"]), str(cur_episode["episode"]), List='Collection'):
                         if cur_episode["location"] == '':
                             logger.log(u"Removing Episode %s S%02dE%02d from collection" %
-                            (cur_episode["show_name"], cur_episode["season"], cur_episode["episode"]), logger.DEBUG)
+                                       (cur_episode["show_name"], cur_episode["season"], cur_episode["episode"]), logger.DEBUG)
                             trakt_data.append((cur_episode["showid"], cur_episode["indexer"], cur_episode["show_name"], cur_episode["startyear"], cur_episode["season"], cur_episode["episode"]))
 
             if len(trakt_data):
@@ -229,7 +229,7 @@ class TraktChecker():
 
                     if not self._checkInList(trakt_id, str(cur_episode["showid"]), str(cur_episode["season"]), str(cur_episode["episode"]), List='Collection'):
                         logger.log(u"Adding Episode %s S%02dE%02d to collection" %
-                        (cur_episode["show_name"], cur_episode["season"], cur_episode["episode"]), logger.DEBUG)
+                                   (cur_episode["show_name"], cur_episode["season"], cur_episode["episode"]), logger.DEBUG)
                         trakt_data.append((cur_episode["showid"], cur_episode["indexer"], cur_episode["show_name"], cur_episode["startyear"], cur_episode["season"], cur_episode["episode"]))
 
                 if len(trakt_data):
@@ -274,7 +274,7 @@ class TraktChecker():
                     if self._checkInList(trakt_id, str(cur_episode["showid"]), str(cur_episode["season"]), str(cur_episode["episode"])):
                         if cur_episode["status"] not in Quality.SNATCHED + Quality.SNATCHED_PROPER + [UNKNOWN] + [WANTED]:
                             logger.log(u"Removing Episode %s S%02dE%02d from watchlist" %
-                            (cur_episode["show_name"], cur_episode["season"], cur_episode["episode"]), logger.DEBUG)
+                                       (cur_episode["show_name"], cur_episode["season"], cur_episode["episode"]), logger.DEBUG)
                             trakt_data.append((cur_episode["showid"], cur_episode["indexer"], cur_episode["show_name"], cur_episode["startyear"], cur_episode["season"], cur_episode["episode"]))
 
             if len(trakt_data):
@@ -303,9 +303,9 @@ class TraktChecker():
 
                     if not self._checkInList(trakt_id, str(cur_episode["showid"]), str(cur_episode["season"]), str(cur_episode["episode"])):
                         logger.log(u"Adding Episode %s S%02dE%02d to watchlist" %
-                        (cur_episode["show_name"], cur_episode["season"], cur_episode["episode"]), logger.DEBUG)
+                                   (cur_episode["show_name"], cur_episode["season"], cur_episode["episode"]), logger.DEBUG)
                         trakt_data.append((cur_episode["showid"], cur_episode["indexer"], cur_episode["show_name"], cur_episode["startyear"], cur_episode["season"],
-                        cur_episode["episode"]))
+                                           cur_episode["episode"]))
 
                 if len(trakt_data):
                     try:
