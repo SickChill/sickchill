@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Dennis Lutter <lad1337@gmail.com>
 # URL: https://sickrage.tv/
 # Git: https://github.com/SiCKRAGETV/SickRage.git
@@ -20,6 +21,7 @@
 import sickbeard
 from sickbeard import db, logger, helpers
 from adba.aniDBerrors import AniDBCommandTimeoutError
+
 
 class BlackAndWhiteList(object):
     blacklist = []
@@ -133,8 +135,10 @@ class BlackAndWhiteList(object):
             logger.log('No Whitelist and  Blacklist defined, check passed.', logger.DEBUG)
             return True
 
+
 class BlackWhitelistNoShowIDException(Exception):
-    'No show_id was given'
+    """No show_id was given"""
+
 
 def short_group_names(groups):
     """
@@ -158,7 +162,7 @@ def short_group_names(groups):
                     if line["shortname"]:
                         shortGroupList.append(line["shortname"])
                     else:
-                        if not groupName in shortGroupList:
+                        if groupName not in shortGroupList:
                             shortGroupList.append(groupName)
     else:
         shortGroupList = groups
