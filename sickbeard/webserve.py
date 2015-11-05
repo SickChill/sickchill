@@ -2412,8 +2412,7 @@ class HomeAddShows(Home):
             library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
 
             for show_detail in shows:
-                show = {}
-                show['show'] = show_detail
+                show = {'show': show_detail}
                 try:
                     if not helpers.findCertainShow(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
                         if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
@@ -3761,9 +3760,9 @@ class ConfigBackupRestore(Config):
         finalResult = ''
 
         if backupDir:
-            source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE]
-            source.append(os.path.join(sickbeard.DATA_DIR, 'failed.db'))
-            source.append(os.path.join(sickbeard.DATA_DIR, 'cache.db'))
+            source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE,
+                      os.path.join(sickbeard.DATA_DIR, 'failed.db'),
+                      os.path.join(sickbeard.DATA_DIR, 'cache.db')]
             target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
             for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
