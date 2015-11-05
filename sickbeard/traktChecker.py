@@ -568,25 +568,25 @@ class TraktChecker():
                 if tvdb:
                     showid = str(watchlist_el['show']['ids'][tvdb_id])
 
-                    if not showid in self.EpisodeWatchlist[tvdb_id + '_id'].keys():
+                    if showid not in self.EpisodeWatchlist[tvdb_id + '_id'].keys():
                         self.EpisodeWatchlist[tvdb_id + '_id'][showid] = {'id': showid, 'title': title, 'year': year, 'seasons': {}}
 
-                    if not season in self.EpisodeWatchlist[tvdb_id + '_id'][showid]['seasons'].keys():
+                    if season not in self.EpisodeWatchlist[tvdb_id + '_id'][showid]['seasons'].keys():
                         self.EpisodeWatchlist[tvdb_id + '_id'][showid]['seasons'][season] = {'s': season, 'episodes': {}}
 
-                    if not episode in self.EpisodeWatchlist[tvdb_id + '_id'][showid]['seasons'][season]['episodes'].keys():
+                    if episode not in self.EpisodeWatchlist[tvdb_id + '_id'][showid]['seasons'][season]['episodes'].keys():
                         self.EpisodeWatchlist[tvdb_id + '_id'][showid]['seasons'][season]['episodes'][episode] = episode
 
                 if tvrage:
                     showid = str(watchlist_el['show']['ids'][tvrage_id])
 
-                    if not showid in self.EpisodeWatchlist[tvrage_id + '_id'].keys():
+                    if showid not in self.EpisodeWatchlist[tvrage_id + '_id'].keys():
                         self.EpisodeWatchlist[tvrage_id + '_id'][showid] = {'id': showid, 'title': title, 'year': year, 'seasons': {}}
 
-                    if not season in self.EpisodeWatchlist[tvrage_id + '_id'][showid]['seasons'].keys():
+                    if season not in self.EpisodeWatchlist[tvrage_id + '_id'][showid]['seasons'].keys():
                         self.EpisodeWatchlist[tvrage_id + '_id'][showid]['seasons'][season] = {'s': season, 'episodes': {}}
 
-                    if not episode in self.EpisodeWatchlist[tvrage_id + '_id'][showid]['seasons'][season]['episodes'].keys():
+                    if episode not in self.EpisodeWatchlist[tvrage_id + '_id'][showid]['seasons'][season]['episodes'].keys():
                         self.EpisodeWatchlist[tvrage_id + '_id'][showid]['seasons'][season]['episodes'][episode] = episode
         except traktException as e:
             logger.log(u"Could not connect to trakt service, cannot download Episode Watchlist: %s" % repr(e), logger.WARNING)
@@ -626,25 +626,25 @@ class TraktChecker():
                             if tvdb:
                                 showid = str(watchlist_el['show']['ids'][tvdb_id])
 
-                                if not showid in self.Collectionlist[tvdb_id + '_id'].keys():
+                                if showid not in self.Collectionlist[tvdb_id + '_id'].keys():
                                     self.Collectionlist[tvdb_id + '_id'][showid] = {'id': showid, 'title': title, 'year': year, 'seasons': {}}
 
-                                if not season in self.Collectionlist[tvdb_id + '_id'][showid]['seasons'].keys():
+                                if season not in self.Collectionlist[tvdb_id + '_id'][showid]['seasons'].keys():
                                     self.Collectionlist[tvdb_id + '_id'][showid]['seasons'][season] = {'s': season, 'episodes': {}}
 
-                                if not episode in self.Collectionlist[tvdb_id + '_id'][showid]['seasons'][season]['episodes'].keys():
+                                if episode not in self.Collectionlist[tvdb_id + '_id'][showid]['seasons'][season]['episodes'].keys():
                                     self.Collectionlist[tvdb_id + '_id'][showid]['seasons'][season]['episodes'][episode] = episode
 
                             if tvrage:
                                 showid = str(watchlist_el['show']['ids'][tvrage_id])
 
-                                if not showid in self.Collectionlist[tvrage_id + '_id'].keys():
+                                if showid not in self.Collectionlist[tvrage_id + '_id'].keys():
                                     self.Collectionlist[tvrage_id + '_id'][showid] = {'id': showid, 'title': title, 'year': year, 'seasons': {}}
 
-                                if not season in self.Collectionlist[tvrage_id + '_id'][showid]['seasons'].keys():
+                                if season not in self.Collectionlist[tvrage_id + '_id'][showid]['seasons'].keys():
                                     self.Collectionlist[tvrage_id + '_id'][showid]['seasons'][season] = {'s': season, 'episodes': {}}
 
-                                if not episode in self.Collectionlist[tvrage_id + '_id'][showid]['seasons'][season]['episodes'].keys():
+                                if episode not in self.Collectionlist[tvrage_id + '_id'][showid]['seasons'][season]['episodes'].keys():
                                     self.Collectionlist[tvrage_id + '_id'][showid]['seasons'][season]['episodes'][episode] = episode
         except traktException as e:
             logger.log(u"Could not connect to trakt service, cannot download Show Collection: %s" % repr(e), logger.WARNING)
