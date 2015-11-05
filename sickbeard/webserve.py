@@ -4156,11 +4156,11 @@ class ConfigProviders(Config):
 
     @staticmethod
     def getNewznabCategories(name, url, key):
-        '''
+        """
         Retrieves a list of possible categories with category id's
         Using the default url/api?cat
         http://yournewznaburl.com/api?t=caps&apikey=yourapikey
-        '''
+        """
         error = ""
         success = False
 
