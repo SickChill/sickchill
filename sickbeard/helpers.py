@@ -170,7 +170,7 @@ def remove_non_release_groups(name):
                        r'\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
                        r'- \[ www\.torrentday\.com \]$':            'searchre',
                        r'^\[ www\.TorrentDay\.com \] - ':           'searchre',
-                      }
+                       }
 
     _name = name
     for remove_string, remove_type in removeWordsList.iteritems():
@@ -1813,8 +1813,7 @@ def verify_freespace(src, dest, oldfile=None):
         import sys
 
         def disk_usage(path):
-            _, total, free = ctypes.c_ulonglong(), ctypes.c_ulonglong(), \
-                               ctypes.c_ulonglong()
+            _, total, free = ctypes.c_ulonglong(), ctypes.c_ulonglong(), ctypes.c_ulonglong()
             if sys.version_info >= (3,) or isinstance(path, unicode):
                 fun = ctypes.windll.kernel32.GetDiskFreeSpaceExW
             else:
