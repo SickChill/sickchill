@@ -161,7 +161,7 @@ def short_group_names(groups):
                     if line["shortname"]:
                         shortGroupList.append(line["shortname"])
                     else:
-                        if not groupName in shortGroupList:
+                        if groupName not in shortGroupList:
                             shortGroupList.append(groupName)
     else:
         shortGroupList = groups
