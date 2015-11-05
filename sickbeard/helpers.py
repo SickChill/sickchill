@@ -463,14 +463,14 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
             ShowObj = findCertainShow(sickbeard.showList, int(series_id))
             # Check if we can find the show in our list (if not, it's not the right show)
             if (indexer_id is None) and (ShowObj is not None) and (ShowObj.indexerid == int(series_id)):
-                return (seriesname, i, int(series_id))
+                return seriesname, i, int(series_id)
             elif (indexer_id is not None) and (int(indexer_id) == int(series_id)):
-                return (seriesname, i, int(indexer_id))
+                return seriesname, i, int(indexer_id)
 
         if indexer:
             break
 
-    return (None, None, None)
+    return None, None, None
 
 
 def listMediaFiles(path):
@@ -820,7 +820,7 @@ def fixSetGroupID(childPath):
 
         try:
             ek(os.chown, childPath, -1, parentGID)  # @UndefinedVariable - only available on UNIX
-            logger.log(u"Respecting the set-group-ID bit on the parent directory for %s" % (childPath), logger.DEBUG)
+            logger.log(u"Respecting the set-group-ID bit on the parent directory for %s" % childPath, logger.DEBUG)
         except OSError:
             logger.log(
                 u"Failed to respect the set-group-ID bit on the parent directory for %s (setting group ID %i)" % (
@@ -886,7 +886,7 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
                 episodes.append(ep.episode)
                 season = ep.season  # this will always take the last found season so eps that cross the season border are not handeled well
 
-    return (season, episodes)
+    return season, episodes
 
 
 def sanitizeSceneName(name, anime=False):
@@ -1534,7 +1534,7 @@ def _getTempDir():
         except ImportError:
             return os.path.join(tempfile.gettempdir(), "sickrage")
 
-    return os.path.join(tempfile.gettempdir(), "sickrage-%s" % (uid))
+    return os.path.join(tempfile.gettempdir(), "sickrage-%s" % uid)
 
 
 def codeDescription(status_code):
