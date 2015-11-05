@@ -2677,18 +2677,18 @@ class HomeAddShows(Home):
     @staticmethod
     def split_extra_show(extra_show):
         if not extra_show:
-            return (None, None, None, None)
+            return None, None, None, None
         split_vals = extra_show.split('|')
         if len(split_vals) < 4:
             indexer = split_vals[0]
             show_dir = split_vals[1]
-            return (indexer, show_dir, None, None)
+            return indexer, show_dir, None, None
         indexer = split_vals[0]
         show_dir = split_vals[1]
         indexer_id = split_vals[2]
         show_name = '|'.join(split_vals[3:])
 
-        return (indexer, show_dir, indexer_id, show_name)
+        return indexer, show_dir, indexer_id, show_name
 
     def addExistingShows(self, shows_to_add=None, promptForSettings=None):
         """
