@@ -60,7 +60,7 @@ def setEpisodeToWanted(show, s, e):
         logger.log(u"Starting backlog search for %s S%02dE%02d because some episodes were set to wanted" % (show.name, s, e))
 
 
-class TraktChecker():
+class TraktChecker(object):
     def __init__(self):
         self.trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
         self.todoBacklog = []
