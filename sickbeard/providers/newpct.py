@@ -163,6 +163,7 @@ class newpctProvider(generic.TorrentProvider):
         title = title.replace('[DVDRIP]', '[DVDrip x264]')
         title = title.replace('[DVD Rip]', '[DVDrip x264]')
         title = title.replace('[DVDrip]', '[DVDrip x264]')
+        title = title.replace('[DVDRIP-AC3.5.1]', '[DVDrip x264]')
         title = title.replace('[BLuRayRip]', '[720p BlueRay x264]')
         title = title.replace('[BRrip]', '[720p BlueRay x264]')
         title = title.replace('[BDrip]', '[720p BlueRay x264]')
