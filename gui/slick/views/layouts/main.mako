@@ -166,7 +166,7 @@
                         </li>
 
                         <li id="NAVconfig" class="navbar-split dropdown${('', ' active')[topmenu == 'config']}">
-                            <a href="${srRoot}/config/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs">Config</span><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" />
+                            <a href="${srRoot}/config/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Config</span><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" />
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
@@ -203,7 +203,7 @@
                                 toolsBadge = ''
                         %>
                         <li id="NAVsystem" class="navbar-split dropdown${('', ' active')[topmenu == 'system']}">
-                            <a href="${srRoot}/home/status/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${toolsBadge}
+                            <a href="${srRoot}/home/status/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${toolsBadge}
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
