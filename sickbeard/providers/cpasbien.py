@@ -34,7 +34,7 @@ class CpasbienProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.public = True
         self.ratio = None
-        self.url = "http://www.cpasbien.pw"
+        self.url = "http://www.cpasbien.io"
 
         self.proper_strings = ['PROPER', 'REPACK']
 
@@ -88,7 +88,7 @@ class CpasbienProvider(generic.TorrentProvider):
                                 #downloadTorrentLink = torrentSoup.find("a", title.startswith('Cliquer'))
                                 tmp = pageURL.split('/')[-1].replace('.html', '.torrent')
 
-                                downloadTorrentLink = ('http://www.cpasbien.pw/telechargement/%s' % tmp)
+                                downloadTorrentLink = ('http://www.cpasbien.io/telechargement/%s' % tmp)
 
                                 if downloadTorrentLink:
                                     download_url = downloadTorrentLink
