@@ -21,7 +21,7 @@ class TheSubDBSubtitle(Subtitle):
 
     @property
     def id(self):
-        return self.hash
+        return self.hash + '-' + str(self.language)
 
     def get_matches(self, video, hearing_impaired=False):
         matches = super(TheSubDBSubtitle, self).get_matches(video, hearing_impaired=hearing_impaired)
@@ -73,7 +73,7 @@ class TheSubDBProvider(Provider):
         return [s for s in self.query(video.hashes['thesubdb']) if s.language in languages]
 
     def download_subtitle(self, subtitle):
-        logger.info('Downloading subtitle %r')
+        logger.info('Downloading subtitle %r', subtitle)
         params = {'action': 'download', 'hash': subtitle.hash, 'language': subtitle.language.alpha2}
         r = self.session.get(self.server_url, params=params, timeout=10)
         r.raise_for_status()

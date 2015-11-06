@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+import re
 
 import chardet
 from guessit.matchtree import MatchTree
 from guessit.plugins.transformers import get_transformer
+from codecs import lookup
 import pysrt
 
 from .video import Episode, Movie
@@ -25,7 +27,7 @@ class Subtitle(object):
     #: Name of the provider that returns that class of subtitle
     provider_name = ''
 
-    def __init__(self, language, hearing_impaired=False, page_link=None):
+    def __init__(self, language, hearing_impaired=False, page_link=None, encoding=None):
         #: Language of the subtitle
         self.language = language
 
@@ -39,7 +41,15 @@ class Subtitle(object):
         self.content = None
 
         #: Encoding to decode with when accessing :attr:`text`
-        self.encoding = None
+        if encoding:
+            try:
+                # set encoding to canonical codec name
+                self.encoding = lookup(encoding).name
+            except (TypeError, LookupError):
+                logger.debug('Unsupported encoding "%s", setting to None', encoding)
+                self.encoding = None
+        else:
+            self.encoding = None
 
     @property
     def id(self):
@@ -56,7 +66,11 @@ class Subtitle(object):
         if not self.content:
             return
 
-        return self.content.decode(self.encoding or self.guess_encoding(), errors='replace')
+        try:
+            return self.content.decode(self.encoding, errors='replace')
+        except (TypeError, LookupError):
+            # Failback to guess_encoding if empty or unknown encoding provided
+            return self.content.decode(self.guess_encoding(), errors='replace')
 
     def is_valid(self):
         """Check if a :attr:`text` is a valid SubRip format.
@@ -219,6 +233,32 @@ def get_subtitle_path(video_path, language=None, extension='.srt'):
     return subtitle_root + extension
 
 
+def sanitize_string(string, replacement=''):
+    """Replace any special characters from a string.
+
+    :param str string: the string to sanitize.
+    :param str replacement: the replacement for special characters.
+    :return: the sanitized string.
+    :rtype: str
+
+    """
+    return re.sub('[^ a-zA-Z0-9]', replacement, string)
+
+
+def sanitized_string_equal(string1, string2):
+    """Test two strings for equality case insensitively and ignoring special characters.
+
+    :param str string1: the first string to compare.
+    :param str string2: the second string to compare.
+    :return: `True` if the two strings are equal, `False` otherwise.
+    :rtype: bool
+
+    """
+    valid_pattern = '[^a-zA-Z0-9]'
+
+    return sanitize_string(string1).lower() == sanitize_string(string2).lower()
+
+
 def guess_matches(video, guess, partial=False):
     """Get matches between a `video` and a `guess`.
 
@@ -236,7 +276,7 @@ def guess_matches(video, guess, partial=False):
     matches = set()
     if isinstance(video, Episode):
         # series
-        if video.series and 'series' in guess and guess['series'].lower() == video.series.lower():
+        if video.series and 'series' in guess and sanitized_string_equal(guess['series'], video.series):
             matches.add('series')
         # season
         if video.season and 'season' in guess and guess['season'] == video.season:
@@ -255,7 +295,7 @@ def guess_matches(video, guess, partial=False):
         if video.year and 'year' in guess and guess['year'] == video.year:
             matches.add('year')
     # title
-    if video.title and 'title' in guess and guess['title'].lower() == video.title.lower():
+    if video.title and 'title' in guess and sanitized_string_equal(guess['title'], video.title):
         matches.add('title')
     # release_group
     if video.release_group and 'releaseGroup' in guess and guess['releaseGroup'].lower() == video.release_group.lower():
