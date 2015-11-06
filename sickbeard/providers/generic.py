@@ -50,8 +50,6 @@ class GenericProvider:
         self.providerType = None
         self.name = name
 
-        self.proxy = ProviderProxy()
-        self.proxyGlypeProxySSLwarning = None
         self.urls = {}
         self.url = ''
 
@@ -141,16 +139,8 @@ class GenericProvider:
         for providers with special URL requirements (like cookies)
         """
 
-        if self.proxy.isEnabled():
-            self.headers.update({'Referer': self.proxy.getProxyURL()})
-            self.proxyGlypeProxySSLwarning = self.proxy.getProxyURL() + 'includes/process.php?action=sslagree&submit=Continue anyway...'
-        else:
-            if 'Referer' in self.headers:
-                self.headers.pop('Referer')
-            self.proxyGlypeProxySSLwarning = None
-
-        return helpers.getURL(self.proxy._buildURL(url), post_data=post_data, params=params, headers=self.headers, timeout=timeout,
-                              session=self.session, json=json, proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning)
+        return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
+                              session=self.session, json=json)
 
 
     def _makeURL(self, result):
@@ -200,17 +190,11 @@ class GenericProvider:
 
         urls, filename = self._makeURL(result)
 
-        if self.proxy.isEnabled():
-            self.headers.update({'Referer': self.proxy.getProxyURL()})
-        elif 'Referer' in self.headers:
-            self.headers.pop('Referer')
-
         for url in urls:
             if 'NO_DOWNLOAD_NAME' in url:
                 continue
 
-            if not self.proxy.isEnabled() and url.startswith('http'):
-                # Let's just set a referer for every .torrent/.nzb, should work as a cover-all without side-effects
+            if url.startswith('http'):
                 self.headers.update({'Referer': '/'.join(url.split('/')[:3]) + '/'})
 
             logger.log(u"Downloading a result from " + self.name + " at " + url)
@@ -219,7 +203,7 @@ class GenericProvider:
             if url.endswith(GenericProvider.TORRENT) and filename.endswith(GenericProvider.NZB):
                 filename = filename.rsplit('.', 1)[0] + '.' + GenericProvider.TORRENT
 
-            if helpers.download_file(self.proxy._buildURL(url), filename, session=self.session, headers=self.headers):
+            if helpers.download_file(url, filename, session=self.session, headers=self.headers):
                 if self._verify_download(filename):
                     logger.log(u"Saved result to " + filename, logger.INFO)
                     return True
@@ -662,44 +646,3 @@ class TorrentProvider(GenericProvider):
                         results.append(classes.Proper(title, url, datetime.datetime.today(), show))
 
         return results
-
-class ProviderProxy:
-    def __init__(self):
-        self.Type = 'GlypeProxy'
-        self.param = 'browse.php?u='
-        self.option = '&b=32&f=norefer'
-        self.enabled = False
-        self.url = None
-
-        self.urls = {
-            'getprivate.eu (NL)': 'http://getprivate.eu/',
-            'hideme.nl (NL)': 'http://hideme.nl/',
-            'proxite.eu (DE)': 'http://proxite.eu/',
-            'interproxy.net (EU)': 'http://interproxy.net/',
-        }
-
-    def isEnabled(self):
-        """ Return True if we Choose to call TPB via Proxy """
-        return self.enabled
-
-    def getProxyURL(self):
-        """ Return the Proxy URL Choosen via Provider Setting """
-        return str(self.url)
-
-    def _buildURL(self, url):
-        """ Return the Proxyfied URL of the page """
-        if self.isEnabled():
-            url = self.getProxyURL() + self.param + urllib.quote_plus(url.encode('UTF-8')) + self.option
-            logger.log(u"Proxified URL: " + url, logger.DEBUG)
-
-        return url
-
-    def _buildRE(self, regx):
-        """ Return the Proxyfied RE string """
-        if self.isEnabled():
-            regx = re.sub('//1', self.option, regx).replace('&', '&amp;')
-            logger.log(u"Proxified REGEX: " + regx, logger.DEBUG)
-        else:
-            regx = re.sub('//1', '', regx)
-
-        return regx

@@ -197,10 +197,6 @@ class RarbgProvider(generic.TorrentProvider):
                                 return results
                             logger.log(u"Using new token", logger.DEBUG)
                             continue
-                        if re.search('<div id="error">.*</div>', data):
-                            logger.log(u"Proxy %s does not support https" % self.proxy.getProxyURL(), logger.DEBUG)
-                            searchURL = searchURL.replace(u'https', 'http')
-                            continue
 
                         # No error found break
                         break

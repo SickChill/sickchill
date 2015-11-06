@@ -126,7 +126,6 @@ def remove_non_release_groups(name):
     """
     Remove non release groups from name
     """
-
     if not name:
         return name
 
@@ -134,44 +133,45 @@ def remove_non_release_groups(name):
     # Check your database for funky release_names and add them here, to improve failed handling, archiving, and history.
     # select release_name from tv_episodes WHERE LENGTH(release_name);
     # [eSc], [SSG], [GWC] are valid release groups for non-anime
-    removeWordsList = {r'\[rartv\]$':       'searchre',
-                       r'\[rarbg\]$':       'searchre',
-                       r'\[eztv\]$':        'searchre',
-                       r'\[ettv\]$':        'searchre',
-                       r'\[cttv\]$':        'searchre',
-                       r'\[vtv\]$':         'searchre',
-                       r'\[EtHD\]$':        'searchre',
-                       r'\[GloDLS\]$':      'searchre',
-                       r'\[silv4\]$':       'searchre',
-                       r'\[Seedbox\]$':     'searchre',
-                       r'\[PublicHD\]$':    'searchre',
-                       r'\[AndroidTwoU\]$': 'searchre',
-                       r'\.\[BT\]$':        'searchre',
-                       r' \[1044\]$':       'searchre',
-                       r'\.RiPSaLoT$':      'searchre',
-                       r'\.GiuseppeTnT$':   'searchre',
-                       r'\.Renc$':          'searchre',
-                       r'-NZBGEEK$':        'searchre',
-                       r'-Siklopentan$':    'searchre',
-                       r'-\SpastikusTV\]$':                 'searchre',
-                       r'-RP$':                             'searchre',
-                       r'-20-40$':                          'searchre',
-                       r'\.\[www\.usabit\.com\]$':          'searchre',
-                       r'^\[www\.Cpasbien\.pe\] ':          'searchre',
-                       r'^\[www\.Cpasbien\.com\] ':         'searchre',
-                       r'^\[ www\.Cpasbien\.pw \] ':        'searchre',
-                       r'^\.www\.Cpasbien\.pw':             'searchre',
-                       r'^\[www\.newpct1\.com\]':           'searchre',
-                       r'^\[ www\.Cpasbien\.com \] ':       'searchre',
-                       r'- \{ www\.SceneTime\.com \}$':     'searchre',
-                       r'^\{ www\.SceneTime\.com \} - ':    'searchre',
-                       r'^\[www\.frenchtorrentdb\.com\] ':  'searchre',
-                       r'^\]\.\[www\.tensiontorrent.com\] - ':      'searchre',
-                       r'^\]\.\[ www\.tensiontorrent.com \] - ':    'searchre',
-                       r'\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
-                       r'- \[ www\.torrentday\.com \]$':            'searchre',
-                       r'^\[ www\.TorrentDay\.com \] - ':           'searchre',
-                       }
+    removeWordsList = {
+        r'\[rartv\]$':       'searchre',
+        r'\[rarbg\]$':       'searchre',
+        r'\[eztv\]$':        'searchre',
+        r'\[ettv\]$':        'searchre',
+        r'\[cttv\]$':        'searchre',
+        r'\[vtv\]$':         'searchre',
+        r'\[EtHD\]$':        'searchre',
+        r'\[GloDLS\]$':      'searchre',
+        r'\[silv4\]$':       'searchre',
+        r'\[Seedbox\]$':     'searchre',
+        r'\[PublicHD\]$':    'searchre',
+        r'\[AndroidTwoU\]$': 'searchre',
+        r'\.\[BT\]$':        'searchre',
+        r' \[1044\]$':       'searchre',
+        r'\.RiPSaLoT$':      'searchre',
+        r'\.GiuseppeTnT$':   'searchre',
+        r'\.Renc$':          'searchre',
+        r'-NZBGEEK$':        'searchre',
+        r'-Siklopentan$':    'searchre',
+        r'-\[SpastikusTV\]$':                 'searchre',
+        r'-RP$':                             'searchre',
+        r'-20-40$':                          'searchre',
+        r'\.\[www\.usabit\.com\]$':          'searchre',
+        r'^\[www\.Cpasbien\.pe\] ':          'searchre',
+        r'^\[www\.Cpasbien\.com\] ':         'searchre',
+        r'^\[ www\.Cpasbien\.pw \] ':        'searchre',
+        r'^\.www\.Cpasbien\.pw':            'searchre',
+        r'^\[www\.newpct1\.com\]':            'searchre',
+        r'^\[ www\.Cpasbien\.com \] ':       'searchre',
+        r'- \{ www\.SceneTime\.com \}$':     'searchre',
+        r'^\{ www\.SceneTime\.com \} - ':    'searchre',
+        r'^\[www\.frenchtorrentdb\.com\] ':  'searchre',
+        r'^\]\.\[www\.tensiontorrent.com\] - ':      'searchre',
+        r'^\]\.\[ www\.tensiontorrent.com \] - ':    'searchre',
+        r'- \[ www\.torrentday\.com \]$':            'searchre',
+        r'^\[ www\.TorrentDay\.com \] - ':           'searchre',
+        r'\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
+    }
 
     _name = name
     for remove_string, remove_type in removeWordsList.iteritems():
@@ -180,7 +180,7 @@ def remove_non_release_groups(name):
         elif remove_type == 'searchre':
             _name = re.sub(r'(?i)' + remove_string, '', _name)
 
-    return _name.strip('.- ')
+    return _name.strip('.- []{}')
 
 
 def replaceExtension(filename, newExt):
@@ -1564,12 +1564,13 @@ def _setUpSession(session, headers):
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions'), use_dir_lock=True), cache_etags=False)
 
     # request session clear residual referer
-    if 'Referer' in session.headers and 'Referer' not in headers:
+    if 'Referer' in session.headers and 'Referer' not in headers or {}:
         session.headers.pop('Referer')
 
     # request session headers
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
-    session.headers.update(headers)
+    if headers:
+        session.headers.update(headers)
 
     # request session ssl verify
     session.verify = certifi.where() if sickbeard.SSL_VERIFY else False
@@ -1591,7 +1592,7 @@ def _setUpSession(session, headers):
     return session
 
 
-def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
+def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=None, json=False):
     """
     Returns a byte-string retrieved from the url provider.
     """
@@ -1623,15 +1624,6 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
                        % (url, resp.status_code, codeDescription(resp.status_code)), logger.DEBUG)
             return None
 
-        if proxyGlypeProxySSLwarning is not None:
-            if re.search('The site you are attempting to browse is on a secure connection', resp.text):
-                resp = session.get(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True, verify=session.verify)
-
-                if not resp.ok:
-                    logger.log(u"GlypeProxySSLwarning: Requested getURL %s returned status code is %s: %s"
-                               % (url, resp.status_code, codeDescription(resp.status_code)), logger.DEBUG)
-                    return None
-
     except (SocketTimeout, TypeError) as e:
         logger.log(u"Connection timed out (sockets) accessing getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
@@ -1661,7 +1653,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
     return resp.content if not json else resp.json()
 
 
-def download_file(url, filename, session=None, headers={}):
+def download_file(url, filename, session=None, headers=None):
     """
     Downloads a file specified
 

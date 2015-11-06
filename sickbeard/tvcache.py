@@ -136,9 +136,7 @@ class TVCache(object):
     def getRSSFeed(self, url):
         handlers = []
 
-        if self.provider.proxy.isEnabled():
-            self.provider.headers.update({'Referer': self.provider.proxy.getProxyURL()})
-        elif sickbeard.PROXY_SETTING:
+        if sickbeard.PROXY_SETTING:
             logger.log("Using proxy for url: " + url, logger.DEBUG)
             scheme, address = urllib2.splittype(sickbeard.PROXY_SETTING)
             address = sickbeard.PROXY_SETTING if scheme else 'http://' + sickbeard.PROXY_SETTING
@@ -148,7 +146,7 @@ class TVCache(object):
             self.provider.headers.pop('Referer')
 
         return getFeed(
-            self.provider.proxy._buildURL(url),
+            url,
             request_headers=self.provider.headers,
             handlers=handlers)
 
