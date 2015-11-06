@@ -512,39 +512,80 @@ qualityPresetStrings = {SD: "SD",
                         ANY: "Any"}
 
 
-# pylint: disable=R0903,C1001
-class StatusStrings:
+class StatusStrings(dict):
+    """
+    Dictionary containing strings for status codes
+
+    Keys must be convertible to int or a ValueError will be raised.  This is intentional to match old functionality until
+    the old StatusStrings is fully deprecated, then we will raise a KeyError instead, where appropriate.
+
+    Membership checks using __contains__ (i.e. 'x in y') do not raise a ValueError to match expected dict functionality
+    """
+    # todo: Deprecate StatusStrings().statusStrings and use StatusStrings() directly
+    # todo: Deprecate .has_key and switch to 'x in y'
+    # todo: Switch from raising ValueError to a saner KeyError
+    # todo: Raise KeyError when unable to resolve a missing key instead of returning ''
+    # todo: Make key of None match dict() functionality
     def __init__(self):
-        self.statusStrings = {UNKNOWN: "Unknown",
-                              UNAIRED: "Unaired",
-                              SNATCHED: "Snatched",
-                              DOWNLOADED: "Downloaded",
-                              SKIPPED: "Skipped",
-                              SNATCHED_PROPER: "Snatched (Proper)",
-                              WANTED: "Wanted",
-                              ARCHIVED: "Archived",
-                              IGNORED: "Ignored",
-                              SUBTITLED: "Subtitled",
-                              FAILED: "Failed",
-                              SNATCHED_BEST: "Snatched (Best)"}
+        """
+        Initialize status strings
+        """
+        self[UNKNOWN] = "Unknown"
+        self[UNAIRED] = "Unaired"
+        self[SNATCHED] = "Snatched"
+        self[DOWNLOADED] = "Downloaded"
+        self[SKIPPED] = "Skipped"
+        self[SNATCHED_PROPER] = "Snatched (Proper)"
+        self[WANTED] = "Wanted"
+        self[ARCHIVED] = "Archived"
+        self[IGNORED] = "Ignored"
+        self[SUBTITLED] = "Subtitled"
+        self[FAILED] = "Failed"
+        self[SNATCHED_BEST] = "Snatched (Best)"
+        self.statusStrings = dict(self)  # for backwards compatibility
 
-    def __getitem__(self, key):
-        key = int(key)
-        if key in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.ARCHIVED:
+    def __missing__(self, key):
+        """
+        If the key is not found, search for the missing key in qualities
+
+        Keys must be convertible to int or a ValueError will be raised.  This is intentional to match old functionality until
+        the old StatusStrings is fully deprecated, then we will raise a KeyError instead, where appropriate.
+        """
+        key = int(key)  # This will raise a ValueError if the key can't be converted to int
+
+        if key in self.keys() + Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.ARCHIVED:
             status, quality = Quality.splitCompositeStatus(key)
-            if quality == Quality.NONE:
-                return self.statusStrings[status]
+            if quality == Quality.NONE:  # If a Quality is not listed... (shouldn't this be 'if not quality:'?)
+                return self[status]  # ...return the status...
             else:
-                return self.statusStrings[status] + " (" + Quality.qualityStrings[quality] + ")"
+                return self[status] + " (" + Quality.qualityStrings[quality] + ")"  # ...otherwise append the quality to the status
         else:
-            return self.statusStrings[key] if self.statusStrings.has_key(key) else ''
+            return ''  # return '' to match old functionality when the numeric key is not found
 
+    # Keep this until all has_key() checks are converted to 'key in dict'
+    # or else has_keys() won't search __missing__ for keys
     def has_key(self, key):
-        key = int(key)
-        return key in self.statusStrings or key in Quality.DOWNLOADED + Quality.ARCHIVED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
+        """
+        Override has_key() to test membership using an 'x in y' search
+
+        Keys must be convertible to int or a ValueError will be raised.  This is intentional to match old functionality until
+        the old StatusStrings is fully deprecated, then we will raise a KeyError instead, where appropriate.
+        """
+        return True if key in self else False  # This will raise a ValueError if __missing__ can't convert the key to int
 
     def __contains__(self, key):
-        return self.has_key(key)
+        """
+        Checks for existence of key
+
+        Unlike has_key() and __missing__() this will NOT raise a ValueError to match expected functionality
+        when checking for 'key in dict'
+        """
+        try:
+            # if the key is not found in keys() then leverage __missing__ by trying the key directly
+            return key in self.keys() or self[key]  # This will raise a ValueError if __missing__ can't convert the key to int
+        except ValueError:  # The key is not numeric and since we only want numeric keys...
+            # ...and we don't want this function to fail...
+            pass  # ...suppress the ValueError and do nothing, the key does not exist
 
 statusStrings = StatusStrings()
 
