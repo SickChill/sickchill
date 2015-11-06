@@ -4,7 +4,8 @@ import logging
 from babelfish import Language
 from requests import Session
 
-from . import Provider
+from . import Provider, get_version
+from .. import __version__
 from ..subtitle import Subtitle
 
 logger = logging.getLogger(__name__)
@@ -61,7 +62,7 @@ class NapiProjektProvider(Provider):
     server_url = 'http://napiprojekt.pl/unit_napisy/dl.php'
 
     def initialize(self):
-        self.session = Session()
+        self.session.headers = {'User-Agent': 'Subliminal/%s' % get_version(__version__)}
 
     def terminate(self):
         self.session.close()
