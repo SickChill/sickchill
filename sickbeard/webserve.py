@@ -1654,6 +1654,7 @@ class Home(WebRoot):
             else:
                 return self._genericMessage("Error", errMsg)
 
+        # Use .has_key() since it is overridden for statusStrings in common.py
         if not statusStrings.has_key(int(status)):
             errMsg = "Invalid status"
             if direct:
