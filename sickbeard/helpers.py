@@ -982,6 +982,8 @@ def create_https_certificates(ssl_cert, ssl_key):
 
     # Save the key and certificate to disk
     try:
+        # pylint: disable=E1101
+        # Module has no member
         open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except Exception:
