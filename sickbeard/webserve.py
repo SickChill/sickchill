@@ -4482,19 +4482,6 @@ class ConfigProviders(Config):
                 except Exception:
                     curTorrentProvider.sorting = 'seeders'
 
-            if hasattr(curTorrentProvider, 'proxy'):
-                try:
-                    curTorrentProvider.proxy.enabled = config.checkbox_to_value(
-                        kwargs[curTorrentProvider.getID() + '_proxy'])
-                except Exception:
-                    curTorrentProvider.proxy.enabled = 0
-
-                if hasattr(curTorrentProvider.proxy, 'url'):
-                    try:
-                        curTorrentProvider.proxy.url = str(kwargs[curTorrentProvider.getID() + '_proxy_url']).strip()
-                    except Exception:
-                        curTorrentProvider.proxy.url = None
-
             if hasattr(curTorrentProvider, 'freeleech'):
                 try:
                     curTorrentProvider.freeleech = config.checkbox_to_value(

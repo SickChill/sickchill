@@ -482,33 +482,6 @@ $('#config-components').tabs();
                         </div>
                         % endif
 
-                        % if hasattr(curTorrentProvider, 'proxy'):
-                        <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_proxy">
-                                <span class="component-title">Access provider via proxy</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="${curTorrentProvider.getID()}_proxy" id="${curTorrentProvider.getID()}_proxy" ${('', 'checked="checked"')[bool(curTorrentProvider.proxy.enabled)]}/>
-                                    <p>to bypass country blocking mechanisms</p>
-                                </span>
-                            </label>
-                        </div>
-
-                        % if hasattr(curTorrentProvider.proxy, 'url'):
-                        <div class="field-pair content_${curTorrentProvider.getID()}_proxy" id="content_${curTorrentProvider.getID()}_proxy">
-                            <label for="${curTorrentProvider.getID()}_proxy_url">
-                                <span class="component-title">Proxy URL:</span>
-                                <span class="component-desc">
-                                  <select name="${curTorrentProvider.getID()}_proxy_url" id="${curTorrentProvider.getID()}_proxy_url" class="form-control input-sm">
-                                    % for i in curTorrentProvider.proxy.urls.keys():
-                                    <option value="${curTorrentProvider.proxy.urls[i]}" ${('', 'selected="selected"')[curTorrentProvider.proxy.urls[i] == curTorrentProvider.proxy.url]}>${i}</option>
-                                    % endfor
-                                    </select>
-                                </span>
-                            </label>
-                        </div>
-                        % endif
-                        % endif
-
                         % if hasattr(curTorrentProvider, 'freeleech'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_freeleech">

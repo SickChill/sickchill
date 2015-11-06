@@ -1248,11 +1248,6 @@ def initialize(consoleLogging=True):
             if hasattr(curTorrentProvider, 'pin'):
                 curTorrentProvider.pin = check_setting_str(CFG, curTorrentProvider.getID().upper(),
                                                            curTorrentProvider.getID() + '_pin', '', censor_log=True)
-            if hasattr(curTorrentProvider, 'proxy'):
-                curTorrentProvider.proxy.enabled = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(), curTorrentProvider.getID() + '_proxy', 0))
-                if hasattr(curTorrentProvider.proxy, 'url'):
-                    curTorrentProvider.proxy.url = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                     curTorrentProvider.getID() + '_proxy_url', '')
             if hasattr(curTorrentProvider, 'confirmed'):
                 curTorrentProvider.confirmed = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                       curTorrentProvider.getID() + '_confirmed', 1))
@@ -1837,12 +1832,6 @@ def save_config():
         if hasattr(curTorrentProvider, 'options'):
             new_config[curTorrentProvider.getID().upper()][
                 curTorrentProvider.getID() + '_options'] = curTorrentProvider.options
-        if hasattr(curTorrentProvider, 'proxy'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_proxy'] = int(
-                curTorrentProvider.proxy.enabled)
-            if hasattr(curTorrentProvider.proxy, 'url'):
-                new_config[curTorrentProvider.getID().upper()][
-                    curTorrentProvider.getID() + '_proxy_url'] = curTorrentProvider.proxy.url
         if hasattr(curTorrentProvider, 'freeleech'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_freeleech'] = int(
                 curTorrentProvider.freeleech)

@@ -1579,7 +1579,7 @@ def _setUpSession(session, headers):
 
     # request session proxies
     if 'Referer' not in session.headers and sickbeard.PROXY_SETTING:
-        logger.log("Using proxy: " + sickbeard.PROXY_SETTING, logger.DEBUG)
+        logger.log("Using global proxy: " + sickbeard.PROXY_SETTING, logger.DEBUG)
         scheme, address = urllib2.splittype(sickbeard.PROXY_SETTING)
         address = sickbeard.PROXY_SETTING if scheme else 'http://' + sickbeard.PROXY_SETTING
         session.proxies = {
