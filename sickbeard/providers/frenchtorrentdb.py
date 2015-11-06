@@ -58,9 +58,6 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
         self.minseed = None
         self.minleech = None
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         params = {

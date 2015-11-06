@@ -56,9 +56,6 @@ class GFTrackerProvider(generic.TorrentProvider):
 
         self.cache = GFTrackerCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
 
         if not self.username or not self.password:

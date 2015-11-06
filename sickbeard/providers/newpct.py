@@ -71,10 +71,6 @@ class newpctProvider(generic.TorrentProvider):
             'q': ''
         }
 
-
-    def isEnabled(self):
-        return self.enabled
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []

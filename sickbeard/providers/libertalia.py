@@ -52,9 +52,6 @@ class LibertaliaProvider(generic.TorrentProvider):
 
         self.cache = LibertaliaCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):

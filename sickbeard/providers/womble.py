@@ -30,9 +30,6 @@ class WombleProvider(generic.NZBProvider):
         self.urls = {'base_url': 'http://newshost.co.za/'}
         self.url = self.urls['base_url']
 
-    def isEnabled(self):
-        return self.enabled
-
 
 class WombleCache(tvcache.TVCache):
     def __init__(self, provider_obj):

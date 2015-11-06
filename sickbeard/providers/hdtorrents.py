@@ -53,10 +53,6 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
         self.cache = HDTorrentsCache(self)
 
-
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
 
         if not self.username or not self.password:

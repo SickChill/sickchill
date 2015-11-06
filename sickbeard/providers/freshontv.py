@@ -57,9 +57,6 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
         self.cookies = None
 
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
 
         if not self.username or not self.password:
@@ -156,7 +153,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                         # limit RSS search
                         if max_page_number > 3 and mode is 'RSS':
                             max_page_number = 3
-                except:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
                     continue
 

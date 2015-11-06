@@ -88,9 +88,6 @@ class NewznabProvider(generic.NZBProvider):
             return self.getID() + '.png'
         return 'newznab.png'
 
-    def isEnabled(self):
-        return self.enabled
-
     def _getURL(self, url, post_data=None, params=None, timeout=30, json=False):
         return self.getURL(url, post_data=post_data, params=params, timeout=timeout, json=json)
 

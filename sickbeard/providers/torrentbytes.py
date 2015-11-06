@@ -55,9 +55,6 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
         self.cache = TorrentBytesCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         login_params = {'username': self.username,

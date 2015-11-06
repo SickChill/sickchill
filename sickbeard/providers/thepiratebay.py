@@ -64,9 +64,6 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         self.re_title_url = r'/torrent/(?P<id>\d+)/(?P<title>.*?)".+?(?P<url>magnet.*?)".+?Size (?P<size>[\d\.]*&nbsp;[TGKMiB]{2,3}).+?(?P<seeders>\d+)</td>.+?(?P<leechers>\d+)</td>'
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []

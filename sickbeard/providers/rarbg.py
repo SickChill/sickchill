@@ -79,9 +79,6 @@ class RarbgProvider(generic.TorrentProvider):
 
         self.cache = RarbgCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
         if self.token and self.tokenExpireDate and datetime.datetime.now() < self.tokenExpireDate:
             return True

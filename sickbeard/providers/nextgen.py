@@ -57,9 +57,6 @@ class NextGenProvider(generic.TorrentProvider):
         self.minleech = 0
         self.freeleech = True
 
-    def isEnabled(self):
-        return self.enabled
-
     def getLoginParams(self):
         return {
             'username': self.username,
@@ -83,7 +80,7 @@ class NextGenProvider(generic.TorrentProvider):
                     return True
                 else:
                     self.login_opener = None
-            except:
+            except Exception:
                 self.login_opener = None
 
         if self.login_opener:
@@ -105,7 +102,7 @@ class NextGenProvider(generic.TorrentProvider):
                     return True
 
                 error = 'unknown'
-        except:
+        except Exception:
             error = traceback.format_exc()
             self.login_opener = None
 

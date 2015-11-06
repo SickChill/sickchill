@@ -40,9 +40,6 @@ class ShazbatProvider(generic.TorrentProvider):
                      'website': u'http://www.shazbat.tv/login',}
         self.url = self.urls['website']
 
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
         if not self.passkey:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")

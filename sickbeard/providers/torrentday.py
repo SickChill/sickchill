@@ -53,9 +53,6 @@ class TorrentDayProvider(generic.TorrentProvider):
         self.categories = {'Season': {'c14': 1}, 'Episode': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1},
                            'RSS': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c14': 1}}
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):

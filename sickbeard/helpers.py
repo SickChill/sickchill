@@ -81,6 +81,8 @@ import shutil_custom
 
 shutil.copyfile = shutil_custom.copyfile_custom
 
+# pylint: disable=W0212
+# Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
 
 
@@ -317,7 +319,7 @@ def sanitizeFileName(name):
     return name
 
 
-def _remove_file_failed(failed_file):
+def remove_file_failed(failed_file):
     """
     Remove file from filesystem
 
@@ -1686,27 +1688,27 @@ def download_file(url, filename, session=None, headers=None):
                 logger.log(u"Problem setting permissions or writing file to: %s" % filename, logger.WARNING)
 
     except (SocketTimeout, TypeError) as e:
-        _remove_file_failed(filename)
+        remove_file_failed(filename)
         logger.log(u"Connection timed out (sockets) while loading download URL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
     except requests.exceptions.HTTPError as e:
-        _remove_file_failed(filename)
+        remove_file_failed(filename)
         logger.log(u"HTTP error %r while loading download URL %s " % (ex(e), url), logger.WARNING)
         return False
     except requests.exceptions.ConnectionError as e:
-        _remove_file_failed(filename)
+        remove_file_failed(filename)
         logger.log(u"Connection error %r while loading download URL %s " % (ex(e), url), logger.WARNING)
         return False
     except requests.exceptions.Timeout as e:
-        _remove_file_failed(filename)
+        remove_file_failed(filename)
         logger.log(u"Connection timed out %r while loading download URL %s " % (ex(e), url), logger.WARNING)
         return False
     except EnvironmentError as e:
-        _remove_file_failed(filename)
+        remove_file_failed(filename)
         logger.log(u"Unable to save the file: %r " % ex(e), logger.WARNING)
         return False
     except Exception:
-        _remove_file_failed(filename)
+        remove_file_failed(filename)
         logger.log(u"Unknown exception while loading download URL %s : %r" % (url, traceback.format_exc()), logger.WARNING)
         return False
 

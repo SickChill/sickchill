@@ -50,9 +50,6 @@ class ExtraTorrentProvider(generic.TorrentProvider):
         self.headers.update({'User-Agent': USER_AGENT})
         self.search_params = {'cid': 8}
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []

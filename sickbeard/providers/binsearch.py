@@ -18,7 +18,7 @@ import urllib
 import re
 
 
-import generic
+from sickbeard.providers import generic
 
 from sickbeard import logger
 from sickbeard import tvcache
@@ -32,8 +32,6 @@ class BinSearchProvider(generic.NZBProvider):
         self.urls = {'base_url': 'https://www.binsearch.info/'}
         self.url = self.urls['base_url']
 
-    def isEnabled(self):
-        return self.enabled
 
 class BinSearchCache(tvcache.TVCache):
     def __init__(self, provider_obj):
@@ -44,13 +42,13 @@ class BinSearchCache(tvcache.TVCache):
         # compile and save our regular expressions
 
         # this pulls the title from the URL in the description
-        self.descTitleStart = re.compile('^.*https?://www\.binsearch\.info/.b=')
+        self.descTitleStart = re.compile(r'^.*https?://www\.binsearch\.info/.b=')
         self.descTitleEnd = re.compile('&amp;.*$')
 
         # these clean up the horrible mess of a title if the above fail
         self.titleCleaners = [
-            re.compile('.?yEnc.?\(\d+/\d+\)$'),
-            re.compile(' \[\d+/\d+\] '),
+            re.compile(r'.?yEnc.?\(\d+/\d+\)$'),
+            re.compile(r' \[\d+/\d+\] '),
         ]
 
     def _get_title_and_url(self, item):
@@ -94,9 +92,9 @@ class BinSearchCache(tvcache.TVCache):
         self.setLastUpdate()
 
         cl = []
-        for group in ['alt.binaries.boneless','alt.binaries.misc','alt.binaries.hdtv','alt.binaries.hdtv.x264','alt.binaries.tv','alt.binaries.tvseries','alt.binaries.teevee']:
+        for group in ['alt.binaries.hdtv', 'alt.binaries.hdtv.x264', 'alt.binaries.tv', 'alt.binaries.tvseries', 'alt.binaries.teevee']:
             url = self.provider.url + 'rss.php?'
-            urlArgs = {'max': 1000,'g': group}
+            urlArgs = {'max': 1000, 'g': group}
 
             url += urllib.urlencode(urlArgs)
 

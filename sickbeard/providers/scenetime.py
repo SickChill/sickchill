@@ -53,9 +53,6 @@ class SceneTimeProvider(generic.TorrentProvider):
 
         self.categories = "&c2=1&c43=13&c9=1&c63=1&c77=1&c79=1&c100=1&c101=1"
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         login_params = {'username': self.username,

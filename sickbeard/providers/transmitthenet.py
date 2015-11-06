@@ -52,9 +52,6 @@ class TransmitTheNetProvider(generic.TorrentProvider):
             "active": 1
         }
 
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
 
         if not self.username or not self.password:

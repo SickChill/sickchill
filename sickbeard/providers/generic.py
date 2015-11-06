@@ -22,7 +22,6 @@ import datetime
 import os
 import re
 import itertools
-import urllib
 from random import shuffle
 from base64 import b16encode, b32decode
 
@@ -40,7 +39,7 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickbeard import show_name_helpers
 
-class GenericProvider:
+class GenericProvider(object):
     NZB = "nzb"
     TORRENT = "torrent"
 
@@ -97,6 +96,8 @@ class GenericProvider:
     def imageName(self):
         return self.getID() + '.png'
 
+    # pylint: disable=R0201,W0612
+    # Method could be a function, Unused variable
     def _checkAuth(self):
         return True
 
@@ -104,18 +105,10 @@ class GenericProvider:
         return True
 
     def isActive(self):
-        if self.providerType == GenericProvider.NZB and sickbeard.USE_NZBS:
-            return self.isEnabled()
-        elif self.providerType == GenericProvider.TORRENT and sickbeard.USE_TORRENTS:
-            return self.isEnabled()
-        else:
-            return False
+        return False
 
     def isEnabled(self):
-        """
-        This should be overridden and should return the config setting eg. sickbeard.MYPROVIDER
-        """
-        return False
+        return self.enabled
 
     def getResult(self, episodes):
         """
@@ -152,7 +145,7 @@ class GenericProvider:
 
                 try:
                     torrent_name = re.findall('dn=([^&]+)', result.url)[0]
-                except:
+                except Exception:
                     torrent_name = 'NO_DOWNLOAD_NAME'
 
                 if len(torrent_hash) == 32:
@@ -163,7 +156,7 @@ class GenericProvider:
                     return urls, filename
 
                 urls = [x.format(torrent_hash=torrent_hash, torrent_name=torrent_name) for x in self.btCacheURLS]
-            except:
+            except Exception:
                 logger.log("Unable to extract torrent hash or name from magnet: " + ex(result.url), logger.ERROR)
                 return urls, filename
         else:
@@ -209,7 +202,7 @@ class GenericProvider:
                     return True
                 else:
                     logger.log(u"Could not download %s" % url, logger.WARNING)
-                    helpers._remove_file_failed(filename)
+                    helpers.remove_file_failed(filename)
 
         if len(urls):
             logger.log(u"Failed to download any results", logger.WARNING)
@@ -226,10 +219,12 @@ class GenericProvider:
             try:
                 parser = createParser(file_name)
                 if parser:
+                    # pylint: disable=W0212
+                    # Access to a protected member of a client class
                     mime_type = parser._getMimeType()
                     try:
                         parser.stream._input.close()
-                    except:
+                    except Exception:
                         pass
                     if mime_type == 'application/x-bittorrent':
                         return True
@@ -256,6 +251,8 @@ class GenericProvider:
         quality = Quality.sceneQuality(title, anime)
         return quality
 
+    # pylint: disable=R0201,W0613
+    # Method could be a function, Unused argument
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
         return []
 
@@ -389,9 +386,8 @@ class GenericProvider:
                             u"This is supposed to be a season pack search but the result " + title + " is not a valid season pack, skipping it",
                             logger.DEBUG)
                         addCacheEntry = True
-                    if len(parse_result.episode_numbers) and (
-                                    parse_result.season_number not in set([ep.season for ep in episodes]) or not [ep for ep in episodes if
-                                                                                 ep.scene_episode in parse_result.episode_numbers]):
+                    if len(parse_result.episode_numbers) and (parse_result.season_number not in set([ep.season for ep in episodes])
+                                                              or not [ep for ep in episodes if ep.scene_episode in parse_result.episode_numbers]):
                         logger.log(
                             u"The result " + title + " doesn't seem to be a valid episode that we are trying to snatch, ignoring",
                             logger.DEBUG)
@@ -441,6 +437,8 @@ class GenericProvider:
             # add parsed result to cache for usage later on
             if addCacheEntry:
                 logger.log(u"Adding item from search to cache: " + title, logger.DEBUG)
+                # pylint: disable=W0212
+                # Access to a protected member of a client class
                 ci = self.cache._addCacheEntry(title, url, parse_result=parse_result)
                 if ci is not None:
                     cl.append(ci)
@@ -496,6 +494,8 @@ class GenericProvider:
 
         # check if we have items to add to cache
         if len(cl) > 0:
+            # pylint: disable=W0212
+            # Access to a protected member of a client class
             myDB = self.cache._getDB()
             myDB.mass_action(cl)
 
@@ -522,6 +522,9 @@ class NZBProvider(GenericProvider):
 
         self.providerType = GenericProvider.NZB
 
+    def isActive(self):
+        return sickbeard.USE_NZBS and self.isEnabled()
+
     def _get_size(self, item):
         try:
             size = item.get('links')[1].get('length', -1)
@@ -539,6 +542,9 @@ class TorrentProvider(GenericProvider):
         GenericProvider.__init__(self, name)
 
         self.providerType = GenericProvider.TORRENT
+
+    def isActive(self):
+        return sickbeard.USE_TORRENTS and self.isEnabled()
 
     def _get_title_and_url(self, item):
         from feedparser.util import FeedParserDict
@@ -611,7 +617,7 @@ class TorrentProvider(GenericProvider):
                 ep_string += "%02d" % int(ep_obj.scene_absolute_number)
             else:
                 ep_string += sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                              'episodenumber': ep_obj.scene_episode}
+                                                                   'episodenumber': ep_obj.scene_episode}
             if add_string:
                 ep_string = ep_string + ' %s' % add_string
 
@@ -619,7 +625,8 @@ class TorrentProvider(GenericProvider):
 
         return [search_string]
 
-    def _clean_title_from_provider(self, title):
+    @staticmethod
+    def _clean_title_from_provider(title):
         return (title or '').replace(' ', '.')
 
     def findPropers(self, search_date=datetime.datetime.today()):

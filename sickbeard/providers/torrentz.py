@@ -48,9 +48,6 @@ class TORRENTZProvider(generic.TorrentProvider):
                      'base': 'https://torrentz.eu/'}
         self.url = self.urls['base']
 
-    def isEnabled(self):
-        return self.enabled
-
     def seedRatio(self):
         return self.ratio
 
