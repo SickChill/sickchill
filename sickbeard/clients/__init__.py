@@ -22,7 +22,8 @@ __all__ = ['utorrent',
            'deluged',
            'download_station',
            'rtorrent',
-           'qbittorrent'
+           'qbittorrent',
+           'mlnet'
 ]
 
 
@@ -103,7 +104,8 @@ default_host = {'utorrent': 'http://localhost:8000',
                 'deluged': 'scgi://localhost:58846',
                 'download_station': 'http://localhost:5000',
                 'rtorrent': 'scgi://localhost:5000',
-                'qbittorrent': 'http://localhost:8080'
+                'qbittorrent': 'http://localhost:8080',
+                'mlnet': 'http://localhost:4080'
 }
 
 
