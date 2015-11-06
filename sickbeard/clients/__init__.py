@@ -91,8 +91,13 @@ http_error_code = {
     509: 'Bandwidth Limit Exceeded',
     510: 'Not Extended',
     511: 'Network Authentication Required',
-    522: 'Cloudfare Connection timed out',
-    524: 'Request to host timedout waiting for reply back',
+    520: 'Cloudfare - Web server is returning an unknown error',
+    521: 'Cloudfare - Web server is down',
+    522: 'Cloudfare - Connection timed out',
+    523: 'Cloudfare - Origin is unreachable',
+    524: 'Cloudfare - A timeout occurred',
+    525: 'Cloudfare - SSL handshake failed',
+    526: 'Cloudfare - Invalid SSL certificate',
     598: 'Network read timeout error',
     599: 'Network connect timeout error '
 }
