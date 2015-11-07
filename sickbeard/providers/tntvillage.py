@@ -182,7 +182,8 @@ class TNTVillageProvider(generic.TorrentProvider):
             file_quality = (torrent_rows.find_all('td'))[1].get_text()
             logger.log(u"Episode quality: %s" % file_quality, logger.DEBUG)
 
-        checkName = lambda list, func: func([re.search(x, file_quality, re.I) for x in list])
+        def checkName(options, func):
+            return func([re.search(option, file_quality, re.I) for option in options])
 
         dvdOptions = checkName(["dvd", "dvdrip", "dvdmux", "DVD9", "DVD5"], any)
         bluRayOptions = checkName(["BD", "BDmux", "BDrip", "BRrip", "Bluray"], any)
