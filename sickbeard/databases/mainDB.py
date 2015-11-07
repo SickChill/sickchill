@@ -994,9 +994,11 @@ class AddAnimeBlacklistWhitelist(AddSceneAbsoluteNumbering):
     def execute(self):
         backupDatabase(35)
 
-        cl = []
-        cl.append(["CREATE TABLE blacklist (show_id INTEGER, range TEXT, keyword TEXT)"])
-        cl.append(["CREATE TABLE whitelist (show_id INTEGER, range TEXT, keyword TEXT)"])
+        cl = [
+            ["CREATE TABLE blacklist (show_id INTEGER, range TEXT, keyword TEXT)"],
+            ["CREATE TABLE whitelist (show_id INTEGER, range TEXT, keyword TEXT)"]
+        ]
+
         self.connection.mass_action(cl)
 
         self.incDBVersion()
