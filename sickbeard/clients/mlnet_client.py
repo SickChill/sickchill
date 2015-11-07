@@ -18,13 +18,14 @@
 
 from sickbeard.clients.generic import GenericClient
 
+
 class mlnetAPI(GenericClient):
     def __init__(self, host=None, username=None, password=None):
 
         super(mlnetAPI, self).__init__('mlnet', host, username, password)
 
         self.url = self.host
-        #self.session.auth = HTTPDigestAuth(self.username, self.password);
+        # self.session.auth = HTTPDigestAuth(self.username, self.password);
 
     def _get_auth(self):
 
@@ -38,13 +39,13 @@ class mlnetAPI(GenericClient):
 
     def _add_torrent_uri(self, result):
 
-        self.url = self.host+'submit'
+        self.url = self.host + 'submit'
         params = {'q': 'dllink ' + result.url}
         return self._request(method='get', params=params)
 
     def _add_torrent_file(self, result):
 
-        self.url = self.host+'submit'
+        self.url = self.host + 'submit'
         params = {'q': 'dllink ' + result.url}
         return self._request(method='get', params=params)
 
