@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Mr_Orange <mr_orange@hotmail.it>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -136,7 +137,7 @@ class DelugeAPI(GenericClient):
             self._request(method='post', data=post_data)
             labels = self.response.json()['result']
 
-            if labels != None:
+            if labels is not None:
                 if label not in labels:
                     logger.log(self.name + ': ' + label + u" label does not exist in Deluge we must add it",
                                logger.DEBUG)
@@ -159,7 +160,6 @@ class DelugeAPI(GenericClient):
                 return False
 
         return not self.response.json()['error']
-
 
     def _set_torrent_ratio(self, result):
 
