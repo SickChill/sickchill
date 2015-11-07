@@ -16,17 +16,16 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-__all__ = ['utorrent',
-           'transmission',
-           'deluge',
-           'deluged',
-           'download_station',
-           'rtorrent',
-           'qbittorrent',
-           'mlnet'
+__all__ = [
+    'utorrent',
+    'transmission',
+    'deluge',
+    'deluged',
+    'download_station',
+    'rtorrent',
+    'qbittorrent',
+    'mlnet'
 ]
-
-
 
 # Mapping error status codes to official W3C names
 http_error_code = {
@@ -103,14 +102,15 @@ http_error_code = {
     599: 'Network connect timeout error '
 }
 
-default_host = {'utorrent': 'http://localhost:8000',
-                'transmission': 'http://localhost:9091',
-                'deluge': 'http://localhost:8112',
-                'deluged': 'scgi://localhost:58846',
-                'download_station': 'http://localhost:5000',
-                'rtorrent': 'scgi://localhost:5000',
-                'qbittorrent': 'http://localhost:8080',
-                'mlnet': 'http://localhost:4080'
+default_host = {
+    'utorrent': 'http://localhost:8000',
+    'transmission': 'http://localhost:9091',
+    'deluge': 'http://localhost:8112',
+    'deluged': 'scgi://localhost:58846',
+    'download_station': 'http://localhost:5000',
+    'rtorrent': 'scgi://localhost:5000',
+    'qbittorrent': 'http://localhost:8080',
+    'mlnet': 'http://localhost:4080'
 }
 
 
