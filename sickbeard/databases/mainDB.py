@@ -518,16 +518,16 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         result = old_quality
         # move fullhdbluray from 1<<5 to 1<<8 if set
         if (result & (1 << 5)):
-            result = result & ~(1 << 5)
-            result = result | (1 << 8)
+            result &= ~(1 << 5)
+            result |= 1 << 8
         # move hdbluray from 1<<4 to 1<<7 if set
         if (result & (1 << 4)):
-            result = result & ~(1 << 4)
-            result = result | (1 << 7)
+            result &= ~(1 << 4)
+            result |= 1 << 7
         # move hdwebdl from 1<<3 to 1<<5 if set
         if (result & (1 << 3)):
-            result = result & ~(1 << 3)
-            result = result | (1 << 5)
+            result &= ~(1 << 3)
+            result |= 1 << 5
 
         return result
 
