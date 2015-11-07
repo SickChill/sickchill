@@ -11,6 +11,7 @@ from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 from synchronousdeluge import DelugeClient
 
+
 class DelugeDAPI(GenericClient):
 
     drpc = None
@@ -85,7 +86,6 @@ class DelugeDAPI(GenericClient):
             return self.drpc.set_torrent_label(result.hash, label)
         return True
 
-
     def _set_torrent_ratio(self, result):
         if result.ratio:
             ratio = float(result.ratio)
@@ -115,6 +115,7 @@ class DelugeDAPI(GenericClient):
             return True, 'Success: Connected and Authenticated'
         else:
             return False, 'Error: Unable to Authenticate!  Please check your config!'
+
 
 class DelugeRPC(object):
 
