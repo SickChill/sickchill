@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import re
 import time
 from hashlib import sha1
