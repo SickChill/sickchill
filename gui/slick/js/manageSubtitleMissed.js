@@ -1,11 +1,11 @@
 $(document).ready(function() {
 
-    function make_row(indexer_id, season, episode, name, subtitles, checked) {
+    function makeRow(indexerId, season, episode, name, subtitles, checked) {
         checked = checked ? ' checked' : '';
 
         var row = '';
-        row += ' <tr class="good show-' + indexer_id + '">';
-        row += '  <td align="center"><input type="checkbox" class="'+indexer_id+'-epcheck" name="'+indexer_id+'-'+season+'x'+episode+'"'+checked+'></td>';
+        row += ' <tr class="good show-' + indexerId + '">';
+        row += '  <td align="center"><input type="checkbox" class="'+indexerId+'-epcheck" name="'+indexerId+'-'+season+'x'+episode+'"'+checked+'></td>';
         row += '  <td style="width: 1%;">'+season+'x'+episode+'</td>';
         row += '  <td>'+name+'</td>';
         row += ' </tr>';
@@ -14,26 +14,26 @@ $(document).ready(function() {
     }
 
     $('.allCheck').click(function(){
-        var indexer_id = $(this).attr('id').split('-')[1];
-        $('.'+indexer_id+'-epcheck').prop('checked', $(this).prop('checked'));
+        var indexerId = $(this).attr('id').split('-')[1];
+        $('.'+indexerId+'-epcheck').prop('checked', $(this).prop('checked'));
     });
 
     $('.get_more_eps').click(function(){
-        var cur_indexer_id = $(this).attr('id');
-        var checked = $('#allCheck-'+cur_indexer_id).prop('checked');
-        var last_row = $('tr#'+cur_indexer_id);
+        var indexerId = $(this).attr('id');
+        var checked = $('#allCheck-'+indexerId).prop('checked');
+        var lastRow = $('tr#'+indexerId);
         var clicked = $(this).attr('data-clicked');
         var action = $(this).attr('value');
 
         if (!clicked) {
             $.getJSON(srRoot + '/manage/showSubtitleMissed', {
-                indexer_id: cur_indexer_id,
+                indexer_id: indexerId, // jshint ignore:line
                 whichSubs: $('#selectSubLang').val()
             }, function(data) {
                 $.each(data, function(season, eps) {
                     $.each(eps, function(episode, data) {
                         //alert(season+'x'+episode+': '+name);
-                        last_row.after(make_row(cur_indexer_id, season, episode, data.name, data.subtitles, checked));
+                        lastRow.after(makeRow(indexerId, season, episode, data.name, data.subtitles, checked));
                     });
                 });
             });
@@ -41,10 +41,10 @@ $(document).ready(function() {
             $(this).prop('value', 'Collapse');
         } else {
             if (action === 'Collapse') {
-                $('table tr').filter('.show-' + cur_indexer_id).hide();
+                $('table tr').filter('.show-' + indexerId).hide();
                 $(this).prop('value', 'Expand');
             } else if (action === 'Expand') {
-                $('table tr').filter('.show-' + cur_indexer_id).show();
+                $('table tr').filter('.show-' + indexerId).show();
                 $(this).prop('value', 'Collapse');
             }
         }

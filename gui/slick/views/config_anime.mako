@@ -5,7 +5,6 @@
 %>
 
 <%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/configAnime.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/config.js?${sbPID}"></script>
 </%block>
 <%block name="content">
