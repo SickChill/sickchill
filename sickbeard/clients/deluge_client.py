@@ -161,7 +161,6 @@ class DelugeAPI(GenericClient):
 
         return not self.response.json()['error']
 
-
     def _set_torrent_ratio(self, result):
 
         ratio = None
