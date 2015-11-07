@@ -29,35 +29,35 @@ from sickbeard.bs4_parser import BS4Parser
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickrage.helper.exceptions import AuthException
 
-category_excluded = {'Sport' : 22,
-                     'Teatro' : 23,
-                     'Video Musicali' : 21,
-                     'Film' : 4,
-                     'Musica' : 2,
-                     'Students Releases' : 13,
-                     'E Books' : 3,
-                     'Linux' : 6,
-                     'Macintosh' : 9,
-                     'Windows Software' : 10,
-                     'Pc Game' : 11,
-                     'Playstation 2' : 12,
-                     'Wrestling' : 24,
-                     'Varie' : 25,
-                     'Xbox' : 26,
-                     'Immagini sfondi' : 27,
-                     'Altri Giochi' : 28,
-                     'Fumetteria' : 30,
-                     'Trash' : 31,
-                     'PlayStation 1' : 32,
-                     'PSP Portable' : 33,
-                     'A Book' : 34,
-                     'Podcast' : 35,
-                     'Edicola' : 36,
-                     'Mobile' : 37}
+category_excluded = {'Sport': 22,
+                     'Teatro': 23,
+                     'Video Musicali': 21,
+                     'Film': 4,
+                     'Musica': 2,
+                     'Students Releases': 13,
+                     'E Books': 3,
+                     'Linux': 6,
+                     'Macintosh': 9,
+                     'Windows Software': 10,
+                     'Pc Game': 11,
+                     'Playstation 2': 12,
+                     'Wrestling': 24,
+                     'Varie': 25,
+                     'Xbox': 26,
+                     'Immagini sfondi': 27,
+                     'Altri Giochi': 28,
+                     'Fumetteria': 30,
+                     'Trash': 31,
+                     'PlayStation 1': 32,
+                     'PSP Portable': 33,
+                     'A Book': 34,
+                     'Podcast': 35,
+                     'Edicola': 36,
+                     'Mobile': 37}
+
 
 class TNTVillageProvider(generic.TorrentProvider):
     def __init__(self):
-
         generic.TorrentProvider.__init__(self, "TNTVillage")
 
         self.supportsBacklog = True
@@ -87,19 +87,19 @@ class TNTVillageProvider(generic.TorrentProvider):
                        ' 720p HEVC',
                        ' 720p']
 
-        self.category_dict = {'Serie TV' : 29,
-                              'Cartoni' : 8,
-                              'Anime' : 7,
-                              'Programmi e Film TV' : 1,
-                              'Documentari' : 14,
-                              'All' : 0}
+        self.category_dict = {'Serie TV': 29,
+                              'Cartoni': 8,
+                              'Anime': 7,
+                              'Programmi e Film TV': 1,
+                              'Documentari': 14,
+                              'All': 0}
 
-        self.urls = {'base_url' : 'http://forum.tntvillage.scambioetico.org',
-                     'login' : 'http://forum.tntvillage.scambioetico.org/index.php?act=Login&CODE=01',
-                     'detail' : 'http://forum.tntvillage.scambioetico.org/index.php?showtopic=%s',
-                     'search' : 'http://forum.tntvillage.scambioetico.org/?act=allreleases&%s',
-                     'search_page' : 'http://forum.tntvillage.scambioetico.org/?act=allreleases&st={0}&{1}',
-                     'download' : 'http://forum.tntvillage.scambioetico.org/index.php?act=Attach&type=post&id=%s'}
+        self.urls = {'base_url': 'http://forum.tntvillage.scambioetico.org',
+                     'login': 'http://forum.tntvillage.scambioetico.org/index.php?act=Login&CODE=01',
+                     'detail': 'http://forum.tntvillage.scambioetico.org/index.php?showtopic=%s',
+                     'search': 'http://forum.tntvillage.scambioetico.org/?act=allreleases&%s',
+                     'search_page': 'http://forum.tntvillage.scambioetico.org/?act=allreleases&st={0}&{1}',
+                     'download': 'http://forum.tntvillage.scambioetico.org/index.php?act=Attach&type=post&id=%s'}
 
         self.url = self.urls['base_url']
 
@@ -132,8 +132,7 @@ class TNTVillageProvider(generic.TorrentProvider):
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
-        if re.search('Sono stati riscontrati i seguenti errori', response) \
-        or re.search('<title>Connettiti</title>', response):
+        if re.search('Sono stati riscontrati i seguenti errori', response) or re.search('<title>Connettiti</title>', response):
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
@@ -296,7 +295,7 @@ class TNTVillageProvider(generic.TorrentProvider):
                 search_string = str(search_string).replace('.', ' ')
 
                 for x in range(0, y):
-                    z = x*20
+                    z = x * 20
                     if last_page:
                         break
 
@@ -308,7 +307,7 @@ class TNTVillageProvider(generic.TorrentProvider):
                     if mode is not 'RSS':
                         logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                    logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                    logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                     data = self.getURL(searchURL)
                     if not data:
                         logger.log(u"No data returned from provider", logger.DEBUG)
@@ -316,7 +315,7 @@ class TNTVillageProvider(generic.TorrentProvider):
 
                     try:
                         with BS4Parser(data, features=["html5lib", "permissive"]) as html:
-                            torrent_table = html.find('table', attrs={'class' : 'copyright'})
+                            torrent_table = html.find('table', attrs={'class': 'copyright'})
                             torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
                             # Continue only if one Release is found
@@ -354,11 +353,11 @@ class TNTVillageProvider(generic.TorrentProvider):
                                     title += filename_qt
 
                                 if not self._is_italian(result) and not self.subtitle:
-                                    logger.log(u"Torrent is subtitled, skipping: %s "  % title, logger.DEBUG)
+                                    logger.log(u"Torrent is subtitled, skipping: %s " % title, logger.DEBUG)
                                     continue
 
                                 if self.engrelease and not self._is_english(result):
-                                    logger.log(u"Torrent isnt english audio/subtitled , skipping: %s "  % title, logger.DEBUG)
+                                    logger.log(u"Torrent isnt english audio/subtitled , skipping: %s " % title, logger.DEBUG)
                                     continue
 
                                 search_show = re.split(r'([Ss][\d{1,2}]+)', search_string)[0]
