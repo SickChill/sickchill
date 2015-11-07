@@ -443,9 +443,10 @@ class SickRage(object):
         stdin = file(devnull, 'r')
         stdout = file(devnull, 'a+')
         stderr = file(devnull, 'a+')
-        os.dup2(stdin.fileno(), sys.stdin.fileno())
-        os.dup2(stdout.fileno(), sys.stdout.fileno())
-        os.dup2(stderr.fileno(), sys.stderr.fileno())
+
+        os.dup2(stdin.fileno(), getattr(sys.stdin, 'device', sys.stdin).fileno())
+        os.dup2(stdout.fileno(), getattr(sys.stdout, 'device', sys.stdout).fileno())
+        os.dup2(stderr.fileno(), getattr(sys.stderr, 'device', sys.stderr).fileno())
 
     @staticmethod
     def remove_pid_file(PIDFILE):
