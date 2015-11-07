@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Mr_Orange <mr_orange@hotmail.it>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -19,6 +21,7 @@
 import sickbeard
 from sickbeard.clients.generic import GenericClient
 from requests.auth import HTTPDigestAuth
+
 
 class qbittorrentAPI(GenericClient):
     def __init__(self, host=None, username=None, password=None):
