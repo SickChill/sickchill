@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Paul Wollaston
 # Contributions: Luke Mullan
 #
