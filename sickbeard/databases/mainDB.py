@@ -427,7 +427,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
                 except (InvalidNameException, InvalidShowException):
                     continue
 
-                if parse_result.series_name and parse_result.season_number != None and parse_result.episode_numbers and parse_result.release_group:
+                if parse_result.series_name and parse_result.season_number is not None and parse_result.episode_numbers and parse_result.release_group:
                     # if all is well by this point we'll just put the release name into the database
                     self.connection.action("UPDATE tv_episodes SET release_name = ? WHERE episode_id = ?",
                                            [cur_name, ep_results[0]["episode_id"]])
