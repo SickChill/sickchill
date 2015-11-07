@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Mr_Orange <mr_orange@hotmail.it>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -30,7 +32,7 @@ class TransmissionAPI(GenericClient):
         super(TransmissionAPI, self).__init__('Transmission', host, username, password)
 
         if not self.host.endswith('/'):
-            self.host = self.host + '/'
+            self.host += '/'
 
         if self.rpcurl.startswith('/'):
             self.rpcurl = self.rpcurl[1:]
