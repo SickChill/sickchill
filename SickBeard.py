@@ -59,8 +59,9 @@ import getopt
 
 # Do this before importing sickbeard, to prevent locked files and incorrect import
 oldtornado = os.path.abspath(os.path.join(os.path.dirname(__file__), 'tornado'))
-shutil.move(oldtornado, oldtornado + '_kill')
-shutil.rmtree(oldtornado + '_kill')
+if os.path.isdir(oldtornado):
+    shutil.move(oldtornado, oldtornado + '_kill')
+    shutil.rmtree(oldtornado + '_kill')
 
 import sickbeard
 from sickbeard import db, logger, network_timezones, failed_history, name_cache
