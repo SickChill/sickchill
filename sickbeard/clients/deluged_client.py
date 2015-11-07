@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Paul Wollaston
 # Contributions: Luke Mullan
 #
@@ -10,6 +11,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 from synchronousdeluge import DelugeClient
+
 
 class DelugeDAPI(GenericClient):
 
@@ -55,9 +57,8 @@ class DelugeDAPI(GenericClient):
         # if result.show.is_anime:
         #     label = sickbeard.TORRENT_LABEL_ANIME
 
-        if not result.content: result.content = {}
-
         if not result.content:
+            result.content = {}
             return None
 
         options = {
@@ -85,7 +86,6 @@ class DelugeDAPI(GenericClient):
         if label:
             return self.drpc.set_torrent_label(result.hash, label)
         return True
-
 
     def _set_torrent_ratio(self, result):
         if result.ratio:
@@ -116,6 +116,7 @@ class DelugeDAPI(GenericClient):
             return True, 'Success: Connected and Authenticated'
         else:
             return False, 'Error: Unable to Authenticate!  Please check your config!'
+
 
 class DelugeRPC(object):
 
