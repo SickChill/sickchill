@@ -10,6 +10,7 @@ from bencode import bencode, bdecode
 import requests
 from bencode.BTL import BTFailure
 
+
 class GenericClient(object):
     def __init__(self, name, host=None, username=None, password=None):
 
