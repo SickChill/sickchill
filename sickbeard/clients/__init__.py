@@ -30,6 +30,7 @@ __all__ = [
 
 # Mapping error status codes to official W3C names
 http_error_code = {
+    # todo: Handle error codes with duplicates (e.g. 451, 499)
     300: 'Multiple Choices',
     301: 'Moved Permanently',
     302: 'Found',
