@@ -19,7 +19,6 @@
 import re
 import traceback
 import xmltodict
-import HTMLParser
 from xml.parsers.expat import ExpatError
 
 from sickbeard import logger

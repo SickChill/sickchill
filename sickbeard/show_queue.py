@@ -516,7 +516,7 @@ class QueueItemRename(ShowQueueItem):
         logger.log(u"Performing rename on " + self.show.name)
 
         try:
-            show_loc = self.show.location
+            self.show.location
         except ShowDirectoryNotFoundException:
             logger.log(u"Can't perform rename on " + self.show.name + " when the show dir is missing.", logger.WARNING)
             return

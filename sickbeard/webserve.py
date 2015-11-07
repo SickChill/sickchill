@@ -3697,7 +3697,6 @@ class ConfigGeneral(Config):
 
         if date_preset:
             sickbeard.DATE_PRESET = date_preset
-            discarded_na_data = date_preset_na
 
         if indexer_default:
             sickbeard.INDEXER_DEFAULT = config.to_int(indexer_default)

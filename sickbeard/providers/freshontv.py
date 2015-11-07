@@ -225,7 +225,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
                                 items[mode].append(item)
 
-                except Exception as e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available

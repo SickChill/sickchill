@@ -48,7 +48,7 @@ from sickbeard import show_queue
 from sickbeard import logger
 from sickbeard import naming
 from sickbeard import dailysearcher
-from sickbeard.indexers.indexer_api import indexerApi
+from sickbeard.indexers import indexer_api
 from sickbeard.indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, indexer_error, \
     indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, indexerExcepts
 from sickbeard.common import SD
@@ -62,6 +62,8 @@ from configobj import ConfigObj
 
 import requests
 requests.packages.urllib3.disable_warnings()
+
+indexerApi = indexer_api.indexerApi
 
 PID = None
 

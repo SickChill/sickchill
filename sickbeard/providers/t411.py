@@ -143,7 +143,7 @@ class T411Provider(generic.TorrentProvider):
 
                                 items[mode].append(item)
 
-                            except Exception as e:
+                            except Exception:
                                 logger.log(u"Invalid torrent data, skipping result: %s" % torrent, logger.DEBUG)
                                 logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.DEBUG)
                                 continue

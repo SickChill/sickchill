@@ -83,7 +83,6 @@ class RarbgProvider(generic.TorrentProvider):
         if self.token and self.tokenExpireDate and datetime.datetime.now() < self.tokenExpireDate:
             return True
 
-        resp_json = None
 
         response = self.getURL(self.urls['token'], timeout=30, json=True)
         if not response:
@@ -209,7 +208,7 @@ class RarbgProvider(generic.TorrentProvider):
                         data_json = json.loads(data.group())
                     else:
                         data_json = {}
-                except Exception as e:
+                except Exception:
                     logger.log(u"JSON load failed: %s" % traceback.format_exc(), logger.ERROR)
                     logger.log(u"JSON load failed. Data dump: %s" % data, logger.DEBUG)
                     continue
@@ -222,7 +221,7 @@ class RarbgProvider(generic.TorrentProvider):
                             size = item['size']
                             seeders = item['seeders']
                             leechers = item['leechers']
-                            pubdate = item['pubdate']
+                            # pubdate = item['pubdate']
 
                             if not all([title, download_url]):
                                 continue

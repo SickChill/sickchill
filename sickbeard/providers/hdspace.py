@@ -21,7 +21,6 @@
 import re
 import urllib
 import requests
-import traceback
 from bs4 import BeautifulSoup
 
 from sickbeard import logger

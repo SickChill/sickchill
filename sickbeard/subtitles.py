@@ -57,6 +57,8 @@ entry_points = {
     ]
 }
 
+# pylint: disable=W0212
+# Access to a protected member of a client class
 distribution._ep_map = pkg_resources.EntryPoint.parse_map(entry_points, distribution)
 pkg_resources.working_set.add(distribution)
 
@@ -341,7 +343,7 @@ def subtitleLanguageFilter():
 def subtitleCodeFilter():
     return [Language.fromopensubtitles(language).opensubtitles for language in language_converters['opensubtitles'].codes if len(language) == 3]
 
-class SubtitlesFinder():
+class SubtitlesFinder(object):
     """
     The SubtitlesFinder will be executed every hour but will not necessarly search
     and download subtitles. Only if the defined rule is true
@@ -373,7 +375,8 @@ class SubtitlesFinder():
         # you have 5 minutes to understand that one. Good luck
         myDB = db.DBConnection()
 
-        sqlResults = myDB.select('SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.subtitles, ' +
+        sqlResults = myDB.select(
+            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.subtitles, ' +
             'e.subtitles_searchcount AS searchcount, e.subtitles_lastsearch AS lastsearch, e.location, (? - e.airdate) AS airdate_daydiff ' +
             'FROM tv_episodes AS e INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id) ' +
             'WHERE s.subtitles = 1 AND e.subtitles NOT LIKE (?) ' +
@@ -392,11 +395,12 @@ class SubtitlesFinder():
                 logger.log(u'Episode file does not exist, cannot download subtitles for episode %dx%d of show %s' % (epToSub['season'], epToSub['episode'], epToSub['show_name']), logger.DEBUG)
                 continue
 
-            # Old shows rule
-            throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
+            # http://bugs.python.org/issue7980#msg221094
+            # I dont think this needs done here, but keeping to be safe
+            datetime.datetime.strptime('20110101', '%Y%m%d')
             if ((epToSub['airdate_daydiff'] > 7 and epToSub['searchcount'] < 2 and now - datetime.datetime.strptime(epToSub['lastsearch'], dateTimeFormat) > datetime.timedelta(hours=rules['old'][epToSub['searchcount']])) or
                 # Recent shows rule
-                    (epToSub['airdate_daydiff'] <= 7 and epToSub['searchcount'] < 7 and now - datetime.datetime.strptime(epToSub['lastsearch'], dateTimeFormat) > datetime.timedelta(hours=rules['new'][epToSub['searchcount']]))):
+                (epToSub['airdate_daydiff'] <= 7 and epToSub['searchcount'] < 7 and now - datetime.datetime.strptime(epToSub['lastsearch'], dateTimeFormat) > datetime.timedelta(hours=rules['new'][epToSub['searchcount']]))):
 
                 logger.log(u'Downloading subtitles for episode %dx%d of show %s' % (epToSub['season'], epToSub['episode'], epToSub['show_name']), logger.DEBUG)
 
@@ -425,7 +429,8 @@ class SubtitlesFinder():
 
         self.amActive = False
 
-    def _getRules(self):
+    @staticmethod
+    def _getRules():
         """
         Define the hours to wait between 2 subtitles search depending on:
         - the episode: new or old
@@ -450,14 +455,14 @@ def run_subs_extra_scripts(epObj, foundSubs):
                     subpath = ek(os.path.join, ek(os.path.dirname, subpath), sickbeard.SUBTITLES_DIR, ek(os.path.basename, subpath))
 
                 inner_cmd = script_cmd + [video.name, subpath, sub.language.opensubtitles, epObj['show.name'],
-                                str(epObj['season']), str(epObj['episode']), epObj['name'], str(epObj['show.indexerid'])]
+                                          str(epObj['season']), str(epObj['episode']), epObj['name'], str(epObj['show.indexerid'])]
 
                 # use subprocess to run the command and capture output
                 logger.log(u"Executing command: %s" % inner_cmd)
                 try:
                     p = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT, cwd=sickbeard.PROG_DIR)
-                    out, err = p.communicate()  # @UnusedVariable
+                                         stderr=subprocess.STDOUT, cwd=sickbeard.PROG_DIR)
+                    out, _ = p.communicate()  # @UnusedVariable
                     logger.log(u"Script result: %s" % out, logger.DEBUG)
 
                 except Exception as e:

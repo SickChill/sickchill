@@ -21,7 +21,6 @@ import re
 import time
 import traceback
 import xmltodict
-import HTMLParser
 from six.moves import urllib
 from xml.parsers.expat import ExpatError
 

@@ -17,7 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import sickbeard
-from .generic import GenericClient
+from sickbeard.clients.generic import GenericClient
 from requests.auth import HTTPDigestAuth
 
 class qbittorrentAPI(GenericClient):
@@ -26,14 +26,14 @@ class qbittorrentAPI(GenericClient):
         super(qbittorrentAPI, self).__init__('qbittorrent', host, username, password)
 
         self.url = self.host
-        self.session.auth = HTTPDigestAuth(self.username, self.password);
+        self.session.auth = HTTPDigestAuth(self.username, self.password)
 
     def _get_auth(self):
 
         try:
             self.response = self.session.get(self.host, verify=False)
             self.auth = self.response.content
-        except:
+        except Exception:
             return None
 
         return self.auth if not self.response.status_code == 404 else None
@@ -60,7 +60,7 @@ class qbittorrentAPI(GenericClient):
         return self._request(method='post', data=data)
 
     def _set_torrent_pause(self, result):
-        
+
         self.url = self.host+'command/resume'
         if sickbeard.TORRENT_PAUSED:
             self.url = self.host+'command/pause'

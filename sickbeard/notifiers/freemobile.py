@@ -53,7 +53,7 @@ class FreeMobileNotifier:
         req = urllib2.Request(URL)
         # send the request to Free Mobile
         try:
-            reponse = urllib2.urlopen(req)
+            urllib2.urlopen(req)
         except IOError, e:
             if hasattr(e,'code'):
                 if e.code == 400:
