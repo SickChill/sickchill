@@ -75,13 +75,13 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
                 self.search_params.update({'q': search_string.strip()})
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: " + search_string, logger.DEBUG)
 
-                searchURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
+                searchURL = self.urls[('search', 'rss')[mode is 'RSS']] + '?' + urlencode(self.search_params)
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 data = self.getURL(searchURL)
-                # data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
+                # data = self.getURL(self.urls[('search', 'rss')[mode is 'RSS']], params=self.search_params)
                 if not data:
                     continue
 
@@ -99,18 +99,18 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
-                        if mode != 'RSS':
+                        if mode is not 'RSS':
                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
                     # Accept Torrent only from Good People for every Episode Search
                     if self.confirmed and re.search(r'(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None:
-                        if mode != 'RSS':
+                        if mode is not 'RSS':
                             logger.log(u"Found result %s but that doesn't seem like a trusted result so I'm ignoring it" % title, logger.DEBUG)
                         continue
 
                     item = title, download_url, size, seeders, leechers
-                    if mode != 'RSS':
+                    if mode is not 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                     items[mode].append(item)

@@ -48,20 +48,6 @@ import certifi
 from contextlib import closing
 from socket import timeout as SocketTimeout
 
-
-try:
-    from io import BytesIO as _StringIO
-except ImportError:
-    try:
-        from cStringIO import StringIO as _StringIO
-    except ImportError:
-        from StringIO import StringIO as _StringIO
-
-try:
-    import gzip
-except ImportError:
-    gzip = None
-
 from sickbeard import logger, classes
 from sickbeard.common import USER_AGENT
 from sickbeard.common import mediaExtensions
@@ -1649,12 +1635,7 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
         logger.log(traceback.format_exc(), logger.WARNING)
         return None
 
-    attempts = 0
-    while gzip and len(resp.content) > 1 and resp.content[0] == '\x1f' and resp.content[1] == '\x8b' and attempts < 3:
-        attempts += 1
-        resp._content = gzip.GzipFile(fileobj=_StringIO(resp.content)).read()
-
-    return resp.content if not json else resp.json()
+    return resp.text if not json else resp.json()
 
 
 def download_file(url, filename, session=None, headers=None):

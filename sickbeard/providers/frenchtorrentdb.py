@@ -134,7 +134,7 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 self.search_params['name'] = search_string
@@ -165,12 +165,12 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
 
                                 # Filter unseeded torrent
                                 # if seeders < self.minseed or leechers < self.minleech:
-                                #    if mode != 'RSS':
+                                #    if mode is not 'RSS':
                                 #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 #    continue
 
                                 item = title, download_url, size, seeders, leechers
-                                if mode != 'RSS':
+                                if mode is not 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                                 items[mode].append(item)

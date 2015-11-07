@@ -47,7 +47,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
         for mode in search_strings.keys():  # Mode = RSS, Season, Episode
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
 
@@ -67,7 +67,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                     seeders = helpers.tryInt(torrents[i]["seeds"], 1)
                     leechers = helpers.tryInt(torrents[i]["leechs"], 0)
                     if seeders < self.minseed or leechers < self.minleech:
-                        if mode != 'RSS':
+                        if mode is not 'RSS':
                             logger.log(u"Torrent doesn't meet minimum seeds & leechers not selecting : %s" % title, logger.DEBUG)
                         continue
 
@@ -90,7 +90,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
 
                     item = title, download_url, size, seeders, leechers
 
-                    if mode != 'RSS':
+                    if mode is not 'RSS':
                         logger.log(u"Found result: %s" % title, logger.DEBUG)
 
                     items[mode].append(item)

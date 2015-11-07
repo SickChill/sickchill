@@ -53,7 +53,7 @@ def update_network_dict():
     d = {}
     try:
         for line in url_data.splitlines():
-            (key, val) = line.decode('utf-8').strip().rsplit(u':', 1)
+            (key, val) = line.strip().rsplit(u':', 1)
             if key is None or val is None:
                 continue
             d[key] = val

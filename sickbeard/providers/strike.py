@@ -41,7 +41,7 @@ class STRIKEProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: " + search_string.strip(), logger.DEBUG)
 
                 searchURL = self.url + "api/v2/torrents/search/?category=TV&phrase=" + search_string
@@ -65,11 +65,11 @@ class STRIKEProvider(generic.TorrentProvider):
 
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
-                        if mode != 'RSS':
+                        if mode is not 'RSS':
                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
-                    if mode != 'RSS':
+                    if mode is not 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                     item = title, download_url, size, seeders, leechers
