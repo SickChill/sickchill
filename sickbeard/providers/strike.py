@@ -32,9 +32,6 @@ class STRIKEProvider(generic.TorrentProvider):
         self.cache = StrikeCache(self)
         self.minseed, self.minleech = 2 * [None]
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []

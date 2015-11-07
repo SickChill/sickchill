@@ -79,9 +79,6 @@ class RarbgProvider(generic.TorrentProvider):
 
         self.cache = RarbgCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
         if self.token and self.tokenExpireDate and datetime.datetime.now() < self.tokenExpireDate:
             return True
@@ -196,10 +193,6 @@ class RarbgProvider(generic.TorrentProvider):
                                 logger.log(u"Failed retrieving new token", logger.DEBUG)
                                 return results
                             logger.log(u"Using new token", logger.DEBUG)
-                            continue
-                        if re.search('<div id="error">.*</div>', data):
-                            logger.log(u"Proxy %s does not support https" % self.proxy.getProxyURL(), logger.DEBUG)
-                            searchURL = searchURL.replace(u'https', 'http')
                             continue
 
                         # No error found break

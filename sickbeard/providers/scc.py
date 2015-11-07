@@ -56,9 +56,6 @@ class SCCProvider(generic.TorrentProvider):
         self.categories = { 'sponly': 'c26=26&c44=44&c45=45', # Archive, non-scene HD, non-scene SD; need to include non-scene because WEB-DL packs get added to those categories
                             'eponly': 'c27=27&c17=17&c44=44&c45=45&c33=33&c34=34'} # TV HD, TV SD, non-scene HD, non-scene SD, foreign XviD, foreign x264
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         login_params = {'username': self.username,

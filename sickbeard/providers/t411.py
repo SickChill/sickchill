@@ -54,9 +54,6 @@ class T411Provider(generic.TorrentProvider):
         self.minleech = 0
         self.confirmed = False
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         if self.token is not None:
@@ -151,7 +148,7 @@ class T411Provider(generic.TorrentProvider):
                                 logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.DEBUG)
                                 continue
 
-                    except Exception, e:
+                    except Exception:
                         logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available if available

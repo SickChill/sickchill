@@ -46,9 +46,6 @@ class animenzb(generic.NZBProvider):
 
         self.url = self.urls['base_url']
 
-    def isEnabled(self):
-        return self.enabled
-
     def _get_season_search_strings(self, ep_obj):
         return [x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, ep_obj)]
 

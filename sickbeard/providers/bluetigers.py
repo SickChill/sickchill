@@ -56,9 +56,6 @@ class BLUETIGERSProvider(generic.TorrentProvider):
 
         self.url = self.urls['base_url']
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True

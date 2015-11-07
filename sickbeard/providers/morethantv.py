@@ -62,9 +62,6 @@ class MoreThanTVProvider(generic.TorrentProvider):
 
         self.cache = MoreThanTVCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
 
         if not self.username or not self.password:

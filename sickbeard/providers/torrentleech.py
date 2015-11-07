@@ -55,9 +55,6 @@ class TorrentLeechProvider(generic.TorrentProvider):
 
         self.cache = TorrentLeechCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         login_params = {'username': self.username,

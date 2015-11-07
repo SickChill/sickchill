@@ -63,9 +63,6 @@ class KATProvider(generic.TorrentProvider):
             'category': 'tv'
         }
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -95,7 +92,7 @@ class KATProvider(generic.TorrentProvider):
                         continue
 
                     if not data.startswith('<?xml'):
-                        logger.log(u'Expected xml but got something else, is your proxy failing?', logger.INFO)
+                        logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
                         continue
 
                     try:

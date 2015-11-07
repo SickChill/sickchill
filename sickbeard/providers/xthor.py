@@ -45,9 +45,6 @@ class XthorProvider(generic.TorrentProvider):
         self.password = None
         self.ratio = None
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):

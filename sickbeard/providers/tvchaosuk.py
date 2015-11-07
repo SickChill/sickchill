@@ -55,9 +55,6 @@ class TVChaosUKProvider(generic.TorrentProvider):
             'include_dead_torrents': 'no',
         }
 
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
         if self.username and self.password:
             return True

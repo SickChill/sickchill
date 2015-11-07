@@ -52,9 +52,6 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         self.cache = SpeedCDCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         login_params = {'username': self.username,

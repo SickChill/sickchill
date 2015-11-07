@@ -45,9 +45,6 @@ class NyaaProvider(generic.TorrentProvider):
         self.minleech = 0
         self.confirmed = False
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
         if self.show and not self.show.is_anime:
             return []

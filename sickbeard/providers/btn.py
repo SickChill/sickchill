@@ -52,9 +52,6 @@ class BTNProvider(generic.TorrentProvider):
 
         self.url = self.urls['website']
 
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
         if not self.api_key:
             logger.log(u"Invalid api key. Check your settings", logger.WARNING)

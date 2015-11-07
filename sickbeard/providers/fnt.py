@@ -54,9 +54,6 @@ class FNTProvider(generic.TorrentProvider):
             "visible": 1, "freeleech": 0, "nuke": 1, "3D": 0, "sort": "size", "order": "desc"
             }
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):

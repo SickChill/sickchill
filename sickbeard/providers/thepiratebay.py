@@ -62,10 +62,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
             'category': 200
         }
 
-        self.re_title_url = r'/torrent/(?P<id>\d+)/(?P<title>.*?)//1".+?(?P<url>magnet.*?)//1".+?Size (?P<size>[\d\.]*&nbsp;[TGKMiB]{2,3}).+?(?P<seeders>\d+)</td>.+?(?P<leechers>\d+)</td>'
-
-    def isEnabled(self):
-        return self.enabled
+        self.re_title_url = r'/torrent/(?P<id>\d+)/(?P<title>.*?)".+?(?P<url>magnet.*?)".+?Size (?P<size>[\d\.]*&nbsp;[TGKMiB]{2,3}).+?(?P<seeders>\d+)</td>.+?(?P<leechers>\d+)</td>'
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
@@ -88,8 +85,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 if not data:
                     continue
 
-                re_title_url = self.proxy._buildRE(self.re_title_url).replace('&amp;f=norefer', '')
-                matches = re.compile(re_title_url, re.DOTALL).finditer(data)
+                matches = re.compile(self.re_title_url, re.DOTALL).finditer(data)
                 for torrent in matches:
                     title = torrent.group('title')
                     download_url = torrent.group('url')

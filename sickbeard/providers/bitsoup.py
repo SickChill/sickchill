@@ -52,9 +52,6 @@ class BitSoupProvider(generic.TorrentProvider):
             "c42": 1, "c45": 1, "c49": 1, "c7": 1
         }
 
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
         if not self.username or not self.password:
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
@@ -141,7 +138,7 @@ class BitSoupProvider(generic.TorrentProvider):
 
                             items[mode].append(item)
 
-                except Exception, e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
             # For each search mode sort all the items by seeders if available

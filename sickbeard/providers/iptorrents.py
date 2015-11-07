@@ -48,9 +48,6 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
         self.categories = '73=&60='
 
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
 
         if not self.username or not self.password:
