@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: kounch
 # URL: http://code.google.com/p/sickbeard/
 #
