@@ -30,7 +30,7 @@ class TransmissionAPI(GenericClient):
         super(TransmissionAPI, self).__init__('Transmission', host, username, password)
 
         if not self.host.endswith('/'):
-            self.host = self.host + '/'
+            self.host += '/'
 
         if self.rpcurl.startswith('/'):
             self.rpcurl = self.rpcurl[1:]
