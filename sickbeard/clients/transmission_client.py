@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Mr_Orange <mr_orange@hotmail.it>
 # URL: http://code.google.com/p/sickbeard/
 #
