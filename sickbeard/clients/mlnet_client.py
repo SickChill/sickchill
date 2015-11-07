@@ -16,9 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import sickbeard
-from .generic import GenericClient
-from requests.auth import HTTPDigestAuth
+from sickbeard.clients.generic import GenericClient
 
 class mlnetAPI(GenericClient):
     def __init__(self, host=None, username=None, password=None):
@@ -33,7 +31,7 @@ class mlnetAPI(GenericClient):
         try:
             self.response = self.session.get(self.host, verify=False)
             self.auth = self.response.content
-        except:
+        except Exception:
             return None
 
         return self.auth if not self.response.status_code == 404 else None
@@ -51,4 +49,3 @@ class mlnetAPI(GenericClient):
         return self._request(method='get', params=params)
 
 api = mlnetAPI()
-

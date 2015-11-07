@@ -105,7 +105,7 @@ class CheckVersion(object):
                 ui.notifications.message('Backup', 'Config backup failed, aborting update')
                 return False
         except Exception as e:
-            logger.log('Update: Config backup failed. Error: %s' % ex(e), logger.ERROR)
+            logger.log(u'Update: Config backup failed. Error: %s' % ex(e), logger.ERROR)
             ui.notifications.message('Backup', 'Config backup failed, aborting update')
             return False
 

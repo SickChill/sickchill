@@ -19,7 +19,6 @@
 import re
 import traceback
 import xmltodict
-import HTMLParser
 from xml.parsers.expat import ExpatError
 
 from sickbeard import logger
@@ -59,14 +58,14 @@ class ExtraTorrentProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 try:
-                    self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string})
+                    self.search_params.update({'type': ('search', 'rss')[mode is 'RSS'], 'search': search_string})
                     data = self.getURL(self.urls['rss'], params=self.search_params)
                     if not data:
-                        logger.log("No data returned from provider", logger.DEBUG)
+                        logger.log(u"No data returned from provider", logger.DEBUG)
                         continue
 
                     if not data.startswith('<?xml'):
@@ -74,7 +73,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                         continue
 
                     try:
-                        data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data.encode('utf-8')).decode('utf-8').replace('&', '&amp;'))
+                        data = xmltodict.parse(data)
                     except ExpatError:
                         logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
                         continue
@@ -100,12 +99,12 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
                             # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
-                            if mode != 'RSS':
+                            if mode is not 'RSS':
                                 logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
 
                         item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
+                        if mode is not 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                         items[mode].append(item)

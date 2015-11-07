@@ -60,18 +60,24 @@ class NullHandler(logging.Handler):
 
 
 class CensoredFormatter(logging.Formatter, object):
-    def __init__(self, *args, **kwargs):
-        super(CensoredFormatter, self).__init__(*args, **kwargs)
+    def __init__(self, fmt=None, datefmt=None, encoding='utf-8'):
+        super(CensoredFormatter, self).__init__(fmt, datefmt)
+        self.encoding = encoding
 
     def format(self, record):
         """Strips censored items from string"""
         msg = super(CensoredFormatter, self).format(record)
-        # pylint: disable=W0612
-        for k, v in censoredItems.iteritems():
-            if v and len(v) > 0 and v in msg:
-                msg = msg.replace(v, len(v) * '*')
+
+        if not isinstance(msg, unicode):
+            msg = msg.decode(self.encoding, 'replace') # Convert to unicode
+
+        for _, v in censoredItems.iteritems():
+            if not isinstance(v, unicode):
+                v = v.decode(self.encoding, 'replace') # Convert to unicode
+            msg = msg.replace(v, len(v) * u'*')
+
         # Needed because Newznab apikey isn't stored as key=value in a section.
-        msg = re.sub(r'([&?]r|[&?]apikey|[&?]api_key)=[^&]*([&\w]?)', r'\1=**********\2', msg)
+        msg = re.sub(ur'([&?]r|[&?]apikey|[&?]api_key)=[^&]*([&\w]?)', ur'\1=**********\2', msg)
         return msg
 
 
@@ -118,7 +124,7 @@ class Logger(object):
         # console log handler
         if self.consoleLogging:
             console = logging.StreamHandler()
-            console.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'))
+            console.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S', encoding='utf-8'))
             console.setLevel(INFO if not self.debugLogging else DEBUG)
 
             for logger in self.loggers:
@@ -127,8 +133,8 @@ class Logger(object):
         # rotating log file handler
         if self.fileLogging:
             rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=sickbeard.LOG_SIZE, backupCount=sickbeard.LOG_NR, encoding='utf-8')
-            rfh.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)-8s %(message)s', dateTimeFormat))
-            rfh.setLevel(DEBUG)
+            rfh.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)-8s %(message)s', dateTimeFormat, encoding='utf-8'))
+            rfh.setLevel(INFO if not self.debugLogging else DEBUG)
 
             for logger in self.loggers:
                 logger.addHandler(rfh)
@@ -142,24 +148,17 @@ class Logger(object):
         message = meThread + u" :: " + msg
 
         # Change the SSL error to a warning with a link to information about how to fix it.
-        check = re.sub(r'error \[Errno 1\] _ssl.c:\d{3}: error:\d{8}:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error', 'See: http://git.io/vJrkM', message)
+        check = re.sub(ur'error \[Errno 1\] _ssl.c:\d{3}: error:\d{8}:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error', 'See: http://git.io/vJrkM', message)
         if check is not message:
             message = check
             level = WARNING
-        
-        # Avoid open issues when user only need to clear cache to fix issue
-        if re.search(r"_mako\'$",message):
-            # 'C__SickRage_gui_slick_views_schedule_mako'
-            # '_usr_local_sickrage_var_SickRage_gui_slick_views_schedule_mako'
-            # '_volume1___plugins_AppCentral_sickbeard_tvrage_SickBeard_TVRage_gui_slick_views_schedule_mako'
-            message = 'Please stop SickRage and delete \SickRage\cache\mako folder. You can see cache folder location in SickRage Help&Info menu'
-            level = WARNING            
+
+        if level in (ERROR, WARNING):
+            self.logger.exception(message, *args, **kwargs)
 
         if level == ERROR:
-            self.logger.exception(message, *args, **kwargs)
             classes.ErrorViewer.add(classes.UIError(message))
         elif level == WARNING:
-            self.logger.exception(message, *args, **kwargs)
             classes.WarningViewer.add(classes.UIError(message))
 
             # if sickbeard.GIT_AUTOISSUES:
@@ -288,7 +287,7 @@ class Logger(object):
 
                 def is_malformed_error(title):
                     # [APP SUBMITTED]: not well-formed (invalid token): line 0, column 0
-                    re.search(r".* not well-formed \(invalid token\): line .* column .*", title) is not None
+                    return re.search(r".* not well-formed \(invalid token\): line .* column .*", title) is not None
 
                 mako_error = is_mako_error(title_Error)
                 ascii_error = is_ascii_error(title_Error)
@@ -331,7 +330,8 @@ class Logger(object):
             issue_id = None
         finally:
             self.submitter_running = False
-            return submitter_result, issue_id
+
+        return submitter_result, issue_id
 
 # pylint: disable=R0903
 class Wrapper(object):

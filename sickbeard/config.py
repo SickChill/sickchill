@@ -265,7 +265,7 @@ def change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency):
     :param subtitles_finder_frequency: New frequency
     """
     if subtitles_finder_frequency == '' or subtitles_finder_frequency is None:
-            subtitles_finder_frequency = 1
+        subtitles_finder_frequency = 1
 
     sickbeard.SUBTITLES_FINDER_FREQUENCY = to_int(subtitles_finder_frequency, 1)
 
@@ -388,12 +388,12 @@ def change_PROCESS_AUTOMATICALLY(process_automatically):
 
 def CheckSection(CFG, sec):
     """ Check if INI section exists, if not create it """
-    try:
-        CFG[sec]
+
+    if sec in CFG:
         return True
-    except:
-        CFG[sec] = {}
-        return False
+
+    CFG[sec] = {}
+    return False
 
 
 def checkbox_to_value(option, value_on=1, value_off=0):
@@ -402,7 +402,7 @@ def checkbox_to_value(option, value_on=1, value_off=0):
     any other value returns value_off (0)
     """
 
-    if type(option) is list:
+    if isinstance(option, list):
         option = option[-1]
 
     if option == 'on' or option == 'true':
@@ -499,7 +499,7 @@ def to_int(val, default=0):
 
     try:
         val = int(val)
-    except:
+    except Exception:
         val = default
 
     return val
@@ -536,11 +536,11 @@ def check_setting_int(config, cfg_name, item_name, def_val, silent=True):
 
         if str(my_val) == str(None):
             raise
-    except:
+    except Exception:
         my_val = def_val
         try:
             config[cfg_name][item_name] = my_val
-        except:
+        except Exception:
             config[cfg_name] = {}
             config[cfg_name][item_name] = my_val
 
@@ -558,11 +558,11 @@ def check_setting_float(config, cfg_name, item_name, def_val, silent=True):
         my_val = float(config[cfg_name][item_name])
         if str(my_val) == str(None):
             raise
-    except:
+    except Exception:
         my_val = def_val
         try:
             config[cfg_name][item_name] = my_val
-        except:
+        except Exception:
             config[cfg_name] = {}
             config[cfg_name][item_name] = my_val
 
@@ -578,7 +578,6 @@ def check_setting_float(config, cfg_name, item_name, def_val, silent=True):
 def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_log=False):
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     if bool(item_name.find('password') + 1):
-        log = False
         encryption_version = sickbeard.ENCRYPTION_VERSION
     else:
         encryption_version = 0
@@ -587,11 +586,11 @@ def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_
         my_val = helpers.decrypt(config[cfg_name][item_name], encryption_version)
         if str(my_val) == str(None):
             raise
-    except:
+    except Exception:
         my_val = def_val
         try:
             config[cfg_name][item_name] = helpers.encrypt(my_val, encryption_version)
-        except:
+        except Exception:
             config[cfg_name] = {}
             config[cfg_name][item_name] = helpers.encrypt(my_val, encryption_version)
 
@@ -599,7 +598,7 @@ def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_
         logger.censoredItems[cfg_name, item_name] = my_val
 
     if not silent:
-        logger.log(item_name + " -> " + str(my_val), logger.DEBUG)
+        logger.log(item_name + " -> " + my_val, logger.DEBUG)
 
     return my_val
 
@@ -615,13 +614,14 @@ class ConfigMigrator():
         # check the version of the config
         self.config_version = check_setting_int(config_obj, 'General', 'config_version', sickbeard.CONFIG_VERSION)
         self.expected_config_version = sickbeard.CONFIG_VERSION
-        self.migration_names = {1: 'Custom naming',
-                                2: 'Sync backup number with version number',
-                                3: 'Rename omgwtfnzb variables',
-                                4: 'Add newznab catIDs',
-                                5: 'Metadata update',
-                                6: 'Convert from XBMC to new KODI variables',
-                                7: 'Use version 2 for password encryption'
+        self.migration_names = {
+            1: 'Custom naming',
+            2: 'Sync backup number with version number',
+            3: 'Rename omgwtfnzb variables',
+            4: 'Add newznab catIDs',
+            5: 'Metadata update',
+            6: 'Convert from XBMC to new KODI variables',
+            7: 'Use version 2 for password encryption'
         }
 
     def migrate_config(self):
@@ -630,10 +630,11 @@ class ConfigMigrator():
         """
 
         if self.config_version > self.expected_config_version:
-            logger.log_error_and_exit(u"Your config version (" + str(
-                self.config_version) + ") has been incremented past what this version of SickRage supports (" + str(
-                self.expected_config_version) + ").\n" + \
-                                      "If you have used other forks or a newer version of SickRage, your config file may be unusable due to their modifications.")
+            logger.log_error_and_exit(
+                u"""Your config version (%i) has been incremented past what this version of SickRage supports (%i).
+                If you have used other forks or a newer version of SickRage, your config file may be unusable due to their modifications.""" %
+                (self.config_version, self.expected_config_version)
+            )
 
         sickbeard.CONFIG_VERSION = self.config_version
 
@@ -668,13 +669,13 @@ class ConfigMigrator():
         """
 
         sickbeard.NAMING_PATTERN = self._name_to_pattern()
-        logger.log("Based on your old settings I'm setting your new naming pattern to: " + sickbeard.NAMING_PATTERN)
+        logger.log(u"Based on your old settings I'm setting your new naming pattern to: " + sickbeard.NAMING_PATTERN)
 
         sickbeard.NAMING_CUSTOM_ABD = bool(check_setting_int(self.config_obj, 'General', 'naming_dates', 0))
 
         if sickbeard.NAMING_CUSTOM_ABD:
             sickbeard.NAMING_ABD_PATTERN = self._name_to_pattern(True)
-            logger.log("Adding a custom air-by-date naming pattern to your config: " + sickbeard.NAMING_ABD_PATTERN)
+            logger.log(u"Adding a custom air-by-date naming pattern to your config: " + sickbeard.NAMING_ABD_PATTERN)
         else:
             sickbeard.NAMING_ABD_PATTERN = naming.name_abd_presets[0]
 
@@ -765,7 +766,7 @@ class ConfigMigrator():
             finalName += naming_sep_type[sep_type] + ep_quality
 
         if use_periods:
-            finalName = re.sub("\s+", ".", finalName)
+            finalName = re.sub(r"\s+", ".", finalName)
 
         return finalName
 

@@ -77,7 +77,7 @@ class DBConnection(object):
             if not args:
                 return self.connection.cursor().execute(query)
             return self.connection.cursor().execute(query, args)
-        except Exception as e:
+        except Exception:
             raise
 
     def execute(self, query, args=None, fetchall=False, fetchone=False):
@@ -97,7 +97,7 @@ class DBConnection(object):
                 return self._execute(query, args).fetchone()
             else:
                 return self._execute(query, args)
-        except Exception as e:
+        except Exception:
             raise
 
     def checkDBVersion(self):

@@ -21,7 +21,7 @@
 # Uses the Synology Download Station API: http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
 
 import sickbeard
-from .generic import GenericClient
+from sickbeard.clients.generic import GenericClient
 
 class DownloadStationAPI(GenericClient):
 
@@ -38,19 +38,21 @@ class DownloadStationAPI(GenericClient):
         try:
             self.response = self.session.get(auth_url, verify=False)
             self.auth = self.response.json()['data']['sid']
-        except:
+        except Exception:
             return None
 
         return self.auth
 
     def _add_torrent_uri(self, result):
 
-        data = {'api':'SYNO.DownloadStation.Task',
-                'version':'1', 'method':'create',
-                'session':'DownloadStation',
-                '_sid':self.auth,
-                'uri':result.url
-                }
+        data = {
+            'api':'SYNO.DownloadStation.Task',
+            'version':'1', 'method':'create',
+            'session':'DownloadStation',
+            '_sid':self.auth,
+            'uri':result.url
+        }
+
         if sickbeard.TORRENT_PATH:
             data['destination'] = sickbeard.TORRENT_PATH
         self._request(method='post', data=data)
@@ -59,12 +61,14 @@ class DownloadStationAPI(GenericClient):
 
     def _add_torrent_file(self, result):
 
-        data = {'api':'SYNO.DownloadStation.Task',
-                'version':'1',
-                'method':'create',
-                'session':'DownloadStation',
-                '_sid':self.auth
-                }
+        data = {
+            'api':'SYNO.DownloadStation.Task',
+            'version':'1',
+            'method':'create',
+            'session':'DownloadStation',
+            '_sid':self.auth
+        }
+
         if sickbeard.TORRENT_PATH:
             data['destination'] = sickbeard.TORRENT_PATH
         files = {'file':(result.name + '.torrent', result.content)}

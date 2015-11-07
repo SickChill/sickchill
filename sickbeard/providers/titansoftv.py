@@ -71,7 +71,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
         parsedJSON = self.getURL(searchURL, json=True)  # do search
 
         if not parsedJSON:
-            logger.log("No data returned from provider", logger.DEBUG)
+            logger.log(u"No data returned from provider", logger.DEBUG)
             return results
 
         if self._checkAuthFromData(parsedJSON):
@@ -95,7 +95,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
 
                 # Filter unseeded torrent
                 # if seeders < self.minseed or leechers < self.minleech:
-                #    if mode != 'RSS':
+                #    if mode is not 'RSS':
                 #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                 #    continue
 

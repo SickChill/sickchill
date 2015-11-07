@@ -47,7 +47,7 @@ class BTDIGGProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
                 searchURL = self.urls['api'] + "api/private-341ada3245790954/s02?q=" + search_string + "&p=0&order=1"
@@ -55,7 +55,7 @@ class BTDIGGProvider(generic.TorrentProvider):
 
                 jdata = self.getURL(searchURL, json=True)
                 if not jdata:
-                    logger.log("No data returned to be parsed!!!")
+                    logger.log(u"No data returned to be parsed!!!")
                     return []
 
                 for torrent in jdata:
@@ -72,12 +72,12 @@ class BTDIGGProvider(generic.TorrentProvider):
 
                         # Filter unseeded torrent
                         # if seeders < self.minseed or leechers < self.minleech:
-                        #    if mode != 'RSS':
+                        #    if mode is not 'RSS':
                         #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         #    continue
 
                         item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
+                        if mode is not 'RSS':
                             logger.log(u"Found result: %s" % title, logger.DEBUG)
 
                         items[mode].append(item)

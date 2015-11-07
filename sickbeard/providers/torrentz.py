@@ -21,7 +21,6 @@ import re
 import time
 import traceback
 import xmltodict
-import HTMLParser
 from six.moves import urllib
 from xml.parsers.expat import ExpatError
 
@@ -63,17 +62,17 @@ class TORRENTZProvider(generic.TorrentProvider):
         for mode in search_strings:
             for search_string in search_strings[mode]:
                 search_url = self.urls['verified'] if self.confirmed else self.urls['feed']
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     search_url += '?q=' + urllib.parse.quote_plus(search_string)
 
                 logger.log(search_url)
                 data = self.getURL(search_url)
                 if not data:
-                    logger.log('Seems to be down right now!')
+                    logger.log(u'Seems to be down right now!')
                     continue
 
                 if not data.startswith("<?xml"):
-                    logger.log('Wrong data returned from: ' + search_url, logger.DEBUG)
+                    logger.log(u'Wrong data returned from: ' + search_url, logger.DEBUG)
                     continue
 
                 if not data.startswith('<?xml'):
@@ -81,7 +80,7 @@ class TORRENTZProvider(generic.TorrentProvider):
                     continue
 
                 try:
-                    data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data.encode('utf-8')).decode('utf-8').replace('&', '&amp;'))
+                    data = xmltodict.parse(data)
                 except ExpatError:
                     logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
                     continue
@@ -112,7 +111,7 @@ class TORRENTZProvider(generic.TorrentProvider):
 
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
-                        if mode != 'RSS':
+                        if mode is not 'RSS':
                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 

@@ -90,12 +90,12 @@ class IPTorrentsProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
                 searchURL = self.urls['search'] % (self.categories, freeleech, search_string)
-                searchURL += ';o=seeders' if mode != 'RSS' else ''
+                searchURL += ';o=seeders' if mode is not 'RSS' else ''
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
                 data = self.getURL(searchURL)
@@ -106,7 +106,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
                     data = re.sub(r'(?im)<button.+?<[\/]button>', '', data, 0)
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                         if not html:
-                            logger.log("No data returned from provider", logger.DEBUG)
+                            logger.log(u"No data returned from provider", logger.DEBUG)
                             continue
 
                         if html.find(text='No Torrents Found!'):
@@ -136,12 +136,12 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
+                                if mode is not 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             item = title, download_url, size, seeders, leechers
-                            if mode != 'RSS':
+                            if mode is not 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)

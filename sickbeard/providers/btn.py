@@ -88,7 +88,7 @@ class BTNProvider(generic.TorrentProvider):
 
         parsedJSON = self._api_call(apikey, params)
         if not parsedJSON:
-            logger.log("No data returned from provider", logger.DEBUG)
+            logger.log(u"No data returned from provider", logger.DEBUG)
             return results
 
         if self._checkAuthFromData(parsedJSON):

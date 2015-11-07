@@ -366,7 +366,7 @@ class PostProcessor(object):
                 helpers.copyFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError), e:
-                logger.log("Unable to copy file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
+                logger.log(u"Unable to copy file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_copy,
