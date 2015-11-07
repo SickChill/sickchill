@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from tvdb_api.tvdb_api import Tvdb
 import requests
 
