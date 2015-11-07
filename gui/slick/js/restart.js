@@ -1,7 +1,7 @@
 $(document).ready(function() {
-    window.console_debug = false;
-    window.console_prefix = 'Restart: ';
-    window.current_pid = '';
+    window.console_debug = false; // jshint ignore:line
+    window.console_prefix = 'Restart: '; // jshint ignore:line
+    window.current_pid = ''; // jshint ignore:line
 
     var is_alive_url = srRoot + '/home/is_alive/';
 

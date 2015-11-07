@@ -14,7 +14,6 @@
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/lib/jquery.bookmarkscroll.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/displayShow.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/sceneExceptionsTooltip.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/ratingTooltip.js?${sbPID}"></script>
@@ -481,7 +480,7 @@
                     ## Lets do this exactly like ComingEpisodes and History
                     ## Avoid issues with dateutil's _isdst on Windows but still provide air dates
                     <% airDate = datetime.datetime.fromordinal(epResult['airdate']) %>
-                    % if airDate.year >= 1970 or show.network:  
+                    % if airDate.year >= 1970 or show.network:
                         <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
                     % endif
                     <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>

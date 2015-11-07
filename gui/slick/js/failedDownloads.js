@@ -8,10 +8,9 @@ $(document).ready(function(){
             }
         });
 
-        if (removeArr.length === 0) return false;
+        if (removeArr.length === 0) { return false; }
 
-        url = srRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|');
-        window.location.href = url;
+        window.location.href = srRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|');
     });
 
     $('.bulkCheck').on('click', function(){
@@ -41,7 +40,7 @@ $(document).ready(function(){
                     this.checked = lastCheck.checked;
                 }
 
-                if (this == check || this == lastCheck) found++;
+                if (this === check || this === lastCheck) { found++; }
             });
         });
     });

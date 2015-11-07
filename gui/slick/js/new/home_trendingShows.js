@@ -49,6 +49,6 @@ $(document).ready(function(){
     });
 
     $('#showsortdirection').on( 'change', function() {
-        $('#container').isotope({sortAscending: ('asc' == this.value)});
+        $('#container').isotope({sortAscending: ('asc' === this.value)});
     });
 });

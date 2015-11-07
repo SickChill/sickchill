@@ -1,11 +1,10 @@
 $(document).ready(function(){
-
     $.fn.showHideServices = function() {
         $('.serviceDiv').each(function(){
             var serviceName = $(this).attr('id');
             var selectedService = $('#editAService :selected').val();
 
-            if (selectedService+'Div' == serviceName){
+            if (selectedService+'Div' === serviceName){
                 $(this).show();
             } else {
                 $(this).hide();
@@ -14,7 +13,7 @@ $(document).ready(function(){
     };
 
     $.fn.addService = function (id, name, url, key, isDefault, showService) {
-        if (url.match('/$') === null) url = url + '/';
+        if (url.match('/$') === null) { url = url + '/'; }
 
         var newData = [isDefault, [name, url, key]];
 
@@ -34,10 +33,9 @@ $(document).ready(function(){
         var idArr = $("#service_order_list").sortable('toArray');
         var finalArr = [];
         $.each(idArr, function(key, val) {
-                var checked = + $('#enable_'+val).prop('checked') ? '1' : '0';
-                finalArr.push(val + ':' + checked);
+            var checked = + $('#enable_'+val).prop('checked') ? '1' : '0';
+            finalArr.push(val + ':' + checked);
         });
-
         $("#service_order").val(finalArr.join(' '));
     };
 
@@ -51,7 +49,6 @@ $(document).ready(function(){
 
 
     // initialization stuff
-
     $(this).showHideServices();
 
     $("#service_order_list").sortable({

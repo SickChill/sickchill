@@ -8,9 +8,11 @@ $(document).ready(function(){
     $('.progressbar').each(function(progressbar){
         var showId = $(this).data('show-id');
         var percentage = $(this).data('progress-percentage');
-        var classToAdd = percentage == 100 ? 100 : percentage > 80 ? 80 : percentage > 60 ? 60 : percentage > 40 ? 40 : 20;
+        var classToAdd = percentage === 100 ? 100 : percentage > 80 ? 80 : percentage > 60 ? 60 : percentage > 40 ? 40 : 20;
         $(this).progressbar({ value:  percentage });
-        if($(this).data('progress-text')) $(this).append('<div class="progressbarText" title="' + $(this).data('progress-tip') + '">' + $(this).data('progress-text') + '</div>');
+        if($(this).data('progress-text')) {
+            $(this).append('<div class="progressbarText" title="' + $(this).data('progress-tip') + '">' + $(this).data('progress-text') + '</div>');
+        }
         $(this).find('.ui-progressbar-value').addClass('progress-' + classToAdd);
     });
 
@@ -53,10 +55,10 @@ $(document).ready(function(){
         widgetOptions: (function(){
             if(metaToBool('sickbeard.FILTER_ROW')){
                 return {
-                    filter_columnFilters: true,
-                    filter_hideFilters : true,
-                    filter_saveFilters : true,
-                    filter_functions : {
+                    filter_columnFilters: true, // jshint ignore:line
+                    filter_hideFilters : true, // jshint ignore:line
+                    filter_saveFilters : true, // jshint ignore:line
+                    filter_functions : { // jshint ignore:line
                        5:function(e, n, f, i, r, c) {
                             var test = false;
                             var pct = Math.floor((n % 1) * 1000);

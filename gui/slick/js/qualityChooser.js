@@ -8,7 +8,7 @@ $(document).ready(function() {
         }
 
         $('#anyQualities option').each(function(i) {
-            var result = preset & $(this).val();
+            var result = preset & $(this).val(); // I have no clue what the & does here
             if (result > 0) {
                 $(this).attr('selected', 'selected');
             } else {
@@ -17,7 +17,7 @@ $(document).ready(function() {
         });
 
         $('#bestQualities option').each(function(i) {
-            var result = preset & ($(this).val() << 16);
+            var result = preset & ($(this).val() << 16); // I have no clue what the & does here
             if (result > 0) {
                 $(this).attr('selected', 'selected');
             } else {
