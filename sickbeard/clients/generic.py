@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import re
 import time
 from hashlib import sha1
@@ -9,6 +11,7 @@ from sickbeard.clients import http_error_code
 from bencode import bencode, bdecode
 import requests
 from bencode.BTL import BTFailure
+
 
 class GenericClient(object):
     def __init__(self, name, host=None, username=None, password=None):
