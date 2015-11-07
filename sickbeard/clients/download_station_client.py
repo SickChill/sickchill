@@ -1,3 +1,4 @@
+# coding=utf-8
 # Authors:
 # Pedro Jose Pereira Vieito <pvieito@gmail.com> (Twitter: @pvieito)
 #
