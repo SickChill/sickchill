@@ -50,6 +50,7 @@ class MainSanityCheck(db.DBSanityCheck):
         self.convert_tvrage_to_tvdb()
         self.convert_archived_to_compund()
 
+    # todo: fix spelling to compound
     def convert_archived_to_compund(self):
         logger.log(u'Checking for archived episodes not qualified', logger.DEBUG)
 
