@@ -57,13 +57,17 @@ import datetime
 import threading
 import getopt
 
+# Do this before importing sickbeard, to prevent locked files and incorrect import
+oldtornado = os.path.abspath(os.path.join(os.path.dirname(__file__), 'tornado'))
+shutil.move(oldtornado, oldtornado + '_kill')
+shutil.rmtree(oldtornado + '_kill')
+
 import sickbeard
 from sickbeard import db, logger, network_timezones, failed_history, name_cache
 from sickbeard.tv import TVShow
 from sickbeard.webserveInit import SRWebServer
 from sickbeard.event_queue import Events
 from configobj import ConfigObj
-from sickrage.helper.encoding import ek
 
 # http://bugs.python.org/issue7980#msg221094
 throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
@@ -127,33 +131,6 @@ class SickRage(object):
         help_msg += "                --noresize          Prevent resizing of the banner/posters even if PIL is installed\n"
 
         return help_msg
-
-    @staticmethod
-    def fix_clients_nonsense():
-        filenames = [
-            "sickbeard/clients/download_station.py",
-            "sickbeard/clients/utorrent.py",
-            "sickbeard/clients/qbittorrent.py",
-            "sickbeard/clients/transmission.py",
-            "sickbeard/clients/deluge.py",
-            "sickbeard/clients/deluged.py",
-            "sickbeard/clients/rtorrent.py"
-        ]
-
-        for filename in filenames:
-            filename = ek(os.path.join, sickbeard.PROG_DIR, filename)
-
-            try:
-                if ek(os.path.exists, filename):
-                    ek(os.remove, filename)
-            except Exception:
-                pass
-
-            try:
-                if ek(os.path.exists, filename + "c"):
-                    ek(os.remove, filename + "c")
-            except Exception:
-                pass
 
     # pylint: disable=R0912,R0915
     # Too many branches
@@ -306,9 +283,6 @@ class SickRage(object):
         # Get PID
         sickbeard.PID = os.getpid()
 
-        # Fix clients old files
-        self.fix_clients_nonsense()
-
         # Build from the DB to start with
         self.loadShowsFromDB()
 
@@ -443,9 +417,10 @@ class SickRage(object):
         stdin = file(devnull, 'r')
         stdout = file(devnull, 'a+')
         stderr = file(devnull, 'a+')
-        os.dup2(stdin.fileno(), sys.stdin.fileno())
-        os.dup2(stdout.fileno(), sys.stdout.fileno())
-        os.dup2(stderr.fileno(), sys.stderr.fileno())
+
+        os.dup2(stdin.fileno(), getattr(sys.stdin, 'device', sys.stdin).fileno())
+        os.dup2(stdout.fileno(), getattr(sys.stdout, 'device', sys.stdout).fileno())
+        os.dup2(stderr.fileno(), getattr(sys.stderr, 'device', sys.stderr).fileno())
 
     @staticmethod
     def remove_pid_file(PIDFILE):
