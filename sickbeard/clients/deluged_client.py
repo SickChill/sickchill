@@ -55,9 +55,8 @@ class DelugeDAPI(GenericClient):
         # if result.show.is_anime:
         #     label = sickbeard.TORRENT_LABEL_ANIME
 
-        if not result.content: result.content = {}
-
         if not result.content:
+            result.content = {}
             return None
 
         options = {
