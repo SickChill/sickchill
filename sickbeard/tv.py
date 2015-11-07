@@ -1815,17 +1815,17 @@ class TVEpisode(object):
 
     def __str__(self):
 
-        toReturn = ""
-        toReturn += "%s - S%02dE%02d - %s " % (self.show.name, self.season or 0, self.episode or 0, self.name) + "\n"
-        toReturn += "location: " + str(self.location) + "\n"
-        toReturn += "description: " + str(self.description) + "\n"
-        toReturn += "subtitles: " + str(",".join(self.subtitles)) + "\n"
-        toReturn += "subtitles_searchcount: " + str(self.subtitles_searchcount) + "\n"
-        toReturn += "subtitles_lastsearch: " + str(self.subtitles_lastsearch) + "\n"
-        toReturn += "airdate: " + str(self.airdate.toordinal()) + " (" + str(self.airdate) + ")\n"
-        toReturn += "hasnfo: " + str(self.hasnfo) + "\n"
-        toReturn += "hastbn: " + str(self.hastbn) + "\n"
-        toReturn += "status: " + str(self.status) + "\n"
+        toReturn = u""
+        toReturn += u"%r - S%02rE%02r - %r\n" % (self.show.name, self.season, self.episode, self.name)
+        toReturn += u"location: %r\n" % self.location
+        toReturn += u"description: %r\n" % self.description
+        toReturn += u"subtitles: %r\n" % u",".join(self.subtitles)
+        toReturn += u"subtitles_searchcount: %r\n" % self.subtitles_searchcount
+        toReturn += u"subtitles_lastsearch: %r\n" % self.subtitles_lastsearch
+        toReturn += u"airdate: %r (%r)\n" % (self.airdate.toordinal(), self.airdate)
+        toReturn += u"hasnfo: %r\n" % self.hasnfo
+        toReturn += u"hastbn: %r\n" % self.hastbn
+        toReturn += u"status: %r\n" % self.status
         return toReturn
 
     def createMetaFiles(self):

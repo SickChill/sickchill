@@ -126,14 +126,14 @@ class GenericProvider(object):
 
         return result
 
-    def getURL(self, url, post_data=None, params=None, timeout=30, json=False):
+    def getURL(self, url, post_data=None, params=None, timeout=30, json=False, needBytes=False):
         """
         By default this is just a simple urlopen call but this method should be overridden
         for providers with special URL requirements (like cookies)
         """
 
         return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
-                              session=self.session, json=json)
+                              session=self.session, json=json, needBytes=needBytes)
 
 
     def _makeURL(self, result):
