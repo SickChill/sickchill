@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Authors: Mr_Orange <mr_orange@hotmail.it>, EchelonFour
 # URL: http://code.google.com/p/sickbeard/
 #
