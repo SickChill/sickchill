@@ -1,7 +1,7 @@
 $.fn.loadContent = function(path, loadingTxt, errorTxt) {
     $(this).html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt);
-    $(this).load(srRoot + path + ' #container', function(response, status, xhr) {
-        if (status == "error") $(this).empty().html(errorTxt);
+    $(this).load(srRoot + path + ' #container', function(response, status) {
+        if (status === "error") { $(this).empty().html(errorTxt); }
     });
 };
 

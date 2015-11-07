@@ -1,3 +1,3 @@
-$(document).load(function(){
+$(document).ready(function(){
     $('#config-components').tabs();
 });

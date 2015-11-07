@@ -7,7 +7,7 @@ $(document).ready(function(){
         $('#minLevel').prop('disabled', true);
         $('#logFilter').prop('disabled', true);
         document.body.style.cursor='wait';
-        url = srRoot + '/errorlogs/viewlog/?minLevel='+$('select[name=minLevel]').val()+'&logFilter='+$('select[name=logFilter]').val()+'&logSearch='+$('#logSearch').val();
+        var url = srRoot + '/errorlogs/viewlog/?minLevel='+$('select[name=minLevel]').val()+'&logFilter='+$('select[name=logFilter]').val()+'&logSearch='+$('#logSearch').val();
         $.get(url, function(data){
             history.pushState('data', '', url);
             $('pre').html($(data).find('pre').html());

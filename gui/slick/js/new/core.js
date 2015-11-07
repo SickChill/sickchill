@@ -9,9 +9,9 @@ $(document).ready(function () {
             var lastOpenedPanel = $(this).data("lastOpenedPanel"),
                 selected = $(this).tabs('option', 'selected');
 
-            if (!lastOpenedPanel) lastOpenedPanel = $(ui.oldPanel);
+            if (!lastOpenedPanel) { lastOpenedPanel = $(ui.oldPanel); }
 
-            if (!$(this).data("topPositionTab")) $(this).data("topPositionTab", $(ui.newPanel).position().top);
+            if (!$(this).data("topPositionTab")) { $(this).data("topPositionTab", $(ui.newPanel).position().top); }
 
             //Dont use the builtin fx effects. This will fade in/out both tabs, we dont want that
             //Fadein the new tab yourself
