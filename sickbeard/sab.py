@@ -57,9 +57,9 @@ def sendNZB(nzb):
     # if it aired more than 7 days ago, override with the backlog category IDs
     for curEp in nzb.episodes:
         if datetime.date.today() - curEp.airdate > datetime.timedelta(days=7):
-            category = sickbeard.NZBGET_CATEGORY_BACKLOG
+            category = sickbeard.SAB_CATEGORY_BACKLOG
             if nzb.show.is_anime:
-                category = sickbeard.NZBGET_CATEGORY_ANIME_BACKLOG
+                category = sickbeard.SAB_CATEGORY_ANIME_BACKLOG
 
     if category != None:
         params['cat'] = category
