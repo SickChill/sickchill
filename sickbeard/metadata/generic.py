@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -139,21 +141,21 @@ class GenericMetadata(object):
 
     def _has_episode_thumb(self, ep_obj):
         location = self.get_episode_thumb_path(ep_obj)
-        result = location != None and ek(os.path.isfile, location)
+        result = location is not None and ek(os.path.isfile, location)
         if location:
             logger.log(u"Checking if " + location + " exists: " + str(result), logger.DEBUG)
         return result
 
     def _has_season_poster(self, show_obj, season):
         location = self.get_season_poster_path(show_obj, season)
-        result = location != None and ek(os.path.isfile, location)
+        result = location is not None and ek(os.path.isfile, location)
         if location:
             logger.log(u"Checking if " + location + " exists: " + str(result), logger.DEBUG)
         return result
 
     def _has_season_banner(self, show_obj, season):
         location = self.get_season_banner_path(show_obj, season)
-        result = location != None and ek(os.path.isfile, location)
+        result = location is not None and ek(os.path.isfile, location)
         if location:
             logger.log(u"Checking if " + location + " exists: " + str(result), logger.DEBUG)
         return result
@@ -618,8 +620,6 @@ class GenericMetadata(object):
         else:
             return False
 
-        return True
-
     def save_season_banners(self, show_obj, season):
         """
         Saves all season banners to disk for the given show.
@@ -666,8 +666,6 @@ class GenericMetadata(object):
             return all(result)
         else:
             return False
-
-        return True
 
     def save_season_all_poster(self, show_obj, which=None):
         # use the default season all poster name
@@ -932,15 +930,15 @@ class GenericMetadata(object):
             with open(metadata_path, 'r') as xmlFileObj:
                 showXML = etree.ElementTree(file=xmlFileObj)
 
-            if showXML.findtext('title') == None or (showXML.findtext('tvdbid') == None and showXML.findtext('id') == None):
+            if showXML.findtext('title') is None or (showXML.findtext('tvdbid') is None and showXML.findtext('id') is None):
                 logger.log(u"Invalid info in tvshow.nfo (missing name or id): %s %s %s" % (showXML.findtext('title'), showXML.findtext('tvdbid'), showXML.findtext('id')))
                 return empty_return
 
             name = showXML.findtext('title')
 
-            if showXML.findtext('tvdbid') != None:
+            if showXML.findtext('tvdbid') is not None:
                 indexer_id = int(showXML.findtext('tvdbid'))
-            elif showXML.findtext('id') != None:
+            elif showXML.findtext('id') is not None:
                 indexer_id = int(showXML.findtext('id'))
             else:
                 logger.log(u"Empty <id> or <tvdbid> field in NFO, unable to find a ID", logger.WARNING)
@@ -951,7 +949,7 @@ class GenericMetadata(object):
                 return empty_return
 
             indexer = None
-            if showXML.find('episodeguide/url') != None:
+            if showXML.find('episodeguide/url') is not None:
                 epg_url = showXML.findtext('episodeguide/url').lower()
                 if str(indexer_id) in epg_url:
                     if 'thetvdb.com' in epg_url:
@@ -960,16 +958,15 @@ class GenericMetadata(object):
                         logger.log(u"Invalid Indexer ID (" + str(indexer_id) + "), not using metadata file because it has TVRage info", logger.WARNING)
                         return empty_return
 
-
         except Exception, e:
             logger.log(
                 u"There was an error parsing your existing metadata file: '" + metadata_path + "' error: " + ex(e),
                 logger.WARNING)
             return empty_return
 
-        return (indexer_id, name, indexer)
+        return indexer_id, name, indexer
 
-    def _retrieve_show_images_from_tmdb(self, show, type):
+    def _retrieve_show_images_from_tmdb(self, show, img_type):
         types = {'poster': 'poster_path',
                  'banner': None,
                  'fanart': 'backdrop_path',
@@ -992,15 +989,15 @@ class GenericMetadata(object):
             search = tmdb.Search()
             for show_name in set(allPossibleShowNames(show)):
                 for result in search.collection({'query': show_name})['results'] + search.tv({'query': show_name})['results']:
-                    if types[type] and getattr(result, types[type]):
-                        return "{0}{1}{2}".format(base_url, max_size, result[types[type]])
+                    if types[img_type] and getattr(result, types[img_type]):
+                        return "{0}{1}{2}".format(base_url, max_size, result[types[img_type]])
 
         except Exception:
             pass
 
-        logger.log(u"Could not find any " + type + " images on TMDB for " + show.name, logger.INFO)
+        logger.log(u"Could not find any " + img_type + " images on TMDB for " + show.name, logger.INFO)
 
-    def _retrieve_show_images_from_fanart(self, show, type, thumb=False):
+    def _retrieve_show_images_from_fanart(self, show, img_type, thumb=False):
         types = {
             'poster': fanart.TYPE.TV.POSTER,
             'banner': fanart.TYPE.TV.BANNER,
@@ -1016,17 +1013,17 @@ class GenericMetadata(object):
                     apikey=sickbeard.FANART_API_KEY,
                     id=indexerid,
                     ws=fanart.WS.TV,
-                    type=types[type],
+                    type=types[img_type],
                     sort=fanart.SORT.POPULAR,
                     limit=fanart.LIMIT.ONE,
                 )
 
                 resp = request.response()
-                url = resp[types[type]][0]['url']
+                url = resp[types[img_type]][0]['url']
                 if thumb:
                     url = re.sub('/fanart/', '/preview/', url)
                 return url
         except Exception:
             pass
 
-        logger.log(u"Could not find any " + type + " images on Fanart.tv for " + show.name, logger.INFO)
+        logger.log(u"Could not find any " + img_type + " images on Fanart.tv for " + show.name, logger.INFO)
