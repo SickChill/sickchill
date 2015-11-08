@@ -25,6 +25,7 @@ __all__ = ['generic', 'helpers', 'kodi', 'kodi_12plus', 'mediabrowser', 'ps3', '
 def available_generators():
     return [x for x in __all__ if x not in ['generic', 'helpers']]
 
+
 def _getMetadataModule(name):
     name = name.lower()
     prefix = "sickbeard.metadata."
