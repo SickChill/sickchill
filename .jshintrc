@@ -25,6 +25,8 @@
         "isMeta": true,
         "generate_bwlist": true,
         "_": true,
-        "bootbox": true
+        "bootbox": true,
+        "PNotify": true,
+        "anonURL": true
     }
 }
