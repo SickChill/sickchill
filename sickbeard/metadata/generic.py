@@ -964,7 +964,7 @@ class GenericMetadata(object):
                 logger.WARNING)
             return empty_return
 
-        return (indexer_id, name, indexer)
+        return indexer_id, name, indexer
 
     def _retrieve_show_images_from_tmdb(self, show, img_type):
         types = {'poster': 'poster_path',
