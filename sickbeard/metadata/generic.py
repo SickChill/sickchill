@@ -269,7 +269,7 @@ class GenericMetadata(object):
             assert isinstance(nfo_file_path, unicode)
 
             try:
-                with io.open(nfo_file_path, 'r', encoding='utf-8') as xmlFileObj:
+                with io.open(nfo_file_path, 'rb') as xmlFileObj:
                     showXML = etree.ElementTree(file=xmlFileObj)
 
                 indexerid = showXML.find('id')
@@ -283,7 +283,7 @@ class GenericMetadata(object):
                 # Make it purdy
                 helpers.indentXML(root)
 
-                showXML.write(nfo_file_path)
+                showXML.write(nfo_file_path, encoding='UTF-8')
                 helpers.chmodAsParent(nfo_file_path)
 
                 return True
@@ -331,10 +331,9 @@ class GenericMetadata(object):
     def create_season_banners(self, show_obj):
         if self.season_banners and show_obj:
             result = []
+            logger.log(u"Metadata provider " + self.name + " creating season banners for " + show_obj.name, logger.DEBUG)
             for season, _ in show_obj.episodes.iteritems():  # @UnusedVariable
                 if not self._has_season_banner(show_obj, season):
-                    logger.log(u"Metadata provider " + self.name + " creating season banners for " + show_obj.name,
-                               logger.DEBUG)
                     result = result + [self.save_season_banners(show_obj, season)]
             return all(result)
         return False
@@ -412,7 +411,7 @@ class GenericMetadata(object):
             logger.log(u"Writing show nfo file to " + nfo_file_path, logger.DEBUG)
 
             nfo_file = io.open(nfo_file_path, 'wb')
-            data.write(nfo_file)
+            data.write(nfo_file, encoding='UTF-8')
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError, e:
@@ -456,7 +455,7 @@ class GenericMetadata(object):
 
             logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
             nfo_file = io.open(nfo_file_path, 'wb')
-            data.write(nfo_file)
+            data.write(nfo_file, encoding='UTF-8')
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError, e:
@@ -915,7 +914,7 @@ class GenericMetadata(object):
         logger.log(u"Loading show info from metadata file in " + folder, logger.DEBUG)
 
         try:
-            with io.open(metadata_path, 'r', encoding='utf-8') as xmlFileObj:
+            with io.open(metadata_path, 'rb') as xmlFileObj:
                 showXML = etree.ElementTree(file=xmlFileObj)
 
             if showXML.findtext('title') is None or (showXML.findtext('tvdbid') is None and showXML.findtext('id') is None):
