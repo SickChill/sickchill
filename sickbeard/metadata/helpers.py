@@ -22,8 +22,6 @@ import requests
 
 meta_session = requests.Session()
 def getShowImage(url, imgNum=None):
-    image_data = None  # @UnusedVariable
-
     if url == None:
         return None
 
