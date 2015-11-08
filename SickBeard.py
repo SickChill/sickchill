@@ -152,7 +152,7 @@ class SickRage(object):
 
         # pylint: disable=E1101
         if not sickbeard.SYS_ENCODING or sickbeard.SYS_ENCODING.lower() in ('ansi_x3.4-1968', 'us-ascii', 'ascii', 'charmap') or \
-            (sys.platform.startswith('win') and sys.getwindowsversion()[0] >= 6 and str(sys.stdout.encoding).lower() in ('cp65001', 'charmap')):
+            (sys.platform.startswith('win') and sys.getwindowsversion()[0] >= 6 and getattr(sys.stdout, 'device', sys.stdout).encoding.lower() in ('cp65001', 'charmap')):
             sickbeard.SYS_ENCODING = 'UTF-8'
 
         # Need console logging for SickBeard.py and SickBeard-console.exe
@@ -233,7 +233,7 @@ class SickRage(object):
 
             else:
                 if self.consoleLogging:
-                    sys.stdout.write("Not running in daemon mode. PID file creation disabled.\n")
+                    sys.stdout.write(u"Not running in daemon mode. PID file creation disabled.\n")
 
                 self.CREATEPID = False
 
@@ -267,11 +267,11 @@ class SickRage(object):
         if os.path.exists(restoreDir):
             success = self.restoreDB(restoreDir, sickbeard.DATA_DIR)
             if self.consoleLogging:
-                sys.stdout.write("Restore: restoring DB and config.ini %s!\n" % ("FAILED", "SUCCESSFUL")[success])
+                sys.stdout.write(u"Restore: restoring DB and config.ini %s!\n" % ("FAILED", "SUCCESSFUL")[success])
 
         # Load the config and publish it to the sickbeard package
         if self.consoleLogging and not os.path.isfile(sickbeard.CONFIG_FILE):
-            sys.stdout.write("Unable to find '" + sickbeard.CONFIG_FILE + "' , all settings will be default!" + "\n")
+            sys.stdout.write(u"Unable to find '" + sickbeard.CONFIG_FILE + "' , all settings will be default!" + "\n")
 
         sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE)
 
@@ -377,7 +377,7 @@ class SickRage(object):
             if pid != 0:
                 os._exit(0)
         except OSError, e:
-            sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
+            sys.stderr.write(u"fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
             sys.exit(1)
 
         os.setsid()  # @UndefinedVariable - only available in UNIX
@@ -395,7 +395,7 @@ class SickRage(object):
             if pid != 0:
                 os._exit(0)
         except OSError, e:
-            sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
+            sys.stderr.write(u"fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
             sys.exit(1)
 
         # Write pid

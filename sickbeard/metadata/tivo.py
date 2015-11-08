@@ -20,11 +20,11 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import datetime
+import io
 import os
+import datetime
 
 import sickbeard
-
 from sickbeard import logger, helpers
 from sickbeard.metadata import generic
 from sickrage.helper.encoding import ek
@@ -321,7 +321,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
             logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
 
-            with open(nfo_file_path, 'w') as nfo_file:
+            with io.open(nfo_file_path, 'w') as nfo_file:
                 # Calling encode directly, b/c often descriptions have wonky characters.
                 nfo_file.write(data.encode("utf-8"))
 
