@@ -168,7 +168,11 @@ class ShowQueue(generic_queue.GenericQueue):
 
         return queueItemObj
 
-class ShowQueueActions:
+class ShowQueueActions(object):
+
+    def __init__(self):
+        pass
+
     REFRESH = 1
     ADD = 2
     UPDATE = 3
@@ -177,13 +181,14 @@ class ShowQueueActions:
     SUBTITLE = 6
     REMOVE = 7
 
-    names = {REFRESH: 'Refresh',
-             ADD: 'Add',
-             UPDATE: 'Update',
-             FORCEUPDATE: 'Force Update',
-             RENAME: 'Rename',
-             SUBTITLE: 'Subtitle',
-             REMOVE: 'Remove Show'
+    names = {
+        REFRESH: 'Refresh',
+        ADD: 'Add',
+        UPDATE: 'Update',
+        FORCEUPDATE: 'Force Update',
+        RENAME: 'Rename',
+        SUBTITLE: 'Subtitle',
+        REMOVE: 'Remove Show'
     }
 
 
@@ -305,14 +310,15 @@ class QueueItemAdd(ShowQueueItem):
                 self._finishEarly()
                 return
         except Exception, e:
-            logger.log(u"Error while loading information from indexer %s. Error: %r" % (self.indexer_id,sickbeard.indexerApi(self.indexer).name, ex(e)),logger.ERROR)
+            logger.log(u"%s Error while loading information from indexer %s. Error: %r" % (self.indexer_id, sickbeard.indexerApi(self.indexer).name, ex(e)), logger.ERROR)
             # logger.log(u"Show name with ID %s doesn't exist on %s anymore. If you are using trakt, it will be removed from your TRAKT watchlist. If you are adding manually, try removing the nfo and adding again" %
             #            (self.indexer_id, sickbeard.indexerApi(self.indexer).name), logger.WARNING)
 
-            ui.notifications.error("Unable to add show",
-                                   "Unable to look up the show in " + self.showDir + " on " + str(sickbeard.indexerApi(
-                                       self.indexer).name) + " using ID " + str(
-                                       self.indexer_id) + ", not using the NFO. Delete .nfo and try adding manually again.")
+            ui.notifications.error(
+                "Unable to add show",
+                "Unable to look up the show in %s on %s using ID %s, not using the NFO. Delete .nfo and try adding manually again." %
+                (self.showDir, sickbeard.indexerApi(self.indexer).name, self.indexer_id)
+            )
 
             if sickbeard.USE_TRAKT:
 
@@ -669,6 +675,6 @@ class QueueItemRemove(ShowQueueItem):
             try:
                 sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
             except Exception as e:
-                logger.log(u"Unable to delete show from Trakt: %s. Error: %s" % (self.show.name, ex(e)),logger.WARNING)
+                logger.log(u"Unable to delete show from Trakt: %s. Error: %s" % (self.show.name, ex(e)), logger.WARNING)
 
         self.finish()

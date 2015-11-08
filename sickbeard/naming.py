@@ -25,9 +25,9 @@ from sickbeard import tv
 from sickbeard import common
 from sickbeard import logger
 from sickbeard.name_parser.parser import NameParser
-from sickrage.helper.encoding import ek
+from sickbeard.common import Quality, DOWNLOADED
 
-from common import Quality, DOWNLOADED
+from sickrage.helper.encoding import ek
 
 name_presets = (
     '%SN - %Sx%0E - %EN',
