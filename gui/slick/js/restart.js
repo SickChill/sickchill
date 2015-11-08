@@ -7,7 +7,7 @@ $(document).ready(function() {
 
     var checkIsAlive = setInterval(isAlive, 1000);
 
-    function isAlive() {
+    function isAlive() {  // jshint ignore:line
         // Setup error detection
         $.ajaxSetup({
             error: ajaxError
@@ -17,7 +17,7 @@ $(document).ready(function() {
             if (data.msg.toLowerCase() === 'nope') {
                 // if it's still initializing then just wait and try again
                 if (console_debug) { // jshint ignore:line
-                    console.log(console_prefix + 'isAlive: Sickrage is starting.');
+                    console.log(console_prefix + 'isAlive: Sickrage is starting.'); // jshint ignore:line
                 }
                 $('#shut_down_loading').hide();
                 $('#shut_down_success').show();
@@ -25,15 +25,15 @@ $(document).ready(function() {
             } else {
                 // if this is before we've even shut down then just try again later
                 if (console_debug) { // jshint ignore:line
-                    console.log(console_prefix + 'isAlive: Sickrage is shutdowning.');
+                    console.log(console_prefix + 'isAlive: Sickrage is shutdowning.'); // jshint ignore:line
                 }
-                if (current_pid === '' || data.msg == current_pid) {
-                    current_pid = data.msg;
+                if (current_pid === '' || data.msg == current_pid) { // jshint ignore:line
+                    current_pid = data.msg; // jshint ignore:line
                 // if we're ready to go then redirect to new url
                 } else {
                     clearInterval(checkIsAlive);
-                    if (console_debug) {
-                        console.log(console_prefix + 'isAlive: Setting redirect.');
+                    if (console_debug) { // jshint ignore:line
+                        console.log(console_prefix + 'isAlive: Setting redirect.'); // jshint ignore:line
                     }
                     $('#restart_loading').hide();
                     $('#restart_success').show();
@@ -50,7 +50,7 @@ $(document).ready(function() {
     }
 
     function ajaxError(x, e) {
-        if (console_debug) {
+        if (console_debug) { // jshint ignore:line
             if (x.status === 0) {
                 console.log(console_prefix + 'isAlive: Sickrage is not responding.');
             } else if (x.status == 404) {
