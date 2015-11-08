@@ -8,6 +8,7 @@ import unittest
 
 from sickbeard import common
 
+
 class QualityTests(unittest.TestCase):
 
     # TODO: repack / proper ? air-by-date ? season rip? multi-ep?
@@ -99,6 +100,59 @@ class QualityTests(unittest.TestCase):
 #        self.assertEqual(common.Quality.FULLHDBLURAY, common.Quality.nameQuality("Test Show - S01E02 - 1080p BluRay - GROUP"))
 #        self.assertEqual(common.Quality.UNKNOWN, common.Quality.nameQuality("Test Show - S01E02 - Unknown - SiCKBEARD"))
 
+
+class StatusStringsTest(unittest.TestCase):
+    # todo: Split tests into separate tests and add additional tests
+    def test_all(self):
+        ss = common.statusStrings
+
+        valid = 1, 112, '1', '112'
+        unused = 122, 99998989899878676, '99998989899878676', None
+        invalid = 'Elephant', (4, 1), [1, 233, 4, None]
+
+        for i in valid:
+            self.assertTrue(i in ss)
+
+        for i in unused:
+            self.assertFalse(i in ss)
+            with self.assertRaises(KeyError):
+                ss[i]
+
+        for i in ss:
+            self.assertEqual(ss[i], ss[str(i)])
+            self.assertEqual(i in ss, str(i) in ss)
+            self.assertEqual(ss.has_key(i), ss.has_key(str(i)))
+            self.assertEqual(i in ss, ss.has_key(i))
+            # self.assertEqual(ss.statusStrings[i], ss.statusStrings[str(i)])  # fails with KeyError
+
+        for i in ss.qualities:
+            self.assertEqual(ss[i], ss[str(i)])
+            self.assertEqual(i in ss, str(i) in ss)
+            self.assertEqual(ss.has_key(i), ss.has_key(str(i)))
+            self.assertEqual(i in ss, ss.has_key(i))
+            # self.assertEqual(ss.statusStrings[i], ss.statusStrings[str(i)])  # fails with KeyError
+
+        for i in invalid:
+            with self.assertRaises(TypeError):
+                ss[i] = 1
+
+        for i in unused:
+            if i is None:
+                with self.assertRaises(TypeError):
+                    ss[str(i)] = 1  # converting None to a string makes this invalid since 'None' != None...
+                ss[i] = 1  # ...but None can still be used as a key
+            else:
+                ss[str(i)] = 1
+            self.assertEqual(ss[i], 1)
+
 if __name__ == '__main__':
+    print "======================="
+    print "STARTING - COMMON TESTS"
+    print "======================="
+    print "######################################################################"
+
     suite = unittest.TestLoader().loadTestsFromTestCase(QualityTests)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+
+    suite = unittest.TestLoader().loadTestsFromTestCase(StatusStringsTest)
     unittest.TextTestRunner(verbosity=2).run(suite)

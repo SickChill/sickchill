@@ -39,7 +39,7 @@ from sickbeard.providers.generic import GenericProvider
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
-    subtitles, traktChecker
+    subtitles, traktChecker, numdict
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import scheduler

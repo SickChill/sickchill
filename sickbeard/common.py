@@ -22,7 +22,13 @@ import operator
 import platform
 import re
 import uuid
-from UserDict import UserDict
+from numdict import NumDict
+
+import sys
+import os.path
+
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from random import shuffle
 
@@ -513,72 +519,43 @@ qualityPresetStrings = {SD: "SD",
                         ANY: "Any"}
 
 
-class StatusStrings(UserDict):
+class StatusStrings(NumDict):
     """
     Dictionary containing strings for status codes
-
-    Keys must be convertible to int or a ValueError will be raised.  This is intentional to match old functionality until
-    the old StatusStrings is fully deprecated, then we will raise a KeyError instead, where appropriate.
-
-    Membership checks using __contains__ (i.e. 'x in y') do not raise a ValueError to match expected dict functionality
     """
     # todo: Deprecate StatusStrings().statusStrings and use StatusStrings() directly
     # todo: Deprecate .has_key and switch to 'x in y'
-    # todo: Switch from raising ValueError to a saner KeyError
-    # todo: Raise KeyError when unable to resolve a missing key instead of returning ''
-    # todo: Make key of None match dict() functionality
+    # todo: Make views return Qualities too
+    # todo:
+
+    qualities = Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.ARCHIVED
 
     @property
     def statusStrings(self):  # for backwards compatibility
         return self.data
 
-    def __setitem__(self, key, value):
-        self.data[int(key)] = value  # make sure all keys being assigned values are ints
-
     def __missing__(self, key):
         """
-        If the key is not found, search for the missing key in qualities
+        If the key is not found try to determine a status from Quality
 
-        Keys must be convertible to int or a ValueError will be raised.  This is intentional to match old functionality until
-        the old StatusStrings is fully deprecated, then we will raise a KeyError instead, where appropriate.
+        :param key: A numeric key or None
+        :raise KeyError: if the key is invalid and can't be determined from Quality
         """
-        if isinstance(key, int):  # if the key is already an int...
-            if key in self.keys() + Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.ARCHIVED:
-                status, quality = Quality.splitCompositeStatus(key)
-                if quality == Quality.NONE:  # If a Quality is not listed... (shouldn't this be 'if not quality:'?)
-                    return self[status]  # ...return the status...
-                else:
-                    return self[status] + " (" + Quality.qualityStrings[quality] + ")"  # ...otherwise append the quality to the status
-            else:
-                return ''  # return '' to match old functionality when the numeric key is not found
-        return self[int(key)]  # Since the key was not an int, let's try int(key) instead
-
-    # Keep this until all has_key() checks are converted to 'key in dict'
-    # or else has_keys() won't search __missing__ for keys
-    def has_key(self, key):
-        """
-        Override has_key() to test membership using an 'x in y' search
-
-        Keys must be convertible to int or a ValueError will be raised.  This is intentional to match old functionality until
-        the old StatusStrings is fully deprecated, then we will raise a KeyError instead, where appropriate.
-        """
-        return key in self  # This will raise a ValueError if __missing__ can't convert the key to int
+        key = self.numeric(key)  # try to convert the key to a number which will raise KeyError if it can't
+        if key in self.qualities:  # the key wasn't found locally so check in qualities
+            status, quality = Quality.splitCompositeStatus(key)
+            return self[status] if not quality else self[status] + " (" + Quality.qualityStrings[quality] + ")"
+        else:  # the key wasn't found in qualities either
+            raise KeyError(key)  # ... so the key is invalid
 
     def __contains__(self, key):
-        """
-        Checks for existence of key
-
-        Unlike has_key() and __missing__() this will NOT raise a ValueError to match expected functionality
-        when checking for 'key in dict'
-        """
         try:
-            # This will raise a ValueError if we can't convert the key to int
-            return ((int(key) in self.data) or
-                    (int(key) in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.ARCHIVED))
-        except ValueError:  # The key is not numeric and since we only want numeric keys...
-            # ...and we don't want this function to fail...
-            pass  # ...suppress the ValueError and do nothing, the key does not exist
+            key = self.numeric(key)
+            return key in self.data or key in self.qualities
+        except KeyError:
+            return False
 
+# Assign strings to statuses
 statusStrings = StatusStrings(
     {UNKNOWN: "Unknown",
      UNAIRED: "Unaired",
@@ -592,11 +569,11 @@ statusStrings = StatusStrings(
      SUBTITLED: "Subtitled",
      FAILED: "Failed",
      SNATCHED_BEST: "Snatched (Best)"
-     })
+     }
+)
 
 # pylint: disable=R0903
 class Overview(object):
-
     UNAIRED = UNAIRED  # 1
     QUAL = 2
     WANTED = WANTED  # 3
@@ -621,4 +598,4 @@ XML_NSMAP = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
 countryList = {'Australia': 'AU',
                'Canada': 'CA',
                'USA': 'US'
-              }
+               }
