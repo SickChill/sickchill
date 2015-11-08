@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # Author: Gordon Turner <gordonturner@gordonturner.ca>
 # URL: http://code.google.com/p/sickbeard/
