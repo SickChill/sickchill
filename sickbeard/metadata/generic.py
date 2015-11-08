@@ -965,7 +965,7 @@ class GenericMetadata(object):
 
         return (indexer_id, name, indexer)
 
-    def _retrieve_show_images_from_tmdb(self, show, type):
+    def _retrieve_show_images_from_tmdb(self, show, img_type):
         types = {'poster': 'poster_path',
                  'banner': None,
                  'fanart': 'backdrop_path',
@@ -988,15 +988,15 @@ class GenericMetadata(object):
             search = tmdb.Search()
             for show_name in set(allPossibleShowNames(show)):
                 for result in search.collection({'query': show_name})['results'] + search.tv({'query': show_name})['results']:
-                    if types[type] and getattr(result, types[type]):
-                        return "{0}{1}{2}".format(base_url, max_size, result[types[type]])
+                    if types[img_type] and getattr(result, types[img_type]):
+                        return "{0}{1}{2}".format(base_url, max_size, result[types[img_type]])
 
         except Exception:
             pass
 
-        logger.log(u"Could not find any " + type + " images on TMDB for " + show.name, logger.INFO)
+        logger.log(u"Could not find any " + img_type + " images on TMDB for " + show.name, logger.INFO)
 
-    def _retrieve_show_images_from_fanart(self, show, type, thumb=False):
+    def _retrieve_show_images_from_fanart(self, show, img_type, thumb=False):
         types = {
             'poster': fanart.TYPE.TV.POSTER,
             'banner': fanart.TYPE.TV.BANNER,
@@ -1012,17 +1012,17 @@ class GenericMetadata(object):
                     apikey=sickbeard.FANART_API_KEY,
                     id=indexerid,
                     ws=fanart.WS.TV,
-                    type=types[type],
+                    type=types[img_type],
                     sort=fanart.SORT.POPULAR,
                     limit=fanart.LIMIT.ONE,
                 )
 
                 resp = request.response()
-                url = resp[types[type]][0]['url']
+                url = resp[types[img_type]][0]['url']
                 if thumb:
                     url = re.sub('/fanart/', '/preview/', url)
                 return url
         except Exception:
             pass
 
-        logger.log(u"Could not find any " + type + " images on Fanart.tv for " + show.name, logger.INFO)
+        logger.log(u"Could not find any " + img_type + " images on Fanart.tv for " + show.name, logger.INFO)
