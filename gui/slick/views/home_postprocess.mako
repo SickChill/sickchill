@@ -16,13 +16,13 @@
 <div id="postProcess">
     <form name="processForm" method="post" action="processEpisode" style="line-height: 40px;">
     <table>
-        <input type="hidden" id="type" name="type" value="manual">
+        <input type="hidden" id="type" name="proc_type" value="manual">
         <tr>
             <td style="padding-right:10px;">
                 <b>Enter the folder containing the episode:</b>
             </td>
             <td>
-                <input type="text" name="dir" id="episodeDir" class="form-control form-control-inline input-sm input350" />
+                <input type="text" name="proc_dir" id="episodeDir" class="form-control form-control-inline input-sm input350" />
             </td>
         </tr>
         <tr>

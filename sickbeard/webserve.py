@@ -911,7 +911,7 @@ class Home(WebRoot):
         elif curResult is False:
             finalResult += 'Test failed, No Plex Media Server host specified'
         else:
-            finalResult += 'Test failed for Plex server(s) ... ' + urllib.unquote_plus(curResult.replace(',', ', '))
+            finalResult += 'Test failed for Plex server(s) ... ' + urllib.unquote_plus(str(curResult).replace(',', ', '))
         finalResult += '<br>' + '\n'
 
         ui.notifications.message('Tested Plex Media Server host(s): ', urllib.unquote_plus(host.replace(',', ', ')))
@@ -2173,8 +2173,8 @@ class HomePostProcess(Home):
         t = PageTemplate(rh=self, filename="home_postprocess.mako")
         return t.render(title='Post Processing', header='Post Processing', topmenu='home')
 
-    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
-                       is_priority=None, delete_on="0", failed="0", type="auto", *args, **kwargs):
+    def processEpisode(self, proc_dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
+                       is_priority=None, delete_on="0", failed="0", proc_type="auto", *args, **kwargs):
 
         def argToBool(argument):
             if isinstance(argument, basestring):
@@ -2189,12 +2189,12 @@ class HomePostProcess(Home):
 
             return argument
 
-        if not dir:
+        if not proc_dir:
             return self.redirect("/home/postprocess/")
         else:
             result = processTV.processDir(
-                dir, nzbName, process_method=process_method, force=argToBool(force),
-                is_priority=argToBool(is_priority), delete_on=argToBool(delete_on), failed=argToBool(failed), type=type
+                proc_dir, nzbName, process_method=process_method, force=argToBool(force),
+                is_priority=argToBool(is_priority), delete_on=argToBool(delete_on), failed=argToBool(failed), proc_type=proc_type
             )
 
             if quiet is not None and int(quiet) == 1:

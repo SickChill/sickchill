@@ -8,8 +8,8 @@ import sickbeard
 from sickbeard import helpers
 from sickrage.helper.encoding import ek
 
-# pylint: disable=C1001
-class imdbPopular:
+
+class imdbPopular(object):
     def __init__(self):
         """Gets a list of most popular TV series from imdb"""
 

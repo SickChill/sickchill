@@ -20,8 +20,8 @@ import re
 from sickbeard.providers import generic
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.helper.exceptions import AuthException
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.exceptions import AuthException, ex
 
 class IPTorrentsProvider(generic.TorrentProvider):
     def __init__(self):
@@ -159,7 +159,8 @@ class IPTorrentsProvider(generic.TorrentProvider):
     def seedRatio(self):
         return self.ratio
 
-    def _convertSize(self, size):
+    @staticmethod
+    def _convertSize(size):
         size, modifier = size.split(' ')
         size = float(size)
         if modifier in 'KB':

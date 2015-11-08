@@ -108,8 +108,8 @@ multiEpStrings[NAMING_EXTEND] = "Extend"
 multiEpStrings[NAMING_LIMITED_EXTEND] = "Extend (Limited)"
 multiEpStrings[NAMING_LIMITED_EXTEND_E_PREFIXED] = "Extend (Limited, E-prefixed)"
 
-# pylint: disable=W0232,C1001
-class Quality:
+# pylint: disable=W0232
+class Quality(object):
     NONE = 0  # 0
     SDTV = 1  # 1
     SDDVD = 1 << 1  # 2
@@ -594,8 +594,8 @@ statusStrings = StatusStrings(
      SNATCHED_BEST: "Snatched (Best)"
      })
 
-# pylint: disable=R0903,C1001
-class Overview:
+# pylint: disable=R0903
+class Overview(object):
 
     UNAIRED = UNAIRED  # 1
     QUAL = 2
