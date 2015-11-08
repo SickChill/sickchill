@@ -12,6 +12,18 @@ $(document).ready(function(){
         });
     };
 
+    var ifExists = function(loopThroughArray, searchFor) {
+        var found = false;
+
+        loopThroughArray.forEach(function(rootObject) {
+            if (rootObject.name === searchFor) {
+                found = true;
+            }
+            console.log(rootObject.name + " while searching for: "+  searchFor);
+        });
+        return found;
+    };
+
     /**
      * Gets categories for the provided newznab provider.
      * @param {String} isDefault
@@ -29,21 +41,18 @@ $(document).ready(function(){
         }
 
         var params = {url: url, name: name, key: key};
-        var returnData;
 
         $(".updating_categories").wrapInner('<span><img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif"> Updating Categories ...</span>');
-        var jqxhr = $.getJSON(srRoot + '/config/providers/getNewznabCategories', params,
-                function(data){
-                    $(this).updateNewznabCaps( data, selectedProvider );
-                    console.debug(data.tv_categories); // jshint ignore:line
-            });
+        var jqxhr = $.getJSON(srRoot + '/config/providers/getNewznabCategories', params, function(data){
+            $(this).updateNewznabCaps( data, selectedProvider );
+            console.debug(data.tv_categories); // jshint ignore:line
+        });
         jqxhr.always(function() {
             $(".updating_categories").empty();
-         });
+        });
     };
 
     $.fn.addProvider = function (id, name, url, key, cat, isDefault, showProvider) {
-
         url = $.trim(url);
         if (!url) {
             return;
@@ -76,7 +85,6 @@ $(document).ready(function(){
     };
 
     $.fn.addTorrentRssProvider = function (id, name, url, cookies, titleTAG) {
-
         var newData = [name, url, cookies, titleTAG];
         torrentRssProviders[id] = newData;
 
@@ -84,9 +92,7 @@ $(document).ready(function(){
         $(this).populateTorrentRssSection();
 
         if ($('#provider_order_list > #'+id).length === 0) {
-            var toAdd = '<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>';
-
-            $('#provider_order_list').append(toAdd);
+            $('#provider_order_list').append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
             $('#provider_order_list').sortable("refresh");
         }
 
@@ -131,6 +137,7 @@ $(document).ready(function(){
         var selectedProvider = $('#editANewznabProvider :selected').val();
         var data = '';
         var isDefault = '';
+        var rrcat = '';
 
         if (selectedProvider === 'addNewznab') {
             data = ['','',''];
@@ -205,18 +212,6 @@ $(document).ready(function(){
                 $(this).updateNewznabCaps( null, data );
             }
         }
-    };
-
-    ifExists = function(loopThroughArray, searchFor) {
-        var found = false;
-
-        loopThroughArray.forEach(function(rootObject) {
-            if (rootObject.name === searchFor) {
-                found = true;
-            }
-            console.log(rootObject.name + " while searching for: "+  searchFor);
-        });
-        return found;
     };
 
     /**
@@ -296,7 +291,7 @@ $(document).ready(function(){
     $.fn.makeTorrentRssProviderString = function() {
         var provStrings = [];
         for (var id in torrentRssProviders) {
-            if (obj.hasOwnProperty(id)) {
+            if (torrentRssProviders.hasOwnProperty(id)) {
                 provStrings.push(torrentRssProviders[id].join('|'));
             }
         }
@@ -441,8 +436,6 @@ $(document).ready(function(){
 
 
     $('#newznab_add').click(function(){
-        var selectedProvider = $('#editANewznabProvider :selected').val();
-
         var name = $.trim($('#newznab_name').val());
         var url = $.trim($('#newznab_url').val());
         var key = $.trim($('#newznab_key').val());
@@ -474,8 +467,6 @@ $(document).ready(function(){
     });
 
     $('#torrentrss_add').click(function(){
-        var selectedProvider = $('#editATorrentRssProvider :selected').val();
-
         var name = $('#torrentrss_name').val();
         var url = $('#torrentrss_url').val();
         var cookies = $('#torrentrss_cookies').val();
@@ -483,24 +474,21 @@ $(document).ready(function(){
         var params = { name: name, url: url, cookies: cookies, titleTAG: titleTAG};
 
         // send to the form with ajax, get a return value
-        $.getJSON(srRoot + '/config/providers/canAddTorrentRssProvider', params,
-            function(data){
-                if (data.error !== undefined) {
-                    alert(data.error);
-                    return;
-                }
+        $.getJSON(srRoot + '/config/providers/canAddTorrentRssProvider', params, function(data){
+            if (data.error !== undefined) {
+                alert(data.error);
+                return;
+            }
 
-                $(this).addTorrentRssProvider(data.success, name, url, cookies, titleTAG);
-                $(this).refreshEditAProvider();
+            $(this).addTorrentRssProvider(data.success, name, url, cookies, titleTAG);
+            $(this).refreshEditAProvider();
         });
     });
 
     $('.torrentrss_delete').on('click', function(){
-        var selectedProvider = $('#editATorrentRssProvider :selected').val();
-        $(this).deleteTorrentRssProvider(selectedProvider);
+        $(this).deleteTorrentRssProvider($('#editATorrentRssProvider :selected').val());
         $(this).refreshEditAProvider();
     });
-
 
     $(this).on('change', "[class='providerDiv_tip'] input", function(){
         $('div .providerDiv ' + "[name=" + $(this).attr('name') + "]").replaceWith($(this).clone());
@@ -571,7 +559,7 @@ $(document).ready(function(){
 
     $("#provider_order_list").sortable({
         placeholder: 'ui-state-highlight',
-        update: function (event, ui) {
+        update: function () {
             $(this).refreshProviderList();
         }
     });
