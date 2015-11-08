@@ -3,37 +3,37 @@ $(document).ready(function() {
     window.console_prefix = 'Restart: '; // jshint ignore:line
     window.current_pid = ''; // jshint ignore:line
 
-    var is_alive_url = srRoot + '/home/is_alive/';
+    var isAliveUrl = srRoot + '/home/is_alive/';
 
-    var check_isAlive = setInterval(is_alive, 1000);
+    var checkIsAlive = setInterval(isAlive, 1000);
 
-    function is_alive() {
+    function isAlive() {
         // Setup error detection
         $.ajaxSetup({
-            error: ajax_error
+            error: ajaxError
         });
 
-        var jqxhr = $.get(is_alive_url, function(data) {
-            if (data.msg == 'nope') {
+        var jqxhr = $.get(isAliveUrl, function(data) {
+            if (data.msg.toLowerCase() === 'nope') {
                 // if it's still initializing then just wait and try again
-                if (console_debug) {
-                    console.log(console_prefix + 'is_alive: Sickrage is starting.');
+                if (console_debug) { // jshint ignore:line
+                    console.log(console_prefix + 'isAlive: Sickrage is starting.');
                 }
                 $('#shut_down_loading').hide();
                 $('#shut_down_success').show();
                 $('#restart_message').show();
             } else {
                 // if this is before we've even shut down then just try again later
-                if (console_debug) {
-                    console.log(console_prefix + 'is_alive: Sickrage is shutdowning.');
+                if (console_debug) { // jshint ignore:line
+                    console.log(console_prefix + 'isAlive: Sickrage is shutdowning.');
                 }
                 if (current_pid === '' || data.msg == current_pid) {
                     current_pid = data.msg;
                 // if we're ready to go then redirect to new url
                 } else {
-                    clearInterval(check_isAlive);
+                    clearInterval(checkIsAlive);
                     if (console_debug) {
-                        console.log(console_prefix + 'is_alive: Setting redirect.');
+                        console.log(console_prefix + 'isAlive: Setting redirect.');
                     }
                     $('#restart_loading').hide();
                     $('#restart_success').show();
@@ -45,20 +45,20 @@ $(document).ready(function() {
         }, 'jsonp');
 
         jqxhr.fail(function() {
-            ajax_error();
+            ajaxError();
         });
     }
 
-    function ajax_error(x, e) {
+    function ajaxError(x, e) {
         if (console_debug) {
             if (x.status === 0) {
-                console.log(console_prefix + 'is_alive: Sickrage is not responding.');
+                console.log(console_prefix + 'isAlive: Sickrage is not responding.');
             } else if (x.status == 404) {
-                console.log(console_prefix + 'is_alive: Requested URL not found.');
+                console.log(console_prefix + 'isAlive: Requested URL not found.');
             } else if (x.status == 500) {
-                console.log(console_prefix + 'is_alive: Internel Server Error.');
+                console.log(console_prefix + 'isAlive: Internel Server Error.');
             }  else {
-                console.log(console_prefix + 'is_alive: Unknow Error.\n' + x.responseText);
+                console.log(console_prefix + 'isAlive: Unknow Error.\n' + x.responseText);
             }
         }
     }
