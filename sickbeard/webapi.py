@@ -24,7 +24,6 @@ import urllib
 import datetime
 import re
 import traceback
-
 import sickbeard
 from sickrage.helper.common import dateFormat, dateTimeFormat, timeFormat
 from sickrage.helper.encoding import ek
@@ -39,7 +38,6 @@ from sickrage.show.History import History
 from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
-
 from sickbeard.versionChecker import CheckVersion
 from sickbeard import db, logger, ui, helpers
 from sickbeard import search_queue
@@ -67,7 +65,6 @@ try:
 except ImportError:
     import simplejson as json
 
-
 from tornado.web import RequestHandler
 
 indexer_ids = ["indexerid", "tvdbid"]
@@ -86,6 +83,8 @@ result_type_map = {
     RESULT_FATAL: "fatal",
     RESULT_DENIED: "denied",
 }
+
+
 # basically everything except RESULT_SUCCESS / success is bad
 
 
@@ -161,7 +160,7 @@ class ApiHandler(RequestHandler):
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception, e:  # if we fail to generate the output fake an error
             logger.log(u"API :: " + traceback.format_exc(), logger.DEBUG)
-            out = '{"result": "%s", "message": "error while composing output: %s"}' %\
+            out = '{"result": "%s", "message": "error while composing output: %s"}' % \
                   (result_type_map[RESULT_ERROR], ex(e))
         return out
 
@@ -233,7 +232,6 @@ class ApiHandler(RequestHandler):
             outDict = CMD_SickBeard(args, kwargs).run()
 
         return outDict
-
 
     def filter_params(self, cmd, args, kwargs):
         """ return only params kwargs that are for cmd
@@ -618,6 +616,7 @@ class IntParseError(Exception):
     A value could not be parsed into an int, but should be parsable to an int
     """
 
+
 # -------------------------------------------------------------------------------------#
 
 
@@ -754,7 +753,7 @@ class CMD_Episode(ApiCall):
         if helpers.tryInt(episode['airdate'], 1) > 693595: # 1900
             episode['airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(
                 network_timezones.parse_date_time(int(episode['airdate']), showObj.airs, showObj.network)),
-                                                               d_preset=dateFormat)
+                d_preset=dateFormat)
         else:
             episode['airdate'] = 'Never'
 
@@ -853,7 +852,6 @@ class CMD_EpisodeSetStatus(ApiCall):
         # convert the string status to a int
         for status in statusStrings.statusStrings:
             if str(statusStrings[status]).lower() == str(self.status).lower():
-
                 self.status = status
                 break
         else:  # if we dont break out of the for loop we got here.
@@ -2016,8 +2014,11 @@ class CMD_ShowAddExisting(ApiCall):
         if iqualityID or aqualityID:
             newQuality = Quality.combineQualities(iqualityID, aqualityID)
 
-        sickbeard.showQueueScheduler.action.addShow(int(indexer), int(self.indexerid), self.location, SKIPPED,
-                                                    newQuality, int(self.flatten_folders))
+        sickbeard.showQueueScheduler.action.addShow(
+            int(indexer), int(self.indexerid), self.location, default_status=sickbeard.STATUS_DEFAULT,
+            quality=newQuality, flatten_folders=int(self.flatten_folders), subtitles=self.subtitles,
+            default_status_after=sickbeard.STATUS_DEFAULT_AFTER, archive=self.archive_firstmatch
+        )
 
         return _responds(RESULT_SUCCESS, {"name": indexerName}, indexerName + " has been queued to be added")
 
@@ -2040,7 +2041,9 @@ class CMD_ShowAddNew(ApiCall):
             "anime": {"desc": "True to mark the show as an anime, False otherwise"},
             "scene": {"desc": "True if episodes search should be made by scene numbering, False otherwise"},
             "future_status": {"desc": "The status of future episodes"},
-            "archive_firstmatch": {"desc": "True if episodes should be archived when first match is downloaded, False otherwise"},
+            "archive_firstmatch": {
+                "desc": "True if episodes should be archived when first match is downloaded, False otherwise"
+            },
         }
     }
 
@@ -2184,10 +2187,11 @@ class CMD_ShowAddNew(ApiCall):
             else:
                 helpers.chmodAsParent(showPath)
 
-        sickbeard.showQueueScheduler.action.addShow(int(indexer), int(self.indexerid), showPath, newStatus,
-                                                    newQuality,
-                                                    int(self.flatten_folders), self.lang, self.subtitles, self.anime,
-                                                    self.scene, default_status_after=default_ep_status_after, archive=self.archive_firstmatch)  # @UndefinedVariable
+        sickbeard.showQueueScheduler.action.addShow(
+            int(indexer), int(self.indexerid), showPath, default_status=newStatus, quality=newQuality,
+            flatten_folders=int(self.flatten_folders), lang=self.lang, subtitles=self.subtitles, anime=self.anime,
+            scene=self.scene, default_status_after=default_ep_status_after, archive=self.archive_firstmatch
+        )
 
         return _responds(RESULT_SUCCESS, {"name": indexerName}, indexerName + " has been queued to be added")
 
@@ -2534,7 +2538,7 @@ class CMD_ShowSeasons(ApiCall):
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
                 row["status"] = _get_status_Strings(status)
                 row["quality"] = get_quality_string(quality)
-                if helpers.tryInt(row['airdate'], 1) > 693595: # 1900
+                if helpers.tryInt(row['airdate'], 1) > 693595:  # 1900
                     dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(
                         network_timezones.parse_date_time(row['airdate'], showObj.airs, showObj.network))
                     row['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
@@ -2561,7 +2565,7 @@ class CMD_ShowSeasons(ApiCall):
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
                 row["status"] = _get_status_Strings(status)
                 row["quality"] = get_quality_string(quality)
-                if helpers.tryInt(row['airdate'], 1) > 693595: # 1900
+                if helpers.tryInt(row['airdate'], 1) > 693595:  # 1900
                     dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(
                         network_timezones.parse_date_time(row['airdate'], showObj.airs, showObj.network))
                     row['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
@@ -2823,7 +2827,7 @@ class CMD_Shows(ApiCall):
                 "subtitles": (0, 1)[curShow.subtitles],
             }
 
-            if helpers.tryInt(curShow.nextaired, 1) > 693595: # 1900
+            if helpers.tryInt(curShow.nextaired, 1) > 693595:  # 1900
                 dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(
                     network_timezones.parse_date_time(curShow.nextaired, curShow.airs, showDict['network']))
                 showDict['next_ep_airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
@@ -2861,6 +2865,7 @@ class CMD_ShowsStats(ApiCall):
             'shows_active': stats['shows']['active'],
             'shows_total': stats['shows']['total'],
         })
+
 
 # WARNING: never define a cmd call string that contains a "_" (underscore)
 # this is reserved for cmd indexes used while cmd chaining
