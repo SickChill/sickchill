@@ -401,10 +401,11 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        persons_dict = {}
-        persons_dict['Director'] = []
-        persons_dict['GuestStar'] = []
-        persons_dict['Writer'] = []
+        persons_dict = {
+            'Director': [],
+            'GuestStar': [],
+            'Writer': []
+        }
 
         indexer_lang = ep_obj.show.lang
 
