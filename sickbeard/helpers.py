@@ -20,6 +20,7 @@
 
 
 import os
+import io
 import ctypes
 import random
 import re
@@ -948,6 +949,9 @@ def create_https_certificates(ssl_cert, ssl_key):
     :return: True on success, False on failure
     """
 
+    assert isinstance(ssl_key, unicode)
+    assert isinstance(ssl_cert, unicode)
+
     try:
         from OpenSSL import crypto  # @UnresolvedImport
         from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
@@ -970,8 +974,8 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         # pylint: disable=E1101
         # Module has no member
-        open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
-        open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        io.open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
+        io.open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except Exception:
         logger.log(u"Error creating SSL key and certificate", logger.ERROR)
         return False
@@ -1091,8 +1095,10 @@ def md5_for_file(filename, block_size=2 ** 16):
     :return MD5 hexdigest on success, or None on failure
     """
 
+    assert isinstance(filename, unicode)
+
     try:
-        with open(filename, 'rb') as f:
+        with io.open(filename, 'rb') as f:
             md5 = hashlib.md5()
             while True:
                 data = f.read(block_size)
@@ -1660,7 +1666,7 @@ def download_file(url, filename, session=None, headers=None):
                 return False
 
             try:
-                with open(filename, 'wb') as fp:
+                with io.open(filename, 'wb') as fp:
                     for chunk in resp.iter_content(chunk_size=1024):
                         if chunk:
                             fp.write(chunk)
@@ -1866,12 +1872,13 @@ def isFileLocked(checkfile, writeLockCheck=False):
     :param writeLockCheck: when true will check if the file is locked for writing (prevents move operations)
     """
 
-    checkfile = ek(os.path.abspath, checkfile)
+    checkfile = os.path.abspath(checkfile)
+    assert isinstance(checkfile, unicode)
 
     if not os.path.exists(checkfile):
         return True
     try:
-        f = open(checkfile, 'r')
+        f = io.open(checkfile, 'rb')
         f.close()
     except IOError:
         return True

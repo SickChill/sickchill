@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+import io
 import os
 import re
 import requests
@@ -25,6 +26,7 @@ from sickbeard.providers import generic
 from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import tvcache
+
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
@@ -136,7 +138,7 @@ class TorrentRssProvider(generic.TorrentProvider):
         dumpName = ek(os.path.join, sickbeard.CACHE_DIR, 'custom_torrent.html')
 
         try:
-            fileOut = open(dumpName, 'wb')
+            fileOut = io.open(dumpName, 'wb')
             fileOut.write(data)
             fileOut.close()
             helpers.chmodAsParent(dumpName)
