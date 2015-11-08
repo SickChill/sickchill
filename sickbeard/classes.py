@@ -124,7 +124,10 @@ class SearchResult:
         for extra in self.extraInfo:
             myString += "  " + extra + "\n"
 
-        myString += "Episode: " + str(self.episodes) + "\n"
+        myString += "Episodes:\n"
+        for ep in self.episodes:
+            myString += "  " + str(ep) + "\n"
+
         myString += "Quality: " + Quality.qualityStrings[self.quality] + "\n"
         myString += "Name: " + self.name + "\n"
         myString += "Size: " + str(self.size) + "\n"

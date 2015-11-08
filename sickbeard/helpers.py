@@ -1582,7 +1582,7 @@ def _setUpSession(session, headers):
     return session
 
 
-def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=None, json=False):
+def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=None, json=False, needBytes=False):
     """
     Returns a byte-string retrieved from the url provider.
     """
@@ -1635,7 +1635,7 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
         logger.log(traceback.format_exc(), logger.WARNING)
         return None
 
-    return resp.text if not json else resp.json()
+    return (resp.text, resp.content)[needBytes] if not json else resp.json()
 
 
 def download_file(url, filename, session=None, headers=None):
