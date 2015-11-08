@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # URL: http://code.google.com/p/sickbeard/
 #
 # This file is part of SickRage.
