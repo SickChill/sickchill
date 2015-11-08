@@ -84,7 +84,7 @@ class TIVOMetadata(generic.GenericMetadata):
     # Override with empty methods for unsupported features
     def retrieveShowMetadata(self, folder):
         # no show metadata generated, we abort this lookup function
-        return (None, None, None)
+        return None, None, None
 
     def create_show_metadata(self, show_obj):
         pass
@@ -224,7 +224,7 @@ class TIVOMetadata(generic.GenericMetadata):
             # after the episode's title and before the description on the Program screen.
 
             # FIXME: Hardcode isEpisode to true for now, not sure how to handle movies
-            data += ("isEpisode : true\n")
+            data += "isEpisode : true\n"
 
             # Write the synopsis of the video here
             # Micrsoft Word's smartquotes can die in a fire.
