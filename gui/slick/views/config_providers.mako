@@ -59,7 +59,7 @@ $('#config-components').tabs();
                         % if not sickbeard.USE_NZBS or not sickbeard.USE_TORRENTS:
                         <blockquote style="margin: 20px 0;">NZB/Torrent providers can be toggled in <b><a href="${srRoot}/config/search">Search Settings</a></b></blockquote>
                         % else:
-                        <br/>
+                        <br>
                         % endif
 
                         <div>
@@ -90,7 +90,7 @@ $('#config-components').tabs();
                         % endfor
                         </ul>
                         <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.getID()+':'+str(int(x.isEnabled())) for x in sickbeard.providers.sortedProviderList()])}"/>
-                        <br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+                        <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                     </fieldset>
                 </div><!-- /component-group1 //-->
 
@@ -586,7 +586,7 @@ $('#config-components').tabs();
 
                     <!-- end div for editing providers -->
 
-                    <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+                    <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
 
                     </fieldset>
                 </div><!-- /component-group2 //-->
@@ -595,7 +595,7 @@ $('#config-components').tabs();
                 <div id="core-component-group3" class="component-group">
 
                     <div class="component-group-desc">
-                        <h3>Configure Custom<br />Newznab Providers</h3>
+                        <h3>Configure Custom<br>Newznab Providers</h3>
                         <p>Add and setup or remove custom Newznab providers.</p>
                     </div>
 
@@ -732,7 +732,7 @@ $('#config-components').tabs();
             </div><!-- /component-group4 //-->
             % endif
 
-            <br/><input type="submit" class="btn config_submitter_refresh" value="Save Changes" /><br/>
+            <br><input type="submit" class="btn config_submitter_refresh" value="Save Changes" /><br>
 
             </div><!-- /config-components //-->
 

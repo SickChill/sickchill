@@ -49,7 +49,7 @@
     </thead>
 </table>
 
-<br/>
+<br>
 <input type="submit" value="Rename Selected" class="btn btn-success"> <a href="/home/displayShow?show=${show.indexerid}" class="btn btn-danger">Cancel Rename</a>
 
 <table id="testRenameTable" class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
@@ -64,7 +64,7 @@
     <thead>
         <tr class="seasonheader" id="season-${cur_ep_obj.season}">
             <td colspan="4">
-                 <br/>
+                 <br>
                 <h2>${('Season '+str(cur_ep_obj.season), 'Specials')[int(cur_ep_obj.season) == 0]}</h2>
             </td>
         </tr>
@@ -98,6 +98,6 @@ if len(epList) > 1:
     </tbody>
 
 % endfor
-</table><br />
+</table><br>
 <input type="submit" value="Rename Selected" class="btn btn-success"> <a href="/home/displayShow?show=${show.indexerid}" class="btn btn-danger">Cancel Rename</a>
 </%block>

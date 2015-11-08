@@ -19,7 +19,7 @@
                             <option value="${keyword}">${keyword}</option>
                         % endfor
                     </select>
-                    <br/>
+                    <br>
                     <input class="btn" id="removeW" value="Remove" type="button"/>
                 </div>
                 <div class="blackwhitelist pool">
@@ -31,7 +31,7 @@
                         % endif
                     % endfor
                     </select>
-                    <br/>
+                    <br>
                     <input class="btn" id="addW" value="Add to Whitelist" type="button"/>
                     <input class="btn" id="addB" value="Add to Blacklist" type="button"/>
                 </div>
@@ -42,7 +42,7 @@
                             <option value="${keyword}">${keyword}</option>
                         % endfor
                     </select>
-                    <br/>
+                    <br>
                     <input class="btn" id="removeB" value="Remove" type="button"/>
                 </div>
             </div>

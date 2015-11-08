@@ -236,7 +236,7 @@
                                 <span class="component-desc">See <a href="https://github.com/SiCKRAGETV/sickrage-issues/wiki/Post-Processing#extra-scripts"><font color='red'><b>Wiki</b></font></a> for script arguments description and usage.</span>
                             </label>
                         </div>
-                        <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+                        <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                     </fieldset>
                 </div><!-- /component-group1 //-->
                 <div id="core-component-group2" class="component-group">
@@ -416,7 +416,7 @@
                                         </tr>
                                     </tbody>
                                   </table>
-                                  <br/>
+                                  <br>
                             </div>
                         </div>
 
@@ -438,7 +438,7 @@
                             <div class="example">
                                 <span class="jumbo" id="naming_example">&nbsp;</span>
                             </div>
-                            <br/>
+                            <br>
                         </div>
 
                         <div id="naming_example_multi_div">
@@ -446,7 +446,7 @@
                             <div class="example">
                                 <span class="jumbo" id="naming_example_multi">&nbsp;</span>
                             </div>
-                            <br/>
+                            <br>
                         </div>
 
                         <div class="field-pair">
@@ -624,7 +624,7 @@
                                             </tr>
                                         </tbody>
                                       </table>
-                                      <br/>
+                                      <br>
                                 </div>
                             </div><!-- /naming_abd_custom -->
 
@@ -633,7 +633,7 @@
                                 <div class="example">
                                     <span class="jumbo" id="naming_abd_example">&nbsp;</span>
                                 </div>
-                                <br/>
+                                <br>
                             </div>
 
                         </div><!-- /naming_abd_different -->
@@ -801,7 +801,7 @@
                                             </tr>
                                         </tbody>
                                       </table>
-                                      <br/>
+                                      <br>
                                 </div>
                             </div><!-- /naming_sports_custom -->
 
@@ -810,7 +810,7 @@
                                 <div class="example">
                                     <span class="jumbo" id="naming_sports_example">&nbsp;</span>
                                 </div>
-                                <br/>
+                                <br>
                             </div>
 
                         </div><!-- /naming_sports_different -->
@@ -974,7 +974,7 @@
                                             </tr>
                                         </tbody>
                                       </table>
-                                      <br/>
+                                      <br>
                                 </div>
                             </div><!-- /naming_anime_custom -->
 
@@ -996,7 +996,7 @@
                                 <div class="example">
                                     <span class="jumbo" id="naming_example_anime">&nbsp;</span>
                                 </div>
-                                <br/>
+                                <br>
                             </div>
 
                             <div id="naming_example_multi_anime_div">
@@ -1004,7 +1004,7 @@
                                 <div class="example">
                                     <span class="jumbo" id="naming_example_multi_anime">&nbsp;</span>
                                 </div>
-                                <br/>
+                                <br>
                             </div>
 
                             <div class="field-pair">
@@ -1046,7 +1046,7 @@
                         </div><!-- /naming_anime_different -->
 
                         <div></div>
-                        <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+                        <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
 
                     </fieldset>
                 </div><!-- /component-group2 //-->
@@ -1112,13 +1112,13 @@
                         </div>
                         % endfor
 
-                        <div class="clearfix"></div><br/>
+                        <div class="clearfix"></div><br>
 
-                        <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+                        <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                     </fieldset>
                 </div><!-- /component-group3 //-->
 
-                <br/>
+                <br>
                 <h6 class="pull-right"><b>All non-absolute folder locations are relative to <span class="path">${sickbeard.DATA_DIR}</span></b> </h6>
                 <input type="submit" class="btn pull-left config_submitter button" value="Save Changes" />
 

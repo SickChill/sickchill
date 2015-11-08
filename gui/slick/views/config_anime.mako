@@ -90,7 +90,7 @@
                    </fieldset>
                 </div><!-- /component-group //-->
 
-                <br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+                <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
 
             </div><!-- /config-components //-->
 

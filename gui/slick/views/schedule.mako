@@ -196,7 +196,7 @@
     show_div = 'ep_listing listing-default'
 %>
 % if 'show' == sort:
-    <br /><br />
+    <br><br>
 % endif
 
 % for cur_result in results:
@@ -238,17 +238,17 @@
     % elif 'date' == sort:
         % if cur_segment != cur_ep_airdate:
             % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
-                <br /><h2 class="day">Missed</h2>
+                <br><h2 class="day">Missed</h2>
                 <% missed_header = True %>
             % elif cur_ep_airdate >= next_week.date() and not too_late_header:
-                <br /><h2 class="day">Later</h2>
+                <br><h2 class="day">Later</h2>
                 <% too_late_header = True %>
             % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
                 % if cur_ep_airdate == today.date():
-                    <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}<span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
+                    <br><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}<span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
                     <% today_header = True %>
                 % else:
-                    <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
+                    <br><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
                 % endif
             % endif
             <% cur_segment = cur_ep_airdate %>
@@ -256,7 +256,7 @@
 
         % if cur_ep_airdate == today.date() and not today_header:
             <div>
-            <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
+            <br><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
             <% today_header = True %>
         % endif
 
