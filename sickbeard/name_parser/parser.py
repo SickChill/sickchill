@@ -483,7 +483,7 @@ class ParseResult(object):
                  score=None,
                  quality=None,
                  version=None
-                ):
+                 ):
 
         self.original_name = original_name
 
