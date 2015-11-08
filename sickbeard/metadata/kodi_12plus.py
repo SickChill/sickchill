@@ -321,7 +321,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 rating.text = myEp['rating']
 
             if getattr(myEp, 'gueststars', None) and isinstance(myEp['gueststars'], basestring):
-                for actor in (x.strip() for x in  myEp['gueststars'].split('|') if x.strip()):
+                for actor in (x.strip() for x in myEp['gueststars'].split('|') if x.strip()):
                     cur_actor = etree.SubElement(episode, "actor")
                     cur_actor_name = etree.SubElement(cur_actor, "name")
                     cur_actor_name.text = actor
