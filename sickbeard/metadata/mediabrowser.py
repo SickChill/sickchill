@@ -100,7 +100,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
     # Override with empty methods for unsupported features
     def retrieveShowMetadata(self, folder):
         # while show metadata is generated, it is not supported for our lookup
-        return (None, None, None)
+        return None, None, None
 
     def create_season_all_poster(self, show_obj):
         pass
