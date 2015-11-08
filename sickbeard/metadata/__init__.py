@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -16,14 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-__all__ = ['generic', 'helpers', 'kodi', 'kodi_12plus', 'mediabrowser', 'ps3', 'wdtv', 'tivo', 'mede8er']
-
 import sys
 from sickbeard.metadata import kodi, kodi_12plus, mediabrowser, ps3, wdtv, tivo, mede8er, generic, helpers
+
+__all__ = ['generic', 'helpers', 'kodi', 'kodi_12plus', 'mediabrowser', 'ps3', 'wdtv', 'tivo', 'mede8er']
 
 
 def available_generators():
     return [x for x in __all__ if x not in ['generic', 'helpers']]
+
 
 def _getMetadataModule(name):
     name = name.lower()
