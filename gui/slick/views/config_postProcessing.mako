@@ -23,10 +23,8 @@
     <h1 class="title">${title}</h1>
 % endif
 <div id="config">
-<div id="config-content">
-
-<form id="configForm" action="savePostProcessing" method="post">
-
+    <div id="config-content">
+        <form id="configForm" action="savePostProcessing" method="post">
             <div id="config-components">
                 <ul>
                     <li><a href="#core-component-group1">Post-Processing</a></li>
@@ -247,7 +245,6 @@
                     </div>
 
                     <fieldset class="component-group-list">
-
                         <div class="field-pair">
                             <label class="nocheck" for="name_presets">
                                 <span class="component-title">Name Pattern:</span>
@@ -1121,10 +1118,8 @@
                 <br>
                 <h6 class="pull-right"><b>All non-absolute folder locations are relative to <span class="path">${sickbeard.DATA_DIR}</span></b> </h6>
                 <input type="submit" class="btn pull-left config_submitter button" value="Save Changes" />
-
         </form>
     </div>
 </div>
-
 <div class="clearfix"></div>
 </%block>
