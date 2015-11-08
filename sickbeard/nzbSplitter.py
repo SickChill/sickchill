@@ -128,7 +128,7 @@ def splitResult(result):
     :param result: search result object
     :return: False upon failure, a list of episode objects otherwise
     """
-    urlData = helpers.getURL(result.url, session=requests.Session())
+    urlData = helpers.getURL(result.url, session=requests.Session(), needBytes=True)
     if urlData is None:
         logger.log(u"Unable to load url " + result.url + ", can't download season NZB", logger.ERROR)
         return False
