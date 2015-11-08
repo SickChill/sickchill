@@ -316,7 +316,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                 if getattr(myShow, '_actors', None) or getattr(myEp, 'gueststars', None):
                     cast = etree.SubElement(episode, "cast")
                     if getattr(myEp, 'gueststars', None) and isinstance(myEp['gueststars'], basestring):
-                        for actor in (x.strip() for x in  myEp['gueststars'].split('|') if x.strip()):
+                        for actor in (x.strip() for x in myEp['gueststars'].split('|') if x.strip()):
                             cur_actor = etree.SubElement(cast, "actor")
                             cur_actor.text = actor
 
