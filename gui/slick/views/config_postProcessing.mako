@@ -47,7 +47,7 @@
                             </label>
                             <label class="nocheck" for="process_automatically">
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><b>NOTE:</b> Do not use if you use an external PostProcesing script</span>
+                                <span class="component-desc"><b>NOTE:</b> Do not use if you use an external PostProcessing script</span>
                             </label>
                         </div>
                         <div class="field-pair">
@@ -280,7 +280,7 @@
                                 </label>
                                 <label class="nocheck">
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc"><b>NOTE:</b> Don't forget to add quality pattern. Otherwise after post-procesing the episode will have UNKNOWN quality</span>
+                                    <span class="component-desc"><b>NOTE:</b> Don't forget to add quality pattern. Otherwise after post-processing the episode will have UNKNOWN quality</span>
                                  </label>
                             </div>
 
