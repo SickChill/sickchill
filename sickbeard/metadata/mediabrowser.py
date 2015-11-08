@@ -272,7 +272,6 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             indexerid = etree.SubElement(tv_node, "id")
             indexerid.text = str(myShow['id'])
 
-
         if getattr(myShow, 'seriesname', None):
             SeriesName = etree.SubElement(tv_node, "SeriesName")
             SeriesName.text = myShow['seriesname']
