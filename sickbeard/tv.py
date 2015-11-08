@@ -1142,10 +1142,10 @@ class TVShow(object):
     def saveToDB(self, forceSave=False):
 
         if not self.dirty and not forceSave:
-            logger.log(str(self.indexerid) + ": Not saving show to db - record is not dirty", logger.DEBUG)
+            # logger.log(str(self.indexerid) + ": Not saving show to db - record is not dirty", logger.DEBUG)
             return
 
-        logger.log(str(self.indexerid) + u": Saving show info to database", logger.DEBUG)
+        logger.log(u"%i: Saving to database: %s" % (self.indexerid, self.name), logger.DEBUG)
 
         controlValueDict = {"indexer_id": self.indexerid}
         newValueDict = {"indexer": self.indexer,
@@ -1949,12 +1949,8 @@ class TVEpisode(object):
         """
 
         if not self.dirty and not forceSave:
-            logger.log(str(self.show.indexerid) + u": Not saving episode to db - record is not dirty", logger.DEBUG)
+            # logger.log(str(self.show.indexerid) + u": Not saving episode to db - record is not dirty", logger.DEBUG)
             return
-
-        logger.log(str(self.show.indexerid) + u": Saving episode details to database", logger.DEBUG)
-
-        logger.log(u"STATUS IS " + str(self.status), logger.DEBUG)
 
         newValueDict = {"indexerid": self.indexerid,
                         "indexer": self.indexer,
@@ -1978,6 +1974,9 @@ class TVEpisode(object):
         controlValueDict = {"showid": self.show.indexerid,
                             "season": self.season,
                             "episode": self.episode}
+
+        # logger.log(u"%s: Saving episode details to database %rx%r: %s" %
+        #            (self.show.indexerid, self.season, self.episode, statusStrings[self.status]), logger.DEBUG)
 
         # use a custom update/insert method to get the data into the DB
         myDB = db.DBConnection()
