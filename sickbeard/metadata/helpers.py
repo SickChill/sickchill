@@ -22,11 +22,11 @@ import requests
 
 meta_session = requests.Session()
 def getShowImage(url, imgNum=None):
-    if url == None:
+    if url is None:
         return None
 
     # if they provided a fanart number try to use it instead
-    if imgNum != None:
+    if imgNum is not None:
         tempURL = url.split('-')[0] + "-" + str(imgNum) + ".jpg"
     else:
         tempURL = url
