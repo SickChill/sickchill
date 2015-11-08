@@ -30,7 +30,7 @@
 <div class="h2footer pull-right">
     <span class="listing-key wanted">Wanted: <b>${totalWanted}</b></span>
     <span class="listing-key qual">Low Quality: <b>${totalQual}</b></span>
-</div><br/>
+</div><br>
 
 <div class="float-left">
 Jump to Show
@@ -51,7 +51,7 @@ Jump to Show
     % endif
     <tr class="seasonheader" id="show-${curShow.indexerid}">
         <td colspan="3" class="align-left">
-            <br/><h2><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></h2>
+            <br><h2><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></h2>
             <div class="pull-right">
                 <span class="listing-key wanted">Wanted: <b>${showCounts[curShow.indexerid][Overview.WANTED]}</b></span>
                 <span class="listing-key qual">Low Quality: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>

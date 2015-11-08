@@ -35,7 +35,7 @@
       <th class="nowrap" width="75%" style="text-align: left;">Release</th>
       <th width="10%">Size</th>
       <th width="14%">Provider</th>
-      <th width="1%">Remove<br />
+      <th width="1%">Remove<br>
           <input type="checkbox" class="bulkCheck" id="removeCheck" />
       </th>
     </tr>

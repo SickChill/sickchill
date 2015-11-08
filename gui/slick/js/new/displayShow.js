@@ -259,7 +259,7 @@ $(document).ready(function(){
         widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
         widgetOptions : {
             columnSelector_saveColumns: true, // jshint ignore:line
-            columnSelector_layout : '<br/><label><input type="checkbox">{name}</label>', // jshint ignore:line
+            columnSelector_layout : '<br><label><input type="checkbox">{name}</label>', // jshint ignore:line
             columnSelector_mediaquery: false, // jshint ignore:line
             columnSelector_cssChecked : 'checked' // jshint ignore:line
         }

@@ -20,7 +20,7 @@
 
 % if whichStatus:
 <h2>None of your episodes have status ${common.statusStrings[int(whichStatus)]}</h2>
-<br />
+<br>
 % endif
 
 <form action="${srRoot}/manage/episodeStatuses" method="get">
@@ -41,7 +41,7 @@ Manage episodes with status <select name="whichStatus" class="form-control form-
 
 <h2>Shows containing ${common.statusStrings[int(whichStatus)]} episodes</h2>
 
-<br />
+<br>
 
 <%
     if int(whichStatus) in [common.IGNORED, common.SNATCHED] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED:
@@ -77,7 +77,7 @@ Set checked shows/episodes to <select name="newStatus" class="form-control form-
     <button type="button" class="btn btn-xs selectAllShows">Select all</a></button>
     <button type="button" class="btn btn-xs unselectAllShows">Clear all</a></button>
 </div>
-<br />
+<br>
 
 <table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
     % for cur_indexer_id in sorted_show_ids:

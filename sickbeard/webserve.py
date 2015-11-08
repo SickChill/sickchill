@@ -177,8 +177,8 @@ class BaseHandler(RequestHandler):
 
         elif self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
-            trace_info = ''.join(["%s<br/>" % line for line in traceback.format_exception(*exc_info)])
-            request_info = ''.join(["<strong>%s</strong>: %s<br/>" % (k, self.request.__dict__[k]) for k in
+            trace_info = ''.join(["%s<br>" % line for line in traceback.format_exception(*exc_info)])
+            request_info = ''.join(["<strong>%s</strong>: %s<br>" % (k, self.request.__dict__[k]) for k in
                                     self.request.__dict__.keys()])
             error = exc_info[1]
 
@@ -874,7 +874,7 @@ class Home(WebRoot):
                 finalResult += "Test KODI notice sent successfully to " + urllib.unquote_plus(curHost)
             else:
                 finalResult += "Test KODI notice failed to " + urllib.unquote_plus(curHost)
-            finalResult += "<br />\n"
+            finalResult += "<br>\n"
 
         return finalResult
 
@@ -891,7 +891,7 @@ class Home(WebRoot):
                 finalResult += 'Successful test notice sent to Plex client ... ' + urllib.unquote_plus(curHost)
             else:
                 finalResult += 'Test failed for Plex client ... ' + urllib.unquote_plus(curHost)
-            finalResult += '<br />' + '\n'
+            finalResult += '<br>' + '\n'
 
         ui.notifications.message('Tested Plex client(s): ', urllib.unquote_plus(host.replace(',', ', ')))
 
@@ -912,7 +912,7 @@ class Home(WebRoot):
             finalResult += 'Test failed, No Plex Media Server host specified'
         else:
             finalResult += 'Test failed for Plex server(s) ... ' + urllib.unquote_plus(curResult.replace(',', ', '))
-        finalResult += '<br />' + '\n'
+        finalResult += '<br>' + '\n'
 
         ui.notifications.message('Tested Plex Media Server host(s): ', urllib.unquote_plus(host.replace(',', ', ')))
 
@@ -1309,7 +1309,7 @@ class Home(WebRoot):
             if season == -1:
                 season = "*"
             out.append("S" + str(season) + ": " + ", ".join(names))
-        return "<br/>".join(out)
+        return "<br>".join(out)
 
     def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], exceptions_list=[],
                  flatten_folders=None, paused=None, directCall=False, air_by_date=None, sports=None, dvdorder=None,
@@ -1748,7 +1748,7 @@ class Home(WebRoot):
                 myDB.mass_action(sql_l)
 
         if int(status) == WANTED and not showObj.paused:
-            msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"
+            msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br>"
             msg += '<ul>'
 
             for season, segment in segments.iteritems():
@@ -1767,7 +1767,7 @@ class Home(WebRoot):
             logger.log(u"Some episodes were set to wanted, but " + showObj.name + " is paused. Not adding to Backlog until show is unpaused")
 
         if int(status) == FAILED:
-            msg = "Retrying Search was automatically started for the following season of <b>" + showObj.name + "</b>:<br />"
+            msg = "Retrying Search was automatically started for the following season of <b>" + showObj.name + "</b>:<br>"
             msg += '<ul>'
 
             for season, segment in segments.iteritems():
@@ -2200,7 +2200,7 @@ class HomePostProcess(Home):
             if quiet is not None and int(quiet) == 1:
                 return result
 
-            result = result.replace("\n", "<br />\n")
+            result = result.replace("\n", "<br>\n")
             return self._genericMessage("Postprocessing results", result)
 
 
@@ -3349,22 +3349,22 @@ class Manage(Home, WebRoot):
         messageDetail = ""
 
         if updates:
-            messageDetail += "<br /><b>Updates</b><br /><ul><li>"
+            messageDetail += "<br><b>Updates</b><br><ul><li>"
             messageDetail += "</li><li>".join(updates)
             messageDetail += "</li></ul>"
 
         if refreshes:
-            messageDetail += "<br /><b>Refreshes</b><br /><ul><li>"
+            messageDetail += "<br><b>Refreshes</b><br><ul><li>"
             messageDetail += "</li><li>".join(refreshes)
             messageDetail += "</li></ul>"
 
         if renames:
-            messageDetail += "<br /><b>Renames</b><br /><ul><li>"
+            messageDetail += "<br><b>Renames</b><br><ul><li>"
             messageDetail += "</li><li>".join(renames)
             messageDetail += "</li></ul>"
 
         if subtitles:
-            messageDetail += "<br /><b>Subtitles</b><br /><ul><li>"
+            messageDetail += "<br><b>Subtitles</b><br><ul><li>"
             messageDetail += "</li><li>".join(subtitles)
             messageDetail += "</li></ul>"
 
@@ -3393,7 +3393,7 @@ class Manage(Home, WebRoot):
             if helpers.check_url(webui_url + 'download/'):
                 webui_url += 'download/'
             else:
-                info_download_station = '<p>To have a better experience please set the Download Station alias as <code>download</code>, you can check this setting in the Synology DSM <b>Control Panel</b> > <b>Application Portal</b>. Make sure you allow DSM to be embedded with iFrames too in <b>Control Panel</b> > <b>DSM Settings</b> > <b>Security</b>.</p><br/><p>There is more information about this available <a href="https://github.com/midgetspy/Sick-Beard/pull/338">here</a>.</p><br/>'
+                info_download_station = '<p>To have a better experience please set the Download Station alias as <code>download</code>, you can check this setting in the Synology DSM <b>Control Panel</b> > <b>Application Portal</b>. Make sure you allow DSM to be embedded with iFrames too in <b>Control Panel</b> > <b>DSM Settings</b> > <b>Security</b>.</p><br><p>There is more information about this available <a href="https://github.com/midgetspy/Sick-Beard/pull/338">here</a>.</p><br>'
 
         if not sickbeard.TORRENT_PASSWORD == "" and not sickbeard.TORRENT_USERNAME == "":
             webui_url = re.sub('://', '://' + str(sickbeard.TORRENT_USERNAME) + ':' + str(sickbeard.TORRENT_PASSWORD) + '@', webui_url)
@@ -3737,7 +3737,7 @@ class ConfigGeneral(Config):
             for x in results:
                 logger.log(x, logger.ERROR)
             ui.notifications.error('Error(s) Saving Configuration',
-                                   '<br />\n'.join(results))
+                                   '<br>\n'.join(results))
         else:
             ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
@@ -3779,7 +3779,7 @@ class ConfigBackupRestore(Config):
         else:
             finalResult += "You need to choose a folder to save your backup to!"
 
-        finalResult += "<br />\n"
+        finalResult += "<br>\n"
 
         return finalResult
 
@@ -3800,7 +3800,7 @@ class ConfigBackupRestore(Config):
         else:
             finalResult += "You need to select a backup file to restore!"
 
-        finalResult += "<br />\n"
+        finalResult += "<br>\n"
 
         return finalResult
 
@@ -3900,7 +3900,7 @@ class ConfigSearch(Config):
             for x in results:
                 logger.log(x, logger.ERROR)
             ui.notifications.error('Error(s) Saving Configuration',
-                                   '<br />\n'.join(results))
+                                   '<br>\n'.join(results))
         else:
             ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
@@ -4027,7 +4027,7 @@ class ConfigPostProcessing(Config):
             for x in results:
                 logger.log(x, logger.WARNING)
             ui.notifications.error('Error(s) Saving Configuration',
-                                   '<br />\n'.join(results))
+                                   '<br>\n'.join(results))
         else:
             ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
@@ -4579,7 +4579,7 @@ class ConfigProviders(Config):
             for x in results:
                 logger.log(x, logger.ERROR)
             ui.notifications.error('Error(s) Saving Configuration',
-                                   '<br />\n'.join(results))
+                                   '<br>\n'.join(results))
         else:
             ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
@@ -4811,7 +4811,7 @@ class ConfigNotifications(Config):
             for x in results:
                 logger.log(x, logger.ERROR)
             ui.notifications.error('Error(s) Saving Configuration',
-                                   '<br />\n'.join(results))
+                                   '<br>\n'.join(results))
         else:
             ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
@@ -4871,7 +4871,7 @@ class ConfigSubtitles(Config):
             for x in results:
                 logger.log(x, logger.ERROR)
             ui.notifications.error('Error(s) Saving Configuration',
-                                   '<br />\n'.join(results))
+                                   '<br>\n'.join(results))
         else:
             ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 
@@ -4906,7 +4906,7 @@ class ConfigAnime(Config):
             for x in results:
                 logger.log(x, logger.ERROR)
             ui.notifications.error('Error(s) Saving Configuration',
-                                   '<br />\n'.join(results))
+                                   '<br>\n'.join(results))
         else:
             ui.notifications.message('Configuration Saved', ek(os.path.join, sickbeard.CONFIG_FILE))
 

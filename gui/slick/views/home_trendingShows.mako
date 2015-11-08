@@ -50,7 +50,7 @@
     </select>
 </div>
 
-<br />
+<br>
 <div id="trendingShows"></div>
-<br />
+<br>
 </%block>

@@ -227,7 +227,7 @@
                                             <span class="component-desc">
                                                 <input type="text" name="plex_server_host" id="plex_server_host" value="${re.sub(r'\b,\b', ', ', sickbeard.PLEX_SERVER_HOST)}" class="form-control input-sm input350" />
                                                 <div class="clear-left">
-                                                    <p>one or more hosts running Plex Media Server<br />(eg. 192.168.1.1:32400, 192.168.1.2:32400)</p>
+                                                    <p>one or more hosts running Plex Media Server<br>(eg. 192.168.1.1:32400, 192.168.1.2:32400)</p>
                                                 </div>
                                             </span>
                                         </label>
@@ -295,7 +295,7 @@
                                     <span class="component-desc">
                                         <input type="text" name="plex_host" id="plex_host" value="${sickbeard.PLEX_HOST}" class="form-control input-sm input350" />
                                         <div class="clear-left">
-                                            <p>one or more hosts running Plex client<br />(eg. 192.168.1.100:3000, 192.168.1.101:3000)</p>
+                                            <p>one or more hosts running Plex client<br>(eg. 192.168.1.100:3000, 192.168.1.101:3000)</p>
                                         </div>
                                     </span>
                                 </label>
@@ -1495,7 +1495,7 @@
                                     <span class="component-title">Step One</span>
                                 </label>
                                 <label>
-                                    <span style="font-size: 11px;">Click the "Request Authorization" button.<br/> This will open a new page containing an auth key.<br/> <b>Note:</b> if nothing happens check your popup blocker.<br/></span>
+                                    <span style="font-size: 11px;">Click the "Request Authorization" button.<br> This will open a new page containing an auth key.<br> <b>Note:</b> if nothing happens check your popup blocker.<br></span>
                                     <input class="btn" type="button" value="Request Authorization" id="twitterStep1" />
                                 </label>
                             </div>
@@ -1504,7 +1504,7 @@
                                     <span class="component-title">Step Two</span>
                                 </label>
                                 <label>
-                                    <span style="font-size: 11px;">Enter the key Twitter gave you below, and click "Verify Key".<br/><br/></span>
+                                    <span style="font-size: 11px;">Enter the key Twitter gave you below, and click "Verify Key".<br><br></span>
                                     <input type="text" id="twitter_key" value="" class="form-control input-sm input350" />
                                     <input class="btn btn-inline" type="button" value="Verify Key" id="twitterStep2" />
                                 </label>
@@ -1831,7 +1831,7 @@
             </div><!-- /config-components //-->
         </form>
 
-        <br/><input type="submit" class="config_submitter btn" value="Save Changes" /><br/>
+        <br><input type="submit" class="config_submitter btn" value="Save Changes" /><br>
 
     </div>
 </div>

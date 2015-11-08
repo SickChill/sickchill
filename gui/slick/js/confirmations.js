@@ -47,7 +47,7 @@ $(document).ready(function () {
         var showname = document.getElementById("showtitle").getAttribute('data-showname');
         $.confirm({
             'title'		: 'Remove Show',
-            'message'	: 'Are you sure you want to remove <span class="footerhighlight">' + showname + '</span> from the database ?<br /><br /><input type="checkbox" id="deleteFiles"> <span class="red-text">Check to delete files as well. IRREVERSIBLE</span></input>',
+            'message'	: 'Are you sure you want to remove <span class="footerhighlight">' + showname + '</span> from the database ?<br><br><input type="checkbox" id="deleteFiles"> <span class="red-text">Check to delete files as well. IRREVERSIBLE</span></input>',
             'buttons'	: {
                 'Yes'	: {
                     'class'	: 'green',
@@ -111,7 +111,7 @@ $(document).ready(function () {
         var target = $(this).attr('href');
         $.confirm({
             'title'		: 'Submit Errors',
-            'message'	: 'Are you sure you want to submit these errors ?<br /><br /><span class="red-text">Make sure SickRage is updated and trigger<br /> this error with debug enabled before submitting</span>',
+            'message'	: 'Are you sure you want to submit these errors ?<br><br><span class="red-text">Make sure SickRage is updated and trigger<br> this error with debug enabled before submitting</span>',
             'buttons'	: {
                 'Yes'	: {
                     'class' : 'green',

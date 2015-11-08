@@ -6,7 +6,7 @@
 %>
 <%block name="content">
 <h2>Popular Shows</h2>
-<br />
+<br>
 
 % if not popular_shows:
     <h3>Fetching of IMDB Data failed. Are you online?</h3>

@@ -154,7 +154,7 @@ $(document).ready(function(){
             } else if ('rtorrent' == selectedProvider){
                 client = 'rTorrent';
                 $(torrent_paused_option).hide();
-                $('#host_desc_torrent').text('URL to your rTorrent client (e.g. scgi://localhost:5000 <br/> or https://localhost/rutorrent/plugins/httprpc/action.php)');
+                $('#host_desc_torrent').text('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or https://localhost/rutorrent/plugins/httprpc/action.php)');
                 $(torrent_verify_cert_option).show();
                 $(torrent_verify_deluge).hide();
                 $(torrent_verify_rtorrent).show();

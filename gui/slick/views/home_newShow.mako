@@ -27,7 +27,7 @@
     <div id="core-component-group1" class="tab-pane active component-group">
 
     <div id="displayText">aoeu</div>
-    <br />
+    <br>
 
     <form id="addShowForm" method="post" action="${srRoot}/home/addShows/addNewShow" accept-charset="utf-8">
 
@@ -60,10 +60,10 @@
                 &nbsp;
                 <input class="btn btn-inline" type="button" id="searchName" value="Search" />
 
-                <br /><br />
-                <b>*</b> This will only affect the language of the retrieved metadata file contents and episode filenames.<br />
-                This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!<br /><br />
-                <div id="searchResults" style="height: 100%;"><br/></div>
+                <br><br>
+                <b>*</b> This will only affect the language of the retrieved metadata file contents and episode filenames.<br>
+                This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!<br><br>
+                <div id="searchResults" style="height: 100%;"><br></div>
             % endif
 
         </div>
@@ -74,8 +74,8 @@
 
         <div class="stepDiv">
             % if provided_show_dir:
-                Pre-chosen Destination Folder: <b>${provided_show_dir}</b> <br />
-                <input type="hidden" id="fullShowPath" name="fullShowPath" value="${provided_show_dir}" /><br />
+                Pre-chosen Destination Folder: <b>${provided_show_dir}</b> <br>
+                <input type="hidden" id="fullShowPath" name="fullShowPath" value="${provided_show_dir}" /><br>
             % else:
                 <%include file="/inc_rootDirs.mako"/>
             % endif
@@ -95,7 +95,7 @@
     <input type="hidden" name="skipShow" id="skipShow" value="" />
     </form>
 
-<br />
+<br>
 
 <div style="width: 100%; text-align: center;">
 <input class="btn" type="button" id="addShowButton" value="Add Show" disabled="disabled" />

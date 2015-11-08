@@ -105,7 +105,7 @@
                                 <span class="component-title">Ignore words</span>
                                 <span class="component-desc">
                                     <input type="text" name="ignore_words" value="${sickbeard.IGNORE_WORDS}" class="form-control input-sm input350" />
-                                    <div class="clear-left">results with one or more word from this list will be ignored<br />
+                                    <div class="clear-left">results with one or more word from this list will be ignored<br>
                                     separate words with a comma, e.g. "word1,word2,word3"
                                     </div>
                                 </span>
@@ -117,7 +117,7 @@
                                 <span class="component-title">Require words</span>
                                 <span class="component-desc">
                                     <input type="text" name="require_words" value="${sickbeard.REQUIRE_WORDS}" class="form-control input-sm input350" />
-                                    <div class="clear-left">results with no word from this list will be ignored<br />
+                                    <div class="clear-left">results with no word from this list will be ignored<br>
                                     separate words with a comma, e.g. "word1,word2,word3"
                                     </div>
                                 </span>
@@ -129,8 +129,8 @@
                                 <span class="component-title">Ignore language names in subbed results</span>
                                 <span class="component-desc">
                                     <input type="text" name="ignored_subs_list" value="${sickbeard.IGNORED_SUBS_LIST}" class="form-control input-sm input350" />
-                                    <div class="clear-left">Ignore subbed releases based on language names <br />
-                                    Example: "dk" will ignore words: dksub, dksubs, dksubbed, dksubed <br />
+                                    <div class="clear-left">Ignore subbed releases based on language names <br>
+                                    Example: "dk" will ignore words: dksub, dksubs, dksubbed, dksubed <br>
                                     separate languages with a comma, e.g. "lang1,lang2,lang3
                                     </div>
                                 </span>
@@ -420,7 +420,7 @@
 
                         <div class="testNotification" id="testSABnzbd_result">Click below to test</div>
                         <input class="btn" type="button" value="Test SABnzbd" id="testSABnzbd" class="btn test-button"/>
-                        <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+                        <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
 
                         </div><!-- /content_use_nzbs //-->
 
@@ -472,7 +472,7 @@
                             </div>
 
                             <div></div>
-                            <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+                            <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                             </div>
                         </div>
 
@@ -613,13 +613,13 @@
 
                             <div class="testNotification" id="test_torrent_result">Click below to test</div>
                             <input class="btn" type="button" value="Test Connection" id="test_torrent" class="btn test-button"/>
-                            <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+                            <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                             </div>
                     </div><!-- /content_use_torrents //-->
                     </fieldset>
                 </div><!-- /component-group3 //-->
 
-                <br/>
+                <br>
                 <h6 class="pull-right"><b>All non-absolute folder locations are relative to <span class="path">${sickbeard.DATA_DIR}</span></b> </h6>
                 <input type="submit" class="btn pull-left config_submitter button" value="Save Changes" />
 

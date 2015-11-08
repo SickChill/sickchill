@@ -22,7 +22,7 @@
 
 % if whichSubs:
 <h2>All of your episodes have ${subsLanguage} subtitles.</h2>
-<br />
+<br>
 % endif
 
 <form action="${srRoot}/manage/subtitleMissed" method="get">
@@ -42,13 +42,13 @@ subtitles
 
 <form action="${srRoot}/manage/downloadSubtitleMissed" method="post">
 <h2>Episodes without ${subsLanguage} subtitles.</h2>
-<br />
+<br>
 Download missed subtitles for selected episodes <input class="btn btn-inline" type="submit" value="Go" />
 <div>
     <button type="button" class="btn btn-xs selectAllShows">Select all</a></button>
     <button type="button" class="btn btn-xs unselectAllShows">Clear all</a></button>
 </div>
-<br />
+<br>
 <table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
 % for cur_indexer_id in sorted_show_ids:
  <tr id="${cur_indexer_id}">

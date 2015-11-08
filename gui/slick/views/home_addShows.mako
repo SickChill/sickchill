@@ -20,7 +20,7 @@
         </div>
     </a>
 
-    <br/><br/>
+    <br><br>
     % if sickbeard.USE_TRAKT == True:
     <a href="${srRoot}/home/addShows/trendingShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addtrendingshow"></div></div>
@@ -30,7 +30,7 @@
         </div>
     </a>
 
-    <br/><br/>
+    <br><br>
 
     <a href="${srRoot}/home/addShows/recommendedShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addrecommendedshow"></div></div>
@@ -40,7 +40,7 @@
         </div>
     </a>
 
-    <br/><br/>
+    <br><br>
     % endif
 
     <a href="${srRoot}/home/addShows/popularShows/" id="btnNewShow" class="btn btn-large">
@@ -51,7 +51,7 @@
         </div>
     </a>
 
-    <br/><br/>
+    <br><br>
 
     <a href="${srRoot}/home/addShows/existingShows/" id="btnExistingShow" class="btn btn-large">
         <div class="button"><div class="icon-addexistingshow"></div></div>

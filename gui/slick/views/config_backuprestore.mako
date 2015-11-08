@@ -45,12 +45,12 @@
                         <div class="field-pair">
                             Select the folder you wish to save your backup file to:
 
-                            <br/><br/>
+                            <br><br>
 
                             <input type="text" name="backupDir" id="backupDir" class="form-control input-sm input350" />
                             <input class="btn btn-inline" type="button" value="Backup" id="Backup" />
 
-                            <br/>
+                            <br>
 
                         </div>
                         <div class="Backup" id="Backup-result"></div>
@@ -68,12 +68,12 @@
                         <div class="field-pair">
                             Select the backup file you wish to restore:
 
-                            <br/><br/>
+                            <br><br>
 
                             <input type="text" name="backupFile" id="backupFile" class="form-control input-sm input350" />
                             <input class="btn btn-inline" type="button" value="Restore" id="Restore" />
 
-                            <br/>
+                            <br>
 
                         </div>
                         <div class="Restore" id="Restore-result"></div>
