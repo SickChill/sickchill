@@ -2107,11 +2107,6 @@ class TVEpisode(object):
         else:
             show_name = self.show.name
 
-        # try to get the release encoder to comply with scene naming standards
-        encoder = Quality.sceneQualityFromName(self.release_name, epQual)
-        if encoder:
-            logger.log(u"Found codec for '" + show_name + ": " + ep_name + "'.", logger.DEBUG)
-
         # try to get the release group
         rel_grp = {}
         rel_grp["SiCKRAGE"] = 'SiCKRAGE'
@@ -2136,6 +2131,11 @@ class TVEpisode(object):
         elif 'location' in rel_grp:
             relgrp = 'location'
         else: relgrp = 'SiCKRAGE'
+
+        # try to get the release encoder to comply with scene naming standards
+        encoder = Quality.sceneQualityFromName(self.release_name.replace(rel_grp[relgrp], ""), epQual)
+        if encoder:
+            logger.log(u"Found codec for '" + show_name + ": " + ep_name + "'.", logger.DEBUG)
 
         return {
             '%SN': show_name,
