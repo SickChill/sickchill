@@ -18,12 +18,14 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=W0223,E0202
 
+import io
 import os
+import re
 import time
 import urllib
 import datetime
-import re
 import traceback
+
 import sickbeard
 from sickrage.helper.common import dateFormat, dateTimeFormat, timeFormat
 from sickrage.helper.encoding import ek
@@ -58,7 +60,6 @@ from sickbeard.common import UNKNOWN
 from sickbeard.common import WANTED
 from sickbeard.common import ARCHIVED
 from sickbeard.common import statusStrings
-import codecs
 
 try:
     import json
@@ -1290,7 +1291,7 @@ class CMD_PostProcess(ApiCall):
             self.type = 'manual'
 
         data = processTV.processDir(self.path, process_method=self.process_method, force=self.force_replace,
-                                    is_priority=self.is_priority, failed=self.failed, type=self.type)
+                                    is_priority=self.is_priority, failed=self.failed, proc_type=self.type)
 
         if not self.return_data:
             data = ""
