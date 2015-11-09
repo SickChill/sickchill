@@ -141,7 +141,7 @@ class sbdatetime(datetime.datetime):
             except Exception:
                 sbdatetime.has_locale = False
 
-        strt = u''
+        strt = ''
         try:
             if self is None:
                 if dt is not None:
@@ -165,7 +165,7 @@ class sbdatetime(datetime.datetime):
             except Exception:
                 sbdatetime.has_locale = False
 
-        return strt
+        return strt.decode(sickbeard.SYS_ENCODING)
 
     # display Date in SickRage Format
     @static_or_instance
@@ -184,7 +184,7 @@ class sbdatetime(datetime.datetime):
         except Exception:
             pass
 
-        strd = u''
+        strd = ''
         try:
             if self is None:
                 if dt is not None:
@@ -204,7 +204,7 @@ class sbdatetime(datetime.datetime):
             except Exception:
                 pass
 
-        return strd
+        return strd.decode(sickbeard.SYS_ENCODING)
 
     # display Datetime in SickRage Format
     @static_or_instance
@@ -225,7 +225,7 @@ class sbdatetime(datetime.datetime):
         except Exception:
             pass
 
-        strd = u''
+        strd = ''
         try:
             if self is None:
                 if dt is not None:
@@ -243,11 +243,11 @@ class sbdatetime(datetime.datetime):
                         except Exception:
                             sbdatetime.has_locale = False
                     if t_preset is not None:
-                        strd += u', ' + dt.strftime(t_preset)
+                        strd += ', ' + dt.strftime(t_preset)
                     elif show_seconds:
-                        strd += u', ' + dt.strftime(sickbeard.TIME_PRESET_W_SECONDS)
+                        strd += ', ' + dt.strftime(sickbeard.TIME_PRESET_W_SECONDS)
                     else:
-                        strd += u', ' + dt.strftime(sickbeard.TIME_PRESET)
+                        strd += ', ' + dt.strftime(sickbeard.TIME_PRESET)
             else:
                 if d_preset is not None:
                     strd = self.strftime(d_preset)
@@ -263,11 +263,11 @@ class sbdatetime(datetime.datetime):
                     except Exception:
                         sbdatetime.has_locale = False
                 if t_preset is not None:
-                    strd += u', ' + self.strftime(t_preset)
+                    strd += ', ' + self.strftime(t_preset)
                 elif show_seconds:
-                    strd += u', ' + self.strftime(sickbeard.TIME_PRESET_W_SECONDS)
+                    strd += ', ' + self.strftime(sickbeard.TIME_PRESET_W_SECONDS)
                 else:
-                    strd += u', ' + self.strftime(sickbeard.TIME_PRESET)
+                    strd += ', ' + self.strftime(sickbeard.TIME_PRESET)
         finally:
             try:
                 if sbdatetime.has_locale:
@@ -275,4 +275,4 @@ class sbdatetime(datetime.datetime):
             except Exception:
                 sbdatetime.has_locale = False
 
-        return strd
+        return strd.decode(sickbeard.SYS_ENCODING)

@@ -139,7 +139,7 @@
 
             <td>
 % if cur_result['description']:
-                <img alt="" src="${srRoot}/images/info32.png" height="16" width="16" class="plotInfo" id="plot_info_${'%s_%s_%s' % (str(cur_result['showid']), str(cur_result['season']), str(cur_result['episode']))}" />
+                <img alt="" src="${srRoot}/images/info32.png" height="16" width="16" class="plotInfo" id="plot_info_${'%s_%s_%s' % (cur_result['showid'], cur_result['season'], cur_result['episode'])}" />
 % else:
                 <img alt="" src="${srRoot}/images/info32.png" width="16" height="16" class="plotInfoNone"  />
 % endif
@@ -319,7 +319,7 @@
                 <span class="title">Next Episode:</span> <span>${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}</span>
 
                 <div class="clearfix">
-                    <span class="title">Airs: </span><span class="airdate">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING)}</span>${('', '<span> on %s</span>' % str(cur_result['network']))[bool(cur_result['network'])]}
+                    <span class="title">Airs: </span><span class="airdate">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime'])}</span>${('', '<span> on %s</span>' % cur_result['network'])[bool(cur_result['network'])]}
                 </div>
 
                 <div class="clearfix">
