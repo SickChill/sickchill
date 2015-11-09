@@ -154,7 +154,7 @@ def downloadSubtitles(subtitles_info):
         save_subtitles(video, found_subtitles, directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI)
 
         if not sickbeard.EMBEDDED_SUBTITLES_ALL and sickbeard.SUBTITLES_EXTRA_SCRIPTS and video_path.endswith(('.mkv', '.mp4')):
-            run_subs_extra_scripts(subtitles_info, found_subtitles)
+            run_subs_extra_scripts(subtitles_info, found_subtitles, video, single=not sickbeard.SUBTITLES_MULTI)
 
         current_subtitles = subtitlesLanguages(video_path)[0]
         new_subtitles = frozenset(current_subtitles).difference(existing_subtitles)
@@ -439,31 +439,26 @@ class SubtitlesFinder(object):
         return {'old': [0, 24], 'new': [0, 4, 8, 4, 16, 24, 24]}
 
 
-def run_subs_extra_scripts(epObj, foundSubs):
+def run_subs_extra_scripts(epObj, found_subtitles, video, single=False):
 
     for curScriptName in sickbeard.SUBTITLES_EXTRA_SCRIPTS:
         script_cmd = [piece for piece in re.split("( |\\\".*?\\\"|'.*?')", curScriptName) if piece.strip()]
         script_cmd[0] = ek(os.path.abspath, script_cmd[0])
         logger.log(u"Absolute path to script: " + script_cmd[0], logger.DEBUG)
 
-        for video, subs in foundSubs.iteritems():
-            for sub in subs:
-                subpath = subliminal.subtitle.get_subtitle_path(video.name, sub.language)
-                if os.path.isabs(sickbeard.SUBTITLES_DIR):
-                    subpath = ek(os.path.join, sickbeard.SUBTITLES_DIR, ek(os.path.basename, subpath))
-                elif sickbeard.SUBTITLES_DIR:
-                    subpath = ek(os.path.join, ek(os.path.dirname, subpath), sickbeard.SUBTITLES_DIR, ek(os.path.basename, subpath))
+        for subtitle in found_subtitles:
+            subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, None if single else subtitle.language)
 
-                inner_cmd = script_cmd + [video.name, subpath, sub.language.opensubtitles, epObj['show.name'],
-                                          str(epObj['season']), str(epObj['episode']), epObj['name'], str(epObj['show.indexerid'])]
+            inner_cmd = script_cmd + [video.name, subtitle_path, subtitle.language.opensubtitles, epObj['show.name'],
+                                      str(epObj['season']), str(epObj['episode']), epObj['name'], str(epObj['show.indexerid'])]
 
-                # use subprocess to run the command and capture output
-                logger.log(u"Executing command: %s" % inner_cmd)
-                try:
-                    p = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                         stderr=subprocess.STDOUT, cwd=sickbeard.PROG_DIR)
-                    out, _ = p.communicate()  # @UnusedVariable
-                    logger.log(u"Script result: %s" % out, logger.DEBUG)
+            # use subprocess to run the command and capture output
+            logger.log(u"Executing command: %s" % inner_cmd)
+            try:
+                p = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                     stderr=subprocess.STDOUT, cwd=sickbeard.PROG_DIR)
+                out, _ = p.communicate()  # @UnusedVariable
+                logger.log(u"Script result: %s" % out, logger.DEBUG)
 
-                except Exception as e:
-                    logger.log(u"Unable to run subs_extra_script: " + ex(e))
+            except Exception as e:
+                logger.log(u"Unable to run subs_extra_script: " + ex(e))
