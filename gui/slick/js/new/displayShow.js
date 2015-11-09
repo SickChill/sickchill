@@ -115,9 +115,9 @@ $(document).ready(function(){
     });
 
     // initially show/hide all the rows according to the checkboxes
-    $("#checkboxControls input").each(function(e) {
+    $("#checkboxControls input").each(function() {
         var status = $(this).prop('checked');
-        $("tr." + $(this).attr('id')).each(function(status) {
+        $("tr." + $(this).attr('id')).each(function() {
             if(status) {
                 $(this).show();
             } else {
