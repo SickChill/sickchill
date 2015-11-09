@@ -70,7 +70,7 @@ def get_scene_exceptions(indexer_id, season=-1):
     """
     Given a indexer_id, return a list of all the scene exceptions.
     """
-    global exceptionsCache
+
     exceptionsList = []
 
     if indexer_id not in exceptionsCache or season not in exceptionsCache[indexer_id]:
@@ -117,7 +117,6 @@ def get_scene_seasons(indexer_id):
     """
     return a list of season numbers that have scene exceptions
     """
-    global exceptionsSeasonCache
     exceptionsSeasonList = []
 
     if indexer_id not in exceptionsSeasonCache:
@@ -181,7 +180,6 @@ def retrieve_exceptions():
     Looks up the exceptions on github, parses them into a dict, and inserts them into the
     scene_exceptions table in cache.db. Also clears the scene name cache.
     """
-    global exception_dict, anidb_exception_dict, xem_exception_dict
 
     for indexer in sickbeard.indexerApi().indexers:
         if shouldRefresh(sickbeard.indexerApi(indexer).name):
@@ -202,7 +200,7 @@ def retrieve_exceptions():
 
             # each exception is on one line with the format indexer_id: 'show name 1', 'show name 2', etc
             for cur_line in data.splitlines():
-                indexer_id, sep, aliases = cur_line.partition(':')  # @UnusedVariable
+                indexer_id, _, aliases = cur_line.partition(':')  # @UnusedVariable
 
                 if not aliases:
                     continue
@@ -246,8 +244,9 @@ def retrieve_exceptions():
             for ex in cur_exception_dict.iteritems():
                 cur_exception, curSeason = ex
                 if cur_exception not in existing_exceptions:
-                    queries.append(["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?);",
-                            [cur_indexer_id, cur_exception, curSeason]])
+                    queries.append(
+                        ["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?);",
+                         [cur_indexer_id, cur_exception, curSeason]])
     if queries:
         myDB.mass_action(queries)
         logger.log(u"Updated scene exceptions", logger.DEBUG)
@@ -263,7 +262,6 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
     """
     Given a indexer_id, and a list of all show scene exceptions, update the db.
     """
-    global exceptionsCache
     myDB = db.DBConnection('cache.db')
     myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=? and season=?', [indexer_id, season])
 
@@ -279,15 +277,13 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
                     [indexer_id, cur_exception, season])
 
 def _anidb_exceptions_fetcher():
-    global anidb_exception_dict
-
     if shouldRefresh('anidb'):
         logger.log(u"Checking for scene exception updates for AniDB")
         for show in sickbeard.showList:
             if show.is_anime and show.indexer == 1:
                 try:
                     anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)
-                except:
+                except Exception:
                     continue
                 else:
                     if anime.name and anime.name != show.name:
@@ -300,9 +296,6 @@ def _anidb_exceptions_fetcher():
 xem_session = requests.Session()
 
 def _xem_exceptions_fetcher():
-    global xem_exception_dict
-    global xem_session
-
     if shouldRefresh('xem'):
         for indexer in sickbeard.indexerApi().indexers:
             logger.log(u"Checking for XEM scene exception updates for " + sickbeard.indexerApi(indexer).name)
@@ -310,7 +303,7 @@ def _xem_exceptions_fetcher():
             url = "http://thexem.de/map/allNames?origin=%s&seasonNumbers=1" % sickbeard.indexerApi(indexer).config[
                 'xem_origin']
 
-            parsedJSON = helpers.getURL(url, session=xem_session, timeout = 90, json=True)
+            parsedJSON = helpers.getURL(url, session=xem_session, timeout=90, json=True)
             if not parsedJSON:
                 logger.log(u"Check scene exceptions update failed for " + sickbeard.indexerApi(
                     indexer).name + ", Unable to get URL: " + url, logger.DEBUG)

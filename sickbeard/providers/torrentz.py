@@ -86,7 +86,7 @@ class TORRENTZProvider(generic.TorrentProvider):
                     continue
 
                 if not all([data, 'rss' in data, 'channel' in data['rss'], 'item' in data['rss']['channel']]):
-                    logger.log(u"Malformed rss returned, skipping", logger.DEBUG)
+                    logger.log(u"Malformed rss returned or no results, skipping", logger.DEBUG)
                     continue
 
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
