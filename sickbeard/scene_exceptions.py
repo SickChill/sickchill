@@ -38,33 +38,33 @@ exceptionsSeasonCache = {}
 
 exceptionLock = threading.Lock()
 
-def shouldRefresh(list):
+def shouldRefresh(exList):
     """
-    Check if we should refresh cache for items in list
+    Check if we should refresh cache for items in exList
 
-    :param list: list to check
+    :param exList: exception list to check if needs a refresh
     :return: True if refresh is needed
     """
     MAX_REFRESH_AGE_SECS = 86400  # 1 day
 
     myDB = db.DBConnection('cache.db')
-    rows = myDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?", [list])
+    rows = myDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?", [exList])
     if rows:
         lastRefresh = int(rows[0]['last_refreshed'])
         return int(time.mktime(datetime.datetime.today().timetuple())) > lastRefresh + MAX_REFRESH_AGE_SECS
     else:
         return True
 
-def setLastRefresh(list):
+def setLastRefresh(exList):
     """
     Update last cache update time for shows in list
 
-    :param list: list to check
+    :param exList: exception list to set refresh time
     """
     myDB = db.DBConnection('cache.db')
     myDB.upsert("scene_exceptions_refresh",
                 {'last_refreshed': int(time.mktime(datetime.datetime.today().timetuple()))},
-                {'list': list})
+                {'list': exList})
 
 def get_scene_exceptions(indexer_id, season=-1):
     """
@@ -183,8 +183,6 @@ def retrieve_exceptions():
     """
     global exception_dict, anidb_exception_dict, xem_exception_dict
 
-    # exceptions are stored in submodules in this repo, sourced from the github repos
-    # TODO: `git submodule update`
     for indexer in sickbeard.indexerApi().indexers:
         if shouldRefresh(sickbeard.indexerApi(indexer).name):
             logger.log(u"Checking for scene exception updates for " + sickbeard.indexerApi(indexer).name + "")
@@ -270,7 +268,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
     myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=? and season=?', [indexer_id, season])
 
     logger.log(u"Updating scene exceptions", logger.INFO)
-    
+
     # A change has been made to the scene exception list. Let's clear the cache, to make this visible
     if indexer_id in exceptionsCache:
         exceptionsCache[indexer_id] = {}

@@ -141,7 +141,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
                 logger.log(u"Torrent file content is empty", logger.WARNING)
                 dlResult = False
     else:
-        logger.log(u"Unknown result type, unable to download it", logger.ERROR)
+        logger.log(u"Unknown result type, unable to download it (%r)" % result.resultType, logger.ERROR)
         dlResult = False
 
     if not dlResult:
