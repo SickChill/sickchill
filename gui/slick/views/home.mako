@@ -2,10 +2,8 @@
 <%!
     import sickbeard
     import calendar
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
-    from sickbeard import db, sbdatetime, network_timezones
-    import datetime
+    from sickbeard import sbdatetime
+    from sickbeard import network_timezones
     import re
 %>
 <%block name="metas">
@@ -404,7 +402,7 @@
         <%
             display_status = curShow.status
             if None is not display_status:
-                if re.search('(?i)(?:new|returning)\s*series', curShow.status):
+                if re.search(r'(?i)(?:new|returning)\s*series', curShow.status):
                     display_status = 'Continuing'
                 elif re.search('(?i)(?:nded)', curShow.status):
                     display_status = 'Ended'

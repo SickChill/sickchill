@@ -7,9 +7,8 @@
     from sickbeard import subtitles, sbdatetime, network_timezones
     import sickbeard.helpers
 
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED
     from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
-
     from sickbeard.helpers import anon_url
 %>
 <%block name="scripts">
