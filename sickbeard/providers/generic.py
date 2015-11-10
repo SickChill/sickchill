@@ -84,7 +84,7 @@ class GenericProvider(object):
 
         shuffle(self.btCacheURLS)
 
-        self.proper_strings = ['PROPER|REPACK']
+        self.proper_strings = ['PROPER|REPACK|REAL']
 
     def getID(self):
         return GenericProvider.makeID(self.name)
