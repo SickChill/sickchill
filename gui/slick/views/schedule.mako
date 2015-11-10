@@ -213,7 +213,7 @@
     else:
         cur_ep_enddate = cur_result['localtime']
 %>
-    % if sickbeard.COMING_EPS_SORT == 'network:
+    % if sickbeard.COMING_EPS_SORT == 'network':
         <% show_network = ('no network', cur_result['network'])[bool(cur_result['network'])] %>
         % if cur_segment != show_network:
             <div>
