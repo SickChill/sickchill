@@ -13,7 +13,6 @@
         initial_quality = int(quality_value)
     else:
         initial_quality = common.SD
-    endif
 
     anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
 %>
@@ -43,7 +42,7 @@
                         <br>
 
                         <fieldset class="component-group-list">
-                            
+
                         <div class="field-pair">
                             <label for="shows">
                                 <span class="component-title">Selected Shows</span>

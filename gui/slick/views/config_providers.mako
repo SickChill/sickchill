@@ -4,7 +4,6 @@
     from sickbeard.providers.generic import GenericProvider
     from sickbeard.providers import thepiratebay
     from sickbeard.helpers import anon_url
-
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/configProviders.js?${sbPID}"></script>
