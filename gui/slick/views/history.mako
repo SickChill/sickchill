@@ -14,9 +14,6 @@
     from sickbeard.common import Quality, statusStrings, Overview
 
     from sickrage.show.History import History
-
-    layout = sickbeard.HISTORY_LAYOUT
-    history_limit = sickbeard.HISTORY_LIMIT
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/new/history.js"></script>
@@ -50,7 +47,7 @@
 </div>
 <br>
 
-% if layout == "detailed":
+% if sickbeard.HISTORY_LAYOUT == "detailed":
     <table id="historyTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
         <thead>
             <tr>

@@ -19,7 +19,6 @@
 </style>
 </%block>
 <%block name="content">
-<% sort = sickbeard.COMING_EPS_SORT %>
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <h1 class="header">${header}</h1>
 <div class="h2footer pull-right">
@@ -122,7 +121,7 @@
                 <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
             </td>
 
-            <td align="center" nowrap="nowrap"> 
+            <td align="center" nowrap="nowrap">
                 <% ends = sbdatetime.sbdatetime.convert_to_setting(cur_ep_enddate) %>
                 <time datetime="${ends.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(ends)}</time>
             </td>
@@ -195,7 +194,7 @@
     today_header = False
     show_div = 'ep_listing listing-default'
 %>
-% if 'show' == sort:
+% if sickbeard.COMING_EPS_SORT == 'show':
     <br><br>
 % endif
 
@@ -214,7 +213,7 @@
     else:
         cur_ep_enddate = cur_result['localtime']
 %>
-    % if 'network' == sort:
+    % if sickbeard.COMING_EPS_SORT == 'network:
         <% show_network = ('no network', cur_result['network'])[bool(cur_result['network'])] %>
         % if cur_segment != show_network:
             <div>
@@ -235,7 +234,7 @@
             % endif
         % endif
 
-    % elif 'date' == sort:
+    % elif sickbeard.COMING_EPS_SORT == 'date':
         % if cur_segment != cur_ep_airdate:
             % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
                 <br><h2 class="day">Missed</h2>
@@ -272,7 +271,7 @@
             % endif
         % endif
 
-    % elif 'show' == sort:
+    % elif sickbeard.COMING_EPS_SORT == 'show':
         % if cur_ep_enddate < today:
             <% show_div = 'ep_listing listing-overdue listingradius' %>
         % elif cur_ep_airdate >= next_week.date():

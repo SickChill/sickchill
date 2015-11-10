@@ -161,7 +161,7 @@
                     ${renderQualityPill(show.quality)}
                 % else:
                 % if anyQualities:
-                    <i>Allowed:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "</br>")[bool(bestQualities)]}
+                    <i>Allowed:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "<br>")[bool(bestQualities)]}
                 % endif
                 % if bestQualities:
                     <i>Preferred:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(bestQualities)])}
