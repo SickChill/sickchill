@@ -18,7 +18,7 @@
 
 from sickbeard.providers import btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, torrentz, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, nextgen, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, \
-    frenchtorrentdb, freshontv, titansoftv, libertalia, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
+    freshontv, titansoftv, libertalia, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
     scenetime, btdigg, strike, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct
 
 __all__ = ['womble',
@@ -38,7 +38,6 @@ __all__ = ['womble',
            'nyaatorrents',
            'animenzb',
            'torrentbytes',
-           'frenchtorrentdb',
            'freshontv',
            'titansoftv',
            'libertalia',

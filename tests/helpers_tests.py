@@ -39,7 +39,6 @@ test_cases = {
         'Show.Name.S01E01.HDTV.x264-RLSGROUP[EtHD]',
         'Show.Name.S01E01.HDTV.x264-RLSGROUP-20-40',
         'Show.Name.S01E01.HDTV.x264-RLSGROUP[NO-RAR] - [ www.torrentday.com ]',
-        '[www.frenchtorrentdb.com] Show.Name.S01E01.HDTV.x264-RLSGROUP',
         'Show.Name.S01E01.HDTV.x264-RLSGROUP[rarbg]',
         'Show.Name.S01E01.HDTV.x264-RLSGROUP[Seedbox]',
         '{ www.SceneTime.com } - Show.Name.S01E01.HDTV.x264-RLSGROUP',
