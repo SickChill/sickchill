@@ -154,7 +154,6 @@ def remove_non_release_groups(name):
         r'^\[ www\.Cpasbien\.com \] ':       'searchre',
         r'- \{ www\.SceneTime\.com \}$':     'searchre',
         r'^\{ www\.SceneTime\.com \} - ':    'searchre',
-        r'^\[www\.frenchtorrentdb\.com\] ':  'searchre',
         r'^\]\.\[www\.tensiontorrent.com\] - ':      'searchre',
         r'^\]\.\[ www\.tensiontorrent.com \] - ':    'searchre',
         r'- \[ www\.torrentday\.com \]$':            'searchre',
