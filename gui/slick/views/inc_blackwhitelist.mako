@@ -8,6 +8,8 @@
             <p>The <b>Whitelist</b> is checked <i>before</i> the <b>Blacklist</b>.</p>
             <p>Groups are shown as <b>Name</b> | <b>Rating</b> | <b>Number of subbed episodes</b>.</p>
             <p>You may also add any fansub group not listed to either list manually.</p>
+            <p>When doing this please note that you can only use groups listed on anidb for this anime.
+            </br>If a group is not listed on anidb but subbed this anime, please correct anidb's data.</p>
         </div>
         <div class="bwlWrapper" id="Anime">
         <div class="blackwhitelist all">
