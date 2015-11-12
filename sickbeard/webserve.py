@@ -2192,8 +2192,10 @@ class HomePostProcess(Home):
         if not proc_dir:
             return self.redirect("/home/postprocess/")
         else:
+            nzbName = ss(nzbName) if nzbName else nzbName
+
             result = processTV.processDir(
-                proc_dir, nzbName, process_method=process_method, force=argToBool(force),
+                ss(proc_dir), nzbName, process_method=process_method, force=argToBool(force),
                 is_priority=argToBool(is_priority), delete_on=argToBool(delete_on), failed=argToBool(failed), proc_type=proc_type
             )
 
