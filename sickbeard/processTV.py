@@ -28,7 +28,7 @@ from sickbeard import logger
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import common
 from sickbeard import failedProcessor
-from sickrage.helper.encoding import ek
+from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
 from unrar2 import RarFile
@@ -516,7 +516,7 @@ def already_postprocessed(dirName, videofile, force, result):
 
         search_sql += " and tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED]) + ")"
         search_sql += " and history.resource LIKE ?"
-        sqlResult = myDB.select(search_sql, [u'%' + videofile])
+        sqlResult = myDB.select(search_sql, ['%' + videofile])
         if sqlResult:
             # result.output += logHelper(u"You're trying to post process a video that's already been processed, skipping", logger.DEBUG)
             return True
