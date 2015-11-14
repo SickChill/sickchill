@@ -22,7 +22,7 @@ after_failure:
   - cat ./Logs/sickrage.log
 
 notifications:
-  irc: "irc.freenode.net#sickrage-updates"
+  irc: "irc.freenode.net#sickrage-builds"
 
   email:
     on_success: change
