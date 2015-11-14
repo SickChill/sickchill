@@ -1,6 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.tv
-# Git: https://github.com/SiCKRAGETV/SickRage.git
+# Git: https://github.com/SickRage/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -43,7 +43,7 @@ else:
 def update_network_dict():
     """Update timezone information from SR repositories"""
 
-    url = 'http://sickragetv.github.io/sb_network_timezones/network_timezones.txt'
+    url = 'http://SickRage.github.io/sb_network_timezones/network_timezones.txt'
     url_data = helpers.getURL(url, session=requests.Session())
     if not url_data:
         logger.log(u'Updating network timezones failed, this can happen from time to time. URL: %s' % url, logger.WARNING)

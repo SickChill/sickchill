@@ -1,6 +1,6 @@
 # Author: Tyler Fenby <tylerfenby@gmail.com>
 # URL: https://sickrage.tv
-# Git: https://github.com/SiCKRAGETV/SickRage.git
+# Git: https://github.com/SickRage/SickRage.git
 #
 # This file is part of SickRage.
 #
