@@ -325,7 +325,7 @@ $(document).ready(function(){
 
         if (finalArr.length > 0) {
             $('<select>').prop('id','editAProvider').addClass('form-control input-sm').appendTo('#provider-list');
-            for (var i = 0; i < finalArr.length; i++) {
+            for (var i = 0, len = finalArr.length; i < len; i++) {
                 var provider = finalArr[i];
                 $('#editAProvider').append($('<option>').prop('value',provider).text($.trim($('#'+provider).text()).replace(/\s\*$/, '').replace(/\s\*\*$/, '')));
             }

@@ -271,7 +271,7 @@ $(document).ready(function(){
         var nmjv2_host = $('#nmjv2_host').val();
         var nmjv2_dbloc;
         var radios = document.getElementsByName('nmjv2_dbloc');
-        for (var i = 0; i < radios.length; i++) {
+        for(var i = 0, len = radios.length; i < len; i++) {
             if (radios[i].checked) {
                 nmjv2_dbloc=radios[i].value;
                 break;
@@ -498,7 +498,7 @@ $(document).ready(function(){
             var devices = jQuery.parseJSON(data).devices;
             var current_pushbullet_device = $("#pushbullet_device").val();
             $("#pushbullet_device_list").html('');
-            for (var i = 0; i < devices.length; i++) {
+            for (var i = 0, len = devices.length; i < len; i++) {
                 if(devices[i].active === true) {
                     if(current_pushbullet_device == devices[i].iden) {
                         $("#pushbullet_device_list").append('<option value="'+devices[i].iden+'" selected>' + devices[i].nickname + '</option>');
