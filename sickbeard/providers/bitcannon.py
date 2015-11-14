@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: miigotu <miigotu@gmail.com>
-# URL: http://github.com/SiCKRAGETV/SickRage
+# URL: http://github.com/SickRage/SickRage
 #
 # This file is part of SickRage.
 #
