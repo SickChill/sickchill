@@ -19,6 +19,10 @@
     "jquery-timeago": "~1.4.3",
     "jquery-tokeninput": "~1.7.0",
     "bootstrap3-typeahead": "~3.1.1",
-    "underscore": "~1.8.3"
+    "underscore": "~1.8.3",
+    "jqueryui-touch-punch": "*",
+    "pnotify": "~2.1.0",
+    "qtip2": "~2.2.1",
+    "jQuery Confirm": "jquery-confirm#~2.5.0"
   }
 }

@@ -62,6 +62,6 @@ lib/unrar2/UnRAR.exe
 
 # Bower #
 ######################
-bower_components
-node_modules
-gui/**/_bower.js
+.build/bower_components
+.build/node_modules
+.build/_bower*

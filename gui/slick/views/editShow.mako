@@ -15,7 +15,6 @@
 
 <%block name="scripts">
     <script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
     <script type="text/javascript" src="${srRoot}/js/new/editShow.js"></script>
 % if show.is_anime:
     <script type="text/javascript" src="${srRoot}/js/blackwhite.js?${sbPID}"></script>
@@ -45,7 +44,7 @@
                 <div class="component-group">
                     <h3>Main Settings</h3>
                     <fieldset class="component-group-list">
-                        
+
                         <div class="field-pair">
                             <label for="location">
                                 <span class="component-title">Show Location</span>
@@ -246,7 +245,7 @@
                     </fieldset>
                 </div>
             </div>
-        
+
         </div>
 
         <br>

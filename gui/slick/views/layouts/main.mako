@@ -41,7 +41,6 @@
         <meta name="msapplication-TileImage" content="${srRoot}/images/ico/favicon-144.png">
         <meta name="msapplication-config" content="${srRoot}/css/browserconfig.xml">
 
-
         <meta data-var="srRoot" data-content="${srRoot}">
         <meta data-var="themeSpinner" data-content="${('', '-dark')[sickbeard.THEME_NAME == 'dark']}">
         <meta data-var="anonURL" data-content="${sickbeard.ANON_REDIRECT}">
@@ -78,6 +77,7 @@
         <link rel="apple-touch-icon" sizes="72x72" href="${srRoot}/images/ico/favicon-72.png">
         <link rel="apple-touch-icon" href="${srRoot}/images/ico/favicon-57.png">
 
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/vender.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/bootstrap.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/browser.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}" />
@@ -86,7 +86,6 @@
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/print.css?${sbPID}" />
         % if srLogin:
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/pnotify.custom.min.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/country-flags.css?${sbPID}"/>
         % endif
         <%block name="css" />
@@ -311,21 +310,15 @@
                 </div>
             </div>
         </footer>
-        <script type="text/javascript" src="${srRoot}/js/_bower.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.cookie.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/vender.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.cookiejar.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.json-2.2.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.selectboxes.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.tokeninput.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter-2.17.7.min.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter.widgets-2.17.7.min.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter.widget-columnSelector-2.17.7.js?${sbPID}"></script><!-- Can't be added to bower -->
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.qtip-2.2.1.min.js?${sbPID}"></script><!-- Can't be added to bower -->
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.ui.touch-punch-0.2.2.min.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/lib/isotope.pkgd.min.js?${sbPID}"></script><!-- Can't be added to bower -->
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.confirm.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/lib/formwizard.js?${sbPID}"></script><!-- Can't be added to bower -->
-        <script type="text/javascript" src="${srRoot}/js/lib/pnotify.custom.min.js?${sbPID}"></script><!-- Needs to be removed -->
         <script type="text/javascript" src="${srRoot}/js/new/parsers.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/new/meta.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/new/core.js?${sbPID}"></script>
