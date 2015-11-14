@@ -1,6 +1,6 @@
 # Author: The SickRage Dev Team
 # URL: https://sickrage.tv
-# Repository: https://github.com/SiCKRAGETV/SickRage.git
+# Repository: https://github.com/SickRage/SickRage.git
 #
 # This file is part of SickRage.
 #

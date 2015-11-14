@@ -1,5 +1,5 @@
 # Author: matigonkas
-# URL: https://github.com/SiCKRAGETV/sickrage
+# URL: https://github.com/SickRage/sickrage
 #
 # This file is part of SickRage.
 #

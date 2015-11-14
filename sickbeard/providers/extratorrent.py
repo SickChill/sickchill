@@ -1,6 +1,6 @@
 # Author: duramato <matigonkas@outlook.com>
 # Author: miigotu
-# URL: https://github.com/SiCKRAGETV/sickrage
+# URL: https://github.com/SickRage/sickrage
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify

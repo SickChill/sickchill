@@ -127,7 +127,7 @@ GIT_RESET = True
 GIT_REMOTE = ''
 GIT_REMOTE_URL = ''
 CUR_COMMIT_BRANCH = ''
-GIT_ORG = 'SiCKRAGETV'
+GIT_ORG = 'SickRage'
 GIT_REPO = 'SickRage'
 GIT_USERNAME = None
 GIT_PASSWORD = None
@@ -136,7 +136,7 @@ GIT_AUTOISSUES = False
 GIT_NEWVER = False
 DEVELOPER = False
 
-NEWS_URL = 'http://sickragetv.github.io/sickrage-news/news.md'
+NEWS_URL = 'http://SickRage.github.io/sickrage-news/news.md'
 NEWS_LAST_READ = None
 NEWS_LATEST = None
 NEWS_UNREAD = 0

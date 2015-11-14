@@ -96,7 +96,7 @@
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="${srRoot}/home/">Back to SickRage</a></li>
                 <li class="hidden-xs">
-                    <a href="https://github.com/SiCKRAGETV/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;">
+                    <a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;">
                         <img src="${srRoot}/images/donate.jpg" alt="[donate]" class="navbaricon" />
                     </a>
                 </li>

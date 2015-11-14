@@ -209,7 +209,7 @@
                                 <li><a href="${srRoot}/news/"><i class="menu-icon-help"></i>&nbsp;News${newsBadge}</a></li>
                                 <li><a href="${srRoot}/IRC/"><i class="menu-icon-help"></i>&nbsp;IRC</a></li>
                                 <li><a href="${srRoot}/changes/"><i class="menu-icon-help"></i>&nbsp;Changelog</a></li>
-                                <li><a href="https://github.com/SiCKRAGETV/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="menu-icon-help"></i>&nbsp;Support SickRage</a></li>
+                                <li><a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="menu-icon-help"></i>&nbsp;Support SickRage</a></li>
                                 <li role="separator" class="divider"></li>
                                 %if numErrors:
                                     <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Errors <span class="badge btn-danger">${numErrors}</span></a></li>

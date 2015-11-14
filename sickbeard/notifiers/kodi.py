@@ -41,7 +41,7 @@ except ImportError:
 
 
 class KODINotifier:
-    sr_logo_url = 'https://raw.githubusercontent.com/SiCKRAGETV/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
+    sr_logo_url = 'https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
 
     def _get_kodi_version(self, host, username, password):
         """Returns KODI JSON-RPC API version (odd # = dev, even # = stable)

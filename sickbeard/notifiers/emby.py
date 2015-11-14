@@ -47,7 +47,7 @@ class EMBYNotifier:
             emby_apikey = sickbeard.EMBY_APIKEY
 
         url = 'http://%s/emby/Notifications/Admin' % (host)
-        values = {'Name': 'SickRage', 'Description': message, 'ImageUrl': 'https://raw.githubusercontent.com/SiCKRAGETV/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'}
+        values = {'Name': 'SickRage', 'Description': message, 'ImageUrl': 'https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'}
         data = json.dumps(values)
         try:
             req = urllib2.Request(url, data)

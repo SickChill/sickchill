@@ -1,6 +1,6 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.tv
-# Git: https://github.com/SiCKRAGETV/SickRage.git
+# Git: https://github.com/SickRage/SickRage.git
 #
 # This file is part of SickRage.
 #
@@ -204,7 +204,7 @@ class Logger(object):
 
         self.submitter_running = True
 
-        gh_org = sickbeard.GIT_ORG or 'SiCKRAGETV'
+        gh_org = sickbeard.GIT_ORG or 'SickRage'
         gh_repo = 'sickrage-issues'
 
         gh = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD, user_agent="SiCKRAGE")
@@ -259,7 +259,7 @@ class Logger(object):
                 except Exception:
                     message += u"Locale: unknown" + "\n"
                 message += u"Branch: **" + sickbeard.BRANCH + "**\n"
-                message += u"Commit: SiCKRAGETV/SickRage@" + sickbeard.CUR_COMMIT_HASH + "\n"
+                message += u"Commit: SickRage/SickRage@" + sickbeard.CUR_COMMIT_HASH + "\n"
                 if gist and gist != 'No ERROR found':
                     message += u"Link to Log: " + gist.html_url + "\n"
                 else:
@@ -269,7 +269,7 @@ class Logger(object):
                 message += curError.message + "\n"
                 message += u"```\n"
                 message += u"---\n"
-                message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
+                message += u"_STAFF NOTIFIED_: @SickRage/owners @SickRage/moderators"
 
                 title_Error = u"[APP SUBMITTED]: " + title_Error
                 reports = gh.get_organization(gh_org).get_repo(gh_repo).get_issues(state="all")

@@ -57,8 +57,8 @@ Please follow these guidelines before reporting a bug:
 
 
 ### Feature requests
-Please follow the bug guidelines above for feature requests, i.e. update to the latest version and search for existing requests on [FeatHub](http://feathub.com/SiCKRAGETV/SickRage) before posting a new request..
-[![Feature Requests](https://cloud.githubusercontent.com/assets/390379/10127973/045b3a96-6560-11e5-9b20-31a2032956b2.png)](http://feathub.com/SiCKRAGETV/SickRage)
+Please follow the bug guidelines above for feature requests, i.e. update to the latest version and search for existing requests on [FeatHub](http://feathub.com/SickRage/SickRage) before posting a new request..
+[![Feature Requests](https://cloud.githubusercontent.com/assets/390379/10127973/045b3a96-6560-11e5-9b20-31a2032956b2.png)](http://feathub.com/SickRage/SickRage)
 
 ### Pull requests
 
@@ -89,7 +89,7 @@ Please follow this process; it's the best way to get your work included in the p
    # navigate to the newly cloned directory
    cd SickRage
    # assign the original repo to a remote called "upstream"
-   git remote add upstream https://github.com/SiCKRAGETV/SickRage.git
+   git remote add upstream https://github.com/SickRage/SickRage.git
    ```
 
 - If you cloned a while ago, get the latest changes from upstream:

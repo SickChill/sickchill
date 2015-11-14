@@ -1,4 +1,4 @@
-SickRage [![Build Status](https://travis-ci.org/SiCKRAGETV/SickRage.svg?branch=develop)](https://travis-ci.org/SiCKRAGETV/SickRage) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/sickragetv/sickrage-issues.svg)](http://isitmaintained.com/project/sickragetv/sickrage-issues "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/sickragetv/sickrage-issues.svg)](http://isitmaintained.com/project/sickragetv/sickrage-issues "Percentage of issues still open")
+SickRage [![Build Status](https://travis-ci.org/SickRage/SickRage.svg?branch=develop)](https://travis-ci.org/SickRage/SickRage) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/SickRage/sickrage-issues.svg)](http://isitmaintained.com/project/SickRage/sickrage-issues "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/SickRage/sickrage-issues.svg)](http://isitmaintained.com/project/SickRage/sickrage-issues "Percentage of issues still open")
 =====
 Automatic Video Library Manager for TV Shows. It watches for new episodes of your favorite shows, and when they are posted it does its magic.
 
@@ -29,16 +29,16 @@ Automatic Video Library Manager for TV Shows. It watches for new episodes of you
 #### Dependencies
  To run SickRage from source you will need Python 2.7.10
 
-#### [![Feature Requests](https://cloud.githubusercontent.com/assets/390379/10127973/045b3a96-6560-11e5-9b20-31a2032956b2.png)](http://feathub.com/SiCKRAGETV/SickRage)
+#### [![Feature Requests](https://cloud.githubusercontent.com/assets/390379/10127973/045b3a96-6560-11e5-9b20-31a2032956b2.png)](http://feathub.com/SickRage/SickRage)
 
 #### Forums
  Any questions or setup info your looking for can be found at out forums https://www.sickrage.tv
 
-##### [SickRage Issue Tracker](https://github.com/SiCKRAGETV/sickrage-issues)
+##### [SickRage Issue Tracker](https://github.com/SickRage/sickrage-issues)
 
-##### [FAQ](https://github.com/SiCKRAGETV/SickRage/wiki/Frequently-Asked-Questions)
+##### [FAQ](https://github.com/SickRage/SickRage/wiki/Frequently-Asked-Questions)
 
-##### [Wiki](https://github.com/SiCKRAGETV/SickRage/wiki)
+##### [Wiki](https://github.com/SickRage/SickRage/wiki)
 
 #### Important
 Before using this with your existing database (sickbeard.db) please make a backup copy of it and delete any other database files such as cache.db and failed.db if present<br>
@@ -46,7 +46,7 @@ We HIGHLY recommend starting out with no database files at all to make this a fr
 
 #### Supported providers
 
-A full list can be found here: [Link](https://github.com/SiCKRAGETV/sickrage-issues/wiki/SickRage-Search-Providers)
+A full list can be found here: [Link](https://github.com/SickRage/sickrage-issues/wiki/SickRage-Search-Providers)
 
 #### Special Thanks to:
 ![image](https://rarbg.com/favicon.ico)[RARBG](https://rarbg.to)
@@ -55,7 +55,7 @@ A full list can be found here: [Link](https://github.com/SiCKRAGETV/sickrage-iss
 ![image](http://kat.cr/favicon.ico)[KickAssTorrents](https://kat.cr)
 ![image](https://nzb.cat/favicon.ico)[NZB.cat](https://nzb.cat/)
 ![image](https://nzbgeek.info/favicon.ico)[NZBGeek](https://nzbgeek.info)
-![image](https://raw.githubusercontent.com/SiCKRAGETV/SickRage/master/gui/slick/images/providers/dognzb.png)[DOGnzb](dognzb.cr)
+![image](https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/providers/dognzb.png)[DOGnzb](dognzb.cr)
 
 #### News and Changelog
-[news.md and CHANGES.md have moved to a separate repo, click here](http://github.com/SiCKRAGETV/sickrage-news)
+[news.md and CHANGES.md have moved to a separate repo, click here](http://github.com/SickRage/sickrage-news)

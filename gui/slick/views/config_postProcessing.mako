@@ -231,7 +231,7 @@
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">See <a href="https://github.com/SiCKRAGETV/sickrage-issues/wiki/Post-Processing#extra-scripts"><font color='red'><b>Wiki</b></font></a> for script arguments description and usage.</span>
+                                <span class="component-desc">See <a href="https://github.com/SickRage/sickrage-issues/wiki/Post-Processing#extra-scripts"><font color='red'><b>Wiki</b></font></a> for script arguments description and usage.</span>
                             </label>
                         </div>
                         <input type="submit" class="btn config_submitter" value="Save Changes" /><br>

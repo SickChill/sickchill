@@ -1,5 +1,5 @@
 # Author: Bill Nasty
-# URL: https://github.com/SiCKRAGETV/SickRage
+# URL: https://github.com/SickRage/SickRage
 #
 # This file is part of SickRage.
 #

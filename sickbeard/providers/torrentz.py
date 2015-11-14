@@ -1,5 +1,5 @@
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: https://github.com/SiCKRAGETV/SickRage
+# URL: https://github.com/SickRage/SickRage
 #
 # This file is part of SickRage.
 #
