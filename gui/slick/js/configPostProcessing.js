@@ -395,7 +395,7 @@ $(document).ready(function () {
             config_arr.push(season_all_banner ? '1' : '0');
 
             var cur_num = 0;
-            for (var i = 0; i < config_arr.length; i++) {
+            for (var i = 0, len = config_arr.length; i < len; i++) {
                 cur_num += parseInt(config_arr[i]);
             }
             if (cur_num > cur_most) {
