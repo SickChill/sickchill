@@ -14,7 +14,6 @@
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/config.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/new/config_general.js"></script>
 </%block>
 <%block name="content">
