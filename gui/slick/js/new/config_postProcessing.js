@@ -1,2 +1,4 @@
-$('#config-components').tabs();
-$('#tv_download_dir').fileBrowser({ title: 'Select TV Download Directory' });
+$(document).ready(function(){
+    $('#config-components').tabs();
+    $('#tv_download_dir').fileBrowser({ title: 'Select TV Download Directory' });
+});

@@ -272,7 +272,7 @@ $(document).ready(function(){
         content: '<div id="popover-target"></div>'
     })
     // bootstrap popover event triggered when the popover opens
-    .on('shown.bs.popover', function () {
-        $.tablesorter.columnSelector.attachTo( $("#showTable, #animeTable"), '#popover-target');
+    .on('shown.bs.popover', function (){
+        $.tablesorter.columnSelector.attachTo($("#showTable, #animeTable"), '#popover-target');
     });
 });
