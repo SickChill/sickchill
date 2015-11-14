@@ -3,10 +3,6 @@
     import sickbeard
     from sickbeard.helpers import anon_url
 %>
-
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/config.js?${sbPID}"></script>
-</%block>
 <%block name="content">
 <div id="content960">
 <h1 class="header">${header}</h1>
