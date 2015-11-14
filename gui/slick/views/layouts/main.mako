@@ -117,7 +117,7 @@
                                 % if sickbeard.SHOWS_RECENT:
                                     <li role="separator" class="divider"></li>
                                     % for recentShow in sickbeard.SHOWS_RECENT:
-                                        <li><a href="${srRoot}/home/displayShow/?show=${recentShow['indexerid']}"><i class="menu-icon-addshow"></i>&nbsp;${recentShow['name']|trim,h}</a></li>
+                                        <li><a href="${srRoot}/home/displayShow?show=${recentShow['indexerid']}"><i class="menu-icon-addshow"></i>&nbsp;${recentShow['name']|trim,h}</a></li>
                                     % endfor
                                 % endif
                             </ul>
