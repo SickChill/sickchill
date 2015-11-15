@@ -1030,10 +1030,13 @@ var SICKRAGE = {
                 });
             }
 
-            function fill_abd_examples() {
+            function fillAbdExamples() {
                 var pattern = $('#naming_abd_pattern').val();
 
-                $.get(srRoot + '/config/postProcessing/testNaming', {pattern: pattern, abd: 'True'}, function (data) {
+                $.get(srRoot + '/config/postProcessing/testNaming', {
+                    pattern: pattern,
+                    abd: 'True'
+                }, function (data) {
                     if (data) {
                         $('#naming_abd_example').text(data + '.ext');
                         $('#naming_abd_example_div').show();
@@ -1042,7 +1045,10 @@ var SICKRAGE = {
                     }
                 });
 
-                $.get(srRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, abd: 'True'}, function (data) {
+                $.get(srRoot + '/config/postProcessing/isNamingValid', {
+                    pattern: pattern,
+                    abd: 'True'
+                }, function (data) {
                     if (data === "invalid") {
                         $('#naming_abd_pattern').qtip('option', {
                             'content.text': 'This pattern is invalid.',
@@ -1068,10 +1074,13 @@ var SICKRAGE = {
                 });
             }
 
-            function fill_sports_examples() {
+            function fillSportsExamples() {
                 var pattern = $('#naming_sports_pattern').val();
 
-                $.get(srRoot + '/config/postProcessing/testNaming', {pattern: pattern, sports: 'True'}, function (data) {
+                $.get(srRoot + '/config/postProcessing/testNaming', {
+                    pattern: pattern,
+                    sports: 'True'
+                }, function (data) {
                     if (data) {
                         $('#naming_sports_example').text(data + '.ext');
                         $('#naming_sports_example_div').show();
@@ -1080,15 +1089,18 @@ var SICKRAGE = {
                     }
                 });
 
-                $.get(srRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, sports: 'True'}, function (data) {
-                    if (data == "invalid") {
+                $.get(srRoot + '/config/postProcessing/isNamingValid', {
+                    pattern: pattern,
+                    sports: 'True'
+                }, function (data) {
+                    if (data === "invalid") {
                         $('#naming_sports_pattern').qtip('option', {
                             'content.text': 'This pattern is invalid.',
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_sports_pattern').qtip('toggle', true);
                         $('#naming_sports_pattern').css('background-color', '#FFDDDD');
-                    } else if (data == "seasonfolders") {
+                    } else if (data === "seasonfolders") {
                         $('#naming_sports_pattern').qtip('option', {
                             'content.text': 'This pattern would be invalid without the folders, using it will force "Flatten" off for all shows.',
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
@@ -1106,12 +1118,16 @@ var SICKRAGE = {
                 });
             }
 
-            function fill_anime_examples() {
-                var pattern = $('#naming_anime_pattern').val();
-                var multi = $('#naming_anime_multi_ep :selected').val();
-                var anime_type = $('input[name="naming_anime"]:checked').val();
+            function fillAnimeExamples() {
+                var example = {};
+                example.pattern = $('#naming_anime_pattern').val();
+                example.multi = $('#naming_anime_multi_ep :selected').val();
+                example.animeType = $('input[name="naming_anime"]:checked').val();
 
-                $.get(srRoot + '/config/postProcessing/testNaming', {pattern: pattern, anime_type: anime_type}, function (data) {
+                $.get(srRoot + '/config/postProcessing/testNaming', {
+                    pattern: example.pattern,
+                    anime_type: example.animeType // jshint ignore:line
+                }, function (data) {
                     if (data) {
                         $('#naming_example_anime').text(data + '.ext');
                         $('#naming_example_anime_div').show();
@@ -1120,7 +1136,11 @@ var SICKRAGE = {
                     }
                 });
 
-                $.get(srRoot + '/config/postProcessing/testNaming', {pattern: pattern, multi: multi, anime_type: anime_type}, function (data) {
+                $.get(srRoot + '/config/postProcessing/testNaming', {
+                    pattern: example.pattern,
+                    multi: example.multi,
+                    anime_type: example.animeType // jshint ignore:line
+                }, function (data) {
                     if (data) {
                         $('#naming_example_multi_anime').text(data + '.ext');
                         $('#naming_example_multi_anime_div').show();
@@ -1129,15 +1149,19 @@ var SICKRAGE = {
                     }
                 });
 
-                $.get(srRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, multi: multi, anime_type: anime_type}, function (data) {
-                    if (data == "invalid") {
+                $.get(srRoot + '/config/postProcessing/isNamingValid', {
+                    pattern: example.pattern,
+                    multi: example.multi,
+                    anime_type: example.animeType // jshint ignore:line
+                }, function (data) {
+                    if (data === "invalid") {
                         $('#naming_pattern').qtip('option', {
                             'content.text': 'This pattern is invalid.',
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_pattern').qtip('toggle', true);
                         $('#naming_pattern').css('background-color', '#FFDDDD');
-                    } else if (data == "seasonfolders") {
+                    } else if (data === "seasonfolders") {
                         $('#naming_pattern').qtip('option', {
                             'content.text': 'This pattern would be invalid without the folders, using it will force "Flatten" off for all shows.',
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
@@ -1166,7 +1190,7 @@ var SICKRAGE = {
                 fillExamples();
             }
 
-            function setup_abd_naming() {
+            function setupAbdNaming() {
                 // if it is a custom selection then show the text box
                 if ($('#name_abd_presets :selected').val().toLowerCase() === "custom...") {
                     $('#naming_abd_custom').show();
@@ -1174,10 +1198,10 @@ var SICKRAGE = {
                     $('#naming_abd_custom').hide();
                     $('#naming_abd_pattern').val($('#name_abd_presets :selected').attr('id'));
                 }
-                fill_abd_examples();
+                fillAbdExamples();
             }
 
-            function setup_sports_naming() {
+            function setupSportsNaming() {
                 // if it is a custom selection then show the text box
                 if ($('#name_sports_presets :selected').val().toLowerCase() === "custom...") {
                     $('#naming_sports_custom').show();
@@ -1185,18 +1209,18 @@ var SICKRAGE = {
                     $('#naming_sports_custom').hide();
                     $('#naming_sports_pattern').val($('#name_sports_presets :selected').attr('id'));
                 }
-                fill_sports_examples();
+                fillSportsExamples();
             }
 
-            function setup_anime_naming() {
+            function setupAnimeNaming() {
                 // if it is a custom selection then show the text box
-                if ($('#name_anime_presets :selected').val() == "Custom...") {
+                if ($('#name_anime_presets :selected').val().toLowerCase() === "custom...") {
                     $('#naming_anime_custom').show();
                 } else {
                     $('#naming_anime_custom').hide();
                     $('#naming_anime_pattern').val($('#name_anime_presets :selected').attr('id'));
                 }
-                fill_anime_examples();
+                fillAnimeExamples();
             }
 
             $('#unpack').on('change', function(){
@@ -1212,31 +1236,31 @@ var SICKRAGE = {
             });
 
             $('#name_abd_presets').on('change', function(){
-                setup_abd_naming();
+                setupAbdNaming();
             });
 
             $('#naming_custom_abd').on('change', function(){
-                setup_abd_naming();
+                setupAbdNaming();
             });
 
             $('#name_sports_presets').on('change', function(){
-                setup_sports_naming();
+                setupSportsNaming();
             });
 
             $('#naming_custom_sports').on('change', function(){
-                setup_sports_naming();
+                setupSportsNaming();
             });
 
             $('#name_anime_presets').on('change', function(){
-                setup_anime_naming();
+                setupAnimeNaming();
             });
 
             $('#naming_custom_anime').on('change', function(){
-                setup_anime_naming();
+                setupAnimeNaming();
             });
 
             $('input[name="naming_anime"]').on('click', function(){
-                setup_anime_naming();
+                setupAnimeNaming();
             });
 
             $('#naming_multi_ep').change(fillExamples);
@@ -1247,32 +1271,32 @@ var SICKRAGE = {
                 }, 500);
             });
 
-            $('#naming_anime_multi_ep').change(fill_anime_examples);
-            $('#naming_anime_pattern').focusout(fill_anime_examples);
+            $('#naming_anime_multi_ep').change(fillAnimeExamples);
+            $('#naming_anime_pattern').focusout(fillAnimeExamples);
             $('#naming_anime_pattern').keyup(function () {
                 typewatch(function () {
-                    fill_anime_examples();
+                    fillAnimeExamples();
                 }, 500);
             });
 
             $('#naming_abd_pattern').focusout(fillExamples);
             $('#naming_abd_pattern').keyup(function () {
                 typewatch(function () {
-                    fill_abd_examples();
+                    fillAbdExamples();
                 }, 500);
             });
 
             $('#naming_sports_pattern').focusout(fillExamples);
             $('#naming_sports_pattern').keyup(function () {
                 typewatch(function () {
-                    fill_sports_examples();
+                    fillSportsExamples();
                 }, 500);
             });
 
             $('#naming_anime_pattern').focusout(fillExamples);
             $('#naming_anime_pattern').keyup(function () {
                 typewatch(function () {
-                    fill_anime_examples();
+                    fillAnimeExamples();
                 }, 500);
             });
 
@@ -1294,9 +1318,9 @@ var SICKRAGE = {
                 $('#naming_pattern').focus();
             });
             setupNaming();
-            setup_abd_naming();
-            setup_sports_naming();
-            setup_anime_naming();
+            setupAbdNaming();
+            setupSportsNaming();
+            setupAnimeNaming();
 
             // -- start of metadata options div toggle code --
             $('#metadataType').on('change keyup', function () {
@@ -1308,7 +1332,7 @@ var SICKRAGE = {
                     var targetName = $(this).attr('id');
                     var selectedTarget = $('#metadataType :selected').val();
 
-                    if (selectedTarget == targetName) {
+                    if (selectedTarget === targetName) {
                         $(this).show();
                     } else {
                         $(this).hide();
@@ -1328,19 +1352,19 @@ var SICKRAGE = {
                 var cur_most_provider = '';
 
                 $('.metadataDiv').each(function () {
-                    var generator_name = $(this).attr('id');
+                    var generatorName = $(this).attr('id');
 
                     var config_arr = [];
-                    var show_metadata = $("#" + generator_name + "_show_metadata").prop('checked');
-                    var episode_metadata = $("#" + generator_name + "_episode_metadata").prop('checked');
-                    var fanart = $("#" + generator_name + "_fanart").prop('checked');
-                    var poster = $("#" + generator_name + "_poster").prop('checked');
-                    var banner = $("#" + generator_name + "_banner").prop('checked');
-                    var episode_thumbnails = $("#" + generator_name + "_episode_thumbnails").prop('checked');
-                    var season_posters = $("#" + generator_name + "_season_posters").prop('checked');
-                    var season_banners = $("#" + generator_name + "_season_banners").prop('checked');
-                    var season_all_poster = $("#" + generator_name + "_season_all_poster").prop('checked');
-                    var season_all_banner = $("#" + generator_name + "_season_all_banner").prop('checked');
+                    var show_metadata = $("#" + generatorName + "_show_metadata").prop('checked');
+                    var episode_metadata = $("#" + generatorName + "_episode_metadata").prop('checked');
+                    var fanart = $("#" + generatorName + "_fanart").prop('checked');
+                    var poster = $("#" + generatorName + "_poster").prop('checked');
+                    var banner = $("#" + generatorName + "_banner").prop('checked');
+                    var episode_thumbnails = $("#" + generatorName + "_episode_thumbnails").prop('checked');
+                    var season_posters = $("#" + generatorName + "_season_posters").prop('checked');
+                    var season_banners = $("#" + generatorName + "_season_banners").prop('checked');
+                    var season_all_poster = $("#" + generatorName + "_season_all_poster").prop('checked');
+                    var season_all_banner = $("#" + generatorName + "_season_all_banner").prop('checked');
 
                     config_arr.push(show_metadata ? '1' : '0');
                     config_arr.push(episode_metadata ? '1' : '0');
@@ -1359,20 +1383,20 @@ var SICKRAGE = {
                     }
                     if (cur_num > cur_most) {
                         cur_most = cur_num;
-                        cur_most_provider = generator_name;
+                        cur_most_provider = generatorName;
                     }
 
-                    $("#" + generator_name + "_eg_show_metadata").attr('class', show_metadata ? 'enabled' : 'disabled');
-                    $("#" + generator_name + "_eg_episode_metadata").attr('class', episode_metadata ? 'enabled' : 'disabled');
-                    $("#" + generator_name + "_eg_fanart").attr('class', fanart ? 'enabled' : 'disabled');
-                    $("#" + generator_name + "_eg_poster").attr('class', poster ? 'enabled' : 'disabled');
-                    $("#" + generator_name + "_eg_banner").attr('class', banner ? 'enabled' : 'disabled');
-                    $("#" + generator_name + "_eg_episode_thumbnails").attr('class', episode_thumbnails ? 'enabled' : 'disabled');
-                    $("#" + generator_name + "_eg_season_posters").attr('class', season_posters ? 'enabled' : 'disabled');
-                    $("#" + generator_name + "_eg_season_banners").attr('class', season_banners ? 'enabled' : 'disabled');
-                    $("#" + generator_name + "_eg_season_all_poster").attr('class', season_all_poster ? 'enabled' : 'disabled');
-                    $("#" + generator_name + "_eg_season_all_banner").attr('class', season_all_banner ? 'enabled' : 'disabled');
-                    $("#" + generator_name + "_data").val(config_arr.join('|'));
+                    $("#" + generatorName + "_eg_show_metadata").attr('class', show_metadata ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_episode_metadata").attr('class', episode_metadata ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_fanart").attr('class', fanart ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_poster").attr('class', poster ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_banner").attr('class', banner ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_episode_thumbnails").attr('class', episode_thumbnails ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_season_posters").attr('class', season_posters ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_season_banners").attr('class', season_banners ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_season_all_poster").attr('class', season_all_poster ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_season_all_banner").attr('class', season_all_banner ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_data").val(config_arr.join('|'));
 
                 });
 
@@ -1868,7 +1892,6 @@ var SICKRAGE = {
                     }, function(data) {
                         $.each(data, function(season, eps) {
                             $.each(eps, function(episode, data) {
-                                //alert(season+'x'+episode+': '+name);
                                 lastRow.after($.makeRow(indexerId, season, episode, data.name, data.subtitles, checked));
                             });
                         });
