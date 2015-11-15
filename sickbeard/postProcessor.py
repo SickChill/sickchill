@@ -514,7 +514,7 @@ class PostProcessor(object):
         if not name:
             return to_return
 
-        logger.log(u"Analyzing name " + repr(name), logger.DEBUG)
+        logger.log(u"Analyzing name " + name, logger.DEBUG)
 
         name = helpers.remove_non_release_groups(helpers.remove_extension(name))
 
