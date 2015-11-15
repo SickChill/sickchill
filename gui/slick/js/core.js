@@ -863,8 +863,8 @@ var SICKRAGE = {
                     pushbullet.devices = jQuery.parseJSON(data).devices;
                     pushbullet.currentDevice = $("#pushbullet_device").val();
                     $("#pushbullet_device_list").html('');
-                    for (var i = 0, len = devices.length; i < len; i++) {
-                        if(devices[i].active === true) {
+                    for (var i = 0, len = pushbullet.devices.length; i < len; i++) {
+                        if(pushbullet.devices[i].active === true) {
                             if(pushbullet.currentDevice === pushbullet.devices[i].iden) {
                                 $("#pushbullet_device_list").append('<option value="'+pushbullet.devices[i].iden+'" selected>' + pushbullet.devices[i].nickname + '</option>');
                             } else {
@@ -898,7 +898,7 @@ var SICKRAGE = {
             // @TODO Find out what notify_data actually does since it doesn't seem to be a real function
             $('#email_show').change(function() {
                 var key = parseInt($('#email_show').val(), 10);
-                $('#email_show_list').val(key >= 0 ? notify_data[key.toString()].list : '');
+                $('#email_show_list').val(key >= 0 ? notify_data[key.toString()].list : ''); // jshint ignore:line
             });
 
             // Update the internal data struct anytime settings are saved to the server
@@ -909,8 +909,8 @@ var SICKRAGE = {
             function loadShowNotifyLists() {
                 $.get(srRoot + "/home/loadShowNotifyLists", function(data) {
                     var list, html, s;
-                    list = $.parseJSON(data);
-                    notify_data = list; // @TODO This is the same as the $('#email_show') function above
+                    list = $.parseJSON(data); // @TODO The line below this is the same as the $('#email_show') function above
+                    notify_data = list; // jshint ignore:line
                     if (list._size === 0) { return; }
                     html = '<option value="-1">-- Select --</option>';
                     for (s in list) {
@@ -1348,60 +1348,60 @@ var SICKRAGE = {
             });
 
             $.fn.refreshMetadataConfig = function (first) {
-                var cur_most = 0;
-                var cur_most_provider = '';
+                var curMost = 0;
+                var curMostProvider = '';
 
                 $('.metadataDiv').each(function () {
                     var generatorName = $(this).attr('id');
 
-                    var config_arr = [];
-                    var show_metadata = $("#" + generatorName + "_show_metadata").prop('checked');
-                    var episode_metadata = $("#" + generatorName + "_episode_metadata").prop('checked');
+                    var configArray = [];
+                    var showMetadata = $("#" + generatorName + "_show_metadata").prop('checked');
+                    var episodeMetadata = $("#" + generatorName + "_episode_metadata").prop('checked');
                     var fanart = $("#" + generatorName + "_fanart").prop('checked');
                     var poster = $("#" + generatorName + "_poster").prop('checked');
                     var banner = $("#" + generatorName + "_banner").prop('checked');
-                    var episode_thumbnails = $("#" + generatorName + "_episode_thumbnails").prop('checked');
-                    var season_posters = $("#" + generatorName + "_season_posters").prop('checked');
-                    var season_banners = $("#" + generatorName + "_season_banners").prop('checked');
-                    var season_all_poster = $("#" + generatorName + "_season_all_poster").prop('checked');
-                    var season_all_banner = $("#" + generatorName + "_season_all_banner").prop('checked');
+                    var episodeThumbnails = $("#" + generatorName + "_episode_thumbnails").prop('checked');
+                    var seasonPosters = $("#" + generatorName + "_season_posters").prop('checked');
+                    var seasonBanners = $("#" + generatorName + "_season_banners").prop('checked');
+                    var seasonAllPoster = $("#" + generatorName + "_season_all_poster").prop('checked');
+                    var seasonAllBanner = $("#" + generatorName + "_season_all_banner").prop('checked');
 
-                    config_arr.push(show_metadata ? '1' : '0');
-                    config_arr.push(episode_metadata ? '1' : '0');
-                    config_arr.push(fanart ? '1' : '0');
-                    config_arr.push(poster ? '1' : '0');
-                    config_arr.push(banner ? '1' : '0');
-                    config_arr.push(episode_thumbnails ? '1' : '0');
-                    config_arr.push(season_posters ? '1' : '0');
-                    config_arr.push(season_banners ? '1' : '0');
-                    config_arr.push(season_all_poster ? '1' : '0');
-                    config_arr.push(season_all_banner ? '1' : '0');
+                    configArray.push(showMetadata ? '1' : '0');
+                    configArray.push(episodeMetadata ? '1' : '0');
+                    configArray.push(fanart ? '1' : '0');
+                    configArray.push(poster ? '1' : '0');
+                    configArray.push(banner ? '1' : '0');
+                    configArray.push(episodeThumbnails ? '1' : '0');
+                    configArray.push(seasonPosters ? '1' : '0');
+                    configArray.push(seasonBanners ? '1' : '0');
+                    configArray.push(seasonAllPoster ? '1' : '0');
+                    configArray.push(seasonAllBanner ? '1' : '0');
 
-                    var cur_num = 0;
-                    for (var i = 0, len = config_arr.length; i < len; i++) {
-                        cur_num += parseInt(config_arr[i]);
+                    var curNumber = 0;
+                    for (var i = 0, len = configArray.length; i < len; i++) {
+                        curNumber += parseInt(configArray[i]);
                     }
-                    if (cur_num > cur_most) {
-                        cur_most = cur_num;
-                        cur_most_provider = generatorName;
+                    if (curNumber > curMost) {
+                        curMost = curNumber;
+                        curMostProvider = generatorName;
                     }
 
-                    $("#" + generatorName + "_eg_show_metadata").attr('class', show_metadata ? 'enabled' : 'disabled');
-                    $("#" + generatorName + "_eg_episode_metadata").attr('class', episode_metadata ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_show_metadata").attr('class', showMetadata ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_episode_metadata").attr('class', episodeMetadata ? 'enabled' : 'disabled');
                     $("#" + generatorName + "_eg_fanart").attr('class', fanart ? 'enabled' : 'disabled');
                     $("#" + generatorName + "_eg_poster").attr('class', poster ? 'enabled' : 'disabled');
                     $("#" + generatorName + "_eg_banner").attr('class', banner ? 'enabled' : 'disabled');
-                    $("#" + generatorName + "_eg_episode_thumbnails").attr('class', episode_thumbnails ? 'enabled' : 'disabled');
-                    $("#" + generatorName + "_eg_season_posters").attr('class', season_posters ? 'enabled' : 'disabled');
-                    $("#" + generatorName + "_eg_season_banners").attr('class', season_banners ? 'enabled' : 'disabled');
-                    $("#" + generatorName + "_eg_season_all_poster").attr('class', season_all_poster ? 'enabled' : 'disabled');
-                    $("#" + generatorName + "_eg_season_all_banner").attr('class', season_all_banner ? 'enabled' : 'disabled');
-                    $("#" + generatorName + "_data").val(config_arr.join('|'));
+                    $("#" + generatorName + "_eg_episode_thumbnails").attr('class', episodeThumbnails ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_season_posters").attr('class', seasonPosters ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_season_banners").attr('class', seasonBanners ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_season_all_poster").attr('class', seasonAllPoster ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_eg_season_all_banner").attr('class', seasonAllBanner ? 'enabled' : 'disabled');
+                    $("#" + generatorName + "_data").val(configArray.join('|'));
 
                 });
 
-                if (cur_most_provider !== '' && first) {
-                    $('#metadataType option[value=' + cur_most_provider + ']').attr('selected', 'selected');
+                if (curMostProvider !== '' && first) {
+                    $('#metadataType option[value=' + curMostProvider + ']').attr('selected', 'selected');
                     $(this).showHideMetadata();
                 }
             };
@@ -1528,7 +1528,7 @@ var SICKRAGE = {
                     label = ' label',
                     directory = ' directory',
                     client = '',
-                    optionPanel = '#options_torrent_blackhole';
+                    optionPanel = '#options_torrent_blackhole',
                     rpcurl = ' RPC URL';
 
                 if (selectedProvider.toLowerCase() !== 'blackhole') {
@@ -1667,13 +1667,19 @@ var SICKRAGE = {
             });
 
             $('#test_torrent').click(function(){
+                var torrent = {};
                 $('#test_torrent_result').html(loading);
-                var torrent_method = $('#torrent_method :selected').val();
-                var torrent_host = $('#torrent_host').val();
-                var torrent_username = $('#torrent_username').val();
-                var torrent_password = $('#torrent_password').val();
+                torrent.method = $('#torrent_method :selected').val();
+                torrent.host = $('#torrent_host').val();
+                torrent.username = $('#torrent_username').val();
+                torrent.password = $('#torrent_password').val();
 
-                $.get(srRoot + '/home/testTorrent', {'torrent_method': torrent_method, 'host': torrent_host, 'username': torrent_username, 'password': torrent_password}, function(data){
+                $.get(srRoot + '/home/testTorrent', {
+                    'torrent_method': torrent.method,
+                    'host': torrent.host,
+                    'username': torrent.username,
+                    'password': torrent.password
+                }, function(data){
                     $('#test_torrent_result').html(data);
                 });
             });
