@@ -6,38 +6,37 @@ var srRoot = getMeta('srRoot'),
     topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />',
     loading = '<img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
 
+var configSuccess = function(){
+    $('.config_submitter').each(function(){
+        $(this).removeAttr("disabled");
+        $(this).next().remove();
+        $(this).show();
+    });
+    $('.config_submitter_refresh').each(function(){
+        $(this).removeAttr("disabled");
+        $(this).next().remove();
+        $(this).show();
+        window.location.href = srRoot + '/config/providers/';
+    });
+    $('#email_show').trigger('notify');
+};
+
 var SICKRAGE = {
     common: {
         init: function() {
-            function configSuccess(){
-                $('.config_submitter').each(function(){
-                    $(this).removeAttr("disabled");
-                    $(this).next().remove();
-                    $(this).show();
-                });
-                $('.config_submitter_refresh').each(function(){
-                    $(this).removeAttr("disabled");
-                    $(this).next().remove();
-                    $(this).show();
-                    window.location.href = srRoot + '/config/providers/';
-                });
-                $('#email_show').trigger('notify');
-            }
-
             $("#config-components").tabs({
                 activate: function (event, ui) {
-                    var lastOpenedPanel = $(this).data("lastOpenedPanel"),
-                        selected = $(this).tabs('option', 'selected');
+                    var lastOpenedPanel = $(this).data("lastOpenedPanel");
 
-                    if (!lastOpenedPanel) { lastOpenedPanel = $(ui.oldPanel); }
+                    if(!lastOpenedPanel) { lastOpenedPanel = $(ui.oldPanel); }
 
-                    if (!$(this).data("topPositionTab")) { $(this).data("topPositionTab", $(ui.newPanel).position().top); }
+                    if(!$(this).data("topPositionTab")) { $(this).data("topPositionTab", $(ui.newPanel).position().top); }
 
                     //Dont use the builtin fx effects. This will fade in/out both tabs, we dont want that
                     //Fadein the new tab yourself
                     $(ui.newPanel).hide().fadeIn(0);
 
-                    if (lastOpenedPanel) {
+                    if(lastOpenedPanel) {
                         // 1. Show the previous opened tab by removing the jQuery UI class
                         // 2. Make the tab temporary position:absolute so the two tabs will overlap
                         // 3. Set topposition so they will overlap if you go from tab 1 to tab 0
@@ -58,8 +57,8 @@ var SICKRAGE = {
 
             // @TODO Replace this with a real touchscreen check
             // hack alert: if we don't have a touchscreen, and we are already hovering the mouse, then click should link instead of toggle
-            if ((navigator.maxTouchPoints || 0) < 2) {
-                $('.dropdown-toggle').on('click', function(e) {
+            if((navigator.maxTouchPoints || 0) < 2) {
+                $('.dropdown-toggle').on('click', function() {
                     var $this = $(this);
                     if ($this.attr('aria-expanded') === 'true') {
                         window.location.href = $this.attr('href');
@@ -67,7 +66,7 @@ var SICKRAGE = {
                 });
             }
 
-            if(metaToBool('sickbeard.FUZZY_DATING')){
+            if(metaToBool('sickbeard.FUZZY_DATING')) {
                 $.timeago.settings.allowFuture = true;
                 $.timeago.settings.strings = {
                     prefixAgo: null,
@@ -687,9 +686,9 @@ var SICKRAGE = {
             });
 
             $('#TraktGetPin').click(function () {
-                var track = {};
-                trackt.pinUrl = $('#trakt_pin_url').val();
-                var w = window.open(trakt.pinUrl, "popUp", "toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=550");
+                var trakt = {};
+                trakt.pinUrl = $('#trakt_pin_url').val();
+                window.open(trakt.pinUrl, "popUp", "toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=550");
                 $('#trakt_pin').removeClass('hide');
             });
 
@@ -926,7 +925,10 @@ var SICKRAGE = {
             loadShowNotifyLists();
 
             $('#email_show_save').click(function() {
-                $.post(srRoot + "/home/saveShowNotifyList", { show: $('#email_show').val(), emails: $('#email_show_list').val()}, function (data) {
+                $.post(srRoot + "/home/saveShowNotifyList", {
+                    show: $('#email_show').val(),
+                    emails: $('#email_show_list').val()
+                }, function() {
                     // Reload the per show notify lists to reflect changes
                     loadShowNotifyLists();
                 });
@@ -955,7 +957,6 @@ var SICKRAGE = {
             })();
 
             function isRarSupported() {
-                var pattern = $('#naming_pattern').val();
                 $.get(srRoot + '/config/postProcessing/isRarSupported', function (data) {
                     if (data !== "supported") {
                         $('#unpack').qtip('option', {
@@ -1525,8 +1526,6 @@ var SICKRAGE = {
                     host = ' host:port',
                     username = ' username',
                     password = ' password',
-                    label = ' label',
-                    directory = ' directory',
                     client = '',
                     optionPanel = '#options_torrent_blackhole',
                     rpcurl = ' RPC URL';
@@ -1761,7 +1760,7 @@ var SICKRAGE = {
                 row += ' </tr>';
 
                 return row;
-            }
+            };
         },
         index: function() {
             $("#massUpdateTable:has(tbody tr)").tablesorter({
@@ -1814,7 +1813,7 @@ var SICKRAGE = {
                 headers: { 3: { sorter: false } }
             });
             $('#limit').change(function(){
-                window.location.href = srRoot + '/manage/failedDownloads/?limit=' + $(this).val();;
+                window.location.href = srRoot + '/manage/failedDownloads/?limit=' + $(this).val();
             });
         },
         massEdit: function() {
