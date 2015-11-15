@@ -6,8 +6,7 @@
     from sickbeard.helpers import anon_url
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/configProviders.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/config.js?${sbPID}"></script>
+<script type="text/javascript" src="/js/ConfigProviders.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
     % if sickbeard.USE_NZBS:

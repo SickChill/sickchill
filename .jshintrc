@@ -10,7 +10,7 @@
     "indent": 4,
     "jquery": true,
     "latedef": true,
-    "maxerr": 2,
+    "maxerr": 100,
     "noarg": true,
     "noempty": true,
     "nonbsp": true,

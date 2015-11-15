@@ -9,12 +9,6 @@
     from sickbeard.metadata.generic import GenericMetadata
     from sickbeard import naming
 %>
-
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/configPostProcessing.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/config.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/new/config_postProcessing.js"></script>
-</%block>
 <%block name="content">
 <div id="content960">
 % if not header is UNDEFINED:
