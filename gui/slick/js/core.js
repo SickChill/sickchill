@@ -1,12 +1,14 @@
+// @TODO Move these into common.ini when possible,
+//       currently we can't do that as browser.js and a few others need it before this is loaded
+var srRoot = getMeta('srRoot'),
+    themeSpinner = getMeta('themeSpinner'),
+    anonURL = getMeta('anonURL'),
+    topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />',
+    loading = '<img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
+
 var SICKRAGE = {
     common: {
         init: function() {
-            var srRoot = getMeta('srRoot'),
-                themeSpinner = getMeta('themeSpinner'),
-                anonURL = getMeta('anonURL'),
-                topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />',
-                loading = '<img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
-
             function configSuccess(){
                 $('.config_submitter').each(function(){
                     $(this).removeAttr("disabled");
