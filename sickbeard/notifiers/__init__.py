@@ -41,8 +41,6 @@ import tweet
 import trakt
 import emailnotify
 
-from sickbeard.common import *
-
 # home theater / nas
 kodi_notifier = kodi.KODINotifier()
 plex_notifier = plex.PLEXNotifier()
