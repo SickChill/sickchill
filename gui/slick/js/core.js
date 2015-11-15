@@ -24,6 +24,49 @@ var configSuccess = function(){
 var SICKRAGE = {
     common: {
         init: function() {
+            $.confirm.options = {
+                confirmButton: "Yes",
+                cancelButton: "Cancel",
+                dialogClass: "modal-dialog",
+                post: false,
+                confirm: function(e) {
+                    location.href = e.context.href;
+                }
+            };
+
+            $("a.shutdown").confirm({
+                title: "Shutdown",
+                text: "Are you sure you want to shutdown SickRage?"
+            });
+
+            $("a.restart").confirm({
+                title: "Restart",
+                text: "Are you sure you want to restart SickRage?"
+            });
+
+            $("a.removeshow").confirm({
+                title: "Remove Show",
+                text: 'Are you sure you want to remove <span class="footerhighlight">' + $('#showtitle').data('showname') + '</span> from the database?<br><br><input type="checkbox" id="deleteFiles"> <span class="red-text">Check to delete files as well. IRREVERSIBLE</span></input>',
+                confirm: function(e) {
+                    location.href = e.context.href + ($('#deleteFiles')[0].checked ? '&full=1' : '');
+                }
+            });
+
+            $('a.clearhistory').confirm({
+                title: 'Clear History',
+                text: 'Are you sure you want to clear all download history?'
+            });
+
+            $('a.trimhistory').confirm({
+                title: 'Trim History',
+                text: 'Are you sure you want to trim all download history older than 30 days?'
+            });
+
+            $('a.submiterrors').confirm({
+                title: 'Submit Errors',
+                text: 'Are you sure you want to submit these errors ?<br><br><span class="red-text">Make sure SickRage is updated and trigger<br> this error with debug enabled before submitting</span>'
+            });
+
             $("#config-components").tabs({
                 activate: function (event, ui) {
                     var lastOpenedPanel = $(this).data("lastOpenedPanel");
