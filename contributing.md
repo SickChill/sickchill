@@ -136,12 +136,14 @@ Please follow this process; it's the best way to get your work included in the p
 ## Code guidelines
 
 ### HTML
-- Use tags and elements appropriate for an HTML5 doctype (e.g., self-closing tags)
-- Use bower components for third-party JS when possible. All other files should be local and not link to a CDN
+- Use tags and elements appropriate for an HTML5 doctype (e.g. self-closing tags).
 - Use [WAI-ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attributes in documentation examples to promote accessibility.
+- DO NOT user any CDNs for any Javascript, CSS or font files.
 
 ### JS
-
-- All non library files should pass full lint tests using the [atom.io js linter](https://atom.io/packages/linter-jshint)
+- All non library files should pass full lint tests using [JSHint](http://jshint.com/) and the .jshintrc file in the .build directory. We suggest using [atom.io's js linter](https://atom.io/packages/linter-jshint) or something similar to lint on the fly.
+- Use bower components for third-party Javascript when possible, if there's no bower package then it must go in the `lib` directory.
+- If the Javascript is not a library then it must be placed in the core.js and then be minified using Grunt as listed below.
 - 4 spaces (no tabs)
-- Code shoud be readable since it all gets minified after development is finished
+- Code should be readable since it all gets minified before shipping.
+- Make sure to run `cd .build && npm install && bower install && grunt` before commiting any javascript to the repo.
