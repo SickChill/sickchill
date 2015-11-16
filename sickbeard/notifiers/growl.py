@@ -75,8 +75,7 @@ class GrowlNotifier(object):
             notice.add_header('Notification-Text', message)
 
         response = self._send(options['host'], options['port'], notice.encode(), options['debug'])
-        if isinstance(response, gntp.GNTPOK): return True
-        return False
+        return True if isinstance(response, gntp.GNTPOK) else False
 
     def _send(self, host, port, data, debug=False):
         if debug: print '<Sending>\n', data, '\n</Sending>'
