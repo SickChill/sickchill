@@ -23,6 +23,7 @@
         "metaToBool": true,
         "getMeta": true,
         "isMeta": true,
+        "topImageHtml": true,
         "generate_bwlist": true,
         "_": true,
         "bootbox": true,
