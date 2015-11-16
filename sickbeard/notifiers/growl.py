@@ -110,16 +110,14 @@ class GrowlNotifier(object):
 
         growlHosts = [(hostParts[0], port)]
 
-        opts = {}
-
-        opts['name'] = name
-
-        opts['title'] = title
-        opts['app'] = 'SickRage'
-
-        opts['sticky'] = None
-        opts['priority'] = None
-        opts['debug'] = False
+        opts = {
+            'name': name,
+            'title': title,
+            'app': 'SickRage',
+            'sticky': None,
+            'priority': None,
+            'debug': False
+        }
 
         if password is None:
             opts['password'] = sickbeard.GROWL_PASSWORD
