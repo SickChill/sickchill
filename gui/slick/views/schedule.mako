@@ -19,7 +19,6 @@
 </style>
 </%block>
 <%block name="content">
-<% sort = sickbeard.COMING_EPS_SORT %>
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <h1 class="header">${header}</h1>
 <div class="h2footer pull-right">
@@ -122,7 +121,7 @@
                 <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
             </td>
 
-            <td align="center" nowrap="nowrap"> 
+            <td align="center" nowrap="nowrap">
                 <% ends = sbdatetime.sbdatetime.convert_to_setting(cur_ep_enddate) %>
                 <time datetime="${ends.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(ends)}</time>
             </td>
@@ -139,7 +138,7 @@
 
             <td>
 % if cur_result['description']:
-                <img alt="" src="${srRoot}/images/info32.png" height="16" width="16" class="plotInfo" id="plot_info_${'%s_%s_%s' % (str(cur_result['showid']), str(cur_result['season']), str(cur_result['episode']))}" />
+                <img alt="" src="${srRoot}/images/info32.png" height="16" width="16" class="plotInfo" id="plot_info_${'%s_%s_%s' % (cur_result['showid'], cur_result['season'], cur_result['episode'])}" />
 % else:
                 <img alt="" src="${srRoot}/images/info32.png" width="16" height="16" class="plotInfoNone"  />
 % endif
@@ -195,8 +194,8 @@
     today_header = False
     show_div = 'ep_listing listing-default'
 %>
-% if 'show' == sort:
-    <br /><br />
+% if sickbeard.COMING_EPS_SORT == 'show':
+    <br><br>
 % endif
 
 % for cur_result in results:
@@ -214,7 +213,7 @@
     else:
         cur_ep_enddate = cur_result['localtime']
 %>
-    % if 'network' == sort:
+    % if sickbeard.COMING_EPS_SORT == 'network':
         <% show_network = ('no network', cur_result['network'])[bool(cur_result['network'])] %>
         % if cur_segment != show_network:
             <div>
@@ -235,20 +234,20 @@
             % endif
         % endif
 
-    % elif 'date' == sort:
+    % elif sickbeard.COMING_EPS_SORT == 'date':
         % if cur_segment != cur_ep_airdate:
             % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
-                <br /><h2 class="day">Missed</h2>
+                <br><h2 class="day">Missed</h2>
                 <% missed_header = True %>
             % elif cur_ep_airdate >= next_week.date() and not too_late_header:
-                <br /><h2 class="day">Later</h2>
+                <br><h2 class="day">Later</h2>
                 <% too_late_header = True %>
             % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
                 % if cur_ep_airdate == today.date():
-                    <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}<span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
+                    <br><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}<span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
                     <% today_header = True %>
                 % else:
-                    <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
+                    <br><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
                 % endif
             % endif
             <% cur_segment = cur_ep_airdate %>
@@ -256,7 +255,7 @@
 
         % if cur_ep_airdate == today.date() and not today_header:
             <div>
-            <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
+            <br><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
             <% today_header = True %>
         % endif
 
@@ -272,7 +271,7 @@
             % endif
         % endif
 
-    % elif 'show' == sort:
+    % elif sickbeard.COMING_EPS_SORT == 'show':
         % if cur_ep_enddate < today:
             <% show_div = 'ep_listing listing-overdue listingradius' %>
         % elif cur_ep_airdate >= next_week.date():
@@ -319,7 +318,7 @@
                 <span class="title">Next Episode:</span> <span>${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}</span>
 
                 <div class="clearfix">
-                    <span class="title">Airs: </span><span class="airdate">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING)}</span>${('', '<span> on %s</span>' % str(cur_result['network']))[bool(cur_result['network'])]}
+                    <span class="title">Airs: </span><span class="airdate">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime'])}</span>${('', '<span> on %s</span>' % cur_result['network'])[bool(cur_result['network'])]}
                 </div>
 
                 <div class="clearfix">

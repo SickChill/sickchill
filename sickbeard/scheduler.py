@@ -82,7 +82,7 @@ class Scheduler(threading.Thread):
                 if self.enable:
                     current_time = datetime.datetime.now()
                     should_run = False
-                    #Is self.force enable
+                    # Is self.force enable
                     if self.force:
                         should_run = True
                     # check if interval has passed

@@ -52,9 +52,6 @@ class BitSoupProvider(generic.TorrentProvider):
             "c42": 1, "c45": 1, "c49": 1, "c7": 1
         }
 
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
         if not self.username or not self.password:
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
@@ -92,7 +89,7 @@ class BitSoupProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 self.search_params['search'] = search_string
@@ -106,7 +103,7 @@ class BitSoupProvider(generic.TorrentProvider):
                         torrent_table = html.find('table', attrs={'class': 'koptekst'})
                         torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                        #Continue only if one Release is found
+                        # Continue only if one Release is found
                         if len(torrent_rows) < 2:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
@@ -121,7 +118,7 @@ class BitSoupProvider(generic.TorrentProvider):
                                 title = link.getText()
                                 seeders = int(cells[10].getText())
                                 leechers = int(cells[11].getText())
-                                #FIXME
+                                # FIXME
                                 size = -1
                             except (AttributeError, TypeError):
                                 continue
@@ -129,22 +126,22 @@ class BitSoupProvider(generic.TorrentProvider):
                             if not all([title, download_url]):
                                 continue
 
-                                #Filter unseeded torrent
+                                # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
+                                if mode is not 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             item = title, download_url, size, seeders, leechers
-                            if mode != 'RSS':
+                            if mode is not 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)
 
-                except Exception, e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

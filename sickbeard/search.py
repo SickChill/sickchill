@@ -132,7 +132,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
             dlResult = _downloadResult(result)
         else:
             if not result.content and not result.url.startswith('magnet'):
-                result.content = result.provider.getURL(result.url)
+                result.content = result.provider.getURL(result.url, needBytes=True)
 
             if result.content or result.url.startswith('magnet'):
                 client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
@@ -141,7 +141,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
                 logger.log(u"Torrent file content is empty", logger.WARNING)
                 dlResult = False
     else:
-        logger.log(u"Unknown result type, unable to download it", logger.ERROR)
+        logger.log(u"Unknown result type, unable to download it (%r)" % result.resultType, logger.ERROR)
         dlResult = False
 
     if not dlResult:
@@ -215,7 +215,7 @@ def pickBestResult(results, show):
             if not show.release_groups.is_valid(cur_result):
                 continue
 
-        logger.log("Quality of " + cur_result.name + " is " + Quality.qualityStrings[cur_result.quality])
+        logger.log(u"Quality of " + cur_result.name + " is " + Quality.qualityStrings[cur_result.quality])
 
         anyQualities, bestQualities = Quality.splitQuality(show.quality)
 

@@ -26,7 +26,7 @@ from sickbeard import logger
 from sickbeard import db
 from sickbeard import common
 from sickbeard import helpers
-from sickbeard import sbdatetime, network_timezones
+from sickbeard import network_timezones
 from sickrage.helper.exceptions import MultipleShowObjectsException
 
 

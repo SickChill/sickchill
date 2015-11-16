@@ -41,7 +41,6 @@
         <meta name="msapplication-TileImage" content="${srRoot}/images/ico/favicon-144.png">
         <meta name="msapplication-config" content="${srRoot}/css/browserconfig.xml">
 
-
         <meta data-var="srRoot" data-content="${srRoot}">
         <meta data-var="themeSpinner" data-content="${('', '-dark')[sickbeard.THEME_NAME == 'dark']}">
         <meta data-var="anonURL" data-content="${sickbeard.ANON_REDIRECT}">
@@ -78,6 +77,7 @@
         <link rel="apple-touch-icon" sizes="72x72" href="${srRoot}/images/ico/favicon-72.png">
         <link rel="apple-touch-icon" href="${srRoot}/images/ico/favicon-57.png">
 
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/vender.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/bootstrap.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/browser.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}" />
@@ -85,14 +85,12 @@
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/style.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/print.css?${sbPID}" />
-        % if sbLogin:
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/pnotify.custom.min.css?${sbPID}" />
+        % if srLogin:
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/country-flags.css?${sbPID}"/>
         % endif
         <%block name="css" />
     </head>
-
-    <body>
+    <body data-controller="${controller}" data-action="${action}">
         <nav class="navbar navbar-default navbar-fixed-top hidden-print" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -105,11 +103,11 @@
                     <a class="navbar-brand" href="${srRoot}/home/" title="SickRage"><img alt="SickRage" src="${srRoot}/images/sickrage.png" style="height: 50px;" class="img-responsive pull-left" /></a>
                 </div>
 
-            % if sbLogin:
+            % if srLogin:
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
                         <li id="NAVhome" class="navbar-split dropdown${('', ' active')[topmenu == 'home']}">
-                            <a href="${srRoot}/home/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">Shows
+                            <a href="${srRoot}/home/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>Shows</span>
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
@@ -119,7 +117,7 @@
                                 % if sickbeard.SHOWS_RECENT:
                                     <li role="separator" class="divider"></li>
                                     % for recentShow in sickbeard.SHOWS_RECENT:
-                                        <li><a href="${srRoot}/home/displayShow/?show=${recentShow['indexerid']}"><i class="menu-icon-addshow"></i>&nbsp;${recentShow['name']|trim,h}</a></li>
+                                        <li><a href="${srRoot}/home/displayShow?show=${recentShow['indexerid']}"><i class="menu-icon-addshow"></i>&nbsp;${recentShow['name']|trim,h}</a></li>
                                     % endfor
                                 % endif
                             </ul>
@@ -135,7 +133,7 @@
                         </li>
 
                         <li id="NAVmanage" class="navbar-split dropdown${('', ' active')[topmenu == 'manage']}">
-                            <a href="${srRoot}/manage/episodeStatuses/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">Manage
+                            <a href="${srRoot}/manage/episodeStatuses/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>Manage</span>
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
@@ -166,7 +164,7 @@
                         </li>
 
                         <li id="NAVconfig" class="navbar-split dropdown${('', ' active')[topmenu == 'config']}">
-                            <a href="${srRoot}/config/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs">Config</span><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" />
+                            <a href="${srRoot}/config/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Config</span><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" />
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
@@ -203,7 +201,7 @@
                                 toolsBadge = ''
                         %>
                         <li id="NAVsystem" class="navbar-split dropdown${('', ' active')[topmenu == 'system']}">
-                            <a href="${srRoot}/home/status/" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${toolsBadge}
+                            <a href="${srRoot}/home/status/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${toolsBadge}
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
@@ -223,7 +221,7 @@
                                 <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
                                 <li><a href="${srRoot}/home/restart/?pid=${sbPID}" class="confirm restart"><i class="menu-icon-restart"></i>&nbsp;Restart</a></li>
                                 <li><a href="${srRoot}/home/shutdown/?pid=${sbPID}" class="confirm shutdown"><i class="menu-icon-shutdown"></i>&nbsp;Shutdown</a></li>
-                                % if sbLogin != True:
+                                % if srLogin != True:
                                     <li><a href="${srRoot}/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;Logout</a></li>
                                 % endif
                                 <li role="separator" class="divider"></li>
@@ -264,13 +262,13 @@
         </div>
         % endif
 
-        % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and sbLogin:
+        % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and srLogin:
         <div class="alert alert-danger upgrade-notification hidden-print" role="alert">
             <span>You're using the ${sickbeard.BRANCH} branch. Please use 'master' unless specifically asked</span>
         </div>
         % endif
 
-        % if sickbeard.NEWEST_VERSION_STRING and sbLogin:
+        % if sickbeard.NEWEST_VERSION_STRING and srLogin:
         <div class="alert alert-success upgrade-notification hidden-print" role="alert">
             <span>${sickbeard.NEWEST_VERSION_STRING}</span>
         </div>
@@ -281,7 +279,7 @@
                 <%block name="content" />
             </div> <!-- /content -->
         </div> <!-- /contentWrapper -->
-    % if sbLogin:
+    % if srLogin:
         <footer>
             <div class="footer clearfix">
             <%
@@ -312,28 +310,22 @@
                 </div>
             </div>
         </footer>
-        <script type="text/javascript" src="${srRoot}/js/_bower.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.cookie.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/vender.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.cookiejar.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.json-2.2.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.selectboxes.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.tokeninput.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter-2.17.7.min.js?${sbPID}"></script><!-- Can't be added to bower -->
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter.widgets-2.17.7.min.js?${sbPID}"></script><!-- Can't be added to bower -->
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.tablesorter.widget-columnSelector-2.17.7.js?${sbPID}"></script><!-- Can't be added to bower -->
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.qtip-2.2.1.min.js?${sbPID}"></script><!-- Can't be added to bower -->
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.ui.touch-punch-0.2.2.min.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/lib/isotope.pkgd.min.js?${sbPID}"></script><!-- Can't be added to bower -->
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.confirm.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/lib/formwizard.js?${sbPID}"></script><!-- Can't be added to bower -->
-        <script type="text/javascript" src="${srRoot}/js/lib/pnotify.custom.min.js?${sbPID}"></script><!-- Needs to be removed -->
         <script type="text/javascript" src="${srRoot}/js/new/parsers.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/new/meta.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/new/core.js?${sbPID}"></script>
+        % if sickbeard.DEVELOPER:
+        <script type="text/javascript" src="${srRoot}/js/core.js?${sbPID}"></script>
+        % else:
+        <script type="text/javascript" src="${srRoot}/js/core.min.js?${sbPID}"></script>
+        % endif
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.scrolltopcontrol-1.1.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/browser.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/confirmations.js?${sbPID}"></script>
     % endif
         <%block name="scripts" />
     </body>

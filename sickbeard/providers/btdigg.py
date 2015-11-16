@@ -1,7 +1,7 @@
 # Author: Jodi Jones <venom@gen-x.co.nz>
 # URL: http://code.google.com/p/sickbeard/
 #
-#Ported to sickrage by: matigonkas
+# Ported to sickrage by: matigonkas
 #
 # This file is part of SickRage.
 #
@@ -38,9 +38,6 @@ class BTDIGGProvider(generic.TorrentProvider):
 
         self.cache = BTDiggCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
@@ -50,7 +47,7 @@ class BTDIGGProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
                 searchURL = self.urls['api'] + "api/private-341ada3245790954/s02?q=" + search_string + "&p=0&order=1"
@@ -58,7 +55,7 @@ class BTDIGGProvider(generic.TorrentProvider):
 
                 jdata = self.getURL(searchURL, json=True)
                 if not jdata:
-                    logger.log("No data returned to be parsed!!!")
+                    logger.log(u"No data returned to be parsed!!!")
                     return []
 
                 for torrent in jdata:
@@ -66,26 +63,26 @@ class BTDIGGProvider(generic.TorrentProvider):
                         title = torrent['name']
                         download_url = torrent['magnet']
                         size = torrent['size']
-                        #FIXME
+                        # FIXME
                         seeders = 1
                         leechers = 0
 
                         if not all([title, download_url]):
                             continue
 
-                        #Filter unseeded torrent
-                        #if seeders < self.minseed or leechers < self.minleech:
-                        #    if mode != 'RSS':
+                        # Filter unseeded torrent
+                        # if seeders < self.minseed or leechers < self.minleech:
+                        #    if mode is not 'RSS':
                         #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         #    continue
 
                         item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
+                        if mode is not 'RSS':
                             logger.log(u"Found result: %s" % title, logger.DEBUG)
 
                         items[mode].append(item)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

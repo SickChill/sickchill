@@ -24,69 +24,70 @@ import functools
 import sickbeard
 from sickbeard.network_timezones import sb_timezone
 
-date_presets = ('%Y-%m-%d',
-                '%a, %Y-%m-%d',
-                '%A, %Y-%m-%d',
-                '%y-%m-%d',
-                '%a, %y-%m-%d',
-                '%A, %y-%m-%d',
-                '%m/%d/%Y',
-                '%a, %m/%d/%Y',
-                '%A, %m/%d/%Y',
-                '%m/%d/%y',
-                '%a, %m/%d/%y',
-                '%A, %m/%d/%y',
-                '%m-%d-%Y',
-                '%a, %m-%d-%Y',
-                '%A, %m-%d-%Y',
-                '%m-%d-%y',
-                '%a, %m-%d-%y',
-                '%A, %m-%d-%y',
-                '%m.%d.%Y',
-                '%a, %m.%d.%Y',
-                '%A, %m.%d.%Y',
-                '%m.%d.%y',
-                '%a, %m.%d.%y',
-                '%A, %m.%d.%y',
-                '%d-%m-%Y',
-                '%a, %d-%m-%Y',
-                '%A, %d-%m-%Y',
-                '%d-%m-%y',
-                '%a, %d-%m-%y',
-                '%A, %d-%m-%y',
-                '%d/%m/%Y',
-                '%a, %d/%m/%Y',
-                '%A, %d/%m/%Y',
-                '%d/%m/%y',
-                '%a, %d/%m/%y',
-                '%A, %d/%m/%y',
-                '%d.%m.%Y',
-                '%a, %d.%m.%Y',
-                '%A, %d.%m.%Y',
-                '%d.%m.%y',
-                '%a, %d.%m.%y',
-                '%A, %d.%m.%y',
-                '%d. %b %Y',
-                '%a, %d. %b %Y',
-                '%A, %d. %b %Y',
-                '%d. %b %y',
-                '%a, %d. %b %y',
-                '%A, %d. %b %y',
-                '%d. %B %Y',
-                '%a, %d. %B %Y',
-                '%A, %d. %B %Y',
-                '%d. %B %y',
-                '%a, %d. %B %y',
-                '%A, %d. %B %y',
-                '%b %d, %Y',
-                '%a, %b %d, %Y',
-                '%A, %b %d, %Y',
-                '%B %d, %Y',
-                '%a, %B %d, %Y',
-                '%A, %B %d, %Y')
+date_presets = (
+    '%Y-%m-%d',
+    '%a, %Y-%m-%d',
+    '%A, %Y-%m-%d',
+    '%y-%m-%d',
+    '%a, %y-%m-%d',
+    '%A, %y-%m-%d',
+    '%m/%d/%Y',
+    '%a, %m/%d/%Y',
+    '%A, %m/%d/%Y',
+    '%m/%d/%y',
+    '%a, %m/%d/%y',
+    '%A, %m/%d/%y',
+    '%m-%d-%Y',
+    '%a, %m-%d-%Y',
+    '%A, %m-%d-%Y',
+    '%m-%d-%y',
+    '%a, %m-%d-%y',
+    '%A, %m-%d-%y',
+    '%m.%d.%Y',
+    '%a, %m.%d.%Y',
+    '%A, %m.%d.%Y',
+    '%m.%d.%y',
+    '%a, %m.%d.%y',
+    '%A, %m.%d.%y',
+    '%d-%m-%Y',
+    '%a, %d-%m-%Y',
+    '%A, %d-%m-%Y',
+    '%d-%m-%y',
+    '%a, %d-%m-%y',
+    '%A, %d-%m-%y',
+    '%d/%m/%Y',
+    '%a, %d/%m/%Y',
+    '%A, %d/%m/%Y',
+    '%d/%m/%y',
+    '%a, %d/%m/%y',
+    '%A, %d/%m/%y',
+    '%d.%m.%Y',
+    '%a, %d.%m.%Y',
+    '%A, %d.%m.%Y',
+    '%d.%m.%y',
+    '%a, %d.%m.%y',
+    '%A, %d.%m.%y',
+    '%d. %b %Y',
+    '%a, %d. %b %Y',
+    '%A, %d. %b %Y',
+    '%d. %b %y',
+    '%a, %d. %b %y',
+    '%A, %d. %b %y',
+    '%d. %B %Y',
+    '%a, %d. %B %Y',
+    '%A, %d. %B %Y',
+    '%d. %B %y',
+    '%a, %d. %B %y',
+    '%A, %d. %B %y',
+    '%b %d, %Y',
+    '%a, %b %d, %Y',
+    '%A, %b %d, %Y',
+    '%B %d, %Y',
+    '%a, %B %d, %Y',
+    '%A, %B %d, %Y'
+)
 
-time_presets = ('%I:%M:%S %p',
-                '%H:%M:%S')
+time_presets = ('%I:%M:%S %p', '%H:%M:%S')
 
 # helper class
 class static_or_instance(object):
@@ -164,7 +165,7 @@ class sbdatetime(datetime.datetime):
             except Exception:
                 sbdatetime.has_locale = False
 
-        return strt
+        return strt.decode(sickbeard.SYS_ENCODING)
 
     # display Date in SickRage Format
     @static_or_instance
@@ -203,7 +204,7 @@ class sbdatetime(datetime.datetime):
             except Exception:
                 pass
 
-        return strd
+        return strd.decode(sickbeard.SYS_ENCODING)
 
     # display Datetime in SickRage Format
     @static_or_instance
@@ -242,11 +243,11 @@ class sbdatetime(datetime.datetime):
                         except Exception:
                             sbdatetime.has_locale = False
                     if t_preset is not None:
-                        strd += u', ' + dt.strftime(t_preset)
+                        strd += ', ' + dt.strftime(t_preset)
                     elif show_seconds:
-                        strd += u', ' + dt.strftime(sickbeard.TIME_PRESET_W_SECONDS)
+                        strd += ', ' + dt.strftime(sickbeard.TIME_PRESET_W_SECONDS)
                     else:
-                        strd += u', ' + dt.strftime(sickbeard.TIME_PRESET)
+                        strd += ', ' + dt.strftime(sickbeard.TIME_PRESET)
             else:
                 if d_preset is not None:
                     strd = self.strftime(d_preset)
@@ -262,11 +263,11 @@ class sbdatetime(datetime.datetime):
                     except Exception:
                         sbdatetime.has_locale = False
                 if t_preset is not None:
-                    strd += u', ' + self.strftime(t_preset)
+                    strd += ', ' + self.strftime(t_preset)
                 elif show_seconds:
-                    strd += u', ' + self.strftime(sickbeard.TIME_PRESET_W_SECONDS)
+                    strd += ', ' + self.strftime(sickbeard.TIME_PRESET_W_SECONDS)
                 else:
-                    strd += u', ' + self.strftime(sickbeard.TIME_PRESET)
+                    strd += ', ' + self.strftime(sickbeard.TIME_PRESET)
         finally:
             try:
                 if sbdatetime.has_locale:
@@ -274,4 +275,4 @@ class sbdatetime(datetime.datetime):
             except Exception:
                 sbdatetime.has_locale = False
 
-        return strd
+        return strd.decode(sickbeard.SYS_ENCODING)

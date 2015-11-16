@@ -105,7 +105,7 @@ class CheckVersion(object):
                 ui.notifications.message('Backup', 'Config backup failed, aborting update')
                 return False
         except Exception as e:
-            logger.log('Update: Config backup failed. Error: %s' % ex(e), logger.ERROR)
+            logger.log(u'Update: Config backup failed. Error: %s' % ex(e), logger.ERROR)
             ui.notifications.message('Backup', 'Config backup failed, aborting update')
             return False
 
@@ -621,7 +621,7 @@ class GitUpdateManager(UpdateManager):
 
         # remove untracked files and performs a hard reset on git branch to avoid update issues
         if sickbeard.GIT_RESET:
-            #self.clean() # This is removing user data and backups
+            # self.clean() # This is removing user data and backups
             self.reset()
 
         if self.branch == self._find_installed_branch():
@@ -857,7 +857,7 @@ class SourceUpdateManager(UpdateManager):
 
                     # Avoid DLL access problem on WIN32/64
                     # These files needing to be updated manually
-                    #or find a way to kill the access from memory
+                    # or find a way to kill the access from memory
                     if curfile in ('unrar.dll', 'unrar64.dll'):
                         try:
                             os.chmod(new_path, stat.S_IWRITE)

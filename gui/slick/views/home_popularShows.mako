@@ -1,13 +1,13 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     from sickbeard.helpers import anon_url
-    import sickbeard    
-    imdb_tt = [show.imdbid for show in sickbeard.showList if show.imdbid]
+    import sickbeard
 %>
 <%block name="content">
 <h2>Popular Shows</h2>
-<br />
+<br>
 
+<% imdb_tt = [show.imdbid for show in sickbeard.showList if show.imdbid] %>
 % if not popular_shows:
     <h3>Fetching of IMDB Data failed. Are you online?</h3>
 
@@ -34,7 +34,7 @@
                     Add Show</a></span>
                 % else:
                 <span> Already added </span>
-                % endif    
+                % endif
 
             </div>
             <br style="clear:both" />

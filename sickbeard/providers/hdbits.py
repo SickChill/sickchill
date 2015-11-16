@@ -49,9 +49,6 @@ class HDBitsProvider(generic.TorrentProvider):
 
         self.url = self.urls['base_url']
 
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
 
         if not self.username or not self.passkey:
@@ -87,7 +84,7 @@ class HDBitsProvider(generic.TorrentProvider):
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
-        #FIXME
+        # FIXME
         results = []
 
         logger.log(u"Search string: %s" %  search_params, logger.DEBUG)
@@ -107,7 +104,7 @@ class HDBitsProvider(generic.TorrentProvider):
 
             for item in items:
                 results.append(item)
-        #FIXME SORTING
+        # FIXME SORTING
         return results
 
     def findPropers(self, search_date=None):

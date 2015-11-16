@@ -14,7 +14,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-#from urllib import urlencode
+# from urllib import urlencode
 
 import sickbeard
 from sickbeard import logger
@@ -54,9 +54,6 @@ class TVChaosUKProvider(generic.TorrentProvider):
             'category': 0,
             'include_dead_torrents': 'no',
         }
-
-    def isEnabled(self):
-        return self.enabled
 
     def _checkAuth(self):
         if self.username and self.password:
@@ -134,15 +131,15 @@ class TVChaosUKProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 self.search_params['keywords'] = search_string.strip()
                 data = self.getURL(self.urls['search'], params=self.search_params)
-                #url_searched = self.urls['search'] + '?' + urlencode(self.search_params)
+                # url_searched = self.urls['search'] + '?' + urlencode(self.search_params)
 
                 if not data:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 with BS4Parser(data) as html:
@@ -157,9 +154,9 @@ class TVChaosUKProvider(generic.TorrentProvider):
                             if not all([title, download_url]):
                                 continue
 
-                            #Filter unseeded torrent
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
+                                if mode is not 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
@@ -175,11 +172,11 @@ class TVChaosUKProvider(generic.TorrentProvider):
                             # Strip year from the end or we can't parse it!
                             title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
 
-                            #FIXME
+                            # FIXME
                             size = -1
 
                             item = title, download_url, size, seeders, leechers
-                            if mode != 'RSS':
+                            if mode is not 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)
@@ -187,7 +184,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
                         except Exception:
                             continue
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

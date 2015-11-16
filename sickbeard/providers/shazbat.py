@@ -16,10 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import generic
-
 from sickbeard import logger
 from sickbeard import tvcache
+from sickbeard.providers import generic
 from sickrage.helper.exceptions import AuthException
 
 
@@ -40,9 +39,6 @@ class ShazbatProvider(generic.TorrentProvider):
         self.urls = {'base_url': u'http://www.shazbat.tv/',
                      'website': u'http://www.shazbat.tv/login',}
         self.url = self.urls['website']
-
-    def isEnabled(self):
-        return self.enabled
 
     def _checkAuth(self):
         if not self.passkey:
@@ -74,7 +70,7 @@ class ShazbatCache(tvcache.TVCache):
         rss_url = self.provider.urls['base_url'] + 'rss/recent?passkey=' + provider.passkey + '&fname=true'
         logger.log(u"Cache update URL: %s" % rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url, items=['entries', 'feed'])
+        return self.getRSSFeed(rss_url)
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)

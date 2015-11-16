@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -98,7 +100,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
     # Override with empty methods for unsupported features
     def retrieveShowMetadata(self, folder):
         # while show metadata is generated, it is not supported for our lookup
-        return (None, None, None)
+        return None, None, None
 
     def create_season_all_poster(self, show_obj):
         pass
@@ -272,7 +274,6 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             indexerid = etree.SubElement(tv_node, "id")
             indexerid.text = str(myShow['id'])
 
-
         if getattr(myShow, 'seriesname', None):
             SeriesName = etree.SubElement(tv_node, "SeriesName")
             SeriesName.text = myShow['seriesname']
@@ -401,10 +402,11 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        persons_dict = {}
-        persons_dict['Director'] = []
-        persons_dict['GuestStar'] = []
-        persons_dict['Writer'] = []
+        persons_dict = {
+            'Director': [],
+            'GuestStar': [],
+            'Writer': []
+        }
 
         indexer_lang = ep_obj.show.lang
 

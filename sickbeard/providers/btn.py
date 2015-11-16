@@ -52,9 +52,6 @@ class BTNProvider(generic.TorrentProvider):
 
         self.url = self.urls['website']
 
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
         if not self.api_key:
             logger.log(u"Invalid api key. Check your settings", logger.WARNING)
@@ -91,7 +88,7 @@ class BTNProvider(generic.TorrentProvider):
 
         parsedJSON = self._api_call(apikey, params)
         if not parsedJSON:
-            logger.log("No data returned from provider", logger.DEBUG)
+            logger.log(u"No data returned from provider", logger.DEBUG)
             return results
 
         if self._checkAuthFromData(parsedJSON):
@@ -128,7 +125,7 @@ class BTNProvider(generic.TorrentProvider):
                     logger.log(u"Found result: %s " % title, logger.DEBUG)
                     results.append(torrent_info)
 
-        #FIXME SORT RESULTS
+        # FIXME SORT RESULTS
         return results
 
     def _api_call(self, apikey, params={}, results_per_page=1000, offset=0):

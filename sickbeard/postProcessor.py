@@ -366,7 +366,7 @@ class PostProcessor(object):
                 helpers.copyFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError), e:
-                logger.log("Unable to copy file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
+                logger.log(u"Unable to copy file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_copy,
@@ -514,7 +514,7 @@ class PostProcessor(object):
         if not name:
             return to_return
 
-        logger.log(u"Analyzing name " + repr(name), logger.DEBUG)
+        logger.log(u"Analyzing name " + name, logger.DEBUG)
 
         name = helpers.remove_non_release_groups(helpers.remove_extension(name))
 
@@ -1108,7 +1108,7 @@ class PostProcessor(object):
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group, new_ep_version)
 
-        #If any notification fails, don't stop postProcessor
+        # If any notification fails, don't stop postProcessor
         try:
             # send notifications
             notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))

@@ -22,41 +22,43 @@
 }());
 
 $(document).ready(function() {
-
     function addRootDir(path) {
-
-        if (!path.length)
+        if (!path.length){
             return;
+        }
 
         // check if it's the first one
-        var is_default = false;
-        if (!$('#whichDefaultRootDir').val().length)
-            is_default = true;
+        var isDefault = false;
+        if (!$('#whichDefaultRootDir').val().length){
+            isDefault = true;
+        }
 
         $('#rootDirs').append('<option value="'+path+'">'+path+'</option>');
 
         syncOptionIDs();
 
-        if (is_default)
+        if (isDefault) {
             setDefault($('#rootDirs option').attr('id'));
+        }
 
         refreshRootDirs();
         $.get(srRoot+'/config/general/saveRootDirs', { rootDirString: $('#rootDirText').val() });
     }
 
     function editRootDir(path) {
-
-        if (!path.length)
+        if (!path.length){
             return;
+        }
 
         // as long as something is selected
         if ($("#rootDirs option:selected").length) {
 
             // update the selected one with the provided path
-            if ($("#rootDirs option:selected").attr('id') == $("#whichDefaultRootDir").val())
+            if ($("#rootDirs option:selected").attr('id') === $("#whichDefaultRootDir").val()) {
                 $("#rootDirs option:selected").text('*'+path);
-            else
+            } else {
                 $("#rootDirs option:selected").text(path);
+            }
             $("#rootDirs option:selected").val(path);
         }
 
@@ -72,8 +74,8 @@ $(document).ready(function() {
 
             var toDelete = $("#rootDirs option:selected");
 
-            var newDefault = (toDelete.attr('id') == $("#whichDefaultRootDir").val());
-            var deleted_num = $("#rootDirs option:selected").attr('id').substr(3);
+            var newDefault = (toDelete.attr('id') === $("#whichDefaultRootDir").val());
+            var deletedNum = $("#rootDirs option:selected").attr('id').substr(3);
 
             toDelete.remove();
             syncOptionIDs();
@@ -86,12 +88,15 @@ $(document).ready(function() {
                 $("#whichDefaultRootDir").val('');
 
                 // if we're deleting the default and there are options left then pick a new default
-                if ($("#rootDirs option").length)
+                if ($("#rootDirs option").length) {
                     setDefault($('#rootDirs option').attr('id'));
+                }
 
             } else if ($("#whichDefaultRootDir").val().length) {
-                var old_default_num = $("#whichDefaultRootDir").val().substr(3);
-                if (old_default_num > deleted_num) $("#whichDefaultRootDir").val('rd-'+(old_default_num-1));
+                var oldDefaultNum = $("#whichDefaultRootDir").val().substr(3);
+                if (oldDefaultNum > deletedNum) {
+                    $("#whichDefaultRootDir").val('rd-'+(oldDefaultNum-1));
+                }
             }
 
         }
@@ -100,8 +105,9 @@ $(document).ready(function() {
     });
 
     $('#defaultRootDir').click(function(){
-        if ($("#rootDirs option:selected").length)
+        if ($("#rootDirs option:selected").length) {
             setDefault($("#rootDirs option:selected").attr('id'));
+        }
         refreshRootDirs();
         $.get(srRoot+'/config/general/saveRootDirs', {rootDirString: $('#rootDirText').val()});
     });
@@ -109,17 +115,17 @@ $(document).ready(function() {
     function setDefault(which, force){
         console.log('setting default to '+which);
 
-        if (which !== undefined && !which.length) return;
+        if (which !== undefined && !which.length) { return; }
 
-        if ($('#whichDefaultRootDir').val() == which && force !== true) return;
+        if ($('#whichDefaultRootDir').val() === which && force !== true) { return; }
 
         // put an asterisk on the text
-        if ($('#'+which).text().charAt(0) != '*') $('#'+which).text('*'+$('#'+which).text());
+        if ($('#'+which).text().charAt(0) !== '*') { $('#'+which).text('*'+$('#'+which).text()); }
 
         // if there's an existing one then take the asterisk off
         if ($('#whichDefaultRootDir').val() && force !== true) {
-            var old_default = $('#'+$('#whichDefaultRootDir').val());
-            old_default.text(old_default.text().substring(1));
+            var oldDefault = $('#'+$('#whichDefaultRootDir').val());
+            oldDefault.text(oldDefault.text().substring(1));
         }
 
         $('#whichDefaultRootDir').val(which);
@@ -135,39 +141,43 @@ $(document).ready(function() {
 
     function refreshRootDirs() {
 
-        if (!$("#rootDirs").length) return;
+        if (!$("#rootDirs").length) { return; }
 
-        var do_disable = 'true';
+        var doDisable = 'true';
 
         // re-sync option ids
         syncOptionIDs();
 
         // if nothing's selected then select the default
-        if (!$("#rootDirs option:selected").length && $('#whichDefaultRootDir').val().length) $('#'+$('#whichDefaultRootDir').val()).prop("selected", true);
+        if (!$("#rootDirs option:selected").length && $('#whichDefaultRootDir').val().length) {
+            $('#'+$('#whichDefaultRootDir').val()).prop("selected", true);
+        }
 
         // if something's selected then we have some behavior to figure out
         if ($("#rootDirs option:selected").length) {
-            do_disable = '';
+            doDisable = '';
         }
 
         // update the elements
-        $('#deleteRootDir').prop('disabled', do_disable);
-        $('#defaultRootDir').prop('disabled', do_disable);
-        $('#editRootDir').prop('disabled', do_disable);
+        $('#deleteRootDir').prop('disabled', doDisable);
+        $('#defaultRootDir').prop('disabled', doDisable);
+        $('#editRootDir').prop('disabled', doDisable);
 
-        var log_str = '';
-        var dir_text = '';
+        var logString = '';
+        var dirString = '';
         if ($('#whichDefaultRootDir').val().length >= 4){
-            dir_text = $('#whichDefaultRootDir').val().substr(3);
+            dirString = $('#whichDefaultRootDir').val().substr(3);
         }
         $('#rootDirs option').each(function() {
-            log_str += $(this).val()+'='+$(this).text()+'->'+$(this).attr('id')+'\n';
-            if (dir_text.length) dir_text += '|' + $(this).val();
+            logString += $(this).val()+'='+$(this).text()+'->'+$(this).attr('id')+'\n';
+            if (dirString.length) {
+                dirString += '|' + $(this).val();
+            }
         });
-        log_str += 'def: '+ $('#whichDefaultRootDir').val();
-        console.log(log_str);
+        logString += 'def: '+ $('#whichDefaultRootDir').val();
+        console.log(logString);
 
-        $('#rootDirText').val(dir_text);
+        $('#rootDirText').val(dirString);
         $('#rootDirText').change();
         console.log('rootDirText: '+$('#rootDirText').val());
     }

@@ -18,7 +18,7 @@
 
 from sickbeard.providers import btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, torrentz, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, nextgen, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, \
-    frenchtorrentdb, freshontv, titansoftv, libertalia, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
+    freshontv, titansoftv, libertalia, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
     scenetime, btdigg, strike, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct
 
 __all__ = ['womble',
@@ -38,7 +38,6 @@ __all__ = ['womble',
            'nyaatorrents',
            'animenzb',
            'torrentbytes',
-           'frenchtorrentdb',
            'freshontv',
            'titansoftv',
            'libertalia',
@@ -217,7 +216,7 @@ def makeTorrentRssProvider(configString):
 
     try:
         torrentRss = sys.modules['sickbeard.providers.rsstorrent']
-    except:
+    except Exception:
         return
 
     newProvider = torrentRss.TorrentRssProvider(name, url, cookies, titleTAG, search_mode, search_fallback, enable_daily,
@@ -228,7 +227,7 @@ def makeTorrentRssProvider(configString):
 
 
 def getDefaultNewznabProviders():
-    #name|url|key|catIDs|enabled|search_mode|search_fallback|enable_daily|enable_backlog
+    # name|url|key|catIDs|enabled|search_mode|search_fallback|enable_daily|enable_backlog
     return 'NZB.Cat|https://nzb.cat/||5030,5040,5010|0|eponly|1|1|1!!!' + \
            'NZBGeek|https://api.nzbgeek.info/||5030,5040|0|eponly|0|0|0!!!' + \
            'NZBs.org|https://nzbs.org/||5030,5040|0|eponly|0|0|0!!!' + \
@@ -243,10 +242,10 @@ def getProviderModule(name):
         raise Exception("Can't find " + prefix + name + " in " + "Providers")
 
 
-def getProviderClass(id):
+def getProviderClass(provider_id):
     providerMatch = [x for x in
                      sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList if
-                     x.getID() == id]
+                     x.getID() == provider_id]
 
     if len(providerMatch) != 1:
         return None

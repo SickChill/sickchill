@@ -34,8 +34,8 @@ from name_parser.parser import NameParser, InvalidNameException, InvalidShowExce
 
 resultFilters = [
     "sub(bed|ed|pack|s)",
-    "(dir|sample|sub|nfo)fix",
-    "sample",
+    "(dir|sub|nfo)fix",
+    "(?<!shomin.)sample",
     "(dvd)?extras",
     "dub(bed)?"
 ]
@@ -328,8 +328,8 @@ def allPossibleShowNames(show, season=-1):
                 elif curName.endswith(' (' + curCountry + ')'):
                     newShowNames.append(curName.replace(' (' + curCountry + ')', ' (' + country_list[curCountry] + ')'))
 
-            # if we have "Show Name (2013)" this will strip the (2013) show year from the show name
-            #newShowNames.append(re.sub('\(\d{4}\)','',curName))
+            # # if we have "Show Name (2013)" this will strip the (2013) show year from the show name
+            # newShowNames.append(re.sub('\(\d{4}\)', '', curName))
 
         showNames += newShowNames
 

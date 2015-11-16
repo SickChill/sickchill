@@ -194,7 +194,7 @@ class TraktNotifier:
             if season not in uniqueSeasons:
                 uniqueSeasons.append(season)
 
-        #build the query
+        # build the query
         seasonsList = []
         for searchedSeason in uniqueSeasons:
             episodesList = []

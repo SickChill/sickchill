@@ -18,20 +18,15 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
 import httplib
 import datetime
-
-import sickbeard
-
 from base64 import standard_b64encode
 import xmlrpclib
 
+import sickbeard
 from sickbeard.providers.generic import GenericProvider
-
 from sickbeard import logger, helpers
-
-from common import Quality
+from sickbeard.common import Quality
 
 
 def sendNZB(nzb, proper=False):
@@ -46,7 +41,7 @@ def sendNZB(nzb, proper=False):
     category = sickbeard.NZBGET_CATEGORY
     if nzb.show.is_anime:
         category = sickbeard.NZBGET_CATEGORY_ANIME
-    
+
     if sickbeard.NZBGET_USE_HTTPS:
         nzbgetXMLrpc = "https://%(username)s:%(password)s@%(host)s/xmlrpc"
     else:
@@ -73,7 +68,7 @@ def sendNZB(nzb, proper=False):
         return False
 
     except xmlrpclib.ProtocolError, e:
-        if (e.errmsg == "Unauthorized"):
+        if e.errmsg == "Unauthorized":
             logger.log(u"NZBget username or password is incorrect.", logger.ERROR)
         else:
             logger.log(u"Protocol Error: " + e.errmsg, logger.ERROR)
@@ -121,7 +116,7 @@ def sendNZB(nzb, proper=False):
                 if nzb.resultType == "nzb":
                     genProvider = GenericProvider("")
                     data = genProvider.getURL(nzb.url)
-                    if (data == None):
+                    if data == None:
                         return False
                     nzbcontent64 = standard_b64encode(data)
                 nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", category, addToTop, nzbcontent64)
@@ -133,7 +128,7 @@ def sendNZB(nzb, proper=False):
                 nzbget_result = nzbGetRPC.appendurl(nzb.name + ".nzb", category, nzbgetprio, False,
                                                     nzb.url, False, dupekey, dupescore, "score")
         # v13+ has a new combined append method that accepts both (url and content)
-        # also the return value has changed from boolean to integer 
+        # also the return value has changed from boolean to integer
         # (Positive number representing NZBID of the queue item. 0 and negative numbers represent error codes.)
         elif nzbget_version >= 13:
             nzbget_result = True if nzbGetRPC.append(nzb.name + ".nzb", nzbcontent64 if nzbcontent64 is not None else nzb.url,
@@ -153,6 +148,6 @@ def sendNZB(nzb, proper=False):
         else:
             logger.log(u"NZBget could not add %s to the queue" % (nzb.name + ".nzb"), logger.ERROR)
             return False
-    except:
+    except Exception:
         logger.log(u"Connect Error to NZBget: could not add %s to the queue" % (nzb.name + ".nzb"), logger.ERROR)
         return False

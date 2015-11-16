@@ -1,6 +1,8 @@
+sudo: false
+
 language: python
-python:
-  - 2.7.10
+
+python: 2.7.9
 
 sudo: false
 
@@ -8,12 +10,7 @@ branches:
   except:
     - master
 
-install: echo "Nothing required!"
-
 cache: pip
-
-before_script:
- - chmod +x ./tests/all_tests.py
 
 script:
   - ./tests/all_tests.py

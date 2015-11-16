@@ -62,9 +62,6 @@ class HoundDawgsProvider(generic.TorrentProvider):
             "searchtags": ''
         }
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         login_params = {'username': self.username,
@@ -98,7 +95,7 @@ class HoundDawgsProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 self.search_params['searchstr'] = search_string
@@ -132,10 +129,10 @@ class HoundDawgsProvider(generic.TorrentProvider):
                             allAs = (torrent[1]).find_all('a')
 
                             try:
-                                #link = self.urls['base_url'] + allAs[2].attrs['href']
-                                #url = result.find('td', attrs={'class': 'quickdownload'}).find('a')
+                                # link = self.urls['base_url'] + allAs[2].attrs['href']
+                                # url = result.find('td', attrs={'class': 'quickdownload'}).find('a')
                                 title = allAs[2].string
-                                #Trimming title so accepted by scene check(Feature has been rewuestet i forum)
+                                # Trimming title so accepted by scene check(Feature has been rewuestet i forum)
                                 title = title.replace("custom.", "")
                                 title = title.replace("CUSTOM.", "")
                                 title = title.replace("Custom.", "")
@@ -147,7 +144,7 @@ class HoundDawgsProvider(generic.TorrentProvider):
                                 title = title.replace("Subs.", "")
 
                                 download_url = self.urls['base_url']+allAs[0].attrs['href']
-                                #FIXME
+                                # FIXME
                                 size = -1
                                 seeders = 1
                                 leechers = 0
@@ -158,14 +155,14 @@ class HoundDawgsProvider(generic.TorrentProvider):
                             if not title or not download_url:
                                 continue
 
-                            #Filter unseeded torrent
-                            #if seeders < self.minseed or leechers < self.minleech:
-                            #    if mode != 'RSS':
+                            # Filter unseeded torrent
+                            # if seeders < self.minseed or leechers < self.minleech:
+                            #    if mode is not 'RSS':
                             #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             #    continue
 
                             item = title, download_url, size, seeders, leechers
-                            if mode != 'RSS':
+                            if mode is not 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)
@@ -173,7 +170,7 @@ class HoundDawgsProvider(generic.TorrentProvider):
                 except Exception, e:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

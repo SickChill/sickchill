@@ -42,8 +42,10 @@ _py3 = sys.version_info[0] == 3
 
 if _py3:
     _VALID_STRING_TYPES = (str,)
+    _VALID_INT_TYPES = (int,)
 else:
     _VALID_STRING_TYPES = (str, unicode)  # @UndefinedVariable
+    _VALID_INT_TYPES = (int, long)  # @UndefinedVariable
 
 _TYPE_INT = 1
 _TYPE_STRING = 2
@@ -267,7 +269,7 @@ def _encode_dict(data):
 def encode(data):
     if isinstance(data, bool):
         return False
-    elif isinstance(data, int):
+    elif isinstance(data, _VALID_INT_TYPES):
         return _encode_int(data)
     elif isinstance(data, bytes):
         return _encode_string(data)

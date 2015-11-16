@@ -1,6 +1,6 @@
 $.tablesorter.addParser({
     id: 'loadingNames',
-    is: function(s) {
+    is: function() {
         return false;
     },
     format: function(s) {
@@ -14,7 +14,7 @@ $.tablesorter.addParser({
 });
 $.tablesorter.addParser({
     id: 'quality',
-    is: function(s) {
+    is: function() {
         return false;
     },
     format: function(s) {
@@ -24,7 +24,7 @@ $.tablesorter.addParser({
 });
 $.tablesorter.addParser({
     id: 'realISODate',
-    is: function(s) {
+    is: function() {
         return false;
     },
     format: function(s) {
@@ -35,7 +35,7 @@ $.tablesorter.addParser({
 
 $.tablesorter.addParser({
     id: 'cDate',
-    is: function(s) {
+    is: function() {
         return false;
     },
     format: function(s) {
@@ -45,27 +45,27 @@ $.tablesorter.addParser({
 });
 $.tablesorter.addParser({
     id: 'eps',
-    is: function(s) {
+    is: function() {
         return false;
     },
     format: function(s) {
-        match = s.match(/^(.*)/);
+        var match = s.match(/^(.*)/);
 
-        if (match === null || match[1] == "?") return -10;
+        if (match === null || match[1] === "?") { return -10; }
 
         var nums = match[1].split(" / ");
-        if (nums[0].indexOf("+") != -1) {
-            var num_parts = nums[0].split("+");
-            nums[0] = num_parts[0];
+        if (nums[0].indexOf("+") !== -1) {
+            var numParts = nums[0].split("+");
+            nums[0] = numParts[0];
         }
 
         nums[0] = parseInt(nums[0]);
         nums[1] = parseInt(nums[1]);
 
-        if (nums[0] === 0) return nums[1];
+        if (nums[0] === 0) { return nums[1]; }
         var finalNum = parseInt((getMeta('max_download_count'))*nums[0]/nums[1]);
         var pct = Math.round((nums[0]/nums[1])*100) / 1000;
-        if (finalNum > 0) finalNum += nums[0];
+        if (finalNum > 0) { finalNum += nums[0]; }
 
         return finalNum + pct;
     },

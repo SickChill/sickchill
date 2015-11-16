@@ -18,7 +18,7 @@ $(document).ready(function(){
         $('.epCheck:visible').each(function(){
             var epParts = $(this).attr('id').split('x');
 
-            if (epParts[0] == seasNo) {
+            if (epParts[0] === seasNo) {
                 this.checked = seasCheck.checked;
             }
         });
@@ -33,10 +33,9 @@ $(document).ready(function(){
             }
         });
 
-        if (epArr.length === 0) return false;
+        if (epArr.length === 0) { return false; }
 
-        url = srRoot+'/home/doRename?show='+$('#showID').attr('value')+'&eps='+epArr.join('|');
-        window.location.href = url;
+        window.location.href = srRoot+'/home/doRename?show='+$('#showID').attr('value')+'&eps='+epArr.join('|');
     });
 
 });

@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -16,19 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-__all__ = ['utorrent',
-           'transmission',
-           'deluge',
-           'deluged',
-           'download_station',
-           'rtorrent',
-           'qbittorrent'
+__all__ = [
+    'utorrent',
+    'transmission',
+    'deluge',
+    'deluged',
+    'download_station',
+    'rtorrent',
+    'qbittorrent',
+    'mlnet'
 ]
-
-
 
 # Mapping error status codes to official W3C names
 http_error_code = {
+    # todo: Handle error codes with duplicates (e.g. 451, 499)
     300: 'Multiple Choices',
     301: 'Moved Permanently',
     302: 'Found',
@@ -91,19 +93,26 @@ http_error_code = {
     509: 'Bandwidth Limit Exceeded',
     510: 'Not Extended',
     511: 'Network Authentication Required',
-    522: 'Cloudfare Connection timed out',
-    524: 'Request to host timedout waiting for reply back',
+    520: 'Cloudfare - Web server is returning an unknown error',
+    521: 'Cloudfare - Web server is down',
+    522: 'Cloudfare - Connection timed out',
+    523: 'Cloudfare - Origin is unreachable',
+    524: 'Cloudfare - A timeout occurred',
+    525: 'Cloudfare - SSL handshake failed',
+    526: 'Cloudfare - Invalid SSL certificate',
     598: 'Network read timeout error',
     599: 'Network connect timeout error '
 }
 
-default_host = {'utorrent': 'http://localhost:8000',
-                'transmission': 'http://localhost:9091',
-                'deluge': 'http://localhost:8112',
-                'deluged': 'scgi://localhost:58846',
-                'download_station': 'http://localhost:5000',
-                'rtorrent': 'scgi://localhost:5000',
-                'qbittorrent': 'http://localhost:8080'
+default_host = {
+    'utorrent': 'http://localhost:8000',
+    'transmission': 'http://localhost:9091',
+    'deluge': 'http://localhost:8112',
+    'deluged': 'scgi://localhost:58846',
+    'download_station': 'http://localhost:5000',
+    'rtorrent': 'scgi://localhost:5000',
+    'qbittorrent': 'http://localhost:8080',
+    'mlnet': 'http://localhost:4080'
 }
 
 

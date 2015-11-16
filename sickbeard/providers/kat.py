@@ -23,7 +23,6 @@ import traceback
 from urllib import urlencode
 
 import xmltodict
-import HTMLParser
 
 import sickbeard
 from sickbeard import logger
@@ -63,9 +62,6 @@ class KATProvider(generic.TorrentProvider):
             'category': 'tv'
         }
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -78,28 +74,28 @@ class KATProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                self.search_params['q'] = search_string.encode('utf-8') if mode != 'RSS' else ''
-                self.search_params['field'] = 'seeders' if mode != 'RSS' else 'time_add'
+                self.search_params['q'] = search_string.encode('utf-8') if mode is not 'RSS' else ''
+                self.search_params['field'] = 'seeders' if mode is not 'RSS' else 'time_add'
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
-                url_fmt_string = 'usearch' if mode != 'RSS' else search_string
+                url_fmt_string = 'usearch' if mode is not 'RSS' else search_string
                 try:
                     searchURL = self.urls['search'] % url_fmt_string + '?' + urlencode(self.search_params)
                     logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                     data = self.getURL(searchURL)
-                    #data = self.getURL(self.urls[('search', 'rss')[mode == 'RSS']], params=self.search_params)
+                    # data = self.getURL(self.urls[('search', 'rss')[mode is 'RSS']], params=self.search_params)
                     if not data:
-                        logger.log("No data returned from provider", logger.DEBUG)
+                        logger.log(u"No data returned from provider", logger.DEBUG)
                         continue
 
                     if not data.startswith('<?xml'):
-                        logger.log(u'Expected xml but got something else, is your proxy failing?', logger.INFO)
+                        logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
                         continue
 
                     try:
-                        data = xmltodict.parse(HTMLParser.HTMLParser().unescape(data.encode('utf-8')).decode('utf-8').replace('&', '&amp;'))
+                        data = xmltodict.parse(data)
                     except ExpatError:
                         logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
                         continue
@@ -114,8 +110,8 @@ class KATProvider(generic.TorrentProvider):
 
                     for item in entries:
                         try:
-                            title = item['title'].decode('utf-8')
-
+                            title = item['title']
+                            assert isinstance(title, unicode)
                             # Use the torcache link kat provides,
                             # unless it is not torcache or we are not using blackhole
                             # because we want to use magnets if connecting direct to client
@@ -130,7 +126,7 @@ class KATProvider(generic.TorrentProvider):
                             size = int(item['torrent:contentLength'])
 
                             info_hash = item['torrent:infoHash']
-                            #link = item['link']
+                            # link = item['link']
 
                         except (AttributeError, TypeError, KeyError):
                             continue
@@ -138,19 +134,19 @@ class KATProvider(generic.TorrentProvider):
                         if not all([title, download_url]):
                             continue
 
-                        #Filter unseeded torrent
+                        # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
-                            if mode != 'RSS':
+                            if mode is not 'RSS':
                                 logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
 
                         if self.confirmed and not verified:
-                            if mode != 'RSS':
+                            if mode is not 'RSS':
                                 logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                             continue
 
                         item = title, download_url, size, seeders, leechers, info_hash
-                        if mode != 'RSS':
+                        if mode is not 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                         items[mode].append(item)
@@ -158,7 +154,7 @@ class KATProvider(generic.TorrentProvider):
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

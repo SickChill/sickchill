@@ -2,7 +2,7 @@
 # URL: http://code.google.com/p/sickbeard
 # Originally written for SickGear
 #
-# This file is part of SickRage. 
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 
 import urllib
 
-import generic
+from sickbeard.providers import generic
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.helpers import mapIndexersToShow
@@ -38,9 +38,6 @@ class TitansOfTVProvider(generic.TorrentProvider):
         self.url = 'http://titansof.tv/api/torrents'
         self.download_url = 'http://titansof.tv/api/torrents/%s/download?apikey=%s'
 
-    def isEnabled(self):
-        return self.enabled
-
     def seedRatio(self):
         return self.ratio
 
@@ -58,7 +55,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
         return True
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
-        #FIXME ADD MODE
+        # FIXME ADD MODE
         self._checkAuth()
         results = []
         params = {}
@@ -69,26 +66,26 @@ class TitansOfTVProvider(generic.TorrentProvider):
 
         searchURL = self.url + '?' + urllib.urlencode(params)
         logger.log(u"Search string: %s " % search_params, logger.DEBUG)
-        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG) 
+        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
         parsedJSON = self.getURL(searchURL, json=True)  # do search
 
         if not parsedJSON:
-            logger.log("No data returned from provider", logger.DEBUG)
+            logger.log(u"No data returned from provider", logger.DEBUG)
             return results
 
         if self._checkAuthFromData(parsedJSON):
 
             try:
                 found_torrents = parsedJSON['results']
-            except:
+            except Exception:
                 found_torrents = {}
 
             for result in found_torrents:
-                title = parsedJSON['release_name']
-                id = parsedJSON['id']
-                download_url = self.download_url % (id, self.api_key)
-                #FIXME
+                title = result.get('release_name', '')
+                tid = result.get('id', '')
+                download_url = self.download_url % (tid, self.api_key)
+                # FIXME size, seeders, leechers
                 size = -1
                 seeders = 1
                 leechers = 0
@@ -96,18 +93,18 @@ class TitansOfTVProvider(generic.TorrentProvider):
                 if not all([title, download_url]):
                     continue
 
-                #Filter unseeded torrent
-                #if seeders < self.minseed or leechers < self.minleech:
-                #    if mode != 'RSS':
+                # Filter unseeded torrent
+                # if seeders < self.minseed or leechers < self.minleech:
+                #    if mode is not 'RSS':
                 #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                 #    continue
 
                 item = title, download_url, size, seeders, leechers
 
                 logger.log(u"Found result: %s " % title, logger.DEBUG)
-                results.append(result)
+                results.append(item)
 
-        #FIXME SORTING
+        # FIXME SORTING
 
         return results
 

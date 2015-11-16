@@ -168,7 +168,11 @@ class ShowQueue(generic_queue.GenericQueue):
 
         return queueItemObj
 
-class ShowQueueActions:
+class ShowQueueActions(object):
+
+    def __init__(self):
+        pass
+
     REFRESH = 1
     ADD = 2
     UPDATE = 3
@@ -177,13 +181,14 @@ class ShowQueueActions:
     SUBTITLE = 6
     REMOVE = 7
 
-    names = {REFRESH: 'Refresh',
-             ADD: 'Add',
-             UPDATE: 'Update',
-             FORCEUPDATE: 'Force Update',
-             RENAME: 'Rename',
-             SUBTITLE: 'Subtitle',
-             REMOVE: 'Remove Show'
+    names = {
+        REFRESH: 'Refresh',
+        ADD: 'Add',
+        UPDATE: 'Update',
+        FORCEUPDATE: 'Force Update',
+        RENAME: 'Rename',
+        SUBTITLE: 'Subtitle',
+        REMOVE: 'Remove Show'
     }
 
 
@@ -205,7 +210,7 @@ class ShowQueueItem(generic_queue.QueueItem):
 
     def isInQueue(self):
         return self in sickbeard.showQueueScheduler.action.queue + [
-            sickbeard.showQueueScheduler.action.currentItem]  #@UndefinedVariable
+            sickbeard.showQueueScheduler.action.currentItem]  # @UndefinedVariable
 
     def _getName(self):
         return str(self.show.indexerid)
@@ -305,14 +310,15 @@ class QueueItemAdd(ShowQueueItem):
                 self._finishEarly()
                 return
         except Exception, e:
-            logger.log(u"Error while loading information from indexer %s. Error: %r" % (self.indexer_id,sickbeard.indexerApi(self.indexer).name, ex(e)),logger.ERROR)
-            #logger.log(u"Show name with ID %s doesn't exist on %s anymore. If you are using trakt, it will be removed from your TRAKT watchlist. If you are adding manually, try removing the nfo and adding again" %
-            #    (self.indexer_id,sickbeard.indexerApi(self.indexer).name) , logger.WARNING)
+            logger.log(u"%s Error while loading information from indexer %s. Error: %r" % (self.indexer_id, sickbeard.indexerApi(self.indexer).name, ex(e)), logger.ERROR)
+            # logger.log(u"Show name with ID %s doesn't exist on %s anymore. If you are using trakt, it will be removed from your TRAKT watchlist. If you are adding manually, try removing the nfo and adding again" %
+            #            (self.indexer_id, sickbeard.indexerApi(self.indexer).name), logger.WARNING)
 
-            ui.notifications.error("Unable to add show",
-                                   "Unable to look up the show in " + self.showDir + " on " + str(sickbeard.indexerApi(
-                                       self.indexer).name) + " using ID " + str(
-                                       self.indexer_id) + ", not using the NFO. Delete .nfo and try adding manually again.")
+            ui.notifications.error(
+                "Unable to add show",
+                "Unable to look up the show in %s on %s using ID %s, not using the NFO. Delete .nfo and try adding manually again." %
+                (self.showDir, sickbeard.indexerApi(self.indexer).name, self.indexer_id)
+            )
 
             if sickbeard.USE_TRAKT:
 
@@ -365,13 +371,13 @@ class QueueItemAdd(ShowQueueItem):
                 if self.whitelist:
                     self.show.release_groups.set_white_keywords(self.whitelist)
 
-            # be smartish about this
-            #if self.show.genre and "talk show" in self.show.genre.lower():
-            #    self.show.air_by_date = 1
-            #if self.show.genre and "documentary" in self.show.genre.lower():
-            #    self.show.air_by_date = 0
-            #if self.show.classification and "sports" in self.show.classification.lower():
-            #    self.show.sports = 1
+            # # be smartish about this
+            # if self.show.genre and "talk show" in self.show.genre.lower():
+            #     self.show.air_by_date = 1
+            # if self.show.genre and "documentary" in self.show.genre.lower():
+            #     self.show.air_by_date = 0
+            # if self.show.classification and "sports" in self.show.classification.lower():
+            #     self.show.sports = 1
 
         except sickbeard.indexer_exception, e:
             logger.log(
@@ -516,7 +522,7 @@ class QueueItemRename(ShowQueueItem):
         logger.log(u"Performing rename on " + self.show.name)
 
         try:
-            show_loc = self.show.location
+            self.show.location
         except ShowDirectoryNotFoundException:
             logger.log(u"Can't perform rename on " + self.show.name + " when the show dir is missing.", logger.WARNING)
             return
@@ -669,6 +675,6 @@ class QueueItemRemove(ShowQueueItem):
             try:
                 sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
             except Exception as e:
-                logger.log(u"Unable to delete show from Trakt: %s. Error: %s" % (self.show.name, ex(e)),logger.WARNING)
+                logger.log(u"Unable to delete show from Trakt: %s. Error: %s" % (self.show.name, ex(e)), logger.WARNING)
 
         self.finish()

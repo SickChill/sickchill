@@ -55,9 +55,6 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
         self.cache = TorrentBytesCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         login_params = {'username': self.username,
@@ -87,7 +84,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
@@ -99,7 +96,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
                 try:
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
-                        #Continue only if one Release is found
+                        # Continue only if one Release is found
                         empty = html.find('Nothing found!')
                         if empty:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
@@ -116,7 +113,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
                             full_id = link['href'].replace('details.php?id=', '')
                             torrent_id = full_id.split("&")[0]
 
-                            #Free leech torrents are marked with green [F L] in the title (i.e. <font color=green>[F&nbsp;L]</font>)
+                            # Free leech torrents are marked with green [F L] in the title (i.e. <font color=green>[F&nbsp;L]</font>)
                             freeleechTag = cells[1].find('font', attrs={'color': 'green'})
                             if freeleechTag and freeleechTag.text == u'[F\xa0L]':
                                 isFreeleechTorrent = True
@@ -148,14 +145,14 @@ class TorrentBytesProvider(generic.TorrentProvider):
                             if not all([title, download_url]):
                                 continue
 
-                            #Filter unseeded torrent
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
+                                if mode is not 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             item = title, download_url, size, seeders, leechers
-                            if mode != 'RSS':
+                            if mode is not 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)
@@ -163,7 +160,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
                 except Exception, e:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

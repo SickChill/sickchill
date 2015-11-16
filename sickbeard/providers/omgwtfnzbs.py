@@ -40,10 +40,6 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
 
         self.supportsBacklog = True
 
-
-    def isEnabled(self):
-        return self.enabled
-
     def _checkAuth(self):
 
         if not self.username or not self.api_key:

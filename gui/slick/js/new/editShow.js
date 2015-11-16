@@ -1,56 +1,56 @@
-var all_exceptions = [];
+var allExceptions = [];
 
 $('#location').fileBrowser({ title: 'Select Show Location' });
 
-$('#submit').click(function(){
-    all_exceptions = [];
+$('#submit').click(function() {
+    var allExceptions = [];
 
-    $("#exceptions_list option").each  ( function() {
-        all_exceptions.push( $(this).val() );
+    $("#exceptions_list option").each(function() {
+        allExceptions.push( $(this).val() );
     });
 
-    $("#exceptions_list").val(all_exceptions);
+    $("#exceptions_list").val(allExceptions);
 
-    if(metaToBool('show.is_anime')) generate_bwlist();
+    if(metaToBool('show.is_anime')) { generate_bwlist(); }
 });
 $('#addSceneName').click(function() {
-    var scene_ex = $('#SceneName').val();
+    var sceneEx = $('#SceneName').val();
     var option = $("<option>");
-    all_exceptions = [];
+    allExceptions = [];
 
-    $("#exceptions_list option").each  ( function() {
-       all_exceptions.push($(this).val());
+    $("#exceptions_list option").each(function() {
+       allExceptions.push($(this).val());
     });
 
     $('#SceneName').val('');
 
-    if ($.inArray(scene_ex, all_exceptions) > -1 || (scene_ex === '')) return;
+    if ($.inArray(sceneEx, allExceptions) > -1 || (sceneEx === '')) { return; }
 
     $("#SceneException").show();
 
-    option.attr("value",scene_ex);
-    option.html(scene_ex);
+    option.attr("value",sceneEx);
+    option.html(sceneEx);
     return option.appendTo('#exceptions_list');
 });
 
 $('#removeSceneName').click(function() {
     $('#exceptions_list option:selected').remove();
 
-    $(this).toggle_SceneException();
+    $(this).toggleSceneException();
 });
 
-$.fn.toggle_SceneException = function() {
-    all_exceptions = [];
+$.fn.toggleSceneException = function() {
+    allExceptions = [];
 
     $("#exceptions_list option").each  ( function() {
-        all_exceptions.push( $(this).val() );
+        allExceptions.push( $(this).val() );
     });
 
-    if (all_exceptions === ''){
+    if (allExceptions === ''){
         $("#SceneException").hide();
     } else {
         $("#SceneException").show();
     }
 };
 
-$(this).toggle_SceneException();
+$(this).toggleSceneException();

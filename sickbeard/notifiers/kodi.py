@@ -121,7 +121,7 @@ class KODINotifier:
 
         # suppress notifications if the notifier is disabled but the notify options are checked
         if not sickbeard.USE_KODI and not force:
-            logger.log("Notification for KODI not enabled, skipping this notification", logger.DEBUG)
+            logger.log(u"Notification for KODI not enabled, skipping this notification", logger.DEBUG)
             return False
 
         result = ''

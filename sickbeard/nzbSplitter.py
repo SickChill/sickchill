@@ -76,7 +76,7 @@ def getSeasonNZBs(name, urlData, season):
             xmlns = xmlnsMatch.group(1)
         match = re.search(regex, curFile.get("subject"), re.I)
         if not match:
-            #print curFile.get("subject"), "doesn't match", regex
+            # print curFile.get("subject"), "doesn't match", regex
             continue
         curEp = match.group(1)
         if curEp not in epFiles:
@@ -128,7 +128,7 @@ def splitResult(result):
     :param result: search result object
     :return: False upon failure, a list of episode objects otherwise
     """
-    urlData = helpers.getURL(result.url, session=requests.Session())
+    urlData = helpers.getURL(result.url, session=requests.Session(), needBytes=True)
     if urlData is None:
         logger.log(u"Unable to load url " + result.url + ", can't download season NZB", logger.ERROR)
         return False

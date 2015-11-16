@@ -54,9 +54,6 @@ class T411Provider(generic.TorrentProvider):
         self.minleech = 0
         self.confirmed = False
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         if self.token is not None:
@@ -93,10 +90,10 @@ class T411Provider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURLS = ([self.urls['search'] % (search_string, u) for u in self.subcategories], [self.urls['rss']])[mode == 'RSS']
+                searchURLS = ([self.urls['search'] % (search_string, u) for u in self.subcategories], [self.urls['rss']])[mode is 'RSS']
                 for searchURL in searchURLS:
                     logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
                     data = self.getURL(searchURL, json=True)
@@ -104,18 +101,18 @@ class T411Provider(generic.TorrentProvider):
                         continue
 
                     try:
-                        if 'torrents' not in data and mode != 'RSS':
+                        if 'torrents' not in data and mode is not 'RSS':
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
-                        torrents = data['torrents'] if mode != 'RSS' else data
+                        torrents = data['torrents'] if mode is not 'RSS' else data
 
                         if not torrents:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                         for torrent in torrents:
-                            if mode == 'RSS' and int(torrent['category']) not in self.subcategories:
+                            if mode is 'RSS' and int(torrent['category']) not in self.subcategories:
                                 continue
 
                             try:
@@ -130,31 +127,31 @@ class T411Provider(generic.TorrentProvider):
                                 leechers = int(torrent['leechers'])
                                 verified = bool(torrent['isVerified'])
 
-                                #Filter unseeded torrent
+                                # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
-                                    if mode != 'RSS':
+                                    if mode is not 'RSS':
                                         logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                     continue
 
-                                if self.confirmed and not verified and mode != 'RSS':
+                                if self.confirmed and not verified and mode is not 'RSS':
                                     logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                                     continue
 
                                 item = title, download_url, size, seeders, leechers
-                                if mode != 'RSS':
+                                if mode is not 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                                 items[mode].append(item)
 
-                            except Exception as e:
+                            except Exception:
                                 logger.log(u"Invalid torrent data, skipping result: %s" % torrent, logger.DEBUG)
                                 logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.DEBUG)
                                 continue
 
-                    except Exception, e:
+                    except Exception:
                         logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
-            #For each search mode sort all the items by seeders if available if available
+            # For each search mode sort all the items by seeders if available if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

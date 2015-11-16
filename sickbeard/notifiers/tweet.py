@@ -23,9 +23,9 @@ from sickrage.helper.exceptions import ex
 
 # parse_qsl moved to urlparse module in v2.6
 try:
-    from urlparse import parse_qsl  #@UnusedImport
+    from urlparse import parse_qsl  # @UnusedImport
 except ImportError:
-    from cgi import parse_qsl  #@Reimport
+    from cgi import parse_qsl  # @Reimport
 
 import oauth2 as oauth
 import pythontwitter as twitter
@@ -63,16 +63,16 @@ class TwitterNotifier:
 
     def _get_authorization(self):
 
-        signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()  #@UnusedVariable
+        signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()  # @UnusedVariable
         oauth_consumer = oauth.Consumer(key=self.consumer_key, secret=self.consumer_secret)
         oauth_client = oauth.Client(oauth_consumer)
 
-        logger.log('Requesting temp token from Twitter', logger.DEBUG)
+        logger.log(u'Requesting temp token from Twitter', logger.DEBUG)
 
         resp, content = oauth_client.request(self.REQUEST_TOKEN_URL, 'GET')
 
         if resp['status'] != '200':
-            logger.log('Invalid response from Twitter requesting temp token: %s' % resp['status'], logger.ERROR)
+            logger.log(u'Invalid response from Twitter requesting temp token: %s' % resp['status'], logger.ERROR)
         else:
             request_token = dict(parse_qsl(content))
 
@@ -91,26 +91,26 @@ class TwitterNotifier:
         token = oauth.Token(request_token['oauth_token'], request_token['oauth_token_secret'])
         token.set_verifier(key)
 
-        logger.log('Generating and signing request for an access token using key ' + key, logger.DEBUG)
+        logger.log(u'Generating and signing request for an access token using key ' + key, logger.DEBUG)
 
-        signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()  #@UnusedVariable
+        signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()  # @UnusedVariable
         oauth_consumer = oauth.Consumer(key=self.consumer_key, secret=self.consumer_secret)
-        logger.log('oauth_consumer: ' + str(oauth_consumer), logger.DEBUG)
+        logger.log(u'oauth_consumer: ' + str(oauth_consumer), logger.DEBUG)
         oauth_client = oauth.Client(oauth_consumer, token)
-        logger.log('oauth_client: ' + str(oauth_client), logger.DEBUG)
+        logger.log(u'oauth_client: ' + str(oauth_client), logger.DEBUG)
         resp, content = oauth_client.request(self.ACCESS_TOKEN_URL, method='POST', body='oauth_verifier=%s' % key)
-        logger.log('resp, content: ' + str(resp) + ',' + str(content), logger.DEBUG)
+        logger.log(u'resp, content: ' + str(resp) + ',' + str(content), logger.DEBUG)
 
         access_token = dict(parse_qsl(content))
-        logger.log('access_token: ' + str(access_token), logger.DEBUG)
+        logger.log(u'access_token: ' + str(access_token), logger.DEBUG)
 
-        logger.log('resp[status] = ' + str(resp['status']), logger.DEBUG)
+        logger.log(u'resp[status] = ' + str(resp['status']), logger.DEBUG)
         if resp['status'] != '200':
-            logger.log('The request for a token with did not succeed: ' + str(resp['status']), logger.ERROR)
+            logger.log(u'The request for a token with did not succeed: ' + str(resp['status']), logger.ERROR)
             return False
         else:
-            logger.log('Your Twitter Access Token key: %s' % access_token['oauth_token'], logger.DEBUG)
-            logger.log('Access Token secret: %s' % access_token['oauth_token_secret'], logger.DEBUG)
+            logger.log(u'Your Twitter Access Token key: %s' % access_token['oauth_token'], logger.DEBUG)
+            logger.log(u'Access Token secret: %s' % access_token['oauth_token_secret'], logger.DEBUG)
             sickbeard.TWITTER_USERNAME = access_token['oauth_token']
             sickbeard.TWITTER_PASSWORD = access_token['oauth_token_secret']
             return True

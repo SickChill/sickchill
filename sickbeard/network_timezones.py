@@ -21,7 +21,6 @@ import re
 import datetime
 import requests
 from dateutil import tz
-from os import name as osname
 
 from sickbeard import db
 from sickbeard import helpers
@@ -33,11 +32,7 @@ am_regex = re.compile(r'(A[. ]? ?M)', flags=re.IGNORECASE)
 pm_regex = re.compile(r'(P[. ]? ?M)', flags=re.IGNORECASE)
 
 network_dict = None
-
-if osname == 'nt' and tz.tzwinlocal is not None:
-    sb_timezone = tz.tzwinlocal()
-else:
-    sb_timezone = tz.tzlocal()
+sb_timezone = tz.tzwinlocal() if tz.tzwinlocal else tz.tzlocal()
 
 # update the network timezone table
 def update_network_dict():
@@ -53,7 +48,7 @@ def update_network_dict():
     d = {}
     try:
         for line in url_data.splitlines():
-            (key, val) = line.decode('utf-8').strip().rsplit(u':', 1)
+            (key, val) = line.strip().rsplit(u':', 1)
             if key is None or val is None:
                 continue
             d[key] = val
@@ -76,7 +71,7 @@ def update_network_dict():
             del network_list[network]
 
     if network_list:
-        purged = list(x for x in network_list)
+        purged = [x for x in network_list]
         queries.append(['DELETE FROM network_timezones WHERE network_name IN (%s);' % ','.join(['?'] * len(purged)), purged])
 
     if queries:
@@ -170,8 +165,7 @@ def parse_date_time(d, t, network):
     te = datetime.datetime.fromordinal(helpers.tryInt(d) or 1)
     try:
         foreign_timezone = get_network_timezone(network, network_dict)
-        foreign_naive = datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=foreign_timezone)
-        return foreign_naive
+        return datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=foreign_timezone)
     except Exception:
         return datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=sb_timezone)
 

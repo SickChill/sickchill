@@ -33,10 +33,10 @@ Filter log by: <select name="logFilter" id="logFilter" class="form-control form-
 Search log by:
 <input type="text" name="logSearch" placeholder="clear to reset" id="logSearch" value="${('', logSearch)[bool(logSearch)]}" class="form-control form-control-inline input-sm" />
 </div>
-<br />
+<br>
 <div class="align-left"><pre>
 ${logLines}
 </pre>
 </div>
-<br />
+<br>
 </%block>

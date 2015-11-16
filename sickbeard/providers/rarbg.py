@@ -79,14 +79,10 @@ class RarbgProvider(generic.TorrentProvider):
 
         self.cache = RarbgCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
         if self.token and self.tokenExpireDate and datetime.datetime.now() < self.tokenExpireDate:
             return True
 
-        resp_json = None
 
         response = self.getURL(self.urls['token'], timeout=30, json=True)
         if not response:
@@ -119,14 +115,14 @@ class RarbgProvider(generic.TorrentProvider):
             ep_indexerid = None
             ep_indexer = None
 
-        for mode in search_params.keys(): #Mode = RSS, Season, Episode
+        for mode in search_params.keys():  # Mode = RSS, Season, Episode
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                if mode == 'RSS':
+                if mode is 'RSS':
                     searchURL = self.urls['listing'] + self.defaultOptions
                 elif mode == 'Season':
                     if ep_indexer == INDEXER_TVDB:
@@ -168,7 +164,7 @@ class RarbgProvider(generic.TorrentProvider):
                         self.next_request = datetime.datetime.now() + datetime.timedelta(seconds=10)
 
                         if not data:
-                            logger.log("No data returned from provider", logger.DEBUG)
+                            logger.log(u"No data returned from provider", logger.DEBUG)
                             raise GetOutOfLoop
                         if re.search('ERROR', data):
                             logger.log(u"Error returned from provider", logger.DEBUG)
@@ -197,12 +193,8 @@ class RarbgProvider(generic.TorrentProvider):
                                 return results
                             logger.log(u"Using new token", logger.DEBUG)
                             continue
-                        if re.search('<div id="error">.*</div>', data):
-                            logger.log(u"Proxy %s does not support https" % self.proxy.getProxyURL(), logger.DEBUG)
-                            searchURL = searchURL.replace(u'https', 'http')
-                            continue
 
-                        #No error found break
+                        # No error found break
                         break
                     else:
                         logger.log(u"Retried 3 times without getting results", logger.DEBUG)
@@ -216,7 +208,7 @@ class RarbgProvider(generic.TorrentProvider):
                         data_json = json.loads(data.group())
                     else:
                         data_json = {}
-                except Exception as e:
+                except Exception:
                     logger.log(u"JSON load failed: %s" % traceback.format_exc(), logger.ERROR)
                     logger.log(u"JSON load failed. Data dump: %s" % data, logger.DEBUG)
                     continue
@@ -229,13 +221,13 @@ class RarbgProvider(generic.TorrentProvider):
                             size = item['size']
                             seeders = item['seeders']
                             leechers = item['leechers']
-                            pubdate = item['pubdate']
+                            # pubdate = item['pubdate']
 
                             if not all([title, download_url]):
                                 continue
 
                             item = title, download_url, size, seeders, leechers
-                            if mode != 'RSS':
+                            if mode is not 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
                             items[mode].append(item)
 

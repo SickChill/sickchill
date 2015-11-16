@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import generic
+from sickbeard.providers import generic
 
 from sickbeard import logger
 from sickbeard import tvcache
@@ -27,11 +27,8 @@ class WombleProvider(generic.NZBProvider):
         generic.NZBProvider.__init__(self, "Womble's Index")
         self.public = True
         self.cache = WombleCache(self)
-        self.urls = {'base_url': 'https://newshost.co.za/'}
+        self.urls = {'base_url': 'http://newshost.co.za/'}
         self.url = self.urls['base_url']
-
-    def isEnabled(self):
-        return self.enabled
 
 
 class WombleCache(tvcache.TVCache):

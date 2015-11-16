@@ -45,9 +45,6 @@ class XthorProvider(generic.TorrentProvider):
         self.password = None
         self.ratio = None
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
@@ -83,7 +80,7 @@ class XthorProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urlsearch % (urllib.quote(search_string), self.categories)
@@ -102,7 +99,7 @@ class XthorProvider(generic.TorrentProvider):
                             if link:
                                 title = link.text
                                 download_url = self.url + '/' + row.find("a", href=re.compile("download.php"))['href']
-                                #FIXME
+                                # FIXME
                                 size = -1
                                 seeders = 1
                                 leechers = 0
@@ -110,19 +107,19 @@ class XthorProvider(generic.TorrentProvider):
                                 if not all([title, download_url]):
                                     continue
 
-                                #Filter unseeded torrent
-                                #if seeders < self.minseed or leechers < self.minleech:
-                                #    if mode != 'RSS':
+                                # Filter unseeded torrent
+                                # if seeders < self.minseed or leechers < self.minleech:
+                                #    if mode is not 'RSS':
                                 #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 #    continue
 
                                 item = title, download_url, size, seeders, leechers
-                                if mode != 'RSS':
+                                if mode is not 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                                 items[mode].append(item)
 
-            #For each search mode sort all the items by seeders if available if available
+            # For each search mode sort all the items by seeders if available if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

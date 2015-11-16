@@ -87,7 +87,7 @@ class NMJNotifier:
 
     def notify_snatch(self, ep_name):
         return False
-        #Not implemented: Start the scanner when snatched does not make any sense
+        # Not implemented: Start the scanner when snatched does not make any sense
 
     def notify_download(self, ep_name):
         if sickbeard.USE_NMJ:
@@ -184,7 +184,7 @@ class NMJNotifier:
         force: If True then the notification will be sent even if NMJ is disabled in the config
         """
         if not sickbeard.USE_NMJ and not force:
-            logger.log("Notification for NMJ scan update not enabled, skipping this notification", logger.DEBUG)
+            logger.log(u"Notification for NMJ scan update not enabled, skipping this notification", logger.DEBUG)
             return False
 
         # fill in omitted parameters

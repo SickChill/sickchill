@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # URL: http://code.google.com/p/sickbeard/
 #
 # This file is part of SickRage.
@@ -305,12 +307,12 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 thumb = etree.SubElement(episode, "thumb")
                 thumb.text = myEp['filename'].strip()
 
-            #watched = etree.SubElement(episode, "watched")
-            #watched.text = 'false'
+            # watched = etree.SubElement(episode, "watched")
+            # watched.text = 'false'
 
             if getattr(myEp, 'writer', None):
-                credits = etree.SubElement(episode, "credits")
-                credits.text = myEp['writer'].strip()
+                ep_credits = etree.SubElement(episode, "credits")
+                ep_credits.text = myEp['writer'].strip()
 
             if getattr(myEp, 'director', None):
                 director = etree.SubElement(episode, "director")
@@ -321,7 +323,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 rating.text = myEp['rating']
 
             if getattr(myEp, 'gueststars', None) and isinstance(myEp['gueststars'], basestring):
-                for actor in (x.strip() for x in  myEp['gueststars'].split('|') if x.strip()):
+                for actor in (x.strip() for x in myEp['gueststars'].split('|') if x.strip()):
                     cur_actor = etree.SubElement(episode, "actor")
                     cur_actor_name = etree.SubElement(cur_actor, "name")
                     cur_actor_name.text = actor

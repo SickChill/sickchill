@@ -1,0 +1,33 @@
+{
+    "bitwise": true,
+    "browser": true,
+    "camelcase": true,
+    "curly": true,
+    "devel": true,
+    "eqeqeq": true,
+    "forin": true,
+    "freeze": true,
+    "indent": 4,
+    "jquery": true,
+    "latedef": true,
+    "maxerr": 100,
+    "noarg": true,
+    "noempty": true,
+    "nonbsp": true,
+    "undef": true,
+    "unused": true,
+    "node": true,
+    "globals": {
+        "srRoot": true,
+        "themeSpinner": true,
+        "metaToBool": true,
+        "getMeta": true,
+        "isMeta": true,
+        "topImageHtml": true,
+        "generate_bwlist": true,
+        "_": true,
+        "bootbox": true,
+        "PNotify": true,
+        "anonURL": true
+    }
+}

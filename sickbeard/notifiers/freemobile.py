@@ -43,7 +43,7 @@ class FreeMobileNotifier:
         if apiKey == None:
             apiKey = sickbeard.FREEMOBILE_APIKEY
 
-        logger.log("Free Mobile in use with API KEY: " + apiKey, logger.DEBUG)
+        logger.log(u"Free Mobile in use with API KEY: " + apiKey, logger.DEBUG)
 
         # build up the URL and parameters
         msg = msg.strip()
@@ -53,7 +53,7 @@ class FreeMobileNotifier:
         req = urllib2.Request(URL)
         # send the request to Free Mobile
         try:
-            reponse = urllib2.urlopen(req)
+            urllib2.urlopen(req)
         except IOError, e:
             if hasattr(e,'code'):
                 if e.code == 400:
@@ -115,10 +115,10 @@ class FreeMobileNotifier:
         """
 
         if not sickbeard.USE_FREEMOBILE and not force:
-            logger.log("Notification for Free Mobile not enabled, skipping this notification", logger.DEBUG)
+            logger.log(u"Notification for Free Mobile not enabled, skipping this notification", logger.DEBUG)
             return False, "Disabled"
 
-        logger.log("Sending a SMS for " + message, logger.DEBUG)
+        logger.log(u"Sending a SMS for " + message, logger.DEBUG)
 
         return self._sendFreeMobileSMS(title, message, id, apiKey)
 

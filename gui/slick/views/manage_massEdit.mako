@@ -13,7 +13,6 @@
         initial_quality = int(quality_value)
     else:
         initial_quality = common.SD
-    endif
 
     anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
 %>
@@ -39,17 +38,17 @@
                     <div class="component-group">
                         <h3>Main Settings</h3>
 
-                        ==> <u>Changing any settings marked with (<span class="separator">*</span>) will force a refresh of the selected shows.</u><br />
-                        <br />
+                        ==> <u>Changing any settings marked with (<span class="separator">*</span>) will force a refresh of the selected shows.</u><br>
+                        <br>
 
                         <fieldset class="component-group-list">
-                            
+
                         <div class="field-pair">
                             <label for="shows">
                                 <span class="component-title">Selected Shows</span>
                                 <span class="component-desc">
                                     % for curName in sorted(showNames):
-                                    <span style="font-size: 14px;">${curName}</span><br />
+                                    <span style="font-size: 14px;">${curName}</span><br>
                                     % endfor
                                 </span>
                             </label>
@@ -142,7 +141,7 @@
                                         <option value="keep" ${('', 'selected="selected"')[archive_firstmatch_value == None]}>&lt; Keep &gt;</option>
                                         <option value="enable" ${('', 'selected="selected"')[archive_firstmatch_value == 1]}>Yes</option>
                                         <option value="disable" ${('', 'selected="selected"')[archive_firstmatch_value == 0]}>No</option>
-                                    </select><br />
+                                    </select><br>
                                     Archive episode after the first best match is found from your archive quality list.
                                 </span>
                             </label>
@@ -156,7 +155,7 @@
                                         <option value="keep" ${('', 'selected="selected"')[flatten_folders_value == None]}>&lt; Keep &gt;</option>
                                         <option value="enable" ${('', 'selected="selected"')[flatten_folders_value == 0]}>Yes</option>
                                         <option value="disable" ${('', 'selected="selected"')[flatten_folders_value == 1]}>No</option>
-                                    </select><br />
+                                    </select><br>
                                     Group episodes by season folder (set to "No" to store in a single folder).
                                 </span>
                             </label>
@@ -185,7 +184,7 @@
                                         % for curStatus in [WANTED, SKIPPED, IGNORED]:
                                         <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == default_ep_status_value]}>${statusStrings[curStatus]}</option>
                                         % endfor
-                                    </select><br />
+                                    </select><br>
                                     This will set the status for future episodes.
                                 </span>
                             </label>
@@ -199,7 +198,7 @@
                                         <option value="keep" ${('', 'selected="selected"')[scene_value == None]}>&lt; Keep &gt;</option>
                                         <option value="enable" ${('', 'selected="selected"')[scene_value == 1]}>Yes</option>
                                         <option value="disable" ${('', 'selected="selected"')[scene_value == 0]}>No</option>
-                                    </select><br />
+                                    </select><br>
                                     Search by scene numbering (set to "No" to search by indexer numbering).
                                 </span>
                             </label>
@@ -213,7 +212,7 @@
                                         <option value="keep" ${('', 'selected="selected"')[anime_value == None]}>&lt; Keep &gt;</option>
                                         <option value="enable" ${('', 'selected="selected"')[anime_value == 1]}>Yes</option>
                                         <option value="disable" ${('', 'selected="selected"')[anime_value == 0]}>No</option>
-                                    </select><br />
+                                    </select><br>
                                     Set if these shows are Anime and episodes are released as Show.265 rather than Show.S02E03
                                 </span>
                             </label>
@@ -227,8 +226,8 @@
                                         <option value="keep" ${('', 'selected="selected"')[sports_value == None]}>&lt; Keep &gt;</option>
                                         <option value="enable" ${('', 'selected="selected"')[sports_value == 1]}>Yes</option>
                                         <option value="disable" ${('', 'selected="selected"')[sports_value == 0]}>No</option>
-                                    </select><br />
-                                    Set if these shows are sporting or MMA events released as Show.03.02.2010 rather than Show.S02E03.<br />
+                                    </select><br>
+                                    Set if these shows are sporting or MMA events released as Show.03.02.2010 rather than Show.S02E03.<br>
                                     <span style="color:red">In case of an air date conflict between regular and special episodes, the later will be ignored.</span>
                                 </span>
                             </label>
@@ -242,8 +241,8 @@
                                         <option value="keep" ${('', 'selected="selected"')[air_by_date_value == None]}>&lt; Keep &gt;</option>
                                         <option value="enable" ${('', 'selected="selected"')[air_by_date_value == 1]}>Yes</option>
                                         <option value="disable" ${('', 'selected="selected"')[air_by_date_value == 0]}>No</option>
-                                    </select><br />
-                                    Set if these shows are released as Show.03.02.2010 rather than Show.S02E03.<br />
+                                    </select><br>
+                                    Set if these shows are released as Show.03.02.2010 rather than Show.S02E03.<br>
                                     <span style="color:red">In case of an air date conflict between regular and special episodes, the later will be ignored.</span>
                                 </span>
                             </label>
@@ -257,7 +256,7 @@
                                         <option value="keep" ${('', 'selected="selected"')[subtitles_value == None]}>&lt; Keep &gt;</option>
                                         <option value="enable" ${('', 'selected="selected"')[subtitles_value == 1]}>Yes</option>
                                         <option value="disable" ${('', 'selected="selected"')[subtitles_value == 0]}>No</option>
-                                    </select><br />
+                                    </select><br>
                                     Search for subtitles.
                                 </span>
                             </label>

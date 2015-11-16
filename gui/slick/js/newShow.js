@@ -58,7 +58,7 @@ $(document).ready(function () {
                             resultStr += ' [' + obj[0] + ']';
                         }
 
-                        resultStr += '<br />';
+                        resultStr += '<br>';
                     });
                     resultStr += '</ul>';
                 }

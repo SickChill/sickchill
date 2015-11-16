@@ -4,11 +4,9 @@
     from sickbeard.providers.generic import GenericProvider
     from sickbeard.providers import thepiratebay
     from sickbeard.helpers import anon_url
-
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/configProviders.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/config.js?${sbPID}"></script>
+<script type="text/javascript" src="/js/ConfigProviders.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
     % if sickbeard.USE_NZBS:
@@ -59,7 +57,7 @@ $('#config-components').tabs();
                         % if not sickbeard.USE_NZBS or not sickbeard.USE_TORRENTS:
                         <blockquote style="margin: 20px 0;">NZB/Torrent providers can be toggled in <b><a href="${srRoot}/config/search">Search Settings</a></b></blockquote>
                         % else:
-                        <br/>
+                        <br>
                         % endif
 
                         <div>
@@ -90,7 +88,7 @@ $('#config-components').tabs();
                         % endfor
                         </ul>
                         <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.getID()+':'+str(int(x.isEnabled())) for x in sickbeard.providers.sortedProviderList()])}"/>
-                        <br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+                        <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                     </fieldset>
                 </div><!-- /component-group1 //-->
 
@@ -482,33 +480,6 @@ $('#config-components').tabs();
                         </div>
                         % endif
 
-                        % if hasattr(curTorrentProvider, 'proxy'):
-                        <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_proxy">
-                                <span class="component-title">Access provider via proxy</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="${curTorrentProvider.getID()}_proxy" id="${curTorrentProvider.getID()}_proxy" ${('', 'checked="checked"')[bool(curTorrentProvider.proxy.enabled)]}/>
-                                    <p>to bypass country blocking mechanisms</p>
-                                </span>
-                            </label>
-                        </div>
-
-                        % if hasattr(curTorrentProvider.proxy, 'url'):
-                        <div class="field-pair content_${curTorrentProvider.getID()}_proxy" id="content_${curTorrentProvider.getID()}_proxy">
-                            <label for="${curTorrentProvider.getID()}_proxy_url">
-                                <span class="component-title">Proxy URL:</span>
-                                <span class="component-desc">
-                                  <select name="${curTorrentProvider.getID()}_proxy_url" id="${curTorrentProvider.getID()}_proxy_url" class="form-control input-sm">
-                                    % for i in curTorrentProvider.proxy.urls.keys():
-                                    <option value="${curTorrentProvider.proxy.urls[i]}" ${('', 'selected="selected"')[curTorrentProvider.proxy.urls[i] == curTorrentProvider.proxy.url]}>${i}</option>
-                                    % endfor
-                                    </select>
-                                </span>
-                            </label>
-                        </div>
-                        % endif
-                        % endif
-
                         % if hasattr(curTorrentProvider, 'freeleech'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_freeleech">
@@ -613,7 +584,7 @@ $('#config-components').tabs();
 
                     <!-- end div for editing providers -->
 
-                    <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+                    <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
 
                     </fieldset>
                 </div><!-- /component-group2 //-->
@@ -622,7 +593,7 @@ $('#config-components').tabs();
                 <div id="core-component-group3" class="component-group">
 
                     <div class="component-group-desc">
-                        <h3>Configure Custom<br />Newznab Providers</h3>
+                        <h3>Configure Custom<br>Newznab Providers</h3>
                         <p>Add and setup or remove custom Newznab providers.</p>
                     </div>
 
@@ -759,7 +730,7 @@ $('#config-components').tabs();
             </div><!-- /component-group4 //-->
             % endif
 
-            <br/><input type="submit" class="btn config_submitter_refresh" value="Save Changes" /><br/>
+            <br><input type="submit" class="btn config_submitter_refresh" value="Save Changes" /><br>
 
             </div><!-- /config-components //-->
 

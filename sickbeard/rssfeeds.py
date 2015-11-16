@@ -1,43 +1,29 @@
-
-import os
-import urllib
-
-import sickbeard
+import re
+import urlparse
+from feedparser.api import parse
+from feedparser.util import FeedParserDict
 
 from sickbeard import logger
-from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
-from feedcache.cache import Cache
+def getFeed(url, request_headers=None, handlers=None):
+    parsed = list(urlparse.urlparse(url))
+    parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
 
-from sqliteshelf import SQLiteShelf
+    try:
+        feed = parse(url, False, False, request_headers, handlers=handlers)
 
+        if feed:
+            if 'entries' in feed:
+                return feed
+            elif 'error' in feed.feed:
+                err_code = feed.feed['error']['code']
+                err_desc = feed.feed['error']['description']
+                logger.log(u'RSS ERROR:[%s] CODE:[%s]' % (err_desc, err_code), logger.DEBUG)
+        else:
+            logger.log(u'RSS error loading url: ' + url, logger.DEBUG)
 
-class RSSFeeds:
-    def __init__(self, db_name='feeds'):
-        try:
-            db_name = ek(os.path.join, sickbeard.CACHE_DIR, 'rss', db_name) + '.db'
-            if not os.path.exists(os.path.dirname(db_name)):
-                sickbeard.helpers.makeDir(os.path.dirname(db_name))
+    except Exception as e:
+        logger.log(u'RSS error: ' + ex(e), logger.DEBUG)
 
-            self.rssDB = SQLiteShelf(db_name)
-        except Exception as e:
-            logger.log(u"FeedParser error: " + ex(e), logger.DEBUG)
-
-    def clearCache(self, age=None):
-        try:
-            Cache(self.rssDB).purge(age)
-        finally:
-            self.rssDB.close()
-
-    def getFeed(self, url, post_data=None, request_headers=None, items=None, handlers=[]):
-
-        if post_data:
-            url += urllib.urlencode(post_data)
-
-        try:
-            resp = Cache(self.rssDB, userAgent=sickbeard.common.USER_AGENT).fetch(url, force_update=True, request_headers=request_headers, handlers=handlers)
-        finally:
-            self.rssDB.close()
-
-        return resp
+    return FeedParserDict()

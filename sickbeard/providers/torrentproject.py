@@ -39,18 +39,15 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
         self.minleech = None
         self.cache = TORRENTPROJECTCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        for mode in search_strings.keys(): #Mode = RSS, Season, Episode
+        for mode in search_strings.keys():  # Mode = RSS, Season, Episode
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
 
@@ -70,38 +67,30 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                     seeders = helpers.tryInt(torrents[i]["seeds"], 1)
                     leechers = helpers.tryInt(torrents[i]["leechs"], 0)
                     if seeders < self.minseed or leechers < self.minleech:
-                        if mode != 'RSS':
-                            logger.log("Torrent doesn't meet minimum seeds & leechers not selecting : %s" % title, logger.DEBUG)
+                        if mode is not 'RSS':
+                            logger.log(u"Torrent doesn't meet minimum seeds & leechers not selecting : %s" % title, logger.DEBUG)
                         continue
 
                     t_hash = torrents[i]["torrent_hash"]
                     size = int(torrents[i]["torrent_size"])
 
-                    if seeders < 10:
-                        if mode != 'RSS':
-                            logger.log("Torrent has less than 10 seeds getting dyn trackers: " + title, logger.DEBUG)
-                            trackerUrl = self.urls['api'] + "" + t_hash + "/trackers_json"
-                            jdata = self.getURL(trackerUrl, json=True)
-                            if jdata == "maintenance":
-                                download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://open.demonii.com:1337&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969"
-                                logger.log("Tracker url is in " + jdata + " mode, using hardcoded one" , logger.INFO)
-                            else:
-                                download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
-                                logger.log("Dyn Magnet: " + download_url, logger.DEBUG)
-                        else:
-                            download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://open.demonii.com:1337&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969"
-                            logger.log("Result has less than 10 seeds but not using Dyn Magnet becouse its from RSS" + title, logger.DEBUG)
-                    else:
-                        #logger.log("Torrent has more than 10 seeds using hard coded trackers", logger.DEBUG)
+                    try:
+                        assert seeders < 10
+                        assert mode is not 'RSS'
+                        logger.log(u"Torrent has less than 10 seeds getting dyn trackers: " + title, logger.DEBUG)
+                        trackerUrl = self.urls['api'] + "" + t_hash + "/trackers_json"
+                        jdata = self.getURL(trackerUrl, json=True)
+                        assert jdata is not "maintenance"
+                        download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
+                    except (Exception, AssertionError):
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://open.demonii.com:1337&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969"
-
 
                     if not all([title, download_url]):
                         continue
 
                     item = title, download_url, size, seeders, leechers
 
-                    if mode != 'RSS':
+                    if mode is not 'RSS':
                         logger.log(u"Found result: %s" % title, logger.DEBUG)
 
                     items[mode].append(item)
@@ -125,7 +114,7 @@ class TORRENTPROJECTCache(tvcache.TVCache):
         self.minTime = 20
 
     def _getRSSData(self):
-        
+
         search_params = {'RSS': ['0day']}
         return {'entries': self.provider._doSearch(search_params)}
 

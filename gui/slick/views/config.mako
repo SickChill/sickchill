@@ -27,9 +27,9 @@
 <table class="infoTable" cellspacing="1" border="0" cellpadding="0" width="100%">
     <tr><td class="infoTableHeader">SR Version: </td><td class="infoTableCell">
 % if sickbeard.VERSION_NOTIFY:
-        BRANCH: (${sickbeard.BRANCH}) / COMMIT: (${sickbeard.CUR_COMMIT_HASH}) <!-- &ndash; build.date //--><br />
+        BRANCH: (${sickbeard.BRANCH}) / COMMIT: (${sickbeard.CUR_COMMIT_HASH}) <!-- &ndash; build.date //--><br>
 % else:
-        You don't have version checking turned on. Please turn on "Check for Update" in Config > General.<br />
+        You don't have version checking turned on. Please turn on "Check for Update" in Config > General.<br>
 % endif
     </td></tr>
 

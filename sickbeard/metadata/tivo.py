@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # Author: Gordon Turner <gordonturner@gordonturner.ca>
 # URL: http://code.google.com/p/sickbeard/
@@ -18,11 +20,11 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import datetime
+import io
 import os
+import datetime
 
 import sickbeard
-
 from sickbeard import logger, helpers
 from sickbeard.metadata import generic
 from sickrage.helper.encoding import ek
@@ -84,7 +86,7 @@ class TIVOMetadata(generic.GenericMetadata):
     # Override with empty methods for unsupported features
     def retrieveShowMetadata(self, folder):
         # no show metadata generated, we abort this lookup function
-        return (None, None, None)
+        return None, None, None
 
     def create_show_metadata(self, show_obj):
         pass
@@ -224,7 +226,7 @@ class TIVOMetadata(generic.GenericMetadata):
             # after the episode's title and before the description on the Program screen.
 
             # FIXME: Hardcode isEpisode to true for now, not sure how to handle movies
-            data += ("isEpisode : true\n")
+            data += "isEpisode : true\n"
 
             # Write the synopsis of the video here
             # Micrsoft Word's smartquotes can die in a fire.
@@ -232,8 +234,7 @@ class TIVOMetadata(generic.GenericMetadata):
             # Replace double curly quotes
             sanitizedDescription = sanitizedDescription.replace(u"\u201c", "\"").replace(u"\u201d", "\"")
             # Replace single curly quotes
-            sanitizedDescription = sanitizedDescription.replace(u"\u2018", "'").replace(u"\u2019", "'").replace(
-                u"\u02BC", "'")
+            sanitizedDescription = sanitizedDescription.replace(u"\u2018", "'").replace(u"\u2019", "'").replace(u"\u02BC", "'")
 
             data += ("description : " + sanitizedDescription + "\n")
 
@@ -320,7 +321,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
             logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
 
-            with open(nfo_file_path, 'w') as nfo_file:
+            with io.open(nfo_file_path, 'w') as nfo_file:
                 # Calling encode directly, b/c often descriptions have wonky characters.
                 nfo_file.write(data.encode("utf-8"))
 

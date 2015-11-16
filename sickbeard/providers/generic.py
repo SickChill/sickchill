@@ -22,7 +22,6 @@ import datetime
 import os
 import re
 import itertools
-import urllib
 from random import shuffle
 from base64 import b16encode, b32decode
 
@@ -40,7 +39,7 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickbeard import show_name_helpers
 
-class GenericProvider:
+class GenericProvider(object):
     NZB = "nzb"
     TORRENT = "torrent"
 
@@ -50,8 +49,6 @@ class GenericProvider:
         self.providerType = None
         self.name = name
 
-        self.proxy = ProviderProxy()
-        self.proxyGlypeProxySSLwarning = None
         self.urls = {}
         self.url = ''
 
@@ -87,7 +84,7 @@ class GenericProvider:
 
         shuffle(self.btCacheURLS)
 
-        self.proper_strings = ['PROPER|REPACK']
+        self.proper_strings = ['PROPER|REPACK|REAL']
 
     def getID(self):
         return GenericProvider.makeID(self.name)
@@ -99,6 +96,8 @@ class GenericProvider:
     def imageName(self):
         return self.getID() + '.png'
 
+    # pylint: disable=R0201,W0612
+    # Method could be a function, Unused variable
     def _checkAuth(self):
         return True
 
@@ -106,18 +105,10 @@ class GenericProvider:
         return True
 
     def isActive(self):
-        if self.providerType == GenericProvider.NZB and sickbeard.USE_NZBS:
-            return self.isEnabled()
-        elif self.providerType == GenericProvider.TORRENT and sickbeard.USE_TORRENTS:
-            return self.isEnabled()
-        else:
-            return False
+        return False
 
     def isEnabled(self):
-        """
-        This should be overridden and should return the config setting eg. sickbeard.MYPROVIDER
-        """
-        return False
+        return self.enabled
 
     def getResult(self, episodes):
         """
@@ -135,22 +126,14 @@ class GenericProvider:
 
         return result
 
-    def getURL(self, url, post_data=None, params=None, timeout=30, json=False):
+    def getURL(self, url, post_data=None, params=None, timeout=30, json=False, needBytes=False):
         """
         By default this is just a simple urlopen call but this method should be overridden
         for providers with special URL requirements (like cookies)
         """
 
-        if self.proxy.isEnabled():
-            self.headers.update({'Referer': self.proxy.getProxyURL()})
-            self.proxyGlypeProxySSLwarning = self.proxy.getProxyURL() + 'includes/process.php?action=sslagree&submit=Continue anyway...'
-        else:
-            if 'Referer' in self.headers:
-                self.headers.pop('Referer')
-            self.proxyGlypeProxySSLwarning = None
-
-        return helpers.getURL(self.proxy._buildURL(url), post_data=post_data, params=params, headers=self.headers, timeout=timeout,
-                              session=self.session, json=json, proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning)
+        return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
+                              session=self.session, json=json, needBytes=needBytes)
 
 
     def _makeURL(self, result):
@@ -162,19 +145,19 @@ class GenericProvider:
 
                 try:
                     torrent_name = re.findall('dn=([^&]+)', result.url)[0]
-                except:
+                except Exception:
                     torrent_name = 'NO_DOWNLOAD_NAME'
 
                 if len(torrent_hash) == 32:
                     torrent_hash = b16encode(b32decode(torrent_hash)).upper()
 
                 if not torrent_hash:
-                    logger.log("Unable to extract torrent hash from magnet: " + ex(result.url), logger.ERROR)
+                    logger.log(u"Unable to extract torrent hash from magnet: " + ex(result.url), logger.ERROR)
                     return urls, filename
 
                 urls = [x.format(torrent_hash=torrent_hash, torrent_name=torrent_name) for x in self.btCacheURLS]
-            except:
-                logger.log("Unable to extract torrent hash or name from magnet: " + ex(result.url), logger.ERROR)
+            except Exception:
+                logger.log(u"Unable to extract torrent hash or name from magnet: " + ex(result.url), logger.ERROR)
                 return urls, filename
         else:
             urls = [result.url]
@@ -200,17 +183,11 @@ class GenericProvider:
 
         urls, filename = self._makeURL(result)
 
-        if self.proxy.isEnabled():
-            self.headers.update({'Referer': self.proxy.getProxyURL()})
-        elif 'Referer' in self.headers:
-            self.headers.pop('Referer')
-
         for url in urls:
             if 'NO_DOWNLOAD_NAME' in url:
                 continue
 
-            if not self.proxy.isEnabled() and url.startswith('http'):
-                # Let's just set a referer for every .torrent/.nzb, should work as a cover-all without side-effects
+            if url.startswith('http'):
                 self.headers.update({'Referer': '/'.join(url.split('/')[:3]) + '/'})
 
             logger.log(u"Downloading a result from " + self.name + " at " + url)
@@ -219,13 +196,13 @@ class GenericProvider:
             if url.endswith(GenericProvider.TORRENT) and filename.endswith(GenericProvider.NZB):
                 filename = filename.rsplit('.', 1)[0] + '.' + GenericProvider.TORRENT
 
-            if helpers.download_file(self.proxy._buildURL(url), filename, session=self.session, headers=self.headers):
+            if helpers.download_file(url, filename, session=self.session, headers=self.headers):
                 if self._verify_download(filename):
                     logger.log(u"Saved result to " + filename, logger.INFO)
                     return True
                 else:
                     logger.log(u"Could not download %s" % url, logger.WARNING)
-                    helpers._remove_file_failed(filename)
+                    helpers.remove_file_failed(filename)
 
         if len(urls):
             logger.log(u"Failed to download any results", logger.WARNING)
@@ -242,10 +219,12 @@ class GenericProvider:
             try:
                 parser = createParser(file_name)
                 if parser:
+                    # pylint: disable=W0212
+                    # Access to a protected member of a client class
                     mime_type = parser._getMimeType()
                     try:
                         parser.stream._input.close()
-                    except:
+                    except Exception:
                         pass
                     if mime_type == 'application/x-bittorrent':
                         return True
@@ -272,6 +251,8 @@ class GenericProvider:
         quality = Quality.sceneQuality(title, anime)
         return quality
 
+    # pylint: disable=R0201,W0613
+    # Method could be a function, Unused argument
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
         return []
 
@@ -405,9 +386,8 @@ class GenericProvider:
                             u"This is supposed to be a season pack search but the result " + title + " is not a valid season pack, skipping it",
                             logger.DEBUG)
                         addCacheEntry = True
-                    if len(parse_result.episode_numbers) and (
-                                    parse_result.season_number not in set([ep.season for ep in episodes]) or not [ep for ep in episodes if
-                                                                                 ep.scene_episode in parse_result.episode_numbers]):
+                    if len(parse_result.episode_numbers) and (parse_result.season_number not in set([ep.season for ep in episodes])
+                                                              or not [ep for ep in episodes if ep.scene_episode in parse_result.episode_numbers]):
                         logger.log(
                             u"The result " + title + " doesn't seem to be a valid episode that we are trying to snatch, ignoring",
                             logger.DEBUG)
@@ -457,6 +437,8 @@ class GenericProvider:
             # add parsed result to cache for usage later on
             if addCacheEntry:
                 logger.log(u"Adding item from search to cache: " + title, logger.DEBUG)
+                # pylint: disable=W0212
+                # Access to a protected member of a client class
                 ci = self.cache._addCacheEntry(title, url, parse_result=parse_result)
                 if ci is not None:
                     cl.append(ci)
@@ -512,6 +494,8 @@ class GenericProvider:
 
         # check if we have items to add to cache
         if len(cl) > 0:
+            # pylint: disable=W0212
+            # Access to a protected member of a client class
             myDB = self.cache._getDB()
             myDB.mass_action(cl)
 
@@ -538,6 +522,9 @@ class NZBProvider(GenericProvider):
 
         self.providerType = GenericProvider.NZB
 
+    def isActive(self):
+        return sickbeard.USE_NZBS and self.isEnabled()
+
     def _get_size(self, item):
         try:
             size = item.get('links')[1].get('length', -1)
@@ -556,8 +543,11 @@ class TorrentProvider(GenericProvider):
 
         self.providerType = GenericProvider.TORRENT
 
+    def isActive(self):
+        return sickbeard.USE_TORRENTS and self.isEnabled()
+
     def _get_title_and_url(self, item):
-        from feedparser.feedparser import FeedParserDict
+        from feedparser.util import FeedParserDict
         if isinstance(item, (dict, FeedParserDict)):
             title = item.get('title', '')
             download_url = item.get('url', '')
@@ -604,7 +594,7 @@ class TorrentProvider(GenericProvider):
             elif ep_obj.show.anime:
                 ep_string = show_name + ' ' + "%d" % ep_obj.scene_absolute_number
             else:
-                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName.SXX
+                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  # 1) showName.SXX
 
             search_string['Season'].append(ep_string.encode('utf-8').strip())
 
@@ -627,7 +617,7 @@ class TorrentProvider(GenericProvider):
                 ep_string += "%02d" % int(ep_obj.scene_absolute_number)
             else:
                 ep_string += sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                              'episodenumber': ep_obj.scene_episode}
+                                                                   'episodenumber': ep_obj.scene_episode}
             if add_string:
                 ep_string = ep_string + ' %s' % add_string
 
@@ -635,7 +625,8 @@ class TorrentProvider(GenericProvider):
 
         return [search_string]
 
-    def _clean_title_from_provider(self, title):
+    @staticmethod
+    def _clean_title_from_provider(title):
         return (title or '').replace(' ', '.')
 
     def findPropers(self, search_date=datetime.datetime.today()):
@@ -662,44 +653,3 @@ class TorrentProvider(GenericProvider):
                         results.append(classes.Proper(title, url, datetime.datetime.today(), show))
 
         return results
-
-class ProviderProxy:
-    def __init__(self):
-        self.Type = 'GlypeProxy'
-        self.param = 'browse.php?u='
-        self.option = '&b=32&f=norefer'
-        self.enabled = False
-        self.url = None
-
-        self.urls = {
-            'getprivate.eu (NL)': 'http://getprivate.eu/',
-            'hideme.nl (NL)': 'http://hideme.nl/',
-            'proxite.eu (DE)': 'http://proxite.eu/',
-            'interproxy.net (EU)': 'http://interproxy.net/',
-        }
-
-    def isEnabled(self):
-        """ Return True if we Choose to call TPB via Proxy """
-        return self.enabled
-
-    def getProxyURL(self):
-        """ Return the Proxy URL Choosen via Provider Setting """
-        return str(self.url)
-
-    def _buildURL(self, url):
-        """ Return the Proxyfied URL of the page """
-        if self.isEnabled():
-            url = self.getProxyURL() + self.param + urllib.quote_plus(url.encode('UTF-8')) + self.option
-            logger.log(u"Proxified URL: " + url, logger.DEBUG)
-
-        return url
-
-    def _buildRE(self, regx):
-        """ Return the Proxyfied RE string """
-        if self.isEnabled():
-            regx = re.sub('//1', self.option, regx).replace('&', '&amp;')
-            logger.log(u"Proxified REGEX: " + regx, logger.DEBUG)
-        else:
-            regx = re.sub('//1', '', regx)
-
-        return regx

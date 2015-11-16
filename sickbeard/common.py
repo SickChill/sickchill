@@ -22,6 +22,13 @@ import operator
 import platform
 import re
 import uuid
+from numdict import NumDict
+
+import sys
+import os.path
+
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from random import shuffle
 
@@ -89,7 +96,7 @@ ARCHIVED = 6  # episodes that you don't have locally (counts toward download com
 IGNORED = 7  # episodes that you don't want included in your download stats
 SNATCHED_PROPER = 9  # qualified with quality
 SUBTITLED = 10  # qualified with quality
-FAILED = 11  #episode downloaded or snatched we don't want
+FAILED = 11  # episode downloaded or snatched we don't want
 SNATCHED_BEST = 12  # episode redownloaded using best quality
 
 NAMING_REPEAT = 1
@@ -107,8 +114,8 @@ multiEpStrings[NAMING_EXTEND] = "Extend"
 multiEpStrings[NAMING_LIMITED_EXTEND] = "Extend (Limited)"
 multiEpStrings[NAMING_LIMITED_EXTEND_E_PREFIXED] = "Extend (Limited, E-prefixed)"
 
-# pylint: disable=W0232,C1001
-class Quality:
+# pylint: disable=W0232
+class Quality(object):
     NONE = 0  # 0
     SDTV = 1  # 1
     SDDVD = 1 << 1  # 2
@@ -221,7 +228,7 @@ class Quality:
         :return: Quality prefix
         """
 
-        #Try Scene names first
+        # Try Scene names first
         quality = Quality.sceneQuality(name, anime)
         if quality != Quality.UNKNOWN:
             return quality
@@ -435,9 +442,9 @@ class Quality:
 
         # 2 corresponds to SDDVD quality
         if quality == 2:
-            if re.search(r"b[rd](|.|-| )(rip|mux)", name.lower()):
+            if re.search(r"b(r|d|rd)?(-| |\.)?(rip|mux)", name.lower()):
                 rip_type = " BDRip"
-            elif re.search(r"dvd(|.|-| )(rip|mux)", name.lower()):
+            elif re.search(r"(dvd)(-| |\.)?(rip|mux)?", name.lower()):
                 rip_type = " DVDRip"
             else:
                 rip_type = ""
@@ -512,46 +519,61 @@ qualityPresetStrings = {SD: "SD",
                         ANY: "Any"}
 
 
-# pylint: disable=R0903,C1001
-class StatusStrings:
-    def __init__(self):
-        self.statusStrings = {UNKNOWN: "Unknown",
-                              UNAIRED: "Unaired",
-                              SNATCHED: "Snatched",
-                              DOWNLOADED: "Downloaded",
-                              SKIPPED: "Skipped",
-                              SNATCHED_PROPER: "Snatched (Proper)",
-                              WANTED: "Wanted",
-                              ARCHIVED: "Archived",
-                              IGNORED: "Ignored",
-                              SUBTITLED: "Subtitled",
-                              FAILED: "Failed",
-                              SNATCHED_BEST: "Snatched (Best)"}
+class StatusStrings(NumDict):
+    """
+    Dictionary containing strings for status codes
+    """
+    # todo: Deprecate StatusStrings().statusStrings and use StatusStrings() directly
+    # todo: Deprecate .has_key and switch to 'x in y'
+    # todo: Make views return Qualities too
+    # todo:
 
-    def __getitem__(self, key):
-        key = int(key)
-        if key in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.ARCHIVED:
+    qualities = Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.ARCHIVED
+
+    @property
+    def statusStrings(self):  # for backwards compatibility
+        return self.data
+
+    def __missing__(self, key):
+        """
+        If the key is not found try to determine a status from Quality
+
+        :param key: A numeric key or None
+        :raise KeyError: if the key is invalid and can't be determined from Quality
+        """
+        key = self.numeric(key)  # try to convert the key to a number which will raise KeyError if it can't
+        if key in self.qualities:  # the key wasn't found locally so check in qualities
             status, quality = Quality.splitCompositeStatus(key)
-            if quality == Quality.NONE:
-                return self.statusStrings[status]
-            else:
-                return self.statusStrings[status] + " (" + Quality.qualityStrings[quality] + ")"
-        else:
-            return self.statusStrings[key] if self.statusStrings.has_key(key) else ''
-
-    def has_key(self, key):
-        key = int(key)
-        return key in self.statusStrings or key in Quality.DOWNLOADED + Quality.ARCHIVED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
+            return self[status] if not quality else self[status] + " (" + Quality.qualityStrings[quality] + ")"
+        else:  # the key wasn't found in qualities either
+            raise KeyError(key)  # ... so the key is invalid
 
     def __contains__(self, key):
-        return self.has_key(key)
+        try:
+            key = self.numeric(key)
+            return key in self.data or key in self.qualities
+        except KeyError:
+            return False
 
-statusStrings = StatusStrings()
+# Assign strings to statuses
+statusStrings = StatusStrings(
+    {UNKNOWN: "Unknown",
+     UNAIRED: "Unaired",
+     SNATCHED: "Snatched",
+     DOWNLOADED: "Downloaded",
+     SKIPPED: "Skipped",
+     SNATCHED_PROPER: "Snatched (Proper)",
+     WANTED: "Wanted",
+     ARCHIVED: "Archived",
+     IGNORED: "Ignored",
+     SUBTITLED: "Subtitled",
+     FAILED: "Failed",
+     SNATCHED_BEST: "Snatched (Best)"
+     }
+)
 
-
-# pylint: disable=R0903,C1001
-class Overview:
-
+# pylint: disable=R0903
+class Overview(object):
     UNAIRED = UNAIRED  # 1
     QUAL = 2
     WANTED = WANTED  # 3
@@ -576,4 +598,4 @@ XML_NSMAP = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
 countryList = {'Australia': 'AU',
                'Canada': 'CA',
                'USA': 'US'
-              }
+               }

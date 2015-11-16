@@ -15,20 +15,20 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+import io
 import os
 import re
+import requests
+from bencode import bdecode
 
 import sickbeard
-import generic
-
+from sickbeard.providers import generic
 from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import tvcache
+
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
-
-import requests
-from bencode import bdecode
 
 
 class TorrentRssProvider(generic.TorrentProvider):
@@ -52,25 +52,22 @@ class TorrentRssProvider(generic.TorrentProvider):
         self.titleTAG = titleTAG
 
     def configStr(self):
-        return "%s|%s|%s|%s|%d|%s|%d|%d|%d" % (self.name or '',
-                                            self.url or '',
-                                            self.cookies or '',
-                                            self.titleTAG or '',
-                                            self.enabled,
-                                            self.search_mode or '',
-                                            self.search_fallback,
-                                            self.enable_daily,
-                                            self.enable_backlog)
+        return "%s|%s|%s|%s|%d|%s|%d|%d|%d" % (
+            self.name or '',
+            self.url or '',
+            self.cookies or '',
+            self.titleTAG or '',
+            self.enabled,
+            self.search_mode or '',
+            self.search_fallback,
+            self.enable_daily,
+            self.enable_backlog
+        )
 
     def imageName(self):
-        if ek(os.path.isfile,
-                 ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
-                       self.getID() + '.png')):
+        if os.path.isfile(ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers', self.getID() + '.png')):
             return self.getID() + '.png'
         return 'torrentrss.png'
-
-    def isEnabled(self):
-        return self.enabled
 
     def _get_title_and_url(self, item):
 
@@ -88,7 +85,7 @@ class TorrentRssProvider(generic.TorrentProvider):
         for cur_attempt in attempt_list:
             try:
                 url = cur_attempt()
-            except:
+            except Exception:
                 continue
 
             if title and url:
@@ -100,10 +97,12 @@ class TorrentRssProvider(generic.TorrentProvider):
 
         try:
             if self.cookies:
-                cookie_validator = re.compile("^(\w+=\w+)(;\w+=\w+)*$")
+                cookie_validator = re.compile(r"^(\w+=\w+)(;\w+=\w+)*$")
                 if not cookie_validator.match(self.cookies):
                     return (False, 'Cookie is not correctly formatted: ' + self.cookies)
 
+            # pylint: disable=W0212
+            # Access to a protected member of a client class
             data = self.cache._getRSSData()['entries']
             if not data:
                 return (False, 'No items found in the RSS feed ' + self.url)
@@ -116,12 +115,12 @@ class TorrentRssProvider(generic.TorrentProvider):
             if not url:
                 return (False, 'Unable to get torrent url from first item')
 
-            if url.startswith('magnet:') and re.search('urn:btih:([\w]{32,40})', url):
+            if url.startswith('magnet:') and re.search(r'urn:btih:([\w]{32,40})', url):
                 return (True, 'RSS feed Parsed correctly')
             else:
                 if self.cookies:
                     requests.utils.add_dict_to_cookiejar(self.session.cookies,
-                                                         dict(x.rsplit('=', 1) for x in (self.cookies.split(';'))))
+                                                         dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
                 torrent_file = self.getURL(url)
                 try:
                     bdecode(torrent_file)
@@ -134,16 +133,17 @@ class TorrentRssProvider(generic.TorrentProvider):
         except Exception, e:
             return (False, 'Error when trying to load RSS: ' + ex(e))
 
-    def dumpHTML(self, data):
+    @staticmethod
+    def dumpHTML(data):
         dumpName = ek(os.path.join, sickbeard.CACHE_DIR, 'custom_torrent.html')
 
         try:
-            fileOut = open(dumpName, 'wb')
+            fileOut = io.open(dumpName, 'wb')
             fileOut.write(data)
             fileOut.close()
             helpers.chmodAsParent(dumpName)
         except IOError, e:
-            logger.log("Unable to save the file: %s " % repr(e), logger.ERROR)
+            logger.log(u"Unable to save the file: %s " % repr(e), logger.ERROR)
             return False
         logger.log(u"Saved custom_torrent html dump %s " % dumpName, logger.INFO)
         return True

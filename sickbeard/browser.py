@@ -31,7 +31,7 @@ def getWinDrives():
     from ctypes import windll
 
     drives = []
-    bitmask = windll.kernel32.GetLogicalDrives()  #@UndefinedVariable
+    bitmask = windll.kernel32.GetLogicalDrives()  # @UndefinedVariable
     for letter in string.uppercase:
         if bitmask & 1:
             drives.append(letter)
@@ -83,13 +83,14 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
         fileList = [{'name': filename, 'path': ek(os.path.join, parentPath, filename)} for filename in ek(os.listdir, parentPath)]
 
     if not includeFiles:
-        fileList = filter(lambda entry: ek(os.path.isdir, entry['path']), fileList)
+        fileList = [x for x in fileList if ek(os.path.isdir, x['path'])]
 
     # prune out directories to protect the user from doing stupid things (already lower case the dir to reduce calls)
     hideList = ["boot", "bootmgr", "cache", "msocache", "recovery", "$recycle.bin", "recycler",
                 "system volume information", "temporary internet files"]  # windows specific
     hideList += [".fseventd", ".spotlight", ".trashes", ".vol", "cachedmessages", "caches", "trash"]  # osx specific
-    fileList = filter(lambda entry: entry['name'].lower() not in hideList, fileList)
+
+    fileList = [x for x in fileList if x['name'].lower() not in hideList]
 
     fileList = sorted(fileList,
                       lambda x, y: cmp(os.path.basename(x['name']).lower(), os.path.basename(y['path']).lower()))

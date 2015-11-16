@@ -45,7 +45,7 @@ class Boxcar2Notifier:
         """
 
         # build up the URL and parameters
-	#more info goes here - https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification
+        # more info goes here - https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification
         msg = msg.strip()
         curUrl = API_URL
 
@@ -65,22 +65,22 @@ class Boxcar2Notifier:
         except Exception as e:
             # if we get an error back that doesn't have an error code then who knows what's really happening
             if not hasattr(e, 'code'):
-                logger.log("Boxcar2 notification failed." + ex(e), logger.ERROR)
+                logger.log(u"Boxcar2 notification failed." + ex(e), logger.ERROR)
                 return False
             else:
-                logger.log("Boxcar2 notification failed. Error code: " + str(e.code), logger.WARNING)
+                logger.log(u"Boxcar2 notification failed. Error code: " + str(e.code), logger.WARNING)
 
             # HTTP status 404
             if e.code == 404:
-                logger.log("Access token is invalid. Check it.", logger.WARNING)
+                logger.log(u"Access token is invalid. Check it.", logger.WARNING)
                 return False
 
             # If you receive an HTTP status code of 400, it is because you failed to send the proper parameters
             elif e.code == 400:
-                logger.log("Wrong data send to boxcar2", logger.ERROR)
+                logger.log(u"Wrong data send to boxcar2", logger.ERROR)
                 return False
 
-        logger.log("Boxcar2 notification successful.", logger.DEBUG)
+        logger.log(u"Boxcar2 notification successful.", logger.DEBUG)
         return True
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
@@ -112,14 +112,14 @@ class Boxcar2Notifier:
         """
 
         if not sickbeard.USE_BOXCAR2:
-            logger.log("Notification for Boxcar2 not enabled, skipping this notification", logger.DEBUG)
+            logger.log(u"Notification for Boxcar2 not enabled, skipping this notification", logger.DEBUG)
             return False
 
         # if no username was given then use the one from the config
         if not accesstoken:
             accesstoken = sickbeard.BOXCAR2_ACCESSTOKEN
 
-        logger.log("Sending notification for " + message, logger.DEBUG)
+        logger.log(u"Sending notification for " + message, logger.DEBUG)
 
         self._sendBoxcar2(message, title, accesstoken)
         return True

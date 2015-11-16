@@ -49,7 +49,7 @@ sbDefaultPage = "${sbDefaultPage}";
 %>
 <% themeSpinner = ('', '-dark')['dark' == themeSpinner] %>
 <h2>Performing Restart</h2>
-<br />
+<br>
 <div id="shut_down_message">
 Waiting for SickRage to shut down:
 <img src="${srRoot}/images/loading16${themeSpinner}.gif" height="16" width="16" id="shut_down_loading" />

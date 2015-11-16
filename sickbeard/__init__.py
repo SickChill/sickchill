@@ -39,7 +39,7 @@ from sickbeard.providers.generic import GenericProvider
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
-    subtitles, traktChecker
+    subtitles, traktChecker, numdict
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import scheduler
@@ -48,7 +48,7 @@ from sickbeard import show_queue
 from sickbeard import logger
 from sickbeard import naming
 from sickbeard import dailysearcher
-from sickbeard.indexers.indexer_api import indexerApi
+from sickbeard.indexers import indexer_api
 from sickbeard.indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, indexer_error, \
     indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, indexerExcepts
 from sickbeard.common import SD
@@ -62,6 +62,8 @@ from configobj import ConfigObj
 
 import requests
 requests.packages.urllib3.disable_warnings()
+
+indexerApi = indexer_api.indexerApi
 
 PID = None
 
@@ -550,7 +552,7 @@ CALENDAR_ICONS = False
 NO_RESTART = False
 
 TMDB_API_KEY = 'edc5f123313769de83a71e157758030b'
-#TRAKT_API_KEY = 'd4161a7a106424551add171e5470112e4afdaf2438e6ef2fe0548edc75924868'
+# TRAKT_API_KEY = 'd4161a7a106424551add171e5470112e4afdaf2438e6ef2fe0548edc75924868'
 
 TRAKT_API_KEY = '5c65f55e11d48c35385d9e8670615763a605fad28374c8ae553a7b7a50651ddd'
 TRAKT_API_SECRET = 'b53e32045ac122a445ef163e6d859403301ffe9b17fb8321d428531b69022a82'
@@ -668,8 +670,8 @@ def initialize(consoleLogging=True):
 
         ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
         LOG_DIR = os.path.normpath(os.path.join(DATA_DIR, ACTUAL_LOG_DIR))
-        LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5) #Default to 5 backup file (sickrage.log.x)
-        LOG_SIZE = check_setting_int(CFG, 'General', 'log_size', 1048576) #Default to max 1MB per logfile
+        LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5)  # Default to 5 backup file (sickrage.log.x)
+        LOG_SIZE = check_setting_int(CFG, 'General', 'log_size', 1048576)  # Default to max 1MB per logfile
         fileLogging = True
         if not helpers.makeDir(LOG_DIR):
             sys.stderr.write("!!! No log folder, logging to screen only!\n")
@@ -680,10 +682,13 @@ def initialize(consoleLogging=True):
 
         # github api
         try:
-            gh = Github(user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
+            if not (GIT_USERNAME and GIT_PASSWORD):
+                gh = Github(user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
+            else:
+                gh = Github(login_or_token=GIT_USERNAME, password=GIT_PASSWORD, user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
         except Exception as e:
             gh = None
-            logger.log('Unable to setup GitHub properly. GitHub will not be available. Error: %s' % ex(e), logger.WARNING)
+            logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: %s' % ex(e), logger.WARNING)
 
         # git reset on update
         GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 1))
@@ -857,7 +862,7 @@ def initialize(consoleLogging=True):
             NZB_METHOD = 'blackhole'
 
         TORRENT_METHOD = check_setting_str(CFG, 'General', 'torrent_method', 'blackhole')
-        if TORRENT_METHOD not in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent'):
+        if TORRENT_METHOD not in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet'):
             TORRENT_METHOD = 'blackhole'
 
         DOWNLOAD_PROPERS = bool(check_setting_int(CFG, 'General', 'download_propers', 1))
@@ -1248,11 +1253,6 @@ def initialize(consoleLogging=True):
             if hasattr(curTorrentProvider, 'pin'):
                 curTorrentProvider.pin = check_setting_str(CFG, curTorrentProvider.getID().upper(),
                                                            curTorrentProvider.getID() + '_pin', '', censor_log=True)
-            if hasattr(curTorrentProvider, 'proxy'):
-                curTorrentProvider.proxy.enabled = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(), curTorrentProvider.getID() + '_proxy', 0))
-                if hasattr(curTorrentProvider.proxy, 'url'):
-                    curTorrentProvider.proxy.url = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                     curTorrentProvider.getID() + '_proxy_url', '')
             if hasattr(curTorrentProvider, 'confirmed'):
                 curTorrentProvider.confirmed = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                       curTorrentProvider.getID() + '_confirmed', 1))
@@ -1837,12 +1837,6 @@ def save_config():
         if hasattr(curTorrentProvider, 'options'):
             new_config[curTorrentProvider.getID().upper()][
                 curTorrentProvider.getID() + '_options'] = curTorrentProvider.options
-        if hasattr(curTorrentProvider, 'proxy'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_proxy'] = int(
-                curTorrentProvider.proxy.enabled)
-            if hasattr(curTorrentProvider.proxy, 'url'):
-                new_config[curTorrentProvider.getID().upper()][
-                    curTorrentProvider.getID() + '_proxy_url'] = curTorrentProvider.proxy.url
         if hasattr(curTorrentProvider, 'freeleech'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_freeleech'] = int(
                 curTorrentProvider.freeleech)

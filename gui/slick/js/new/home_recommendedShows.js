@@ -9,7 +9,7 @@ $(document).ready(function(){
     $('#showsortdirection').val('asc');
 
     var $container = [$('#container')];
-    $.each($container, function (j) {
+    $.each($container, function() {
         this.isotope({
             itemSelector: '.trakt_show',
             sortBy: 'original-order',
@@ -52,6 +52,6 @@ $(document).ready(function(){
     });
 
     $('#showsortdirection').on( 'change', function() {
-        $('#container').isotope({sortAscending: ('asc' == this.value)});
+        $('#container').isotope({sortAscending: ('asc' === this.value)});
     });
 });

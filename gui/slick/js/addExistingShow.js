@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
     $('#tableDiv').on('click', '#checkAll', function() {
         var seasCheck = this;
         $('.dirCheck').each(function() {
@@ -9,7 +8,7 @@ $(document).ready(function() {
 
     $('#submitShowDirs').click(function() {
         var dirArr = [];
-        $('.dirCheck').each(function(i,w) {
+        $('.dirCheck').each(function() {
             if (this.checked === true) {
                 var show = $(this).attr('id');
                 var indexer = $(this).closest('tr').find('select').val();
@@ -21,10 +20,7 @@ $(document).ready(function() {
             return false;
         }
 
-        url = srRoot + '/home/addShows/addExistingShows?promptForSettings=' + ($('#promptForSettings').prop('checked') ? 'on' : 'off');
-        url += '&shows_to_add=' + dirArr.join('&shows_to_add=');
-
-        window.location.href = url;
+        window.location.href = srRoot + '/home/addShows/addExistingShows?promptForSettings=' + ($('#promptForSettings').prop('checked') ? 'on' : 'off') + '&shows_to_add=' + dirArr.join('&shows_to_add=');
     });
 
 
@@ -52,12 +48,12 @@ $(document).ready(function() {
         });
     }
 
-    var last_txt = '';
+    var lastTxt = '';
     $('#rootDirText').change(function() {
-        if (last_txt == $('#rootDirText').val()) {
+        if (lastTxt === $('#rootDirText').val()) {
             return false;
         } else {
-            last_txt = $('#rootDirText').val();
+            lastTxt = $('#rootDirText').val();
         }
         $('#rootDirStaticList').html('');
         $('#rootDirs option').each(function(i, w) {

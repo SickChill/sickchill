@@ -71,10 +71,6 @@ class newpctProvider(generic.TorrentProvider):
             'q': ''
         }
 
-
-    def isEnabled(self):
-        return self.enabled
-
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
@@ -82,7 +78,7 @@ class newpctProvider(generic.TorrentProvider):
 
         lang_info = '' if not epObj or not epObj.show else epObj.show.lang
 
-        #Only search if user conditions are true
+        # Only search if user conditions are true
         if self.onlyspasearch and lang_info != 'es':
             logger.log(u"Show info is not spanish, skipping provider search", logger.DEBUG)
             return results
@@ -156,13 +152,14 @@ class newpctProvider(generic.TorrentProvider):
 
         title = title.replace('Descargar ', '')
 
-        #Quality
+        # Quality
         title = title.replace('[HDTV]', '[720p HDTV x264]')
         title = title.replace('[HDTV 720p AC3 5.1]', '[720p HDTV x264]')
         title = title.replace('[HDTV 1080p AC3 5.1]', '[1080p HDTV x264]')
         title = title.replace('[DVDRIP]', '[DVDrip x264]')
         title = title.replace('[DVD Rip]', '[DVDrip x264]')
         title = title.replace('[DVDrip]', '[DVDrip x264]')
+        title = title.replace('[DVDRIP-AC3.5.1]', '[DVDrip x264]')
         title = title.replace('[BLuRayRip]', '[720p BlueRay x264]')
         title = title.replace('[BRrip]', '[720p BlueRay x264]')
         title = title.replace('[BDrip]', '[720p BlueRay x264]')

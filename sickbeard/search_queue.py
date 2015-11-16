@@ -126,13 +126,13 @@ class SearchQueue(generic_queue.GenericQueue):
 class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self):
         self.success = None
-        generic_queue.QueueItem.__init__(self, 'Daily Search', DAILY_SEARCH)
+        generic_queue.QueueItem.__init__(self, u'Daily Search', DAILY_SEARCH)
 
     def run(self):
         generic_queue.QueueItem.run(self)
 
         try:
-            logger.log("Beginning daily search for new episodes")
+            logger.log(u"Beginning daily search for new episodes")
             foundResults = search.searchForNeededEpisodes()
 
             if not len(foundResults):
@@ -158,7 +158,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment, downCurQuality=False):
-        generic_queue.QueueItem.__init__(self, 'Manual Search', MANUAL_SEARCH)
+        generic_queue.QueueItem.__init__(self, u'Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.name = 'MANUAL-' + str(show.indexerid)
         self.success = None
@@ -171,7 +171,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         generic_queue.QueueItem.run(self)
 
         try:
-            logger.log("Beginning manual search for: [" + self.segment.prettyName() + "]")
+            logger.log(u"Beginning manual search for: [" + self.segment.prettyName() + "]")
             self.started = True
 
             searchResult = search.searchProviders(self.show, [self.segment], True, self.downCurQuality)
@@ -204,7 +204,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
 class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
-        generic_queue.QueueItem.__init__(self, 'Backlog', BACKLOG_SEARCH)
+        generic_queue.QueueItem.__init__(self, u'Backlog', BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
         self.name = 'BACKLOG-' + str(show.indexerid)
         self.success = None
@@ -216,7 +216,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
         if not self.show.paused:
             try:
-                logger.log("Beginning backlog search for: [" + self.show.name + "]")
+                logger.log(u"Beginning backlog search for: [" + self.show.name + "]")
                 searchResult = search.searchProviders(self.show, self.segment, False)
 
                 if searchResult:
@@ -237,7 +237,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
 class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment, downCurQuality=False):
-        generic_queue.QueueItem.__init__(self, 'Retry', FAILED_SEARCH)
+        generic_queue.QueueItem.__init__(self, u'Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.name = 'RETRY-' + str(show.indexerid)
         self.show = show
@@ -263,7 +263,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                     history.logFailed(epObj, release, provider)
 
                 failed_history.revertEpisode(epObj)
-                logger.log("Beginning failed download search for: [" + epObj.prettyName() + "]")
+                logger.log(u"Beginning failed download search for: [" + epObj.prettyName() + "]")
 
             # If it is wanted, self.downCurQuality doesnt matter
             # if it isnt wanted, we need to make sure to not overwrite the existing ep that we reverted to!
@@ -279,7 +279,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                     time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
             else:
                 pass
-                #logger.log(u"No valid episode found to retry for: [" + self.segment.prettyName() + "]")
+                # logger.log(u"No valid episode found to retry for: [" + self.segment.prettyName() + "]")
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 

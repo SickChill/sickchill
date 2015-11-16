@@ -8,10 +8,9 @@ $(document).ready(function(){
             }
         });
 
-        if (removeArr.length === 0) return false;
+        if (removeArr.length === 0) { return false; }
 
-        url = srRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|');
-        window.location.href = url;
+        window.location.href = srRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|');
     });
 
     $('.bulkCheck').on('click', function(){
@@ -23,26 +22,29 @@ $(document).ready(function(){
         });
     });
 
-    $('.removeCheck').forEach(function(name) {
-        var lastCheck = null;
-        $(name).click(function(event) {
-            if(!lastCheck || !event.shiftKey) {
-                lastCheck = this;
-                return;
-            }
-
-            var check = this;
-            var found = 0;
-
-            $(name+':visible').each(function() {
-                switch (found) {
-                    case 2: return false;
-                    case 1:
-                    this.checked = lastCheck.checked;
+    if($('.removeCheck').length){
+        $('.removeCheck').each(function(name) {
+            var lastCheck = null;
+            $(name).click(function(event) {
+                if(!lastCheck || !event.shiftKey) {
+                    lastCheck = this;
+                    return;
                 }
 
-                if (this == check || this == lastCheck) found++;
+                var check = this;
+                var found = 0;
+
+                $(name+':visible').each(function() {
+                    switch (found) {
+                        case 2: return false;
+                        case 1:
+                        this.checked = lastCheck.checked;
+                    }
+
+                    if (this === check || this === lastCheck) { found++; }
+                });
             });
         });
-    });
+    }
+
 });

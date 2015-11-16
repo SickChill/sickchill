@@ -40,9 +40,6 @@ class CpasbienProvider(generic.TorrentProvider):
 
         self.cache = CpasbienCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
@@ -52,7 +49,7 @@ class CpasbienProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.url + '/recherche/'+search_string.replace('.', '-') + '.html'
@@ -85,14 +82,14 @@ class CpasbienProvider(generic.TorrentProvider):
                                 title = link.text.lower().strip()
                                 pageURL = link['href']
 
-                                #downloadTorrentLink = torrentSoup.find("a", title.startswith('Cliquer'))
+                                # downloadTorrentLink = torrentSoup.find("a", title.startswith('Cliquer'))
                                 tmp = pageURL.split('/')[-1].replace('.html', '.torrent')
 
                                 downloadTorrentLink = ('http://www.cpasbien.io/telechargement/%s' % tmp)
 
                                 if downloadTorrentLink:
                                     download_url = downloadTorrentLink
-                                    #FIXME
+                                    # FIXME
                                     size = -1
                                     seeders = 1
                                     leechers = 0
@@ -104,7 +101,7 @@ class CpasbienProvider(generic.TorrentProvider):
                                 continue
 
                             item = title, download_url, size, seeders, leechers
-                            if mode != 'RSS':
+                            if mode is not 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)
@@ -112,7 +109,7 @@ class CpasbienProvider(generic.TorrentProvider):
                 except Exception, e:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
@@ -130,7 +127,7 @@ class CpasbienCache(tvcache.TVCache):
         self.minTime = 30
 
     def _getRSSData(self):
-        #search_strings = {'RSS': ['']}
+        # search_strings = {'RSS': ['']}
         return {'entries': {}}
 
 provider = CpasbienProvider()

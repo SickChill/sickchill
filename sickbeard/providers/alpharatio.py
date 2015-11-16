@@ -53,9 +53,6 @@ class AlphaRatioProvider(generic.TorrentProvider):
 
         self.cache = AlphaRatioCache(self)
 
-    def isEnabled(self):
-        return self.enabled
-
     def _doLogin(self):
         login_params = {'username': self.username,
                         'password': self.password,
@@ -86,7 +83,7 @@ class AlphaRatioProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                if mode != 'RSS':
+                if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (search_string, self.catagories)
@@ -101,7 +98,7 @@ class AlphaRatioProvider(generic.TorrentProvider):
                         torrent_table = html.find('table', attrs={'id': 'torrent_table'})
                         torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                        #Continue only if one Release is found
+                        # Continue only if one Release is found
                         if len(torrent_rows) < 2:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
@@ -116,7 +113,7 @@ class AlphaRatioProvider(generic.TorrentProvider):
                                 download_url = self.urls['download'] % (url['href'])
                                 seeders = cells[len(cells)-2].contents[0]
                                 leechers = cells[len(cells)-1].contents[0]
-                                #FIXME
+                                # FIXME
                                 size = -1
                             except (AttributeError, TypeError):
                                 continue
@@ -124,22 +121,22 @@ class AlphaRatioProvider(generic.TorrentProvider):
                             if not all([title, download_url]):
                                 continue
 
-                            #Filter unseeded torrent
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
+                                if mode is not 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             item = title, download_url, size, seeders, leechers
-                            if mode != 'RSS':
+                            if mode is not 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)
 
-                except Exception, e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
-            #For each search mode sort all the items by seeders if available
+            # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]

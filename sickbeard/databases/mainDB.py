@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -48,12 +50,12 @@ class MainSanityCheck(db.DBSanityCheck):
         self.convert_tvrage_to_tvdb()
         self.convert_archived_to_compund()
 
-
+    # todo: fix spelling to compound
     def convert_archived_to_compund(self):
         logger.log(u'Checking for archived episodes not qualified', logger.DEBUG)
 
         query = "SELECT episode_id, showid, status, location, season, episode " + \
-        "FROM tv_episodes WHERE status = %s" % common.ARCHIVED
+                "FROM tv_episodes WHERE status = %s" % common.ARCHIVED
 
         sqlResults = self.connection.select(query)
         if sqlResults:
@@ -67,9 +69,9 @@ class MainSanityCheck(db.DBSanityCheck):
                 fixedStatus = common.Quality.compositeStatus(common.ARCHIVED, quality)
 
             logger.log(u'Changing status from %s to %s for %s: S%02dE%02d at %s (File %s)' %
-                (common.statusStrings[common.ARCHIVED], common.statusStrings[fixedStatus],
-                 archivedEp['showid'], archivedEp['season'], archivedEp['episode'],
-                 archivedEp['location'] if archivedEp['location'] else 'unknown location', ('NOT FOUND', 'EXISTS')[bool(existing)]))
+                       (common.statusStrings[common.ARCHIVED], common.statusStrings[fixedStatus],
+                        archivedEp['showid'], archivedEp['season'], archivedEp['episode'],
+                        archivedEp['location'] if archivedEp['location'] else 'unknown location', ('NOT FOUND', 'EXISTS')[bool(existing)]))
 
             self.connection.action("UPDATE tv_episodes SET status = %i WHERE episode_id = %i" % (fixedStatus, archivedEp['episode_id']))
 
@@ -86,11 +88,11 @@ class MainSanityCheck(db.DBSanityCheck):
         for tvrage_show in sqlResults:
             logger.log(u"Processing %s at %s" % (tvrage_show['show_name'], tvrage_show['location']))
             mapping = self.connection.select("SELECT mindexer_id FROM indexer_mapping WHERE indexer_id=%i AND indexer=%i AND mindexer=%i" %
-                    (tvrage_show['indexer_id'], INDEXER_TVRAGE, INDEXER_TVDB))
+                                             (tvrage_show['indexer_id'], INDEXER_TVRAGE, INDEXER_TVDB))
 
             if len(mapping) != 1:
                 logger.log(u"Error mapping show from tvrage to tvdb for %s (%s), found %i mapping results. Cannot convert automatically!" %
-                        (tvrage_show['show_name'], tvrage_show['location'], len(mapping)), logger.WARNING)
+                           (tvrage_show['show_name'], tvrage_show['location'], len(mapping)), logger.WARNING)
                 logger.log(u"Removing the TVRage show and it's episodes from the DB, use 'addExistingShow'", logger.WARNING)
                 self.connection.action("DELETE FROM tv_shows WHERE indexer_id = %i AND indexer = %i" % (tvrage_show['indexer_id'], INDEXER_TVRAGE))
                 self.connection.action("DELETE FROM tv_episodes WHERE showid = %i" % tvrage_show['indexer_id'])
@@ -100,32 +102,31 @@ class MainSanityCheck(db.DBSanityCheck):
             duplicate = self.connection.select("SELECT * FROM tv_shows WHERE indexer_id = %i AND indexer = %i" % (mapping[0]['mindexer_id'], INDEXER_TVDB))
             if duplicate:
                 logger.log(u'Found %s which has the same id as %s, cannot convert automatically so I am pausing %s' %
-                    (duplicate[0]['show_name'], tvrage_show['show_name'], duplicate[0]['show_name']), logger.WARNING)
+                           (duplicate[0]['show_name'], tvrage_show['show_name'], duplicate[0]['show_name']), logger.WARNING)
                 self.connection.action("UPDATE tv_shows SET paused=1 WHERE indexer=%i AND indexer_id=%i" %
-                        (INDEXER_TVDB, duplicate[0]['indexer_id']))
+                                       (INDEXER_TVDB, duplicate[0]['indexer_id']))
 
                 logger.log(u"Removing %s and it's episodes from the DB" % tvrage_show['show_name'], logger.WARNING)
                 self.connection.action("DELETE FROM tv_shows WHERE indexer_id = %i AND indexer = %i" % (tvrage_show['indexer_id'], INDEXER_TVRAGE))
                 self.connection.action("DELETE FROM tv_episodes WHERE showid = %i" % tvrage_show['indexer_id'])
                 logger.log(u'Manually move the season folders from %s into %s, and delete %s before rescanning %s and unpausing it' %
-                    (tvrage_show['location'], duplicate[0]['location'], tvrage_show['location'], duplicate[0]['show_name']), logger.WARNING)
+                           (tvrage_show['location'], duplicate[0]['location'], tvrage_show['location'], duplicate[0]['show_name']), logger.WARNING)
                 continue
 
-            logger.log('Mapping %s to tvdb id %i' % (tvrage_show['show_name'], mapping[0]['mindexer_id']))
+            logger.log(u'Mapping %s to tvdb id %i' % (tvrage_show['show_name'], mapping[0]['mindexer_id']))
 
             self.connection.action(
                 "UPDATE tv_shows SET indexer=%i, indexer_id=%i WHERE indexer_id=%i" %
-                    (INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
-                )
+                (INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
+            )
 
             logger.log(u'Relinking episodes to show')
             self.connection.action(
                 "UPDATE tv_episodes SET indexer=%i, showid=%i, indexerid=0 WHERE showid=%i" %
-                    (INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
-                )
+                (INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
+            )
 
-            logger.log('Please perform a full update on %s' % tvrage_show['show_name'], logger.WARNING)
-
+            logger.log(u'Please perform a full update on %s' % tvrage_show['show_name'], logger.WARNING)
 
     def fix_duplicate_shows(self, column='indexer_id'):
 
@@ -147,7 +148,6 @@ class MainSanityCheck(db.DBSanityCheck):
                     u"Deleting duplicate show with " + column + ": " + str(cur_dupe_id[column]) + u" show_id: " + str(
                         cur_dupe_id["show_id"]))
                 self.connection.action("DELETE FROM tv_shows WHERE show_id = ?", [cur_dupe_id["show_id"]])
-
 
     def fix_duplicate_episodes(self):
 
@@ -265,7 +265,8 @@ class MainSanityCheck(db.DBSanityCheck):
 
         sqlResults = self.connection.select(
             "SELECT subtitles, episode_id FROM tv_episodes WHERE subtitles != '' AND subtitles_lastsearch < ?;",
-                [datetime.datetime(2015, 7, 15, 17, 20, 44, 326380).strftime(dateTimeFormat)])
+            [datetime.datetime(2015, 7, 15, 17, 20, 44, 326380).strftime(dateTimeFormat)]
+        )
 
         validLanguages = [Language.fromopensubtitles(language).opensubtitles for language in language_converters['opensubtitles'].codes if len(language) == 3]
 
@@ -275,19 +276,19 @@ class MainSanityCheck(db.DBSanityCheck):
         for sqlResult in sqlResults:
             langs = []
 
-            logger.log("Checking subtitle codes for episode_id: %s, codes: %s" %
-                (sqlResult['episode_id'], sqlResult['subtitles']), logger.DEBUG)
+            logger.log(u"Checking subtitle codes for episode_id: %s, codes: %s" %
+                       (sqlResult['episode_id'], sqlResult['subtitles']), logger.DEBUG)
 
             for subcode in sqlResult['subtitles'].split(','):
-                if not len(subcode) is 3 or not subcode in validLanguages:
-                    logger.log("Fixing subtitle codes for episode_id: %s, invalid code: %s" %
-                        (sqlResult['episode_id'], subcode), logger.DEBUG)
+                if not len(subcode) is 3 or subcode not in validLanguages:
+                    logger.log(u"Fixing subtitle codes for episode_id: %s, invalid code: %s" %
+                               (sqlResult['episode_id'], subcode), logger.DEBUG)
                     continue
 
                 langs.append(subcode)
 
             self.connection.action("UPDATE tv_episodes SET subtitles = ?, subtitles_lastsearch = ? WHERE episode_id = ?;",
-                [','.join(langs), datetime.datetime.now().strftime(dateTimeFormat), sqlResult['episode_id']])
+                                   [','.join(langs), datetime.datetime.now().strftime(dateTimeFormat), sqlResult['episode_id']])
 
     def fix_show_nfo_lang(self):
         self.connection.action("UPDATE tv_shows SET lang = '' WHERE lang = 0 or lang = '0'")
@@ -299,6 +300,7 @@ def backupDatabase(version):
         logger.log_error_and_exit(u"Database backup failed, abort upgrading database")
     else:
         logger.log(u"Proceeding with upgrade")
+
 
 # ======================
 # = Main DB Migrations =
@@ -338,18 +340,18 @@ class InitialSchema(db.SchemaUpgrade):
             cur_db_version = self.checkDBVersion()
 
             if cur_db_version < MIN_DB_VERSION:
-                logger.log_error_and_exit(u"Your database version (" + str(
-                    cur_db_version) + ") is too old to migrate from what this version of SickRage supports (" + \
-                                          str(MIN_DB_VERSION) + ").\n" + \
+                logger.log_error_and_exit(u"Your database version (" +
+                                          str(cur_db_version) + ") is too old to migrate from what this version of SickRage supports (" +
+                                          str(MIN_DB_VERSION) + ").\n" +
                                           "Upgrade using a previous version (tag) build 496 to build 501 of SickRage first or remove database file to begin fresh."
-                )
+                                          )
 
             if cur_db_version > MAX_DB_VERSION:
-                logger.log_error_and_exit(u"Your database version (" + str(
-                    cur_db_version) + ") has been incremented past what this version of SickRage supports (" + \
-                                          str(MAX_DB_VERSION) + ").\n" + \
+                logger.log_error_and_exit(u"Your database version (" +
+                                          str(cur_db_version) + ") has been incremented past what this version of SickRage supports (" +
+                                          str(MAX_DB_VERSION) + ").\n" +
                                           "If you have used other forks of SickRage, your database may be unusable due to their modifications."
-                )
+                                          )
 
 
 class AddSizeAndSceneNameFields(InitialSchema):
@@ -427,7 +429,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
                 except (InvalidNameException, InvalidShowException):
                     continue
 
-                if parse_result.series_name and parse_result.season_number != None and parse_result.episode_numbers and parse_result.release_group:
+                if parse_result.series_name and parse_result.season_number is not None and parse_result.episode_numbers and parse_result.release_group:
                     # if all is well by this point we'll just put the release name into the database
                     self.connection.action("UPDATE tv_episodes SET release_name = ? WHERE episode_id = ?",
                                            [cur_name, ep_results[0]["episode_id"]])
@@ -517,17 +519,17 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
 
         result = old_quality
         # move fullhdbluray from 1<<5 to 1<<8 if set
-        if (result & (1 << 5)):
-            result = result & ~(1 << 5)
-            result = result | (1 << 8)
+        if result & (1 << 5):
+            result &= ~(1 << 5)
+            result |= 1 << 8
         # move hdbluray from 1<<4 to 1<<7 if set
-        if (result & (1 << 4)):
-            result = result & ~(1 << 4)
-            result = result | (1 << 7)
+        if result & (1 << 4):
+            result &= ~(1 << 4)
+            result |= 1 << 7
         # move hdwebdl from 1<<3 to 1<<5 if set
-        if (result & (1 << 3)):
-            result = result & ~(1 << 3)
-            result = result | (1 << 5)
+        if result & (1 << 3):
+            result &= ~(1 << 3)
+            result |= 1 << 5
 
         return result
 
@@ -540,7 +542,7 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         """
 
         best = (status & (0xffff << 16)) >> 16
-        initial = status & (0xffff)
+        initial = status & 0xffff
 
         best = self._update_quality(best)
         initial = self._update_quality(initial)
@@ -559,7 +561,7 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         old_hd = common.Quality.combineQualities(
             [common.Quality.HDTV, common.Quality.HDWEBDL >> 2, common.Quality.HDBLURAY >> 3], [])
         new_hd = common.Quality.combineQualities([common.Quality.HDTV, common.Quality.HDWEBDL, common.Quality.HDBLURAY],
-            [])
+                                                 [])
 
         # update ANY -- shift existing qualities and add new 1080p qualities, note that rawHD was not added to the ANY template
         old_any = common.Quality.combineQualities(
@@ -949,6 +951,7 @@ class AddSceneNumberingToTvEpisodes(AddSportsOption):
 
         self.incDBVersion()
 
+
 class AddAnimeTVShow(AddSceneNumberingToTvEpisodes):
     def test(self):
         return self.checkDBVersion() >= 32
@@ -961,6 +964,7 @@ class AddAnimeTVShow(AddSceneNumberingToTvEpisodes):
 
         self.incDBVersion()
 
+
 class AddAbsoluteNumbering(AddAnimeTVShow):
     def test(self):
         return self.checkDBVersion() >= 33
@@ -972,6 +976,7 @@ class AddAbsoluteNumbering(AddAnimeTVShow):
         self.addColumn("tv_episodes", "absolute_number", "NUMERIC", "0")
 
         self.incDBVersion()
+
 
 class AddSceneAbsoluteNumbering(AddAbsoluteNumbering):
     def test(self):
@@ -986,6 +991,7 @@ class AddSceneAbsoluteNumbering(AddAbsoluteNumbering):
 
         self.incDBVersion()
 
+
 class AddAnimeBlacklistWhitelist(AddSceneAbsoluteNumbering):
 
     def test(self):
@@ -994,12 +1000,15 @@ class AddAnimeBlacklistWhitelist(AddSceneAbsoluteNumbering):
     def execute(self):
         backupDatabase(35)
 
-        cl = []
-        cl.append(["CREATE TABLE blacklist (show_id INTEGER, range TEXT, keyword TEXT)"])
-        cl.append(["CREATE TABLE whitelist (show_id INTEGER, range TEXT, keyword TEXT)"])
+        cl = [
+            ["CREATE TABLE blacklist (show_id INTEGER, range TEXT, keyword TEXT)"],
+            ["CREATE TABLE whitelist (show_id INTEGER, range TEXT, keyword TEXT)"]
+        ]
+
         self.connection.mass_action(cl)
 
         self.incDBVersion()
+
 
 class AddSceneAbsoluteNumbering2(AddAnimeBlacklistWhitelist):
     def test(self):
@@ -1012,6 +1021,7 @@ class AddSceneAbsoluteNumbering2(AddAnimeBlacklistWhitelist):
         self.addColumn("tv_episodes", "scene_absolute_number", "NUMERIC", "0")
 
         self.incDBVersion()
+
 
 class AddXemRefresh(AddSceneAbsoluteNumbering2):
     def test(self):
@@ -1026,6 +1036,7 @@ class AddXemRefresh(AddSceneAbsoluteNumbering2):
 
         self.incDBVersion()
 
+
 class AddSceneToTvShows(AddXemRefresh):
     def test(self):
         return self.checkDBVersion() >= 38
@@ -1037,6 +1048,7 @@ class AddSceneToTvShows(AddXemRefresh):
         self.addColumn("tv_shows", "scene", "NUMERIC", "0")
 
         self.incDBVersion()
+
 
 class AddIndexerMapping(AddSceneToTvShows):
     def test(self):
@@ -1054,6 +1066,7 @@ class AddIndexerMapping(AddSceneToTvShows):
 
         self.incDBVersion()
 
+
 class AddVersionToTvEpisodes(AddIndexerMapping):
     def test(self):
         return self.checkDBVersion() >= 40
@@ -1068,6 +1081,7 @@ class AddVersionToTvEpisodes(AddIndexerMapping):
 
         self.incDBVersion()
 
+
 class AddDefaultEpStatusToTvShows(AddVersionToTvEpisodes):
     def test(self):
         return self.checkDBVersion() >= 41
@@ -1079,6 +1093,7 @@ class AddDefaultEpStatusToTvShows(AddVersionToTvEpisodes):
         self.addColumn("tv_shows", "default_ep_status", "NUMERIC", "-1")
 
         self.incDBVersion()
+
 
 class AlterTVShowsFieldTypes(AddDefaultEpStatusToTvShows):
     def test(self):
