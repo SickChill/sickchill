@@ -62,7 +62,7 @@ class PushalotNotifier(object):
         if not sickbeard.USE_PUSHALOT and not force:
             return False
 
-        if pushalot_authorizationtoken == None:
+        if pushalot_authorizationtoken is None:
             pushalot_authorizationtoken = sickbeard.PUSHALOT_AUTHORIZATIONTOKEN
 
         logger.log(u"Pushalot event: " + event, logger.DEBUG)
