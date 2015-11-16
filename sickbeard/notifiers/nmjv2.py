@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Jasper Lanting
 # Based on nmj.py by Nico Berlee: http://nico.berlee.nl/
 # URL: http://code.google.com/p/sickbeard/
