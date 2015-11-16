@@ -29,7 +29,7 @@ from sickrage.helper.exceptions import ex
 API_URL = "https://new.boxcar.io/api/notifications"
 
 
-class Boxcar2Notifier:
+class Boxcar2Notifier(object):
     def test_notify(self, accesstoken, title="SickRage : Test"):
         return self._sendBoxcar2("This is a test notification from SickRage", title, accesstoken)
 
