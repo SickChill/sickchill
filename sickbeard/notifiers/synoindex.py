@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Sebastien Erard <sebastien_erard@hotmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
