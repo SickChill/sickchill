@@ -921,8 +921,6 @@ class PostProcessor(object):
                 if self.is_proper:
                     self._log(
                         u"File exists and new file is smaller, new file is a proper/repack, marking it safe to replace")
-                    return True
-
                 else:
                     self._log(u"File exists and new file is smaller, marking it unsafe to replace")
                     return False
