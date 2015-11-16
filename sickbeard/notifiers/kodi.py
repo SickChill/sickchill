@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -40,7 +42,7 @@ except ImportError:
     import simplejson as json
 
 
-class KODINotifier:
+class KODINotifier(object):
     sr_logo_url = 'https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
 
     def _get_kodi_version(self, host, username, password):
@@ -70,7 +72,7 @@ class KODINotifier:
 
         """
 
-        # since we need to maintain python 2.5 compatability we can not pass a timeout delay to urllib2 directly (python 2.6+)
+        # since we need to maintain python 2.5 compatibility we can not pass a timeout delay to urllib2 directly (python 2.6+)
         # override socket timeout to reduce delay for this call alone
         socket.setdefaulttimeout(10)
 
@@ -279,13 +281,13 @@ class KODINotifier:
 
             pathSql = 'select path.strPath from path, tvshow, tvshowlinkpath where ' \
                       'tvshow.c00 = "%s" and tvshowlinkpath.idShow = tvshow.idShow ' \
-                      'and tvshowlinkpath.idPath = path.idPath' % (showName)
+                      'and tvshowlinkpath.idPath = path.idPath' % showName
 
             # use this to get xml back for the path lookups
             xmlCommand = {
                 'command': 'SetResponseFormat(webheader;false;webfooter;false;header;<xml>;footer;</xml>;opentag;<tag>;closetag;</tag>;closefinaltag;false)'}
             # sql used to grab path(s)
-            sqlCommand = {'command': 'QueryVideoDatabase(%s)' % (pathSql)}
+            sqlCommand = {'command': 'QueryVideoDatabase(%s)' % pathSql}
             # set output back to default
             resetCommand = {'command': 'SetResponseFormat()'}
 
@@ -318,7 +320,7 @@ class KODINotifier:
                 # we do not need it double-encoded, gawd this is dumb
                 unEncPath = urllib.unquote(path.text).decode(sickbeard.SYS_ENCODING)
                 logger.log(u"KODI Updating " + showName + " on " + host + " at " + unEncPath, logger.DEBUG)
-                updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video, %s)' % (unEncPath)}
+                updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video, %s)' % unEncPath}
                 request = self._send_to_kodi(updateCommand, host)
                 if not request:
                     logger.log(u"Update of show directory failed on " + showName + " on " + host + " at " + unEncPath, logger.WARNING)
@@ -369,7 +371,7 @@ class KODINotifier:
         command = command.encode('utf-8')
         logger.log(u"KODI JSON command: " + command, logger.DEBUG)
 
-        url = 'http://%s/jsonrpc' % (host)
+        url = 'http://%s/jsonrpc' % host
         try:
             req = urllib2.Request(url, command)
             req.add_header("Content-type", "application/json")
@@ -396,7 +398,7 @@ class KODINotifier:
                 logger.log(u"KODI JSON response: " + str(result), logger.DEBUG)
                 return result  # need to return response for parsing
             except ValueError, e:
-                logger.log(u"Unable to decode JSON: " +  str(response.read()), logger.WARNING)
+                logger.log(u"Unable to decode JSON: " + str(response.read()), logger.WARNING)
                 return False
 
         except IOError, e:
@@ -469,10 +471,9 @@ class KODINotifier:
                 logger.log(u'Exact show name not matched in KODI TV show list', logger.DEBUG)
                 return False
 
-
             # lookup tv-show path if we don't already know it
             if not len(path):
-                pathCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":{"tvshowid":%d, "properties": ["file"]},"id":1}' % (tvshowid)
+                pathCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":{"tvshowid":%d, "properties": ["file"]},"id":1}' % tvshowid
                 pathResponse = self._send_to_kodi_json(pathCommand, host)
 
                 path = pathResponse["result"]["tvshowdetails"]["file"]
@@ -537,7 +538,7 @@ class KODINotifier:
         """Public wrapper for the update library functions to branch the logic for JSON-RPC or legacy HTTP API
 
         Checks the KODI API version to branch the logic to call either the legacy HTTP API or the newer JSON-RPC over HTTP methods.
-        Do the ability of accepting a list of hosts deliminated by comma, only one host is updated, the first to respond with success.
+        Do the ability of accepting a list of hosts delimited by comma, only one host is updated, the first to respond with success.
         This is a workaround for SQL backend users as updating multiple clients causes duplicate entries.
         Future plan is to revist how we store the host/ip/username/pw/options so that it may be more flexible.
 
