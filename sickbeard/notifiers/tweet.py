@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -31,7 +33,7 @@ import oauth2 as oauth
 import pythontwitter as twitter
 
 
-class TwitterNotifier:
+class TwitterNotifier(object):
     consumer_key = "vHHtcB6WzpWDG6KYlBMr8g"
     consumer_secret = "zMqq5CB3f8cWKiRO2KzWPTlBanYmV0VYxSXZ0Pxds0E"
 
@@ -52,10 +54,10 @@ class TwitterNotifier:
         if sickbeard.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyTwitter(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ": " + lang)
 
-    def notify_git_update(self, new_version = "??"):
+    def notify_git_update(self, new_version="??"):
         if sickbeard.USE_TWITTER:
-            update_text=common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-            title=common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
+            title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notifyTwitter(title + " - " + update_text + new_version)
 
     def test_notify(self):
@@ -82,11 +84,11 @@ class TwitterNotifier:
             return self.AUTHORIZATION_URL + "?oauth_token=" + request_token['oauth_token']
 
     def _get_credentials(self, key):
-        request_token = {}
-
-        request_token['oauth_token'] = sickbeard.TWITTER_USERNAME
-        request_token['oauth_token_secret'] = sickbeard.TWITTER_PASSWORD
-        request_token['oauth_callback_confirmed'] = 'true'
+        request_token = {
+            'oauth_token': sickbeard.TWITTER_USERNAME,
+            'oauth_token_secret': sickbeard.TWITTER_PASSWORD,
+            'oauth_callback_confirmed': 'true'
+        }
 
         token = oauth.Token(request_token['oauth_token'], request_token['oauth_token_secret'])
         token.set_verifier(key)
@@ -114,7 +116,6 @@ class TwitterNotifier:
             sickbeard.TWITTER_USERNAME = access_token['oauth_token']
             sickbeard.TWITTER_PASSWORD = access_token['oauth_token_secret']
             return True
-
 
     def _send_tweet(self, message=None):
 
