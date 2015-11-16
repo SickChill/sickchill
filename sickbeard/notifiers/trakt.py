@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Dieter Blomme <dieterblomme@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
