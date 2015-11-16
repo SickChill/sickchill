@@ -23,7 +23,8 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT
 
-class FreeMobileNotifier:
+
+class FreeMobileNotifier(object):
     def test_notify(self, id=None, apiKey=None):
         return self._notifyFreeMobile('Test', "This is a test notification from SickRage", id, apiKey, force=True)
 
