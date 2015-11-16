@@ -794,13 +794,42 @@
                                 </label>
                             </div>
                             <div class="field-pair">
+                                 <label for="prowl_message_title">
+                                     <span class="component-title">Prowl Message Title:</span>
+                                     <input type="text" name="prowl_message_title" id="prowl_message_title" value="${sickbeard.PROWL_MESSAGE_TITLE}" class="form-control input-sm input250" />
+                                 </label>
+                            </div>
+                            <div class="field-pair">
                                 <label for="prowl_api">
-                                    <span class="component-title">Prowl API key:</span>
+                                    <span class="component-title">Global Prowl API key(s):</span>
                                     <input type="text" name="prowl_api" id="prowl_api" value="${sickbeard.PROWL_API}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">get your key at: <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://www.prowlapp.com/api_settings.php</a></span>
+                                    <span class="component-desc">Prowl API(s) listed here, seperated by commas if applicable, will receive notifications for <b>all</b> shows.<br />
+                                                                 (Your Prowl API key is available at: <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://www.prowlapp.com/api_settings.php</a>)</span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="prowl_show">
+                                    <span class="component-title">Show notification list</span>
+                                    <select name="prowl_show" id="prowl_show" class="form-control input-sm">
+                                        <option value="-1">-- Select a Show --</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <input type="text" name="prowl_show_list" id="prowl_show_list" class="form-control input-sm input350" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Configure per-show notifications here by entering Prowl API key(s), seperated by commas,
+                                                                 after selecting a show in the drop-down box.   Be sure to activate the 'Save for this show'
+                                                                 button below after each entry.</span>
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <input id="prowl_show_save" class="btn" type="button" value="Save for this show" />
                                 </label>
                             </div>
                             <div class="field-pair">
@@ -1791,7 +1820,7 @@
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">all emails here receive notifications for <b>all</b> shows.</span>
+                                    <span class="component-desc">Email address(es) listed here, seperated by commas if applicable, will receive notifications for <b>all</b> shows.</span>
                                 </label>
                             </div>
                             <div class="field-pair">
@@ -1807,7 +1836,9 @@
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">configure per show notifications here.</span>
+                                    <span class="component-desc">Configure per-show notifications here by entering email address(es), seperated by commas,
+                                                                 after selecting a show in the drop-down box.   Be sure to activate the 'Save for this show'
+                                                                 button below after each entry.</span>
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>

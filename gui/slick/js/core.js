@@ -19,6 +19,7 @@ var configSuccess = function(){
         window.location.href = srRoot + '/config/providers/';
     });
     $('#email_show').trigger('notify');
+    $('#prowl_show').trigger('notify');
 };
 
 var SICKRAGE = {
@@ -942,9 +943,16 @@ var SICKRAGE = {
                 var key = parseInt($('#email_show').val(), 10);
                 $('#email_show_list').val(key >= 0 ? notify_data[key.toString()].list : ''); // jshint ignore:line
             });
+            $('#prowl_show').change(function() {
+                var key = parseInt($('#prowl_show').val(), 10);
+                $('#prowl_show_list').val(key >= 0 ? notify_data[key.toString()].prowl_notify_list : ''); // jshint ignore:line
+            });
 
             // Update the internal data struct anytime settings are saved to the server
             $('#email_show').bind('notify', function() {
+                loadShowNotifyLists();
+            });
+            $('#prowl_show').bind('notify', function() {
                 loadShowNotifyLists();
             });
 
@@ -954,14 +962,28 @@ var SICKRAGE = {
                     list = $.parseJSON(data); // @TODO The line below this is the same as the $('#email_show') function above
                     notify_data = list; // jshint ignore:line
                     if (list._size === 0) { return; }
-                    html = '<option value="-1">-- Select --</option>';
+
+                    // Convert the 'list' object to a js array of objects so that we can sort it
+                    var _list = [];
                     for (s in list) {
                         if (s.charAt(0) !== '_') {
-                            html += '<option value="' + list[s].id + '">' + $('<div/>').text(list[s].name).html() + '</option>';
+                            _list.push(list[s]);
                         }
+                    }
+                    var sorted_list = _list.sort(function(a,b) {
+                        if (a.name < b.name) return -1;
+                        if (a.name > b.name) return 1;
+                        return 0;
+                    });
+                    html = '<option value="-1">-- Select --</option>';
+                    for (s in sorted_list) {
+                        html += '<option value="' + sorted_list[s].id + '">' + $('<div/>').text(sorted_list[s].name).html() + '</option>';
                     }
                     $('#email_show').html(html);
                     $('#email_show_list').val('');
+
+                    $('#prowl_show').html(html);
+                    $('#prowl_show_list').val('');
                 });
             }
             // Load the per show notify lists everytime this page is loaded
@@ -971,6 +993,16 @@ var SICKRAGE = {
                 $.post(srRoot + "/home/saveShowNotifyList", {
                     show: $('#email_show').val(),
                     emails: $('#email_show_list').val()
+                }, function() {
+                    // Reload the per show notify lists to reflect changes
+                    loadShowNotifyLists();
+                });
+            });
+
+            $('#prowl_show_save').click(function() {
+                $.post(srRoot + "/home/saveShowNotifyList", {
+                    show: $('#prowl_show').val(),
+                    prowlAPIs: $('#prowl_show_list').val()
                 }, function() {
                     // Reload the per show notify lists to reflect changes
                     loadShowNotifyLists();

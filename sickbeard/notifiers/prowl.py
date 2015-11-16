@@ -1,4 +1,4 @@
-# coding=utf-8
+﻿# coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
@@ -31,36 +31,98 @@ except ImportError:
         pass
 
 import sickbeard
+import time
+import ast
 
 from sickbeard import logger, common
 
+from sickbeard import db
+from sickrage.helper.encoding import ss
 
 class ProwlNotifier(object):
     def test_notify(self, prowl_api, prowl_priority):
-        return self._sendProwl(prowl_api, prowl_priority, event="Test",
-                               message="Testing Prowl settings from SickRage", force=True)
+        return self._sendProwl(prowl_api, prowl_priority, event="Test", message="Testing Prowl settings from SickRage", force=True)
 
     def notify_snatch(self, ep_name):
+        ep_name = ss(ep_name)
         if sickbeard.PROWL_NOTIFY_ONSNATCH:
-            self._sendProwl(prowl_api=None, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_SNATCH],
-                            message=ep_name)
+            show = self._parseEp(ep_name)
+            recipients = self._generate_recipients(show)
+            if len(recipients) == 0:
+                logger.log('Skipping prowl notify because there are no configured recipients', logger.DEBUG)
+            else:
+                myDB = db.DBConnection()
+                shows = myDB.select("SELECT * FROM tv_shows WHERE show_name = ?", [show[0]])
+                network = 'TV'
+                if len(shows) == 1:
+                    network = shows[0]['network']
+                for api in recipients:
+                    self._sendProwl(prowl_api=api, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_SNATCH],
+                                    message=ep_name+" ("+network+") :: "+time.strftime(sickbeard.DATE_PRESET+' at '+sickbeard.TIME_PRESET))
 
     def notify_download(self, ep_name):
+        ep_name = ss(ep_name)
         if sickbeard.PROWL_NOTIFY_ONDOWNLOAD:
-            self._sendProwl(prowl_api=None, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_DOWNLOAD],
-                            message=ep_name)
+            show = self._parseEp(ep_name)
+            recipients = self._generate_recipients(show)
+            if len(recipients) == 0:
+                logger.log('Skipping prowl notify because there are no configured recipients', logger.DEBUG)
+            else:
+                myDB = db.DBConnection()
+                shows = myDB.select("SELECT * FROM tv_shows WHERE show_name = ?", [show[0]])
+                network = 'TV'
+                if len(shows) == 1:
+                    network = shows[0]['network']
+                for api in recipients:
+                    self._sendProwl(prowl_api=api, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_DOWNLOAD],
+                                    message=ep_name+" ("+network+") :: "+time.strftime(sickbeard.DATE_PRESET+' at '+sickbeard.TIME_PRESET))
 
     def notify_subtitle_download(self, ep_name, lang):
+        ep_name = ss(ep_name)
         if sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._sendProwl(prowl_api=None, prowl_priority=None,
-                            event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], message=ep_name + ": " + lang)
-                            
-    def notify_git_update(self, new_version="??"):
+            show = self._parseEp(ep_name)
+            recipients = self._generate_recipients(show)
+            if len(recipients) == 0:
+                logger.log('Skipping prowl notify because there are no configured recipients', logger.DEBUG)
+            else:
+                myDB = db.DBConnection()
+                shows = myDB.select("SELECT * FROM tv_shows WHERE show_name = ?", [show[0]])
+                network = 'TV'
+                if len(shows) == 1:
+                    network = shows[0]['network']
+                for api in recipients:
+                    self._sendProwl(prowl_api=api, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
+                                    message=ep_name+" ["+lang+"] ("+network+") :: "+time.strftime(sickbeard.DATE_PRESET+' at '+sickbeard.TIME_PRESET))
+
+    def notify_git_update(self, new_version = "??"):
         if sickbeard.USE_PROWL:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._sendProwl(prowl_api=None, prowl_priority=None,
                             event=title, message=update_text + new_version)
+
+    def _generate_recipients(self, show=None):
+        apis = []
+        myDB = db.DBConnection()
+
+        # Grab the global recipient(s)
+        for api in sickbeard.PROWL_API.split(','):
+            if (len(api.strip()) > 0):
+                apis.append(api)
+
+        # Grab the per-show-notification recipients
+        if show is not None:
+            for s in show:
+                for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (s,)):
+                    if subs['notify_list']:
+                        if subs['notify_list'][0] == '{':               # legacy format handling
+                            entries = dict(ast.literal_eval(subs['notify_list']))
+                            for api in entries['prowlAPIs'].split(','):
+                                if (len(api.strip()) > 0):
+                                    apis.append(api)
+
+        apis = set(apis)
+        return apis
 
     def _sendProwl(self, prowl_api=None, prowl_priority=None, event=None, message=None, force=False):
 
@@ -69,13 +131,15 @@ class ProwlNotifier(object):
 
         if prowl_api is None:
             prowl_api = sickbeard.PROWL_API
+            if len(prowl_api) == 0:
+                return False
 
         if prowl_priority is None:
             prowl_priority = sickbeard.PROWL_PRIORITY
 
-        title = "SickRage"
+        title = sickbeard.PROWL_MESSAGE_TITLE
 
-        logger.log(u"PROWL: Sending notice with details: event=\"%s\", message=\"%s\", priority=%s, api=%s" % (event, message, prowl_priority, prowl_api), logger.DEBUG)
+        logger.log(u"PROWL: Sending notice with details: title=\"%s\" event=\"%s\", message=\"%s\", priority=%s, api=%s" % (title, event, message, prowl_priority, prowl_api), logger.DEBUG)
 
         http_handler = HTTPSConnection("api.prowlapp.com")
 
@@ -106,5 +170,13 @@ class ProwlNotifier(object):
             logger.log(u"Prowl notification failed.", logger.ERROR)
             return False
 
+    def _parseEp(self, ep_name):
+        ep_name = ss(ep_name)
+
+        sep = " - "
+        titles = ep_name.split(sep)
+        titles.sort(key=len, reverse=True)
+        logger.log("TITLES: %s" % titles, logger.DEBUG)
+        return titles
 
 notifier = ProwlNotifier
