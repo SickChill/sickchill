@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -66,7 +68,7 @@ class animenzb(generic.NZBProvider):
         }
 
         searchURL = self.url + "rss?" + urllib.urlencode(params)
-        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+        logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
         results = []
         for curItem in self.cache.getRSSFeed(searchURL)['entries'] or []:
             (title, url) = self._get_title_and_url(curItem)
