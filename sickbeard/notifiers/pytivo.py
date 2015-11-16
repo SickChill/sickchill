@@ -79,11 +79,11 @@ class pyTivoNotifier(object):
         showAndSeason = rootShowAndSeason.replace(root, "")
 
         container = shareName + "/" + showAndSeason
-        file = "/" + absPath.replace(root, "")
+        filename = "/" + absPath.replace(root, "")
 
         # Finally create the url and make request
         requestUrl = "http://" + host + "/TiVoConnect?" + urlencode(
-            {'Command': 'Push', 'Container': container, 'File': file, 'tsn': tsn})
+            {'Command': 'Push', 'Container': container, 'File': filename, 'tsn': tsn})
 
         logger.log(u"pyTivo notification: Requesting " + requestUrl, logger.DEBUG)
 
