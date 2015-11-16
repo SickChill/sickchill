@@ -53,7 +53,7 @@ class NMJv2Notifier(object):
         Retrieves the NMJv2 database location from Popcorn hour
         
         host: The hostname/IP of the Popcorn Hour server
-        dbloc: 'local' for PCH internal harddrive. 'network' for PCH network shares
+        dbloc: 'local' for PCH internal hard drive. 'network' for PCH network shares
         instance: Allows for selection of different DB in case of multiple databases
         
         Returns: True if the settings were retrieved successfully, False otherwise
@@ -66,7 +66,7 @@ class NMJv2Notifier(object):
             xml = parseString(response1)
             time.sleep(300.0 / 1000.0)
             for node in xml.getElementsByTagName('path'):
-                xmlTag = node.toxml();
+                xmlTag = node.toxml()
                 xmlData = xmlTag.replace('<path>', '').replace('</path>', '').replace('[=]', '')
                 url_db = "http://" + host + ":8008/metadata_database?arg0=check_database&arg1=" + xmlData
                 reqdb = urllib2.Request(url_db)
@@ -98,7 +98,7 @@ class NMJv2Notifier(object):
         Sends a NMJ update command to the specified machine
         
         host: The hostname/IP to send the request to (no port)
-        database: The database to send the requst to
+        database: The database to send the request to
         mount: The mount URL to use (optional)
         
         Returns: True if the request succeeded, False otherwise
