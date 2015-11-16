@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Authors:
 # Derek Battams <derek@battams.ca>
 # Pedro Jose Pereira Vieito (@pvieito) <pvieito@gmail.com>
