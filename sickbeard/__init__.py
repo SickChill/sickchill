@@ -701,6 +701,9 @@ def initialize(consoleLogging=True):
         GIT_REMOTE_URL = check_setting_str(CFG, 'General', 'git_remote_url',
                                            'https://github.com/%s/%s.git' % (GIT_ORG, GIT_REPO))
 
+        if 'sickragetv' in GIT_REMOTE_URL.lower():
+            GIT_REMOTE_URL = 'https://github.com/SickRage/SickRage.git'
+
         # current commit hash
         CUR_COMMIT_HASH = check_setting_str(CFG, 'General', 'cur_commit_hash', '')
 
