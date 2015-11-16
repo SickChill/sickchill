@@ -107,9 +107,9 @@ class NMJv2Notifier(object):
         # if a host is provided then attempt to open a handle to that URL
         try:
             url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=&arg3=update_all"
-            logger.log(u"NMJ scan update command sent to host: %s" % (host), logger.DEBUG)
+            logger.log(u"NMJ scan update command sent to host: %s" % host, logger.DEBUG)
             url_updatedb = "http://" + host + ":8008/metadata_database?arg0=scanner_start&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=background&arg3="
-            logger.log(u"Try to mount network drive via url: %s" % (host), logger.DEBUG)
+            logger.log(u"Try to mount network drive via url: %s" % host, logger.DEBUG)
             prereq = urllib2.Request(url_scandir)
             req = urllib2.Request(url_updatedb)
             handle1 = urllib2.urlopen(prereq)
@@ -124,13 +124,13 @@ class NMJv2Notifier(object):
             et = etree.fromstring(response1)
             result1 = et.findtext("returnValue")
         except SyntaxError, e:
-            logger.log(u"Unable to parse XML returned from the Popcorn Hour: update_scandir, %s" % (e), logger.ERROR)
+            logger.log(u"Unable to parse XML returned from the Popcorn Hour: update_scandir, %s" % e, logger.ERROR)
             return False
         try:
             et = etree.fromstring(response2)
             result2 = et.findtext("returnValue")
         except SyntaxError, e:
-            logger.log(u"Unable to parse XML returned from the Popcorn Hour: scanner_start, %s" % (e), logger.ERROR)
+            logger.log(u"Unable to parse XML returned from the Popcorn Hour: scanner_start, %s" % e, logger.ERROR)
             return False
 
         # if the result was a number then consider that an error
