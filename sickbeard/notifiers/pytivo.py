@@ -63,9 +63,7 @@ class pyTivoNotifier(object):
         # come up with.
         #
 
-
         # Calculated values
-
         showPath = ep_obj.show.location
         showName = ep_obj.show.name
         rootShowAndSeason = ek(os.path.dirname, ep_obj.location)
@@ -91,7 +89,7 @@ class pyTivoNotifier(object):
 
         try:
             response = urlopen(request)  # @UnusedVariable
-        except HTTPError , e:
+        except HTTPError, e:
             if hasattr(e, 'reason'):
                 logger.log(u"pyTivo notification: Error, failed to reach a server - " + e.reason, logger.ERROR)
                 return False
