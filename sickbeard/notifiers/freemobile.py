@@ -56,7 +56,7 @@ class FreeMobileNotifier(object):
         try:
             urllib2.urlopen(req)
         except IOError, e:
-            if hasattr(e,'code'):
+            if hasattr(e, 'code'):
                 if e.code == 400:
                     message = "Missing parameter(s)."
                     logger.log(message, logger.ERROR)
@@ -82,13 +82,9 @@ class FreeMobileNotifier(object):
         logger.log(message, logger.INFO)
         return True, message
 
-
-
-
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
         if sickbeard.FREEMOBILE_NOTIFY_ONSNATCH:
             self._notifyFreeMobile(title, ep_name)
-
 
     def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
         if sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD:
@@ -98,10 +94,10 @@ class FreeMobileNotifier(object):
         if sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyFreeMobile(title, ep_name + ": " + lang)
 
-    def notify_git_update(self, new_version = "??"):
+    def notify_git_update(self, new_version="??"):
         if sickbeard.USE_FREEMOBILE:
-            update_text=notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
-            title=notifyStrings[NOTIFY_GIT_UPDATE]
+            update_text = notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
+            title = notifyStrings[NOTIFY_GIT_UPDATE]
             self._notifyFreeMobile(title, update_text + new_version)
 
     def _notifyFreeMobile(self, title, message, cust_id=None, apiKey=None, force=False):
