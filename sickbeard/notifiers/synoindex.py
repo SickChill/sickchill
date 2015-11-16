@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Sebastien Erard <sebastien_erard@hotmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -26,7 +28,7 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
 
-class synoIndexNotifier:
+class synoIndexNotifier(object):
     def notify_snatch(self, ep_name):
         pass
 
