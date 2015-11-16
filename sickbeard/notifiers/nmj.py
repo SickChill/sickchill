@@ -30,7 +30,7 @@ except ImportError:
     import xml.etree.ElementTree as etree
 
 
-class NMJNotifier:
+class NMJNotifier(object):
     def notify_settings(self, host):
         """
         Retrieves the settings from a NMJ/Popcorn hour
