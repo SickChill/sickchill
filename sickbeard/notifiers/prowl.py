@@ -33,7 +33,7 @@ import sickbeard
 from sickbeard import logger, common
 
 
-class ProwlNotifier:
+class ProwlNotifier(object):
     def test_notify(self, prowl_api, prowl_priority):
         return self._sendProwl(prowl_api, prowl_priority, event="Test",
                                message="Testing Prowl settings from SickRage", force=True)
