@@ -39,9 +39,9 @@ class FreeMobileNotifier(object):
         returns: True if the message succeeded, False otherwise
         """
 
-        if id == None:
+        if id is None:
             id = sickbeard.FREEMOBILE_ID
-        if apiKey == None:
+        if apiKey is None:
             apiKey = sickbeard.FREEMOBILE_APIKEY
 
         logger.log(u"Free Mobile in use with API KEY: " + apiKey, logger.DEBUG)
