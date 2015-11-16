@@ -41,7 +41,6 @@ class NMJNotifier(object):
         """
 
         # establish a terminal session to the PC
-        terminal = False
         try:
             terminal = telnetlib.Telnet(host)
         except Exception:
@@ -56,8 +55,6 @@ class NMJNotifier(object):
         terminal.write("exit\n")
         tnoutput = terminal.read_all()
 
-        database = ""
-        device = ""
         match = re.search(r"(.+\.db)\r\n?(.+)(?=sh-3.00# cat /tmp/netshare)", tnoutput)
 
         # if we found the database in the terminal output then save that database to the config
