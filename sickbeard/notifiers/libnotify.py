@@ -24,10 +24,10 @@ from sickbeard import logger, common
 
 
 def diagnose():
-    '''
+    """
     Check the environment for reasons libnotify isn't working.  Return a
     user-readable message indicating possible issues.
-    '''
+    """
     try:
         from gi.repository import Notify  # @UnusedImport
     except ImportError:
