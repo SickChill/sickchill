@@ -40,7 +40,7 @@ except ImportError:
     import simplejson as json
 
 
-class KODINotifier:
+class KODINotifier(object):
     sr_logo_url = 'https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
 
     def _get_kodi_version(self, host, username, password):
