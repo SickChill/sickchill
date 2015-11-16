@@ -70,7 +70,7 @@ class KODINotifier(object):
 
         """
 
-        # since we need to maintain python 2.5 compatability we can not pass a timeout delay to urllib2 directly (python 2.6+)
+        # since we need to maintain python 2.5 compatibility we can not pass a timeout delay to urllib2 directly (python 2.6+)
         # override socket timeout to reduce delay for this call alone
         socket.setdefaulttimeout(10)
 
@@ -396,7 +396,7 @@ class KODINotifier(object):
                 logger.log(u"KODI JSON response: " + str(result), logger.DEBUG)
                 return result  # need to return response for parsing
             except ValueError, e:
-                logger.log(u"Unable to decode JSON: " +  str(response.read()), logger.WARNING)
+                logger.log(u"Unable to decode JSON: " + str(response.read()), logger.WARNING)
                 return False
 
         except IOError, e:
@@ -469,7 +469,6 @@ class KODINotifier(object):
                 logger.log(u'Exact show name not matched in KODI TV show list', logger.DEBUG)
                 return False
 
-
             # lookup tv-show path if we don't already know it
             if not len(path):
                 pathCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":{"tvshowid":%d, "properties": ["file"]},"id":1}' % tvshowid
@@ -537,7 +536,7 @@ class KODINotifier(object):
         """Public wrapper for the update library functions to branch the logic for JSON-RPC or legacy HTTP API
 
         Checks the KODI API version to branch the logic to call either the legacy HTTP API or the newer JSON-RPC over HTTP methods.
-        Do the ability of accepting a list of hosts deliminated by comma, only one host is updated, the first to respond with success.
+        Do the ability of accepting a list of hosts delimited by comma, only one host is updated, the first to respond with success.
         This is a workaround for SQL backend users as updating multiple clients causes duplicate entries.
         Future plan is to revist how we store the host/ip/username/pw/options so that it may be more flexible.
 
