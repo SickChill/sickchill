@@ -26,7 +26,7 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
 
-class synologyNotifier:
+class synologyNotifier(object):
     def notify_snatch(self, ep_name):
         if sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH:
             self._send_synologyNotifier(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
