@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Maciej Olesinski (https://github.com/molesinski/)
 # Based on prowl.py by Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
@@ -26,7 +28,7 @@ import sickbeard
 from sickbeard import logger, common
 
 
-class PushalotNotifier:
+class PushalotNotifier(object):
     def test_notify(self, pushalot_authorizationtoken):
         return self._sendPushalot(pushalot_authorizationtoken, event="Test",
                                   message="Testing Pushalot settings from SickRage", force=True)
@@ -47,10 +49,10 @@ class PushalotNotifier:
                                event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
                                message=ep_name + ": " + lang)
                                
-    def notify_git_update(self, new_version = "??"):
+    def notify_git_update(self, new_version="??"):
         if sickbeard.USE_PUSHALOT:
-            update_text=common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-            title=common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
+            title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._sendPushalot(pushalot_authorizationtoken=None,
                                event=title, 
                                message=update_text + new_version)
@@ -60,7 +62,7 @@ class PushalotNotifier:
         if not sickbeard.USE_PUSHALOT and not force:
             return False
 
-        if pushalot_authorizationtoken == None:
+        if pushalot_authorizationtoken is None:
             pushalot_authorizationtoken = sickbeard.PUSHALOT_AUTHORIZATIONTOKEN
 
         logger.log(u"Pushalot event: " + event, logger.DEBUG)
