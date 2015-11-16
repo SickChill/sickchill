@@ -279,13 +279,13 @@ class KODINotifier(object):
 
             pathSql = 'select path.strPath from path, tvshow, tvshowlinkpath where ' \
                       'tvshow.c00 = "%s" and tvshowlinkpath.idShow = tvshow.idShow ' \
-                      'and tvshowlinkpath.idPath = path.idPath' % (showName)
+                      'and tvshowlinkpath.idPath = path.idPath' % showName
 
             # use this to get xml back for the path lookups
             xmlCommand = {
                 'command': 'SetResponseFormat(webheader;false;webfooter;false;header;<xml>;footer;</xml>;opentag;<tag>;closetag;</tag>;closefinaltag;false)'}
             # sql used to grab path(s)
-            sqlCommand = {'command': 'QueryVideoDatabase(%s)' % (pathSql)}
+            sqlCommand = {'command': 'QueryVideoDatabase(%s)' % pathSql}
             # set output back to default
             resetCommand = {'command': 'SetResponseFormat()'}
 
@@ -318,7 +318,7 @@ class KODINotifier(object):
                 # we do not need it double-encoded, gawd this is dumb
                 unEncPath = urllib.unquote(path.text).decode(sickbeard.SYS_ENCODING)
                 logger.log(u"KODI Updating " + showName + " on " + host + " at " + unEncPath, logger.DEBUG)
-                updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video, %s)' % (unEncPath)}
+                updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video, %s)' % unEncPath}
                 request = self._send_to_kodi(updateCommand, host)
                 if not request:
                     logger.log(u"Update of show directory failed on " + showName + " on " + host + " at " + unEncPath, logger.WARNING)
@@ -369,7 +369,7 @@ class KODINotifier(object):
         command = command.encode('utf-8')
         logger.log(u"KODI JSON command: " + command, logger.DEBUG)
 
-        url = 'http://%s/jsonrpc' % (host)
+        url = 'http://%s/jsonrpc' % host
         try:
             req = urllib2.Request(url, command)
             req.add_header("Content-type", "application/json")
@@ -472,7 +472,7 @@ class KODINotifier(object):
 
             # lookup tv-show path if we don't already know it
             if not len(path):
-                pathCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":{"tvshowid":%d, "properties": ["file"]},"id":1}' % (tvshowid)
+                pathCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":{"tvshowid":%d, "properties": ["file"]},"id":1}' % tvshowid
                 pathResponse = self._send_to_kodi_json(pathCommand, host)
 
                 path = pathResponse["result"]["tvshowdetails"]["file"]
