@@ -25,10 +25,10 @@ from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTI
 
 
 class FreeMobileNotifier(object):
-    def test_notify(self, id=None, apiKey=None):
-        return self._notifyFreeMobile('Test', "This is a test notification from SickRage", id, apiKey, force=True)
+    def test_notify(self, cust_id=None, apiKey=None):
+        return self._notifyFreeMobile('Test', "This is a test notification from SickRage", cust_id, apiKey, force=True)
 
-    def _sendFreeMobileSMS(self, title, msg, id=None, apiKey=None):
+    def _sendFreeMobileSMS(self, title, msg, cust_id=None, apiKey=None):
         """
         Sends a SMS notification
 
@@ -39,8 +39,8 @@ class FreeMobileNotifier(object):
         returns: True if the message succeeded, False otherwise
         """
 
-        if id is None:
-            id = sickbeard.FREEMOBILE_ID
+        if cust_id is None:
+            cust_id = sickbeard.FREEMOBILE_ID
         if apiKey is None:
             apiKey = sickbeard.FREEMOBILE_APIKEY
 
@@ -49,7 +49,7 @@ class FreeMobileNotifier(object):
         # build up the URL and parameters
         msg = msg.strip()
         msg_quoted = urllib2.quote(title.encode('utf-8') + ": " + msg.encode('utf-8'))
-        URL = "https://smsapi.free-mobile.fr/sendmsg?user=" + id + "&pass=" + apiKey + "&msg=" + msg_quoted
+        URL = "https://smsapi.free-mobile.fr/sendmsg?user=" + cust_id + "&pass=" + apiKey + "&msg=" + msg_quoted
 
         req = urllib2.Request(URL)
         # send the request to Free Mobile
@@ -104,13 +104,13 @@ class FreeMobileNotifier(object):
             title=notifyStrings[NOTIFY_GIT_UPDATE]
             self._notifyFreeMobile(title, update_text + new_version)
 
-    def _notifyFreeMobile(self, title, message, id=None, apiKey=None, force=False):
+    def _notifyFreeMobile(self, title, message, cust_id=None, apiKey=None, force=False):
         """
         Sends a SMS notification
 
         title: The title of the notification to send
         message: The message string to send
-        id: Your Free Mobile customer ID
+        cust_id: Your Free Mobile customer ID
         apikey: Your Free Mobile API key
         force: Enforce sending, for instance for testing
         """
@@ -121,7 +121,7 @@ class FreeMobileNotifier(object):
 
         logger.log(u"Sending a SMS for " + message, logger.DEBUG)
 
-        return self._sendFreeMobileSMS(title, message, id, apiKey)
+        return self._sendFreeMobileSMS(title, message, cust_id, apiKey)
 
 
 notifier = FreeMobileNotifier
