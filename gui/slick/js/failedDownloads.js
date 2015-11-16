@@ -23,7 +23,7 @@ $(document).ready(function(){
     });
 
     if($('.removeCheck').length){
-        $('.removeCheck').forEach(function(name) {
+        $('.removeCheck').each(function(name) {
             var lastCheck = null;
             $(name).click(function(event) {
                 if(!lastCheck || !event.shiftKey) {
