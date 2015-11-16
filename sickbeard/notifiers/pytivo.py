@@ -27,7 +27,7 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
 
-class pyTivoNotifier:
+class pyTivoNotifier(object):
     def notify_snatch(self, ep_name):
         pass
 
