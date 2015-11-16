@@ -44,10 +44,10 @@ class GrowlNotifier(object):
         if sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._sendGrowl(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], ep_name + ": " + lang)
 
-    def notify_git_update(self, new_version = "??"):
+    def notify_git_update(self, new_version="??"):
         if sickbeard.USE_GROWL:
-            update_text=common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-            title=common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
+            title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._sendGrowl(title, update_text + new_version)
 
     def _send_growl(self, options, message=None):
@@ -78,7 +78,8 @@ class GrowlNotifier(object):
         return True if isinstance(response, gntp.GNTPOK) else False
 
     def _send(self, host, port, data, debug=False):
-        if debug: print '<Sending>\n', data, '\n</Sending>'
+        if debug:
+            print '<Sending>\n', data, '\n</Sending>'
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((host, port))
@@ -86,7 +87,8 @@ class GrowlNotifier(object):
         response = gntp.parse_gntp(s.recv(1024))
         s.close()
 
-        if debug: print '<Recieved>\n', response, '\n</Recieved>'
+        if debug:
+            print '<Received>\n', response, '\n</Received>'
 
         return response
 
