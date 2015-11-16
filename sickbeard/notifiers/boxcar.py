@@ -64,7 +64,6 @@ class BoxcarNotifier(object):
                 'notification[from_remote_service_id]': int(time.time())
             })
 
-
         # send the request to boxcar
         try:
             req = urllib2.Request(curUrl)
@@ -90,7 +89,7 @@ class BoxcarNotifier(object):
                 # If the user has already added your service, we'll return an HTTP status code of 401.
                 if subscribe:
                     logger.log(u"Already subscribed to service", logger.ERROR)
-                    # i dont know if this is true or false ... its neither but i also dont know how we got here in the first place
+                    # i don't know if this is true or false ... its neither but i also don't know how we got here in the first place
                     return False
 
                 # HTTP status 401 if the user doesn't have the service added
@@ -115,7 +114,6 @@ class BoxcarNotifier(object):
         if sickbeard.BOXCAR_NOTIFY_ONSNATCH:
             self._notifyBoxcar(title, ep_name)
 
-
     def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
         if sickbeard.BOXCAR_NOTIFY_ONDOWNLOAD:
             self._notifyBoxcar(title, ep_name)
@@ -124,10 +122,10 @@ class BoxcarNotifier(object):
         if sickbeard.BOXCAR_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyBoxcar(title, ep_name + ": " + lang)
 
-    def notify_git_update(self, new_version = "??"):
+    def notify_git_update(self, new_version="??"):
         if sickbeard.USE_BOXCAR:
-            update_text=notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
-            title=notifyStrings[NOTIFY_GIT_UPDATE]
+            update_text = notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
+            title = notifyStrings[NOTIFY_GIT_UPDATE]
             self._notifyBoxcar(title, update_text + new_version)
 
     def _notifyBoxcar(self, title, message, username=None, force=False):
