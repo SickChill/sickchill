@@ -4,7 +4,7 @@ from sickbeard import logger, common
 from pynma import pynma
 
 
-class NMA_Notifier:
+class NMA_Notifier(object):
     def test_notify(self, nma_api, nma_priority):
         return self._sendNMA(nma_api, nma_priority, event="Test", message="Testing NMA settings from SickRage",
                              force=True)
