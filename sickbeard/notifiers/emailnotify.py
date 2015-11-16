@@ -34,7 +34,7 @@ from sickbeard import db
 from sickrage.helper.encoding import ss
 
 
-class EmailNotifier:
+class EmailNotifier(object):
     def __init__(self):
         self.last_err = None
 
