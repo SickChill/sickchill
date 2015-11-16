@@ -82,11 +82,11 @@ class TwitterNotifier(object):
             return self.AUTHORIZATION_URL + "?oauth_token=" + request_token['oauth_token']
 
     def _get_credentials(self, key):
-        request_token = {}
-
-        request_token['oauth_token'] = sickbeard.TWITTER_USERNAME
-        request_token['oauth_token_secret'] = sickbeard.TWITTER_PASSWORD
-        request_token['oauth_callback_confirmed'] = 'true'
+        request_token = {
+            'oauth_token': sickbeard.TWITTER_USERNAME,
+            'oauth_token_secret': sickbeard.TWITTER_PASSWORD,
+            'oauth_callback_confirmed': 'true'
+        }
 
         token = oauth.Token(request_token['oauth_token'], request_token['oauth_token_secret'])
         token.set_verifier(key)
