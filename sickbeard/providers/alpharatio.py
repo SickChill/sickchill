@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Bill Nasty
 # URL: https://github.com/SickRage/SickRage
 #
