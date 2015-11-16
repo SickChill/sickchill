@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import sickbeard
 
 from sickbeard import logger, common
