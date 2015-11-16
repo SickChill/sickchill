@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Maciej Olesinski (https://github.com/molesinski/)
 # Based on prowl.py by Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
@@ -26,7 +28,7 @@ import sickbeard
 from sickbeard import logger, common
 
 
-class PushalotNotifier:
+class PushalotNotifier(object):
     def test_notify(self, pushalot_authorizationtoken):
         return self._sendPushalot(pushalot_authorizationtoken, event="Test",
                                   message="Testing Pushalot settings from SickRage", force=True)
