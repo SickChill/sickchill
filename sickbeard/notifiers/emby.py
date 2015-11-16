@@ -30,7 +30,7 @@ except ImportError:
     import simplejson as json
 
 
-class EMBYNotifier:
+class EMBYNotifier(object):
 
     def _notify_emby(self, message, host=None, emby_apikey=None):
         """Handles notifying Emby host via HTTP API
