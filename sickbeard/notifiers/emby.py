@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -30,7 +32,7 @@ except ImportError:
     import simplejson as json
 
 
-class EMBYNotifier:
+class EMBYNotifier(object):
 
     def _notify_emby(self, message, host=None, emby_apikey=None):
         """Handles notifying Emby host via HTTP API
@@ -46,7 +48,7 @@ class EMBYNotifier:
         if not emby_apikey:
             emby_apikey = sickbeard.EMBY_APIKEY
 
-        url = 'http://%s/emby/Notifications/Admin' % (host)
+        url = 'http://%s/emby/Notifications/Admin' % host
         values = {'Name': 'SickRage', 'Description': message, 'ImageUrl': 'https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'}
         data = json.dumps(values)
         try:
