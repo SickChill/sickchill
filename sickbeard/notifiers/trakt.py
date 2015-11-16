@@ -225,7 +225,7 @@ class TraktNotifier(object):
                 trakt_lists = trakt_api.traktRequest("users/" + username + "/lists")
                 found = False
                 for trakt_list in trakt_lists:
-                    if (trakt_list['ids']['slug'] == blacklist_name):
+                    if trakt_list['ids']['slug'] == blacklist_name:
                         return "Test notice sent successfully to Trakt"
                 if not found:
                     return "Trakt blacklist doesn't exists"
