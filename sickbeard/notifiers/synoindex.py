@@ -26,7 +26,7 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
 
-class synoIndexNotifier:
+class synoIndexNotifier(object):
     def notify_snatch(self, ep_name):
         pass
 
