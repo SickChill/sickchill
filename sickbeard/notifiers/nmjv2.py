@@ -30,7 +30,7 @@ except ImportError:
     import xml.etree.ElementTree as etree
 
 
-class NMJv2Notifier:
+class NMJv2Notifier(object):
     def notify_snatch(self, ep_name):
         return False
         # Not implemented: Start the scanner when snatched does not make any sense
