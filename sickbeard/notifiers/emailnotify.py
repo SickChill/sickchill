@@ -170,7 +170,7 @@ class EmailNotifier(object):
 
         # Grab the global recipients
         for addr in sickbeard.EMAIL_LIST.split(','):
-            if (len(addr.strip()) > 0):
+            if len(addr.strip()) > 0:
                 addrs.append(addr)
 
         # Grab the recipients for the show
@@ -179,7 +179,7 @@ class EmailNotifier(object):
             for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (s,)):
                 if subs['notify_list']:
                     for addr in subs['notify_list'].split(','):
-                        if (len(addr.strip()) > 0):
+                        if len(addr.strip()) > 0:
                             addrs.append(addr)
 
         addrs = set(addrs)
