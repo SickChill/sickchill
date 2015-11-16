@@ -97,8 +97,8 @@ class TraktNotifier(object):
         show_obj: The TVShow object to add to trakt
         s: season number
         e: episode number
-        data_show: structured object of shows traktv type
-        data_episode: structured object of episodes traktv type
+        data_show: structured object of shows trakt type
+        data_episode: structured object of episodes trakt type
         update: type o action add or remove
         """
 
@@ -135,7 +135,7 @@ class TraktNotifier(object):
                     data['shows'][0].update(data_episode)
 
                 elif s is not None:
-                    # traktv URL parameters
+                    # trakt URL parameters
                     season = {
                         'season': [
                             {
@@ -145,7 +145,7 @@ class TraktNotifier(object):
                     }
 
                     if e is not None:
-                        # traktv URL parameters
+                        # trakt URL parameters
                         episode = {
                             'episodes': [
                                 {
