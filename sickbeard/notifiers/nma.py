@@ -24,10 +24,10 @@ class NMA_Notifier(object):
             self._sendNMA(nma_api=None, nma_priority=None, event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
                           message=ep_name + ": " + lang)
 
-    def notify_git_update(self, new_version = "??"):
+    def notify_git_update(self, new_version="??"):
         if sickbeard.USE_NMA:
-            update_text=common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-            title=common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
+            title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._sendNMA(nma_api=None, nma_priority=None, event=title, message=update_text + new_version)
 
     def _sendNMA(self, nma_api=None, nma_priority=None, event=None, message=None, force=False):
@@ -49,7 +49,8 @@ class NMA_Notifier(object):
         keys = nma_api.split(',')
         p.addkey(keys)
 
-        if len(keys) > 1: batch = True
+        if len(keys) > 1:
+            batch = True
 
         logger.log(u"NMA: Sending notice with details: event=\"%s\", message=\"%s\", priority=%s, batch=%s" % (event, message, nma_priority, batch), logger.DEBUG)
         response = p.push(application=title, event=event, description=message, priority=nma_priority, batch_mode=batch)
