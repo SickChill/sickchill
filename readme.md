@@ -58,4 +58,4 @@ A full list can be found here: [Link](https://github.com/SickRage/sickrage-issue
 ![image](https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/providers/dognzb.png)[DOGnzb](dognzb.cr)
 
 #### News and Changelog
-[news.md and CHANGES.md have moved to a separate repo, click here](http://github.com/SickRage/sickrage-news)
+[news.md and CHANGES.md have moved to a separate repo, click here](https://github.com/SickRage/sickrage.github.io)
