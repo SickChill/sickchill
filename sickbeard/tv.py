@@ -2020,7 +2020,7 @@ class TVEpisode(object):
         elif self.show.air_by_date:
             return self._format_pattern('%SN - %AD - %EN')
 
-        return self._format_pattern('%SN - %Sx%0E - %EN')
+        return self._format_pattern('%SN - S%0SE%0E - %EN')
 
     def _ep_name(self):
         """
