@@ -17,6 +17,13 @@ module.exports = function(grunt) {
                     ],
                     'bootstrap-formhelpers': [
                         'dist/js/bootstrap-formhelpers.min.js'
+                    ],
+                    'isotope': [
+                        "dist/isotope.pkgd.min.js"
+                    ],
+                    "outlayer": [
+                        "item.js",
+                        "outlayer.js"
                     ]
                 },
                 bowerOptions: {
