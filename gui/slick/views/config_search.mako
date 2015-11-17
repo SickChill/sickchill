@@ -3,11 +3,6 @@
     import sickbeard
     from sickbeard import clients
 %>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/configSearch.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/config.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/new/config_search.js"></script>
-</%block>
 <%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>

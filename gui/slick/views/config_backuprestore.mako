@@ -10,10 +10,6 @@
     from sickbeard import metadata
     from sickbeard.metadata.generic import GenericMetadata
 %>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/configBackupRestore.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/new/config_backuprestore.js"></script>
-</%block>
 <%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
