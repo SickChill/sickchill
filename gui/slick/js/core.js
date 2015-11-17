@@ -1544,104 +1544,88 @@ var SICKRAGE = {
                     rpcurl = ' RPC URL';
 
                 if (selectedProvider.toLowerCase() !== 'blackhole') {
-                    var label_warning_deluge = '#label_warning_deluge',
-                        label_anime_warning_deluge = '#label_anime_warning_deluge',
-                        host_desc_rtorrent = '#host_desc_rtorrent',
-                        host_desc_torrent = '#host_desc_torrent',
-                        torrent_verify_cert_option = '#torrent_verify_cert_option',
-                        torrent_path_option = '#torrent_path_option',
-                        torrent_seed_time_option = '#torrent_seed_time_option',
-                        torrent_high_bandwidth_option = '#torrent_high_bandwidth_option',
-                        torrent_label_option = '#torrent_label_option',
-                        torrent_label_anime_option = '#torrent_label_anime_option',
-                        path_synology = '#path_synology',
-                        torrent_paused_option = '#torrent_paused_option';
-
-                    $(label_warning_deluge).hide();
-                    $(label_anime_warning_deluge).hide();
-                    $(label_anime_warning_deluge).hide();
-                    $(host_desc_rtorrent).hide();
-                    $(host_desc_torrent).show();
-                    $(torrent_verify_cert_option).hide();
-                    $(torrent_verify_deluge).hide();
-                    $(torrent_verify_rtorrent).hide();
-                    $(torrent_auth_type_option).hide();
-                    $(torrent_path_option).show();
-                    $(torrent_path_option).find('.fileBrowser').show();
-                    $(torrent_seed_time_option).hide();
-                    $(torrent_high_bandwidth_option).hide();
-                    $(torrent_label_option).show();
-                    $(torrent_label_anime_option).show();
-                    $(path_synology).hide();
-                    $(torrent_paused_option).show();
-                    $(torrent_rpcurl_option).hide();
-                    $(this).rtorrentScgi();
+                    $('#label_warning_deluge').hide();
+                    $('#label_anime_warning_deluge').hide();
+                    $('#host_desc_torrent').show();
+                    $('#torrent_verify_cert_option').hide();
+                    $('#torrent_verify_deluge').hide();
+                    $('#torrent_verify_rtorrent').hide();
+                    $('#torrent_auth_type_option').hide();
+                    $('#torrent_path_option').show();
+                    $('#torrent_path_option').find('.fileBrowser').show();
+                    $('#torrent_seed_time_option').hide();
+                    $('#torrent_high_bandwidth_option').hide();
+                    $('#torrent_label_option').show();
+                    $('#torrent_label_anime_option').show();
+                    $('#path_synology').hide();
+                    $('#torrent_paused_option').show();
+                    $('#torrent_rpcurl_option').hide();
 
                     if (selectedProvider.toLowerCase() === 'utorrent') {
                         client = 'uTorrent';
-                        $(torrent_path_option).hide();
+                        $('#torrent_path_option').hide();
                         $('#torrent_seed_time_label').text('Minimum seeding time is');
-                        $(torrent_seed_time_option).show();
+                        $('#torrent_seed_time_option').show();
                         $('#host_desc_torrent').text('URL to your uTorrent client (e.g. http://localhost:8000)');
                     } else if (selectedProvider.toLowerCase() === 'transmission'){
                         client = 'Transmission';
                         $('#torrent_seed_time_label').text('Stop seeding when inactive for');
-                        $(torrent_seed_time_option).show();
-                        $(torrent_high_bandwidth_option).show();
-                        $(torrent_label_option).hide();
-                        $(torrent_label_anime_option).hide();
-                        $(torrent_rpcurl_option).show();
+                        $('#torrent_seed_time_option').show();
+                        $('#torrent_high_bandwidth_option').show();
+                        $('#torrent_label_option').hide();
+                        $('#torrent_label_anime_option').hide();
+                        $('#torrent_rpcurl_option').show();
                         $('#host_desc_torrent').text('URL to your Transmission client (e.g. http://localhost:9091)');
                     } else if (selectedProvider.toLowerCase() === 'deluge'){
                         client = 'Deluge';
-                        $(torrent_verify_cert_option).show();
-                        $(torrent_verify_deluge).show();
-                        $(torrent_verify_rtorrent).hide();
-                        $(label_warning_deluge).show();
-                        $(label_anime_warning_deluge).show();
+                        $('#torrent_verify_cert_option').show();
+                        $('#torrent_verify_deluge').show();
+                        $('#torrent_verify_rtorrent').hide();
+                        $('#label_warning_deluge').show();
+                        $('#label_anime_warning_deluge').show();
                         $('#torrent_username_option').hide();
                         $('#torrent_username').prop('value', '');
                         $('#host_desc_torrent').text('URL to your Deluge client (e.g. http://localhost:8112)');
-                    } else if ('deluged' == selectedProvider){
+                    } else if (selectedProvider.toLowerCase() === 'deluged'){
                         client = 'Deluge';
-                        $(torrent_verify_cert_option).hide();
-                        $(torrent_verify_deluge).hide();
-                        $(torrent_verify_rtorrent).hide();
-                        $(label_warning_deluge).show();
-                        $(label_anime_warning_deluge).show();
+                        $('#torrent_verify_cert_option').hide();
+                        $('#torrent_verify_deluge').hide();
+                        $('#torrent_verify_rtorrent').hide();
+                        $('#label_warning_deluge').show();
+                        $('#label_anime_warning_deluge').show();
                         $('#torrent_username_option').show();
                         $('#host_desc_torrent').text('IP or Hostname of your Deluge Daemon (e.g. scgi://localhost:58846)');
-                    } else if ('download_station' == selectedProvider){
+                    } else if (selectedProvider.toLowerCase() === 'download_station'){
                         client = 'Synology DS';
-                        $(torrent_label_option).hide();
-                        $(torrent_label_anime_option).hide();
+                        $('#torrent_label_option').hide();
+                        $('#torrent_label_anime_option').hide();
                         $('#torrent_paused_option').hide();
-                        $(torrent_path_option).find('.fileBrowser').hide();
+                        $('#torrent_path_option').find('.fileBrowser').hide();
                         $('#host_desc_torrent').text('URL to your Synology DS client (e.g. http://localhost:5000)');
-                        $(path_synology).show();
-                    } else if ('rtorrent' == selectedProvider){
+                        $('#path_synology').show();
+                    } else if (selectedProvider.toLowerCase() === 'rtorrent'){
                         client = 'rTorrent';
-                        $(torrent_paused_option).hide();
+                        $('#torrent_paused_option').hide();
                         $('#host_desc_torrent').text('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or https://localhost/rutorrent/plugins/httprpc/action.php)');
-                        $(torrent_verify_cert_option).show();
-                        $(torrent_verify_deluge).hide();
-                        $(torrent_verify_rtorrent).show();
-                        $(torrent_auth_type_option).show();
-                    } else if ('qbittorrent' == selectedProvider){
+                        $('#torrent_verify_cert_option').show();
+                        $('#torrent_verify_deluge').hide();
+                        $('#torrent_verify_rtorrent').show();
+                        $('#torrent_auth_type_option').show();
+                    } else if (selectedProvider.toLowerCase() === 'qbittorrent'){
                         client = 'qbittorrent';
-                        $(torrent_path_option).hide();
-                        $(torrent_label_option).hide();
-                        $(torrent_label_anime_option).hide();
+                        $('#torrent_path_option').hide();
+                        $('#torrent_label_option').hide();
+                        $('#torrent_label_anime_option').hide();
                         $('#host_desc_torrent').text('URL to your qbittorrent client (e.g. http://localhost:8080)');
-                    } else if ('mlnet' == selectedProvider){
+                    } else if (selectedProvider.toLowerCase() === 'mlnet'){
                         client = 'mlnet';
-                        $(torrent_path_option).hide();
-                        $(torrent_label_option).hide();
-                        $(torrent_verify_cert_option).hide();
-                        $(torrent_verify_deluge).hide();
-                        $(torrent_verify_rtorrent).hide();
-                        $(torrent_label_anime_option).hide();
-                        $(torrent_paused_option).hide();
+                        $('#torrent_path_option').hide();
+                        $('#torrent_label_option').hide();
+                        $('#torrent_verify_cert_option').hide();
+                        $('#torrent_verify_deluge').hide();
+                        $('#torrent_verify_rtorrent').hide();
+                        $('#torrent_label_anime_option').hide();
+                        $('#torrent_paused_option').hide();
                         $('#host_desc_torrent').text('URL to your MLDonkey (e.g. http://localhost:4080)');
                     }
                     $('#host_title').text(client + host);
