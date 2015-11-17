@@ -74,7 +74,7 @@ $(document).ready(function(){
         });
     });
 
-  ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck'].forEach(function(name) {
+    ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck'].forEach(function(name) {
         var lastCheck = null;
 
         $(name).on('click', function(event) {
@@ -89,8 +89,7 @@ $(document).ready(function(){
             $(name).each(function() {
                 switch (found) {
                     case 2: return false;
-                    case 1:
-                    if(!this.disabled) { this.checked = lastCheck.checked; }
+                    case 1: if(!this.disabled) { this.checked = lastCheck.checked; }
                 }
                 if(this === check || this === lastCheck) { found++; }
             });

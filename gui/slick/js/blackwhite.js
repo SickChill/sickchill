@@ -1,24 +1,24 @@
 function generate_bwlist() {
     var realvalues = [];
 
-        $('#white option').each(function(i, selected) {
-            realvalues[i] = $(selected).val();
-        });
-        $("#whitelist").val(realvalues.join(","));
+    $('#white option').each(function(i, selected) {
+        realvalues[i] = $(selected).val();
+    });
+    $("#whitelist").val(realvalues.join(","));
 
-        realvalues = [];
-        $('#black option').each(function(i, selected) {
-            realvalues[i] = $(selected).val();
-        });
-        $("#blacklist").val(realvalues.join(","));
+    realvalues = [];
+    $('#black option').each(function(i, selected) {
+        realvalues[i] = $(selected).val();
+    });
+    $("#blacklist").val(realvalues.join(","));
 }
 
 function update_bwlist(show_name) {
-        $('#pool').children().remove();
+    $('#pool').children().remove();
 
-        $('#blackwhitelist').show();
-        if (show_name) {
-            $.getJSON(srRoot + '/home/fetch_releasegroups', {'show_name': show_name}, function (data) {
+    $('#blackwhitelist').show();
+    if (show_name) {
+        $.getJSON(srRoot + '/home/fetch_releasegroups', {'show_name': show_name}, function (data) {
             if (data.result == 'success') {
                 $.each(data.groups, function(i, group) {
                     var option = $("<option>");
@@ -27,9 +27,9 @@ function update_bwlist(show_name) {
                     option.appendTo('#pool');
                 });
             }
-         });
-        }
+        });
     }
+}
 
 $('#removeW').click(function() {
     !$('#white option:selected').remove().appendTo('#pool');
