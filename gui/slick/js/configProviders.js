@@ -354,7 +354,7 @@ $(document).ready(function(){
         var selectedProvider = $('#editANewznabProvider :selected').val();
 
         if (selectedProvider === "addNewznab"){
-             return;
+            return;
         }
 
         var url = $('#newznab_url').val();
@@ -371,7 +371,7 @@ $(document).ready(function(){
         var selectedProvider = $('#editATorrentRssProvider :selected').val();
 
         if (selectedProvider === "addTorrentRss"){
-             return;
+            return;
         }
 
         var url = $('#torrentrss_url').val();

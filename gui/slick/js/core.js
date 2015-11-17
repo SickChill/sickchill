@@ -1794,7 +1794,7 @@ var SICKRAGE = {
     },
     manage: {
         init: function() {
-            $.makeRow = function(indexerId, season, episode, name, checked) {
+            $.makeEpisodeRow = function(indexerId, season, episode, name, checked) {
                 var row = '';
                 row += ' <tr class="' + $('#row_class').val() + ' show-' + indexerId + '">';
                 row += '  <td class="tableleft" align="center"><input type="checkbox" class="' + indexerId + '-epcheck" name="' + indexerId + '-' + season + 'x' + episode + '"' + (checked ? ' checked' : '') + '></td>';
@@ -1804,6 +1804,25 @@ var SICKRAGE = {
 
                 return row;
             };
+
+            $.makeSubtitleRow = function(indexerId, season, episode, name, subtitles, checked) {
+                var row = '';
+                row += '<tr class="good show-' + indexerId + '">';
+                row += '<td align="center"><input type="checkbox" class="' + indexerId + '-epcheck" name="' + indexerId + '-' + season + 'x' + episode + '"' + (checked ? ' checked' : '') + '></td>';
+                row += '<td style="width: 1%;">' + season + 'x' + episode + '</td>';
+                row += '<td>' + name + '</td>';
+                row += '<td style="float: right;">';
+                subtitles = subtitles.split(',');
+                for (var i in subtitles) {
+                    if (subtitles.hasOwnProperty(i)) {
+                        row += '<img src="/images/subtitles/flags/' + subtitles[i] + '.png" width="16" height="11" alt="' + subtitles[i] + '" />&nbsp;';
+                    }
+                }
+                row += '</td>';
+                row += '</tr>';
+
+                return row;
+            }
         },
         index: function() {
             $("#massUpdateTable:has(tbody tr)").tablesorter({
@@ -1830,14 +1849,14 @@ var SICKRAGE = {
                     7: { sorter: 'archive_firstmatch'},
                     8: { sorter: 'paused'},
                     9: { sorter: 'subtitle'},
-                   10: { sorter: 'default_ep_status'},
-                   11: { sorter: 'status'},
-                   12: { sorter: false},
-                   13: { sorter: false},
-                   14: { sorter: false},
-                   15: { sorter: false},
-                   16: { sorter: false},
-                   17: { sorter: false}
+                    10: { sorter: 'default_ep_status'},
+                    11: { sorter: 'status'},
+                    12: { sorter: false},
+                    13: { sorter: false},
+                    14: { sorter: false},
+                    15: { sorter: false},
+                    16: { sorter: false},
+                    17: { sorter: false}
                 }
             });
         },
@@ -1883,7 +1902,7 @@ var SICKRAGE = {
                         $.each(data, function(season,eps){
                             $.each(eps, function(episode, name) {
                                 //alert(season+'x'+episode+': '+name);
-                                lastRow.after($.makeRow(curIndexerId, season, episode, name, checked));
+                                lastRow.after($.makeEpisodeRow(curIndexerId, season, episode, name, checked));
                             });
                         });
                     });
@@ -1903,20 +1922,20 @@ var SICKRAGE = {
             // selects all visible episode checkboxes.
             $('.selectAllShows').click(function(){
                 $('.allCheck').each(function(){
-                        this.checked = true;
+                    this.checked = true;
                 });
                 $('input[class*="-epcheck"]').each(function(){
-                        this.checked = true;
+                    this.checked = true;
                 });
             });
 
             // clears all visible episode checkboxes and the season selectors
             $('.unselectAllShows').click(function(){
                 $('.allCheck').each(function(){
-                        this.checked = false;
+                    this.checked = false;
                 });
                 $('input[class*="-epcheck"]').each(function(){
-                        this.checked = false;
+                    this.checked = false;
                 });
             });
         },
@@ -1940,7 +1959,7 @@ var SICKRAGE = {
                     }, function(data) {
                         $.each(data, function(season, eps) {
                             $.each(eps, function(episode, data) {
-                                lastRow.after($.makeRow(indexerId, season, episode, data.name, data.subtitles, checked));
+                                lastRow.after($.makeEpisodeRow(indexerId, season, episode, data.name, data.subtitles, checked));
                             });
                         });
                     });
@@ -1960,20 +1979,20 @@ var SICKRAGE = {
             // selects all visible episode checkboxes.
             $('.selectAllShows').click(function(){
                 $('.allCheck').each(function(){
-                        this.checked = true;
+                    this.checked = true;
                 });
                 $('input[class*="-epcheck"]').each(function(){
-                        this.checked = true;
+                    this.checked = true;
                 });
             });
 
             // clears all visible episode checkboxes and the season selectors
             $('.unselectAllShows').click(function(){
                 $('.allCheck').each(function(){
-                        this.checked = false;
+                    this.checked = false;
                 });
                 $('input[class*="-epcheck"]').each(function(){
-                        this.checked = false;
+                    this.checked = false;
                 });
             });
         }

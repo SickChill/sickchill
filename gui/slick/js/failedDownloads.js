@@ -37,8 +37,7 @@ $(document).ready(function(){
                 $(name+':visible').each(function() {
                     switch (found) {
                         case 2: return false;
-                        case 1:
-                        this.checked = lastCheck.checked;
+                        case 1: this.checked = lastCheck.checked;
                     }
 
                     if (this === check || this === lastCheck) { found++; }
