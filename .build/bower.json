@@ -24,6 +24,7 @@
     "qtip2": "~2.2.1",
     "tablesorter": "jquery.tablesorter#~2.24.5",
     "jquery-confirm": "~2.5.2",
-    "bootstrap-formhelpers": "~2.3.0"
+    "bootstrap-formhelpers": "~2.3.0",
+    "isotope": "~2.2.2"
   }
 }
