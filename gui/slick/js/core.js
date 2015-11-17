@@ -3,7 +3,7 @@
 var srRoot = getMeta('srRoot'),
     themeSpinner = getMeta('themeSpinner'),
     anonURL = getMeta('anonURL'),
-    topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />', // jshint ignore:line
+    topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />',
     loading = '<img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
 
 var configSuccess = function(){
@@ -142,7 +142,7 @@ var SICKRAGE = {
                 if (!$(this).prop('checked')) { $('#content_'+$(this).attr('id')).hide(); }
             });
 
-            $(".enabler").click(function() {
+            $(".enabler").on('click', function() {
                 if ($(this).prop('checked')){
                     $('#content_'+$(this).attr('id')).fadeIn("fast", "linear");
                 } else {
@@ -150,7 +150,7 @@ var SICKRAGE = {
                 }
             });
 
-            $(".viewIf").click(function() {
+            $(".viewIf").on('click', function() {
                 if ($(this).prop('checked')) {
                     $('.hide_if_'+$(this).attr('id')).css('display','none');
                     $('.show_if_'+$(this).attr('id')).fadeIn("fast", "linear");
@@ -160,7 +160,7 @@ var SICKRAGE = {
                 }
             });
 
-            $(".datePresets").click(function() {
+            $(".datePresets").on('click', function() {
                 var def = $('#date_presets').val();
                 if ($(this).prop('checked') && '%x' === def) {
                     def = '%a, %b %d, %Y';
@@ -198,11 +198,11 @@ var SICKRAGE = {
                 }
             });
 
-            $('#api_key').click(function(){
+            $('#api_key').on('click', function(){
                 $('#api_key').select();
             });
 
-            $("#generate_new_apikey").click(function(){
+            $("#generate_new_apikey").on('click', function(){
                 $.get(srRoot + '/config/general/generateApiKey', function(data){
                     if (data.error !== undefined) {
                         alert(data.error);
@@ -212,7 +212,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#branchCheckout').click(function() {
+            $('#branchCheckout').on('click', function() {
                 var url = srRoot + '/home/branchCheckout?branch=' + $("#branchVersion").val();
                 var checkDBversion = srRoot + "/home/getDBcompare";
                 $.getJSON(checkDBversion, function(data){
@@ -252,7 +252,7 @@ var SICKRAGE = {
             $('#log_dir').fileBrowser({ title: 'Select log file folder location' });
         },
         backupRestore: function(){
-            $('#Backup').click(function() {
+            $('#Backup').on('click', function() {
                 $("#Backup").attr("disabled", true);
                 $('#Backup-result').html(loading);
                 var backupDir = $("#backupDir").val();
@@ -262,7 +262,7 @@ var SICKRAGE = {
                         $("#Backup").attr("disabled", false);
                     });
             });
-            $('#Restore').click(function() {
+            $('#Restore').on('click', function() {
                 $("#Restore").attr("disabled", true);
                 $('#Restore-result').html(loading);
                 var backupFile = $("#backupFile").val();
@@ -281,7 +281,7 @@ var SICKRAGE = {
                 if (!$(this).prop('checked')) { $('#content_'+$(this).attr('id')).hide(); }
             });
 
-            $(".enabler").click(function() {
+            $(".enabler").on('click', function() {
                 if ($(this).prop('checked')){
                     $('#content_'+$(this).attr('id')).fadeIn("fast", "linear");
                 } else {
@@ -289,7 +289,7 @@ var SICKRAGE = {
                 }
             });
 
-            $(".viewIf").click(function() {
+            $(".viewIf").on('click', function() {
                 if ($(this).prop('checked')) {
                     $('.hide_if_'+$(this).attr('id')).css('display','none');
                     $('.show_if_'+$(this).attr('id')).fadeIn("fast", "linear");
@@ -299,7 +299,7 @@ var SICKRAGE = {
                 }
             });
 
-            $(".datePresets").click(function() {
+            $(".datePresets").on('click', function() {
                 var def = $('#date_presets').val();
                 if ($(this).prop('checked') && '%x' == def) { // jshint ignore:line
                     def = '%a, %b %d, %Y';
@@ -337,11 +337,11 @@ var SICKRAGE = {
                 }
             });
 
-            $('#api_key').click(function(){
+            $('#api_key').on('click', function(){
                 $('#api_key').select();
             });
 
-            $("#generate_new_apikey").click(function(){
+            $("#generate_new_apikey").on('click', function(){
                 $.get(srRoot + '/config/general/generateApiKey', function(data){
                     if (data.error !== undefined) {
                         alert(data.error);
@@ -351,7 +351,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#branchCheckout').click(function() {
+            $('#branchCheckout').on('click', function() {
                 var url = srRoot+'/home/branchCheckout?branch='+$("#branchVersion").val();
                 var checkDBversion = srRoot + "/home/getDBcompare";
                 $.getJSON(checkDBversion, function(data){
@@ -376,7 +376,7 @@ var SICKRAGE = {
         notifications: function() {
             $('#config-components').tabs();
 
-            $('#testGrowl').click(function () {
+            $('#testGrowl').on('click', function () {
                 var growl = {};
                 growl.host = $.trim($('#growl_host').val());
                 growl.password = $.trim($('#growl_password').val());
@@ -394,7 +394,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testProwl').click(function () {
+            $('#testProwl').on('click', function () {
                 var prowl = {};
                 prowl.api = $.trim($('#prowl_api').val());
                 prowl.priority = $('#prowl_priority').val();
@@ -412,7 +412,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testKODI').click(function () {
+            $('#testKODI').on('click', function () {
                 var kodi = {};
                 kodi.host = $.trim($('#kodi_host').val());
                 kodi.username = $.trim($('#kodi_username').val());
@@ -431,7 +431,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testPMC').click(function () {
+            $('#testPMC').on('click', function () {
                 var plex = {};
                 plex.client = {};
                 plex.client.host = $.trim($('#plex_host').val());
@@ -451,7 +451,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testPMS').click(function () {
+            $('#testPMS').on('click', function () {
                 var plex = {};
                 plex.server = {};
                 plex.server.host = $.trim($('#plex_server_host').val());
@@ -472,7 +472,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testEMBY').click(function () {
+            $('#testEMBY').on('click', function () {
                 var emby = {};
                 emby.host = $('#emby_host').val();
                 emby.apikey = $('#emby_apikey').val();
@@ -499,7 +499,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testBoxcar').click(function() {
+            $('#testBoxcar').on('click', function() {
                 var boxcar = {};
                 boxcar.username = $.trim($('#boxcar_username').val());
                 if (!boxcar.username) {
@@ -516,7 +516,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testBoxcar2').click(function () {
+            $('#testBoxcar2').on('click', function () {
                 var boxcar2 = {};
                 boxcar2.accesstoken = $.trim($('#boxcar2_accesstoken').val());
                 if (!boxcar2.accesstoken) {
@@ -533,7 +533,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testPushover').click(function () {
+            $('#testPushover').on('click', function () {
                 var pushover = {};
                 pushover.userkey = $('#pushover_userkey').val();
                 pushover.apikey = $('#pushover_apikey').val();
@@ -560,14 +560,14 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testLibnotify').click(function() {
+            $('#testLibnotify').on('click', function() {
                 $('#testLibnotify-result').html(loading);
                 $.get(srRoot + '/home/testLibnotify', function (data) {
                     $('#testLibnotify-result').html(data);
                 });
             });
 
-            $('#twitterStep1').click(function() {
+            $('#twitterStep1').on('click', function() {
                 $('#testTwitter-result').html(loading);
                 $.get(srRoot + '/home/twitterStep1', function (data) {
                     window.open(data);
@@ -576,7 +576,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#twitterStep2').click(function () {
+            $('#twitterStep2').on('click', function () {
                 var twitter = {};
                 twitter.key = $.trim($('#twitter_key').val());
                 if (!twitter.key) {
@@ -591,13 +591,13 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testTwitter').click(function() {
+            $('#testTwitter').on('click', function() {
                 $.get(srRoot + '/home/testTwitter', function(data) {
                     $('#testTwitter-result').html(data);
                 });
             });
 
-            $('#settingsNMJ').click(function() {
+            $('#settingsNMJ').on('click', function() {
                 var nmj = {};
                 if (!$('#nmj_host').val()) {
                     alert('Please fill in the Popcorn IP address');
@@ -630,7 +630,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testNMJ').click(function () {
+            $('#testNMJ').on('click', function () {
                 var nmj = {};
                 nmj.host = $.trim($('#nmj_host').val());
                 nmj.database = $('#nmj_database').val();
@@ -649,7 +649,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#settingsNMJv2').click(function() {
+            $('#settingsNMJv2').on('click', function() {
                 var nmjv2 = {};
                 if(!$('#nmjv2_host').val()) {
                     alert('Please fill in the Popcorn IP address');
@@ -684,7 +684,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testNMJv2').click(function () {
+            $('#testNMJv2').on('click', function () {
                 var nmjv2 = {};
                 nmjv2.host = $.trim($('#nmjv2_host').val());
                 if (!nmjv2.host) {
@@ -701,7 +701,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testFreeMobile').click(function () {
+            $('#testFreeMobile').on('click', function () {
                 var freemobile = {};
                 freemobile.id = $.trim($('#freemobile_id').val());
                 freemobile.apikey = $.trim($('#freemobile_apikey').val());
@@ -728,7 +728,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#TraktGetPin').click(function () {
+            $('#TraktGetPin').on('click', function () {
                 var trakt = {};
                 trakt.pinUrl = $('#trakt_pin_url').val();
                 window.open(trakt.pinUrl, "popUp", "toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=550");
@@ -748,7 +748,7 @@ var SICKRAGE = {
                 }
             });
 
-            $('#authTrakt').click(function() {
+            $('#authTrakt').on('click', function() {
                 var trakt = {};
                 trakt.pin = $('#trakt_pin').val();
                 if (trakt.pin.length !== 0) {
@@ -761,7 +761,7 @@ var SICKRAGE = {
                 }
             });
 
-            $('#testTrakt').click(function () {
+            $('#testTrakt').on('click', function () {
                 var trakt = {};
                 trakt.username = $.trim($('#trakt_username').val());
                 trakt.trendingBlacklist = $.trim($('#trakt_blacklist_name').val());
@@ -790,7 +790,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testEmail').click(function () {
+            $('#testEmail').on('click', function () {
                 var status, host, port, tls, from, user, pwd, err, to;
                 status = $('#testEmail-result');
                 status.html(loading);
@@ -821,13 +821,13 @@ var SICKRAGE = {
                         status.html('<p style="color: red;">You must provide a recipient email address!</p>');
                     } else {
                         $.get(srRoot + '/home/testEmail', {
-                            host: host,
-                            port: port,
-                            smtp_from: from, // jshint ignore:line
-                            use_tls: tls, // jshint ignore:line
-                            user: user,
-                            pwd: pwd,
-                            to: to
+                            'host': host,
+                            'port': port,
+                            'smtp_from': from, // @TODO we shouldn't be using any reserved words like "from"
+                            'use_tls': tls,
+                            'user': user,
+                            'pwd': pwd,
+                            'to': to
                         }, function (msg) {
                             $('#testEmail-result').html(msg);
                         });
@@ -835,7 +835,7 @@ var SICKRAGE = {
                 }
             });
 
-            $('#testNMA').click(function () {
+            $('#testNMA').on('click', function () {
                 var nma = {};
                 nma.api = $.trim($('#nma_api').val());
                 nma.priority = $('#nma_priority').val();
@@ -853,7 +853,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testPushalot').click(function () {
+            $('#testPushalot').on('click', function () {
                 var pushalot = {};
                 pushalot.authToken = $.trim($('#pushalot_authorizationtoken').val());
                 if (!pushalot.authToken) {
@@ -870,7 +870,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testPushbullet').click(function () {
+            $('#testPushbullet').on('click', function () {
                 var pushbullet = {};
                 pushbullet.api = $.trim($('#pushbullet_api').val());
                 if (!pushbullet.api) {
@@ -924,13 +924,13 @@ var SICKRAGE = {
                     }
                 });
 
-                $("#pushbullet_device_list").change(function(){
+                $("#pushbullet_device_list").on('change', function(){
                     $("#pushbullet_device").val($("#pushbullet_device_list").val());
                     $('#testPushbullet-result').html("Don't forget to save your new pushbullet settings.");
                 });
             }
 
-            $('#getPushbulletDevices').click(function(){
+            $('#getPushbulletDevices').on('click', function(){
                 getPushbulletDevices("Device list updated. Please choose a device to push to.");
             });
 
@@ -938,7 +938,7 @@ var SICKRAGE = {
             getPushbulletDevices();
 
             // @TODO Find out what notify_data actually does since it doesn't seem to be a real function
-            $('#email_show').change(function() {
+            $('#email_show').on('change', function() {
                 var key = parseInt($('#email_show').val(), 10);
                 $('#email_show_list').val(key >= 0 ? notify_data[key.toString()].list : ''); // jshint ignore:line
             });
@@ -967,7 +967,7 @@ var SICKRAGE = {
             // Load the per show notify lists everytime this page is loaded
             loadShowNotifyLists();
 
-            $('#email_show_save').click(function() {
+            $('#email_show_save').on('click', function() {
                 $.post(srRoot + "/home/saveShowNotifyList", {
                     show: $('#email_show').val(),
                     emails: $('#email_show_list').val()
@@ -978,7 +978,7 @@ var SICKRAGE = {
             });
 
             // show instructions for plex when enabled
-            $('#use_plex').click(function() {
+            $('#use_plex').on('click', function() {
                 if ($(this).is(':checked')) {
                     $('.plexinfo').removeClass('hide');
                 } else {
@@ -1020,8 +1020,8 @@ var SICKRAGE = {
                 example.animeType = $('input[name="naming_anime"]:checked').val();
 
                 $.get(srRoot + '/config/postProcessing/testNaming', {
-                    pattern: example.pattern,
-                    anime_type: 3 // jshint ignore:line
+                    'pattern': example.pattern,
+                    'anime_type': 3 // jshint ignore:line
                 }, function (data) {
                     if (data) {
                         $('#naming_example').text(data + '.ext');
@@ -1032,9 +1032,9 @@ var SICKRAGE = {
                 });
 
                 $.get(srRoot + '/config/postProcessing/testNaming', {
-                    pattern: example.pattern,
-                    multi: example.multi,
-                    anime_type: 3 // jshint ignore:line
+                    'pattern': example.pattern,
+                    'multi': example.multi,
+                    'anime_type': 3
                 }, function (data) {
                     if (data) {
                         $('#naming_example_multi').text(data + '.ext');
@@ -1045,9 +1045,9 @@ var SICKRAGE = {
                 });
 
                 $.get(srRoot + '/config/postProcessing/isNamingValid', {
-                    pattern: example.pattern,
-                    multi: example.multi,
-                    anime_type: example.animeType // jshint ignore:line
+                    'pattern': example.pattern,
+                    'multi': example.multi,
+                    'anime_type': example.animeType
                 }, function (data) {
                     if (data === "invalid") {
                         $('#naming_pattern').qtip('option', {
@@ -1078,8 +1078,8 @@ var SICKRAGE = {
                 var pattern = $('#naming_abd_pattern').val();
 
                 $.get(srRoot + '/config/postProcessing/testNaming', {
-                    pattern: pattern,
-                    abd: 'True'
+                    'pattern': pattern,
+                    'abd': 'True'
                 }, function (data) {
                     if (data) {
                         $('#naming_abd_example').text(data + '.ext');
@@ -1090,8 +1090,8 @@ var SICKRAGE = {
                 });
 
                 $.get(srRoot + '/config/postProcessing/isNamingValid', {
-                    pattern: pattern,
-                    abd: 'True'
+                    'pattern': pattern,
+                    'abd': 'True'
                 }, function (data) {
                     if (data === "invalid") {
                         $('#naming_abd_pattern').qtip('option', {
@@ -1122,8 +1122,8 @@ var SICKRAGE = {
                 var pattern = $('#naming_sports_pattern').val();
 
                 $.get(srRoot + '/config/postProcessing/testNaming', {
-                    pattern: pattern,
-                    sports: 'True'
+                    'pattern': pattern,
+                    'sports': 'True'
                 }, function (data) {
                     if (data) {
                         $('#naming_sports_example').text(data + '.ext');
@@ -1134,8 +1134,8 @@ var SICKRAGE = {
                 });
 
                 $.get(srRoot + '/config/postProcessing/isNamingValid', {
-                    pattern: pattern,
-                    sports: 'True'
+                    'pattern': pattern,
+                    'sports': 'True'
                 }, function (data) {
                     if (data === "invalid") {
                         $('#naming_sports_pattern').qtip('option', {
@@ -1169,8 +1169,8 @@ var SICKRAGE = {
                 example.animeType = $('input[name="naming_anime"]:checked').val();
 
                 $.get(srRoot + '/config/postProcessing/testNaming', {
-                    pattern: example.pattern,
-                    anime_type: example.animeType // jshint ignore:line
+                    'pattern': example.pattern,
+                    'anime_type': example.animeType
                 }, function (data) {
                     if (data) {
                         $('#naming_example_anime').text(data + '.ext');
@@ -1181,9 +1181,9 @@ var SICKRAGE = {
                 });
 
                 $.get(srRoot + '/config/postProcessing/testNaming', {
-                    pattern: example.pattern,
-                    multi: example.multi,
-                    anime_type: example.animeType // jshint ignore:line
+                    'pattern': example.pattern,
+                    'multi': example.multi,
+                    'anime_type': example.animeType
                 }, function (data) {
                     if (data) {
                         $('#naming_example_multi_anime').text(data + '.ext');
@@ -1194,9 +1194,9 @@ var SICKRAGE = {
                 });
 
                 $.get(srRoot + '/config/postProcessing/isNamingValid', {
-                    pattern: example.pattern,
-                    multi: example.multi,
-                    anime_type: example.animeType // jshint ignore:line
+                    'pattern': example.pattern,
+                    'multi': example.multi,
+                    'anime_type': example.animeType
                 }, function (data) {
                     if (data === "invalid") {
                         $('#naming_pattern').qtip('option', {
@@ -1307,38 +1307,38 @@ var SICKRAGE = {
                 setupAnimeNaming();
             });
 
-            $('#naming_multi_ep').change(fillExamples);
-            $('#naming_pattern').focusout(fillExamples);
-            $('#naming_pattern').keyup(function () {
+            $('#naming_multi_ep').on('change', fillExamples);
+            $('#naming_pattern').on('focusout', fillExamples);
+            $('#naming_pattern').on('keyup', function() {
                 typewatch(function () {
                     fillExamples();
                 }, 500);
             });
 
-            $('#naming_anime_multi_ep').change(fillAnimeExamples);
-            $('#naming_anime_pattern').focusout(fillAnimeExamples);
-            $('#naming_anime_pattern').keyup(function () {
+            $('#naming_anime_multi_ep').on('change', fillAnimeExamples);
+            $('#naming_anime_pattern').on('focusout', fillAnimeExamples);
+            $('#naming_anime_pattern').on('keyup', function() {
                 typewatch(function () {
                     fillAnimeExamples();
                 }, 500);
             });
 
-            $('#naming_abd_pattern').focusout(fillExamples);
-            $('#naming_abd_pattern').keyup(function () {
+            $('#naming_abd_pattern').on('focusout', fillExamples);
+            $('#naming_abd_pattern').on('keyup', function() {
                 typewatch(function () {
                     fillAbdExamples();
                 }, 500);
             });
 
-            $('#naming_sports_pattern').focusout(fillExamples);
-            $('#naming_sports_pattern').keyup(function () {
+            $('#naming_sports_pattern').on('focusout', fillExamples);
+            $('#naming_sports_pattern').on('keyup', function() {
                 typewatch(function () {
                     fillSportsExamples();
                 }, 500);
             });
 
-            $('#naming_anime_pattern').focusout(fillExamples);
-            $('#naming_anime_pattern').keyup(function () {
+            $('#naming_anime_pattern').on('focusout', fillExamples);
+            $('#naming_anime_pattern').on('keyup', function() {
                 typewatch(function () {
                     fillAnimeExamples();
                 }, 500);
@@ -1506,14 +1506,6 @@ var SICKRAGE = {
             $('#torrent_dir').fileBrowser({ title: 'Select .torrent black hole/watch location' });
             $('#torrent_path').fileBrowser({ title: 'Select .torrent download location' });
 
-            function toggleTorrentTitle(){
-                if ($('#use_torrents').prop('checked')){
-                    $('#no_torrents').show();
-                } else {
-                    $('#no_torrents').hide();
-                }
-            }
-
             $.fn.nzbMethodHandler = function() {
                 var selectedProvider = $('#nzb_method :selected').val(),
                     blackholeSettings = '#blackhole_settings',
@@ -1536,28 +1528,6 @@ var SICKRAGE = {
                     $(sabnzbdSettings).show();
                     $(testSABnzbd).show();
                     $(testSABnzbdResult).show();
-                }
-            };
-
-            $.fn.rtorrentScgi = function(){
-                var selectedProvider = $('#torrent_method :selected').val();
-
-                if (selectedProvider.toLowerCase() === 'rtorrent') {
-                    var hostname = $('#torrent_host').prop('value');
-                    var isMatch = hostname.substr(0, 7) === "scgi://";
-
-                    if (isMatch) {
-                        $('#torrent_username_option').hide();
-                        $('#torrent_username').prop('value', '');
-                        $('#torrent_password_option').hide();
-                        $('#torrent_password').prop('value', '');
-                        $('#torrent_auth_type_option').hide();
-                        $("#torrent_auth_type option[value=none]").attr('selected', 'selected');
-                    } else {
-                        $('#torrent_username_option').show();
-                        $('#torrent_password_option').show();
-                        $('#torrent_auth_type_option').show();
-                    }
                 }
             };
 
@@ -1684,31 +1654,53 @@ var SICKRAGE = {
                 $(optionPanel).show();
             };
 
-            $('#nzb_method').change($(this).nzbMethodHandler);
+            $('#torrent_host').on('input', function(){
+                if($('#torrent_method :selected').val().toLowerCase() === 'rtorrent') {
+                    var hostname = $('#torrent_host').val();
+                    var isMatch = hostname.substr(0, 7) === "scgi://";
+
+                    if(isMatch) {
+                        $('#torrent_username_option').hide();
+                        $('#torrent_username').prop('value', '');
+                        $('#torrent_password_option').hide();
+                        $('#torrent_password').prop('value', '');
+                        $('#torrent_auth_type_option').hide();
+                        $("#torrent_auth_type option[value=none]").attr('selected', 'selected');
+                    } else {
+                        $('#torrent_username_option').show();
+                        $('#torrent_password_option').show();
+                        $('#torrent_auth_type_option').show();
+                    }
+                }
+            });
+
+            $('#nzb_method').on('change', $(this).nzbMethodHandler);
 
             $(this).nzbMethodHandler();
 
-            $('#testSABnzbd').click(function(){
+            $('#testSABnzbd').on('click', function(){
+                var sab = {};
                 $('#testSABnzbd_result').html(loading);
-                var sab_host = $('#sab_host').val();
-                var sab_username = $('#sab_username').val();
-                var sab_password = $('#sab_password').val();
-                var sab_apiKey = $('#sab_apikey').val();
+                sab.host = $('#sab_host').val();
+                sab.username = $('#sab_username').val();
+                sab.password = $('#sab_password').val();
+                sab.apiKey = $('#sab_apikey').val();
 
-                $.get(srRoot + '/home/testSABnzbd', {'host': sab_host, 'username': sab_username, 'password': sab_password, 'apikey': sab_apiKey}, function(data){
+                $.get(srRoot + '/home/testSABnzbd', {
+                    'host': sab.host,
+                    'username': sab.username,
+                    'password': sab.password,
+                    'apikey': sab.apiKey
+                }, function(data){
                     $('#testSABnzbd_result').html(data);
                 });
             });
 
-            $('#torrent_method').change($(this).torrentMethodHandler);
+            $('#torrent_method').on('change', $.torrentMethodHandler);
 
-            $(this).torrentMethodHandler();
+            $.torrentMethodHandler();
 
-            $('#use_torrents').click(function(){
-                toggleTorrentTitle();
-            });
-
-            $('#test_torrent').click(function(){
+            $('#test_torrent').on('click', function(){
                 var torrent = {};
                 $('#test_torrent_result').html(loading);
                 torrent.method = $('#torrent_method :selected').val();
@@ -1725,8 +1717,6 @@ var SICKRAGE = {
                     $('#test_torrent_result').html(data);
                 });
             });
-
-            $('#torrent_host').change($(this).rtorrentScgi);
         },
         subtitles: function() {
             $.fn.showHideServices = function() {
@@ -1767,7 +1757,7 @@ var SICKRAGE = {
                 $("#service_order").val(finalArr.join(' '));
             };
 
-            $('#editAService').change(function(){
+            $('#editAService').on('change', function(){
                 $(this).showHideServices();
             });
 
@@ -1824,7 +1814,7 @@ var SICKRAGE = {
                 row += '</tr>';
 
                 return row;
-            }
+            };
         },
         index: function() {
             $("#massUpdateTable:has(tbody tr)").tablesorter({
@@ -1863,7 +1853,7 @@ var SICKRAGE = {
             });
         },
         backlogOverview: function() {
-            $('#pickShow').change(function(){
+            $('#pickShow').on('change', function(){
                 var id = $(this).val();
                 if (id) {
                     $('html,body').animate({scrollTop: $('#show-' + id).offset().top -25},'slow');
@@ -1876,7 +1866,7 @@ var SICKRAGE = {
                 sortList: [[0,0]],
                 headers: { 3: { sorter: false } }
             });
-            $('#limit').change(function(){
+            $('#limit').on('change', function(){
                 window.location.href = srRoot + '/manage/failedDownloads/?limit=' + $(this).val();
             });
         },
@@ -1884,12 +1874,12 @@ var SICKRAGE = {
             $('#location').fileBrowser({ title: 'Select Show Location' });
         },
         episodeStatuses: function() {
-            $('.allCheck').click(function(){
+            $('.allCheck').on('click', function(){
                 var indexerId = $(this).attr('id').split('-')[1];
                 $('.' + indexerId + '-epcheck').prop('checked', $(this).prop('checked'));
             });
 
-            $('.get_more_eps').click(function(){
+            $('.get_more_eps').on('click', function(){
                 var curIndexerId = $(this).attr('id');
                 var checked = $('#allCheck-' + curIndexerId).prop('checked');
                 var lastRow = $('tr#' + curIndexerId);
@@ -1898,12 +1888,11 @@ var SICKRAGE = {
 
                 if(!clicked) {
                     $.getJSON(srRoot+'/manage/showEpisodeStatuses',{
-                        indexer_id: curIndexerId, // jshint ignore:line
+                        'indexer_id': curIndexerId,
                         whichStatus: $('#oldStatus').val()
                     }, function (data) {
                         $.each(data, function(season,eps){
                             $.each(eps, function(episode, name) {
-                                //alert(season+'x'+episode+': '+name);
                                 lastRow.after($.makeEpisodeRow(curIndexerId, season, episode, name, checked));
                             });
                         });
@@ -1922,7 +1911,7 @@ var SICKRAGE = {
             });
 
             // selects all visible episode checkboxes.
-            $('.selectAllShows').click(function(){
+            $('.selectAllShows').on('click', function(){
                 $('.allCheck').each(function(){
                     this.checked = true;
                 });
@@ -1932,7 +1921,7 @@ var SICKRAGE = {
             });
 
             // clears all visible episode checkboxes and the season selectors
-            $('.unselectAllShows').click(function(){
+            $('.unselectAllShows').on('click', function(){
                 $('.allCheck').each(function(){
                     this.checked = false;
                 });
@@ -1942,12 +1931,12 @@ var SICKRAGE = {
             });
         },
         subtitleMissed: function() {
-            $('.allCheck').click(function(){
+            $('.allCheck').on('click', function(){
                 var indexerId = $(this).attr('id').split('-')[1];
                 $('.'+indexerId+'-epcheck').prop('checked', $(this).prop('checked'));
             });
 
-            $('.get_more_eps').click(function(){
+            $('.get_more_eps').on('click', function(){
                 var indexerId = $(this).attr('id');
                 var checked = $('#allCheck-'+indexerId).prop('checked');
                 var lastRow = $('tr#'+indexerId);
@@ -1956,7 +1945,7 @@ var SICKRAGE = {
 
                 if (!clicked) {
                     $.getJSON(srRoot + '/manage/showSubtitleMissed', {
-                        indexer_id: indexerId, // jshint ignore:line
+                        'indexer_id': indexerId,
                         whichSubs: $('#selectSubLang').val()
                     }, function(data) {
                         $.each(data, function(season, eps) {
@@ -1979,7 +1968,7 @@ var SICKRAGE = {
             });
 
             // selects all visible episode checkboxes.
-            $('.selectAllShows').click(function(){
+            $('.selectAllShows').on('click', function(){
                 $('.allCheck').each(function(){
                     this.checked = true;
                 });
@@ -1989,7 +1978,7 @@ var SICKRAGE = {
             });
 
             // clears all visible episode checkboxes and the season selectors
-            $('.unselectAllShows').click(function(){
+            $('.unselectAllShows').on('click', function(){
                 $('.allCheck').each(function(){
                     this.checked = false;
                 });
