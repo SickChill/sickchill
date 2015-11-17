@@ -213,7 +213,7 @@ $(document).ready(function () {
                     }
                     // applying the quality class
                     var rSearchTerm = /(\w+)\s\((.+?)\)/;
-                        htmlContent = data.result.replace(rSearchTerm,"$1"+' <span class="quality '+data.quality+'">'+"$2"+'</span>');
+                    htmlContent = data.result.replace(rSearchTerm,"$1"+' <span class="quality '+data.quality+'">'+"$2"+'</span>');
                     // update the status column if it exists
                     parent.siblings('.col-status').html(htmlContent);
                     // Only if the queuing was successful, disable the onClick event of the loading image

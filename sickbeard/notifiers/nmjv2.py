@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Jasper Lanting
 # Based on nmj.py by Nico Berlee: http://nico.berlee.nl/
 # URL: http://code.google.com/p/sickbeard/
@@ -30,7 +32,7 @@ except ImportError:
     import xml.etree.ElementTree as etree
 
 
-class NMJv2Notifier:
+class NMJv2Notifier(object):
     def notify_snatch(self, ep_name):
         return False
         # Not implemented: Start the scanner when snatched does not make any sense
@@ -53,7 +55,7 @@ class NMJv2Notifier:
         Retrieves the NMJv2 database location from Popcorn hour
         
         host: The hostname/IP of the Popcorn Hour server
-        dbloc: 'local' for PCH internal harddrive. 'network' for PCH network shares
+        dbloc: 'local' for PCH internal hard drive. 'network' for PCH network shares
         instance: Allows for selection of different DB in case of multiple databases
         
         Returns: True if the settings were retrieved successfully, False otherwise
@@ -66,7 +68,7 @@ class NMJv2Notifier:
             xml = parseString(response1)
             time.sleep(300.0 / 1000.0)
             for node in xml.getElementsByTagName('path'):
-                xmlTag = node.toxml();
+                xmlTag = node.toxml()
                 xmlData = xmlTag.replace('<path>', '').replace('</path>', '').replace('[=]', '')
                 url_db = "http://" + host + ":8008/metadata_database?arg0=check_database&arg1=" + xmlData
                 reqdb = urllib2.Request(url_db)
@@ -98,7 +100,7 @@ class NMJv2Notifier:
         Sends a NMJ update command to the specified machine
         
         host: The hostname/IP to send the request to (no port)
-        database: The database to send the requst to
+        database: The database to send the request to
         mount: The mount URL to use (optional)
         
         Returns: True if the request succeeded, False otherwise
@@ -107,9 +109,9 @@ class NMJv2Notifier:
         # if a host is provided then attempt to open a handle to that URL
         try:
             url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=&arg3=update_all"
-            logger.log(u"NMJ scan update command sent to host: %s" % (host), logger.DEBUG)
+            logger.log(u"NMJ scan update command sent to host: %s" % host, logger.DEBUG)
             url_updatedb = "http://" + host + ":8008/metadata_database?arg0=scanner_start&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=background&arg3="
-            logger.log(u"Try to mount network drive via url: %s" % (host), logger.DEBUG)
+            logger.log(u"Try to mount network drive via url: %s" % host, logger.DEBUG)
             prereq = urllib2.Request(url_scandir)
             req = urllib2.Request(url_updatedb)
             handle1 = urllib2.urlopen(prereq)
@@ -124,13 +126,13 @@ class NMJv2Notifier:
             et = etree.fromstring(response1)
             result1 = et.findtext("returnValue")
         except SyntaxError, e:
-            logger.log(u"Unable to parse XML returned from the Popcorn Hour: update_scandir, %s" % (e), logger.ERROR)
+            logger.log(u"Unable to parse XML returned from the Popcorn Hour: update_scandir, %s" % e, logger.ERROR)
             return False
         try:
             et = etree.fromstring(response2)
             result2 = et.findtext("returnValue")
         except SyntaxError, e:
-            logger.log(u"Unable to parse XML returned from the Popcorn Hour: scanner_start, %s" % (e), logger.ERROR)
+            logger.log(u"Unable to parse XML returned from the Popcorn Hour: scanner_start, %s" % e, logger.ERROR)
             return False
 
         # if the result was a number then consider that an error

@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Authors:
 # Derek Battams <derek@battams.ca>
 # Pedro Jose Pereira Vieito (@pvieito) <pvieito@gmail.com>
@@ -34,7 +36,7 @@ from sickbeard import db
 from sickrage.helper.encoding import ss
 
 
-class EmailNotifier:
+class EmailNotifier(object):
     def __init__(self):
         self.last_err = None
 
@@ -162,7 +164,6 @@ class EmailNotifier:
                 else:
                     logger.log(u"Download notification ERROR: %s" % self.last_err, logger.ERROR)
 
-
     def notify_git_update(self, new_version="??"):
         pass
 
@@ -171,7 +172,7 @@ class EmailNotifier:
 
         # Grab the global recipients
         for addr in sickbeard.EMAIL_LIST.split(','):
-            if (len(addr.strip()) > 0):
+            if len(addr.strip()) > 0:
                 addrs.append(addr)
 
         # Grab the recipients for the show
@@ -180,7 +181,7 @@ class EmailNotifier:
             for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (s,)):
                 if subs['notify_list']:
                     for addr in subs['notify_list'].split(','):
-                        if (len(addr.strip()) > 0):
+                        if len(addr.strip()) > 0:
                             addrs.append(addr)
 
         addrs = set(addrs)
@@ -200,10 +201,10 @@ class EmailNotifier:
         if smtpDebug:
             srv.set_debuglevel(1)
         try:
-            if (use_tls == '1' or use_tls == True) or (len(user) > 0 and len(pwd) > 0):
+            if (use_tls == '1' or use_tls is True) or (len(user) > 0 and len(pwd) > 0):
                 srv.ehlo()
                 logger.log(u'Sent initial EHLO command!', logger.DEBUG)
-            if use_tls == '1' or use_tls == True:
+            if use_tls == '1' or use_tls is True:
                 srv.starttls()
                 logger.log(u'Sent STARTTLS command!', logger.DEBUG)
             if len(user) > 0 and len(pwd) > 0:

@@ -921,8 +921,6 @@ class PostProcessor(object):
                 if self.is_proper:
                     self._log(
                         u"File exists and new file is smaller, new file is a proper/repack, marking it safe to replace")
-                    return True
-
                 else:
                     self._log(u"File exists and new file is smaller, marking it unsafe to replace")
                     return False
@@ -984,6 +982,10 @@ class PostProcessor(object):
                 if self.release_name:
                     self._log("Found release name " + self.release_name, logger.DEBUG)
                     cur_ep.release_name = self.release_name
+                elif self.file_name:
+                    # If we can't get the release name we expect, save the original release name instead
+                    self._log("Using original release name " + self.file_name, logger.DEBUG)
+                    cur_ep.release_name = self.file_name
                 else:
                     cur_ep.release_name = ""
 

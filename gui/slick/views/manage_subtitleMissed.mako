@@ -5,9 +5,6 @@
     import sickbeard
     from sickbeard import common
 %>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/manageSubtitleMissed.js?${sbPID}"></script>
-</%block>
 <%block name="content">
 <div id="content960">
 % if not header is UNDEFINED:

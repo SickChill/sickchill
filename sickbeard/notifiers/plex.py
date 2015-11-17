@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -33,7 +35,7 @@ except ImportError:
     import xml.etree.ElementTree as etree
 
 
-class PLEXNotifier:
+class PLEXNotifier(object):
 
     def _send_to_plex(self, command, host, username=None, password=None):
         """Handles communication to Plex hosts via HTTP API

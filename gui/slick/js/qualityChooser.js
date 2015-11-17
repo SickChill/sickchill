@@ -7,8 +7,8 @@ $(document).ready(function() {
             $('#customQuality').hide();
         }
 
-        $('#anyQualities option').each(function(i) {
-            var result = preset & $(this).val(); // I have no clue what the & does here
+        $('#anyQualities option').each(function() {
+            var result = preset & $(this).val(); // @TODO Find out what this does
             if (result > 0) {
                 $(this).attr('selected', 'selected');
             } else {
@@ -16,8 +16,8 @@ $(document).ready(function() {
             }
         });
 
-        $('#bestQualities option').each(function(i) {
-            var result = preset & ($(this).val() << 16); // I have no clue what the & does here
+        $('#bestQualities option').each(function() {
+            var result = preset & ($(this).val() << 16); // @TODO Find out what this does
             if (result > 0) {
                 $(this).attr('selected', 'selected');
             } else {

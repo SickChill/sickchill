@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Bill Nasty
 # URL: https://github.com/SickRage/SickRage
 #
@@ -47,7 +49,7 @@ class AlphaRatioProvider(generic.TorrentProvider):
 
         self.url = self.urls['base_url']
 
-        self.catagories = "&filter_cat[1]=1&filter_cat[2]=1&filter_cat[3]=1&filter_cat[4]=1&filter_cat[5]=1"
+        self.categories = "&filter_cat[1]=1&filter_cat[2]=1&filter_cat[3]=1&filter_cat[4]=1&filter_cat[5]=1"
 
         self.proper_strings = ['PROPER', 'REPACK']
 
@@ -86,8 +88,8 @@ class AlphaRatioProvider(generic.TorrentProvider):
                 if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (search_string, self.catagories)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                searchURL = self.urls['search'] % (search_string, self.categories)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
                 data = self.getURL(searchURL)
                 if not data:
@@ -145,6 +147,7 @@ class AlphaRatioProvider(generic.TorrentProvider):
 
     def seedRatio(self):
         return self.ratio
+
 
 class AlphaRatioCache(tvcache.TVCache):
 

@@ -2544,10 +2544,10 @@ class TVEpisode(object):
                                + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime))
                 else:
                     logger.log(str(self.show.indexerid) + u": Unable to modify date of " + os.path.basename(self.location)
-                               + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime), logger.ERROR)
-            except Exception:
+                               + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime), logger.WARNING)
+            except Exception as e:
                 logger.log(str(self.show.indexerid) + u": Failed to modify date of '" + os.path.basename(self.location)
-                           + "' to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime), logger.ERROR)
+                           + "' to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime) + ". Error: %s" % ex(e), logger.WARNING)
 
     def __getstate__(self):
         d = dict(self.__dict__)

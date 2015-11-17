@@ -605,8 +605,8 @@ name_parser_cache = NameParserCache()
 
 
 class InvalidNameException(Exception):
-    "The given release name is not valid"
+    """The given release name is not valid"""
 
 
 class InvalidShowException(Exception):
-    "The given show name is not valid"
+    """The given show name is not valid"""

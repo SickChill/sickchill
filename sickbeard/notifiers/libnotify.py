@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -24,10 +26,10 @@ from sickbeard import logger, common
 
 
 def diagnose():
-    '''
+    """
     Check the environment for reasons libnotify isn't working.  Return a
     user-readable message indicating possible issues.
-    '''
+    """
     try:
         from gi.repository import Notify  # @UnusedImport
     except ImportError:
@@ -57,7 +59,7 @@ def diagnose():
     return u"<p>Error: Unable to send notification."
 
 
-class LibnotifyNotifier:
+class LibnotifyNotifier(object):
     def __init__(self):
         self.Notify = None
         self.gobject = None
@@ -94,10 +96,10 @@ class LibnotifyNotifier:
         if sickbeard.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notify(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], ep_name + ": " + lang)
             
-    def notify_git_update(self, new_version = "??"):
+    def notify_git_update(self, new_version="??"):
         if sickbeard.USE_LIBNOTIFY:
-            update_text=common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-            title=common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
+            title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify(title, update_text + new_version)
 
     def test_notify(self):

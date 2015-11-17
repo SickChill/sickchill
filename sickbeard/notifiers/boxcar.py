@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Marvin Pinto <me@marvinp.ca>
 # Author: Dennis Lutter <lad1337@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
@@ -17,7 +19,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import urllib, urllib2
+import urllib
+import urllib2
 import time
 
 import sickbeard
@@ -29,7 +32,7 @@ from sickrage.helper.exceptions import ex
 API_URL = "https://boxcar.io/devices/providers/fWc4sgSmpcN6JujtBmR6/notifications"
 
 
-class BoxcarNotifier:
+class BoxcarNotifier(object):
     def test_notify(self, boxcar_username):
         return self._notifyBoxcar("This is a test notification from Sick Beard", "Test", boxcar_username, force=True)
 
@@ -52,7 +55,7 @@ class BoxcarNotifier:
         # if this is a subscription notification then act accordingly
         if subscribe:
             data = urllib.urlencode({'email': email})
-            curUrl = curUrl + "/subscribe"
+            curUrl += "/subscribe"
 
         # for normal requests we need all these parameters
         else:
@@ -62,7 +65,6 @@ class BoxcarNotifier:
                 'notification[message]': msg.encode('utf-8'),
                 'notification[from_remote_service_id]': int(time.time())
             })
-
 
         # send the request to boxcar
         try:
@@ -89,7 +91,7 @@ class BoxcarNotifier:
                 # If the user has already added your service, we'll return an HTTP status code of 401.
                 if subscribe:
                     logger.log(u"Already subscribed to service", logger.ERROR)
-                    # i dont know if this is true or false ... its neither but i also dont know how we got here in the first place
+                    # i don't know if this is true or false ... its neither but i also don't know how we got here in the first place
                     return False
 
                 # HTTP status 401 if the user doesn't have the service added
@@ -114,7 +116,6 @@ class BoxcarNotifier:
         if sickbeard.BOXCAR_NOTIFY_ONSNATCH:
             self._notifyBoxcar(title, ep_name)
 
-
     def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
         if sickbeard.BOXCAR_NOTIFY_ONDOWNLOAD:
             self._notifyBoxcar(title, ep_name)
@@ -123,10 +124,10 @@ class BoxcarNotifier:
         if sickbeard.BOXCAR_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyBoxcar(title, ep_name + ": " + lang)
 
-    def notify_git_update(self, new_version = "??"):
+    def notify_git_update(self, new_version="??"):
         if sickbeard.USE_BOXCAR:
-            update_text=notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
-            title=notifyStrings[NOTIFY_GIT_UPDATE]
+            update_text = notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
+            title = notifyStrings[NOTIFY_GIT_UPDATE]
             self._notifyBoxcar(title, update_text + new_version)
 
     def _notifyBoxcar(self, title, message, username=None, force=False):
