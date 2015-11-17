@@ -1811,14 +1811,16 @@ var SICKRAGE = {
                 row += '<td align="center"><input type="checkbox" class="' + indexerId + '-epcheck" name="' + indexerId + '-' + season + 'x' + episode + '"' + (checked ? ' checked' : '') + '></td>';
                 row += '<td style="width: 1%;">' + season + 'x' + episode + '</td>';
                 row += '<td>' + name + '</td>';
-                row += '<td style="float: right;">';
-                subtitles = subtitles.split(',');
-                for (var i in subtitles) {
-                    if (subtitles.hasOwnProperty(i)) {
-                        row += '<img src="/images/subtitles/flags/' + subtitles[i] + '.png" width="16" height="11" alt="' + subtitles[i] + '" />&nbsp;';
+                if(subtitles.length > 0){
+                    row += '<td style="float: right;">';
+                    subtitles = subtitles.split(',');
+                    for (var i in subtitles) {
+                        if (subtitles.hasOwnProperty(i)) {
+                            row += '<img src="/images/subtitles/flags/' + subtitles[i] + '.png" width="16" height="11" alt="' + subtitles[i] + '" />&nbsp;';
+                        }
                     }
+                    row += '</td>';
                 }
-                row += '</td>';
                 row += '</tr>';
 
                 return row;
@@ -1959,7 +1961,7 @@ var SICKRAGE = {
                     }, function(data) {
                         $.each(data, function(season, eps) {
                             $.each(eps, function(episode, data) {
-                                lastRow.after($.makeEpisodeRow(indexerId, season, episode, data.name, data.subtitles, checked));
+                                lastRow.after($.makeSubtitleRow(indexerId, season, episode, data.name, data.subtitles, checked));
                             });
                         });
                     });
