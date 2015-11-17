@@ -99,7 +99,7 @@ class LibertaliaProvider(generic.TorrentProvider):
                 with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                     resultsTable = html.find("table", {"class" : "torrent_table"})
                     if resultsTable:
-                        rows = resultsTable.findAll("tr", {"class" : re.compile("torrent_row(.*)?")})
+                        rows = resultsTable.findAll("tr", {"class" : re.compile("torrent_row.*")})
                         for row in rows:
 
                             # bypass first row because title only
