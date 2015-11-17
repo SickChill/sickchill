@@ -1036,14 +1036,11 @@
 
                         </div><!-- /naming_anime_different -->
 
-                        <div></div>
                         <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
-
                     </fieldset>
                 </div><!-- /component-group2 //-->
 
                 <div id="core-component-group3" class="component-group">
-
                     <div class="component-group-desc">
                         <h3>Metadata</h3>
                         <p>The data associated to the data. These are files associated to a TV show in the form of images and text that, when supported, will enhance the viewing experience.</p>
