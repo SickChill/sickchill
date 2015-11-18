@@ -83,6 +83,10 @@ class BLUETIGERSProvider(generic.TorrentProvider):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
+        
+        # check for auth
+        if not self._doLogin():
+            return results
 
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)

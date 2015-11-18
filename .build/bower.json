@@ -25,5 +25,8 @@
     "jquery-confirm": "~2.5.2",
     "bootstrap-formhelpers": "~2.3.0",
     "isotope": "~2.2.2"
+  },
+  "resolutions": {
+    "bootstrap": "~3.3.5"
   }
 }
