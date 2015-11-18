@@ -3954,7 +3954,7 @@ class ConfigPostProcessing(Config):
                            del_rar_contents=None, process_automatically=None,
                            no_delete=None, rename_episodes=None, airdate_episodes=None,
                            file_timestamp_timezone=None, unpack=None, move_associated_files=None,
-                           sync_files=None, postpone_if_sync_files=None, nfo_rename=None,
+                           sync_files=None, postpone_if_sync_files=None, allowed_extensions=None, nfo_rename=None,
                            tv_download_dir=None, naming_custom_abd=None, naming_anime=None,
                            create_missing_show_dirs=None, add_shows_wo_dir=None,
                            naming_abd_pattern=None, naming_strip_year=None,
@@ -3991,6 +3991,7 @@ class ConfigPostProcessing(Config):
         sickbeard.FILE_TIMESTAMP_TIMEZONE = file_timestamp_timezone
         sickbeard.MOVE_ASSOCIATED_FILES = config.checkbox_to_value(move_associated_files)
         sickbeard.SYNC_FILES = sync_files
+        sickbeard.ALLOWED_EXTENSIONS = allowed_extensions
         sickbeard.POSTPONE_IF_SYNC_FILES = config.checkbox_to_value(postpone_if_sync_files)
         sickbeard.NAMING_CUSTOM_ABD = config.checkbox_to_value(naming_custom_abd)
         sickbeard.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)

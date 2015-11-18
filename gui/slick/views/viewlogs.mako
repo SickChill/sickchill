@@ -4,8 +4,14 @@
     from sickbeard import classes
     from sickbeard.logger import reverseNames
 %>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/new/viewlogs.js"></script>
+<%block name="css">
+<style>
+pre {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+}
+</style>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:

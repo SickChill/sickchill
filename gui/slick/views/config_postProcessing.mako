@@ -133,6 +133,16 @@
                             </label>
                         </div>
                         <div class="field-pair">
+                            <label class="nocheck">
+                                <span class="component-title">Allowed associated files extensions</span>
+                                <input type="text" name="allowed_extensions" id="allowed_extensions" value="${sickbeard.ALLOWED_EXTENSIONS}" class="form-control input-sm input350" />
+                            </label>
+                            <label class="nocheck">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">comma seperated list of associated files extensions SickRage should move while Post Processing</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
                             <input type="checkbox" name="nfo_rename" id="nfo_rename" ${('', 'checked="checked"')[bool(sickbeard.NFO_RENAME)]}/>
                             <label for="nfo_rename">
                                 <span class="component-title">Rename .nfo file</span>
