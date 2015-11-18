@@ -42,9 +42,9 @@ class ThePirateBayProvider(generic.TorrentProvider):
         self.cache = ThePirateBayCache(self)
 
         self.urls = {
-            'base_url': 'https://pirateproxy.la/',
-            'search': 'https://pirateproxy.la/s/',
-            'rss': 'https://pirateproxy.la/tv/latest'
+            'base_url': 'https://pirateproxy.pl/',
+            'search': 'https://pirateproxy.pl/s/',
+            'rss': 'https://pirateproxy.pl/tv/latest'
         }
 
         self.url = self.urls['base_url']
@@ -52,7 +52,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         """
         205 = SD, 208 = HD, 200 = All Videos
-        https://thepiratebay.gd/s/?q=Game of Thrones&type=search&orderby=7&page=0&category=200
+        https://pirateproxy.pl/s/?q=Game of Thrones&type=search&orderby=7&page=0&category=200
         """
         self.search_params = {
             'q': '',
