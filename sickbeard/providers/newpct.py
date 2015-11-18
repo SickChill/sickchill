@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: CristianBB
 # Greetings to Mr. Pine-apple
 #
@@ -22,7 +21,7 @@
 
 import traceback
 import re
-import urllib
+from six.moves import urllib
 
 from sickbeard import helpers
 from sickbeard import logger
@@ -39,8 +38,10 @@ class newpctProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.onlyspasearch = None
         self.cache = newpctCache(self)
-        self.minseed = None
-        self.minleech = None
+
+        # Unsupported
+        # self.minseed = None
+        # self.minleech = None
 
         self.urls = {
             'base_url': 'http://www.newpct.com',
@@ -75,15 +76,14 @@ class newpctProvider(generic.TorrentProvider):
             'q': ''
         }
 
-   
+
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        lang_info = '' if not epObj or not epObj.show else epObj.show.lang
-
         # Only search if user conditions are true
+        lang_info = '' if not epObj or not epObj.show else epObj.show.lang
         if self.onlyspasearch and lang_info != 'es':
             logger.log(u"Show info is not spanish, skipping provider search", logger.DEBUG)
             return results
@@ -94,10 +94,10 @@ class newpctProvider(generic.TorrentProvider):
             for search_string in search_strings[mode]:
                 if mode is not 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
-                    
+
                 self.search_params.update({'q': search_string.strip()})
 
-                logger.log(u"Search URL: %s" % self.urls['search'] + '?' + urllib.urlencode(self.search_params), logger.DEBUG)
+                logger.log(u"Search URL: %s" % self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params), logger.DEBUG)
                 data = self.getURL(self.urls['search'], post_data=self.search_params, timeout=30)
                 if not data:
                     continue
@@ -106,56 +106,56 @@ class newpctProvider(generic.TorrentProvider):
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                         torrent_tbody = html.find('tbody')
 
-                        if len(torrent_tbody) < 1:
+                        if not len(torrent_tbody):
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                         torrent_table = torrent_tbody.findAll('tr')
-                        #last item isn't a result
-                        torrent_table.pop()
-                        
-                        for row in torrent_table:
+                        if not len(torrent_table):
+                            logger.log(u"Torrent table does not have any rows", logger.DEBUG)
+                            continue
+
+                        for row in torrent_table[:-1]:
                             try:
                                 torrent_size = row.findAll('td')[2]
                                 torrent_row = row.findAll('a')[0]
 
-                                download_url = torrent_row.get('href')
+                                download_url = torrent_row.get('href', '')
                                 size = self._convertSize(torrent_size.text)
-                                title_raw = torrent_row.get('title')
-                                title = self._processTitle(title_raw)
-                                    
-                                # FIXME
+                                title = self._processTitle(torrent_row.get('title', ''))
+
+                                # FIXME: Provider does not provide seeders/leechers
                                 seeders = 1
                                 leechers = 0
-                                                                            
+
                             except (AttributeError, TypeError):
                                 continue
-                                
+
                             if not all([title, download_url]):
                                 continue
-                            
-                            # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
-                                if mode is not 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                continue
+
+                            # Filter unseeded torrent (Unsupported)
+                            # if seeders < self.minseed or leechers < self.minleech:
+                            #     if mode is not 'RSS':
+                            #         logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            #     continue
 
                             item = title, download_url, size, seeders, leechers
                             if mode is not 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
-                                
+
                             items[mode].append(item)
-                                                            
+
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
-            # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-            
+            # For each search mode sort all the items by seeders if available (Unsupported)
+            # items[mode].sort(key=lambda tup: tup[3], reverse=True)
+
             results += items[mode]
 
         return results
-    
+
     def downloadResult(self, result):
         """
         Save the result to disk.
@@ -187,7 +187,7 @@ class newpctProvider(generic.TorrentProvider):
 
         if len(urls):
             logger.log(u"Failed to download any results", logger.WARNING)
-            
+
         return False
 
     @staticmethod
@@ -204,8 +204,9 @@ class newpctProvider(generic.TorrentProvider):
             size = size * 1024**4
         return int(size)
 
-    
-    def _processTitle(self, title):
+
+    @staticmethod
+    def _processTitle(title):
 
         # Remove "Mas informacion sobre " literal from title
         title = title[22:]
@@ -227,16 +228,19 @@ class newpctProvider(generic.TorrentProvider):
         title = title.replace('[BluRay MicroHD]', '[1080p BlueRay x264]')
         title = title.replace('[MicroHD 1080p]', '[1080p BlueRay x264]')
 
-        return title
-    
-    
+        return title.strip()
+
+
 class newpctCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
         tvcache.TVCache.__init__(self, provider_obj)
 
-        self.minTime = 30
+        # set this 0 to suppress log line, since we aren't updating it anyways
+        self.minTime = 0
 
+    def _getRSSData(self):
+        return {'entries': []}
 
 
 provider = newpctProvider()
