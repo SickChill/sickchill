@@ -97,12 +97,13 @@ class BTDiggCache(tvcache.TVCache):
 
         tvcache.TVCache.__init__(self, provider_obj)
 
-        # set this 0 to suppress log line, since we aren't updating it anyways
-        self.minTime = 0
+        # Cache results for a hour ,since BTDigg takes some time to crawl
+        self.minTime = 60
 
     def _getRSSData(self):
-        # no rss for btdigg, can't search with empty string
-        # newest results are always > 1 day since added anyways
-        return {'entries': {}}
+
+        # Use x264 for RSS search since most results will use that codec and since the site doesnt have latest results search
+        search_params = {'RSS': ['x264']}
+        return {'entries': self.provider._doSearch(search_params)}
 
 provider = BTDIGGProvider()
