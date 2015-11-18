@@ -143,8 +143,7 @@ class RarbgProvider(generic.TorrentProvider):
                 if self.minseed:
                     searchURL += self.urlOptions['seeders'].format(min_seeders=int(self.minseed))
 
-                if self.sorting:
-                    searchURL += self.urlOptions['sorting'].format(sorting=self.sorting)
+                searchURL += self.urlOptions['sorting'].format(sorting=(self.sorting if self.sorting else 'seeders', 'last')[mode is 'RSS'])
 
                 if self.ranked:
                     searchURL += self.urlOptions['ranked'].format(ranked=int(self.ranked))
