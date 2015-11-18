@@ -67,7 +67,7 @@
     <tr><td class="infoTableHeader"><i class="icon16-WiKi"></i> WiKi</td><td class="infoTableCell"><a href="${anon_url('https://github.com/SickRage/sickrage-issues/wiki')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://github.com/SickRage/sickrage-issues/wiki</a></td></tr>
     <tr><td class="infoTableHeader"><i class="icon16-web"></i> Forums</td><td class="infoTableCell"><a href="${anon_url('http://sickrage.tv/forums/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">http://sickrage.tv/forums/</a></td></tr>
     <tr><td class="infoTableHeader"><i class="icon16-github"></i> Source</td><td class="infoTableCell"><a href="${anon_url('https://github.com/SickRage/SickRage/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://github.com/SickRage/SickRage/</a></td></tr>
-    <tr><td class="infoTableHeader"><i class="icon16-mirc"></i> IRChat</td><td class="infoTableCell"><a href="irc://irc.freenode.net/#sickrage" rel="noreferrer"><i>#sickrage</i> on <i>irc.freenode.net</i></a></td></tr>
+    <tr><td class="infoTableHeader"><i class="icon16-mirc"></i> IRChat</td><td class="infoTableCell"><a href="irc://irc.freenode.net/#sickrage-issues" rel="noreferrer"><i>#sickrage-issues</i> on <i>irc.freenode.net</i></a></td></tr>
 </table>
 </div>
 </%block>

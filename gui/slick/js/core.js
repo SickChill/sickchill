@@ -3,7 +3,7 @@
 var srRoot = getMeta('srRoot'),
     themeSpinner = getMeta('themeSpinner'),
     anonURL = getMeta('anonURL'),
-    topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />',
+    topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />', // jshint ignore:line
     loading = '<img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
 
 var configSuccess = function(){
@@ -1766,6 +1766,478 @@ var SICKRAGE = {
             console.log('This function need to be filled with ConfigProviders.js but can\'t be as we\'ve got scope issues currently.');
         }
     },
+    home: {
+        init: function(){
+
+        },
+        index: function(){
+            // Resets the tables sorting, needed as we only use a single call for both tables in tablesorter
+            $('.resetsorting').on('click', function(){
+                $('table').trigger('filterReset');
+            });
+
+            // This needs to be refined to work a little faster.
+            $('.progressbar').each(function(){
+                var percentage = $(this).data('progress-percentage');
+                var classToAdd = percentage === 100 ? 100 : percentage > 80 ? 80 : percentage > 60 ? 60 : percentage > 40 ? 40 : 20;
+                $(this).progressbar({ value:  percentage });
+                if($(this).data('progress-text')) {
+                    $(this).append('<div class="progressbarText" title="' + $(this).data('progress-tip') + '">' + $(this).data('progress-text') + '</div>');
+                }
+                $(this).find('.ui-progressbar-value').addClass('progress-' + classToAdd);
+            });
+
+            $("img#network").on('error', function(){
+                $(this).parent().text($(this).attr('alt'));
+                $(this).remove();
+            });
+
+            $("#showListTableShows:has(tbody tr), #showListTableAnime:has(tbody tr)").tablesorter({
+                sortList: [[7,1],[2,0]],
+                textExtraction: {
+                    0: function(node) { return $(node).find('time').attr('datetime'); },
+                    1: function(node) { return $(node).find('time').attr('datetime'); },
+                    3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
+                    4: function(node) { return $(node).find("span").text().toLowerCase(); },
+                    5: function(node) { return $(node).find("span:first").text(); },
+                    6: function(node) { return $(node).find("img").attr("alt"); }
+                },
+                widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
+                headers: (function(){
+                    if(metaToBool('sickbeard.FILTER_ROW')){
+                        return {
+                            0: { sorter: 'realISODate' },
+                            1: { sorter: 'realISODate' },
+                            2: { sorter: 'loadingNames' },
+                            4: { sorter: 'quality' },
+                            5: { sorter: 'eps' },
+                            6: { filter : 'parsed' }
+                        };
+                    } else {
+                        return {
+                            0: { sorter: 'realISODate' },
+                            1: { sorter: 'realISODate' },
+                            2: { sorter: 'loadingNames' },
+                            4: { sorter: 'quality' },
+                            5: { sorter: 'eps' }
+                        };
+                    }
+                }()),
+                widgetOptions: (function(){
+                    if(metaToBool('sickbeard.FILTER_ROW')){
+                        return {
+                            filter_columnFilters: true, // jshint ignore:line
+                            filter_hideFilters : true, // jshint ignore:line
+                            filter_saveFilters : true, // jshint ignore:line
+                            filter_functions : { // jshint ignore:line
+                                5:function(e, n, f) {
+                                    var test = false;
+                                    var pct = Math.floor((n % 1) * 1000);
+                                    if (f === '') {
+                                        test = true;
+                                    } else {
+                                        var result = f.match(/(<|<=|>=|>)\s(\d+)/i);
+                                        if (result) {
+                                            if (result[1] === "<") {
+                                                if (pct < parseInt(result[2])) {
+                                                    test = true;
+                                                }
+                                            } else if (result[1] === "<=") {
+                                                if (pct <= parseInt(result[2])) {
+                                                    test = true;
+                                                }
+                                            } else if (result[1] === ">=") {
+                                                if (pct >= parseInt(result[2])) {
+                                                    test = true;
+                                                }
+                                            } else if (result[1] === ">") {
+                                                if (pct > parseInt(result[2])) {
+                                                    test = true;
+                                                }
+                                            }
+                                        }
+
+                                        result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
+                                        if (result) {
+                                            if ((result[2] === "-") || (result[2] === "to")) {
+                                                if ((pct >= parseInt(result[1])) && (pct <= parseInt(result[3]))) {
+                                                    test = true;
+                                                }
+                                            }
+                                        }
+
+                                        result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
+                                        if (result) {
+                                            if ((result[1] === "=") || (result[3] === "=")) {
+                                                if (parseInt(result[2]) === pct) {
+                                                    test = true;
+                                                }
+                                            }
+                                        }
+
+                                        if (!isNaN(parseFloat(f)) && isFinite(f)) {
+                                            if (parseInt(f) === pct) {
+                                                test = true;
+                                            }
+                                        }
+                                    }
+                                    return test;
+                                }
+                            },
+                            'columnSelector_mediaquery': false
+                        };
+                    } else {
+                        return {
+                            'filter_columnFilters': false
+                        };
+                    }
+                }()),
+                sortStable: true,
+                sortAppend: [[2,0]]
+            });
+
+            if ($("#showListTableShows").find("tbody").find("tr").size() > 0){
+                $.tablesorter.filter.bindSearch( "#showListTableShows", $('.search') );
+            }
+
+            if(metaToBool('sickbeard.ANIME_SPLIT_HOME')){
+                if($("#showListTableAnime").find("tbody").find("tr").size() > 0){
+                    $.tablesorter.filter.bindSearch( "#showListTableAnime", $('.search') );
+                }
+            }
+
+            $.each([$('#container'), $('#container-anime')], function (){
+                this.isotope({
+                    itemSelector: '.show',
+                    sortBy : getMeta('sickbeard.POSTER_SORTBY'),
+                    sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
+                    layoutMode: 'masonry',
+                    masonry: {
+                        columnWidth: 13,
+                        isFitWidth: true
+                    },
+                    getSortData: {
+                        name: function(itemElem){
+                            var name = $(itemElem).attr('data-name');
+                            return (metaToBool('sickbeard.SORT_ARTICLE') ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
+                        },
+                        network: '[data-network]',
+                        date: function(itemElem){
+                            var date = $(itemElem).attr('data-date');
+                            return date.length && parseInt(date, 10) || Number.POSITIVE_INFINITY;
+                        },
+                        progress: function(itemElem){
+                            var progress = $(itemElem).attr('data-progress');
+                            return progress.length && parseInt(progress, 10) || Number.NEGATIVE_INFINITY;
+                        }
+                    }
+                });
+            });
+
+            $('#postersort').on('change', function(){
+                $('#container, #container-anime').isotope({sortBy: $(this).val()});
+                $.get($(this).find('option[value=' + $(this).val() +']').attr('data-sort'));
+            });
+
+            $('#postersortdirection').on('change', function(){
+                $('#container, #container-anime').isotope({sortAscending: ($(this).val() === 'true')});
+                $.get($(this).find('option[value=' + $(this).val() +']').attr('data-sort'));
+            });
+
+            $('#popover').popover({
+                placement: 'bottom',
+                html: true, // required if content has HTML
+                content: '<div id="popover-target"></div>'
+            }).on('shown.bs.popover', function () { // bootstrap popover event triggered when the popover opens
+                // call this function to copy the column selection code into the popover
+                $.tablesorter.columnSelector.attachTo( $('#showListTableShows'), '#popover-target');
+                if(metaToBool('sickbeard.ANIME_SPLIT_HOME')){
+                    $.tablesorter.columnSelector.attachTo( $('#showListTableAnime'), '#popover-target');
+                }
+
+            });
+        },
+        displayShow: function() {
+            $('#srRoot').ajaxEpSearch({'colorRow': true});
+
+            $('#srRoot').ajaxEpSubtitlesSearch();
+
+            $('#seasonJump').on('change', function(){
+                var id = $('#seasonJump option:selected').val();
+                if (id && id !== 'jump') {
+                    var season = $('#seasonJump option:selected').data('season');
+                    $('html,body').animate({scrollTop: $('[name ="' + id.substring(1) + '"]').offset().top - 50}, 'slow');
+                    $('#collapseSeason-' + season).collapse('show');
+                    location.hash = id;
+                }
+                $(this).val('jump');
+            });
+
+            $("#prevShow").on('click', function(){
+                $('#pickShow option:selected').prev('option').prop('selected', 'selected');
+                $("#pickShow").change();
+            });
+
+            $("#nextShow").on('click', function(){
+                $('#pickShow option:selected').next('option').prop('selected', 'selected');
+                $("#pickShow").change();
+            });
+
+            $('#changeStatus').on('click', function(){
+                var srRoot = $('#srRoot').val();
+                var epArr = [];
+
+                $('.epCheck').each(function () {
+                    if (this.checked === true) {
+                        epArr.push($(this).attr('id'));
+                    }
+                });
+
+                if (epArr.length === 0) { return false; }
+
+                window.location.href = srRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
+            });
+
+            $('.seasonCheck').on('click', function(){
+                var seasCheck = this;
+                var seasNo = $(seasCheck).attr('id');
+
+                $('#collapseSeason-' + seasNo).collapse('show');
+                $('.epCheck:visible').each(function () {
+                    var epParts = $(this).attr('id').split('x');
+                    if (epParts[0] === seasNo) {
+                        this.checked = seasCheck.checked;
+                    }
+                });
+            });
+
+            var lastCheck = null;
+            $('.epCheck').on('click', function (event) {
+
+                if (!lastCheck || !event.shiftKey) {
+                    lastCheck = this;
+                    return;
+                }
+
+                var check = this;
+                var found = 0;
+
+                $('.epCheck').each(function() {
+                    switch (found) {
+                        case 2:
+                            return false;
+                        case 1:
+                            this.checked = lastCheck.checked;
+                    }
+
+                    if (this === check || this === lastCheck) {
+                        found++;
+                    }
+                });
+            });
+
+            // selects all visible episode checkboxes.
+            $('.seriesCheck').on('click', function () {
+                $('.epCheck:visible').each(function () {
+                    this.checked = true;
+                });
+                $('.seasonCheck:visible').each(function () {
+                    this.checked = true;
+                });
+            });
+
+            // clears all visible episode checkboxes and the season selectors
+            $('.clearAll').on('click', function () {
+                $('.epCheck:visible').each(function () {
+                    this.checked = false;
+                });
+                $('.seasonCheck:visible').each(function () {
+                    this.checked = false;
+                });
+            });
+
+            // handle the show selection dropbox
+            $('#pickShow').on('change', function () {
+                var srRoot = $('#srRoot').val();
+                var val = $(this).val();
+                if (val === 0) {
+                    return;
+                }
+                window.location.href = srRoot + '/home/displayShow?show=' + val;
+            });
+
+            // show/hide different types of rows when the checkboxes are changed
+            $("#checkboxControls input").change(function () {
+                var whichClass = $(this).attr('id');
+                $(this).showHideRows(whichClass);
+            });
+
+            // initially show/hide all the rows according to the checkboxes
+            $("#checkboxControls input").each(function() {
+                var status = $(this).prop('checked');
+                $("tr." + $(this).attr('id')).each(function() {
+                    if(status) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+
+            $.fn.showHideRows = function(whichClass) {
+                var status = $('#checkboxControls > input, #' + whichClass).prop('checked');
+                $("tr." + whichClass).each(function() {
+                    if (status) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                // hide season headers with no episodes under them
+                $('tr.seasonheader').each(function () {
+                    var numRows = 0;
+                    var seasonNo = $(this).attr('id');
+                    $('tr.' + seasonNo + ' :visible').each(function () {
+                        numRows++;
+                    });
+                    if (numRows === 0) {
+                        $(this).hide();
+                        $('#' + seasonNo + '-cols').hide();
+                    } else {
+                        $(this).show();
+                        $('#' + seasonNo + '-cols').show();
+                    }
+                });
+            };
+
+            function setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode) {
+                var srRoot = $('#srRoot').val();
+                var showId = $('#showID').val();
+                var indexer = $('#indexer').val();
+
+                if (sceneSeason === '') { sceneSeason = null; }
+                if (sceneEpisode === '') { sceneEpisode = null; }
+
+                $.getJSON(srRoot + '/home/setSceneNumbering',{
+                    'show': showId,
+                    'indexer': indexer,
+                    'forSeason': forSeason,
+                    'forEpisode': forEpisode,
+                    'sceneSeason': sceneSeason,
+                    'sceneEpisode': sceneEpisode
+                }, function(data) {
+                    //	Set the values we get back
+                    if (data.sceneSeason === null || data.sceneEpisode === null) {
+                        $('#sceneSeasonXEpisode_' + showId + '_' + forSeason + '_' + forEpisode).val('');
+                    } else {
+                        $('#sceneSeasonXEpisode_' + showId + '_' + forSeason + '_' + forEpisode).val(data.sceneSeason + 'x' + data.sceneEpisode);
+                    }
+                    if (!data.success) {
+                        if (data.errorMessage) {
+                            alert(data.errorMessage);
+                        } else {
+                            alert('Update failed.');
+                        }
+                    }
+                });
+            }
+
+            function setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute) {
+                var srRoot = $('#srRoot').val();
+                var showId = $('#showID').val();
+                var indexer = $('#indexer').val();
+
+                if (sceneAbsolute === '') { sceneAbsolute = null; }
+
+                $.getJSON(srRoot + '/home/setSceneNumbering', {
+                    'show': showId,
+                    'indexer': indexer,
+                    'forAbsolute': forAbsolute,
+                    'sceneAbsolute': sceneAbsolute
+                },
+                function(data) {
+                    //	Set the values we get back
+                    if (data.sceneAbsolute === null) {
+                        $('#sceneAbsolute_' + showId + '_' + forAbsolute).val('');
+                    } else {
+                        $('#sceneAbsolute_' + showId + '_' + forAbsolute).val(data.sceneAbsolute);
+                    }
+                    if (!data.success) {
+                        if (data.errorMessage) {
+                            alert(data.errorMessage);
+                        } else {
+                            alert('Update failed.');
+                        }
+                    }
+                });
+            }
+
+            $('.sceneSeasonXEpisode').on('change', function() {
+                //	Strip non-numeric characters
+                $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
+                var forSeason = $(this).attr('data-for-season');
+                var forEpisode = $(this).attr('data-for-episode');
+                var m = $(this).val().match(/^(\d+)x(\d+)$/i);
+                var sceneSeason = null, sceneEpisode = null;
+                if (m) {
+                    sceneSeason = m[1];
+                    sceneEpisode = m[2];
+                }
+                setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode);
+            });
+
+            $('.sceneAbsolute').on('change', function() {
+                //	Strip non-numeric characters
+                $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
+                var forAbsolute = $(this).attr('data-for-absolute');
+
+                var m = $(this).val().match(/^(\d{1,3})$/i);
+                var sceneAbsolute = null;
+                if (m) {
+                    sceneAbsolute = m[1];
+                }
+                setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute);
+            });
+
+            $('.addQTip').each(function () {
+                $(this).css({'cursor':'help', 'text-shadow':'0px 0px 0.5px #666'});
+                $(this).qtip({
+                    show: {solo:true},
+                    position: {viewport:$(window), my:'left center', adjust:{ y: -10, x: 2 }},
+                    style: {tip:{corner:true, method:'polygon'}, classes:'qtip-rounded qtip-shadow ui-tooltip-sb'}
+                });
+            });
+            $.fn.generateStars = function() {
+                return this.each(function(i,e){$(e).html($('<span/>').width($(e).text()*12));});
+            };
+
+            $('.imdbstars').generateStars();
+
+            $("#showTable, #animeTable").tablesorter({
+                widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
+                widgetOptions : {
+                    columnSelector_saveColumns: true, // jshint ignore:line
+                    columnSelector_layout : '<br><label><input type="checkbox">{name}</label>', // jshint ignore:line
+                    columnSelector_mediaquery: false, // jshint ignore:line
+                    columnSelector_cssChecked : 'checked' // jshint ignore:line
+                }
+            });
+
+            $('#popover').popover({
+                placement: 'bottom',
+                html: true, // required if content has HTML
+                content: '<div id="popover-target"></div>'
+            })
+            // bootstrap popover event triggered when the popover opens
+            .on('shown.bs.popover', function (){
+                $.tablesorter.columnSelector.attachTo($("#showTable, #animeTable"), '#popover-target');
+            });
+        },
+        postProcess: function() {
+            $('#episodeDir').fileBrowser({ title: 'Select Unprocessed Episode Folder', key: 'postprocessPath' });
+        }
+    },
     manage: {
         init: function() {
             $.makeEpisodeRow = function(indexerId, season, episode, name, checked) {
@@ -1853,6 +2325,53 @@ var SICKRAGE = {
             $('#limit').on('change', function(){
                 window.location.href = srRoot + '/manage/failedDownloads/?limit=' + $(this).val();
             });
+
+            $('#submitMassRemove').on('click', function(){
+                var removeArr = [];
+
+                $('.removeCheck').each(function() {
+                    if (this.checked === true) {
+                        removeArr.push($(this).attr('id').split('-')[1]);
+                    }
+                });
+
+                if (removeArr.length === 0) { return false; }
+
+                window.location.href = srRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|');
+            });
+
+            $('.bulkCheck').on('click', function(){
+                var bulkCheck = this;
+                var whichBulkCheck = $(bulkCheck).attr('id');
+
+                $('.'+whichBulkCheck+':visible').each(function(){
+                    this.checked = bulkCheck.checked;
+                });
+            });
+
+            if($('.removeCheck').length){
+                $('.removeCheck').each(function(name) {
+                    var lastCheck = null;
+                    $(name).click(function(event) {
+                        if(!lastCheck || !event.shiftKey) {
+                            lastCheck = this;
+                            return;
+                        }
+
+                        var check = this;
+                        var found = 0;
+
+                        $(name+':visible').each(function() {
+                            switch (found) {
+                                case 2: return false;
+                                case 1: this.checked = lastCheck.checked;
+                            }
+
+                            if (this === check || this === lastCheck) { found++; }
+                        });
+                    });
+                });
+            }
         },
         massEdit: function() {
             $('#location').fileBrowser({ title: 'Select Show Location' });
@@ -1969,6 +2488,51 @@ var SICKRAGE = {
                 $('input[class*="-epcheck"]').each(function(){
                     this.checked = false;
                 });
+            });
+        }
+    },
+    history: {
+        init: function() {
+
+        },
+        index: function() {
+            $("#historyTable:has(tbody tr)").tablesorter({
+                widgets: ['zebra', 'filter'],
+                sortList: [[0,1]],
+                textExtraction: (function(){
+                    if(isMeta('sickbeard.HISTORY_LAYOUT', ['detailed'])){
+                        return {
+                            0: function(node) { return $(node).find('time').attr('datetime'); },
+                            4: function(node) { return $(node).find("span").text().toLowerCase(); }
+                        };
+                    } else {
+                        return {
+                            0: function(node) { return $(node).find('time').attr('datetime'); },
+                            1: function(node) { return $(node).find("span").text().toLowerCase(); },
+                            2: function(node) { return $(node).attr("provider").toLowerCase(); },
+                            5: function(node) { return $(node).attr("quality").toLowerCase(); }
+                        };
+                    }
+                }()),
+                headers: (function(){
+                    if(isMeta('sickbeard.HISTORY_LAYOUT', ['detailed'])){
+                        return {
+                            0: { sorter: 'realISODate' },
+                            4: { sorter: 'quality' }
+                        };
+                    } else {
+                        return {
+                            0: { sorter: 'realISODate' },
+                            4: { sorter: false },
+                            5: { sorter: 'quality' }
+                        };
+                    }
+                }())
+            });
+
+            $('#history_limit').on('change', function() {
+                var url = srRoot + '/history/?limit=' + $(this).val();
+                window.location.href = url;
             });
         }
     }
