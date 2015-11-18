@@ -2177,7 +2177,7 @@ class HomePostProcess(Home):
 
     def index(self):
         t = PageTemplate(rh=self, filename="home_postprocess.mako")
-        return t.render(title='Post Processing', header='Post Processing', topmenu='home', controller="postprocess", action="index")
+        return t.render(title='Post Processing', header='Post Processing', topmenu='home', controller="home", action="postProcess")
 
     def processEpisode(self, proc_dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
                        is_priority=None, delete_on="0", failed="0", proc_type="auto", *args, **kwargs):
@@ -2400,7 +2400,7 @@ class HomeAddShows(Home):
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, filename="home_recommendedShows.mako")
-        return t.render(title="Recommended Shows", header="Recommended Shows", enable_anime_options=False, controller="home", action="addShows|recommendedShows")
+        return t.render(title="Recommended Shows", header="Recommended Shows", enable_anime_options=False)
 
     def getRecommendedShows(self):
         t = PageTemplate(rh=self, filename="trendingShows.mako")
@@ -3431,7 +3431,8 @@ class Manage(Home, WebRoot):
 
         t = PageTemplate(rh=self, filename="manage_failedDownloads.mako")
 
-        return t.render(limit=limit, failedResults=sqlResults, title='Failed Downloads', header='Failed Downloads', topmenu='manage')
+        return t.render(limit=limit, failedResults=sqlResults, title='Failed Downloads', header='Failed Downloads', topmenu='manage',
+                controller="manage", action="failedDownloads")
 
 
 @route('/manage/manageSearches(/?.*)')
@@ -3446,7 +3447,8 @@ class ManageSearches(Manage):
         return t.render(backlogPaused=sickbeard.searchQueueScheduler.action.is_backlog_paused(),
                         backlogRunning=sickbeard.searchQueueScheduler.action.is_backlog_in_progress(), dailySearchStatus=sickbeard.dailySearchScheduler.action.amActive,
                         findPropersStatus=sickbeard.properFinderScheduler.action.amActive, queueLength=sickbeard.searchQueueScheduler.action.queue_length(),
-                        title='Manage Searches', header='Manage Searches', topmenu='manage')
+                        title='Manage Searches', header='Manage Searches', topmenu='manage',
+                        controller="manage", action="manageSearches")
 
     def forceBacklog(self):
         # force it to run the next time it looks
@@ -3548,7 +3550,8 @@ class History(WebRoot):
             {'title': 'Trim History', 'path': 'history/trimHistory', 'icon': 'ui-icon ui-icon-trash', 'class': 'trimhistory', 'confirm': True},
         ]
 
-        return t.render(historyResults=data, compactResults=compact, limit=limit, submenu=submenu, title='History', header='History', topmenu="history")
+        return t.render(historyResults=data, compactResults=compact, limit=limit, submenu=submenu, title='History', header='History', topmenu="history",
+                controller="history", action="index")
 
     def clearHistory(self):
         self.history.clear()

@@ -9,10 +9,6 @@
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings, Overview
 %>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/new/manage_failedDownloads.js"></script>
-<script type="text/javascript" src="${srRoot}/js/failedDownloads.js?${sbPID}"></script>
-</%block>
 <%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
