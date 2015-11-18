@@ -364,12 +364,7 @@ class GenericProvider(object):
 
             # parse the file name
             try:
-                if show.is_anime:
-                    method = 'anime'
-                else:
-                    method = 'normal'
-                    
-                myParser = NameParser(parse_method=method)
+                myParser = NameParser(parse_method=('normal', 'anime')[show.is_anime])
                 parse_result = myParser.parse(title)
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.DEBUG)
