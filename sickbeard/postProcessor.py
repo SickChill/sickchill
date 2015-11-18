@@ -211,9 +211,9 @@ class PostProcessor(object):
                 file_path_list.append(associated_file_path)
 
         if file_path_list:
-            self._log(u"Found the following associated files: " + str(file_path_list), logger.DEBUG)
+            self._log(u"Found the following associated files for %s: %s" % (file_path, file_path_list), logger.DEBUG)
         else:
-            self._log(u"No associated files were during this pass", logger.DEBUG)
+            self._log(u"No associated files for %s were found during this pass" % file_path, logger.DEBUG)
 
         return file_path_list
 
