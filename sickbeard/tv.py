@@ -2020,7 +2020,7 @@ class TVEpisode(object):
         elif self.show.air_by_date:
             return self._format_pattern('%SN - %AD - %EN')
 
-        return self._format_pattern('%SN - %Sx%0E - %EN')
+        return self._format_pattern('%SN - S%0SE%0E - %EN')
 
     def _ep_name(self):
         """
@@ -2544,10 +2544,10 @@ class TVEpisode(object):
                                + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime))
                 else:
                     logger.log(str(self.show.indexerid) + u": Unable to modify date of " + os.path.basename(self.location)
-                               + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime), logger.ERROR)
-            except Exception:
+                               + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime), logger.WARNING)
+            except Exception as e:
                 logger.log(str(self.show.indexerid) + u": Failed to modify date of '" + os.path.basename(self.location)
-                           + "' to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime), logger.ERROR)
+                           + "' to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime) + ". Error: %s" % ex(e), logger.WARNING)
 
     def __getstate__(self):
         d = dict(self.__dict__)

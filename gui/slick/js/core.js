@@ -142,7 +142,7 @@ var SICKRAGE = {
                 if (!$(this).prop('checked')) { $('#content_'+$(this).attr('id')).hide(); }
             });
 
-            $(".enabler").click(function() {
+            $(".enabler").on('click', function() {
                 if ($(this).prop('checked')){
                     $('#content_'+$(this).attr('id')).fadeIn("fast", "linear");
                 } else {
@@ -150,7 +150,7 @@ var SICKRAGE = {
                 }
             });
 
-            $(".viewIf").click(function() {
+            $(".viewIf").on('click', function() {
                 if ($(this).prop('checked')) {
                     $('.hide_if_'+$(this).attr('id')).css('display','none');
                     $('.show_if_'+$(this).attr('id')).fadeIn("fast", "linear");
@@ -160,7 +160,7 @@ var SICKRAGE = {
                 }
             });
 
-            $(".datePresets").click(function() {
+            $(".datePresets").on('click', function() {
                 var def = $('#date_presets').val();
                 if ($(this).prop('checked') && '%x' === def) {
                     def = '%a, %b %d, %Y';
@@ -198,11 +198,11 @@ var SICKRAGE = {
                 }
             });
 
-            $('#api_key').click(function(){
+            $('#api_key').on('click', function(){
                 $('#api_key').select();
             });
 
-            $("#generate_new_apikey").click(function(){
+            $("#generate_new_apikey").on('click', function(){
                 $.get(srRoot + '/config/general/generateApiKey', function(data){
                     if (data.error !== undefined) {
                         alert(data.error);
@@ -212,7 +212,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#branchCheckout').click(function() {
+            $('#branchCheckout').on('click', function() {
                 var url = srRoot + '/home/branchCheckout?branch=' + $("#branchVersion").val();
                 var checkDBversion = srRoot + "/home/getDBcompare";
                 $.getJSON(checkDBversion, function(data){
@@ -252,7 +252,7 @@ var SICKRAGE = {
             $('#log_dir').fileBrowser({ title: 'Select log file folder location' });
         },
         backupRestore: function(){
-            $('#Backup').click(function() {
+            $('#Backup').on('click', function() {
                 $("#Backup").attr("disabled", true);
                 $('#Backup-result').html(loading);
                 var backupDir = $("#backupDir").val();
@@ -262,7 +262,7 @@ var SICKRAGE = {
                         $("#Backup").attr("disabled", false);
                     });
             });
-            $('#Restore').click(function() {
+            $('#Restore').on('click', function() {
                 $("#Restore").attr("disabled", true);
                 $('#Restore-result').html(loading);
                 var backupFile = $("#backupFile").val();
@@ -281,7 +281,7 @@ var SICKRAGE = {
                 if (!$(this).prop('checked')) { $('#content_'+$(this).attr('id')).hide(); }
             });
 
-            $(".enabler").click(function() {
+            $(".enabler").on('click', function() {
                 if ($(this).prop('checked')){
                     $('#content_'+$(this).attr('id')).fadeIn("fast", "linear");
                 } else {
@@ -289,7 +289,7 @@ var SICKRAGE = {
                 }
             });
 
-            $(".viewIf").click(function() {
+            $(".viewIf").on('click', function() {
                 if ($(this).prop('checked')) {
                     $('.hide_if_'+$(this).attr('id')).css('display','none');
                     $('.show_if_'+$(this).attr('id')).fadeIn("fast", "linear");
@@ -299,7 +299,7 @@ var SICKRAGE = {
                 }
             });
 
-            $(".datePresets").click(function() {
+            $(".datePresets").on('click', function() {
                 var def = $('#date_presets').val();
                 if ($(this).prop('checked') && '%x' == def) { // jshint ignore:line
                     def = '%a, %b %d, %Y';
@@ -337,11 +337,11 @@ var SICKRAGE = {
                 }
             });
 
-            $('#api_key').click(function(){
+            $('#api_key').on('click', function(){
                 $('#api_key').select();
             });
 
-            $("#generate_new_apikey").click(function(){
+            $("#generate_new_apikey").on('click', function(){
                 $.get(srRoot + '/config/general/generateApiKey', function(data){
                     if (data.error !== undefined) {
                         alert(data.error);
@@ -351,7 +351,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#branchCheckout').click(function() {
+            $('#branchCheckout').on('click', function() {
                 var url = srRoot+'/home/branchCheckout?branch='+$("#branchVersion").val();
                 var checkDBversion = srRoot + "/home/getDBcompare";
                 $.getJSON(checkDBversion, function(data){
@@ -376,7 +376,7 @@ var SICKRAGE = {
         notifications: function() {
             $('#config-components').tabs();
 
-            $('#testGrowl').click(function () {
+            $('#testGrowl').on('click', function () {
                 var growl = {};
                 growl.host = $.trim($('#growl_host').val());
                 growl.password = $.trim($('#growl_password').val());
@@ -394,7 +394,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testProwl').click(function () {
+            $('#testProwl').on('click', function () {
                 var prowl = {};
                 prowl.api = $.trim($('#prowl_api').val());
                 prowl.priority = $('#prowl_priority').val();
@@ -412,7 +412,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testKODI').click(function () {
+            $('#testKODI').on('click', function () {
                 var kodi = {};
                 kodi.host = $.trim($('#kodi_host').val());
                 kodi.username = $.trim($('#kodi_username').val());
@@ -431,7 +431,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testPMC').click(function () {
+            $('#testPMC').on('click', function () {
                 var plex = {};
                 plex.client = {};
                 plex.client.host = $.trim($('#plex_host').val());
@@ -451,7 +451,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testPMS').click(function () {
+            $('#testPMS').on('click', function () {
                 var plex = {};
                 plex.server = {};
                 plex.server.host = $.trim($('#plex_server_host').val());
@@ -472,7 +472,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testEMBY').click(function () {
+            $('#testEMBY').on('click', function () {
                 var emby = {};
                 emby.host = $('#emby_host').val();
                 emby.apikey = $('#emby_apikey').val();
@@ -499,7 +499,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testBoxcar').click(function() {
+            $('#testBoxcar').on('click', function() {
                 var boxcar = {};
                 boxcar.username = $.trim($('#boxcar_username').val());
                 if (!boxcar.username) {
@@ -516,7 +516,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testBoxcar2').click(function () {
+            $('#testBoxcar2').on('click', function () {
                 var boxcar2 = {};
                 boxcar2.accesstoken = $.trim($('#boxcar2_accesstoken').val());
                 if (!boxcar2.accesstoken) {
@@ -533,7 +533,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testPushover').click(function () {
+            $('#testPushover').on('click', function () {
                 var pushover = {};
                 pushover.userkey = $('#pushover_userkey').val();
                 pushover.apikey = $('#pushover_apikey').val();
@@ -560,14 +560,14 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testLibnotify').click(function() {
+            $('#testLibnotify').on('click', function() {
                 $('#testLibnotify-result').html(loading);
                 $.get(srRoot + '/home/testLibnotify', function (data) {
                     $('#testLibnotify-result').html(data);
                 });
             });
 
-            $('#twitterStep1').click(function() {
+            $('#twitterStep1').on('click', function() {
                 $('#testTwitter-result').html(loading);
                 $.get(srRoot + '/home/twitterStep1', function (data) {
                     window.open(data);
@@ -576,7 +576,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#twitterStep2').click(function () {
+            $('#twitterStep2').on('click', function () {
                 var twitter = {};
                 twitter.key = $.trim($('#twitter_key').val());
                 if (!twitter.key) {
@@ -591,13 +591,13 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testTwitter').click(function() {
+            $('#testTwitter').on('click', function() {
                 $.get(srRoot + '/home/testTwitter', function(data) {
                     $('#testTwitter-result').html(data);
                 });
             });
 
-            $('#settingsNMJ').click(function() {
+            $('#settingsNMJ').on('click', function() {
                 var nmj = {};
                 if (!$('#nmj_host').val()) {
                     alert('Please fill in the Popcorn IP address');
@@ -630,7 +630,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testNMJ').click(function () {
+            $('#testNMJ').on('click', function () {
                 var nmj = {};
                 nmj.host = $.trim($('#nmj_host').val());
                 nmj.database = $('#nmj_database').val();
@@ -649,7 +649,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#settingsNMJv2').click(function() {
+            $('#settingsNMJv2').on('click', function() {
                 var nmjv2 = {};
                 if(!$('#nmjv2_host').val()) {
                     alert('Please fill in the Popcorn IP address');
@@ -684,7 +684,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testNMJv2').click(function () {
+            $('#testNMJv2').on('click', function () {
                 var nmjv2 = {};
                 nmjv2.host = $.trim($('#nmjv2_host').val());
                 if (!nmjv2.host) {
@@ -701,7 +701,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testFreeMobile').click(function () {
+            $('#testFreeMobile').on('click', function () {
                 var freemobile = {};
                 freemobile.id = $.trim($('#freemobile_id').val());
                 freemobile.apikey = $.trim($('#freemobile_apikey').val());
@@ -728,7 +728,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#TraktGetPin').click(function () {
+            $('#TraktGetPin').on('click', function () {
                 var trakt = {};
                 trakt.pinUrl = $('#trakt_pin_url').val();
                 window.open(trakt.pinUrl, "popUp", "toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=550");
@@ -748,7 +748,7 @@ var SICKRAGE = {
                 }
             });
 
-            $('#authTrakt').click(function() {
+            $('#authTrakt').on('click', function() {
                 var trakt = {};
                 trakt.pin = $('#trakt_pin').val();
                 if (trakt.pin.length !== 0) {
@@ -761,7 +761,7 @@ var SICKRAGE = {
                 }
             });
 
-            $('#testTrakt').click(function () {
+            $('#testTrakt').on('click', function () {
                 var trakt = {};
                 trakt.username = $.trim($('#trakt_username').val());
                 trakt.trendingBlacklist = $.trim($('#trakt_blacklist_name').val());
@@ -790,7 +790,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testEmail').click(function () {
+            $('#testEmail').on('click', function () {
                 var status, host, port, tls, from, user, pwd, err, to;
                 status = $('#testEmail-result');
                 status.html(loading);
@@ -821,13 +821,13 @@ var SICKRAGE = {
                         status.html('<p style="color: red;">You must provide a recipient email address!</p>');
                     } else {
                         $.get(srRoot + '/home/testEmail', {
-                            host: host,
-                            port: port,
-                            smtp_from: from, // jshint ignore:line
-                            use_tls: tls, // jshint ignore:line
-                            user: user,
-                            pwd: pwd,
-                            to: to
+                            'host': host,
+                            'port': port,
+                            'smtp_from': from, // @TODO we shouldn't be using any reserved words like "from"
+                            'use_tls': tls,
+                            'user': user,
+                            'pwd': pwd,
+                            'to': to
                         }, function (msg) {
                             $('#testEmail-result').html(msg);
                         });
@@ -835,7 +835,7 @@ var SICKRAGE = {
                 }
             });
 
-            $('#testNMA').click(function () {
+            $('#testNMA').on('click', function () {
                 var nma = {};
                 nma.api = $.trim($('#nma_api').val());
                 nma.priority = $('#nma_priority').val();
@@ -853,7 +853,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testPushalot').click(function () {
+            $('#testPushalot').on('click', function () {
                 var pushalot = {};
                 pushalot.authToken = $.trim($('#pushalot_authorizationtoken').val());
                 if (!pushalot.authToken) {
@@ -870,7 +870,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testPushbullet').click(function () {
+            $('#testPushbullet').on('click', function () {
                 var pushbullet = {};
                 pushbullet.api = $.trim($('#pushbullet_api').val());
                 if (!pushbullet.api) {
@@ -924,13 +924,13 @@ var SICKRAGE = {
                     }
                 });
 
-                $("#pushbullet_device_list").change(function(){
+                $("#pushbullet_device_list").on('change', function(){
                     $("#pushbullet_device").val($("#pushbullet_device_list").val());
                     $('#testPushbullet-result').html("Don't forget to save your new pushbullet settings.");
                 });
             }
 
-            $('#getPushbulletDevices').click(function(){
+            $('#getPushbulletDevices').on('click', function(){
                 getPushbulletDevices("Device list updated. Please choose a device to push to.");
             });
 
@@ -938,7 +938,7 @@ var SICKRAGE = {
             getPushbulletDevices();
 
             // @TODO Find out what notify_data actually does since it doesn't seem to be a real function
-            $('#email_show').change(function() {
+            $('#email_show').on('change', function() {
                 var key = parseInt($('#email_show').val(), 10);
                 $('#email_show_list').val(key >= 0 ? notify_data[key.toString()].list : ''); // jshint ignore:line
             });
@@ -967,7 +967,7 @@ var SICKRAGE = {
             // Load the per show notify lists everytime this page is loaded
             loadShowNotifyLists();
 
-            $('#email_show_save').click(function() {
+            $('#email_show_save').on('click', function() {
                 $.post(srRoot + "/home/saveShowNotifyList", {
                     show: $('#email_show').val(),
                     emails: $('#email_show_list').val()
@@ -978,7 +978,7 @@ var SICKRAGE = {
             });
 
             // show instructions for plex when enabled
-            $('#use_plex').click(function() {
+            $('#use_plex').on('click', function() {
                 if ($(this).is(':checked')) {
                     $('.plexinfo').removeClass('hide');
                 } else {
@@ -1020,8 +1020,8 @@ var SICKRAGE = {
                 example.animeType = $('input[name="naming_anime"]:checked').val();
 
                 $.get(srRoot + '/config/postProcessing/testNaming', {
-                    pattern: example.pattern,
-                    anime_type: 3 // jshint ignore:line
+                    'pattern': example.pattern,
+                    'anime_type': 3 // jshint ignore:line
                 }, function (data) {
                     if (data) {
                         $('#naming_example').text(data + '.ext');
@@ -1032,9 +1032,9 @@ var SICKRAGE = {
                 });
 
                 $.get(srRoot + '/config/postProcessing/testNaming', {
-                    pattern: example.pattern,
-                    multi: example.multi,
-                    anime_type: 3 // jshint ignore:line
+                    'pattern': example.pattern,
+                    'multi': example.multi,
+                    'anime_type': 3
                 }, function (data) {
                     if (data) {
                         $('#naming_example_multi').text(data + '.ext');
@@ -1045,9 +1045,9 @@ var SICKRAGE = {
                 });
 
                 $.get(srRoot + '/config/postProcessing/isNamingValid', {
-                    pattern: example.pattern,
-                    multi: example.multi,
-                    anime_type: example.animeType // jshint ignore:line
+                    'pattern': example.pattern,
+                    'multi': example.multi,
+                    'anime_type': example.animeType
                 }, function (data) {
                     if (data === "invalid") {
                         $('#naming_pattern').qtip('option', {
@@ -1078,8 +1078,8 @@ var SICKRAGE = {
                 var pattern = $('#naming_abd_pattern').val();
 
                 $.get(srRoot + '/config/postProcessing/testNaming', {
-                    pattern: pattern,
-                    abd: 'True'
+                    'pattern': pattern,
+                    'abd': 'True'
                 }, function (data) {
                     if (data) {
                         $('#naming_abd_example').text(data + '.ext');
@@ -1090,8 +1090,8 @@ var SICKRAGE = {
                 });
 
                 $.get(srRoot + '/config/postProcessing/isNamingValid', {
-                    pattern: pattern,
-                    abd: 'True'
+                    'pattern': pattern,
+                    'abd': 'True'
                 }, function (data) {
                     if (data === "invalid") {
                         $('#naming_abd_pattern').qtip('option', {
@@ -1122,8 +1122,8 @@ var SICKRAGE = {
                 var pattern = $('#naming_sports_pattern').val();
 
                 $.get(srRoot + '/config/postProcessing/testNaming', {
-                    pattern: pattern,
-                    sports: 'True'
+                    'pattern': pattern,
+                    'sports': 'True'
                 }, function (data) {
                     if (data) {
                         $('#naming_sports_example').text(data + '.ext');
@@ -1134,8 +1134,8 @@ var SICKRAGE = {
                 });
 
                 $.get(srRoot + '/config/postProcessing/isNamingValid', {
-                    pattern: pattern,
-                    sports: 'True'
+                    'pattern': pattern,
+                    'sports': 'True'
                 }, function (data) {
                     if (data === "invalid") {
                         $('#naming_sports_pattern').qtip('option', {
@@ -1169,8 +1169,8 @@ var SICKRAGE = {
                 example.animeType = $('input[name="naming_anime"]:checked').val();
 
                 $.get(srRoot + '/config/postProcessing/testNaming', {
-                    pattern: example.pattern,
-                    anime_type: example.animeType // jshint ignore:line
+                    'pattern': example.pattern,
+                    'anime_type': example.animeType
                 }, function (data) {
                     if (data) {
                         $('#naming_example_anime').text(data + '.ext');
@@ -1181,9 +1181,9 @@ var SICKRAGE = {
                 });
 
                 $.get(srRoot + '/config/postProcessing/testNaming', {
-                    pattern: example.pattern,
-                    multi: example.multi,
-                    anime_type: example.animeType // jshint ignore:line
+                    'pattern': example.pattern,
+                    'multi': example.multi,
+                    'anime_type': example.animeType
                 }, function (data) {
                     if (data) {
                         $('#naming_example_multi_anime').text(data + '.ext');
@@ -1194,9 +1194,9 @@ var SICKRAGE = {
                 });
 
                 $.get(srRoot + '/config/postProcessing/isNamingValid', {
-                    pattern: example.pattern,
-                    multi: example.multi,
-                    anime_type: example.animeType // jshint ignore:line
+                    'pattern': example.pattern,
+                    'multi': example.multi,
+                    'anime_type': example.animeType
                 }, function (data) {
                     if (data === "invalid") {
                         $('#naming_pattern').qtip('option', {
@@ -1307,38 +1307,38 @@ var SICKRAGE = {
                 setupAnimeNaming();
             });
 
-            $('#naming_multi_ep').change(fillExamples);
-            $('#naming_pattern').focusout(fillExamples);
-            $('#naming_pattern').keyup(function () {
+            $('#naming_multi_ep').on('change', fillExamples);
+            $('#naming_pattern').on('focusout', fillExamples);
+            $('#naming_pattern').on('keyup', function() {
                 typewatch(function () {
                     fillExamples();
                 }, 500);
             });
 
-            $('#naming_anime_multi_ep').change(fillAnimeExamples);
-            $('#naming_anime_pattern').focusout(fillAnimeExamples);
-            $('#naming_anime_pattern').keyup(function () {
+            $('#naming_anime_multi_ep').on('change', fillAnimeExamples);
+            $('#naming_anime_pattern').on('focusout', fillAnimeExamples);
+            $('#naming_anime_pattern').on('keyup', function() {
                 typewatch(function () {
                     fillAnimeExamples();
                 }, 500);
             });
 
-            $('#naming_abd_pattern').focusout(fillExamples);
-            $('#naming_abd_pattern').keyup(function () {
+            $('#naming_abd_pattern').on('focusout', fillExamples);
+            $('#naming_abd_pattern').on('keyup', function() {
                 typewatch(function () {
                     fillAbdExamples();
                 }, 500);
             });
 
-            $('#naming_sports_pattern').focusout(fillExamples);
-            $('#naming_sports_pattern').keyup(function () {
+            $('#naming_sports_pattern').on('focusout', fillExamples);
+            $('#naming_sports_pattern').on('keyup', function() {
                 typewatch(function () {
                     fillSportsExamples();
                 }, 500);
             });
 
-            $('#naming_anime_pattern').focusout(fillExamples);
-            $('#naming_anime_pattern').keyup(function () {
+            $('#naming_anime_pattern').on('focusout', fillExamples);
+            $('#naming_anime_pattern').on('keyup', function() {
                 typewatch(function () {
                     fillAnimeExamples();
                 }, 500);
@@ -1506,14 +1506,6 @@ var SICKRAGE = {
             $('#torrent_dir').fileBrowser({ title: 'Select .torrent black hole/watch location' });
             $('#torrent_path').fileBrowser({ title: 'Select .torrent download location' });
 
-            function toggleTorrentTitle(){
-                if ($('#use_torrents').prop('checked')){
-                    $('#no_torrents').show();
-                } else {
-                    $('#no_torrents').hide();
-                }
-            }
-
             $.fn.nzbMethodHandler = function() {
                 var selectedProvider = $('#nzb_method :selected').val(),
                     blackholeSettings = '#blackhole_settings',
@@ -1539,28 +1531,6 @@ var SICKRAGE = {
                 }
             };
 
-            $.fn.rtorrentScgi = function(){
-                var selectedProvider = $('#torrent_method :selected').val();
-
-                if (selectedProvider.toLowerCase() === 'rtorrent') {
-                    var hostname = $('#torrent_host').prop('value');
-                    var isMatch = hostname.substr(0, 7) === "scgi://";
-
-                    if (isMatch) {
-                        $('#torrent_username_option').hide();
-                        $('#torrent_username').prop('value', '');
-                        $('#torrent_password_option').hide();
-                        $('#torrent_password').prop('value', '');
-                        $('#torrent_auth_type_option').hide();
-                        $("#torrent_auth_type option[value=none]").attr('selected', 'selected');
-                    } else {
-                        $('#torrent_username_option').show();
-                        $('#torrent_password_option').show();
-                        $('#torrent_auth_type_option').show();
-                    }
-                }
-            };
-
             $.fn.torrentMethodHandler = function() {
                 $('#options_torrent_clients').hide();
                 $('#options_torrent_blackhole').hide();
@@ -1574,104 +1544,88 @@ var SICKRAGE = {
                     rpcurl = ' RPC URL';
 
                 if (selectedProvider.toLowerCase() !== 'blackhole') {
-                    var label_warning_deluge = '#label_warning_deluge',
-                        label_anime_warning_deluge = '#label_anime_warning_deluge',
-                        host_desc_rtorrent = '#host_desc_rtorrent',
-                        host_desc_torrent = '#host_desc_torrent',
-                        torrent_verify_cert_option = '#torrent_verify_cert_option',
-                        torrent_path_option = '#torrent_path_option',
-                        torrent_seed_time_option = '#torrent_seed_time_option',
-                        torrent_high_bandwidth_option = '#torrent_high_bandwidth_option',
-                        torrent_label_option = '#torrent_label_option',
-                        torrent_label_anime_option = '#torrent_label_anime_option',
-                        path_synology = '#path_synology',
-                        torrent_paused_option = '#torrent_paused_option';
-
-                    $(label_warning_deluge).hide();
-                    $(label_anime_warning_deluge).hide();
-                    $(label_anime_warning_deluge).hide();
-                    $(host_desc_rtorrent).hide();
-                    $(host_desc_torrent).show();
-                    $(torrent_verify_cert_option).hide();
-                    $(torrent_verify_deluge).hide();
-                    $(torrent_verify_rtorrent).hide();
-                    $(torrent_auth_type_option).hide();
-                    $(torrent_path_option).show();
-                    $(torrent_path_option).find('.fileBrowser').show();
-                    $(torrent_seed_time_option).hide();
-                    $(torrent_high_bandwidth_option).hide();
-                    $(torrent_label_option).show();
-                    $(torrent_label_anime_option).show();
-                    $(path_synology).hide();
-                    $(torrent_paused_option).show();
-                    $(torrent_rpcurl_option).hide();
-                    $(this).rtorrentScgi();
+                    $('#label_warning_deluge').hide();
+                    $('#label_anime_warning_deluge').hide();
+                    $('#host_desc_torrent').show();
+                    $('#torrent_verify_cert_option').hide();
+                    $('#torrent_verify_deluge').hide();
+                    $('#torrent_verify_rtorrent').hide();
+                    $('#torrent_auth_type_option').hide();
+                    $('#torrent_path_option').show();
+                    $('#torrent_path_option').find('.fileBrowser').show();
+                    $('#torrent_seed_time_option').hide();
+                    $('#torrent_high_bandwidth_option').hide();
+                    $('#torrent_label_option').show();
+                    $('#torrent_label_anime_option').show();
+                    $('#path_synology').hide();
+                    $('#torrent_paused_option').show();
+                    $('#torrent_rpcurl_option').hide();
 
                     if (selectedProvider.toLowerCase() === 'utorrent') {
                         client = 'uTorrent';
-                        $(torrent_path_option).hide();
+                        $('#torrent_path_option').hide();
                         $('#torrent_seed_time_label').text('Minimum seeding time is');
-                        $(torrent_seed_time_option).show();
+                        $('#torrent_seed_time_option').show();
                         $('#host_desc_torrent').text('URL to your uTorrent client (e.g. http://localhost:8000)');
                     } else if (selectedProvider.toLowerCase() === 'transmission'){
                         client = 'Transmission';
                         $('#torrent_seed_time_label').text('Stop seeding when inactive for');
-                        $(torrent_seed_time_option).show();
-                        $(torrent_high_bandwidth_option).show();
-                        $(torrent_label_option).hide();
-                        $(torrent_label_anime_option).hide();
-                        $(torrent_rpcurl_option).show();
+                        $('#torrent_seed_time_option').show();
+                        $('#torrent_high_bandwidth_option').show();
+                        $('#torrent_label_option').hide();
+                        $('#torrent_label_anime_option').hide();
+                        $('#torrent_rpcurl_option').show();
                         $('#host_desc_torrent').text('URL to your Transmission client (e.g. http://localhost:9091)');
                     } else if (selectedProvider.toLowerCase() === 'deluge'){
                         client = 'Deluge';
-                        $(torrent_verify_cert_option).show();
-                        $(torrent_verify_deluge).show();
-                        $(torrent_verify_rtorrent).hide();
-                        $(label_warning_deluge).show();
-                        $(label_anime_warning_deluge).show();
+                        $('#torrent_verify_cert_option').show();
+                        $('#torrent_verify_deluge').show();
+                        $('#torrent_verify_rtorrent').hide();
+                        $('#label_warning_deluge').show();
+                        $('#label_anime_warning_deluge').show();
                         $('#torrent_username_option').hide();
                         $('#torrent_username').prop('value', '');
                         $('#host_desc_torrent').text('URL to your Deluge client (e.g. http://localhost:8112)');
-                    } else if ('deluged' == selectedProvider){
+                    } else if (selectedProvider.toLowerCase() === 'deluged'){
                         client = 'Deluge';
-                        $(torrent_verify_cert_option).hide();
-                        $(torrent_verify_deluge).hide();
-                        $(torrent_verify_rtorrent).hide();
-                        $(label_warning_deluge).show();
-                        $(label_anime_warning_deluge).show();
+                        $('#torrent_verify_cert_option').hide();
+                        $('#torrent_verify_deluge').hide();
+                        $('#torrent_verify_rtorrent').hide();
+                        $('#label_warning_deluge').show();
+                        $('#label_anime_warning_deluge').show();
                         $('#torrent_username_option').show();
                         $('#host_desc_torrent').text('IP or Hostname of your Deluge Daemon (e.g. scgi://localhost:58846)');
-                    } else if ('download_station' == selectedProvider){
+                    } else if (selectedProvider.toLowerCase() === 'download_station'){
                         client = 'Synology DS';
-                        $(torrent_label_option).hide();
-                        $(torrent_label_anime_option).hide();
+                        $('#torrent_label_option').hide();
+                        $('#torrent_label_anime_option').hide();
                         $('#torrent_paused_option').hide();
-                        $(torrent_path_option).find('.fileBrowser').hide();
+                        $('#torrent_path_option').find('.fileBrowser').hide();
                         $('#host_desc_torrent').text('URL to your Synology DS client (e.g. http://localhost:5000)');
-                        $(path_synology).show();
-                    } else if ('rtorrent' == selectedProvider){
+                        $('#path_synology').show();
+                    } else if (selectedProvider.toLowerCase() === 'rtorrent'){
                         client = 'rTorrent';
-                        $(torrent_paused_option).hide();
+                        $('#torrent_paused_option').hide();
                         $('#host_desc_torrent').text('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or https://localhost/rutorrent/plugins/httprpc/action.php)');
-                        $(torrent_verify_cert_option).show();
-                        $(torrent_verify_deluge).hide();
-                        $(torrent_verify_rtorrent).show();
-                        $(torrent_auth_type_option).show();
-                    } else if ('qbittorrent' == selectedProvider){
+                        $('#torrent_verify_cert_option').show();
+                        $('#torrent_verify_deluge').hide();
+                        $('#torrent_verify_rtorrent').show();
+                        $('#torrent_auth_type_option').show();
+                    } else if (selectedProvider.toLowerCase() === 'qbittorrent'){
                         client = 'qbittorrent';
-                        $(torrent_path_option).hide();
-                        $(torrent_label_option).hide();
-                        $(torrent_label_anime_option).hide();
+                        $('#torrent_path_option').hide();
+                        $('#torrent_label_option').hide();
+                        $('#torrent_label_anime_option').hide();
                         $('#host_desc_torrent').text('URL to your qbittorrent client (e.g. http://localhost:8080)');
-                    } else if ('mlnet' == selectedProvider){
+                    } else if (selectedProvider.toLowerCase() === 'mlnet'){
                         client = 'mlnet';
-                        $(torrent_path_option).hide();
-                        $(torrent_label_option).hide();
-                        $(torrent_verify_cert_option).hide();
-                        $(torrent_verify_deluge).hide();
-                        $(torrent_verify_rtorrent).hide();
-                        $(torrent_label_anime_option).hide();
-                        $(torrent_paused_option).hide();
+                        $('#torrent_path_option').hide();
+                        $('#torrent_label_option').hide();
+                        $('#torrent_verify_cert_option').hide();
+                        $('#torrent_verify_deluge').hide();
+                        $('#torrent_verify_rtorrent').hide();
+                        $('#torrent_label_anime_option').hide();
+                        $('#torrent_paused_option').hide();
                         $('#host_desc_torrent').text('URL to your MLDonkey (e.g. http://localhost:4080)');
                     }
                     $('#host_title').text(client + host);
@@ -1684,31 +1638,53 @@ var SICKRAGE = {
                 $(optionPanel).show();
             };
 
-            $('#nzb_method').change($(this).nzbMethodHandler);
+            $('#torrent_host').on('input', function(){
+                if($('#torrent_method :selected').val().toLowerCase() === 'rtorrent') {
+                    var hostname = $('#torrent_host').val();
+                    var isMatch = hostname.substr(0, 7) === "scgi://";
+
+                    if(isMatch) {
+                        $('#torrent_username_option').hide();
+                        $('#torrent_username').prop('value', '');
+                        $('#torrent_password_option').hide();
+                        $('#torrent_password').prop('value', '');
+                        $('#torrent_auth_type_option').hide();
+                        $("#torrent_auth_type option[value=none]").attr('selected', 'selected');
+                    } else {
+                        $('#torrent_username_option').show();
+                        $('#torrent_password_option').show();
+                        $('#torrent_auth_type_option').show();
+                    }
+                }
+            });
+
+            $('#nzb_method').on('change', $(this).nzbMethodHandler);
 
             $(this).nzbMethodHandler();
 
-            $('#testSABnzbd').click(function(){
+            $('#testSABnzbd').on('click', function(){
+                var sab = {};
                 $('#testSABnzbd_result').html(loading);
-                var sab_host = $('#sab_host').val();
-                var sab_username = $('#sab_username').val();
-                var sab_password = $('#sab_password').val();
-                var sab_apiKey = $('#sab_apikey').val();
+                sab.host = $('#sab_host').val();
+                sab.username = $('#sab_username').val();
+                sab.password = $('#sab_password').val();
+                sab.apiKey = $('#sab_apikey').val();
 
-                $.get(srRoot + '/home/testSABnzbd', {'host': sab_host, 'username': sab_username, 'password': sab_password, 'apikey': sab_apiKey}, function(data){
+                $.get(srRoot + '/home/testSABnzbd', {
+                    'host': sab.host,
+                    'username': sab.username,
+                    'password': sab.password,
+                    'apikey': sab.apiKey
+                }, function(data){
                     $('#testSABnzbd_result').html(data);
                 });
             });
 
-            $('#torrent_method').change($(this).torrentMethodHandler);
+            $('#torrent_method').on('change', $.torrentMethodHandler);
 
-            $(this).torrentMethodHandler();
+            $.torrentMethodHandler();
 
-            $('#use_torrents').click(function(){
-                toggleTorrentTitle();
-            });
-
-            $('#test_torrent').click(function(){
+            $('#test_torrent').on('click', function(){
                 var torrent = {};
                 $('#test_torrent_result').html(loading);
                 torrent.method = $('#torrent_method :selected').val();
@@ -1725,8 +1701,6 @@ var SICKRAGE = {
                     $('#test_torrent_result').html(data);
                 });
             });
-
-            $('#torrent_host').change($(this).rtorrentScgi);
         },
         subtitles: function() {
             $.fn.showHideServices = function() {
@@ -1767,7 +1741,7 @@ var SICKRAGE = {
                 $("#service_order").val(finalArr.join(' '));
             };
 
-            $('#editAService').change(function(){
+            $('#editAService').on('change', function(){
                 $(this).showHideServices();
             });
 
@@ -1792,15 +1766,508 @@ var SICKRAGE = {
             console.log('This function need to be filled with ConfigProviders.js but can\'t be as we\'ve got scope issues currently.');
         }
     },
+    home: {
+        init: function(){
+
+        },
+        index: function(){
+            // Resets the tables sorting, needed as we only use a single call for both tables in tablesorter
+            $('.resetsorting').on('click', function(){
+                $('table').trigger('filterReset');
+            });
+
+            // This needs to be refined to work a little faster.
+            $('.progressbar').each(function(){
+                var percentage = $(this).data('progress-percentage');
+                var classToAdd = percentage === 100 ? 100 : percentage > 80 ? 80 : percentage > 60 ? 60 : percentage > 40 ? 40 : 20;
+                $(this).progressbar({ value:  percentage });
+                if($(this).data('progress-text')) {
+                    $(this).append('<div class="progressbarText" title="' + $(this).data('progress-tip') + '">' + $(this).data('progress-text') + '</div>');
+                }
+                $(this).find('.ui-progressbar-value').addClass('progress-' + classToAdd);
+            });
+
+            $("img#network").on('error', function(){
+                $(this).parent().text($(this).attr('alt'));
+                $(this).remove();
+            });
+
+            $("#showListTableShows:has(tbody tr), #showListTableAnime:has(tbody tr)").tablesorter({
+                sortList: [[7,1],[2,0]],
+                textExtraction: {
+                    0: function(node) { return $(node).find('time').attr('datetime'); },
+                    1: function(node) { return $(node).find('time').attr('datetime'); },
+                    3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
+                    4: function(node) { return $(node).find("span").text().toLowerCase(); },
+                    5: function(node) { return $(node).find("span:first").text(); },
+                    6: function(node) { return $(node).find("img").attr("alt"); }
+                },
+                widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
+                headers: (function(){
+                    if(metaToBool('sickbeard.FILTER_ROW')){
+                        return {
+                            0: { sorter: 'realISODate' },
+                            1: { sorter: 'realISODate' },
+                            2: { sorter: 'loadingNames' },
+                            4: { sorter: 'quality' },
+                            5: { sorter: 'eps' },
+                            6: { filter : 'parsed' }
+                        };
+                    } else {
+                        return {
+                            0: { sorter: 'realISODate' },
+                            1: { sorter: 'realISODate' },
+                            2: { sorter: 'loadingNames' },
+                            4: { sorter: 'quality' },
+                            5: { sorter: 'eps' }
+                        };
+                    }
+                }()),
+                widgetOptions: (function(){
+                    if(metaToBool('sickbeard.FILTER_ROW')){
+                        return {
+                            filter_columnFilters: true, // jshint ignore:line
+                            filter_hideFilters : true, // jshint ignore:line
+                            filter_saveFilters : true, // jshint ignore:line
+                            filter_functions : { // jshint ignore:line
+                                5:function(e, n, f) {
+                                    var test = false;
+                                    var pct = Math.floor((n % 1) * 1000);
+                                    if (f === '') {
+                                        test = true;
+                                    } else {
+                                        var result = f.match(/(<|<=|>=|>)\s(\d+)/i);
+                                        if (result) {
+                                            if (result[1] === "<") {
+                                                if (pct < parseInt(result[2])) {
+                                                    test = true;
+                                                }
+                                            } else if (result[1] === "<=") {
+                                                if (pct <= parseInt(result[2])) {
+                                                    test = true;
+                                                }
+                                            } else if (result[1] === ">=") {
+                                                if (pct >= parseInt(result[2])) {
+                                                    test = true;
+                                                }
+                                            } else if (result[1] === ">") {
+                                                if (pct > parseInt(result[2])) {
+                                                    test = true;
+                                                }
+                                            }
+                                        }
+
+                                        result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
+                                        if (result) {
+                                            if ((result[2] === "-") || (result[2] === "to")) {
+                                                if ((pct >= parseInt(result[1])) && (pct <= parseInt(result[3]))) {
+                                                    test = true;
+                                                }
+                                            }
+                                        }
+
+                                        result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
+                                        if (result) {
+                                            if ((result[1] === "=") || (result[3] === "=")) {
+                                                if (parseInt(result[2]) === pct) {
+                                                    test = true;
+                                                }
+                                            }
+                                        }
+
+                                        if (!isNaN(parseFloat(f)) && isFinite(f)) {
+                                            if (parseInt(f) === pct) {
+                                                test = true;
+                                            }
+                                        }
+                                    }
+                                    return test;
+                                }
+                            },
+                            'columnSelector_mediaquery': false
+                        };
+                    } else {
+                        return {
+                            'filter_columnFilters': false
+                        };
+                    }
+                }()),
+                sortStable: true,
+                sortAppend: [[2,0]]
+            });
+
+            if ($("#showListTableShows").find("tbody").find("tr").size() > 0){
+                $.tablesorter.filter.bindSearch( "#showListTableShows", $('.search') );
+            }
+
+            if(metaToBool('sickbeard.ANIME_SPLIT_HOME')){
+                if($("#showListTableAnime").find("tbody").find("tr").size() > 0){
+                    $.tablesorter.filter.bindSearch( "#showListTableAnime", $('.search') );
+                }
+            }
+
+            $.each([$('#container'), $('#container-anime')], function (){
+                this.isotope({
+                    itemSelector: '.show',
+                    sortBy : getMeta('sickbeard.POSTER_SORTBY'),
+                    sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
+                    layoutMode: 'masonry',
+                    masonry: {
+                        columnWidth: 13,
+                        isFitWidth: true
+                    },
+                    getSortData: {
+                        name: function(itemElem){
+                            var name = $(itemElem).attr('data-name');
+                            return (metaToBool('sickbeard.SORT_ARTICLE') ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
+                        },
+                        network: '[data-network]',
+                        date: function(itemElem){
+                            var date = $(itemElem).attr('data-date');
+                            return date.length && parseInt(date, 10) || Number.POSITIVE_INFINITY;
+                        },
+                        progress: function(itemElem){
+                            var progress = $(itemElem).attr('data-progress');
+                            return progress.length && parseInt(progress, 10) || Number.NEGATIVE_INFINITY;
+                        }
+                    }
+                });
+            });
+
+            $('#postersort').on('change', function(){
+                $('#container, #container-anime').isotope({sortBy: $(this).val()});
+                $.get($(this).find('option[value=' + $(this).val() +']').attr('data-sort'));
+            });
+
+            $('#postersortdirection').on('change', function(){
+                $('#container, #container-anime').isotope({sortAscending: ($(this).val() === 'true')});
+                $.get($(this).find('option[value=' + $(this).val() +']').attr('data-sort'));
+            });
+
+            $('#popover').popover({
+                placement: 'bottom',
+                html: true, // required if content has HTML
+                content: '<div id="popover-target"></div>'
+            }).on('shown.bs.popover', function () { // bootstrap popover event triggered when the popover opens
+                // call this function to copy the column selection code into the popover
+                $.tablesorter.columnSelector.attachTo( $('#showListTableShows'), '#popover-target');
+                if(metaToBool('sickbeard.ANIME_SPLIT_HOME')){
+                    $.tablesorter.columnSelector.attachTo( $('#showListTableAnime'), '#popover-target');
+                }
+
+            });
+        },
+        displayShow: function() {
+            $('#srRoot').ajaxEpSearch({'colorRow': true});
+
+            $('#srRoot').ajaxEpSubtitlesSearch();
+
+            $('#seasonJump').on('change', function(){
+                var id = $('#seasonJump option:selected').val();
+                if (id && id !== 'jump') {
+                    var season = $('#seasonJump option:selected').data('season');
+                    $('html,body').animate({scrollTop: $('[name ="' + id.substring(1) + '"]').offset().top - 50}, 'slow');
+                    $('#collapseSeason-' + season).collapse('show');
+                    location.hash = id;
+                }
+                $(this).val('jump');
+            });
+
+            $("#prevShow").on('click', function(){
+                $('#pickShow option:selected').prev('option').prop('selected', 'selected');
+                $("#pickShow").change();
+            });
+
+            $("#nextShow").on('click', function(){
+                $('#pickShow option:selected').next('option').prop('selected', 'selected');
+                $("#pickShow").change();
+            });
+
+            $('#changeStatus').on('click', function(){
+                var srRoot = $('#srRoot').val();
+                var epArr = [];
+
+                $('.epCheck').each(function () {
+                    if (this.checked === true) {
+                        epArr.push($(this).attr('id'));
+                    }
+                });
+
+                if (epArr.length === 0) { return false; }
+
+                window.location.href = srRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
+            });
+
+            $('.seasonCheck').on('click', function(){
+                var seasCheck = this;
+                var seasNo = $(seasCheck).attr('id');
+
+                $('#collapseSeason-' + seasNo).collapse('show');
+                $('.epCheck:visible').each(function () {
+                    var epParts = $(this).attr('id').split('x');
+                    if (epParts[0] === seasNo) {
+                        this.checked = seasCheck.checked;
+                    }
+                });
+            });
+
+            var lastCheck = null;
+            $('.epCheck').on('click', function (event) {
+
+                if (!lastCheck || !event.shiftKey) {
+                    lastCheck = this;
+                    return;
+                }
+
+                var check = this;
+                var found = 0;
+
+                $('.epCheck').each(function() {
+                    switch (found) {
+                        case 2:
+                            return false;
+                        case 1:
+                            this.checked = lastCheck.checked;
+                    }
+
+                    if (this === check || this === lastCheck) {
+                        found++;
+                    }
+                });
+            });
+
+            // selects all visible episode checkboxes.
+            $('.seriesCheck').on('click', function () {
+                $('.epCheck:visible').each(function () {
+                    this.checked = true;
+                });
+                $('.seasonCheck:visible').each(function () {
+                    this.checked = true;
+                });
+            });
+
+            // clears all visible episode checkboxes and the season selectors
+            $('.clearAll').on('click', function () {
+                $('.epCheck:visible').each(function () {
+                    this.checked = false;
+                });
+                $('.seasonCheck:visible').each(function () {
+                    this.checked = false;
+                });
+            });
+
+            // handle the show selection dropbox
+            $('#pickShow').on('change', function () {
+                var srRoot = $('#srRoot').val();
+                var val = $(this).val();
+                if (val === 0) {
+                    return;
+                }
+                window.location.href = srRoot + '/home/displayShow?show=' + val;
+            });
+
+            // show/hide different types of rows when the checkboxes are changed
+            $("#checkboxControls input").change(function () {
+                var whichClass = $(this).attr('id');
+                $(this).showHideRows(whichClass);
+            });
+
+            // initially show/hide all the rows according to the checkboxes
+            $("#checkboxControls input").each(function() {
+                var status = $(this).prop('checked');
+                $("tr." + $(this).attr('id')).each(function() {
+                    if(status) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+
+            $.fn.showHideRows = function(whichClass) {
+                var status = $('#checkboxControls > input, #' + whichClass).prop('checked');
+                $("tr." + whichClass).each(function() {
+                    if (status) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                // hide season headers with no episodes under them
+                $('tr.seasonheader').each(function () {
+                    var numRows = 0;
+                    var seasonNo = $(this).attr('id');
+                    $('tr.' + seasonNo + ' :visible').each(function () {
+                        numRows++;
+                    });
+                    if (numRows === 0) {
+                        $(this).hide();
+                        $('#' + seasonNo + '-cols').hide();
+                    } else {
+                        $(this).show();
+                        $('#' + seasonNo + '-cols').show();
+                    }
+                });
+            };
+
+            function setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode) {
+                var srRoot = $('#srRoot').val();
+                var showId = $('#showID').val();
+                var indexer = $('#indexer').val();
+
+                if (sceneSeason === '') { sceneSeason = null; }
+                if (sceneEpisode === '') { sceneEpisode = null; }
+
+                $.getJSON(srRoot + '/home/setSceneNumbering',{
+                    'show': showId,
+                    'indexer': indexer,
+                    'forSeason': forSeason,
+                    'forEpisode': forEpisode,
+                    'sceneSeason': sceneSeason,
+                    'sceneEpisode': sceneEpisode
+                }, function(data) {
+                    //	Set the values we get back
+                    if (data.sceneSeason === null || data.sceneEpisode === null) {
+                        $('#sceneSeasonXEpisode_' + showId + '_' + forSeason + '_' + forEpisode).val('');
+                    } else {
+                        $('#sceneSeasonXEpisode_' + showId + '_' + forSeason + '_' + forEpisode).val(data.sceneSeason + 'x' + data.sceneEpisode);
+                    }
+                    if (!data.success) {
+                        if (data.errorMessage) {
+                            alert(data.errorMessage);
+                        } else {
+                            alert('Update failed.');
+                        }
+                    }
+                });
+            }
+
+            function setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute) {
+                var srRoot = $('#srRoot').val();
+                var showId = $('#showID').val();
+                var indexer = $('#indexer').val();
+
+                if (sceneAbsolute === '') { sceneAbsolute = null; }
+
+                $.getJSON(srRoot + '/home/setSceneNumbering', {
+                    'show': showId,
+                    'indexer': indexer,
+                    'forAbsolute': forAbsolute,
+                    'sceneAbsolute': sceneAbsolute
+                },
+                function(data) {
+                    //	Set the values we get back
+                    if (data.sceneAbsolute === null) {
+                        $('#sceneAbsolute_' + showId + '_' + forAbsolute).val('');
+                    } else {
+                        $('#sceneAbsolute_' + showId + '_' + forAbsolute).val(data.sceneAbsolute);
+                    }
+                    if (!data.success) {
+                        if (data.errorMessage) {
+                            alert(data.errorMessage);
+                        } else {
+                            alert('Update failed.');
+                        }
+                    }
+                });
+            }
+
+            $('.sceneSeasonXEpisode').on('change', function() {
+                //	Strip non-numeric characters
+                $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
+                var forSeason = $(this).attr('data-for-season');
+                var forEpisode = $(this).attr('data-for-episode');
+                var m = $(this).val().match(/^(\d+)x(\d+)$/i);
+                var sceneSeason = null, sceneEpisode = null;
+                if (m) {
+                    sceneSeason = m[1];
+                    sceneEpisode = m[2];
+                }
+                setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode);
+            });
+
+            $('.sceneAbsolute').on('change', function() {
+                //	Strip non-numeric characters
+                $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
+                var forAbsolute = $(this).attr('data-for-absolute');
+
+                var m = $(this).val().match(/^(\d{1,3})$/i);
+                var sceneAbsolute = null;
+                if (m) {
+                    sceneAbsolute = m[1];
+                }
+                setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute);
+            });
+
+            $('.addQTip').each(function () {
+                $(this).css({'cursor':'help', 'text-shadow':'0px 0px 0.5px #666'});
+                $(this).qtip({
+                    show: {solo:true},
+                    position: {viewport:$(window), my:'left center', adjust:{ y: -10, x: 2 }},
+                    style: {tip:{corner:true, method:'polygon'}, classes:'qtip-rounded qtip-shadow ui-tooltip-sb'}
+                });
+            });
+            $.fn.generateStars = function() {
+                return this.each(function(i,e){$(e).html($('<span/>').width($(e).text()*12));});
+            };
+
+            $('.imdbstars').generateStars();
+
+            $("#showTable, #animeTable").tablesorter({
+                widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
+                widgetOptions : {
+                    columnSelector_saveColumns: true, // jshint ignore:line
+                    columnSelector_layout : '<br><label><input type="checkbox">{name}</label>', // jshint ignore:line
+                    columnSelector_mediaquery: false, // jshint ignore:line
+                    columnSelector_cssChecked : 'checked' // jshint ignore:line
+                }
+            });
+
+            $('#popover').popover({
+                placement: 'bottom',
+                html: true, // required if content has HTML
+                content: '<div id="popover-target"></div>'
+            })
+            // bootstrap popover event triggered when the popover opens
+            .on('shown.bs.popover', function (){
+                $.tablesorter.columnSelector.attachTo($("#showTable, #animeTable"), '#popover-target');
+            });
+        },
+        postProcess: function() {
+            $('#episodeDir').fileBrowser({ title: 'Select Unprocessed Episode Folder', key: 'postprocessPath' });
+        }
+    },
     manage: {
         init: function() {
-            $.makeRow = function(indexerId, season, episode, name, checked) {
+            $.makeEpisodeRow = function(indexerId, season, episode, name, checked) {
                 var row = '';
                 row += ' <tr class="' + $('#row_class').val() + ' show-' + indexerId + '">';
                 row += '  <td class="tableleft" align="center"><input type="checkbox" class="' + indexerId + '-epcheck" name="' + indexerId + '-' + season + 'x' + episode + '"' + (checked ? ' checked' : '') + '></td>';
                 row += '  <td>' + season + 'x' + episode + '</td>';
                 row += '  <td class="tableright" style="width: 100%">' + name + '</td>';
                 row += ' </tr>';
+
+                return row;
+            };
+
+            $.makeSubtitleRow = function(indexerId, season, episode, name, subtitles, checked) {
+                var row = '';
+                row += '<tr class="good show-' + indexerId + '">';
+                row += '<td align="center"><input type="checkbox" class="' + indexerId + '-epcheck" name="' + indexerId + '-' + season + 'x' + episode + '"' + (checked ? ' checked' : '') + '></td>';
+                row += '<td style="width: 1%;">' + season + 'x' + episode + '</td>';
+                row += '<td>' + name + '</td>';
+                if(subtitles.length > 0){
+                    row += '<td style="float: right;">';
+                    subtitles = subtitles.split(',');
+                    for (var i in subtitles) {
+                        if (subtitles.hasOwnProperty(i)) {
+                            row += '<img src="/images/subtitles/flags/' + subtitles[i] + '.png" width="16" height="11" alt="' + subtitles[i] + '" />&nbsp;';
+                        }
+                    }
+                    row += '</td>';
+                }
+                row += '</tr>';
 
                 return row;
             };
@@ -1830,19 +2297,19 @@ var SICKRAGE = {
                     7: { sorter: 'archive_firstmatch'},
                     8: { sorter: 'paused'},
                     9: { sorter: 'subtitle'},
-                   10: { sorter: 'default_ep_status'},
-                   11: { sorter: 'status'},
-                   12: { sorter: false},
-                   13: { sorter: false},
-                   14: { sorter: false},
-                   15: { sorter: false},
-                   16: { sorter: false},
-                   17: { sorter: false}
+                    10: { sorter: 'default_ep_status'},
+                    11: { sorter: 'status'},
+                    12: { sorter: false},
+                    13: { sorter: false},
+                    14: { sorter: false},
+                    15: { sorter: false},
+                    16: { sorter: false},
+                    17: { sorter: false}
                 }
             });
         },
         backlogOverview: function() {
-            $('#pickShow').change(function(){
+            $('#pickShow').on('change', function(){
                 var id = $(this).val();
                 if (id) {
                     $('html,body').animate({scrollTop: $('#show-' + id).offset().top -25},'slow');
@@ -1855,20 +2322,67 @@ var SICKRAGE = {
                 sortList: [[0,0]],
                 headers: { 3: { sorter: false } }
             });
-            $('#limit').change(function(){
+            $('#limit').on('change', function(){
                 window.location.href = srRoot + '/manage/failedDownloads/?limit=' + $(this).val();
             });
+
+            $('#submitMassRemove').on('click', function(){
+                var removeArr = [];
+
+                $('.removeCheck').each(function() {
+                    if (this.checked === true) {
+                        removeArr.push($(this).attr('id').split('-')[1]);
+                    }
+                });
+
+                if (removeArr.length === 0) { return false; }
+
+                window.location.href = srRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|');
+            });
+
+            $('.bulkCheck').on('click', function(){
+                var bulkCheck = this;
+                var whichBulkCheck = $(bulkCheck).attr('id');
+
+                $('.'+whichBulkCheck+':visible').each(function(){
+                    this.checked = bulkCheck.checked;
+                });
+            });
+
+            if($('.removeCheck').length){
+                $('.removeCheck').each(function(name) {
+                    var lastCheck = null;
+                    $(name).click(function(event) {
+                        if(!lastCheck || !event.shiftKey) {
+                            lastCheck = this;
+                            return;
+                        }
+
+                        var check = this;
+                        var found = 0;
+
+                        $(name+':visible').each(function() {
+                            switch (found) {
+                                case 2: return false;
+                                case 1: this.checked = lastCheck.checked;
+                            }
+
+                            if (this === check || this === lastCheck) { found++; }
+                        });
+                    });
+                });
+            }
         },
         massEdit: function() {
             $('#location').fileBrowser({ title: 'Select Show Location' });
         },
         episodeStatuses: function() {
-            $('.allCheck').click(function(){
+            $('.allCheck').on('click', function(){
                 var indexerId = $(this).attr('id').split('-')[1];
                 $('.' + indexerId + '-epcheck').prop('checked', $(this).prop('checked'));
             });
 
-            $('.get_more_eps').click(function(){
+            $('.get_more_eps').on('click', function(){
                 var curIndexerId = $(this).attr('id');
                 var checked = $('#allCheck-' + curIndexerId).prop('checked');
                 var lastRow = $('tr#' + curIndexerId);
@@ -1877,13 +2391,12 @@ var SICKRAGE = {
 
                 if(!clicked) {
                     $.getJSON(srRoot+'/manage/showEpisodeStatuses',{
-                        indexer_id: curIndexerId, // jshint ignore:line
+                        'indexer_id': curIndexerId,
                         whichStatus: $('#oldStatus').val()
                     }, function (data) {
                         $.each(data, function(season,eps){
                             $.each(eps, function(episode, name) {
-                                //alert(season+'x'+episode+': '+name);
-                                lastRow.after($.makeRow(curIndexerId, season, episode, name, checked));
+                                lastRow.after($.makeEpisodeRow(curIndexerId, season, episode, name, checked));
                             });
                         });
                     });
@@ -1901,32 +2414,32 @@ var SICKRAGE = {
             });
 
             // selects all visible episode checkboxes.
-            $('.selectAllShows').click(function(){
+            $('.selectAllShows').on('click', function(){
                 $('.allCheck').each(function(){
-                        this.checked = true;
+                    this.checked = true;
                 });
                 $('input[class*="-epcheck"]').each(function(){
-                        this.checked = true;
+                    this.checked = true;
                 });
             });
 
             // clears all visible episode checkboxes and the season selectors
-            $('.unselectAllShows').click(function(){
+            $('.unselectAllShows').on('click', function(){
                 $('.allCheck').each(function(){
-                        this.checked = false;
+                    this.checked = false;
                 });
                 $('input[class*="-epcheck"]').each(function(){
-                        this.checked = false;
+                    this.checked = false;
                 });
             });
         },
         subtitleMissed: function() {
-            $('.allCheck').click(function(){
+            $('.allCheck').on('click', function(){
                 var indexerId = $(this).attr('id').split('-')[1];
                 $('.'+indexerId+'-epcheck').prop('checked', $(this).prop('checked'));
             });
 
-            $('.get_more_eps').click(function(){
+            $('.get_more_eps').on('click', function(){
                 var indexerId = $(this).attr('id');
                 var checked = $('#allCheck-'+indexerId).prop('checked');
                 var lastRow = $('tr#'+indexerId);
@@ -1935,12 +2448,12 @@ var SICKRAGE = {
 
                 if (!clicked) {
                     $.getJSON(srRoot + '/manage/showSubtitleMissed', {
-                        indexer_id: indexerId, // jshint ignore:line
+                        'indexer_id': indexerId,
                         whichSubs: $('#selectSubLang').val()
                     }, function(data) {
                         $.each(data, function(season, eps) {
                             $.each(eps, function(episode, data) {
-                                lastRow.after($.makeRow(indexerId, season, episode, data.name, data.subtitles, checked));
+                                lastRow.after($.makeSubtitleRow(indexerId, season, episode, data.name, data.subtitles, checked));
                             });
                         });
                     });
@@ -1958,23 +2471,68 @@ var SICKRAGE = {
             });
 
             // selects all visible episode checkboxes.
-            $('.selectAllShows').click(function(){
+            $('.selectAllShows').on('click', function(){
                 $('.allCheck').each(function(){
-                        this.checked = true;
+                    this.checked = true;
                 });
                 $('input[class*="-epcheck"]').each(function(){
-                        this.checked = true;
+                    this.checked = true;
                 });
             });
 
             // clears all visible episode checkboxes and the season selectors
-            $('.unselectAllShows').click(function(){
+            $('.unselectAllShows').on('click', function(){
                 $('.allCheck').each(function(){
-                        this.checked = false;
+                    this.checked = false;
                 });
                 $('input[class*="-epcheck"]').each(function(){
-                        this.checked = false;
+                    this.checked = false;
                 });
+            });
+        }
+    },
+    history: {
+        init: function() {
+
+        },
+        index: function() {
+            $("#historyTable:has(tbody tr)").tablesorter({
+                widgets: ['zebra', 'filter'],
+                sortList: [[0,1]],
+                textExtraction: (function(){
+                    if(isMeta('sickbeard.HISTORY_LAYOUT', ['detailed'])){
+                        return {
+                            0: function(node) { return $(node).find('time').attr('datetime'); },
+                            4: function(node) { return $(node).find("span").text().toLowerCase(); }
+                        };
+                    } else {
+                        return {
+                            0: function(node) { return $(node).find('time').attr('datetime'); },
+                            1: function(node) { return $(node).find("span").text().toLowerCase(); },
+                            2: function(node) { return $(node).attr("provider").toLowerCase(); },
+                            5: function(node) { return $(node).attr("quality").toLowerCase(); }
+                        };
+                    }
+                }()),
+                headers: (function(){
+                    if(isMeta('sickbeard.HISTORY_LAYOUT', ['detailed'])){
+                        return {
+                            0: { sorter: 'realISODate' },
+                            4: { sorter: 'quality' }
+                        };
+                    } else {
+                        return {
+                            0: { sorter: 'realISODate' },
+                            4: { sorter: false },
+                            5: { sorter: 'quality' }
+                        };
+                    }
+                }())
+            });
+
+            $('#history_limit').on('change', function() {
+                var url = srRoot + '/history/?limit=' + $(this).val();
+                window.location.href = url;
             });
         }
     }

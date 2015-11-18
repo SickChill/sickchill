@@ -39,6 +39,7 @@ from sickbeard.name_parser.parser import NameParser, InvalidNameException, Inval
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
+from babelfish import language_converters
 
 import adba
 from sickbeard.helpers import verify_freespace
@@ -190,10 +191,17 @@ class PostProcessor(object):
             checklist = glob.glob(ek(os.path.join, ek(os.path.dirname, globbable_file_path), '*')) # get a list of all the files in the folder
             for filefound in checklist: # loop through all the files in the folder, and check if they are the same name even when the cases don't match
                 file_name = filefound.rpartition('.')[0]
+                file_extension = filefound.rpartition('.')[2]
                 if not base_name_only:
-                    file_name = file_name + '.'
-                if file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'): # if there's no difference in the filename add it to the filelist
+                    new_file_name = file_name + '.'
+                if new_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'): # if there's no difference in the filename add it to the filelist
                     filelist.append(filefound)
+                elif file_extension in common.subtitleExtensions:
+                    language_extensions = tuple('.' + c for c in language_converters['opensubtitles'].codes)
+                    if file_name.lower().endswith(language_extensions) and (len(filefound.rsplit('.', 2)[1]) is 2 or 3):
+                        filelist.append(filefound)
+                    elif file_name.lower().endswith('pt-br') and len(filefound.rsplit('.', 2)[1]) is 5:
+                        filelist.append(filefound)
 
         for associated_file_path in filelist:
             # only add associated to list
@@ -299,7 +307,10 @@ class PostProcessor(object):
             # check if file have subtitles language
             if os.path.splitext(cur_extension)[1][1:] in common.subtitleExtensions:
                 cur_lang = os.path.splitext(cur_extension)[0]
-                if cur_lang in sickbeard.subtitles.wantedLanguages():
+                if cur_lang:
+                    cur_lang = cur_lang.lower()
+                    if cur_lang == 'pt-br':
+                        cur_lang = 'pt-BR'
                     cur_extension = cur_lang + os.path.splitext(cur_extension)[1]
 
             # replace .nfo with .nfo-orig to avoid conflicts
@@ -313,7 +324,7 @@ class PostProcessor(object):
             else:
                 new_file_name = helpers.replaceExtension(cur_file_name, cur_extension)
 
-            if sickbeard.SUBTITLES_DIR and cur_extension in common.subtitleExtensions:
+            if sickbeard.SUBTITLES_DIR and cur_extension[-3:] in common.subtitleExtensions:
                 subs_new_path = ek(os.path.join, new_path, sickbeard.SUBTITLES_DIR)
                 dir_exists = helpers.makeDir(subs_new_path)
                 if not dir_exists:
@@ -921,8 +932,6 @@ class PostProcessor(object):
                 if self.is_proper:
                     self._log(
                         u"File exists and new file is smaller, new file is a proper/repack, marking it safe to replace")
-                    return True
-
                 else:
                     self._log(u"File exists and new file is smaller, marking it unsafe to replace")
                     return False
@@ -984,6 +993,10 @@ class PostProcessor(object):
                 if self.release_name:
                     self._log("Found release name " + self.release_name, logger.DEBUG)
                     cur_ep.release_name = self.release_name
+                elif self.file_name:
+                    # If we can't get the release name we expect, save the original release name instead
+                    self._log("Using original release name " + self.file_name, logger.DEBUG)
+                    cur_ep.release_name = self.file_name
                 else:
                     cur_ep.release_name = ""
 

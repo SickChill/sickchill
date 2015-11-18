@@ -5,8 +5,6 @@
     from sickbeard.helpers import anon_url
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/configSubtitles.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/config.js"></script>
 <script>
 $(document).ready(function() {
     $("#subtitles_languages").tokenInput([${','.join("{\"id\": \"" + lang.opensubtitles + "\", name: \"" + lang.name + "\"}" for lang in subtitles.subtitleLanguageFilter())}], {

@@ -3,11 +3,6 @@
     import sickbeard
     from sickbeard import clients
 %>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/configSearch.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/config.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/new/config_search.js"></script>
-</%block>
 <%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -17,9 +12,7 @@
 
 <div id="config">
     <div id="config-content">
-
         <form id="configForm" action="saveSearch" method="post">
-
             <div id="config-components">
                 <ul>
                     <li><a href="#core-component-group1">Episode Search</a></li>
@@ -27,9 +20,7 @@
                     <li><a href="#core-component-group3">Torrent Search</a></li>
                 </ul>
 
-
                 <div id="core-component-group1" class="component-group">
-
                     <div class="component-group-desc">
                         <h3>Episode Search</h3>
                         <p>How to manage searching with <a href="${srRoot}/config/providers">providers</a>.</p>
@@ -428,16 +419,13 @@
                 </div><!-- /component-group2 //-->
 
                 <div id="core-component-group3" class="component-group">
-
                     <div class="component-group-desc">
                         <h3>Torrent Search</h3>
                         <p>How to handle Torrent search results.</p>
                     </div>
 
                     <fieldset class="component-group-list">
-
                         <div class="field-pair">
-
                             <label for="use_torrents">
                                 <span class="component-title">Search torrents</span>
                                 <span class="component-desc">
@@ -447,175 +435,175 @@
                             </label>
                         </div>
 
-                    <div id="content_use_torrents">
-                        <div class="field-pair">
-                            <label for="torrent_method">
-                                <span class="component-title">Send .torrent files to:</span>
-                                <span class="component-desc">
-                                <select name="torrent_method" id="torrent_method" class="form-control input-sm">
-<% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge (via WebUI)", 'deluged': "Deluge (via Daemon)", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent", 'mlnet': "MLDonkey"} %>
-% for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet'):
-                                <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
-% endfor
-                                </select>
-                            </label>
-
-                        <div id="options_torrent_blackhole">
+                        <div id="content_use_torrents">
                             <div class="field-pair">
-                                <label>
-                                    <span class="component-title">Black hole folder location</span>
+                                <label for="torrent_method">
+                                    <span class="component-title">Send .torrent files to:</span>
                                     <span class="component-desc">
-                                        <input type="text" name="torrent_dir" id="torrent_dir" value="${sickbeard.TORRENT_DIR}" class="form-control input-sm input350" />
-                                        <div class="clear-left"><p><b>.torrent</b> files are stored at this location for external software to find and use</p></div>
-                                    </span>
+                                    <select name="torrent_method" id="torrent_method" class="form-control input-sm">
+    <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge (via WebUI)", 'deluged': "Deluge (via Daemon)", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent", 'mlnet': "MLDonkey"} %>
+    % for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet'):
+                                    <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
+    % endfor
+                                    </select>
                                 </label>
+
+                                <div id="options_torrent_blackhole">
+                                    <div class="field-pair">
+                                        <label>
+                                            <span class="component-title">Black hole folder location</span>
+                                            <span class="component-desc">
+                                                <input type="text" name="torrent_dir" id="torrent_dir" value="${sickbeard.TORRENT_DIR}" class="form-control input-sm input350" />
+                                                <div class="clear-left"><p><b>.torrent</b> files are stored at this location for external software to find and use</p></div>
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                    <div></div>
+                                    <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
+                                </div>
                             </div>
 
-                            <div></div>
-                            <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
-                            </div>
-                        </div>
-
-                        <div id="options_torrent_clients">
-                            <div class="field-pair">
-                                <label>
-                                    <span class="component-title" id="host_title">Torrent host:port</span>
-                                    <span class="component-desc">
-                                        <input type="text" name="torrent_host" id="torrent_host" value="${sickbeard.TORRENT_HOST}" class="form-control input-sm input350" />
-                                        <div class="clear-left">
-                                            <p id="host_desc_torrent">URL to your torrent client (e.g. http://localhost:8000/)</p>
-                                        </div>
-                                    </span>
-                                </label>
-                            </div>
-
-                            <div class="field-pair" id="torrent_rpcurl_option">
-                                <label>
-                                    <span class="component-title" id="rpcurl_title">Torrent RPC URL</span>
-                                    <span class="component-desc">
-                                        <input type="text" name="torrent_rpcurl" id="torrent_rpcurl" value="${sickbeard.TORRENT_RPCURL}" class="form-control input-sm input350"/>
-                                        <div class="clear-left">
-                                            <p id="rpcurl_desc_">The path without leading and trailing slashes (e.g. transmission)</p>
-                                        </div>
-                                    </span>
-                                </label>
-                            </div>
-
-                            <div class="field-pair" id="torrent_auth_type_option">
-                                <label>
-                                    <span class="component-title">Http Authentication</span>
-                                    <span class="component-desc">
-                                        <select name="torrent_auth_type" id="torrent_auth_type" class="form-control input-sm">
-                                        <% http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"} %>
-                                        % for authvalue, authname in http_authtype.iteritems():
-                                            <option id="torrent_auth_type_value" value="${authvalue}" ${('', 'selected="selected"')[sickbeard.TORRENT_AUTH_TYPE == authvalue]}>${authname}</option>
-                                        % endfor
-                                        </select>
-                                        <p></p>
-                                    </span>
-                                </label>
-                            </div>
-
-                            <div class="field-pair" id="torrent_verify_cert_option">
-                                <label for="torrent_verify_cert">
-                                    <span class="component-title">Verify certificate</span>
-                                    <span class="component-desc">
-                                        <input type="checkbox" name="torrent_verify_cert" class="enabler" id="torrent_verify_cert" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_VERIFY_CERT)]}/>
-                                        <p id="torrent_verify_deluge">disable if you get "Deluge: Authentication Error" in your log</p>
-                                        <p id="torrent_verify_rtorrent">Verify SSL certificates for HTTPS requests</p>
-                                    </span>
-                                </label>
-                            </div>
-
-                            <div class="field-pair" id="torrent_username_option">
-                                <label>
-                                    <span class="component-title" id="username_title">Client username</span>
-                                    <span class="component-desc">
-                                        <input type="text" name="torrent_username" id="torrent_username" value="${sickbeard.TORRENT_USERNAME}" class="form-control input-sm input200" />
-                                        <p>(blank for none)</p>
-                                    </span>
-                                </label>
-                            </div>
-
-                            <div class="field-pair" id="torrent_password_option">
-                                <label>
-                                    <span class="component-title" id="password_title">Client password</span>
-                                    <span class="component-desc">
-                                        <input type="password" name="torrent_password" id="torrent_password" value="${sickbeard.TORRENT_PASSWORD}" class="form-control input-sm input200" />
-                                        <p>(blank for none)</p>
-                                    </span>
-                                </label>
-                            </div>
-
-                            <div class="field-pair" id="torrent_label_option">
-                                <label>
-                                    <span class="component-title">Add label to torrent</span>
-                                    <span class="component-desc">
-                                        <input type="text" name="torrent_label" id="torrent_label" value="${sickbeard.TORRENT_LABEL}" class="form-control input-sm input200" />
-                                        <span id="label_warning_deluge" style="display:none"><p>(blank spaces are not allowed)</p>
-                                            <div class="clear-left"><p>note: label plugin must be enabled in Deluge clients</p></div>
+                            <div id="options_torrent_clients">
+                                <div class="field-pair">
+                                    <label>
+                                        <span class="component-title" id="host_title">Torrent host:port</span>
+                                        <span class="component-desc">
+                                            <input type="text" name="torrent_host" id="torrent_host" value="${sickbeard.TORRENT_HOST}" class="form-control input-sm input350" />
+                                            <div class="clear-left">
+                                                <p id="host_desc_torrent">URL to your torrent client (e.g. http://localhost:8000/)</p>
+                                            </div>
                                         </span>
-                                    </span>
-                                </label>
-                            </div>
+                                    </label>
+                                </div>
 
-                            <div class="field-pair" id="torrent_label_anime_option">
-                                <label>
-                                    <span class="component-title">Add label to torrent for anime</span>
-                                    <span class="component-desc">
-                                        <input type="text" name="torrent_label_anime" id="torrent_label_anime" value="${sickbeard.TORRENT_LABEL_ANIME}" class="form-control input-sm input200" />
-                                        <span id="label_anime_warning_deluge" style="display:none"><p>(blank spaces are not allowed)</p>
-                                            <div class="clear-left"><p>note: label plugin must be enabled in Deluge clients</p></div>
+                                <div class="field-pair" id="torrent_rpcurl_option">
+                                    <label>
+                                        <span class="component-title" id="rpcurl_title">Torrent RPC URL</span>
+                                        <span class="component-desc">
+                                            <input type="text" name="torrent_rpcurl" id="torrent_rpcurl" value="${sickbeard.TORRENT_RPCURL}" class="form-control input-sm input350"/>
+                                            <div class="clear-left">
+                                                <p id="rpcurl_desc_">The path without leading and trailing slashes (e.g. transmission)</p>
+                                            </div>
                                         </span>
-                                    </span>
-                                </label>
-                            </div>
+                                    </label>
+                                </div>
 
-                            <div class="field-pair" id="torrent_path_option">
-                                <label>
-                                    <span class="component-title" id="directory_title">Downloaded files location</span>
-                                    <span class="component-desc">
-                                        <input type="text" name="torrent_path" id="torrent_path" value="${sickbeard.TORRENT_PATH}" class="form-control input-sm input350" />
-                                        <div class="clear-left"><p>where <span id="torrent_client">the torrent client</span> will save downloaded files (blank for client default)
-                                            <span id="path_synology"> <b>note:</b> the destination has to be a shared folder for Synology DS</span></p>
-                                        </div>
-                                    </span>
-                                </label>
-                            </div>
+                                <div class="field-pair" id="torrent_auth_type_option">
+                                    <label>
+                                        <span class="component-title">Http Authentication</span>
+                                        <span class="component-desc">
+                                            <select name="torrent_auth_type" id="torrent_auth_type" class="form-control input-sm">
+                                            <% http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"} %>
+                                            % for authvalue, authname in http_authtype.iteritems():
+                                                <option id="torrent_auth_type_value" value="${authvalue}" ${('', 'selected="selected"')[sickbeard.TORRENT_AUTH_TYPE == authvalue]}>${authname}</option>
+                                            % endfor
+                                            </select>
+                                            <p></p>
+                                        </span>
+                                    </label>
+                                </div>
 
-                            <div class="field-pair" id="torrent_seed_time_option">
-                                <label>
-                                    <span class="component-title" id="torrent_seed_time_label">Minimum seeding time is</span>
-                                    <span class="component-desc"><input type="number" step="1" name="torrent_seed_time" id="torrent_seed_time" value="${sickbeard.TORRENT_SEED_TIME}" class="form-control input-sm input100" />
-                                    <p>hours. (default:'0' passes blank to client and '-1' passes nothing)</p></span>
-                                </label>
-                            </div>
+                                <div class="field-pair" id="torrent_verify_cert_option">
+                                    <label for="torrent_verify_cert">
+                                        <span class="component-title">Verify certificate</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" name="torrent_verify_cert" class="enabler" id="torrent_verify_cert" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_VERIFY_CERT)]}/>
+                                            <p id="torrent_verify_deluge">disable if you get "Deluge: Authentication Error" in your log</p>
+                                            <p id="torrent_verify_rtorrent">Verify SSL certificates for HTTPS requests</p>
+                                        </span>
+                                    </label>
+                                </div>
 
-                            <div class="field-pair" id="torrent_paused_option">
-                                <label>
-                                    <span class="component-title">Start torrent paused</span>
-                                    <span class="component-desc">
-                                        <input type="checkbox" name="torrent_paused" class="enabler" id="torrent_paused" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_PAUSED)]}/>
-                                        <p>add .torrent to client but do <b style="font-weight:900">not</b> start downloading</p>
-                                    </span>
-                                </label>
-                            </div>
+                                <div class="field-pair" id="torrent_username_option">
+                                    <label>
+                                        <span class="component-title" id="username_title">Client username</span>
+                                        <span class="component-desc">
+                                            <input type="text" name="torrent_username" id="torrent_username" value="${sickbeard.TORRENT_USERNAME}" class="form-control input-sm input200" />
+                                            <p>(blank for none)</p>
+                                        </span>
+                                    </label>
+                                </div>
 
-                            <div class="field-pair" id="torrent_high_bandwidth_option">
-                                <label>
-                                    <span class="component-title">Allow high bandwidth</span>
-                                    <span class="component-desc">
-                                        <input type="checkbox" name="torrent_high_bandwidth" class="enabler" id="torrent_high_bandwidth" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_HIGH_BANDWIDTH)]}/>
-                                        <p>use high bandwidth allocation if priority is high</p>
-                                    </span>
-                                </label>
-                            </div>
+                                <div class="field-pair" id="torrent_password_option">
+                                    <label>
+                                        <span class="component-title" id="password_title">Client password</span>
+                                        <span class="component-desc">
+                                            <input type="password" name="torrent_password" id="torrent_password" value="${sickbeard.TORRENT_PASSWORD}" class="form-control input-sm input200" />
+                                            <p>(blank for none)</p>
+                                        </span>
+                                    </label>
+                                </div>
 
-                            <div class="testNotification" id="test_torrent_result">Click below to test</div>
-                            <input class="btn" type="button" value="Test Connection" id="test_torrent" class="btn test-button"/>
-                            <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
-                            </div>
-                    </div><!-- /content_use_torrents //-->
+                                <div class="field-pair" id="torrent_label_option">
+                                    <label>
+                                        <span class="component-title">Add label to torrent</span>
+                                        <span class="component-desc">
+                                            <input type="text" name="torrent_label" id="torrent_label" value="${sickbeard.TORRENT_LABEL}" class="form-control input-sm input200" />
+                                            <span id="label_warning_deluge" style="display:none"><p>(blank spaces are not allowed)</p>
+                                                <div class="clear-left"><p>note: label plugin must be enabled in Deluge clients</p></div>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div class="field-pair" id="torrent_label_anime_option">
+                                    <label>
+                                        <span class="component-title">Add label to torrent for anime</span>
+                                        <span class="component-desc">
+                                            <input type="text" name="torrent_label_anime" id="torrent_label_anime" value="${sickbeard.TORRENT_LABEL_ANIME}" class="form-control input-sm input200" />
+                                            <span id="label_anime_warning_deluge" style="display:none"><p>(blank spaces are not allowed)</p>
+                                                <div class="clear-left"><p>note: label plugin must be enabled in Deluge clients</p></div>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div class="field-pair" id="torrent_path_option">
+                                    <label>
+                                        <span class="component-title" id="directory_title">Downloaded files location</span>
+                                        <span class="component-desc">
+                                            <input type="text" name="torrent_path" id="torrent_path" value="${sickbeard.TORRENT_PATH}" class="form-control input-sm input350" />
+                                            <div class="clear-left"><p>where <span id="torrent_client">the torrent client</span> will save downloaded files (blank for client default)
+                                                <span id="path_synology"> <b>note:</b> the destination has to be a shared folder for Synology DS</span></p>
+                                            </div>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div class="field-pair" id="torrent_seed_time_option">
+                                    <label>
+                                        <span class="component-title" id="torrent_seed_time_label">Minimum seeding time is</span>
+                                        <span class="component-desc"><input type="number" step="1" name="torrent_seed_time" id="torrent_seed_time" value="${sickbeard.TORRENT_SEED_TIME}" class="form-control input-sm input100" />
+                                        <p>hours. (default:'0' passes blank to client and '-1' passes nothing)</p></span>
+                                    </label>
+                                </div>
+
+                                <div class="field-pair" id="torrent_paused_option">
+                                    <label>
+                                        <span class="component-title">Start torrent paused</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" name="torrent_paused" class="enabler" id="torrent_paused" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_PAUSED)]}/>
+                                            <p>add .torrent to client but do <b style="font-weight:900">not</b> start downloading</p>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div class="field-pair" id="torrent_high_bandwidth_option">
+                                    <label>
+                                        <span class="component-title">Allow high bandwidth</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" name="torrent_high_bandwidth" class="enabler" id="torrent_high_bandwidth" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_HIGH_BANDWIDTH)]}/>
+                                            <p>use high bandwidth allocation if priority is high</p>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div class="testNotification" id="test_torrent_result">Click below to test</div>
+                                <input class="btn" type="button" value="Test Connection" id="test_torrent" class="btn test-button"/>
+                                <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
+                                </div>
+                        </div><!-- /content_use_torrents //-->
                     </fieldset>
                 </div><!-- /component-group3 //-->
 
@@ -624,10 +612,7 @@
                 <input type="submit" class="btn pull-left config_submitter button" value="Save Changes" />
 
             </div><!-- /config-components //-->
-
         </form>
     </div>
 </div>
-
-<div></div>
 </%block>

@@ -412,6 +412,7 @@ class GenericProvider(object):
                     actual_season = parse_result.season_number
                     actual_episodes = parse_result.episode_numbers
             else:
+                sameDaySpecial = False
                 if not parse_result.is_air_by_date:
                     logger.log(
                         u"This is supposed to be a date search but the result " + title + " didn't parse as one, skipping it",
@@ -424,13 +425,22 @@ class GenericProvider(object):
                         "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
                         [showObj.indexerid, airdate])
 
-                    if len(sql_results) != 1:
+                    if len(sql_results) == 2:
+                        if int(sql_results[0]['season']) == 0 and int(sql_results[1]['season']) != 0:
+                            actual_season = int(sql_results[1]["season"])
+                            actual_episodes = [int(sql_results[1]["episode"])]
+                            sameDaySpecial = True
+                        elif int(sql_results[1]['season']) == 0 and int(sql_results[0]['season']) != 0:
+                            actual_season = int(sql_results[0]["season"])
+                            actual_episodes = [int(sql_results[0]["episode"])]
+                            sameDaySpecial = True
+                    elif len(sql_results) != 1:
                         logger.log(
                             u"Tried to look up the date for the episode " + title + " but the database didn't give proper results, skipping it",
                             logger.WARNING)
                         addCacheEntry = True
 
-                if not addCacheEntry:
+                if not addCacheEntry and not sameDaySpecial:
                     actual_season = int(sql_results[0]["season"])
                     actual_episodes = [int(sql_results[0]["episode"])]
 

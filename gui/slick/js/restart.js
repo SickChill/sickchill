@@ -49,13 +49,13 @@ $(document).ready(function() {
         });
     }
 
-    function ajaxError(x, e) {
+    function ajaxError(x) {
         if (console_debug) { // jshint ignore:line
             if (x.status === 0) {
                 console.log(console_prefix + 'isAlive: Sickrage is not responding.');
-            } else if (x.status == 404) {
+            } else if (x.status === 404) {
                 console.log(console_prefix + 'isAlive: Requested URL not found.');
-            } else if (x.status == 500) {
+            } else if (x.status === 500) {
                 console.log(console_prefix + 'isAlive: Internel Server Error.');
             }  else {
                 console.log(console_prefix + 'isAlive: Unknow Error.\n' + x.responseText);

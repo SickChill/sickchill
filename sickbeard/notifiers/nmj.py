@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nico Berlee http://nico.berlee.nl/
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -16,7 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import urllib, urllib2
+import urllib
+import urllib2
 import sickbeard
 import telnetlib
 import re
@@ -30,7 +33,7 @@ except ImportError:
     import xml.etree.ElementTree as etree
 
 
-class NMJNotifier:
+class NMJNotifier(object):
     def notify_settings(self, host):
         """
         Retrieves the settings from a NMJ/Popcorn hour
@@ -41,23 +44,20 @@ class NMJNotifier:
         """
 
         # establish a terminal session to the PC
-        terminal = False
         try:
             terminal = telnetlib.Telnet(host)
         except Exception:
-            logger.log(u"Warning: unable to get a telnet session to %s" % (host), logger.WARNING)
+            logger.log(u"Warning: unable to get a telnet session to %s" % host, logger.WARNING)
             return False
 
         # tell the terminal to output the necessary info to the screen so we can search it later
-        logger.log(u"Connected to %s via telnet" % (host), logger.DEBUG)
+        logger.log(u"Connected to %s via telnet" % host, logger.DEBUG)
         terminal.read_until("sh-3.00# ")
         terminal.write("cat /tmp/source\n")
         terminal.write("cat /tmp/netshare\n")
         terminal.write("exit\n")
         tnoutput = terminal.read_all()
 
-        database = ""
-        device = ""
         match = re.search(r"(.+\.db)\r\n?(.+)(?=sh-3.00# cat /tmp/netshare)", tnoutput)
 
         # if we found the database in the terminal output then save that database to the config
@@ -67,7 +67,7 @@ class NMJNotifier:
             logger.log(u"Found NMJ database %s on device %s" % (database, device), logger.DEBUG)
             sickbeard.NMJ_DATABASE = database
         else:
-            logger.log(u"Could not get current NMJ database on %s, NMJ is probably not running!" % (host), logger.WARNING)
+            logger.log(u"Could not get current NMJ database on %s, NMJ is probably not running!" % host, logger.WARNING)
             return False
 
         # if the device is a remote host then try to parse the mounting URL and save it to the config
@@ -76,7 +76,7 @@ class NMJNotifier:
 
             if match:
                 mount = match.group().replace("127.0.0.1", host)
-                logger.log(u"Found mounting url on the Popcorn Hour in configuration: %s" % (mount), logger.DEBUG)
+                logger.log(u"Found mounting url on the Popcorn Hour in configuration: %s" % mount, logger.DEBUG)
                 sickbeard.NMJ_MOUNT = mount
             else:
                 logger.log(u"Detected a network share on the Popcorn Hour, but could not get the mounting url",
@@ -109,7 +109,7 @@ class NMJNotifier:
         Sends a NMJ update command to the specified machine
 
         host: The hostname/IP to send the request to (no port)
-        database: The database to send the requst to
+        database: The database to send the request to
         mount: The mount URL to use (optional)
 
         Returns: True if the request succeeded, False otherwise
@@ -119,7 +119,7 @@ class NMJNotifier:
         if mount:
             try:
                 req = urllib2.Request(mount)
-                logger.log(u"Try to mount network drive via url: %s" % (mount), logger.DEBUG)
+                logger.log(u"Try to mount network drive via url: %s" % mount, logger.DEBUG)
                 handle = urllib2.urlopen(req)
             except IOError, e:
                 if hasattr(e, 'reason'):
@@ -145,7 +145,7 @@ class NMJNotifier:
         # send the request to the server
         try:
             req = urllib2.Request(updateUrl)
-            logger.log(u"Sending NMJ scan update command via url: %s" % (updateUrl), logger.DEBUG)
+            logger.log(u"Sending NMJ scan update command via url: %s" % updateUrl, logger.DEBUG)
             handle = urllib2.urlopen(req)
             response = handle.read()
         except IOError, e:
@@ -163,12 +163,12 @@ class NMJNotifier:
             et = etree.fromstring(response)
             result = et.findtext("returnValue")
         except SyntaxError, e:
-            logger.log(u"Unable to parse XML returned from the Popcorn Hour: %s" % (e), logger.ERROR)
+            logger.log(u"Unable to parse XML returned from the Popcorn Hour: %s" % e, logger.ERROR)
             return False
 
         # if the result was a number then consider that an error
         if int(result) > 0:
-            logger.log(u"Popcorn Hour returned an errorcode: %s" % (result), logger.ERROR)
+            logger.log(u"Popcorn Hour returned an error code: %s" % result, logger.ERROR)
             return False
         else:
             logger.log(u"NMJ started background scan", logger.INFO)

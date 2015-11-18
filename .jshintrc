@@ -28,6 +28,7 @@
         "_": true,
         "bootbox": true,
         "PNotify": true,
-        "anonURL": true
+        "anonURL": true,
+        "window": true
     }
 }

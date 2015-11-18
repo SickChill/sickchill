@@ -50,10 +50,10 @@ class RarbgProvider(generic.TorrentProvider):
         self.tokenExpireDate = None
 
         self.urls = {'url': u'https://rarbg.com',
-                     'token': u'http://torrentapi.org/pubapi_v2.php?get_token=get_token&format=json&app_id=sickrage',
-                     'listing': u'http://torrentapi.org/pubapi_v2.php?mode=list&app_id=sickrage',
-                     'search': u'http://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_string={search_string}',
-                     'search_tvdb': u'http://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_tvdb={tvdb}&search_string={search_string}',
+                     'token': u'http://torrentapi.org/pubapi_v2.php?get_token=get_token&format=json&app_id=sickrage2',
+                     'listing': u'http://torrentapi.org/pubapi_v2.php?mode=list&app_id=sickrage2',
+                     'search': u'http://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage2&search_string={search_string}',
+                     'search_tvdb': u'http://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage2&search_tvdb={tvdb}&search_string={search_string}',
                      'api_spec': u'https://rarbg.com/pubapi/apidocs.txt'}
 
         self.url = self.urls['listing']
@@ -143,8 +143,7 @@ class RarbgProvider(generic.TorrentProvider):
                 if self.minseed:
                     searchURL += self.urlOptions['seeders'].format(min_seeders=int(self.minseed))
 
-                if self.sorting:
-                    searchURL += self.urlOptions['sorting'].format(sorting=self.sorting)
+                searchURL += self.urlOptions['sorting'].format(sorting=(self.sorting if self.sorting else 'seeders', 'last')[mode is 'RSS'])
 
                 if self.ranked:
                     searchURL += self.urlOptions['ranked'].format(ranked=int(self.ranked))

@@ -9,9 +9,6 @@
 <%block name="metas">
 <meta data-var="max_download_count" data-content="${max_download_count}">
 </%block>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/new/home.js?${sbPID}"></script>
-</%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 % if not header is UNDEFINED:

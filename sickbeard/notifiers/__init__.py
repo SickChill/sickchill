@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -40,8 +42,6 @@ import freemobile
 import tweet
 import trakt
 import emailnotify
-
-from sickbeard.common import *
 
 # home theater / nas
 kodi_notifier = kodi.KODINotifier()

@@ -96,7 +96,7 @@ class TORRENTZProvider(generic.TorrentProvider):
                 entries = entries if isinstance(entries, list) else [entries]
 
                 for item in entries:
-                    if 'tv' not in item.get('category', ''):
+                    if item.get('category', None) and 'tv' not in item.get('category', ''):
                         continue
 
                     title = item.get('title', '').rsplit(' ', 1)[0].replace(' ', '.')
