@@ -398,7 +398,7 @@ var SICKRAGE = {
                 var prowl = {};
                 prowl.api = $.trim($('#prowl_api').val());
                 prowl.priority = $('#prowl_priority').val();
-                if (!prowl.ai) {
+                if (!prowl.api) {
                     $('#testProwl-result').html('Please fill out the necessary fields above.');
                     $('#prowl_api').addClass('warning');
                     return;
@@ -1531,7 +1531,7 @@ var SICKRAGE = {
                 }
             };
 
-            $.fn.torrentMethodHandler = function() {
+            $.torrentMethodHandler = function() {
                 $('#options_torrent_clients').hide();
                 $('#options_torrent_blackhole').hide();
 
