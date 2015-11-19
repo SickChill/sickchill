@@ -103,7 +103,7 @@ class NewznabProvider(generic.NZBProvider):
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
-        url = "%s/api?%s" % (self.url, urllib.urlencode(params))
+        url = os.path.join(self.url, 'api?') +  urllib.urlencode(params)
         data = self.getURL(url)
         if not data:
             error_string = u"Error getting xml for [%s]" % url
@@ -202,7 +202,7 @@ class NewznabProvider(generic.NZBProvider):
                 try:
                     err_code = int(data.error.attrs['code'])
                     err_desc = data.error.attrs['description']
-                    if not err_code or err_desc:
+                    if not (err_code or err_desc):
                         raise
                 except (AssertionError, AttributeError, ValueError):
                     return self._checkAuth()
@@ -212,11 +212,13 @@ class NewznabProvider(generic.NZBProvider):
             return self._checkAuth()
 
         if err_code == 100:
-            raise AuthException("Your API key for " + self.name + " is incorrect, check your config.")
+            raise AuthException("Your API key for %s is incorrect, check your config." % self.name)
         elif err_code == 101:
-            raise AuthException("Your account on " + self.name + " has been suspended, contact the administrator.")
+            raise AuthException("Your account on %s has been suspended, contact the administrator." % self.name)
         elif err_code == 102:
-            raise AuthException("Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
+            raise AuthException("Your account isn't allowed to use the API on %s, contact the administrator" % self.name)
+        elif err_code == 500:
+            raise AuthException("Your account for %s has reached the api limit" % self.name)
         else:
             logger.log(u"Unknown error: %s" % err_desc, logger.ERROR)
 
@@ -243,7 +245,7 @@ class NewznabProvider(generic.NZBProvider):
 
         results = []
 
-        search_url = self.url + 'api?' + urllib.urlencode(params)
+        search_url = os.path.join(self.url, 'api?') + urllib.urlencode(params)
         logger.log(u"Search url: %s" % search_url, logger.DEBUG)
         data = self.getURL(search_url)
         if not data:
