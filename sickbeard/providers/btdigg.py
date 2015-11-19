@@ -1,22 +1,23 @@
+# coding=utf-8
 # Author: Jodi Jones <venom@gen-x.co.nz>
 # URL: http://code.google.com/p/sickbeard/
-# Author: Gonçalo <matigonkas@hotmail.com>
+# Rewrite: Gonçalo <matigonkas@outlook.com>
 # URL: https://github.com/SickRage/SickRage
 #
 # This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from sickbeard.providers import generic
 from urllib import urlencode
@@ -36,11 +37,9 @@ class BTDIGGProvider(generic.TorrentProvider):
 
         self.url = self.urls['url']
 
-        self.search_params = {
-            'q': '',
-            'order': '1',
-            'p': 1,
-        }
+        # Unsupported
+        # self.minseed = 1
+        # self.minleech = 0
 
         self.cache = BTDiggCache(self)
 
@@ -48,6 +47,7 @@ class BTDIGGProvider(generic.TorrentProvider):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
+        search_params = {'p': 1}
 
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
@@ -56,10 +56,10 @@ class BTDIGGProvider(generic.TorrentProvider):
                 if mode is not 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
-                self.search_params['q'] = search_string.encode('utf-8')
-                self.search_params['order'] = '1' if mode is not 'RSS' else '2'
+                search_params['q'] = search_string.encode('utf-8')
+                search_params['order'] = '1' if mode is not 'RSS' else '2'
 
-                searchURL = self.urls['api'] + '?' + urlencode(self.search_params)
+                searchURL = self.urls['api'] + '?' + urlencode(search_params)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
                 jdata = self.getURL(searchURL, json=True)
@@ -79,7 +79,7 @@ class BTDIGGProvider(generic.TorrentProvider):
                         if not all([title, download_url]):
                             continue
 
-                        # Filter unseeded torrent
+                        # Filter unseeded torrent (Unsupported)
                         # if seeders < self.minseed or leechers < self.minleech:
                         #    if mode is not 'RSS':
                         #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -91,8 +91,8 @@ class BTDIGGProvider(generic.TorrentProvider):
 
                         items[mode].append(item)
 
-            # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            # For each search mode sort all the items by seeders if available (Unsupported)
+            # items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 
@@ -112,7 +112,7 @@ class BTDiggCache(tvcache.TVCache):
     def _getRSSData(self):
 
         # Use this hacky way for RSS search since most results will use this codecs
-        search_params = {'RSS': ['x264','x264.HDTV','720.HDTV.x264']}
+        search_params = {'RSS': ['x264', 'x264.HDTV', '720.HDTV.x264']}
         return {'entries': self.provider._doSearch(search_params)}
 
 provider = BTDIGGProvider()
