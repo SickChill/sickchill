@@ -502,7 +502,8 @@ class WebRoot(WebHandler):
 
         t = PageTemplate(rh=self, filename='schedule.mako')
         return t.render(submenu=submenu, next_week=next_week1, today=today, results=results, layout=layout,
-                        title='Schedule', header='Schedule', topmenu='schedule')
+                        title='Schedule', header='Schedule', topmenu='schedule',
+                        controller="schedule", action="index")
 
 
 class CalendarHandler(BaseHandler):
@@ -5076,7 +5077,8 @@ class ErrorLogs(WebRoot):
         return t.render(
             header="Log File", title="Logs", topmenu="system",
             logLines=u"".join(data), minLevel=minLevel, logNameFilters=logNameFilters,
-            logFilter=logFilter, logSearch=logSearch)
+            logFilter=logFilter, logSearch=logSearch,
+            controller="errorlogs", action="viewlogs")
 
     def submit_errors(self):
         submitter_result, issue_id = logger.submit_errors()
