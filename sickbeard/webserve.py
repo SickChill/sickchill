@@ -1077,7 +1077,8 @@ class Home(WebRoot):
                 rootDir[subject] = helpers.getDiskSpaceUsage(subject)
 
         t = PageTemplate(rh=self, filename="status.mako")
-        return t.render(title='Status', header='Status', topmenu='system', tvdirFree=tvdirFree, rootDir=rootDir)
+        return t.render(title='Status', header='Status', topmenu='system', tvdirFree=tvdirFree, rootDir=rootDir,
+                controller="home", action="status")
 
     def shutdown(self, pid=None):
         if not Shutdown.stop(pid):
