@@ -136,7 +136,7 @@ GIT_AUTOISSUES = False
 GIT_NEWVER = False
 DEVELOPER = False
 
-NEWS_URL = 'http://SickRage.github.io/sickrage-news/news.md'
+NEWS_URL = 'http://sickrage.github.io/sickrage-news/news.md'
 NEWS_LAST_READ = None
 NEWS_LATEST = None
 NEWS_UNREAD = 0

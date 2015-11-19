@@ -380,7 +380,7 @@ var SICKRAGE = {
                 var growl = {};
                 growl.host = $.trim($('#growl_host').val());
                 growl.password = $.trim($('#growl_password').val());
-                if (!growl.ost) {
+                if (!growl.host) {
                     $('#testGrowl-result').html('Please fill out the necessary fields above.');
                     $('#growl_host').addClass('warning');
                     return;
@@ -398,7 +398,7 @@ var SICKRAGE = {
                 var prowl = {};
                 prowl.api = $.trim($('#prowl_api').val());
                 prowl.priority = $('#prowl_priority').val();
-                if (!prowl.ai) {
+                if (!prowl.api) {
                     $('#testProwl-result').html('Please fill out the necessary fields above.');
                     $('#prowl_api').addClass('warning');
                     return;
@@ -1531,7 +1531,7 @@ var SICKRAGE = {
                 }
             };
 
-            $.fn.torrentMethodHandler = function() {
+            $.torrentMethodHandler = function() {
                 $('#options_torrent_clients').hide();
                 $('#options_torrent_blackhole').hide();
 
@@ -2236,6 +2236,23 @@ var SICKRAGE = {
         },
         postProcess: function() {
             $('#episodeDir').fileBrowser({ title: 'Select Unprocessed Episode Folder', key: 'postprocessPath' });
+        },
+        status: function() {
+            $("#schedulerStatusTable").tablesorter({
+                widgets: ['saveSort', 'zebra'],
+                textExtraction: {
+                    5: function(node) { return $(node).data('seconds'); },
+                    6: function(node) { return $(node).data('seconds'); }
+                },
+                headers: {
+                    5: { sorter: 'digit' },
+                    6: { sorter: 'digit' }
+                }
+            });
+            $("#queueStatusTable").tablesorter({
+                widgets: ['saveSort', 'zebra'],
+                sortList: [[3,0], [4,0], [2,1]]
+            });
         }
     },
     manage: {
@@ -2533,6 +2550,102 @@ var SICKRAGE = {
             $('#history_limit').on('change', function() {
                 var url = srRoot + '/history/?limit=' + $(this).val();
                 window.location.href = url;
+            });
+        }
+    },
+    errorlogs: {
+        init: function() {
+
+        },
+        index: function() {
+
+        },
+        viewlogs: function() {
+            $('#minLevel,#logFilter,#logSearch').on('keyup change', _.debounce(function () {
+                if ($('#logSearch').val().length > 0){
+                    $('#logFilter option[value="<NONE>"]').prop('selected', true);
+                    $('#minLevel option[value=5]').prop('selected', true);
+                }
+                $('#minLevel').prop('disabled', true);
+                $('#logFilter').prop('disabled', true);
+                document.body.style.cursor='wait';
+                var url = srRoot + '/errorlogs/viewlog/?minLevel='+$('select[name=minLevel]').val()+'&logFilter='+$('select[name=logFilter]').val()+'&logSearch='+$('#logSearch').val();
+                $.get(url, function(data){
+                    history.pushState('data', '', url);
+                    $('pre').html($(data).find('pre').html());
+                    $('#minLevel').prop('disabled', false);
+                    $('#logFilter').prop('disabled', false);
+                    document.body.style.cursor='default';
+                });
+            }, 500));
+        }
+    },
+    schedule: {
+        init: function() {
+
+        },
+        index: function() {
+            if(isMeta('sickbeard.COMING_EPS_LAYOUT', ['list'])){
+                var sortCodes = {'date': 0, 'show': 2, 'network': 5};
+                var sort = getMeta('sickbeard.COMING_EPS_SORT');
+                var sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
+
+                $('#showListTable:has(tbody tr)').tablesorter({
+                    widgets: ['stickyHeaders', 'filter', 'columnSelector', 'saveSort'],
+                    sortList: sortList,
+                    textExtraction: {
+                        0: function(node) { return $(node).find('time').attr('datetime'); },
+                        1: function(node) { return $(node).find('time').attr('datetime'); },
+                        7: function(node) { return $(node).find('span').text().toLowerCase(); }
+                    },
+                    headers: {
+                        0: { sorter: 'realISODate' },
+                        1: { sorter: 'realISODate' },
+                        2: { sorter: 'loadingNames' },
+                        4: { sorter: 'loadingNames' },
+                        7: { sorter: 'quality' },
+                        8: { sorter: false },
+                        9: { sorter: false }
+                    },
+                    widgetOptions: (function() {
+                        if (metaToBool('sickbeard.FILTER_ROW')) {
+                            return {
+                                'filter_columnFilters': true,
+                                'filter_hideFilters': true,
+                                'filter_saveFilters': true,
+                                'columnSelector_mediaquery': false
+                            };
+                        } else {
+                            return {
+                                'filter_columnFilters': false,
+                                'columnSelector_mediaquery': false
+                            };
+                        }
+                    }())
+                });
+
+                $('#srRoot').ajaxEpSearch();
+            }
+
+            if(isMeta('sickbeard.COMING_EPS_LAYOUT', ['banner', 'poster'])){
+                $('#srRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
+                $('.ep_summary').hide();
+                $('.ep_summaryTrigger').click(function() {
+                    $(this).next('.ep_summary').slideToggle('normal', function() {
+                        $(this).prev('.ep_summaryTrigger').attr('src', function(i, src) {
+                            return $(this).next('.ep_summary').is(':visible') ? src.replace('plus','minus') : src.replace('minus','plus');
+                        });
+                    });
+                });
+            }
+
+            $('#popover').popover({
+                placement: 'bottom',
+                html: true, // required if content has HTML
+                content: '<div id="popover-target"></div>'
+            }).on('shown.bs.popover', function () { // bootstrap popover event triggered when the popover opens
+                // call this function to copy the column selection code into the popover
+                $.tablesorter.columnSelector.attachTo( $('#showListTable'), '#popover-target');
             });
         }
     }

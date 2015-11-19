@@ -2,9 +2,10 @@
   "name": "sickrage",
   "version": "4.0.72",
   "private": true,
-  "dependencies": {
+  "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-bower-concat": "^0.5.0",
+    "grunt-cli": "^0.1.13",
     "grunt-contrib-cssmin": "^0.14.0",
     "grunt-contrib-jshint": "^0.11.3",
     "grunt-contrib-uglify": "^0.9.2"
