@@ -60,7 +60,7 @@
             fileBrowserDialog = $('<div id="fileBrowserDialog" style="display:hidden"></div>').appendTo('body').dialog({
                 dialogClass: 'browserDialog',
                 title:       options.title,
-                position:    ['center', 40],
+                position:    { my: 'center top', at: 'center top+60', of: window },
                 minWidth:    Math.min($(document).width() - 80, 650),
                 height:      Math.min($(document).height() - 80, $(window).height() - 80),
                 maxHeight:   Math.min($(document).height() - 80, $(window).height() - 80),
@@ -129,7 +129,6 @@
                 },
                 open: function (event, ui) {
                     $(".ui-autocomplete li.ui-menu-item a").removeClass("ui-corner-all");
-                    $(".ui-autocomplete li.ui-menu-item:odd a").addClass("ui-menu-item-alternate");
                 }
             })
                 .data("ui-autocomplete")._renderItem = function (ul, item) {

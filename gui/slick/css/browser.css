@@ -3,6 +3,10 @@
     overflow-y: auto;
 }
 
+#fileBrowserDialog h2 {
+    font-size: 20px;
+}
+
 #fileBrowserDialog ul {
     margin: 0;
     padding: 0;
@@ -20,7 +24,7 @@
 }
 
 #fileBrowserDialog ul li a:hover {
-    color: #09A2FF;
+    color: #00f;
     background: none;
 }
 
@@ -29,8 +33,6 @@
     float: left;
 }
 
-
-/* jQuery-UI autocomplete overrides to make it look more like the old autocomplete */
 .ui-autocomplete {
     max-height: 180px;
     overflow-y: auto;
@@ -38,22 +40,4 @@
     overflow-x: hidden;
     /* add padding to account for vertical scrollbar */
     padding-right: 20px;
-}
-
-* html .ui-autocomplete {
-    height: 180px;
-}
-
-.ui-menu .ui-menu-item {
-    background-color: #eeeeee;
-}
-
-.ui-menu .ui-menu-item-alternate{
-    background-color: #ffffff;
-}
-
-.ui-menu a.ui-state-hover{
-    background: none;
-    background-color: #0A246A;
-    color: #ffffff;
 }

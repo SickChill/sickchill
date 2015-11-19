@@ -228,7 +228,7 @@ class Logger(object):
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
 
                 try:
-                    title_Error = ss(curError.title)
+                    title_Error = ss(str(curError.title))
                     if not len(title_Error) or title_Error == 'None':
                         title_Error = re.match(r"^[A-Z0-9\-\[\] :]+::\s*(.*)$", ss(curError.message)).group(1)
 

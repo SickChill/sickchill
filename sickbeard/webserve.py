@@ -502,7 +502,8 @@ class WebRoot(WebHandler):
 
         t = PageTemplate(rh=self, filename='schedule.mako')
         return t.render(submenu=submenu, next_week=next_week1, today=today, results=results, layout=layout,
-                        title='Schedule', header='Schedule', topmenu='schedule')
+                        title='Schedule', header='Schedule', topmenu='schedule',
+                        controller="schedule", action="index")
 
 
 class CalendarHandler(BaseHandler):
@@ -1077,7 +1078,8 @@ class Home(WebRoot):
                 rootDir[subject] = helpers.getDiskSpaceUsage(subject)
 
         t = PageTemplate(rh=self, filename="status.mako")
-        return t.render(title='Status', header='Status', topmenu='system', tvdirFree=tvdirFree, rootDir=rootDir)
+        return t.render(title='Status', header='Status', topmenu='system', tvdirFree=tvdirFree, rootDir=rootDir,
+                controller="home", action="status")
 
     def shutdown(self, pid=None):
         if not Shutdown.stop(pid):
@@ -2161,10 +2163,10 @@ class HomeChangeLog(Home):
 
     def index(self):
         try:
-            changes = helpers.getURL('http://SickRage.github.io/sickrage-news/CHANGES.md', session=requests.Session())
+            changes = helpers.getURL('http://sickrage.github.io/sickrage-news/CHANGES.md', session=requests.Session())
         except Exception:
             logger.log(u'Could not load changes from repo, giving a link!', logger.DEBUG)
-            changes = 'Could not load changes from the repo. [Click here for CHANGES.md](http://SickRage.github.io/sickrage-news/CHANGES.md)'
+            changes = 'Could not load changes from the repo. [Click here for CHANGES.md](http://sickrage.github.io/sickrage-news/CHANGES.md)'
 
         t = PageTemplate(rh=self, filename="markdown.mako")
         data = markdown2.markdown(changes if changes else "The was a problem connecting to github, please refresh and try again", extras=['header-ids'])
@@ -2512,6 +2514,7 @@ class HomeAddShows(Home):
         try:
             popular_shows = imdb_popular.fetch_popular_shows()
         except Exception as e:
+            # print traceback.format_exc()
             popular_shows = None
 
         return t.render(title="Popular Shows", header="Popular Shows", popular_shows=popular_shows, imdb_exception=e, topmenu="home")
@@ -5074,7 +5077,8 @@ class ErrorLogs(WebRoot):
         return t.render(
             header="Log File", title="Logs", topmenu="system",
             logLines=u"".join(data), minLevel=minLevel, logNameFilters=logNameFilters,
-            logFilter=logFilter, logSearch=logSearch)
+            logFilter=logFilter, logSearch=logSearch,
+            controller="errorlogs", action="viewlogs")
 
     def submit_errors(self):
         submitter_result, issue_id = logger.submit_errors()

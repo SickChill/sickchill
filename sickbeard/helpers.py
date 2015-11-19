@@ -1559,7 +1559,7 @@ def _setUpSession(session, headers):
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions'), use_dir_lock=True), cache_etags=False)
 
     # request session clear residual referer
-    if 'Referer' in session.headers and 'Referer' not in headers or {}:
+    if 'Referer' in session.headers and 'Referer' not in (headers or {}):
         session.headers.pop('Referer')
 
     # request session headers

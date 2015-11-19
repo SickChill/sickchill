@@ -37,7 +37,7 @@ class NameParser(object):
     NORMAL_REGEX = 1
     ANIME_REGEX = 2
 
-    def __init__(self, file_name=True, showObj=None, tryIndexers=False, naming_pattern=False):
+    def __init__(self, file_name=True, showObj=None, tryIndexers=False, naming_pattern=False, parse_method = None):
 
         self.file_name = file_name
         self.showObj = showObj
@@ -45,9 +45,9 @@ class NameParser(object):
 
         self.naming_pattern = naming_pattern
 
-        if self.showObj and not self.showObj.is_anime:
+        if (self.showObj and not self.showObj.is_anime) or parse_method == 'normal':
             self._compile_regexes(self.NORMAL_REGEX)
-        elif self.showObj and self.showObj.is_anime:
+        elif (self.showObj and self.showObj.is_anime) or parse_method == 'anime':
             self._compile_regexes(self.ANIME_REGEX)
         else:
             self._compile_regexes(self.ALL_REGEX)
