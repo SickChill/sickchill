@@ -306,7 +306,7 @@
                     % endif
                     Load time: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
                     Branch: <span class="footerhighlight">${sickbeard.BRANCH}</span> |
-                    Now: <span class="footerhighlight">${datetime.datetime.now(network_timezones.sb_timezone)}</span>
+                    Now: <span class="footerhighlight">${datetime.datetime.now(network_timezones.sb_timezone).strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET)}</span>
                 </div>
             </div>
         </footer>
