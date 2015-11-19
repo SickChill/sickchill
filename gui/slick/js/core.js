@@ -380,7 +380,7 @@ var SICKRAGE = {
                 var growl = {};
                 growl.host = $.trim($('#growl_host').val());
                 growl.password = $.trim($('#growl_password').val());
-                if (!growl.ost) {
+                if (!growl.host) {
                     $('#testGrowl-result').html('Please fill out the necessary fields above.');
                     $('#growl_host').addClass('warning');
                     return;
