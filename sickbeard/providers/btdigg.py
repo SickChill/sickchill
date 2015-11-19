@@ -1,7 +1,7 @@
 # Author: Jodi Jones <venom@gen-x.co.nz>
 # URL: http://code.google.com/p/sickbeard/
-#
-# Ported to sickrage by: matigonkas
+# Author: Gonçalo <matigonkas@hotmail.com>
+# URL: https://github.com/SickRage/SickRage
 #
 # This file is part of SickRage.
 #
@@ -19,7 +19,7 @@
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
 from sickbeard.providers import generic
-
+from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
 
@@ -32,9 +32,15 @@ class BTDIGGProvider(generic.TorrentProvider):
         self.public = True
         self.ratio = 0
         self.urls = {'url': u'https://btdigg.org/',
-                     'api': u'https://api.btdigg.org/'}
+                     'api': u'https://api.btdigg.org/api/private-341ada3245790954/s02'}
 
         self.url = self.urls['url']
+
+        self.search_params = {
+            'q': '',
+            'order': '1',
+            'p': 1,
+        }
 
         self.cache = BTDiggCache(self)
 
@@ -50,7 +56,10 @@ class BTDIGGProvider(generic.TorrentProvider):
                 if mode is not 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
-                searchURL = self.urls['api'] + "api/private-341ada3245790954/s02?q=" + search_string + "&p=0&order=1"
+                self.search_params['q'] = search_string.encode('utf-8')
+                self.search_params['order'] = '1' if mode is not 'RSS' else '2'
+
+                searchURL = self.urls['api'] + '?' + urlencode(self.search_params)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
                 jdata = self.getURL(searchURL, json=True)
@@ -97,13 +106,13 @@ class BTDiggCache(tvcache.TVCache):
 
         tvcache.TVCache.__init__(self, provider_obj)
 
-        # Cache results for a hour ,since BTDigg takes some time to crawl
-        self.minTime = 60
+        # Cache results for a 30min ,since BTDigg takes some time to crawl
+        self.minTime = 30
 
     def _getRSSData(self):
 
-        # Use x264 for RSS search since most results will use that codec and since the site doesnt have latest results search
-        search_params = {'RSS': ['x264']}
+        # Use this hacky way for RSS search since most results will use this codecs
+        search_params = {'RSS': ['x264','x264.HDTV','720.HDTV.x264']}
         return {'entries': self.provider._doSearch(search_params)}
 
 provider = BTDIGGProvider()
