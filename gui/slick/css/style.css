@@ -189,6 +189,15 @@ inc_top.mako
     background: #eceadf url("../css/lib/images/ui-bg_fine-grain_10_eceadf_60x60.png") 50% 50% repeat !important;
 }
 
+/* restore 1.8.x resize handle on dialog button pane */
+.ui-dialog .ui-resizable-se {
+    width: 14px;
+    height: 14px;
+    right: 3px;
+    bottom: 3px;
+    background-position: -80px -224px;
+}
+
 .ui-accordion-content,
 .ui-tabs-panel {
     background: #ededed !important;
@@ -2638,50 +2647,6 @@ input sizing (for config pages)
 .input350 {
     width: 350px;
     margin-top: -4px;
-}
-
-/* =======================================================================
-browser.css overrides
-========================================================================== */
-
-#fileBrowserDialog {
-    overflow-y: auto;
-}
-
-#fileBrowserDialog ul li a:hover {
-    color: #00f;
-    background: none;
-}
-
-#fileBrowserDialog h2 {
-    font-size: 20px;
-}
-
-.ui-autocomplete {
-    max-height: 180px;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-
-/* IE6 hack since it doesn't support max-height */
-* html .ui-autocomplete {
-    height: 180px;
-    padding-right: 20px;
-}
-
-.ui-autocomplete .ui-menu-item .ui-state-focus {
-    color: #fff;
-    background: none;
-    background-color: #0a246a;
-}
-
-/* restore 1.8.x resize handle on dialog button pane */
-.ui-dialog .ui-resizable-se {
-    width: 14px;
-    height: 14px;
-    right: 3px;
-    bottom: 3px;
-    background-position: -80px -224px;
 }
 
 /* =======================================================================
