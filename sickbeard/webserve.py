@@ -502,7 +502,8 @@ class WebRoot(WebHandler):
 
         t = PageTemplate(rh=self, filename='schedule.mako')
         return t.render(submenu=submenu, next_week=next_week1, today=today, results=results, layout=layout,
-                        title='Schedule', header='Schedule', topmenu='schedule')
+                        title='Schedule', header='Schedule', topmenu='schedule',
+                        controller="schedule", action="index")
 
 
 class CalendarHandler(BaseHandler):
@@ -1077,7 +1078,8 @@ class Home(WebRoot):
                 rootDir[subject] = helpers.getDiskSpaceUsage(subject)
 
         t = PageTemplate(rh=self, filename="status.mako")
-        return t.render(title='Status', header='Status', topmenu='system', tvdirFree=tvdirFree, rootDir=rootDir)
+        return t.render(title='Status', header='Status', topmenu='system', tvdirFree=tvdirFree, rootDir=rootDir,
+                controller="home", action="status")
 
     def shutdown(self, pid=None):
         if not Shutdown.stop(pid):
@@ -5075,7 +5077,8 @@ class ErrorLogs(WebRoot):
         return t.render(
             header="Log File", title="Logs", topmenu="system",
             logLines=u"".join(data), minLevel=minLevel, logNameFilters=logNameFilters,
-            logFilter=logFilter, logSearch=logSearch)
+            logFilter=logFilter, logSearch=logSearch,
+            controller="errorlogs", action="viewlogs")
 
     def submit_errors(self):
         submitter_result, issue_id = logger.submit_errors()
