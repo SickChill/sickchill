@@ -1,4 +1,4 @@
-;(function($) {
+;(function ($) {
 "use strict";
 
     $.Browser = {
@@ -15,7 +15,7 @@
 
     function browse(path, endpoint, includeFiles) {
 
-        if (currentBrowserPath == path) {
+        if (currentBrowserPath === path) {
             return;
         }
 
@@ -29,23 +29,23 @@
 
         currentRequest = $.getJSON(endpoint, { path: path, includeFiles: includeFiles }, function (data) {
             fileBrowserDialog.empty();
-            var first_val = data[0];
+            var firstVal = data[0];
             var i = 0;
             var list, link = null;
-            data = $.grep(data, function (value) {
+            data = $.grep(data, function () {
                 return i++ !== 0;
             });
 
             $('<input type="text" class="form-control input-sm">')
-                .val(first_val.current_path)
-                .on('keypress', function(e) {
+                .val(firstVal.current_path) // jshint ignore:line
+                .on('keypress', function (e) {
                     if (e.which === 13) {
                         browse(e.target.value, endpoint, includeFiles);
                     }
                 })
                 .appendTo(fileBrowserDialog)
                 .fileBrowser({showBrowseButton: false})
-                .on('autocompleteselect', function(e, ui) {
+                .on('autocompleteselect', function (e, ui) {
                     browse(ui.item.value, endpoint, includeFiles);
                 });
 
@@ -88,7 +88,7 @@
                     {
                         text: "Ok",
                         "class": "btn",
-                        click: function() {
+                        click: function () {
                             // store the browsed path to the associated text field
                             callback(currentBrowserPath, options);
                             $(this).dialog("close");
@@ -97,7 +97,7 @@
                     {
                         text: "Cancel",
                         "class": "btn",
-                        click: function() {
+                        click: function () {
                             $(this).dialog("close");
                         }
                     }
@@ -131,30 +131,30 @@
                         url: options.autocompleteURL,
                         data: request,
                         dataType: "json",
-                        success: function (data, item) {
+                        success: function (data) {
                             //implement a startsWith filter for the results
                             var matcher = new RegExp("^" + query, "i");
-                            var a = $.grep(data, function (item, index) {
+                            var a = $.grep(data, function (item) {
                                 return matcher.test(item);
                             });
                             response(a);
                         }
                     });
                 },
-                open: function (event, ui) {
+                open: function () {
                     $(".ui-autocomplete li.ui-menu-item a").removeClass("ui-corner-all");
                 }
             })
                 .data("ui-autocomplete")._renderItem = function (ul, item) {
                     //highlight the matched search term from the item -- note that this is global and will match anywhere
-                    var result_item = item.label;
+                    var resultItem = item.label;
                     var x = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "gi");
-                    result_item = result_item.replace(x, function (FullMatch, n) {
-                        return '<b>' + FullMatch + '</b>';
+                    resultItem = resultItem.replace(x, function (fullMatch) {
+                        return '<b>' + fullMatch + '</b>';
                     });
                     return $("<li></li>")
                         .data("ui-autocomplete-item", item)
-                        .append("<a class='nowrap'>" + result_item + "</a>")
+                        .append("<a class='nowrap'>" + resultItem + "</a>")
                         .appendTo(ul);
                 };
         }
