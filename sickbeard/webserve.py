@@ -1662,7 +1662,7 @@ class Home(WebRoot):
                 return self._genericMessage("Error", errMsg)
 
         # Use .has_key() since it is overridden for statusStrings in common.py
-        if not statusStrings.has_key(int(status)):
+        if status not in statusStrings:
             errMsg = "Invalid status"
             if direct:
                 ui.notifications.error('Error', errMsg)
