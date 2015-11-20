@@ -24,9 +24,6 @@ import os
 import re
 import os.path
 import shutil
-import shutil_custom
-
-shutil.copyfile = shutil_custom.copyfile_custom
 
 from threading import Lock
 import sys

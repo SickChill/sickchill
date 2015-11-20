@@ -33,9 +33,9 @@ class History:
         Clear all the history
         """
         self.db.action(
-            'DELETE '
-            'FROM history '
-            'WHERE 1 = 1'
+                'DELETE '
+                'FROM history '
+                'WHERE 1 = 1'
         )
 
     def get(self, limit=100, action=None):
@@ -48,13 +48,7 @@ class History:
 
         action = action.lower() if isinstance(action, str) else ''
         limit = int(limit)
-
-        if action == 'downloaded':
-            actions = Quality.DOWNLOADED
-        elif action == 'snatched':
-            actions = Quality.SNATCHED
-        else:
-            actions = []
+        actions = History._get_actions(action)
 
         common_sql = 'SELECT action, date, episode, provider, h.quality, resource, season, show_name, showid ' \
                      'FROM history h, tv_shows s ' \
@@ -95,8 +89,20 @@ class History:
         """
 
         self.db.action(
-            'DELETE '
-            'FROM history '
-            'WHERE date < ?',
-            [(datetime.today() - timedelta(days=30)).strftime(History.date_format)]
+                'DELETE '
+                'FROM history '
+                'WHERE date < ?',
+                [(datetime.today() - timedelta(days=30)).strftime(History.date_format)]
         )
+
+    @staticmethod
+    def _get_actions(action):
+        action = action.lower() if action else ''
+
+        if action == 'downloaded':
+            return Quality.DOWNLOADED
+
+        if action == 'snatched':
+            return Quality.SNATCHED
+
+        return []
