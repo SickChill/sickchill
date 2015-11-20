@@ -528,7 +528,7 @@ class StatusStrings(NumDict):
     # todo: Make views return Qualities too
     # todo:
 
-    qualities = Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.ARCHIVED
+    qualities = Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.ARCHIVED + Quality.FAILED
 
     @property
     def statusStrings(self):  # for backwards compatibility
