@@ -117,7 +117,7 @@ class NewznabProvider(generic.NZBProvider):
             logger.log(error_string, logger.WARNING)
             return False, return_categories, error_string
 
-        data = BeautifulSoup(data, 'xml')
+        data = BeautifulSoup(data)
         if not self._checkAuthFromData(data):
             data.decompose()
             error_string = u"Error parsing xml for [%s]" % (self.name)
@@ -273,7 +273,7 @@ class NewznabProvider(generic.NZBProvider):
         if not data:
             return results
 
-        data = BeautifulSoup(data, 'xml')
+        data = BeautifulSoup(data)
 
         try:
             torznab = 'xmlns:torznab' in data.rss.attrs.keys()
