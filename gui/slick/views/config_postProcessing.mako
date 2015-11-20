@@ -105,6 +105,14 @@
                             </label>
                         </div>
                         <div class="field-pair">
+                            <input type="checkbox" name="postpone_if_no_subs" id="postpone_if_no_subs" ${('', 'checked="checked"')[bool(sickbeard.POSTPONE_IF_NO_SUBS)]}/>
+                            <label for="postpone_if_no_subs">
+                                <span class="component-title">Postpone if no subtitle</span>
+                                <span class="component-desc">Wait to process a file until subtitles are present</span>
+                                <span class="component-desc">Language names are allowed in subtitle filename (en.srt, pt-br.srt, ita.srt, etc.)</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
                             <input type="checkbox" name="rename_episodes" id="rename_episodes" ${('', 'checked="checked"')[bool(sickbeard.RENAME_EPISODES)]}/>
                             <label for="rename_episodes">
                                 <span class="component-title">Rename Episodes</span>
