@@ -1,5 +1,5 @@
 ;(function ($) {
-"use strict";
+    "use strict";
 
     $.Browser = {
         defaults: {
@@ -14,7 +14,6 @@
     var fileBrowserDialog, currentBrowserPath, currentRequest = null;
 
     function browse(path, endpoint, includeFiles) {
-
         if (currentBrowserPath === path) {
             return;
         }
@@ -85,22 +84,22 @@
         }
 
         fileBrowserDialog.dialog('option', 'buttons', [
-                    {
-                        text: "Ok",
-                        "class": "btn",
-                        click: function () {
-                            // store the browsed path to the associated text field
-                            callback(currentBrowserPath, options);
-                            $(this).dialog("close");
-                        }
-                    },
-                    {
-                        text: "Cancel",
-                        "class": "btn",
-                        click: function () {
-                            $(this).dialog("close");
-                        }
-                    }
+            {
+                text: "Ok",
+                "class": "btn",
+                click: function () {
+                    // store the browsed path to the associated text field
+                    callback(currentBrowserPath, options);
+                    $(this).dialog("close");
+                }
+            },
+            {
+                text: "Cancel",
+                "class": "btn",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }
         ]);
 
         // set up the browser and launch the dialog
@@ -144,19 +143,18 @@
                 open: function () {
                     $(".ui-autocomplete li.ui-menu-item a").removeClass("ui-corner-all");
                 }
-            })
-                .data("ui-autocomplete")._renderItem = function (ul, item) {
-                    //highlight the matched search term from the item -- note that this is global and will match anywhere
-                    var resultItem = item.label;
-                    var x = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "gi");
-                    resultItem = resultItem.replace(x, function (fullMatch) {
-                        return '<b>' + fullMatch + '</b>';
-                    });
-                    return $("<li></li>")
-                        .data("ui-autocomplete-item", item)
-                        .append("<a class='nowrap'>" + resultItem + "</a>")
-                        .appendTo(ul);
-                };
+            }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                //highlight the matched search term from the item -- note that this is global and will match anywhere
+                var resultItem = item.label;
+                var x = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "gi");
+                resultItem = resultItem.replace(x, function (fullMatch) {
+                    return '<b>' + fullMatch + '</b>';
+                });
+                return $("<li></li>")
+                    .data("ui-autocomplete-item", item)
+                    .append("<a class='nowrap'>" + resultItem + "</a>")
+                    .appendTo(ul);
+            };
         }
 
         var path, callback, ls = false;
@@ -177,7 +175,6 @@
             if (ls && options.key) {
                 localStorage['fileBrowser-' + options.key] = path;
             }
-
         };
 
         options.field.addClass('fileBrowserField');
@@ -194,5 +191,4 @@
         }
         return options.field;
     };
-
 })(jQuery);
