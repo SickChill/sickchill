@@ -6,7 +6,8 @@
             title:             'Choose Directory',
             url:               srRoot + '/browser/',
             autocompleteURL:   srRoot + '/browser/complete',
-            includeFiles:      0
+            includeFiles:      0,
+            showBrowseButton:  true
         }
     };
 
@@ -34,10 +35,23 @@
             data = $.grep(data, function (value) {
                 return i++ !== 0;
             });
-            $('<h2>').text(first_val.current_path).appendTo(fileBrowserDialog);
+
+            $('<input type="text" class="form-control input-sm">')
+                .val(first_val.current_path)
+                .on('keypress', function(e) {
+                    if (e.which === 13) {
+                        browse(e.target.value, endpoint, includeFiles);
+                    }
+                })
+                .appendTo(fileBrowserDialog)
+                .fileBrowser({showBrowseButton: false})
+                .on('autocompleteselect', function(e, ui) {
+                    browse(ui.item.value, endpoint, includeFiles);
+                });
+
             list = $('<ul>').appendTo(fileBrowserDialog);
             $.each(data, function (i, entry) {
-                link = $("<a href='javascript:void(0)' />").click(function () { browse(entry.path, endpoint, includeFiles); }).text(entry.name);
+                link = $("<a href='javascript:void(0)' />").on('click', function () { browse(entry.path, endpoint, includeFiles); }).text(entry.name);
                 $('<span class="ui-icon ui-icon-folder-collapsed"></span>').prependTo(link);
                 link.hover(
                     function () {$("span", this).addClass("ui-icon-folder-open");    },
@@ -166,13 +180,19 @@
 
         };
 
-        // append the browse button and give it a click behaviour
-        return options.field.addClass('fileBrowserField').after($('<input type="button" value="Browse&hellip;" class="btn btn-inline fileBrowser" />').click(function () {
-            var initialDir = options.field.val() || (options.key && path) || '';
-            var optionsWithInitialDir = $.extend({}, options, {initialDir: initialDir});
-            $(this).nFileBrowser(callback, optionsWithInitialDir);
-            return false;
-        }));
+        options.field.addClass('fileBrowserField');
+        if (options.showBrowseButton) {
+            // append the browse button and give it a click behaviour
+            options.field.after(
+                $('<input type="button" value="Browse&hellip;" class="btn btn-inline fileBrowser">').on('click', function () {
+                    var initialDir = options.field.val() || (options.key && path) || '';
+                    var optionsWithInitialDir = $.extend({}, options, {initialDir: initialDir});
+                    $(this).nFileBrowser(callback, optionsWithInitialDir);
+                    return false;
+                })
+            );
+        }
+        return options.field;
     };
 
 })(jQuery);
