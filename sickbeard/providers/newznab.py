@@ -117,7 +117,7 @@ class NewznabProvider(generic.NZBProvider):
             logger.log(error_string, logger.WARNING)
             return False, return_categories, error_string
 
-        data = BeautifulSoup(data)
+        data = BeautifulSoup(data, features=["html5lib", "permissive"])
         if not self._checkAuthFromData(data):
             data.decompose()
             error_string = u"Error parsing xml for [%s]" % (self.name)
@@ -209,17 +209,8 @@ class NewznabProvider(generic.NZBProvider):
         Checks that the returned data is valid
         Returns: _checkAuth if valid otherwise False if there is an error
         """
-        try:
-            assert data.caps.categories is not None
+        if data.findAll('categories') + data.findAll('item'):
             return self._checkAuth()
-        except (AssertionError, AttributeError):
-            pass
-
-        try:
-            assert data.rss.channel.item is not None
-            return self._checkAuth()
-        except (AssertionError, AttributeError):
-            pass
 
         try:
             err_code = int(data.error.attrs['code'])
@@ -273,7 +264,7 @@ class NewznabProvider(generic.NZBProvider):
         if not data:
             return results
 
-        data = BeautifulSoup(data)
+        data = BeautifulSoup(data, features=["html5lib", "permissive"])
 
         try:
             torznab = 'xmlns:torznab' in data.rss.attrs.keys()
@@ -284,16 +275,16 @@ class NewznabProvider(generic.NZBProvider):
             data.decompose()
             return results
 
-        for item in data.rss.channel.findAll('item'):
+        for item in data.findAll('item'):
             try:
-                title = item.title.text.strip()
-                download_url = item.link.text.strip()
+                title = item.title.next.strip()
+                download_url = item.link.next.strip()
             except (AttributeError, TypeError):
                 continue
 
             if title and download_url:
                 size = seeders = leechers = None
-                for attr in item.findAll('attr'):
+                for attr in item.findAll('newznab:attr') + item.findAll('torznab:attr'):
                     size = helpers.tryInt(attr['value'], -1) if attr['name'] == 'size' else size
                     seeders = helpers.tryInt(attr['value'], 1) if attr['name'] == 'seeders' else seeders
                     leechers = helpers.tryInt(attr['value'], 0) if attr['name'] == 'leechers' else leechers
