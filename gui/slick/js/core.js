@@ -943,7 +943,7 @@ var SICKRAGE = {
                 var key = parseInt($('#email_show').val(), 10);
                 $('#email_show_list').val(key >= 0 ? notify_data[key.toString()].list : ''); // jshint ignore:line
             });
-            $('#prowl_show').change(function() {
+            $('#prowl_show').on('change', function() {
                 var key = parseInt($('#prowl_show').val(), 10);
                 $('#prowl_show_list').val(key >= 0 ? notify_data[key.toString()].prowl_notify_list : ''); // jshint ignore:line
             });
@@ -999,7 +999,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#prowl_show_save').click(function() {
+						$('#prowl_show_save').on('click', function() {
                 $.post(srRoot + "/home/saveShowNotifyList", {
                     show: $('#prowl_show').val(),
                     prowlAPIs: $('#prowl_show_list').val()
