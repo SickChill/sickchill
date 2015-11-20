@@ -999,7 +999,7 @@ var SICKRAGE = {
                 });
             });
 
-						$('#prowl_show_save').on('click', function() {
+            $('#prowl_show_list').on('click', function() {
                 $.post(srRoot + "/home/saveShowNotifyList", {
                     show: $('#prowl_show').val(),
                     prowlAPIs: $('#prowl_show_list').val()
