@@ -13,9 +13,6 @@ pre {
 }
 </style>
 </%block>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/new/viewlogs.js"></script>
-</%block>
 <%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
