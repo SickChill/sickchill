@@ -1,4 +1,4 @@
-# coding=utf-8
+﻿# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -24,6 +24,7 @@ import time
 import urllib
 import datetime
 import traceback
+import ast
 
 import sickbeard
 from sickbeard import config, sab
@@ -1004,19 +1005,48 @@ class Home(WebRoot):
         data = {}
         size = 0
         for r in rows:
-            data[r['show_id']] = {'id': r['show_id'], 'name': r['show_name'], 'list': r['notify_list']}
+            NotifyList = {'emails':'', 'prowlAPIs':''}
+            if (r['notify_list'] and len(r['notify_list']) > 0):
+                # First, handle legacy format (emails only)
+                if not r['notify_list'][0] == '{':
+                    NotifyList['emails'] = r['notify_list']
+                else:
+                    NotifyList = dict(ast.literal_eval(r['notify_list']))
+
+            data[r['show_id']] = {'id': r['show_id'],'name': r['show_name'],
+                                  'list': NotifyList['emails'],
+                                  'prowl_notify_list': NotifyList['prowlAPIs']
+                                 }
             size += 1
         data['_size'] = size
         return json.dumps(data)
 
     @staticmethod
-    def saveShowNotifyList(show=None, emails=None):
+    def saveShowNotifyList(show=None, emails=None, prowlAPIs=None):
 
+        entries = {'emails':'', 'prowlAPIs':''}
         myDB = db.DBConnection()
-        if myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [emails, show]):
-            return 'OK'
-        else:
-            return 'ERROR'
+
+        # Get current data
+        for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_id = ?", [show]):
+            if (subs['notify_list'] and len(subs['notify_list']) > 0):
+                # First, handle legacy format (emails only)
+                if not subs['notify_list'][0] == '{':
+                    entries['emails'] = subs['notify_list']
+                else:
+                    entries = dict(ast.literal_eval(subs['notify_list']))
+
+        if (emails is not None):
+            entries['emails'] = emails
+            if not myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
+                return 'ERROR'
+
+        if (prowlAPIs is not None):
+            entries['prowlAPIs'] = prowlAPIs
+            if not myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
+                return 'ERROR'
+
+        return 'OK'
 
     @staticmethod
     def testEmail(host=None, port=None, smtp_from=None, use_tls=None, user=None, pwd=None, to=None):
@@ -4644,6 +4674,7 @@ class ConfigNotifications(Config):
                           freemobile_notify_onsubtitledownload=None, freemobile_id=None, freemobile_apikey=None,
                           use_prowl=None, prowl_notify_onsnatch=None, prowl_notify_ondownload=None,
                           prowl_notify_onsubtitledownload=None, prowl_api=None, prowl_priority=0,
+                          prowl_show_list=None, prowl_show=None, prowl_message_title=None,
                           use_twitter=None, twitter_notify_onsnatch=None, twitter_notify_ondownload=None,
                           twitter_notify_onsubtitledownload=None, twitter_usedm=None, twitter_dmto=None,
                           use_boxcar=None, boxcar_notify_onsnatch=None, boxcar_notify_ondownload=None,
@@ -4729,6 +4760,7 @@ class ConfigNotifications(Config):
         sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(prowl_notify_onsubtitledownload)
         sickbeard.PROWL_API = prowl_api
         sickbeard.PROWL_PRIORITY = prowl_priority
+        sickbeard.PROWL_MESSAGE_TITLE = prowl_message_title
 
         sickbeard.USE_TWITTER = config.checkbox_to_value(use_twitter)
         sickbeard.TWITTER_NOTIFY_ONSNATCH = config.checkbox_to_value(twitter_notify_onsnatch)
