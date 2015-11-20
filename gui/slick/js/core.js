@@ -944,7 +944,7 @@ var SICKRAGE = {
             });
 
             // Update the internal data struct anytime settings are saved to the server
-            $('#email_show').bind('notify', function() {
+            $('#email_show').on('notify', function() {
                 loadShowNotifyLists();
             });
 
