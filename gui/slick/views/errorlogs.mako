@@ -13,9 +13,6 @@ pre {
 }
 </style>
 </%block>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/new/errorlogs.js"></script>
-</%block>
 <%block name="content">
 <%
     if logLevel == sickbeard.logger.WARNING:
