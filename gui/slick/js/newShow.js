@@ -101,7 +101,7 @@ $(document).ready(function () {
     * Visit http://www.dynamicdrive.com/ for this script and 100s more.
     ***********************************************/
 
-    var myform = new formtowizard({
+    var myform = new formtowizard({ // jshint ignore:line
         formid: 'addShowForm',
         revealfx: ['slide', 500],
         oninit: function () {

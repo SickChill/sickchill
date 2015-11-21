@@ -38,7 +38,7 @@ $(document).ready(function() {
                     $('#restart_loading').hide();
                     $('#restart_success').show();
                     $('#refresh_message').show();
-                    setTimeout(function(){window.location = srRoot + '/' + sbDefaultPage + '/';}, 5000);
+                    setTimeout(function(){window.location = srRoot + '/' + sbDefaultPage + '/';}, 5000); // jshint ignore:line
                 }
             }
 
@@ -52,13 +52,13 @@ $(document).ready(function() {
     function ajaxError(x) {
         if (console_debug) { // jshint ignore:line
             if (x.status === 0) {
-                console.log(console_prefix + 'isAlive: Sickrage is not responding.');
+                console.log(console_prefix + 'isAlive: Sickrage is not responding.'); // jshint ignore:line
             } else if (x.status === 404) {
-                console.log(console_prefix + 'isAlive: Requested URL not found.');
+                console.log(console_prefix + 'isAlive: Requested URL not found.'); // jshint ignore:line
             } else if (x.status === 500) {
-                console.log(console_prefix + 'isAlive: Internel Server Error.');
+                console.log(console_prefix + 'isAlive: Internel Server Error.'); // jshint ignore:line
             }  else {
-                console.log(console_prefix + 'isAlive: Unknow Error.\n' + x.responseText);
+                console.log(console_prefix + 'isAlive: Unknow Error.\n' + x.responseText); // jshint ignore:line
             }
         }
     }
