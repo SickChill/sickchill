@@ -63,6 +63,16 @@
 
                         <div class="field-pair">
                             <label>
+                                <span class="component-title">Backlog search day(s)</span>
+                                <span class="component-desc">
+                                    <input type="text" name="backlog_days" value="${sickbeard.BACKLOG_DAYS}" class="form-control input-sm input75" />
+                                    <p>number of day(s) that the "Forced Backlog Search" will cover (e.g. 7 Days)</p>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
+                            <label>
                                 <span class="component-title">Backlog search frequency</span>
                                 <span class="component-desc">
                                     <input type="text" name="backlog_frequency" value="${sickbeard.BACKLOG_FREQUENCY}" class="form-control input-sm input75" />
