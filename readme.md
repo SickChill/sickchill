@@ -1,5 +1,7 @@
 SickRage [![Build Status](https://travis-ci.org/SickRage/SickRage.svg?branch=develop)](https://travis-ci.org/SickRage/SickRage) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/SickRage/sickrage-issues.svg)](http://isitmaintained.com/project/SickRage/sickrage-issues "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/SickRage/sickrage-issues.svg)](http://isitmaintained.com/project/SickRage/sickrage-issues "Percentage of issues still open")
 =====
+
+[![Join the chat at https://gitter.im/SickRage/SickRage](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/SickRage/SickRage?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Automatic Video Library Manager for TV Shows. It watches for new episodes of your favorite shows, and when they are posted it does its magic.
 
 #### Features
