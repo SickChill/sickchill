@@ -10,7 +10,6 @@
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/new/schedule.js"></script>
 </%block>
 <%block name="css">
 <style type="text/css">
