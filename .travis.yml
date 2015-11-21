@@ -9,8 +9,6 @@ branches:
   except:
     - master
 
-cache: pip
-
 before_install:
   - npm install -g grunt-cli
   - npm install -g bower
@@ -22,6 +20,7 @@ script:
 
 cache:
   directories:
+    - $HOME/.cache/pip
     - .build/bower_components
     - .build/node_modules
 
