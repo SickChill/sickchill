@@ -15,8 +15,8 @@ before_install:
   - cd .build && npm install && bower install && cd ..
 
 script:
-  - ./tests/all_tests.py
   - cd .build && grunt travis && cd ..
+  - ./tests/all_tests.py
 
 cache:
   directories:
