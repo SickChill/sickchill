@@ -45,6 +45,7 @@ def getFileList(path, includeFiles):
     hideList = ["boot", "bootmgr", "cache", "config.msi", "msocache", "recovery", "$recycle.bin",
                 "recycler", "system volume information", "temporary internet files"]  # windows specific
     hideList += [".fseventd", ".spotlight", ".trashes", ".vol", "cachedmessages", "caches", "trash"]  # osx specific
+    hideList += [".git"]
 
     fileList = []
     for filename in ek(os.listdir, path):
