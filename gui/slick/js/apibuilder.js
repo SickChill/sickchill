@@ -21,7 +21,7 @@ $(document).ready(function() {
             }
         });
 
-        if(profile) url += '&profile=1';
+        if(profile) { url += '&profile=1'; }
 
         var requestTime = new Date().getTime();
         $.get(url, function (data, textStatus, jqXHR) {

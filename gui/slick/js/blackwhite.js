@@ -1,4 +1,4 @@
-function generate_bwlist() {
+function generateBlackWhiteList() {
     var realvalues = [];
 
     $('#white option').each(function(i, selected) {
@@ -13,13 +13,15 @@ function generate_bwlist() {
     $("#blacklist").val(realvalues.join(","));
 }
 
-function update_bwlist(show_name) {
+function updateBlackWhiteList(showName) {
     $('#pool').children().remove();
 
     $('#blackwhitelist').show();
-    if (show_name) {
-        $.getJSON(srRoot + '/home/fetch_releasegroups', {'show_name': show_name}, function (data) {
-            if (data.result == 'success') {
+    if (showName) {
+        $.getJSON(srRoot + '/home/fetch_releasegroups', {
+            'show_name': showName
+        }, function (data) {
+            if (data.result === 'success') {
                 $.each(data.groups, function(i, group) {
                     var option = $("<option>");
                     option.attr("value", group.name);
