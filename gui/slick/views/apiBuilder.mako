@@ -186,7 +186,7 @@ var commands = ${sorted(commands)};
 var episodes = ${episodes};
 </script>
 <script type="text/javascript" src="${srRoot}/js/vender.min.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/new/meta.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/meta.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/core.min.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/apibuilder.js?${sbPID}"></script>
 </body>
