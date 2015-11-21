@@ -1,0 +1,15 @@
+ignore:
+  'npm:semver:20150403':
+    - semver@2.3.2:
+        reason: Waiting for official update
+        expires: '2015-12-21T06:00:27.961Z'
+  'npm:uglify-js:20150824':
+    - uglify-js@2.3.6:
+        reason: Waiting for official update
+        expires: '2015-12-21T06:00:27.962Z'
+  'npm:uglify-js:20151024':
+    - uglify-js@2.3.6:
+        reason: Waiting for official update
+        expires: '2015-12-21T06:00:27.962Z'
+patch: {}
+version: v1
