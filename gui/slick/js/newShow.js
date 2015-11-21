@@ -3,9 +3,9 @@ $(document).ready(function () {
     var searchRequestXhr = null;
 
     function searchIndexers() {
-        if (!$('#nameToSearch').val().length) return;
+        if (!$('#nameToSearch').val().length) { return; }
 
-        if (searchRequestXhr) searchRequestXhr.abort();
+        if (searchRequestXhr) { searchRequestXhr.abort(); }
 
         var searchingFor = $('#nameToSearch').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
         $('#searchResults').empty().html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> searching ' + searchingFor + '...');
@@ -37,8 +37,8 @@ $(document).ready(function () {
                         var whichSeries = obj.join('|');
 
 
-                        resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries.replace(/"/g, "")  + '"' + checked + ' /> ';
-                        if (data.langid && data.langid !== "") {
+                        resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries.replace(/"/g, '')  + '"' + checked + ' /> ';
+                        if (data.langid && data.langid !== '') {
                             resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '&lid=' + data.langid + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
                         } else {
                             resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
@@ -78,11 +78,11 @@ $(document).ready(function () {
 
     $('#addShowButton').click(function () {
         // if they haven't picked a show don't let them submit
-        if (!$("input:radio[name='whichSeries']:checked").val() && !$("input:hidden[name='whichSeries']").val().length) {
+        if (!$('input:radio[name="whichSeries"]:checked').val() && !$('input:hidden[name="whichSeries"]').val().length) {
             alert('You must choose a show to continue');
             return false;
         }
-        generate_bwlist();
+        generateBlackWhiteList();
         $('#addShowForm').submit();
     });
 
@@ -114,7 +114,7 @@ $(document).ready(function () {
 
     function goToStep(num) {
         $('.step').each(function () {
-            if ($.data(this, 'section') + 1 == num) {
+            if ($.data(this, 'section') + 1 === num) {
                 $(this).click();
             }
         });
@@ -125,53 +125,51 @@ $(document).ready(function () {
     function updateSampleText() {
         // if something's selected then we have some behavior to figure out
 
-        var show_name, sep_char;
+        var showName, sepChar;
         // if they've picked a radio button then use that
         if ($('input:radio[name=whichSeries]:checked').length) {
-            show_name = $('input:radio[name=whichSeries]:checked').val().split('|')[4];
-        }
-        // if we provided a show in the hidden field, use that
-        else if ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length) {
-            show_name = $('#providedName').val();
+            showName = $('input:radio[name=whichSeries]:checked').val().split('|')[4];
+        } else if ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length) { // if we provided a show in the hidden field, use that
+            showName = $('#providedName').val();
         } else {
-            show_name = '';
+            showName = '';
         }
-        update_bwlist(show_name);
-        var sample_text = 'Adding show <b>' + show_name + '</b> into <b>';
+        updateBlackWhiteList(showName);
+        var sampleText = 'Adding show <b>' + showName + '</b> into <b>';
 
         // if we have a root dir selected, figure out the path
-        if ($("#rootDirs option:selected").length) {
-            var root_dir_text = $('#rootDirs option:selected').val();
-            if (root_dir_text.indexOf('/') >= 0) {
-                sep_char = '/';
-            } else if (root_dir_text.indexOf('\\') >= 0) {
-                sep_char = '\\';
+        if ($('#rootDirs option:selected').length) {
+            var rootDirectoryText = $('#rootDirs option:selected').val();
+            if (rootDirectoryText.indexOf('/') >= 0) {
+                sepChar = '/';
+            } else if (rootDirectoryText.indexOf('\\') >= 0) {
+                sepChar = '\\';
             } else {
-                sep_char = '';
+                sepChar = '';
             }
 
-            if (root_dir_text.substr(sample_text.length - 1) != sep_char) {
-                root_dir_text += sep_char;
+            if (rootDirectoryText.substr(sampleText.length - 1) !== sepChar) {
+                rootDirectoryText += sepChar;
             }
-            root_dir_text += '<i>||</i>' + sep_char;
+            rootDirectoryText += '<i>||</i>' + sepChar;
 
-            sample_text += root_dir_text;
+            sampleText += rootDirectoryText;
         } else if ($('#fullShowPath').length && $('#fullShowPath').val().length) {
-            sample_text += $('#fullShowPath').val();
+            sampleText += $('#fullShowPath').val();
         } else {
-            sample_text += 'unknown dir.';
+            sampleText += 'unknown dir.';
         }
 
-        sample_text += '</b>';
+        sampleText += '</b>';
 
         // if we have a show name then sanitize and use it for the dir name
-        if (show_name.length) {
-            $.get(srRoot + '/home/addShows/sanitizeFileName', {name: show_name}, function (data) {
-                $('#displayText').html(sample_text.replace('||', data));
+        if (showName.length) {
+            $.get(srRoot + '/home/addShows/sanitizeFileName', {name: showName}, function (data) {
+                $('#displayText').html(sampleText.replace('||', data));
             });
         // if not then it's unknown
         } else {
-            $('#displayText').html(sample_text.replace('||', '??'));
+            $('#displayText').html(sampleText.replace('||', '??'));
         }
 
         // also toggle the add show button
@@ -186,35 +184,37 @@ $(document).ready(function () {
     $('#rootDirText').change(updateSampleText);
     $('#searchResults').on('change', '#whichSeries', updateSampleText);
 
-    $('#nameToSearch').keyup(function (event) {
-        if (event.keyCode == 13) {
+    $('#nameToSearch').keyup(function(event) {
+        if (event.keyCode === 13) {
             $('#searchName').click();
         }
     });
 
-    $('#anime').change (function () {
+    $('#anime').change (function() {
         updateSampleText();
         myform.loadsection(2);
     });
 
-    function update_bwlist (show_name) {
+    function updateBlackWhiteList(showName) {
         $('#white').children().remove();
         $('#black').children().remove();
         $('#pool').children().remove();
 
         if ($('#anime').prop('checked')) {
             $('#blackwhitelist').show();
-            if (show_name) {
-                $.getJSON(srRoot + '/home/fetch_releasegroups', {'show_name': show_name}, function (data) {
-                if (data.result == 'success') {
-                    $.each(data.groups, function(i, group) {
-                        var option = $("<option>");
-                        option.attr("value", group.name);
-                        option.html(group.name + ' | ' + group.rating + ' | ' + group.range);
-                        option.appendTo('#pool');
-                    });
-                }
-             });
+            if (showName) {
+                $.getJSON(srRoot + '/home/fetch_releasegroups', {
+                    'show_name': showName
+                }, function (data) {
+                    if (data.result === 'success') {
+                        $.each(data.groups, function(i, group) {
+                            var option = $("<option>");
+                            option.attr("value", group.name);
+                            option.html(group.name + ' | ' + group.rating + ' | ' + group.range);
+                            option.appendTo('#pool');
+                        });
+                    }
+                });
             }
         } else {
             $('#blackwhitelist').hide();
