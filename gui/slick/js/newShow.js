@@ -37,8 +37,8 @@ $(document).ready(function () {
                         var whichSeries = obj.join('|');
 
 
-                        resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries.replace(/"/g, "")  + '"' + checked + ' /> ';
-                        if (data.langid && data.langid !== "") {
+                        resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries.replace(/"/g, '')  + '"' + checked + ' /> ';
+                        if (data.langid && data.langid !== '') {
                             resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '&lid=' + data.langid + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
                         } else {
                             resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
@@ -78,7 +78,7 @@ $(document).ready(function () {
 
     $('#addShowButton').click(function () {
         // if they haven't picked a show don't let them submit
-        if (!$("input:radio[name='whichSeries']:checked").val() && !$("input:hidden[name='whichSeries']").val().length) {
+        if (!$('input:radio[name="whichSeries"]:checked').val() && !$('input:hidden[name="whichSeries"]').val().length) {
             alert('You must choose a show to continue');
             return false;
         }
@@ -114,7 +114,7 @@ $(document).ready(function () {
 
     function goToStep(num) {
         $('.step').each(function () {
-            if ($.data(this, 'section') + 1 == num) {
+            if ($.data(this, 'section') + 1 === num) {
                 $(this).click();
             }
         });
@@ -125,7 +125,7 @@ $(document).ready(function () {
     function updateSampleText() {
         // if something's selected then we have some behavior to figure out
 
-        var showName, sep_char;
+        var showName, sepChar;
         // if they've picked a radio button then use that
         if ($('input:radio[name=whichSeries]:checked').length) {
             showName = $('input:radio[name=whichSeries]:checked').val().split('|')[4];
@@ -138,22 +138,22 @@ $(document).ready(function () {
         var sampleText = 'Adding show <b>' + showName + '</b> into <b>';
 
         // if we have a root dir selected, figure out the path
-        if ($("#rootDirs option:selected").length) {
-            var root_dir_text = $('#rootDirs option:selected').val();
-            if (root_dir_text.indexOf('/') >= 0) {
-                sep_char = '/';
-            } else if (root_dir_text.indexOf('\\') >= 0) {
-                sep_char = '\\';
+        if ($('#rootDirs option:selected').length) {
+            var rootDirectoryText = $('#rootDirs option:selected').val();
+            if (rootDirectoryText.indexOf('/') >= 0) {
+                sepChar = '/';
+            } else if (rootDirectoryText.indexOf('\\') >= 0) {
+                sepChar = '\\';
             } else {
-                sep_char = '';
+                sepChar = '';
             }
 
-            if (root_dir_text.substr(sampleText.length - 1) != sep_char) {
-                root_dir_text += sep_char;
+            if (rootDirectoryText.substr(sampleText.length - 1) !== sepChar) {
+                rootDirectoryText += sepChar;
             }
-            root_dir_text += '<i>||</i>' + sep_char;
+            rootDirectoryText += '<i>||</i>' + sepChar;
 
-            sampleText += root_dir_text;
+            sampleText += rootDirectoryText;
         } else if ($('#fullShowPath').length && $('#fullShowPath').val().length) {
             sampleText += $('#fullShowPath').val();
         } else {

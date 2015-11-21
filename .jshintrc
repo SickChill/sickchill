@@ -11,13 +11,14 @@
     "jquery": true,
     "latedef": true,
     "maxerr": 100,
+    "maxlen": 1000,
     "noarg": true,
     "noempty": true,
     "nonbsp": true,
     "undef": true,
     "unused": true,
     "node": true,
-    "globals": {
+    "predef": {
         "srRoot": true,
         "themeSpinner": true,
         "metaToBool": true,
