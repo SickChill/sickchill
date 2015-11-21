@@ -86,8 +86,8 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
         fileList = [x for x in fileList if ek(os.path.isdir, x['path'])]
 
     # prune out directories to protect the user from doing stupid things (already lower case the dir to reduce calls)
-    hideList = ["boot", "bootmgr", "cache", "msocache", "recovery", "$recycle.bin", "recycler",
-                "system volume information", "temporary internet files"]  # windows specific
+    hideList = ["boot", "bootmgr", "cache", "config.msi", "msocache", "recovery", "$recycle.bin",
+                "recycler", "system volume information", "temporary internet files"]  # windows specific
     hideList += [".fseventd", ".spotlight", ".trashes", ".vol", "cachedmessages", "caches", "trash"]  # osx specific
 
     fileList = [x for x in fileList if x['name'].lower() not in hideList]
