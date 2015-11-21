@@ -1,6 +1,6 @@
 ### Questions about SickRage?
 
-To get your questions answered, please ask on the [SickRage Forum](http://sickrage.tv/),  or [#sickrage-issues](http://webchat.freenode.net/?channels=sickrage-issues) IRC channel on irc.freenode.net
+To get your questions answered, please ask on the [#sickrage-issues](http://webchat.freenode.net/?channels=sickrage-issues) IRC channel on irc.freenode.net
 
 # Contributing to SickRage
 
@@ -17,11 +17,9 @@ The goal of this guide is to provide the best way to contribute to the official 
 
 ## Discussion
 
-### Forum and IRC
+If you think you've found a bug please [file it in the bug tracker](#how-to-report-bugs).
 
-The SickRage development team frequently tracks posts on the [SickRage Forum](http://sickrage.tv/). If you have longer posts or questions please feel free to post them there. If you think you've found a bug please [file it in the bug tracker](#how-to-report-bugs).
-
-Additionally most of the SickRage development team can be found in the [#sickrage-issues](http://webchat.freenode.net/?channels=sickrage-issues) IRC channel on irc.freenode.net.
+Most of the SickRage development team can be found in the [#sickrage-issues](http://webchat.freenode.net/?channels=sickrage-issues) IRC channel on irc.freenode.net.
 
 
 ## How to Report Bugs
@@ -30,7 +28,7 @@ Additionally most of the SickRage development team can be found in the [#sickrag
 
 Many bugs reported are actually issues with the user mis-understanding of how something works (there are a bit of moving parts to an ideal setup) and most of the time can be fixed by just changing some settings to fit the users needs.
 
-If you are new to SickRage, it is usually a much better idea to ask for help first in the [Using SickRage Forum](http://sickrage.tv) or the [SickRage IRC channel](http://webchat.freenode.net/?channels=sickrage-issues). You will get much quicker support, and you will help avoid tying up the SickRage team with invalid bug reports.
+If you are new to SickRage, it is usually a much better idea to ask for help first in the [SickRage IRC channel](http://webchat.freenode.net/?channels=sickrage-issues). You will get much quicker support, and you will help avoid tying up the SickRage team with invalid bug reports.
 
 ### Try the latest version of SickRage
 
@@ -44,7 +42,7 @@ Bugs in old versions of SickRage may have already been fixed. In order to avoid 
 
 **NEVER write your patches to the master branch** - it gets messy (I say this from experience!)
 
-**ALWAYS USE A "TOPIC" BRANCH!** Personally I like the `branch-feature_name` format that way its easy to identify the branch and feature at a glance. Also please make note of any forum post / issue number in the pull commit so we know what you are solving (it helps with cleaning up the related items later).
+**ALWAYS USE A "TOPIC" BRANCH!** Personally I like the `branch-feature_name` format that way its easy to identify the branch and feature at a glance. Also please make note of any issue number in the pull commit so we know what you are solving (it helps with cleaning up the related items later).
 
 
 Please follow these guidelines before reporting a bug:
@@ -53,7 +51,7 @@ Please follow these guidelines before reporting a bug:
 
 2. **Use the search on sickrage-issues** &mdash; check if the issue has already been reported. If it has been, please comment on the existing issue.
 
-3. **Provide a means to reproduce the problem** &mdash; Please provide as much details as possible, e.g. SickRage log files (obfuscate apikey/passwords), browser and operating system versions, how you started SickRage, and of course the steps to reproduce the problem. Bugs are always reported in the forums.
+3. **Provide a means to reproduce the problem** &mdash; Please provide as much details as possible, e.g. SickRage log files (obfuscate apikey/passwords), browser and operating system versions, how you started SickRage, and of course the steps to reproduce the problem.
 
 
 ### Feature requests
