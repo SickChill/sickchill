@@ -36,7 +36,7 @@
             });
 
             $('<input type="text" class="form-control input-sm">')
-                .val(firstVal.current_path) // jshint ignore:line
+                .val(firstVal.currentPath)
                 .on('keypress', function (e) {
                     if (e.which === 13) {
                         browse(e.target.value, endpoint, includeFiles);
@@ -50,12 +50,21 @@
 
             list = $('<ul>').appendTo(fileBrowserDialog);
             $.each(data, function (i, entry) {
-                link = $("<a href='javascript:void(0)' />").on('click', function () { browse(entry.path, endpoint, includeFiles); }).text(entry.name);
-                $('<span class="ui-icon ui-icon-folder-collapsed"></span>').prependTo(link);
-                link.hover(
-                    function () {$("span", this).addClass("ui-icon-folder-open");    },
-                    function () {$("span", this).removeClass("ui-icon-folder-open"); }
-                );
+                link = $('<a href="javascript:void(0)">').on('click', function () {
+                    if (entry.isFile) {
+                        currentBrowserPath = entry.path;
+                        $('.browserDialog .ui-button:contains("Ok")').click();
+                    } else {
+                        browse(entry.path, endpoint, includeFiles);
+                    }
+                }).text(entry.name);
+                if (entry.isFile) {
+                    link.prepend('<span class="ui-icon ui-icon-blank"></span>');
+                } else {
+                    link.prepend('<span class="ui-icon ui-icon-folder-collapsed"></span>')
+                        .on('mouseenter', function () { $('span', this).addClass('ui-icon-folder-open'); })
+                        .on('mouseleave', function () { $('span', this).removeClass('ui-icon-folder-open'); });
+                }
                 link.appendTo(list);
             });
             $("a", list).wrap('<li class="ui-state-default ui-corner-all">');
@@ -68,7 +77,6 @@
 
         // make a fileBrowserDialog object if one doesn't exist already
         if (!fileBrowserDialog) {
-
             // set up the jquery dialog
             fileBrowserDialog = $('<div id="fileBrowserDialog" style="display:hidden"></div>').appendTo('body').dialog({
                 dialogClass: 'browserDialog',
