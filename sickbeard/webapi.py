@@ -851,7 +851,7 @@ class CMD_EpisodeSetStatus(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         # convert the string status to a int
-        for status in statusStrings.statusStrings:
+        for status in statusStrings:
             if str(statusStrings[status]).lower() == str(self.status).lower():
                 self.status = status
                 break
@@ -1778,12 +1778,12 @@ class CMD_SickBeardSetDefaults(ApiCall):
 
         if self.status:
             # convert the string status to a int
-            for status in statusStrings.statusStrings:
+            for status in statusStrings:
                 if statusStrings[status].lower() == str(self.status).lower():
                     self.status = status
                     break
             # this should be obsolete bcause of the above
-            if not self.status in statusStrings.statusStrings:
+            if not self.status in statusStrings:
                 raise ApiError("Invalid Status")
             # only allow the status options we want
             if int(self.status) not in (3, 5, 6, 7):
@@ -2128,12 +2128,12 @@ class CMD_ShowAddNew(ApiCall):
         newStatus = sickbeard.STATUS_DEFAULT
         if self.status:
             # convert the string status to a int
-            for status in statusStrings.statusStrings:
+            for status in statusStrings:
                 if statusStrings[status].lower() == str(self.status).lower():
                     self.status = status
                     break
 
-            if self.status not in statusStrings.statusStrings:
+            if self.status not in statusStrings:
                 raise ApiError("Invalid Status")
 
             # only allow the status options we want
@@ -2145,12 +2145,12 @@ class CMD_ShowAddNew(ApiCall):
         default_ep_status_after = sickbeard.STATUS_DEFAULT_AFTER
         if self.future_status:
             # convert the string status to a int
-            for status in statusStrings.statusStrings:
+            for status in statusStrings:
                 if statusStrings[status].lower() == str(self.future_status).lower():
                     self.future_status = status
                     break
 
-            if self.future_status not in statusStrings.statusStrings:
+            if self.future_status not in statusStrings:
                 raise ApiError("Invalid Status")
 
             # only allow the status options we want
@@ -2672,7 +2672,7 @@ class CMD_ShowStats(ApiCall):
         # show stats
         episode_status_counts_total = {}
         episode_status_counts_total["total"] = 0
-        for status in statusStrings.statusStrings.keys():
+        for status in statusStrings:
             if status in [UNKNOWN, DOWNLOADED, SNATCHED, SNATCHED_PROPER, ARCHIVED]:
                 continue
             episode_status_counts_total[status] = 0
@@ -2747,7 +2747,7 @@ class CMD_ShowStats(ApiCall):
                 episodes_stats["total"] = episode_status_counts_total[statusCode]
                 continue
             status, quality = Quality.splitCompositeStatus(int(statusCode))
-            statusString = statusStrings.statusStrings[statusCode].lower().replace(" ", "_").replace("(", "").replace(
+            statusString = statusStrings[statusCode].lower().replace(" ", "_").replace("(", "").replace(
                 ")", "")
             episodes_stats[statusString] = episode_status_counts_total[statusCode]
 

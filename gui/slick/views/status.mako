@@ -5,9 +5,6 @@
     from sickbeard.show_queue import ShowQueueActions
     from sickrage.helper.common import dateTimeFormat
 %>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/new/status.js"></script>
-</%block>
 <%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>

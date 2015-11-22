@@ -19,7 +19,7 @@
 % if not whichStatus or (whichStatus and not ep_counts):
 
 % if whichStatus:
-<h2>None of your episodes have status ${common.statusStrings[int(whichStatus)]}</h2>
+<h2>None of your episodes have status ${common.statusStrings[whichStatus]}</h2>
 <br>
 % endif
 
@@ -39,7 +39,7 @@ Manage episodes with status <select name="whichStatus" class="form-control form-
 <form action="${srRoot}/manage/changeEpisodeStatuses" method="post">
 <input type="hidden" id="oldStatus" name="oldStatus" value="${whichStatus}" />
 
-<h2>Shows containing ${common.statusStrings[int(whichStatus)]} episodes</h2>
+<h2>Shows containing ${common.statusStrings[whichStatus]} episodes</h2>
 
 <br>
 

@@ -1,5 +1,5 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.tv/
+# URL: https://sickrage.github.io/
 # Git: https://github.com/SickRage/SickRage.git
 #
 # This file is part of SickRage.
@@ -40,6 +40,34 @@ def getWinDrives():
     return drives
 
 
+def getFileList(path, includeFiles):
+    # prune out directories to protect the user from doing stupid things (already lower case the dir to reduce calls)
+    hideList = ["boot", "bootmgr", "cache", "config.msi", "msocache", "recovery", "$recycle.bin",
+                "recycler", "system volume information", "temporary internet files"]  # windows specific
+    hideList += [".fseventd", ".spotlight", ".trashes", ".vol", "cachedmessages", "caches", "trash"]  # osx specific
+    hideList += [".git"]
+
+    fileList = []
+    for filename in ek(os.listdir, path):
+        if filename.lower() in hideList:
+            continue
+
+        fullFilename = ek(os.path.join, path, filename)
+        isDir = ek(os.path.isdir, fullFilename)
+
+        if not includeFiles and not isDir:
+            continue
+
+        entry = {
+            'name': filename,
+            'path': fullFilename
+        }
+        if not isDir: entry['isFile'] = True
+        fileList.append(entry)
+
+    return fileList
+
+
 def foldersAtPath(path, includeParent=False, includeFiles=False):
     """ Returns a list of dictionaries with the folders contained at the given path
         Give the empty string as the path to list the contents of the root path
@@ -60,7 +88,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
 
     if path == "":
         if os.name == 'nt':
-            entries = [{'current_path': 'Root'}]
+            entries = [{'currentPath': 'Root'}]
             for letter in getWinDrives():
                 letterPath = letter + ':\\'
                 entries.append({'name': letterPath, 'path': letterPath})
@@ -77,25 +105,15 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
         parentPath = ""
 
     try:
-        fileList = [{'name': filename, 'path': ek(os.path.join, path, filename)} for filename in ek(os.listdir, path)]
+        fileList = getFileList(path, includeFiles)
     except OSError, e:
         logger.log(u"Unable to open " + path + ": " + repr(e) + " / " + str(e), logger.WARNING)
-        fileList = [{'name': filename, 'path': ek(os.path.join, parentPath, filename)} for filename in ek(os.listdir, parentPath)]
-
-    if not includeFiles:
-        fileList = [x for x in fileList if ek(os.path.isdir, x['path'])]
-
-    # prune out directories to protect the user from doing stupid things (already lower case the dir to reduce calls)
-    hideList = ["boot", "bootmgr", "cache", "msocache", "recovery", "$recycle.bin", "recycler",
-                "system volume information", "temporary internet files"]  # windows specific
-    hideList += [".fseventd", ".spotlight", ".trashes", ".vol", "cachedmessages", "caches", "trash"]  # osx specific
-
-    fileList = [x for x in fileList if x['name'].lower() not in hideList]
+        fileList = getFileList(parentPath, includeFiles)
 
     fileList = sorted(fileList,
                       lambda x, y: cmp(os.path.basename(x['name']).lower(), os.path.basename(y['path']).lower()))
 
-    entries = [{'current_path': path}]
+    entries = [{'currentPath': path}]
     if includeParent and parentPath != path:
         entries.append({'name': "..", 'path': parentPath})
     entries.extend(fileList)

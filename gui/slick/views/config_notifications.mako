@@ -1001,71 +1001,8 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="${srRoot}/images/notifiers/boxcar.png" alt="" title="Boxcar" />
-                        <h3><a href="${anon_url('http://boxcar.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Boxcar</a></h3>
-                        <p>Universal push notification for iOS. Read your messages where and when you want them! A subscription will be sent if needed.</p>
-                    </div>
-                    <fieldset class="component-group-list">
-                        <div class="field-pair">
-                            <label for="use_boxcar">
-                                <span class="component-title">Enable</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_boxcar" id="use_boxcar" ${('', 'checked="checked"')[bool(sickbeard.USE_BOXCAR)]}/>
-                                    <p>should SickRage send Boxcar notifications ?</p>
-                                </span>
-                            </label>
-                        </div>
-
-                        <div id="content_use_boxcar">
-                            <div class="field-pair">
-                                <label for="boxcar_notify_onsnatch">
-                                    <span class="component-title">Notify on snatch</span>
-                                    <span class="component-desc">
-                                        <input type="checkbox" name="boxcar_notify_onsnatch" id="boxcar_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR_NOTIFY_ONSNATCH)]}/>
-                                        <p>send a notification when a download starts ?</p>
-                                    </span>
-                                </label>
-                            </div>
-                            <div class="field-pair">
-                                <label for="boxcar_notify_ondownload">
-                                    <span class="component-title">Notify on download</span>
-                                    <span class="component-desc">
-                                        <input type="checkbox" name="boxcar_notify_ondownload" id="boxcar_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR_NOTIFY_ONDOWNLOAD)]}/>
-                                        <p>send a notification when a download finishes ?</p>
-                                    </span>
-                                </label>
-                            </div>
-                            <div class="field-pair">
-                                <label for="boxcar_notify_onsubtitledownload">
-                                    <span class="component-title">Notify on subtitle download</span>
-                                    <span class="component-desc">
-                                        <input type="checkbox" name="boxcar_notify_onsubtitledownload" id="boxcar_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                        <p>send a notification when subtitles are downloaded ?</p>
-                                    </span>
-                                </label>
-                            </div>
-                            <div class="field-pair">
-                                <label for="boxcar_username">
-                                    <span class="component-title">Boxcar username</span>
-                                    <input type="text" name="boxcar_username" id="boxcar_username" value="${sickbeard.BOXCAR_USERNAME}" class="form-control input-sm input250" />
-                                </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">username of your Boxcar account</span>
-                                </label>
-                            </div>
-                            <div class="testNotification" id="testBoxcar-result">Click below to test.</div>
-                            <input  class="btn" type="button" value="Test Boxcar" id="testBoxcar" />
-                            <input type="submit" class="config_submitter btn" value="Save Changes" />
-                        </div><!-- /content_use_boxcar //-->
-
-                    </fieldset>
-                </div><!-- /boxcar component-group //-->
-
-                <div class="component-group">
-                    <div class="component-group-desc">
-                        <img class="notifier-icon" src="${srRoot}/images/notifiers/boxcar2.png" alt="" title="Boxcar2"/>
-                        <h3><a href="${anon_url('https://new.boxcar.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Boxcar2</a></h3>
+                        <img class="notifier-icon" src="${srRoot}/images/notifiers/boxcar2.png" alt="" title="Boxcar 2"/>
+                        <h3><a href="${anon_url('https://new.boxcar.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Boxcar 2</a></h3>
                         <p>Read your messages where and when you want them!</p>
                     </div>
                     <fieldset class="component-group-list">
@@ -1074,7 +1011,7 @@
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
                                     <input type="checkbox" class="enabler" name="use_boxcar2" id="use_boxcar2" ${('', 'checked="checked"')[bool(sickbeard.USE_BOXCAR2)]}/>
-                                    <p>should SickRage send Boxcar2 notifications ?</p>
+                                    <p>should SickRage send Boxcar notifications ?</p>
                                 </span>
                             </label>
                         </div>
@@ -1114,11 +1051,11 @@
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">access token for your Boxcar2 account.</span>
+                                    <span class="component-desc">access token for your Boxcar account.</span>
                                 </label>
                             </div>
                             <div class="testNotification" id="testBoxcar2-result">Click below to test.</div>
-                            <input  class="btn" type="button" value="Test Boxcar2" id="testBoxcar2" />
+                            <input  class="btn" type="button" value="Test Boxcar" id="testBoxcar2" />
                             <input type="submit" class="config_submitter btn" value="Save Changes" />
                         </div><!-- /content_use_boxcar2 //-->
 

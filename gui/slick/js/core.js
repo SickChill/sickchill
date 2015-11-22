@@ -499,23 +499,6 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testBoxcar').on('click', function() {
-                var boxcar = {};
-                boxcar.username = $.trim($('#boxcar_username').val());
-                if (!boxcar.username) {
-                    $('#testBoxcar-result').html('Please fill out the necessary fields above.');
-                    $('#boxcar_username').addClass('warning');
-                    return;
-                }
-                $('#boxcar_username').removeClass('warning');
-                $(this).prop('disabled', true);
-                $('#testBoxcar-result').html(loading);
-                $.get(srRoot + '/home/testBoxcar', {'username': boxcar.username}).done(function (data) {
-                    $('#testBoxcar-result').html(data);
-                    $('#testBoxcar').prop('disabled', false);
-                });
-            });
-
             $('#testBoxcar2').on('click', function () {
                 var boxcar2 = {};
                 boxcar2.accesstoken = $.trim($('#boxcar2_accesstoken').val());
@@ -944,7 +927,7 @@ var SICKRAGE = {
             });
 
             // Update the internal data struct anytime settings are saved to the server
-            $('#email_show').bind('notify', function() {
+            $('#email_show').on('notify', function() {
                 loadShowNotifyLists();
             });
 

@@ -53,9 +53,14 @@ module.exports = function(grunt) {
         },
         jshint: {
             options: {
-                eqeqeq: true
+                jshintrc: '../.jshintrc'
             },
-            uses_defaults: ['../gui/slick/js/**/*.js']
+            all: [
+                '../gui/slick/js/**/*.js',
+                '!../gui/slick/js/lib/**/*.js',
+                '!../gui/slick/js/ajaxNotifications.js',
+                '!../gui/slick/js/**/*.min.js', // We use this because ignores doesn't seem to work :(
+            ]
         }
     });
 
@@ -64,5 +69,12 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
-    grunt.registerTask('default', ['bower_concat', 'uglify', 'cssmin']);
+    grunt.registerTask('default', [
+        'bower_concat',
+        'uglify',
+        'cssmin']
+    );
+    grunt.registerTask('travis', [
+        'jshint'
+    ]);
 };

@@ -303,7 +303,7 @@ class QueueItemAdd(ShowQueueItem):
             # if the show has no episodes/seasons
             if not s:
                 logger.log(u"Show " + str(s['seriesname']) + " is on " + str(
-                    sickbeard.indexerApi(self.indexer).name) + " but contains no season/episode data.", logger.ERROR)
+                    sickbeard.indexerApi(self.indexer).name) + " but contains no season/episode data.")
                 ui.notifications.error("Unable to add show",
                                        "Show " + str(s['seriesname']) + " is on " + str(sickbeard.indexerApi(
                                            self.indexer).name) + " but contains no season/episode data.")

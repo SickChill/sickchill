@@ -1,20 +1,20 @@
-;(function($) {
-"use strict";
+;(function ($) {
+    'use strict';
 
     $.Browser = {
         defaults: {
             title:             'Choose Directory',
             url:               srRoot + '/browser/',
             autocompleteURL:   srRoot + '/browser/complete',
-            includeFiles:      0
+            includeFiles:      0,
+            showBrowseButton:  true
         }
     };
 
     var fileBrowserDialog, currentBrowserPath, currentRequest = null;
 
     function browse(path, endpoint, includeFiles) {
-
-        if (currentBrowserPath == path) {
+        if (currentBrowserPath === path) {
             return;
         }
 
@@ -28,24 +28,46 @@
 
         currentRequest = $.getJSON(endpoint, { path: path, includeFiles: includeFiles }, function (data) {
             fileBrowserDialog.empty();
-            var first_val = data[0];
+            var firstVal = data[0];
             var i = 0;
             var list, link = null;
-            data = $.grep(data, function (value) {
+            data = $.grep(data, function () {
                 return i++ !== 0;
             });
-            $('<h2>').text(first_val.current_path).appendTo(fileBrowserDialog);
+
+            $('<input type="text" class="form-control input-sm">')
+                .val(firstVal.currentPath)
+                .on('keypress', function (e) {
+                    if (e.which === 13) {
+                        browse(e.target.value, endpoint, includeFiles);
+                    }
+                })
+                .appendTo(fileBrowserDialog)
+                .fileBrowser({showBrowseButton: false})
+                .on('autocompleteselect', function (e, ui) {
+                    browse(ui.item.value, endpoint, includeFiles);
+                });
+
             list = $('<ul>').appendTo(fileBrowserDialog);
             $.each(data, function (i, entry) {
-                link = $("<a href='javascript:void(0)' />").click(function () { browse(entry.path, endpoint, includeFiles); }).text(entry.name);
-                $('<span class="ui-icon ui-icon-folder-collapsed"></span>').prependTo(link);
-                link.hover(
-                    function () {$("span", this).addClass("ui-icon-folder-open");    },
-                    function () {$("span", this).removeClass("ui-icon-folder-open"); }
-                );
+                link = $('<a href="javascript:void(0)">').on('click', function () {
+                    if (entry.isFile) {
+                        currentBrowserPath = entry.path;
+                        $('.browserDialog .ui-button:contains("Ok")').click();
+                    } else {
+                        browse(entry.path, endpoint, includeFiles);
+                    }
+                }).text(entry.name);
+                if (entry.isFile) {
+                    link.prepend('<span class="ui-icon ui-icon-blank"></span>');
+                } else {
+                    link.prepend('<span class="ui-icon ui-icon-folder-collapsed"></span>')
+                        .on('mouseenter', function () { $('span', this).addClass('ui-icon-folder-open'); })
+                        .on('mouseleave', function () { $('span', this).removeClass('ui-icon-folder-open'); });
+                }
                 link.appendTo(list);
             });
-            $("a", list).wrap('<li class="ui-state-default ui-corner-all">');
+            $('a', list).wrap('<li class="ui-state-default ui-corner-all">');
             fileBrowserDialog.dialog('option', 'dialogClass', 'browserDialog');
         });
     }
@@ -55,7 +77,6 @@
 
         // make a fileBrowserDialog object if one doesn't exist already
         if (!fileBrowserDialog) {
-
             // set up the jquery dialog
             fileBrowserDialog = $('<div id="fileBrowserDialog" style="display:hidden"></div>').appendTo('body').dialog({
                 dialogClass: 'browserDialog',
@@ -71,22 +92,22 @@
         }
 
         fileBrowserDialog.dialog('option', 'buttons', [
-                    {
-                        text: "Ok",
-                        "class": "btn",
-                        click: function() {
-                            // store the browsed path to the associated text field
-                            callback(currentBrowserPath, options);
-                            $(this).dialog("close");
-                        }
-                    },
-                    {
-                        text: "Cancel",
-                        "class": "btn",
-                        click: function() {
-                            $(this).dialog("close");
-                        }
-                    }
+            {
+                text: 'Ok',
+                'class': 'btn',
+                click: function () {
+                    // store the browsed path to the associated text field
+                    callback(currentBrowserPath, options);
+                    $(this).dialog('close');
+                }
+            },
+            {
+                text: 'Cancel',
+                'class': 'btn',
+                click: function () {
+                    $(this).dialog('close');
+                }
+            }
         ]);
 
         // set up the browser and launch the dialog
@@ -109,40 +130,39 @@
         if (options.field.autocomplete && options.autocompleteURL) {
             var query = '';
             options.field.autocomplete({
-                position: { my : "top", at: "bottom", collision: "flipfit" },
+                position: { my : 'top', at: 'bottom', collision: 'flipfit' },
                 source: function (request, response) {
                     //keep track of user submitted search term
                     query = $.ui.autocomplete.escapeRegex(request.term, options.includeFiles);
                     $.ajax({
                         url: options.autocompleteURL,
                         data: request,
-                        dataType: "json",
-                        success: function (data, item) {
+                        dataType: 'json',
+                        success: function (data) {
                             //implement a startsWith filter for the results
-                            var matcher = new RegExp("^" + query, "i");
-                            var a = $.grep(data, function (item, index) {
+                            var matcher = new RegExp('^' + query, 'i');
+                            var a = $.grep(data, function (item) {
                                 return matcher.test(item);
                             });
                             response(a);
                         }
                     });
                 },
-                open: function (event, ui) {
-                    $(".ui-autocomplete li.ui-menu-item a").removeClass("ui-corner-all");
+                open: function () {
+                    $('.ui-autocomplete li.ui-menu-item a').removeClass('ui-corner-all');
                 }
-            })
-                .data("ui-autocomplete")._renderItem = function (ul, item) {
-                    //highlight the matched search term from the item -- note that this is global and will match anywhere
-                    var result_item = item.label;
-                    var x = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "gi");
-                    result_item = result_item.replace(x, function (FullMatch, n) {
-                        return '<b>' + FullMatch + '</b>';
-                    });
-                    return $("<li></li>")
-                        .data("ui-autocomplete-item", item)
-                        .append("<a class='nowrap'>" + result_item + "</a>")
-                        .appendTo(ul);
-                };
+            }).data('ui-autocomplete')._renderItem = function (ul, item) {
+                //highlight the matched search term from the item -- note that this is global and will match anywhere
+                var resultItem = item.label;
+                var x = new RegExp('(?![^&;]+;)(?!<[^<>]*)(' + query + ')(?![^<>]*>)(?![^&;]+;)', 'gi');
+                resultItem = resultItem.replace(x, function (fullMatch) {
+                    return '<b>' + fullMatch + '</b>';
+                });
+                return $('<li></li>')
+                    .data('ui-autocomplete-item', item)
+                    .append('<a class="nowrap">' + resultItem + '</a>')
+                    .appendTo(ul);
+            };
         }
 
         var path, callback, ls = false;
@@ -163,16 +183,20 @@
             if (ls && options.key) {
                 localStorage['fileBrowser-' + options.key] = path;
             }
-
         };
 
-        // append the browse button and give it a click behaviour
-        return options.field.addClass('fileBrowserField').after($('<input type="button" value="Browse&hellip;" class="btn btn-inline fileBrowser" />').click(function () {
-            var initialDir = options.field.val() || (options.key && path) || '';
-            var optionsWithInitialDir = $.extend({}, options, {initialDir: initialDir});
-            $(this).nFileBrowser(callback, optionsWithInitialDir);
-            return false;
-        }));
+        options.field.addClass('fileBrowserField');
+        if (options.showBrowseButton) {
+            // append the browse button and give it a click behaviour
+            options.field.after(
+                $('<input type="button" value="Browse&hellip;" class="btn btn-inline fileBrowser">').on('click', function () {
+                    var initialDir = options.field.val() || (options.key && path) || '';
+                    var optionsWithInitialDir = $.extend({}, options, {initialDir: initialDir});
+                    $(this).nFileBrowser(callback, optionsWithInitialDir);
+                    return false;
+                })
+            );
+        }
+        return options.field;
     };
-
 })(jQuery);

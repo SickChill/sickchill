@@ -2,9 +2,6 @@
 <%!
     import sickbeard
 %>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/new/home_postprocess.js"></script>
-</%block>
 <%block name="content">
 <div id="content800">
 % if not header is UNDEFINED:
