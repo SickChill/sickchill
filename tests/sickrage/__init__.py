@@ -1,8 +1,7 @@
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.tv
-# Git: https://github.com/SickRage/SickRage.git
-#
 # This file is part of SickRage.
+#
+# URL: https://sickrage.github.io
+# Git: https://github.com/SickRage/SickRage.git
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +24,7 @@ from system.shutdown_tests import ShutdownTests
 from unittest import TestLoader, TextTestRunner
 
 if __name__ == '__main__':
-    print('=====> Running all test <=====')
+    print('=====> Running all test in "sickrage" <=====')
 
     test_classes = [
         ComingEpisodesTests,

@@ -18,9 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys, os.path
+import os
+import sys
 
-tests_dir=os.path.abspath(__file__)[:-len(os.path.basename(__file__))]
+tests_dir = os.path.abspath(__file__)[:-len(os.path.basename(__file__))]
 
 sys.path.insert(1, os.path.join(tests_dir, '../lib'))
 sys.path.insert(1, os.path.join(tests_dir, '..'))
@@ -28,11 +29,13 @@ sys.path.insert(1, os.path.join(tests_dir, '..'))
 import glob
 import unittest
 
+
 class AllTests(unittest.TestCase):
-    #Block issue_submitter_tests to avoid issue tracker spam on every build
+    # Block issue_submitter_tests to avoid issue tracker spam on every build
     blacklist = [tests_dir + 'all_tests.py', tests_dir + 'issue_submitter_tests.py', tests_dir + 'search_tests.py']
+
     def setUp(self):
-        self.test_file_strings = [ x for x in glob.glob(tests_dir + '*_tests.py') if not x in self.blacklist ]
+        self.test_file_strings = [x for x in glob.glob(tests_dir + '*_tests.py') if x not in self.blacklist]
         self.module_strings = [file_string[len(tests_dir):len(file_string) - 3] for file_string in self.test_file_strings]
         self.suites = [unittest.defaultTestLoader.loadTestsFromName(file_string) for file_string in self.module_strings]
         self.testSuite = unittest.TestSuite(self.suites)
@@ -41,8 +44,8 @@ class AllTests(unittest.TestCase):
         print "=================="
         print "STARTING - ALL TESTS"
         print "=================="
-        for includedfiles in self.test_file_strings:
-            print "- " + includedfiles[len(tests_dir):-3]
+        for included_files in self.test_file_strings:
+            print "- " + included_files[len(tests_dir):-3]
 
         text_runner = unittest.TextTestRunner().run(self.testSuite)
         if not text_runner.wasSuccessful():
