@@ -2237,10 +2237,10 @@ class HomeAddShows(Home):
 
         searchTerms = [search_term]
 
-        # If search term ends with a 4 digit number (year), enclose it in ()
-        matches = re.match(r'^(.+) ([12][0-9]{3})$', search_term)
+        # If search term ends with what looks like a year, enclose it in ()
+        matches = re.match(r'^(.+ |)([12][0-9]{3})$', search_term)
         if matches:
-            searchTerms.append("%s (%s)" % (matches.group(1), matches.group(2)))
+            searchTerms.append("%s(%s)" % (matches.group(1), matches.group(2)))
 
         for searchTerm in searchTerms:
             # If search term begins with an article, let's also search for it without
