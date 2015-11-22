@@ -1,5 +1,5 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.tv
+# URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
 #
 # This file is part of SickRage.
@@ -171,6 +171,8 @@ class PostProcessor(object):
 
         file_path_list = []
 
+        extensions_to_delete = []
+
         if subfolders:
             base_name = ek(os.path.basename, globbable_file_path).rpartition('.')[0]
         else:
@@ -207,6 +209,7 @@ class PostProcessor(object):
             # only add associated to list
             if associated_file_path == file_path:
                 continue
+
             # only list it if the only non-shared part is the extension or if it is a subtitle
             if subtitles_only and not associated_file_path[len(associated_file_path) - 3:] in common.subtitleExtensions:
                 continue
@@ -215,13 +218,24 @@ class PostProcessor(object):
             if re.search(r'(^.+\.(rar|r\d+)$)', associated_file_path):
                 continue
 
+            # Add the extensions that the user doesn't allow to the 'extensions_to_delete' list
+            if sickbeard.MOVE_ASSOCIATED_FILES and sickbeard.ALLOWED_EXTENSIONS:
+                allowed_extensions = sickbeard.ALLOWED_EXTENSIONS.split(",")
+                if not associated_file_path[-3:] in allowed_extensions and not associated_file_path[-3:] in common.subtitleExtensions:
+                    if ek(os.path.isfile, associated_file_path):
+                        extensions_to_delete.append(associated_file_path)
+
             if ek(os.path.isfile, associated_file_path):
                 file_path_list.append(associated_file_path)
 
         if file_path_list:
-            self._log(u"Found the following associated files: " + str(file_path_list), logger.DEBUG)
+            self._log(u"Found the following associated files for %s: %s" % (file_path, file_path_list), logger.DEBUG)
+            if extensions_to_delete:
+                # Rebuild the 'file_path_list' list only with the extensions the user allows
+                file_path_list = [associated_file for associated_file in file_path_list if associated_file not in extensions_to_delete]
+                self._delete(extensions_to_delete)
         else:
-            self._log(u"No associated files were during this pass", logger.DEBUG)
+            self._log(u"No associated files for %s were found during this pass" % file_path, logger.DEBUG)
 
         return file_path_list
 
@@ -236,8 +250,13 @@ class PostProcessor(object):
         if not file_path:
             return
 
+        # Check if file_path is a list, if not, make it one
+        if not isinstance(file_path, list):
+            file_list = [file_path]
+        else:
+            file_list = file_path
+
         # figure out which files we want to delete
-        file_list = [file_path]
         if associated_files:
             file_list = file_list + self.list_associated_files(file_path, base_name_only=True, subfolders=True)
 
@@ -939,6 +958,19 @@ class PostProcessor(object):
             elif existing_file_status == PostProcessor.EXISTS_SAME:
                 self._log(u"File exists and new file is same size, marking it unsafe to replace")
                 return False
+
+            # Check if the processed file season is already in our indexer. If not, the file is most probably mislabled/fake and will be skipped
+            # Only proceed if the file season is > 0
+            if int(ep_obj.season) > 0:
+                myDB = db.DBConnection()
+                max_season = myDB.select(
+                    "SELECT MAX(season) as maxseason FROM tv_episodes WHERE showid = ? and indexer = ?",
+                    [show.indexerid, show.indexer])
+                # If the file season (ep_obj.season) is bigger than the indexer season (max_season[0][0]), skip the file
+                if int(ep_obj.season) > int(max_season[0][0]):
+                    self._log(u"File has season %s, while the indexer is on season %s. The file may be incorrectly labeled or fake, aborting." 
+                              % (str(ep_obj.season), str(max_season[0][0])))
+                    return False
 
         # if the file is priority then we're going to replace it even if it exists
         else:

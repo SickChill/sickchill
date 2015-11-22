@@ -63,6 +63,16 @@
 
                         <div class="field-pair">
                             <label>
+                                <span class="component-title">Backlog search day(s)</span>
+                                <span class="component-desc">
+                                    <input type="text" name="backlog_days" value="${sickbeard.BACKLOG_DAYS}" class="form-control input-sm input75" />
+                                    <p>number of day(s) that the "Forced Backlog Search" will cover (e.g. 7 Days)</p>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
+                            <label>
                                 <span class="component-title">Backlog search frequency</span>
                                 <span class="component-desc">
                                     <input type="text" name="backlog_frequency" value="${sickbeard.BACKLOG_FREQUENCY}" class="form-control input-sm input75" />
@@ -110,6 +120,18 @@
                                     <input type="text" name="require_words" value="${sickbeard.REQUIRE_WORDS}" class="form-control input-sm input350" />
                                     <div class="clear-left">results with no word from this list will be ignored<br>
                                     separate words with a comma, e.g. "word1,word2,word3"
+                                    </div>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
+                            <label>
+                                <span class="component-title">Trackers list</span>
+                                <span class="component-desc">
+                                    <input type="text" name="trackers_list" value="${sickbeard.TRACKERS_LIST}" class="form-control input-sm input350" />
+                                    <div class="clear-left">Trackers that will be added to magnets without trackers<br>
+                                    separate trackers with a comma, e.g. "tracker1,tracker2,tracker3"
                                     </div>
                                 </span>
                             </label>

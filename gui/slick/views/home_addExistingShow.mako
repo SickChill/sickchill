@@ -7,7 +7,7 @@
 <script type="text/javascript" src="${srRoot}/js/addExistingShow.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/addShowOptions.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/new/home_addExistingShow.js"></script>
+<script type="text/javascript" src="${srRoot}/js/home_addExistingShow.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:

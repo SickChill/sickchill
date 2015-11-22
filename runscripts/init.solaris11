@@ -85,7 +85,7 @@
        </common_name>
        <documentation>
           <doc_link name='sickrage'
-                    uri='https://sickrage.tv/' />
+                    uri='https://sickrage.github.io/' />
        </documentation>
     </template>
  

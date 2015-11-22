@@ -105,6 +105,14 @@
                             </label>
                         </div>
                         <div class="field-pair">
+                            <input type="checkbox" name="postpone_if_no_subs" id="postpone_if_no_subs" ${('', 'checked="checked"')[bool(sickbeard.POSTPONE_IF_NO_SUBS)]}/>
+                            <label for="postpone_if_no_subs">
+                                <span class="component-title">Postpone if no subtitle</span>
+                                <span class="component-desc">Wait to process a file until subtitles are present</span>
+                                <span class="component-desc">Language names are allowed in subtitle filename (en.srt, pt-br.srt, ita.srt, etc.)</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
                             <input type="checkbox" name="rename_episodes" id="rename_episodes" ${('', 'checked="checked"')[bool(sickbeard.RENAME_EPISODES)]}/>
                             <label for="rename_episodes">
                                 <span class="component-title">Rename Episodes</span>
@@ -129,7 +137,17 @@
                             <input type="checkbox" name="move_associated_files" id="move_associated_files" ${('', 'checked="checked"')[bool(sickbeard.MOVE_ASSOCIATED_FILES)]}/>
                             <label for="move_associated_files">
                                 <span class="component-title">Move Associated Files</span>
-                                <span class="component-desc">Move srr/srt/sfv/etc files with the episode when processed?</span>
+                                <span class="component-desc">Move srr/sfv/etc files with the episode when processed?</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
+                            <label class="nocheck">
+                                <span class="component-title">Allowed associated file extensions</span>
+                                <input type="text" name="allowed_extensions" id="allowed_extensions" value="${sickbeard.ALLOWED_EXTENSIONS}" class="form-control input-sm input350" />
+                            </label>
+                            <label class="nocheck">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">Comma seperated list of associated file extensions SickRage should move while Post Processing. Leaving it empty means all extensions will be allowed</span>
                             </label>
                         </div>
                         <div class="field-pair">

@@ -639,6 +639,10 @@ class TorrentProvider(GenericProvider):
     def _clean_title_from_provider(title):
         return (title or '').replace(' ', '.')
 
+    @property
+    def _custom_trackers(self):
+        return ('', '&tr=' + '&tr='.join(set([x.strip() for x in sickbeard.TRACKERS_LIST.split(',') if x.strip()])))[self.public] if sickbeard.TRACKERS_LIST else ''
+
     def findPropers(self, search_date=datetime.datetime.today()):
 
         results = []

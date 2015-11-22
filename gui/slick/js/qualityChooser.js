@@ -8,7 +8,7 @@ $(document).ready(function() {
         }
 
         $('#anyQualities option').each(function() {
-            var result = preset & $(this).val(); // @TODO Find out what this does
+            var result = preset & $(this).val(); // jshint ignore:line
             if (result > 0) {
                 $(this).attr('selected', 'selected');
             } else {
@@ -17,7 +17,7 @@ $(document).ready(function() {
         });
 
         $('#bestQualities option').each(function() {
-            var result = preset & ($(this).val() << 16); // @TODO Find out what this does
+            var result = preset & ($(this).val() << 16); // jshint ignore:line
             if (result > 0) {
                 $(this).attr('selected', 'selected');
             } else {

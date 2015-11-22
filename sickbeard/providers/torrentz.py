@@ -30,6 +30,7 @@ from sickbeard import tvcache
 from sickbeard.providers import generic
 from sickbeard.common import cpu_presets
 
+
 class TORRENTZProvider(generic.TorrentProvider):
 
     def __init__(self):
@@ -106,7 +107,7 @@ class TORRENTZProvider(generic.TorrentProvider):
                         continue
 
                     # TODO: Add method to generic provider for building magnet from hash.
-                    download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://open.demonii.com:1337&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969"
+                    download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + self._custom_trackers
                     size, seeders, leechers = self._split_description(item.get('description', ''))
 
                     # Filter unseeded torrent

@@ -12,7 +12,7 @@ $(document).ready(function() {
             var name = $(item).attr('name');
             var value = $(item).val();
 
-            if(name !== undefined && value !== undefined && name != value && value) {
+            if(name !== undefined && value !== undefined && name !== value && value) {
                 if($.isArray(value)) {
                     value = value.join('|');
                 }
@@ -21,7 +21,7 @@ $(document).ready(function() {
             }
         });
 
-        if(profile) url += '&profile=1';
+        if(profile) { url += '&profile=1'; }
 
         var requestTime = new Date().getTime();
         $.get(url, function (data, textStatus, jqXHR) {
@@ -33,7 +33,7 @@ $(document).ready(function() {
             $(timeId).text(responseTime + 'ms');
             $(urlId).text(url + (jsonp ? '&jsonp=foo' : ''));
 
-            if(responseType.slice(0, 6) == 'image/') {
+            if(responseType.slice(0, 6) === 'image/') {
                 target.html($('<img/>').attr('src', url));
             } else {
                 var json = JSON.stringify(data, null, 4);
@@ -65,10 +65,10 @@ $(document).ready(function() {
             select.removeClass('hidden');
             select.find('option:gt(0)').remove();
 
-            for(var episode in episodes[show][season]) {
+            for(var episode in episodes[show][season]) { // jshint ignore:line
                 select.append($('<option>', {
-                    value: episodes[show][season][episode],
-                    label: 'Episode ' + episodes[show][season][episode],
+                    value: episodes[show][season][episode], // jshint ignore:line
+                    label: 'Episode ' + episodes[show][season][episode], // jshint ignore:line
                 }));
             }
         }
@@ -84,7 +84,7 @@ $(document).ready(function() {
             select.removeClass('hidden');
             select.find('option:gt(0)').remove();
 
-            for(var season in episodes[show]) {
+            for(var season in episodes[show]) { // jshint ignore:line
                 select.append($('<option>', {
                     value: season,
                     label: (season === 0) ? 'Specials' : 'Season ' + season,
@@ -95,7 +95,7 @@ $(document).ready(function() {
 
     // Enable command search
     $('#command-search').typeahead({
-        source: commands,
+        source: commands, // jshint ignore:line
     });
     $('#command-search').on('change', function() {
         var command = $(this).typeahead('getActive');
