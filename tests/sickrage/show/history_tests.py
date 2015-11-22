@@ -76,5 +76,5 @@ class HistoryTests(TestCase):
 if __name__ == '__main__':
     print('=====> Testing %s' % __file__)
 
-    suite = TestLoader().loadTestsFromTestCase(History)
+    suite = TestLoader().loadTestsFromTestCase(HistoryTests)
     TextTestRunner(verbosity=2).run(suite)

@@ -31,6 +31,9 @@ from unittest import TestCase, TestLoader, TextTestRunner
 
 class ShutdownTests(TestCase):
     def test_shutdown(self):
+        sickbeard.PID = 123456
+        sickbeard.events = Events(None)
+
         tests = {
             0: False,
             '0': False,
@@ -43,9 +46,6 @@ class ShutdownTests(TestCase):
             u'123456': True,
         }
 
-        sickbeard.PID = 123456
-        sickbeard.events = Events(None)
-
         for (pid, result) in tests.iteritems():
             self.assertEqual(Shutdown.stop(pid), result)
 
@@ -53,5 +53,5 @@ class ShutdownTests(TestCase):
 if __name__ == '__main__':
     print('=====> Testing %s' % __file__)
 
-    suite = TestLoader().loadTestsFromTestCase(Shutdown)
+    suite = TestLoader().loadTestsFromTestCase(ShutdownTests)
     TextTestRunner(verbosity=2).run(suite)

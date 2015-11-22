@@ -31,6 +31,9 @@ from unittest import TestCase, TestLoader, TextTestRunner
 
 class RestartTests(TestCase):
     def test_restart(self):
+        sickbeard.PID = 123456
+        sickbeard.events = Events(None)
+
         tests = {
             0: False,
             '0': False,
@@ -42,9 +45,6 @@ class RestartTests(TestCase):
             '123456': True,
             u'123456': True,
         }
-
-        sickbeard.PID = 123456
-        sickbeard.events = Events(None)
 
         for (pid, result) in tests.iteritems():
             self.assertEqual(Restart.restart(pid), result)

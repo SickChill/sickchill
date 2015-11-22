@@ -19,6 +19,7 @@
 from helper.quality_tests import QualityTests
 from show.coming_episodes_tests import ComingEpisodesTests
 from show.history_tests import HistoryTests
+from show.show_tests import ShowTests
 from system.restart_tests import RestartTests
 from system.shutdown_tests import ShutdownTests
 from unittest import TestLoader, TextTestRunner
@@ -31,7 +32,8 @@ if __name__ == '__main__':
         HistoryTests,
         QualityTests,
         RestartTests,
-        ShutdownTests
+        ShowTests,
+        ShutdownTests,
     ]
 
     for test_class in test_classes:
