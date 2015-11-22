@@ -106,7 +106,7 @@ class newpctProvider(generic.TorrentProvider):
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                         torrent_tbody = html.find('tbody')
 
-                        if not len(torrent_tbody):
+                        if torrent_tbody is None:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
