@@ -127,6 +127,18 @@
 
                         <div class="field-pair">
                             <label>
+                                <span class="component-title">Trackers list</span>
+                                <span class="component-desc">
+                                    <input type="text" name="trackers_list" value="${sickbeard.TRACKERS_LIST}" class="form-control input-sm input350" />
+                                    <div class="clear-left">Trackers that will be added to magnets without trackers<br>
+                                    separate trackers with a comma, e.g. "tracker1,tracker2,tracker3"
+                                    </div>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
+                            <label>
                                 <span class="component-title">Ignore language names in subbed results</span>
                                 <span class="component-desc">
                                     <input type="text" name="ignored_subs_list" value="${sickbeard.IGNORED_SUBS_LIST}" class="form-control input-sm input350" />

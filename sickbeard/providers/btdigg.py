@@ -19,10 +19,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+
 from sickbeard.providers import generic
 from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
+
 
 class BTDIGGProvider(generic.TorrentProvider):
 
@@ -70,7 +72,7 @@ class BTDIGGProvider(generic.TorrentProvider):
                 for torrent in jdata:
                     if not torrent['ff']:
                         title = torrent['name']
-                        download_url = torrent['magnet'] + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://open.demonii.com:1337&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969"
+                        download_url = torrent['magnet'] + self._custom_trackers
                         size = torrent['size']
                         # FIXME
                         seeders = 1

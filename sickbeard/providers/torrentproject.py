@@ -24,6 +24,7 @@ from sickbeard import helpers
 from sickbeard.providers import generic
 from sickbeard.common import USER_AGENT
 
+
 class TORRENTPROJECTProvider(generic.TorrentProvider):
 
     def __init__(self):
@@ -83,7 +84,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                         assert jdata is not "maintenance"
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
                     except (Exception, AssertionError):
-                        download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://open.demonii.com:1337&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969"
+                        download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + self._custom_trackers
 
                     if not all([title, download_url]):
                         continue
