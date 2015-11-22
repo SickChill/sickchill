@@ -1,7 +1,7 @@
-# This file is part of SickRage.
+# Author: Nic Wolfe <nic@wolfeden.ca>
+# URL: http://code.google.com/p/sickbeard/
 #
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
