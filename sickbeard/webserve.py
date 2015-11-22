@@ -2235,6 +2235,19 @@ class HomeAddShows(Home):
 
         search_term = search_term.encode('utf-8')
 
+        searchTerms = [search_term]
+
+        # If search term ends with a 4 digit number (year), enclose it in ()
+        matches = re.match(r'^(.+) ([12][0-9]{3})$', search_term)
+        if matches:
+            searchTerms.append("%s (%s)" % (matches.group(1), matches.group(2)))
+
+        for searchTerm in searchTerms:
+            # If search term begins with an article, let's also search for it without
+            matches = re.match(r'^(?:a|an|the) (.+)$', searchTerm, re.I)
+            if matches:
+                searchTerms.append(matches.group(1))
+
         results = {}
         final_results = []
 
@@ -2245,13 +2258,16 @@ class HomeAddShows(Home):
             lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
             t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
-            logger.log(u"Searching for Show with searchterm: %s on Indexer: %s" % (
-                search_term, sickbeard.indexerApi(indexer).name), logger.DEBUG)
-            try:
+            logger.log(u"Searching for Show with searchterm(s): %s on Indexer: %s" % (
+                searchTerms, sickbeard.indexerApi(indexer).name), logger.DEBUG)
+            for searchTerm in searchTerms:
+                try:
+                    indexerResults = t[searchTerm]
+                except Exception:
+                    continue
+
                 # add search results
-                results.setdefault(indexer, []).extend(t[search_term])
-            except Exception:
-                continue
+                results.setdefault(indexer, []).extend(indexerResults)
 
         for i, shows in results.iteritems():
             final_results.extend([[sickbeard.indexerApi(i).name, i, sickbeard.indexerApi(i).config["show_url"], int(show['id']),
