@@ -158,7 +158,7 @@ class PostProcessor(object):
         """
         def recursive_glob(treeroot, pattern):
             results = []
-            for base, _, files in os.walk(treeroot):
+            for base, _, files in os.walk(treeroot.encode(sickbeard.SYS_ENCODING)):
                 goodfiles = fnmatch.filter(files, pattern)
                 results.extend(os.path.join(base, f) for f in goodfiles)
             return results
@@ -968,7 +968,7 @@ class PostProcessor(object):
                     [show.indexerid, show.indexer])
                 # If the file season (ep_obj.season) is bigger than the indexer season (max_season[0][0]), skip the file
                 if int(ep_obj.season) > int(max_season[0][0]):
-                    self._log(u"File has season %s, while the indexer is on season %s. The file may be incorrectly labeled or fake, aborting." 
+                    self._log(u"File has season %s, while the indexer is on season %s. The file may be incorrectly labeled or fake, aborting."
                               % (str(ep_obj.season), str(max_season[0][0])))
                     return False
 
