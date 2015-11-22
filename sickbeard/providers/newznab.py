@@ -1,5 +1,9 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
+#
+# Rewrite: Dustyn Gibson (miigotu) <miigotu@gmail.com>
+# URL: http://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -15,13 +19,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=W0703
+# pylint: disable=R0902,R0913
 
-import urllib
-import time
-import datetime
 import os
 import re
+import urllib
+import datetime
+from bs4 import BeautifulSoup
 
 import sickbeard
 from sickbeard import classes
@@ -33,23 +37,24 @@ from sickbeard import db
 from sickbeard.common import Quality
 from sickbeard.providers import generic
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import AuthException
 from sickbeard.common import USER_AGENT
 
 
 class NewznabProvider(generic.NZBProvider):
-    def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly', search_fallback=False,
-                 enable_daily=False, enable_backlog=False):
+    """
+    Generic provider for built in and custom providers who expose a newznab
+    compatible api.
+    Tested with: newznab, nzedb, spotweb, torznab
+    """
+    def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly',
+                 search_fallback=False, enable_daily=True, enable_backlog=False):
 
         generic.NZBProvider.__init__(self, name)
 
-        self.cache = NewznabCache(self)
+        self.headers.update({'User-Agent': USER_AGENT})
 
         self.urls = {'base_url': url}
-
         self.url = self.urls['base_url']
-
-        self.headers.update({'User-Agent': USER_AGENT})
 
         self.key = key
 
@@ -58,38 +63,36 @@ class NewznabProvider(generic.NZBProvider):
         self.enable_daily = enable_daily
         self.enable_backlog = enable_backlog
 
-        # a 0 in the key spot indicates that no key is needed
-        if self.key == '0':
-            self.needs_auth = False
-        else:
-            self.needs_auth = True
-
-        self.public = not self.needs_auth
-
-        if catIDs:
-            self.catIDs = catIDs
-        else:
-            self.catIDs = '5030,5040'
-
         self.supportsBacklog = True
 
+        # 0 in the key spot indicates that no key is needed
+        self.needs_auth = self.key != '0'
+        self.public = not self.needs_auth
+
+        self.catIDs = catIDs if catIDs else '5030,5040'
+
         self.default = False
-        self.last_search = datetime.datetime.now()
+
+        self.cache = NewznabCache(self)
 
     def configStr(self):
+        """
+        Generates a '|' delimited string of instance attributes, for saving to config.ini
+        """
         return self.name + '|' + self.url + '|' + self.key + '|' + self.catIDs + '|' + str(
             int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(
                 int(self.enable_daily)) + '|' + str(int(self.enable_backlog))
 
     def imageName(self):
+        """
+        Checks if we have an image for this provider already.
+        Returns found image or the default newznab image
+        """
         if ek(os.path.isfile,
               ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
                  self.getID() + '.png')):
             return self.getID() + '.png'
         return 'newznab.png'
-
-    def _getURL(self, url, post_data=None, params=None, timeout=30, json=False):
-        return self.getURL(url, post_data=post_data, params=params, timeout=timeout, json=json)
 
     def get_newznab_categories(self):
         """
@@ -100,39 +103,41 @@ class NewznabProvider(generic.NZBProvider):
         """
         return_categories = []
 
-        self._checkAuth()
+        if not self._checkAuth():
+            return False, return_categories, "Provider requires auth and your key is not set"
 
         params = {"t": "caps"}
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
-        try:
-            data = self.cache.getRSSFeed("%s/api?%s" % (self.url, urllib.urlencode(params)))
-        except Exception:
-            logger.log(u"Error getting html for [%s]" %
-                       ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x, y) for x, y in params.iteritems()))), logger.WARNING)
-            return (False, return_categories, "Error getting html for [%s]" %
-                    ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x, y) for x, y in params.iteritems()))))
+        url = os.path.join(self.url, 'api?') +  urllib.urlencode(params)
+        data = self.getURL(url)
+        if not data:
+            error_string = u"Error getting xml for [%s]" % url
+            logger.log(error_string, logger.WARNING)
+            return False, return_categories, error_string
 
+        data = BeautifulSoup(data, features=["html5lib", "permissive"])
         if not self._checkAuthFromData(data):
-            logger.log(u"Error parsing xml", logger.DEBUG)
-            return False, return_categories, "Error parsing xml for [%s]" % (self.name)
+            data.decompose()
+            error_string = u"Error parsing xml for [%s]" % (self.name)
+            logger.log(error_string, logger.DEBUG)
+            return False, return_categories, error_string
 
-        try:
-            for category in data.feed.categories:
-                if category.get('name') == 'TV':
-                    return_categories.append(category)
-                    for subcat in category.subcats:
-                        return_categories.append(subcat)
-        except Exception:
-            logger.log(u"Error parsing result for [%s]" % (self.name),
-                       logger.DEBUG)
-            return (False, return_categories, "Error parsing result for [%s]" % (self.name))
+        for category in data.caps.categories.findAll('category'):
+            if hasattr(category, 'attrs') and category.attrs['name'] == 'TV':
+                return_categories.append({'id': category.attrs['id'], 'name': category.attrs['name']})
+                for subcat in category.findAll('subcat'):
+                    return_categories.append({'id': subcat.attrs['id'], 'name': subcat.attrs['name']})
 
+        data.decompose()
         return True, return_categories, ""
 
     def _get_season_search_strings(self, ep_obj):
-
+        """
+        Makes objects to pass to _doSearch for manual and backlog season pack searching
+        Returns a list containing dicts of search parameters
+        """
         to_return = []
         params = {}
         if not ep_obj:
@@ -141,7 +146,6 @@ class NewznabProvider(generic.NZBProvider):
         params['maxage'] = (datetime.datetime.now() - datetime.datetime.combine(ep_obj.airdate, datetime.datetime.min.time())).days + 1
         params['tvdbid'] = ep_obj.show.indexerid
 
-        # season
         if ep_obj.show.air_by_date or ep_obj.show.sports:
             date_str = str(ep_obj.airdate).split('-')[0]
             params['season'] = date_str
@@ -151,10 +155,7 @@ class NewznabProvider(generic.NZBProvider):
 
         save_q = ' ' + params['q'] if 'q' in params else ''
 
-
-        # add new query strings for exceptions
-        name_exceptions = list(
-            set([ep_obj.show.name] + scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid)))
+        name_exceptions = list(set([ep_obj.show.name] + scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid)))
         for cur_exception in name_exceptions:
             params['q'] = helpers.sanitizeSceneName(cur_exception) + save_q
             to_return.append(dict(params))
@@ -162,6 +163,10 @@ class NewznabProvider(generic.NZBProvider):
         return to_return
 
     def _get_episode_search_strings(self, ep_obj, add_string=''):
+        """
+        Makes objects to pass to _doSearch for manual and backlog season pack searching
+        Returns a list containing dicts of search parameters
+        """
         to_return = []
         params = {}
         if not ep_obj:
@@ -178,9 +183,7 @@ class NewznabProvider(generic.NZBProvider):
             params['season'] = ep_obj.scene_season
             params['ep'] = ep_obj.scene_episode
 
-        # add new query strings for exceptions
-        name_exceptions = list(
-            set([ep_obj.show.name] + scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid)))
+        name_exceptions = list(set([ep_obj.show.name] + scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid)))
         for cur_exception in name_exceptions:
             params['q'] = helpers.sanitizeSceneName(cur_exception)
             if add_string:
@@ -190,129 +193,129 @@ class NewznabProvider(generic.NZBProvider):
 
         return to_return
 
-    def _doGeneralSearch(self, search_string):
-        return self._doSearch({'q': search_string})
-
     def _checkAuth(self):
-
+        """
+        Checks that user has set their api key if it is needed
+        Returns: True/False
+        """
         if self.needs_auth and not self.key:
             logger.log(u"Invalid api key. Check your settings", logger.WARNING)
-            # raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
+            return False
 
         return True
 
     def _checkAuthFromData(self, data):
-
-        if 'feed' not in data or 'entries' not in data:
+        """
+        Checks that the returned data is valid
+        Returns: _checkAuth if valid otherwise False if there is an error
+        """
+        if data.findAll('categories') + data.findAll('item'):
             return self._checkAuth()
 
         try:
-            bozo = int(data['bozo'])
-            bozo_exception = data['bozo_exception']
-            err_code = int(data['feed']['error']['code'])
-            err_desc = data['feed']['error']['description']
-            if not err_code or err_desc:
+            err_code = int(data.error.attrs['code'])
+            err_desc = data.error.attrs['description']
+            if not (err_code or err_desc):
                 raise
-        except Exception:
-            return True
+        except (AssertionError, AttributeError, ValueError):
+            return self._checkAuth()
 
         if err_code == 100:
-            raise AuthException("Your API key for " + self.name + " is incorrect, check your config.")
+            logger.log(u'Your API key for %s is incorrect, please check your config.' % self.name)
         elif err_code == 101:
-            raise AuthException("Your account on " + self.name + " has been suspended, contact the administrator.")
+            logger.log(u'Your account on %s has been suspended, contact the administrator.' % self.name)
         elif err_code == 102:
-            raise AuthException(
-                "Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
-        elif bozo == 1:
-            raise Exception(bozo_exception)
+            logger.log(u'Your account is not allowed to use the API on %s, contact the administrator' % self.name)
+        elif err_code == 500:
+            logger.log(u'Your account for %s has reached the api limit' % self.name)
         else:
-            logger.log(u"Unknown error: %s" % err_desc, logger.ERROR)
+            logger.log(u'Unknown error: %s' % err_desc, logger.ERROR)
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+        return False
 
-        self._checkAuth()
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=R0913,R0914
+        """
+        Searches indexer using the params in search_params, either for latest releases, or a string/id search
+        Returns: list of results in dict form
+        """
+        results = []
+        if not self._checkAuth():
+            return results
 
-        params = {"t": "tvsearch",
-                  "maxage": (4, age)[age],
-                  "limit": 100,
-                  "offset": 0}
-
-        if search_params:
-            params.update(search_params)
-            logger.log(u'Search parameters: %s' % repr(search_params), logger.DEBUG)
-
-        # category ids
-        if self.show and self.show.is_sports:
-            params['cat'] = self.catIDs + ',5060'
-        elif self.show and self.show.is_anime:
-            params['cat'] = self.catIDs + ',5070'
-        else:
-            params['cat'] = self.catIDs
-
-        params['cat'] = params['cat'].strip(', ')
+        params = {
+            "t": "tvsearch",
+            "maxage": (4, age)[age],
+            "limit": 100,
+            "offset": 0,
+            "cat": self.catIDs.strip(', ')
+        }
 
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
+        if search_params:
+            params.update(search_params)
+
         params['maxage'] = min(params['maxage'], sickbeard.USENET_RETENTION)
 
-        results = []
-        offset = total = 0
+        search_url = os.path.join(self.url, 'api?') + urllib.urlencode(params)
+        logger.log(u"Search url: %s" % search_url, logger.DEBUG)
+        data = self.getURL(search_url)
+        if not data:
+            return results
 
-        if 'lolo.sickbeard.com' in self.url and params['maxage'] < 33:
-            params['maxage'] = 33
+        data = BeautifulSoup(data, features=["html5lib", "permissive"])
 
-        while total >= offset:
-            search_url = self.url + 'api?' + urllib.urlencode(params)
+        try:
+            torznab = 'xmlns:torznab' in data.rss.attrs.keys()
+        except AttributeError:
+            torznab = False
 
-            while(datetime.datetime.now() - self.last_search).seconds < 5:
-                time.sleep(1)
+        if not self._checkAuthFromData(data):
+            data.decompose()
+            return results
 
-            logger.log(u"Search url: %s" % search_url, logger.DEBUG)
-
-            data = self.cache.getRSSFeed(search_url)
-
-            self.last_search = datetime.datetime.now()
-
-            if not self._checkAuthFromData(data):
-                break
-
-            for item in data['entries'] or []:
-
-                (title, url) = self._get_title_and_url(item)
-
-                if title and url:
-                    results.append(item)
-
-            # get total and offset attribs
+        for item in data.findAll('item'):
             try:
-                if total == 0:
-                    total = int(data['feed'].newznab_response['total'] or 0)
-                offset = int(data['feed'].newznab_response['offset'] or 0)
-            except AttributeError:
-                break
+                title = item.title.next.strip()
+                download_url = item.link.next.strip()
+            except (AttributeError, TypeError):
+                continue
 
-            # No items found, prevent from doing another search
-            if total == 0:
-                break
+            if title and download_url:
+                size = seeders = leechers = None
+                for attr in item.findAll('newznab:attr') + item.findAll('torznab:attr'):
+                    size = helpers.tryInt(attr['value'], -1) if attr['name'] == 'size' else size
+                    seeders = helpers.tryInt(attr['value'], 1) if attr['name'] == 'seeders' else seeders
+                    leechers = helpers.tryInt(attr['value'], 0) if attr['name'] == 'leechers' else leechers
 
-            if offset != params['offset']:
-                logger.log(u"Tell your newznab provider to fix their bloody newznab responses")
-                break
+                if not size or (torznab and (seeders is None or leechers is None)):
+                    continue
 
-            params['offset'] += params['limit']
-            if (total > int(params['offset'])) and (offset < 500):
-                offset = int(params['offset'])
-                # if there are more items available then the amount given in one call, grab some more
-                logger.log(u'%d' % (total - offset) + ' more items to be fetched from provider.' +
-                           'Fetching another %d' % int(params['limit']) + ' items.', logger.DEBUG)
-            else:
-                logger.log(u'No more searches needed', logger.DEBUG)
-                break
+                result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
+                results.append(result)
+
+        data.decompose()
+
+        if torznab:
+            results.sort(key=lambda d: d.get('seeders', 0) or 0, reverse=True)
 
         return results
 
+
+    def _get_size(self, item):
+        """
+        Gets size info from a result item
+        Returns int size or -1
+        """
+        return helpers.tryInt(item.get('size', -1), -1)
+
+
     def findPropers(self, search_date=datetime.datetime.today()):
+        """
+        Searches providers for PROPER or REPACK releases
+        Returns a list of objects of type classes.Proper
+        """
         results = []
 
         myDB = db.DBConnection()
@@ -325,7 +328,7 @@ class NewznabProvider(generic.NZBProvider):
         )
 
         if not sqlResults:
-            return []
+            return results
 
         for sqlshow in sqlResults:
             self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
@@ -348,46 +351,6 @@ class NewznabCache(tvcache.TVCache):
 
         # only poll newznab providers every 30 minutes
         self.minTime = 30
-        self.last_search = datetime.datetime.now()
 
     def _getRSSData(self):
-
-        params = {"t": "tvsearch",
-                  "cat": self.provider.catIDs + ',5060,5070',
-                  "maxage": 4,
-                 }
-
-        if 'lolo.sickbeard.com' in self.provider.url:
-            params['maxage'] = 33
-
-        if self.provider.needs_auth and self.provider.key:
-            params['apikey'] = self.provider.key
-
-        rss_url = self.provider.url + 'api?' + urllib.urlencode(params)
-
-        while (datetime.datetime.now() - self.last_search).seconds < 5:
-            time.sleep(1)
-
-        logger.log(u"Cache update URL: %s " % rss_url, logger.DEBUG)
-        data = self.getRSSFeed(rss_url)
-
-        self.last_search = datetime.datetime.now()
-
-        return data
-
-    def _checkAuth(self, data):
-        # pylint: disable=W0212
-        return self.provider._checkAuthFromData(data)
-
-    def _parseItem(self, item):
-        title, url = self._get_title_and_url(item)
-
-        self._checkItemAuth(title, url)
-
-        if not title or not url:
-            return None
-
-        tvrageid = 0
-
-        logger.log(u"Attempting to add item from RSS to cache: %s" % title, logger.DEBUG)
-        return self._addCacheEntry(title, url, indexer_id=tvrageid)
+        return {'entries': self.provider._doSearch({})}

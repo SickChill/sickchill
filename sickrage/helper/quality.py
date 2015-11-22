@@ -1,6 +1,6 @@
 # This file is part of SickRage.
 #
-# URL: https://www.sickrage.tv
+# URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
 #
 # SickRage is free software: you can redistribute it and/or modify

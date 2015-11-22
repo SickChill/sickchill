@@ -5,7 +5,6 @@
     from sickbeard.common import statusStrings
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/new/manage.js"></script>
 <script type="text/javascript" src="${srRoot}/js/massUpdate.js?${sbPID}"></script>
 </%block>
 <%block name="content">

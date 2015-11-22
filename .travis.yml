@@ -1,6 +1,5 @@
-sudo: false
-
-language: python
+language:
+  - python
 
 python: 2.7.9
 
@@ -10,10 +9,20 @@ branches:
   except:
     - master
 
-cache: pip
+before_install:
+  - npm install -g grunt-cli
+  - npm install -g bower
+  - cd .build && npm install && bower install && cd ..
 
 script:
+  - cd .build && grunt travis && cd ..
   - ./tests/all_tests.py
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+    - .build/bower_components
+    - .build/node_modules
 
 after_failure:
   - cat ./Logs/sickrage.log

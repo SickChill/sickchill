@@ -1,5 +1,5 @@
 ;(function ($) {
-    "use strict";
+    'use strict';
 
     $.Browser = {
         defaults: {
@@ -36,7 +36,7 @@
             });
 
             $('<input type="text" class="form-control input-sm">')
-                .val(firstVal.current_path) // jshint ignore:line
+                .val(firstVal.currentPath)
                 .on('keypress', function (e) {
                     if (e.which === 13) {
                         browse(e.target.value, endpoint, includeFiles);
@@ -50,15 +50,24 @@
 
             list = $('<ul>').appendTo(fileBrowserDialog);
             $.each(data, function (i, entry) {
-                link = $("<a href='javascript:void(0)' />").on('click', function () { browse(entry.path, endpoint, includeFiles); }).text(entry.name);
-                $('<span class="ui-icon ui-icon-folder-collapsed"></span>').prependTo(link);
-                link.hover(
-                    function () {$("span", this).addClass("ui-icon-folder-open");    },
-                    function () {$("span", this).removeClass("ui-icon-folder-open"); }
-                );
+                link = $('<a href="javascript:void(0)">').on('click', function () {
+                    if (entry.isFile) {
+                        currentBrowserPath = entry.path;
+                        $('.browserDialog .ui-button:contains("Ok")').click();
+                    } else {
+                        browse(entry.path, endpoint, includeFiles);
+                    }
+                }).text(entry.name);
+                if (entry.isFile) {
+                    link.prepend('<span class="ui-icon ui-icon-blank"></span>');
+                } else {
+                    link.prepend('<span class="ui-icon ui-icon-folder-collapsed"></span>')
+                        .on('mouseenter', function () { $('span', this).addClass('ui-icon-folder-open'); })
+                        .on('mouseleave', function () { $('span', this).removeClass('ui-icon-folder-open'); });
+                }
                 link.appendTo(list);
             });
-            $("a", list).wrap('<li class="ui-state-default ui-corner-all">');
+            $('a', list).wrap('<li class="ui-state-default ui-corner-all">');
             fileBrowserDialog.dialog('option', 'dialogClass', 'browserDialog');
         });
     }
@@ -68,7 +77,6 @@
 
         // make a fileBrowserDialog object if one doesn't exist already
         if (!fileBrowserDialog) {
-
             // set up the jquery dialog
             fileBrowserDialog = $('<div id="fileBrowserDialog" style="display:hidden"></div>').appendTo('body').dialog({
                 dialogClass: 'browserDialog',
@@ -85,19 +93,19 @@
 
         fileBrowserDialog.dialog('option', 'buttons', [
             {
-                text: "Ok",
-                "class": "btn",
+                text: 'Ok',
+                'class': 'btn',
                 click: function () {
                     // store the browsed path to the associated text field
                     callback(currentBrowserPath, options);
-                    $(this).dialog("close");
+                    $(this).dialog('close');
                 }
             },
             {
-                text: "Cancel",
-                "class": "btn",
+                text: 'Cancel',
+                'class': 'btn',
                 click: function () {
-                    $(this).dialog("close");
+                    $(this).dialog('close');
                 }
             }
         ]);
@@ -122,17 +130,17 @@
         if (options.field.autocomplete && options.autocompleteURL) {
             var query = '';
             options.field.autocomplete({
-                position: { my : "top", at: "bottom", collision: "flipfit" },
+                position: { my : 'top', at: 'bottom', collision: 'flipfit' },
                 source: function (request, response) {
                     //keep track of user submitted search term
                     query = $.ui.autocomplete.escapeRegex(request.term, options.includeFiles);
                     $.ajax({
                         url: options.autocompleteURL,
                         data: request,
-                        dataType: "json",
+                        dataType: 'json',
                         success: function (data) {
                             //implement a startsWith filter for the results
-                            var matcher = new RegExp("^" + query, "i");
+                            var matcher = new RegExp('^' + query, 'i');
                             var a = $.grep(data, function (item) {
                                 return matcher.test(item);
                             });
@@ -141,18 +149,18 @@
                     });
                 },
                 open: function () {
-                    $(".ui-autocomplete li.ui-menu-item a").removeClass("ui-corner-all");
+                    $('.ui-autocomplete li.ui-menu-item a').removeClass('ui-corner-all');
                 }
-            }).data("ui-autocomplete")._renderItem = function (ul, item) {
+            }).data('ui-autocomplete')._renderItem = function (ul, item) {
                 //highlight the matched search term from the item -- note that this is global and will match anywhere
                 var resultItem = item.label;
-                var x = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "gi");
+                var x = new RegExp('(?![^&;]+;)(?!<[^<>]*)(' + query + ')(?![^<>]*>)(?![^&;]+;)', 'gi');
                 resultItem = resultItem.replace(x, function (fullMatch) {
                     return '<b>' + fullMatch + '</b>';
                 });
-                return $("<li></li>")
-                    .data("ui-autocomplete-item", item)
-                    .append("<a class='nowrap'>" + resultItem + "</a>")
+                return $('<li></li>')
+                    .data('ui-autocomplete-item', item)
+                    .append('<a class="nowrap">' + resultItem + '</a>')
                     .appendTo(ul);
             };
         }

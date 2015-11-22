@@ -18,7 +18,6 @@
 %>
 <script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/massEdit.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/new/manage_massEdit.js"></script>
 </%block>
 
 <%block name="content">
