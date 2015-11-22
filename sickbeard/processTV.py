@@ -1,5 +1,5 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.tv/
+# URL: https://sickrage.github.io/
 # Git: https://github.com/SickRage/SickRage.git
 #
 # This file is part of SickRage.
@@ -542,11 +542,20 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
         cur_video_file_path = ek(os.path.join, processPath, cur_video_file)
 
         if already_postprocessed(processPath, cur_video_file, force, result):
-            result.output += logHelper(u"Already Processed " + cur_video_file_path + " : Skipping", logger.DEBUG)
+            result.output += logHelper(u"Already Processed " + cur_video_file + " : Skipping", logger.DEBUG)
             continue
 
         try:
             processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority)
+            # This feature prevents PP for files that do not have subtitle associated with the video file        
+            if sickbeard.POSTPONE_IF_NO_SUBS:
+                associatedFiles = processor.list_associated_files(cur_video_file_path, subtitles_only=True)
+                if not [associatedFile for associatedFile in associatedFiles if associatedFile[-3:] in common.subtitleExtensions]:
+                    result.output += logHelper(u"No subtitles associated. Postponing the post-process of this file: %s" % cur_video_file, logger.DEBUG)
+                    continue
+                else:
+                    result.output += logHelper(u"Found subtitles associated. Continuing the post-process of this file: %s" % cur_video_file) 
+        
             result.result = processor.process()
             process_fail_message = ""
         except EpisodePostProcessingFailedException, e:

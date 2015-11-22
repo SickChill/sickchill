@@ -9,10 +9,10 @@
     from sickbeard.helpers import anon_url
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/new/addTrendingShow.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/addTrendingShow.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/new/home_trendingShows.js"></script>
+<script type="text/javascript" src="${srRoot}/js/home_trendingShows.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:

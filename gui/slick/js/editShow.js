@@ -11,7 +11,7 @@ $('#submit').click(function() {
 
     $("#exceptions_list").val(allExceptions);
 
-    if(metaToBool('show.is_anime')) { generate_bwlist(); }
+    if(metaToBool('show.is_anime')) { generateBlackWhiteList(); }
 });
 $('#addSceneName').click(function() {
     var sceneEx = $('#SceneName').val();
@@ -19,7 +19,7 @@ $('#addSceneName').click(function() {
     allExceptions = [];
 
     $("#exceptions_list option").each(function() {
-       allExceptions.push($(this).val());
+        allExceptions.push($(this).val());
     });
 
     $('#SceneName').val('');

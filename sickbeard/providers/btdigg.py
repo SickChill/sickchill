@@ -70,7 +70,7 @@ class BTDIGGProvider(generic.TorrentProvider):
                 for torrent in jdata:
                     if not torrent['ff']:
                         title = torrent['name']
-                        download_url = torrent['magnet']
+                        download_url = torrent['magnet'] + "&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://open.demonii.com:1337&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969"
                         size = torrent['size']
                         # FIXME
                         seeders = 1
