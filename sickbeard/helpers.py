@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.tv
+# URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
 #
 # This file is part of SickRage.
@@ -747,7 +747,7 @@ def chmodAsParent(childPath):
     parentPathStat = os.stat(parentPath)
     parentMode = stat.S_IMODE(parentPathStat[stat.ST_MODE])
 
-    childPathStat = os.stat(childPath)
+    childPathStat = os.stat(childPath.encode(sickbeard.SYS_ENCODING))
     childPath_mode = stat.S_IMODE(childPathStat[stat.ST_MODE])
 
     if os.path.isfile(childPath):
@@ -792,7 +792,7 @@ def fixSetGroupID(childPath):
 
     if parentMode & stat.S_ISGID:
         parentGID = parentStat[stat.ST_GID]
-        childStat = os.stat(childPath)
+        childStat = os.stat(childPath.encode(sickbeard.SYS_ENCODING))
         childGID = childStat[stat.ST_GID]
 
         if childGID == parentGID:

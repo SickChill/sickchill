@@ -15,9 +15,6 @@
 
     from sickrage.show.History import History
 %>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/new/history.js"></script>
-</%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 % if not header is UNDEFINED:

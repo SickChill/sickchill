@@ -1,5 +1,5 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.tv
+# URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage
 #
 # This file is part of SickRage.

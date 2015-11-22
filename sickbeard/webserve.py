@@ -817,15 +817,6 @@ class Home(WebRoot):
             return "Test prowl notice failed"
 
     @staticmethod
-    def testBoxcar(username=None):
-
-        result = notifiers.boxcar_notifier.test_notify(username)
-        if result:
-            return "Boxcar notification succeeded. Check your Boxcar clients to make sure it worked"
-        else:
-            return "Error sending Boxcar notification"
-
-    @staticmethod
     def testBoxcar2(accesstoken=None):
 
         result = notifiers.boxcar2_notifier.test_notify(accesstoken)
@@ -1662,7 +1653,7 @@ class Home(WebRoot):
                 return self._genericMessage("Error", errMsg)
 
         # Use .has_key() since it is overridden for statusStrings in common.py
-        if not statusStrings.has_key(int(status)):
+        if status not in statusStrings:
             errMsg = "Invalid status"
             if direct:
                 ui.notifications.error('Error', errMsg)
@@ -2244,6 +2235,19 @@ class HomeAddShows(Home):
 
         search_term = search_term.encode('utf-8')
 
+        searchTerms = [search_term]
+
+        # If search term ends with what looks like a year, enclose it in ()
+        matches = re.match(r'^(.+ |)([12][0-9]{3})$', search_term)
+        if matches:
+            searchTerms.append("%s(%s)" % (matches.group(1), matches.group(2)))
+
+        for searchTerm in searchTerms:
+            # If search term begins with an article, let's also search for it without
+            matches = re.match(r'^(?:a|an|the) (.+)$', searchTerm, re.I)
+            if matches:
+                searchTerms.append(matches.group(1))
+
         results = {}
         final_results = []
 
@@ -2254,13 +2258,16 @@ class HomeAddShows(Home):
             lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
             t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
-            logger.log(u"Searching for Show with searchterm: %s on Indexer: %s" % (
-                search_term, sickbeard.indexerApi(indexer).name), logger.DEBUG)
-            try:
+            logger.log(u"Searching for Show with searchterm(s): %s on Indexer: %s" % (
+                searchTerms, sickbeard.indexerApi(indexer).name), logger.DEBUG)
+            for searchTerm in searchTerms:
+                try:
+                    indexerResults = t[searchTerm]
+                except Exception:
+                    continue
+
                 # add search results
-                results.setdefault(indexer, []).extend(t[search_term])
-            except Exception:
-                continue
+                results.setdefault(indexer, []).extend(indexerResults)
 
         for i, shows in results.iteritems():
             final_results.extend([[sickbeard.indexerApi(i).name, i, sickbeard.indexerApi(i).config["show_url"], int(show['id']),
@@ -3846,14 +3853,14 @@ class ConfigSearch(Config):
     def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
                    sab_apikey=None, sab_category=None, sab_category_anime=None, sab_category_backlog=None, sab_category_anime_backlog=None, sab_host=None, nzbget_username=None,
                    nzbget_password=None, nzbget_category=None, nzbget_category_backlog=None, nzbget_category_anime=None, nzbget_category_anime_backlog=None, nzbget_priority=None,
-                   nzbget_host=None, nzbget_use_https=None, backlog_frequency=None,
+                   nzbget_host=None, nzbget_use_https=None, backlog_days=None, backlog_frequency=None,
                    dailysearch_frequency=None, nzb_method=None, torrent_method=None, usenet_retention=None,
                    download_propers=None, check_propers_interval=None, allow_high_priority=None, sab_forced=None,
                    randomize_providers=None, use_failed_downloads=None, delete_failed=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
-                   torrent_rpcurl=None, torrent_auth_type=None, ignore_words=None, require_words=None, ignored_subs_list=None):
+                   torrent_rpcurl=None, torrent_auth_type=None, ignore_words=None, trackers_list=None, require_words=None, ignored_subs_list=None):
 
         results = []
 
@@ -3866,6 +3873,7 @@ class ConfigSearch(Config):
         config.change_DAILYSEARCH_FREQUENCY(dailysearch_frequency)
 
         config.change_BACKLOG_FREQUENCY(backlog_frequency)
+        sickbeard.BACKLOG_DAYS = config.to_int(backlog_days, default=7)
 
         sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
         sickbeard.USE_TORRENTS = config.checkbox_to_value(use_torrents)
@@ -3875,6 +3883,7 @@ class ConfigSearch(Config):
         sickbeard.USENET_RETENTION = config.to_int(usenet_retention, default=500)
 
         sickbeard.IGNORE_WORDS = ignore_words if ignore_words else ""
+        sickbeard.TRACKERS_LIST = trackers_list if trackers_list else ""
         sickbeard.REQUIRE_WORDS = require_words if require_words else ""
         sickbeard.IGNORED_SUBS_LIST = ignored_subs_list if ignored_subs_list else ""
 
@@ -3954,8 +3963,8 @@ class ConfigPostProcessing(Config):
                            del_rar_contents=None, process_automatically=None,
                            no_delete=None, rename_episodes=None, airdate_episodes=None,
                            file_timestamp_timezone=None, unpack=None, move_associated_files=None,
-                           sync_files=None, postpone_if_sync_files=None, nfo_rename=None,
-                           tv_download_dir=None, naming_custom_abd=None, naming_anime=None,
+                           sync_files=None, postpone_if_sync_files=None, postpone_if_no_subs=None, nfo_rename=None,
+                           allowed_extensions=None, tv_download_dir=None, naming_custom_abd=None, naming_anime=None,
                            create_missing_show_dirs=None, add_shows_wo_dir=None,
                            naming_abd_pattern=None, naming_strip_year=None,
                            use_failed_downloads=None, delete_failed=None, extra_scripts=None,
@@ -3991,7 +4000,9 @@ class ConfigPostProcessing(Config):
         sickbeard.FILE_TIMESTAMP_TIMEZONE = file_timestamp_timezone
         sickbeard.MOVE_ASSOCIATED_FILES = config.checkbox_to_value(move_associated_files)
         sickbeard.SYNC_FILES = sync_files
+        sickbeard.ALLOWED_EXTENSIONS = allowed_extensions
         sickbeard.POSTPONE_IF_SYNC_FILES = config.checkbox_to_value(postpone_if_sync_files)
+        sickbeard.POSTPONE_IF_NO_SUBS = config.checkbox_to_value(postpone_if_no_subs)
         sickbeard.NAMING_CUSTOM_ABD = config.checkbox_to_value(naming_custom_abd)
         sickbeard.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)
         sickbeard.NAMING_CUSTOM_ANIME = config.checkbox_to_value(naming_custom_anime)
@@ -4646,8 +4657,6 @@ class ConfigNotifications(Config):
                           prowl_notify_onsubtitledownload=None, prowl_api=None, prowl_priority=0,
                           use_twitter=None, twitter_notify_onsnatch=None, twitter_notify_ondownload=None,
                           twitter_notify_onsubtitledownload=None, twitter_usedm=None, twitter_dmto=None,
-                          use_boxcar=None, boxcar_notify_onsnatch=None, boxcar_notify_ondownload=None,
-                          boxcar_notify_onsubtitledownload=None, boxcar_username=None,
                           use_boxcar2=None, boxcar2_notify_onsnatch=None, boxcar2_notify_ondownload=None,
                           boxcar2_notify_onsubtitledownload=None, boxcar2_accesstoken=None,
                           use_pushover=None, pushover_notify_onsnatch=None, pushover_notify_ondownload=None,
@@ -4736,12 +4745,6 @@ class ConfigNotifications(Config):
         sickbeard.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twitter_notify_onsubtitledownload)
         sickbeard.TWITTER_USEDM = config.checkbox_to_value(twitter_usedm)
         sickbeard.TWITTER_DMTO = twitter_dmto
-
-        sickbeard.USE_BOXCAR = config.checkbox_to_value(use_boxcar)
-        sickbeard.BOXCAR_NOTIFY_ONSNATCH = config.checkbox_to_value(boxcar_notify_onsnatch)
-        sickbeard.BOXCAR_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(boxcar_notify_ondownload)
-        sickbeard.BOXCAR_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(boxcar_notify_onsubtitledownload)
-        sickbeard.BOXCAR_USERNAME = boxcar_username
 
         sickbeard.USE_BOXCAR2 = config.checkbox_to_value(use_boxcar2)
         sickbeard.BOXCAR2_NOTIFY_ONSNATCH = config.checkbox_to_value(boxcar2_notify_onsnatch)

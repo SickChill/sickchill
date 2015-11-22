@@ -22,7 +22,6 @@ sbHandleReverseProxy = "${curSBHandleReverseProxy}";
 sbHost = "${curSBHost}";
 sbDefaultPage = "${sbDefaultPage}";
 </script>
-<script type="text/javascript" src="${srRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/restart.js?${sbPID}&amp;${sbDefaultPage}"></script>
 </%block>
 <%block name="css">
