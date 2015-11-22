@@ -152,7 +152,7 @@ class SickRage(object):
 
         # pylint: disable=E1101
         if not sickbeard.SYS_ENCODING or sickbeard.SYS_ENCODING.lower() in ('ansi_x3.4-1968', 'us-ascii', 'ascii', 'charmap') or \
-            (sys.platform.startswith('win') and sys.getwindowsversion()[0] >= 6 and getattr(sys.stdout, 'device', sys.stdout).encoding.lower() in ('cp65001', 'charmap')):
+            (sys.platform.startswith('win') and sys.getwindowsversion()[0] >= 6 and str(getattr(sys.stdout, 'device', sys.stdout).encoding).lower() in ('cp65001', 'charmap')):
             sickbeard.SYS_ENCODING = 'UTF-8'
 
         # TODO: Continue working on making this unnecessary, this hack creates all sorts of hellish problems
