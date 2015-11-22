@@ -189,15 +189,6 @@ inc_top.mako
     background: #eceadf url("../css/lib/images/ui-bg_fine-grain_10_eceadf_60x60.png") 50% 50% repeat !important;
 }
 
-/* restore 1.8.x resize handle on dialog button pane */
-.ui-dialog .ui-resizable-se {
-    width: 14px;
-    height: 14px;
-    right: 3px;
-    bottom: 3px;
-    background-position: -80px -224px;
-}
-
 .ui-accordion-content,
 .ui-tabs-panel {
     background: #ededed !important;
@@ -701,11 +692,7 @@ home.mako
     height: 100%;
     top: 0;
     right: 0;
-    background-image: -webkit-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -moz-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -ms-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -o-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: linear-gradient(to left, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
+
 }
 
 .show-date {
@@ -724,11 +711,7 @@ home.mako
     height: 100%;
     top: 0;
     right: 0;
-    background-image: -webkit-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -moz-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -ms-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -o-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: linear-gradient(to left, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
+
 }
 
 .show-table {
@@ -1212,9 +1195,9 @@ span.snatched b {
 
 .displayShowTable th.row-seasonheader {
     border: none !important;
-    background-color: #222 !important;
+    background-color: #111111 !important;
     color: #fff !important;
-    padding-top: 15px !important;
+    padding-top: 3px !important;
     text-align: left !important;
 }
 
@@ -1351,7 +1334,7 @@ td.col-search {
 }
 
 /* =======================================================================
-schedule.mako
+comingEpisodes.mako
 ========================================================================== */
 
 .key {
@@ -1519,12 +1502,13 @@ h2.day, h2.network {
 }
 
 .calendarShow .poster img {
-    width:142px;
-    height:auto
+    width: 126px;
+    height:auto;
 }
 
 .calendarShow .text {
-    padding:0 5px 10px 5px
+    padding:0 5px 5px 5px;
+	border-bottom: 8px solid white;
 }
 
 .calendarShow .text .airtime,
@@ -1916,7 +1900,6 @@ span.quality {
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
-    white-space: nowrap;
 }
 
 span.any-hd {
@@ -2153,6 +2136,9 @@ input, textarea, select, .uneditable-input {
 }
 
 .navbar-default .navbar-nav > li.navbar-split > a:first-child {
+    border-width: 0 1px 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 20%, #ddd, rgba(0, 0, 0, 0) 80%) 1 100%;
     padding-right: 8px;
 }
 
@@ -2650,6 +2636,50 @@ input sizing (for config pages)
 }
 
 /* =======================================================================
+browser.css overrides
+========================================================================== */
+
+#fileBrowserDialog {
+    overflow-y: auto;
+}
+
+#fileBrowserDialog ul li a:hover {
+    color: #00f;
+    background: none;
+}
+
+#fileBrowserDialog h2 {
+    font-size: 20px;
+}
+
+.ui-autocomplete {
+    max-height: 180px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* IE6 hack since it doesn't support max-height */
+* html .ui-autocomplete {
+    height: 180px;
+    padding-right: 20px;
+}
+
+.ui-autocomplete .ui-menu-item .ui-state-focus {
+    color: #fff;
+    background: none;
+    background-color: #0a246a;
+}
+
+/* restore 1.8.x resize handle on dialog button pane */
+.ui-dialog .ui-resizable-se {
+    width: 14px;
+    height: 14px;
+    right: 3px;
+    bottom: 3px;
+    background-position: -80px -224px;
+}
+
+/* =======================================================================
 formWizard.css
 ========================================================================== */
 
@@ -2941,7 +2971,7 @@ li.token-input-token {
 }
 
 li.token-input-token img {
-    padding-top: 3px;
+    padding-top: 7px;
     padding-right: 4px;
     float: left;
 }

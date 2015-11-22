@@ -7,20 +7,27 @@
     from sickbeard import subtitles, sbdatetime, network_timezones
     import sickbeard.helpers
 
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
+
     from sickbeard.helpers import anon_url
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/lib/jquery.bookmarkscroll.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/displayShow.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/sceneExceptionsTooltip.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/ratingTooltip.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/ajaxEpSubtitles.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/new/displayShow.js"></script>
 </%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
+
+<center>
+<div style="width: 1280px;">
+
 <input type="hidden" id="srRoot" value="${srRoot}" />
     <div class="pull-left form-inline">
         Change Show:
@@ -43,11 +50,12 @@
             </select>
         <div class="navShow"><img id="nextShow" src="${srRoot}/images/next.png" alt="&gt;&gt;" title="Next Show" /></div>
     </div>
-
+</div>
     <div class="clearfix"></div>
 
+<div style="width: 1280px;">
     <div id="showtitle" data-showname="${show.name}">
-        <h1 class="title" id="scene_exception_${show.indexerid}">${show.name}</h1>
+        <h1 style="font-weight: bold; color: #444444;" class="title" id="scene_exception_${show.indexerid}">${show.name}</h1>
     </div>
 
     % if seasonResults:
@@ -93,17 +101,17 @@
 
         </div>
         % endif
-
+</div>
 
     <div class="clearfix"></div>
 
 % if show_message:
-    <div class="alert alert-info">
+    <div class="alert alert-info" style="width: 1280px; ">
         ${show_message}
     </div>
 % endif
 
-    <div id="container">
+    <div id="container" style="width: 1280px; ">
         <div id="posterCol">
             <a href="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster" rel="dialog" title="View Poster for ${show.name}"><img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb" class="tvshowImg" alt=""/></a>
         </div>
@@ -159,7 +167,7 @@
                     ${renderQualityPill(show.quality)}
                 % else:
                 % if anyQualities:
-                    <i>Allowed:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "<br>")[bool(bestQualities)]}
+                    <i>Allowed:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "</br>")[bool(bestQualities)]}
                 % endif
                 % if bestQualities:
                     <i>Preferred:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(bestQualities)])}
@@ -211,7 +219,7 @@
                     % if sickbeard.USE_SUBTITLES:
                     <tr><td class="showLegend">Subtitles: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td></tr>
                     % endif
-                    <tr><td class="showLegend">Season Folders: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(not show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(not show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Flat Folders: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td></tr>
                     <tr><td class="showLegend">Paused: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.paused)]}" alt="${("N", "Y")[bool(show.paused)]}" width="16" height="16" /></td></tr>
                     <tr><td class="showLegend">Air-by-Date: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.air_by_date)]}" alt="${("N", "Y")[bool(show.air_by_date)]}" width="16" height="16" /></td></tr>
                     <tr><td class="showLegend">Sports: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_sports)]}" alt="${("N", "Y")[bool(show.is_sports)]}" width="16" height="16" /></td></tr>
@@ -225,9 +233,13 @@
     </div>
 
     <div class="clearfix"></div>
+<center>
+<div style="width: 1280px; border-top: 1px solid #777777;">
 
-    <div class="pull-left" >
+ <div class="pull-left">
+		<div style="margin-left: -52px;">
         Change selected episodes to:</br>
+		</div>
         <select id="statusSelect" class="form-control form-control-inline input-sm">
         <% availableStatus = [WANTED, SKIPPED, IGNORED, FAILED] %>
         % if not sickbeard.USE_FAILED_DOWNLOADS:
@@ -248,11 +260,11 @@
 
     <div class="pull-right clearfix" id="checkboxControls">
         <div style="padding-bottom: 5px;">
-            <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> Wanted: <b>${epCounts[Overview.WANTED]}</b></span></label>
-            <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> Low Quality: <b>${epCounts[Overview.QUAL]}</b></span></label>
-            <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> Downloaded: <b>${epCounts[Overview.GOOD]}</b></span></label>
-            <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> Skipped: <b>${epCounts[Overview.SKIPPED]}</b></span></label>
-            <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> Snatched: <b>${epCounts[Overview.SNATCHED]}</b></span></label>
+            <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted"checked="checked" /> Wanted: <b>${epCounts[Overview.WANTED]}</b></span></label>
+            <label for="qual"><span class="qual"><input type="checkbox" id="qual"checked="checked" /> Low Quality: <b>${epCounts[Overview.QUAL]}</b></span></label>
+            <label for="good"><span class="good"><input type="checkbox" id="good"checked="checked" /> Downloaded: <b>${epCounts[Overview.GOOD]}</b></span></label>
+            <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped"checked="checked" /> Skipped: <b>${epCounts[Overview.SKIPPED]}</b></span></label>
+            <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched"checked="checked" /> Snatched: <b>${epCounts[Overview.SNATCHED]}</b></span></label>
         </div>
 
         <button id="popover" type="button" class="btn btn-xs">Select Columns <b class="caret"></b></button>
@@ -261,11 +273,12 @@
             <button class="btn btn-xs clearAll">Clear All</button>
         </div>
     </div>
+
 <br />
 <br />
 <br />
 
-<table id="${("showTable", "animeTable")[bool(show.is_anime)]}" class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
+<table id="${("showTable", "animeTable")[bool(show.is_anime)]}" class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0" width="1280">
     <% curSeason = -1 %>
     <% odd = 0 %>
     % for epResult in sqlResults:
@@ -331,9 +344,9 @@
         </tr>
     </thead>
     <tbody class="tablesorter-no-sort">
-        <tr style="height: 60px;">
-            <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
-                <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${("Specials", "Season " + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
+        <tr style="height: 20px;">
+            <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: center; width: auto;">
+                <h3 style="display: inline; font-size: 16px;  font-weight: bold; "><center><a name="season-${epResult["season"]}"></a>${("Specials", "Season " + str(epResult["season"]))[int(epResult["season"]) > 0]}</center></h3>
                 % if sickbeard.DISPLAY_ALL_SEASONS == False:
                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
                     <script type="text/javascript">
@@ -371,9 +384,9 @@
             % else:
     </tbody>
     <tbody class="tablesorter-no-sort">
-        <tr style="height: 60px;">
+        <tr style="height: 20px;">
             <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
-                <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${("Specials", "Season " + str(epResult["season"]))[bool(int(epResult["season"]))]}</h3>
+                <h3 style="display: inline;  font-size: 16px; font-weight: bold; "><center><a name="season-${epResult["season"]}"></a>${("Specials", "Season " + str(epResult["season"]))[bool(int(epResult["season"]))]}</center></h3>
                 % if sickbeard.DISPLAY_ALL_SEASONS == False:
                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
                     <script type="text/javascript">
@@ -476,11 +489,7 @@
             <td class="col-airdate">
                 % if int(epResult['airdate']) != 1:
                     ## Lets do this exactly like ComingEpisodes and History
-                    ## Avoid issues with dateutil's _isdst on Windows but still provide air dates
-                    <% airDate = datetime.datetime.fromordinal(epResult['airdate']) %>
-                    % if airDate.year >= 1970 or show.network:
-                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
-                    % endif
+                    <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
                     <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
                 % else:
                     Never
@@ -569,7 +578,8 @@
         </div>
     </div>
 </div>
-
+</div>	</center>
 <!--End - Bootstrap Modal-->
 
 </%block>
+
