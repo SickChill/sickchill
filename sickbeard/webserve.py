@@ -2228,8 +2228,7 @@ class HomeAddShows(Home):
     def sanitizeFileName(name):
         return helpers.sanitizeFileName(name)
 
-    @staticmethod
-    def searchIndexersForShowName(search_term, lang=None, indexer=None):
+    def searchIndexersForShowName(self, search_term, lang=None, indexer=None):
         if not lang or lang == 'null':
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
@@ -2239,21 +2238,34 @@ class HomeAddShows(Home):
         final_results = []
 
         # Query Indexers for each search term and build the list of results
-        for indexer in sickbeard.indexerApi().indexers if not int(indexer) else [int(indexer)]:
-            lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
+        for i in sickbeard.indexerApi().indexers if not int(indexer) else [int(indexer)]:
+            lINDEXER_API_PARMS = sickbeard.indexerApi(i).api_params.copy()
             lINDEXER_API_PARMS['language'] = lang
             lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
-            t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(i).indexer(**lINDEXER_API_PARMS)
 
             logger.log(u"Searching for Show with searchterm: %s on Indexer: %s" % (
-                search_term, sickbeard.indexerApi(indexer).name), logger.DEBUG)
+                search_term, sickbeard.indexerApi(i).name), logger.DEBUG)
             try:
                 # add search results
-                results.setdefault(indexer, []).extend(t[search_term])
+                results.setdefault(i, []).extend(t[search_term])
             except Exception:
                 continue
 
+        if re.search(r'(?i)(^(a |an |the ))|( \d{4}$)', search_term):
+            num_results = 0
+            for i, shows in results.iteritems():
+                len(shows)
+                num_results += len(shows)
+
+            if not num_results:
+                logger.log("No results! Removing articles and adding parens and retrying search")
+                search_term = re.sub(r'^(?i)(a |an |the )', r'', search_term.strip())
+                search_term = re.sub(r' (\d{4})$', r' (\1)', search_term.strip())
+                return self.searchIndexersForShowName(search_term, lang, indexer)
+
         for i, shows in results.iteritems():
+
             final_results.extend([[sickbeard.indexerApi(i).name, i, sickbeard.indexerApi(i).config["show_url"], int(show['id']),
                                    show['seriesname'], show['firstaired']] for show in shows])
 
