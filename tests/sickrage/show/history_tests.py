@@ -32,15 +32,45 @@ class HistoryTests(TestCase):
         tests = {
             None: [],
             '': [],
+            u'': [],
             'wrong': [],
+            u'wrong': [],
             'downloaded': Quality.DOWNLOADED,
+            u'downloaded': Quality.DOWNLOADED,
             'Downloaded': Quality.DOWNLOADED,
+            u'Downloaded': Quality.DOWNLOADED,
             'snatched': Quality.SNATCHED,
+            u'snatched': Quality.SNATCHED,
             'Snatched': Quality.SNATCHED,
+            u'Snatched': Quality.SNATCHED,
         }
 
         for (action, result) in tests.iteritems():
             self.assertEqual(History._get_actions(action), result)
+
+    def test_get_limit(self):
+        tests = {
+            None: 0,
+            '': 0,
+            u'': 0,
+            '0': 0,
+            u'0': 0,
+            '5': 5,
+            u'5': 5,
+            '-5': 0,
+            u'-5': 0,
+            '1.5': 0,
+            u'1.5': 0,
+            '-1.5': 0,
+            u'-1.5': 0,
+            5: 5,
+            -5: 0,
+            1.5: 1,
+            -1.5: 0,
+        }
+
+        for (action, result) in tests.iteritems():
+            self.assertEqual(History._get_limit(action), result)
 
 
 if __name__ == '__main__':

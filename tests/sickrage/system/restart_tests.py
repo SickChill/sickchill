@@ -34,10 +34,13 @@ class RestartTests(TestCase):
         tests = {
             0: False,
             '0': False,
+            u'0': False,
             123: False,
             '123': False,
+            u'123': False,
             123456: True,
             '123456': True,
+            u'123456': True,
         }
 
         sickbeard.PID = 123456

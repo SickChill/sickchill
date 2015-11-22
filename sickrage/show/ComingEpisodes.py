@@ -82,7 +82,7 @@ class ComingEpisodes:
         done_shows_list = [int(result['showid']) for result in results]
         placeholder = ','.join(['?'] * len(done_shows_list))
         placeholder2 = ','.join(
-            ['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST + Quality.SNATCHED_PROPER))
+                ['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST + Quality.SNATCHED_PROPER))
 
         results += db.select(
                 'SELECT %s ' % fields_to_select +
@@ -124,7 +124,7 @@ class ComingEpisodes:
         if not group:
             return results
 
-        grouped_results = {category: [] for category in categories}
+        grouped_results = ComingEpisodes._get_categories_map(categories)
 
         for result in results:
             if result['paused'] and not paused:
@@ -168,6 +168,13 @@ class ComingEpisodes:
             return categories.split('|')
 
         return categories
+
+    @staticmethod
+    def _get_categories_map(categories):
+        if not categories:
+            return {}
+
+        return {category: [] for category in categories}
 
     @staticmethod
     def _get_sort(sort):

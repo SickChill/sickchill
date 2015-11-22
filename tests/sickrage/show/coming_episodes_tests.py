@@ -29,10 +29,10 @@ from unittest import TestCase, TestLoader, TextTestRunner
 class ComingEpisodesTests(TestCase):
     def test_get_categories(self):
         categories_list = [
-            None, [], ['A', 'B'], '', 'A|B',
+            None, [], ['A', 'B'], [u'A', u'B'], '', 'A|B', u'A|B',
         ]
         results_list = [
-            [], [], ['A', 'B'], [], ['A', 'B']
+            [], [], ['A', 'B'], [u'A', u'B'], [], ['A', 'B'], ['A', 'B']
         ]
 
         self.assertEqual(
@@ -43,17 +43,41 @@ class ComingEpisodesTests(TestCase):
         for (index, categories) in enumerate(categories_list):
             self.assertEqual(ComingEpisodes._get_categories(categories), results_list[index])
 
+    def test_get_categories_map(self):
+        categories_list = [
+            None, [], ['A', 'B'], [u'A', u'B']
+        ]
+        results_list = [
+            {}, {}, {'A': [], 'B': []}, {u'A': [], u'B': []}
+        ]
+
+        self.assertEqual(
+                len(categories_list), len(results_list),
+                'Number of parameters (%d) and results (%d) does not match' % (len(categories_list), len(results_list))
+        )
+
+        for (index, categories) in enumerate(categories_list):
+            self.assertEqual(ComingEpisodes._get_categories_map(categories), results_list[index])
+
     def test_get_sort(self):
         tests = {
             None: 'date',
             '': 'date',
+            u'': 'date',
             'wrong': 'date',
+            u'wrong': 'date',
             'date': 'date',
-            'DaTe': 'date',
+            u'date': 'date',
+            'Date': 'date',
+            u'Date': 'date',
             'network': 'network',
+            u'network': 'network',
             'NetWork': 'network',
+            u'NetWork': 'network',
             'show': 'show',
+            u'show': 'show',
             'Show': 'show',
+            u'Show': 'show',
         }
 
         for (sort, result) in tests.iteritems():
