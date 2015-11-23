@@ -1,5 +1,6 @@
-# Author: matigonkas
-# URL: https://github.com/SickRage/sickrage
+# coding=utf-8
+# Author: Gonçalo (aka duramato) <matigonkas@outlook.com>
+# URL: https://github.com/SickRage/SickRage
 #
 # This file is part of SickRage.
 #
@@ -91,12 +92,14 @@ class StrikeCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
         tvcache.TVCache.__init__(self, provider_obj)
-
-        # set this 0 to suppress log line, since we aren't updating it anyways
-        self.minTime = 0
+        
+        # Cache results for 10 min
+        self.minTime = 10
 
     def _getRSSData(self):
-        # no rss for getstrike.net afaik, also can't search with empty string
-        return {'entries': {}}
+        
+        # Use this hacky way for RSS search since most results will use this codec       
+        search_params = {'RSS': ['x264']}
+        return {'entries': self.provider._doSearch(search_params)}
 
 provider = STRIKEProvider()
