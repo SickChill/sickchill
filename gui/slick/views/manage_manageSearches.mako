@@ -44,6 +44,17 @@ ${('Not in progress', 'In Progress')[dailySearchStatus]}<br>
 % endif
 <br>
 
+<h3>Subtitle Search:</h3>
+<a class="btn ${('disabled', '')[bool(sickbeard.USE_SUBTITLES)]}" href="${srRoot}/manage/manageSearches/forceSubtitlesFinder"><i class="icon-exclamation-sign"></i> Force</a>
+% if not sickbeard.USE_SUBTITLES:
+    Subtitle search disabled <br>
+% elif not subtitlesFinderStatus:
+    Not in progress<br>
+% else:
+    In Progress<br>
+% endif
+<br>
+
 <h3>Search Queue:</h3>
 Backlog: <i>${queueLength['backlog']} pending items</i></br>
 Daily: <i>${queueLength['daily']} pending items</i></br>
