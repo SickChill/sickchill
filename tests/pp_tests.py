@@ -35,20 +35,20 @@ from sickbeard.name_cache import addNameToCache
 class PPInitTests(unittest.TestCase):
 
     def setUp(self):
-        self.pp = PostProcessor(test.FILEPATH)
+        self.pp = PostProcessor(test.FILE_PATH)
 
     def test_init_file_name(self):
         self.assertEqual(self.pp.file_name, test.FILENAME)
 
     def test_init_folder_name(self):
-        self.assertEqual(self.pp.folder_name, test.SHOWNAME)
+        self.assertEqual(self.pp.folder_name, test.SHOW_NAME)
 
 class PPBasicTests(test.SickbeardTestDBCase):
 
     def test_process(self):
         show = TVShow(1,3)
-        show.name = test.SHOWNAME
-        show.location = test.SHOWDIR
+        show.name = test.SHOW_NAME
+        show.location = test.SHOW_DIR
         show.saveToDB()
 
         sickbeard.showList = [show]
@@ -59,7 +59,7 @@ class PPBasicTests(test.SickbeardTestDBCase):
         addNameToCache('show name', 3)
         sickbeard.PROCESS_METHOD = 'move'
 
-        pp = PostProcessor(test.FILEPATH)
+        pp = PostProcessor(test.FILE_PATH)
         self.assertTrue(pp.process())
 
 
