@@ -156,6 +156,19 @@ class newpctProvider(generic.TorrentProvider):
 
         return results
 
+    def getURL(self, url, post_data=None, params=None, timeout=30, json=False, needBytes=False):
+        """
+        needBytes=True when trying access to torrent info (For calling torrent client). Previously we must parse
+        the URL to get torrent file
+        """
+        if needBytes:
+            data = helpers.getURL(url, post_data=None, params=None, headers=self.headers, timeout=timeout,
+                              session=self.session, json=json, needBytes=False)
+            url = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
+            
+        return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
+                              session=self.session, json=json, needBytes=needBytes)
+        
     def downloadResult(self, result):
         """
         Save the result to disk.
