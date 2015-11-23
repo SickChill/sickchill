@@ -75,16 +75,16 @@ class PushbulletNotifier(object):
         logger.log(u"Pushbullet message: %r" % message, logger.DEBUG)
         logger.log(u"Pushbullet api: %r" % pushbullet_api, logger.DEBUG)
         logger.log(u"Pushbullet devices: %r" % pushbullet_device, logger.DEBUG)
-        logger.log(u"Pushbullet notification type: %r" % 'note' if event else 'None', logger.DEBUG)
+        logger.log(u"Pushbullet notification type: %r" % ('note' if event else 'None'), logger.DEBUG)
 
         url = 'https://api.pushbullet.com/v2/%s' % ('devices', 'pushes')[event is not None]
 
-        data = json.dumps({
+        data = None if not event else json.dumps({
             'title': event.encode('utf-8'),
             'body': message.encode('utf-8'),
             'device_iden': pushbullet_device.encode('utf-8'),
             'type': 'note'
-        }) if event else None
+        })
 
         method = 'GET' if data is None else 'POST'
         headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer %s' % pushbullet_api}
