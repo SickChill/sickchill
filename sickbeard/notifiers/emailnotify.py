@@ -20,9 +20,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
 
 import smtplib
 import traceback
+import ast
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate
@@ -61,7 +64,7 @@ class EmailNotifier(object):
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
             if len(to) == 0:
-                logger.log(u'Skipping email notify because there are no configured recipients', logger.WARNING)
+                logger.log(u'Skipping email notify because there are no configured recipients', logger.DEBUG)
             else:
                 try:
                     msg = MIMEMultipart('alternative')
@@ -100,7 +103,7 @@ class EmailNotifier(object):
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
             if len(to) == 0:
-                logger.log(u'Skipping email notify because there are no configured recipients', logger.WARNING)
+                logger.log(u'Skipping email notify because there are no configured recipients', logger.DEBUG)
             else:
                 try:
                     msg = MIMEMultipart('alternative')
@@ -139,7 +142,7 @@ class EmailNotifier(object):
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
             if len(to) == 0:
-                logger.log(u'Skipping email notify because there are no configured recipients', logger.WARNING)
+                logger.log(u'Skipping email notify because there are no configured recipients', logger.DEBUG)
             else:
                 try:
                     msg = MIMEMultipart('alternative')
@@ -169,20 +172,28 @@ class EmailNotifier(object):
 
     def _generate_recipients(self, show):
         addrs = []
+        myDB = db.DBConnection()
 
         # Grab the global recipients
-        for addr in sickbeard.EMAIL_LIST.split(','):
-            if len(addr.strip()) > 0:
-                addrs.append(addr)
+        if sickbeard.EMAIL_LIST:
+            for addr in sickbeard.EMAIL_LIST.split(','):
+                if len(addr.strip()) > 0:
+                    addrs.append(addr)
 
-        # Grab the recipients for the show
-        myDB = db.DBConnection()
-        for s in show:
-            for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (s,)):
-                if subs['notify_list']:
-                    for addr in subs['notify_list'].split(','):
-                        if len(addr.strip()) > 0:
-                            addrs.append(addr)
+        # Grab the per-show-notification recipients
+        if show is not None:
+            for s in show:
+                for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (s,)):
+                    if subs['notify_list']:
+                        if subs['notify_list'][0] == '{':
+                            entries = dict(ast.literal_eval(subs['notify_list']))
+                            for addr in entries['emails'].split(','):
+                                if len(addr.strip()) > 0:
+                                    addrs.append(addr)
+                        else:                                           # Legacy
+                            for addr in subs['notify_list'].split(','):
+                                if len(addr.strip()) > 0:
+                                    addrs.append(addr)
 
         addrs = set(addrs)
         logger.log(u'Notification recipients: %s' % addrs, logger.DEBUG)

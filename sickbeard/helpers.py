@@ -747,10 +747,10 @@ def chmodAsParent(childPath):
     parentPathStat = os.stat(parentPath)
     parentMode = stat.S_IMODE(parentPathStat[stat.ST_MODE])
 
-    childPathStat = os.stat(childPath)
+    childPathStat = os.stat(childPath.encode(sickbeard.SYS_ENCODING))
     childPath_mode = stat.S_IMODE(childPathStat[stat.ST_MODE])
 
-    if os.path.isfile(childPath):
+    if ek(os.path.isfile, childPath):
         childMode = fileBitFilter(parentMode)
     else:
         childMode = parentMode
@@ -792,7 +792,7 @@ def fixSetGroupID(childPath):
 
     if parentMode & stat.S_ISGID:
         parentGID = parentStat[stat.ST_GID]
-        childStat = os.stat(childPath)
+        childStat = os.stat(childPath.encode(sickbeard.SYS_ENCODING))
         childGID = childStat[stat.ST_GID]
 
         if childGID == parentGID:
@@ -948,8 +948,8 @@ def create_https_certificates(ssl_cert, ssl_key):
     :return: True on success, False on failure
     """
 
-    assert isinstance(ssl_key, unicode)
-    assert isinstance(ssl_cert, unicode)
+    # assert isinstance(ssl_key, unicode)
+    # assert isinstance(ssl_cert, unicode)
 
     try:
         from OpenSSL import crypto  # @UnresolvedImport
@@ -973,8 +973,8 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         # pylint: disable=E1101
         # Module has no member
-        io.open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
-        io.open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        io.open(ssl_key, 'wb').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
+        io.open(ssl_cert, 'wb').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except Exception:
         logger.log(u"Error creating SSL key and certificate", logger.ERROR)
         return False
@@ -1094,7 +1094,7 @@ def md5_for_file(filename, block_size=2 ** 16):
     :return MD5 hexdigest on success, or None on failure
     """
 
-    assert isinstance(filename, unicode)
+    # assert isinstance(filename, unicode)
 
     try:
         with io.open(filename, 'rb') as f:
@@ -1559,6 +1559,8 @@ def _setUpSession(session, headers):
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions'), use_dir_lock=True), cache_etags=False)
 
     # request session clear residual referer
+    # pylint: disable=C0325
+    # These extra parens are necessary!
     if 'Referer' in session.headers and 'Referer' not in (headers or {}):
         session.headers.pop('Referer')
 
@@ -1871,10 +1873,9 @@ def isFileLocked(checkfile, writeLockCheck=False):
     :param writeLockCheck: when true will check if the file is locked for writing (prevents move operations)
     """
 
-    checkfile = os.path.abspath(checkfile)
-    assert isinstance(checkfile, unicode)
+    checkfile = ek(os.path.abspath, checkfile)
 
-    if not os.path.exists(checkfile):
+    if not ek(os.path.exists, checkfile):
         return True
     try:
         f = io.open(checkfile, 'rb')

@@ -158,7 +158,7 @@ class PostProcessor(object):
         """
         def recursive_glob(treeroot, pattern):
             results = []
-            for base, _, files in os.walk(treeroot):
+            for base, _, files in os.walk(treeroot.encode(sickbeard.SYS_ENCODING)):
                 goodfiles = fnmatch.filter(files, pattern)
                 results.extend(os.path.join(base, f) for f in goodfiles)
             return results
@@ -192,18 +192,29 @@ class PostProcessor(object):
 
             checklist = glob.glob(ek(os.path.join, ek(os.path.dirname, globbable_file_path), '*')) # get a list of all the files in the folder
             for filefound in checklist: # loop through all the files in the folder, and check if they are the same name even when the cases don't match
+
                 file_name = filefound.rpartition('.')[0]
                 file_extension = filefound.rpartition('.')[2]
+                is_subtitle = None
+
+                if file_extension in common.subtitleExtensions:
+                    is_subtitle = True
+
                 if not base_name_only:
                     new_file_name = file_name + '.'
-                if new_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'): # if there's no difference in the filename add it to the filelist
-                    filelist.append(filefound)
-                elif file_extension in common.subtitleExtensions:
+                    sub_file_name = file_name.rpartition('.')[0] + '.'
+                else:
+                    new_file_name = file_name
+                    sub_file_name = file_name.rpartition('.')[0]
+
+                if is_subtitle and sub_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'):
                     language_extensions = tuple('.' + c for c in language_converters['opensubtitles'].codes)
                     if file_name.lower().endswith(language_extensions) and (len(filefound.rsplit('.', 2)[1]) is 2 or 3):
                         filelist.append(filefound)
                     elif file_name.lower().endswith('pt-br') and len(filefound.rsplit('.', 2)[1]) is 5:
                         filelist.append(filefound)
+                elif new_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'): # if there's no difference in the filename add it to the filelist
+                    filelist.append(filefound)
 
         for associated_file_path in filelist:
             # only add associated to list
@@ -968,7 +979,7 @@ class PostProcessor(object):
                     [show.indexerid, show.indexer])
                 # If the file season (ep_obj.season) is bigger than the indexer season (max_season[0][0]), skip the file
                 if int(ep_obj.season) > int(max_season[0][0]):
-                    self._log(u"File has season %s, while the indexer is on season %s. The file may be incorrectly labeled or fake, aborting." 
+                    self._log(u"File has season %s, while the indexer is on season %s. The file may be incorrectly labeled or fake, aborting."
                               % (str(ep_obj.season), str(max_season[0][0])))
                     return False
 
