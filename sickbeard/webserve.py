@@ -3492,6 +3492,7 @@ class ManageSearches(Manage):
         return t.render(backlogPaused=sickbeard.searchQueueScheduler.action.is_backlog_paused(),
                         backlogRunning=sickbeard.searchQueueScheduler.action.is_backlog_in_progress(), dailySearchStatus=sickbeard.dailySearchScheduler.action.amActive,
                         findPropersStatus=sickbeard.properFinderScheduler.action.amActive, queueLength=sickbeard.searchQueueScheduler.action.queue_length(),
+                        subtitlesFinderStatus=sickbeard.subtitlesFinderScheduler.action.amActive,
                         title='Manage Searches', header='Manage Searches', topmenu='manage',
                         controller="manage", action="manageSearches")
 
@@ -3520,6 +3521,15 @@ class ManageSearches(Manage):
         if result:
             logger.log(u"Find propers search forced")
             ui.notifications.message('Find propers search started')
+
+        return self.redirect("/manage/manageSearches/")
+        
+    def forceSubtitlesFinder(self):
+        # force it to run the next time it looks
+        result = sickbeard.subtitlesFinderScheduler.forceRun()
+        if result:
+            logger.log(u"Subtitle search forced")
+            ui.notifications.message('Subtitle search started')
 
         return self.redirect("/manage/manageSearches/")
 
