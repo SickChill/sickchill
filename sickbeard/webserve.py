@@ -1179,14 +1179,15 @@ class Home(WebRoot):
             return json.dumps({"status": "error", 'message': 'General exception'})
 
     def displayShow(self, show=None):
+        # todo: add more comprehensive show validation
+        try:
+            show = int(show)  # fails if show id ends in a period SickRage/sickrage-issues#65
+            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, show)
+        except (ValueError, TypeError):
+            return self._genericMessage("Error", "Invalid show ID: %s" % str(show))
 
-        if show is None:
-            return self._genericMessage("Error", "Invalid show ID")
-        else:
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
-
-            if showObj is None:
-                return self._genericMessage("Error", "Show not in show list")
+        if showObj is None:
+            return self._genericMessage("Error", "Show not in show list")
 
         myDB = db.DBConnection()
         seasonResults = myDB.select(
