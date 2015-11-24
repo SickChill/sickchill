@@ -301,6 +301,24 @@ $('#config-components').tabs();
 
                     % for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if curProvider.providerType == GenericProvider.TORRENT]:
                     <div class="providerDiv" id="${curTorrentProvider.getID()}Div">
+
+                        % if hasattr(curTorrentProvider, 'custom_url'):
+                        <div class="field-pair">
+                            <label for="${curTorrentProvider.getID()}_custom_url">
+                                <span class="component-title">Custom URL:</span>
+                                <span class="component-desc">
+                                    <input type="text" name="${curTorrentProvider.getID()}_custom_url" id="${curTorrentProvider.getID()}_custom_url" value="${curTorrentProvider.custom_url}" class="form-control input-sm input350" />
+                                </span>
+                            </label>
+                            <label>
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">
+                                    <p>The URL should include the protocol and port (if applicable).  Examples:  http://192.168.1.4/ or http://localhost:3000/</p>
+                                </span>
+                            </label>
+                        </div>
+                        % endif
+
                         % if hasattr(curTorrentProvider, 'api_key'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_api_key">

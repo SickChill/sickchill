@@ -17,42 +17,82 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys, os.path
+"""
+Test show database functionality.
+
+Tests:
+    DBBasicTests
+    DBMultiTests
+"""
+
+import sys
+import os.path
+import unittest
+import threading
+
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import unittest
-import test_lib as test
-import threading
+import tests.test_lib as test
+
 
 class DBBasicTests(test.SickbeardTestDBCase):
+    """
+    Perform basic database tests.
+
+    Tests:
+        test_select
+    """
+
     def setUp(self):
+        """
+        Set up test.
+        """
         super(DBBasicTests, self).setUp()
-        self.db = test.db.DBConnection()
+        self.sr_db = test.db.DBConnection()
 
     def test_select(self):
-        self.db.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [0000])
+        """
+        Test selecting from the database
+        """
+        self.sr_db.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [0000])
+
 
 class DBMultiTests(test.SickbeardTestDBCase):
+    """
+    Perform multi-threaded test of the database
+
+    Tests:
+        test_threaded
+    """
     def setUp(self):
+        """
+        Set up test.
+        """
         super(DBMultiTests, self).setUp()
-        self.db = test.db.DBConnection()
+        self.sr_db = test.db.DBConnection()
 
     def select(self):
-        self.db.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [0000])
+        """
+        Select from the database.
+        """
+        self.sr_db.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [0000])
 
     def test_threaded(self):
-        for i in xrange(4):
-            t = threading.Thread(target=self.select)
-            t.start()
+        """
+        Test multi-threaded selection from the database
+        """
+        for _ in xrange(4):
+            thread = threading.Thread(target=self.select)
+            thread.start()
 
 if __name__ == '__main__':
     print "=================="
     print "STARTING - DB TESTS"
     print "=================="
     print "######################################################################"
-    suite = unittest.TestLoader().loadTestsFromTestCase(DBBasicTests)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(DBBasicTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
 
-    #suite = unittest.TestLoader().loadTestsFromTestCase(DBMultiTests)
-    #unittest.TextTestRunner(verbosity=2).run(suite)
+    # suite = unittest.TestLoader().loadTestsFromTestCase(DBMultiTests)
+    # unittest.TextTestRunner(verbosity=2).run(suite)

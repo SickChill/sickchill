@@ -24,6 +24,7 @@ import time
 import urllib
 import datetime
 import traceback
+import ast
 
 import sickbeard
 from sickbeard import config, sab
@@ -995,19 +996,48 @@ class Home(WebRoot):
         data = {}
         size = 0
         for r in rows:
-            data[r['show_id']] = {'id': r['show_id'], 'name': r['show_name'], 'list': r['notify_list']}
+            NotifyList = {'emails':'', 'prowlAPIs':''}
+            if (r['notify_list'] and len(r['notify_list']) > 0):
+                # First, handle legacy format (emails only)
+                if not r['notify_list'][0] == '{':
+                    NotifyList['emails'] = r['notify_list']
+                else:
+                    NotifyList = dict(ast.literal_eval(r['notify_list']))
+
+            data[r['show_id']] = {'id': r['show_id'],'name': r['show_name'],
+                                  'list': NotifyList['emails'],
+                                  'prowl_notify_list': NotifyList['prowlAPIs']
+                                 }
             size += 1
         data['_size'] = size
         return json.dumps(data)
 
     @staticmethod
-    def saveShowNotifyList(show=None, emails=None):
+    def saveShowNotifyList(show=None, emails=None, prowlAPIs=None):
 
+        entries = {'emails':'', 'prowlAPIs':''}
         myDB = db.DBConnection()
-        if myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [emails, show]):
-            return 'OK'
-        else:
-            return 'ERROR'
+
+        # Get current data
+        for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_id = ?", [show]):
+            if (subs['notify_list'] and len(subs['notify_list']) > 0):
+                # First, handle legacy format (emails only)
+                if not subs['notify_list'][0] == '{':
+                    entries['emails'] = subs['notify_list']
+                else:
+                    entries = dict(ast.literal_eval(subs['notify_list']))
+
+        if (emails is not None):
+            entries['emails'] = emails
+            if not myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
+                return 'ERROR'
+
+        if (prowlAPIs is not None):
+            entries['prowlAPIs'] = prowlAPIs
+            if not myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
+                return 'ERROR'
+
+        return 'OK'
 
     @staticmethod
     def testEmail(host=None, port=None, smtp_from=None, use_tls=None, user=None, pwd=None, to=None):
@@ -1149,14 +1179,15 @@ class Home(WebRoot):
             return json.dumps({"status": "error", 'message': 'General exception'})
 
     def displayShow(self, show=None):
+        # todo: add more comprehensive show validation
+        try:
+            show = int(show)  # fails if show id ends in a period SickRage/sickrage-issues#65
+            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, show)
+        except (ValueError, TypeError):
+            return self._genericMessage("Error", "Invalid show ID: %s" % str(show))
 
-        if show is None:
-            return self._genericMessage("Error", "Invalid show ID")
-        else:
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
-
-            if showObj is None:
-                return self._genericMessage("Error", "Show not in show list")
+        if showObj is None:
+            return self._genericMessage("Error", "Show not in show list")
 
         myDB = db.DBConnection()
         seasonResults = myDB.select(
@@ -3462,6 +3493,7 @@ class ManageSearches(Manage):
         return t.render(backlogPaused=sickbeard.searchQueueScheduler.action.is_backlog_paused(),
                         backlogRunning=sickbeard.searchQueueScheduler.action.is_backlog_in_progress(), dailySearchStatus=sickbeard.dailySearchScheduler.action.amActive,
                         findPropersStatus=sickbeard.properFinderScheduler.action.amActive, queueLength=sickbeard.searchQueueScheduler.action.queue_length(),
+                        subtitlesFinderStatus=sickbeard.subtitlesFinderScheduler.action.amActive,
                         title='Manage Searches', header='Manage Searches', topmenu='manage',
                         controller="manage", action="manageSearches")
 
@@ -3490,6 +3522,15 @@ class ManageSearches(Manage):
         if result:
             logger.log(u"Find propers search forced")
             ui.notifications.message('Find propers search started')
+
+        return self.redirect("/manage/manageSearches/")
+        
+    def forceSubtitlesFinder(self):
+        # force it to run the next time it looks
+        result = sickbeard.subtitlesFinderScheduler.forceRun()
+        if result:
+            logger.log(u"Subtitle search forced")
+            ui.notifications.message('Subtitle search started')
 
         return self.redirect("/manage/manageSearches/")
 
@@ -4429,6 +4470,12 @@ class ConfigProviders(Config):
         for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
                                    curProvider.providerType == sickbeard.GenericProvider.TORRENT]:
 
+            if hasattr(curTorrentProvider, 'custom_url'):
+                try:
+                    curTorrentProvider.custom_url = str(kwargs[curTorrentProvider.getID() + '_custom_url']).strip()
+                except Exception:
+                    curTorrentProvider.custom_url = None
+
             if hasattr(curTorrentProvider, 'minseed'):
                 try:
                     curTorrentProvider.minseed = int(str(kwargs[curTorrentProvider.getID() + '_minseed']).strip())
@@ -4655,6 +4702,7 @@ class ConfigNotifications(Config):
                           freemobile_notify_onsubtitledownload=None, freemobile_id=None, freemobile_apikey=None,
                           use_prowl=None, prowl_notify_onsnatch=None, prowl_notify_ondownload=None,
                           prowl_notify_onsubtitledownload=None, prowl_api=None, prowl_priority=0,
+                          prowl_show_list=None, prowl_show=None, prowl_message_title=None,
                           use_twitter=None, twitter_notify_onsnatch=None, twitter_notify_ondownload=None,
                           twitter_notify_onsubtitledownload=None, twitter_usedm=None, twitter_dmto=None,
                           use_boxcar2=None, boxcar2_notify_onsnatch=None, boxcar2_notify_ondownload=None,
@@ -4738,6 +4786,7 @@ class ConfigNotifications(Config):
         sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(prowl_notify_onsubtitledownload)
         sickbeard.PROWL_API = prowl_api
         sickbeard.PROWL_PRIORITY = prowl_priority
+        sickbeard.PROWL_MESSAGE_TITLE = prowl_message_title
 
         sickbeard.USE_TWITTER = config.checkbox_to_value(use_twitter)
         sickbeard.TWITTER_NOTIFY_ONSNATCH = config.checkbox_to_value(twitter_notify_onsnatch)
