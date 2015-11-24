@@ -150,7 +150,13 @@ inc_top.mako
 }
 
 #contentWrapper {
-/*	background: url("../images/bg.png") repeat 0 0 transparent; */
+
+margin-top: -20px;
+/*	background: url("../images/bg.png") repeat 0 0 transparent; 
+*/
+	background: #B9B9B9;
+	background-image: url("../images/grey_wash_wall.png"); 
+
 }
 
 [class^="icon-"],
@@ -187,15 +193,6 @@ inc_top.mako
 .ui-dialog,
 .ui-dialog-buttonpane {
     background: #eceadf url("../css/lib/images/ui-bg_fine-grain_10_eceadf_60x60.png") 50% 50% repeat !important;
-}
-
-/* restore 1.8.x resize handle on dialog button pane */
-.ui-dialog .ui-resizable-se {
-    width: 14px;
-    height: 14px;
-    right: 3px;
-    bottom: 3px;
-    background-position: -80px -224px;
 }
 
 .ui-accordion-content,
@@ -332,12 +329,15 @@ inc_top.mako
 }
 
 #content {
-    width: 95%;
+    width: 99%;
     min-width: 875px;
-    padding: 15px;
+    padding: 5px;
     margin-left: auto;
     margin-right: auto;
     clear: both;
+/*	background: #B9B9B9;
+	background-image: url("../images/grey_wash_wall.png"); 
+*/	
 }
 
 #SubMenu {
@@ -498,6 +498,10 @@ inc_bottom.mako
     color: #4e4e4e;
     text-align: center;
     font-size: 12px;
+	
+	background: #B9B9B9;
+	background-image: url("../images/grey_wash_wall.png"); 
+	
 }
 
 .footerhighlight {
@@ -621,6 +625,7 @@ home.mako
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
+
 }
 
 #container, #container-anime {
@@ -628,20 +633,23 @@ home.mako
 }
 
 .show {
-    margin: 12px;
-    width: 188px;
-    height: 352px;
-    background-color: #DFDACF;
-    border: 1px solid #111;
-    border-radius: 6px;
+    margin: 4px;
+    width: 135px;
+    height: 270px;
+    background-color: #F3F3F3;
+    border: 5px solid #F3F3F3;
+    border-radius: 3px;
+    box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.31);
+
 }
 
 .show-image {
     overflow: hidden;
-    height: 273px;
-    width: 186px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    height: 190px;
+    width: 126px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+	
 }
 
 .show .ui-progressbar {
@@ -666,8 +674,8 @@ home.mako
 }
 
 .show .ui-widget-content {
-    border-top: 1px solid #111;
-    border-bottom: 1px solid #111;
+    border-top: 1px solid #B0B0B0;
+    border-bottom: 1px solid #B0B0B0;
     border-left: 0px;
     border-right: 0px;
 }
@@ -691,6 +699,7 @@ home.mako
     white-space: nowrap;
     font-size: 11px;
     margin: 4px 4px 0px 4px;
+    font-weight: bold;
 }
 
 .show-title:after {
@@ -701,19 +710,16 @@ home.mako
     height: 100%;
     top: 0;
     right: 0;
-    background-image: -webkit-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -moz-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -ms-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -o-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: linear-gradient(to left, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
+
 }
 
 .show-date {
     position: relative;
     overflow: hidden;
     white-space: nowrap;
-    font-size: 11px;
+    font-size: 10px;
     margin: 0px 4px 4px 4px;
+	color: #949494
 }
 
 .show-date:after {
@@ -724,11 +730,7 @@ home.mako
     height: 100%;
     top: 0;
     right: 0;
-    background-image: -webkit-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -moz-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -ms-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -o-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: linear-gradient(to left, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
+
 }
 
 .show-table {
@@ -750,22 +752,24 @@ home.mako
 }
 
 .show-network-image {
-    width: 50px;
+    width: 40px;
     height: auto;
 }
 
 .show-dlstats {
-    font-size: 11px;
+    font-size: 9px;
     text-align: left;
     display: block;
     margin-left: 4px;
+	color: #444444;
 }
 
 .show-quality {
-    font-size: 11px;
+    font-size: 9px;
     text-align: right;
     display: block;
     margin-right: 4px;
+		color: #444444;
 }
 
 #sort-by {
@@ -1212,9 +1216,9 @@ span.snatched b {
 
 .displayShowTable th.row-seasonheader {
     border: none !important;
-    background-color: #222 !important;
+    background-color: #111111 !important;
     color: #fff !important;
-    padding-top: 15px !important;
+    padding-top: 3px !important;
     text-align: left !important;
 }
 
@@ -1351,7 +1355,7 @@ td.col-search {
 }
 
 /* =======================================================================
-schedule.mako
+comingEpisodes.mako
 ========================================================================== */
 
 .key {
@@ -1498,7 +1502,7 @@ h2.day, h2.network {
 }
 
 .calendarWrapper {
-    width:1000px;
+    width:1200px;
     margin:0 auto;
     padding:0 3px
 }
@@ -1519,12 +1523,13 @@ h2.day, h2.network {
 }
 
 .calendarShow .poster img {
-    width:142px;
-    height:auto
+    width: 126px;
+    height:auto;
 }
 
 .calendarShow .text {
-    padding:0 5px 10px 5px
+    padding:0 5px 5px 5px;
+	border-bottom: 8px solid white;
 }
 
 .calendarShow .text .airtime,
@@ -1916,7 +1921,6 @@ span.quality {
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
-    white-space: nowrap;
 }
 
 span.any-hd {
@@ -2063,6 +2067,7 @@ body {
 
 html * {
     outline: 0 !important;
+	
 }
 
 input[type="checkbox"] {
@@ -2153,6 +2158,9 @@ input, textarea, select, .uneditable-input {
 }
 
 .navbar-default .navbar-nav > li.navbar-split > a:first-child {
+    border-width: 0 1px 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 20%, #ddd, rgba(0, 0, 0, 0) 80%) 1 100%;
     padding-right: 8px;
 }
 
@@ -2650,6 +2658,50 @@ input sizing (for config pages)
 }
 
 /* =======================================================================
+browser.css overrides
+========================================================================== */
+
+#fileBrowserDialog {
+    overflow-y: auto;
+}
+
+#fileBrowserDialog ul li a:hover {
+    color: #00f;
+    background: none;
+}
+
+#fileBrowserDialog h2 {
+    font-size: 20px;
+}
+
+.ui-autocomplete {
+    max-height: 180px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* IE6 hack since it doesn't support max-height */
+* html .ui-autocomplete {
+    height: 180px;
+    padding-right: 20px;
+}
+
+.ui-autocomplete .ui-menu-item .ui-state-focus {
+    color: #fff;
+    background: none;
+    background-color: #0a246a;
+}
+
+/* restore 1.8.x resize handle on dialog button pane */
+.ui-dialog .ui-resizable-se {
+    width: 14px;
+    height: 14px;
+    right: 3px;
+    bottom: 3px;
+    background-position: -80px -224px;
+}
+
+/* =======================================================================
 formWizard.css
 ========================================================================== */
 
@@ -2941,7 +2993,7 @@ li.token-input-token {
 }
 
 li.token-input-token img {
-    padding-top: 3px;
+    padding-top: 7px;
     padding-right: 4px;
     float: left;
 }
