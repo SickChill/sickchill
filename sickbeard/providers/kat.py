@@ -75,13 +75,13 @@ class KATProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                self.search_params['q'] = search_string.encode('utf-8') if mode is not 'RSS' else ''
-                self.search_params['field'] = 'seeders' if mode is not 'RSS' else 'time_add'
+                self.search_params['q'] = search_string.encode('utf-8') if mode != 'RSS' else ''
+                self.search_params['field'] = 'seeders' if mode != 'RSS' else 'time_add'
 
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
-                url_fmt_string = 'usearch' if mode is not 'RSS' else search_string
+                url_fmt_string = 'usearch' if mode != 'RSS' else search_string
                 try:
                     searchURL = self.urls['search'] % url_fmt_string + '?' + urlencode(self.search_params)
                     logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
@@ -127,17 +127,17 @@ class KATProvider(generic.TorrentProvider):
 
                         # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
-                            if mode is not 'RSS':
+                            if mode != 'RSS':
                                 logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
 
                         if self.confirmed and not verified:
-                            if mode is not 'RSS':
+                            if mode != 'RSS':
                                 logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                             continue
 
                         item = title, download_url, size, seeders, leechers, info_hash
-                        if mode is not 'RSS':
+                        if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                         items[mode].append(item)

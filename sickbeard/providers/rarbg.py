@@ -119,7 +119,7 @@ class RarbgProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 if mode is 'RSS':
@@ -226,7 +226,7 @@ class RarbgProvider(generic.TorrentProvider):
                                 continue
 
                             item = title, download_url, size, seeders, leechers
-                            if mode is not 'RSS':
+                            if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
                             items[mode].append(item)
 

@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Dennis Lutter <lad1337@gmail.com>
 # Author: Jonathon Saine <thezoggy@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
@@ -221,7 +222,7 @@ class ApiHandler(RequestHandler):
                     if cmdIndex is None:  # do we need a index dict for this cmd ?
                         outDict[cmd] = curOutDict
                     else:
-                        if not cmd in outDict:
+                        if cmd not in outDict:
                             outDict[cmd] = {}
                         outDict[cmd][cmdIndex] = curOutDict
                 else:
@@ -263,7 +264,7 @@ class ApiHandler(RequestHandler):
             if kwarg.find(cmd + ".") == 0:
                 cleanKey = kwarg.rpartition(".")[2]
                 curKwargs[cleanKey] = kwargs[kwarg].lower()
-            elif not "." in kwarg:  # the kwarg was not namespaced therefore a "global"
+            elif "." not in kwarg:  # the kwarg was not namespaced therefore a "global"
                 curKwargs[kwarg] = kwargs[kwarg]
         return curArgs, curKwargs
 
@@ -304,7 +305,7 @@ class ApiCall(ApiHandler):
 
             if paramType in self._help:
                 for paramName in paramDict:
-                    if not paramName in self._help[paramType]:
+                    if paramName not in self._help[paramType]:
                         self._help[paramType][paramName] = {}
                     if paramDict[paramName]["allowedValues"]:
                         self._help[paramType][paramName]["allowedValues"] = paramDict[paramName]["allowedValues"]
@@ -439,10 +440,10 @@ class ApiCall(ApiHandler):
             error = False
             if isinstance(value, list):
                 for item in value:
-                    if not item in allowedValues:
+                    if item not in allowedValues:
                         error = True
             else:
-                if not value in allowedValues:
+                if value not in allowedValues:
                     error = True
 
             if error:
@@ -751,7 +752,7 @@ class CMD_Episode(ApiCall):
             episode["location"] = ""
 
         # convert stuff to human form
-        if helpers.tryInt(episode['airdate'], 1) > 693595: # 1900
+        if helpers.tryInt(episode['airdate'], 1) > 693595:  # 1900
             episode['airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(
                 network_timezones.parse_date_time(int(episode['airdate']), showObj.airs, showObj.network)),
                 d_preset=dateFormat)
@@ -1017,7 +1018,7 @@ class CMD_Exceptions(ApiCall):
             scene_exceptions = {}
             for row in sqlResults:
                 indexerid = row["indexerid"]
-                if not indexerid in scene_exceptions:
+                if indexerid not in scene_exceptions:
                     scene_exceptions[indexerid] = []
                 scene_exceptions[indexerid].append(row["show_name"])
 
@@ -1783,7 +1784,7 @@ class CMD_SickBeardSetDefaults(ApiCall):
                     self.status = status
                     break
             # this should be obsolete bcause of the above
-            if not self.status in statusStrings:
+            if self.status not in statusStrings:
                 raise ApiError("Invalid Status")
             # only allow the status options we want
             if int(self.status) not in (3, 5, 6, 7):
@@ -2549,7 +2550,7 @@ class CMD_ShowSeasons(ApiCall):
                 curEpisode = int(row["episode"])
                 del row["season"]
                 del row["episode"]
-                if not curSeason in seasons:
+                if curSeason not in seasons:
                     seasons[curSeason] = {}
                 seasons[curSeason][curEpisode] = row
 
@@ -2572,7 +2573,7 @@ class CMD_ShowSeasons(ApiCall):
                     row['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
                 else:
                     row['airdate'] = 'Never'
-                if not curEpisode in seasons:
+                if curEpisode not in seasons:
                     seasons[curEpisode] = {}
                 seasons[curEpisode] = row
 
