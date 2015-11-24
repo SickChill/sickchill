@@ -225,21 +225,26 @@ class newpctProvider(generic.TorrentProvider):
         title = title[22:]
 
         # Quality
-        title = title.replace('[HDTV]', '[720p HDTV x264]')
-        title = title.replace('[HDTV 720p AC3 5.1]', '[720p HDTV x264]')
-        title = title.replace('[HDTV 1080p AC3 5.1]', '[1080p HDTV x264]')
-        title = title.replace('[DVDRIP]', '[DVDrip x264]')
-        title = title.replace('[DVD Rip]', '[DVDrip x264]')
-        title = title.replace('[DVDrip]', '[DVDrip x264]')
-        title = title.replace('[DVDRIP-AC3.5.1]', '[DVDrip x264]')
-        title = title.replace('[BLuRayRip]', '[720p BlueRay x264]')
-        title = title.replace('[BRrip]', '[720p BlueRay x264]')
-        title = title.replace('[BDrip]', '[720p BlueRay x264]')
-        title = title.replace('[BluRay Rip]', '[720p BlueRay x264]')
-        title = title.replace('[BluRay 720p]', '[720p BlueRay x264]')
-        title = title.replace('[BluRay 1080p]', '[1080p BlueRay x264]')
-        title = title.replace('[BluRay MicroHD]', '[1080p BlueRay x264]')
-        title = title.replace('[MicroHD 1080p]', '[1080p BlueRay x264]')
+        title = title.replace('[HDTV]', 'HDTV x264')
+        title = title.replace('[HDTV 720p AC3 5.1]', '720p HDTV x264')
+        title = title.replace('[HDTV 1080p AC3 5.1]', '1080p HDTV x264')
+        title = title.replace('[DVDRIP]', 'DVDrip x264')
+        title = title.replace('[DVD Rip]', 'DVDrip x264')
+        title = title.replace('[DVDrip]', 'DVDrip x264')
+        title = title.replace('[DVDRIP-AC3.5.1]', 'DVDrip x26]')
+        title = title.replace('[BLuRayRip]', '720p BlueRay x26]')
+        title = title.replace('[BRrip]', '720p BlueRay x264')
+        title = title.replace('[BDrip]', '720p BlueRay x264')
+        title = title.replace('[BluRay Rip]', '720p BlueRay x264')
+        title = title.replace('[BluRay 720p]', '720p BlueRay x264')
+        title = title.replace('[BluRay 1080p]', '1080p BlueRay x264')
+        title = title.replace('[BluRay MicroHD]', '1080p BlueRay x264')
+        title = title.replace('[MicroHD 1080p]', '1080p BlueRay x264')
+        
+        title = title.replace('[Spanish]', 'SPANISH')
+        title = title.replace('[Español Castellano]', 'SPANISH')
+
+        title += '-NEWPCT'
 
         return title.strip()
 
