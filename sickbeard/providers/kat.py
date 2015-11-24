@@ -1,6 +1,6 @@
 # coding=utf-8
-# Author: Mr_Orange <mr_orange@hotmail.it>
-# URL: http://code.google.com/p/sickbeard/
+# Author: Dustyn Gibson <miigotu@gmail.com>
+# URL: http://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -21,15 +21,14 @@
 import traceback
 
 from urllib import urlencode
-
-import xmltodict
+from bs4 import BeautifulSoup
 
 import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
 from sickbeard.providers import generic
-from xml.parsers.expat import ExpatError
+from sickbeard.helpers import tryInt
 
 class KATProvider(generic.TorrentProvider):
     def __init__(self):
@@ -44,7 +43,6 @@ class KATProvider(generic.TorrentProvider):
         self.minseed = None
         self.minleech = None
 
-        self.cache = KATCache(self)
 
         self.urls = {
             'base_url': 'https://kickass.unblocked.pe/',
@@ -61,6 +59,9 @@ class KATProvider(generic.TorrentProvider):
             'rss': 1,
             'category': 'tv'
         }
+
+        self.cache = KATCache(self)
+
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
         results = []
@@ -94,45 +95,35 @@ class KATProvider(generic.TorrentProvider):
                         logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
                         continue
 
-                    try:
-                        data = xmltodict.parse(data)
-                    except ExpatError:
-                        logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
-                        continue
+                    data = BeautifulSoup(data, features=["html5lib", "permissive"])
 
-                    if not all([data, 'rss' in data, 'channel' in data['rss'], 'item' in data['rss']['channel']]):
-                        logger.log(u"Malformed rss returned, skipping", logger.DEBUG)
-                        continue
-
-                    # https://github.com/martinblech/xmltodict/issues/111
-                    entries = data['rss']['channel']['item']
-                    entries = entries if isinstance(entries, list) else [entries]
-
+                    entries = data.findAll('item')
                     for item in entries:
                         try:
-                            title = item['title']
+                            title = item.title.text
                             assert isinstance(title, unicode)
                             # Use the torcache link kat provides,
                             # unless it is not torcache or we are not using blackhole
                             # because we want to use magnets if connecting direct to client
                             # so that proxies work.
-                            download_url = item['enclosure']['@url']
+                            download_url = item.enclosure['url']
                             if sickbeard.TORRENT_METHOD != "blackhole" or 'torcache' not in download_url:
-                                download_url = item['torrent:magnetURI']
+                                download_url = item.find('torrent:magneturi').next.replace('CDATA', '').strip('[]')
 
-                            seeders = int(item['torrent:seeds'])
-                            leechers = int(item['torrent:peers'])
-                            verified = bool(int(item['torrent:verified']) or 0)
-                            size = int(item['torrent:contentLength'])
+                            if not (title and download_url):
+                                continue
 
-                            info_hash = item['torrent:infoHash']
+                            seeders = tryInt(item.find('torrent:seeds').text, 0)
+                            leechers = tryInt(item.find('torrent:peers').text, 0)
+                            verified = bool(tryInt(item.find('torrent:verified').text, 0))
+                            size = tryInt(item.find('torrent:contentlength').text)
+
+                            info_hash = item.find('torrent:infohash').text
                             # link = item['link']
 
-                        except (AttributeError, TypeError, KeyError):
+                        except (AttributeError, TypeError, KeyError, ValueError):
                             continue
 
-                        if not all([title, download_url]):
-                            continue
 
                         # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
