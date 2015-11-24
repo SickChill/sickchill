@@ -1749,6 +1749,16 @@ var SICKRAGE = {
                 $('table').trigger('filterReset');
             });
 
+            // Handle filtering in the poster layout
+            $('#filterShowName').on('input', _.debounce(function (e) {
+                $('#container, #container-anime').isotope({
+                    filter: function () {
+                      var name = $('div.show-title', this).text();
+                      return (name.toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1);
+                    }
+                });
+            }, 500));
+
             // This needs to be refined to work a little faster.
             $('.progressbar').each(function(){
                 var percentage = $(this).data('progress-percentage');
@@ -1869,21 +1879,11 @@ var SICKRAGE = {
                 sortAppend: [[2,0]]
             });
 
-            if ($("#showListTableShows").find("tbody").find("tr").size() > 0){
-                $.tablesorter.filter.bindSearch( "#showListTableShows", $('.search') );
-            }
-
-            if(metaToBool('sickbeard.ANIME_SPLIT_HOME')){
-                if($("#showListTableAnime").find("tbody").find("tr").size() > 0){
-                    $.tablesorter.filter.bindSearch( "#showListTableAnime", $('.search') );
-                }
-            }
-
             // @TODO we need to check if doing a $('') with a comma would be quicker than a seperate
             //       isotope function for each as it does here
             $.each([$('#container'), $('#container-anime')], function (){
                 this.isotope({
-                    itemSelector: '.show',
+                    itemSelector: '.show-container',
                     sortBy : getMeta('sickbeard.POSTER_SORTBY'),
                     sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
                     layoutMode: 'masonry',

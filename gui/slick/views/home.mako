@@ -19,18 +19,20 @@
 
 <div id="HomeLayout" class="pull-right hidden-print" style="margin-top: -40px;">
     % if sickbeard.HOME_LAYOUT != 'poster':
+    <span>
         <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
-    % endif
-
-    % if sickbeard.HOME_LAYOUT != 'poster':
+    </span>
     &nbsp;
-    <span> Search:
-        <input class="search form-control form-control-inline input-sm input200" type="search" data-column="2" placeholder="Search Show Name">
-        <button type="button" class="resetsorting btn btn-inline">Reset Search</button>
+    <span>
+        <button type="button" class="resetsorting btn btn-inline">Clear Filter(s)</button>
     </span>
     % endif
 
     % if sickbeard.HOME_LAYOUT == 'poster':
+    &nbsp;
+    <span>
+        <input id="filterShowName" class="form-control form-control-inline input-sm input200" type="search" placeholder="Filter Show Name">
+    </span>
     &nbsp;
     <span> Sort By:
         <select id="postersort" class="form-control form-control-inline input-sm">
@@ -71,7 +73,7 @@
 <div class="posterview">
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
     % if curLoadingShow.show == None:
-        <div class="show" data-name="0" data-date="010101" data-network="0" data-progress="101">
+        <div class="show-container" data-name="0" data-date="010101" data-network="0" data-progress="101">
             <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="${srRoot}/images/poster.png" />
             <div class="show-details">
                 <div class="show-add">Loading... (${curLoadingShow.show_name})</div>
@@ -144,7 +146,7 @@
         elif 'nded' in display_status:
             data_date = '5000000100.0'
 %>
-    <div class="show" id="show${curShow.indexerid}" data-name="${curShow.name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
+    <div class="show-container" id="show${curShow.indexerid}" data-name="${curShow.name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
         <div class="show-image">
             <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
         </div>
