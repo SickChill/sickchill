@@ -21,19 +21,14 @@
     % if sickbeard.HOME_LAYOUT != 'poster':
         <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
     % endif
-    <span> Layout:
-        <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
-            <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
-            <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
-            <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
-        </select>
-        % if sickbeard.HOME_LAYOUT != 'poster':
-        Search:
-            <input class="search form-control form-control-inline input-sm input200" type="search" data-column="2" placeholder="Search Show Name">
-            <button type="button" class="resetsorting btn btn-inline">Reset Search</button>
-        % endif
+
+    % if sickbeard.HOME_LAYOUT != 'poster':
+    &nbsp;
+    <span> Search:
+        <input class="search form-control form-control-inline input-sm input200" type="search" data-column="2" placeholder="Search Show Name">
+        <button type="button" class="resetsorting btn btn-inline">Reset Search</button>
     </span>
+    % endif
 
     % if sickbeard.HOME_LAYOUT == 'poster':
     &nbsp;
@@ -46,15 +41,23 @@
         </select>
     </span>
     &nbsp;
-    <span> Sort Order:
+    <span> Direction:
         <select id="postersortdirection" class="form-control form-control-inline input-sm">
-            <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>Asc</option>
-            <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Desc</option>
+            <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>A &#10140; Z</option>
+            <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Z &#10140; A</option>
         </select>
     </span>
-    &nbsp;
-
     % endif
+
+    &nbsp;
+    <span> Layout:
+        <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+            <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
+            <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
+            <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
+            <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
+        </select>
+    </span>
 </div>
 
 % for curShowlist in showlists:
