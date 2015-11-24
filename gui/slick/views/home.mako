@@ -41,10 +41,10 @@
         </select>
     </span>
     &nbsp;
-    <span> Sort Order:
+    <span> Direction:
         <select id="postersortdirection" class="form-control form-control-inline input-sm">
-            <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>Asc</option>
-            <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Desc</option>
+            <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>A &#10140; Z</option>
+            <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Z &#10140; A</option>
         </select>
     </span>
     % endif
