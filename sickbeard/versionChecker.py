@@ -71,7 +71,7 @@ class CheckVersion(object):
                 if sickbeard.AUTO_UPDATE:
                     logger.log(u"New update found for SickRage, starting auto-updater ...")
                     ui.notifications.message('New update found for SickRage, starting auto-updater')
-                    if self.run_backup_if_safe() is True:
+                    if self.run_backup_if_safe():
                         if sickbeard.versionCheckScheduler.action.update():
                             logger.log(u"Update was successful!")
                             ui.notifications.message('Update was successful')
@@ -96,7 +96,7 @@ class CheckVersion(object):
             if not os.path.isdir(backupDir):
                 os.mkdir(backupDir)
 
-            if self._keeplatestbackup(backupDir) is True and self._backup(backupDir) is True:
+            if self._keeplatestbackup(backupDir) and self._backup(backupDir):
                 logger.log(u"Config backup successful, updating...")
                 ui.notifications.message('Backup', 'Config backup successful, updating...')
                 return True
@@ -155,22 +155,26 @@ class CheckVersion(object):
     def safe_to_update(self):
 
         def db_safe(self):
+            message = {
+                'equal': {
+                    'type': logger.DEBUG,
+                    'text': u"We can proceed with the update. New update has same DB version"},
+                'upgrade': {
+                    'type': logger.WARNING,
+                    'text': u"We can't proceed with the update. New update has a new DB version. Please manually update"},
+                'downgrade': {
+                    'type': logger.ERROR,
+                    'text': u"We can't proceed with the update. New update has a old DB version. It's not possible to downgrade"},
+            }
             try:
                 result = self.getDBcompare()
-                if result == 'equal':
-                    logger.log(u"We can proceed with the update. New update has same DB version", logger.DEBUG)
-                    return True
-                elif result == 'upgrade':
-                    logger.log(u"We can't proceed with the update. New update has a new DB version. Please manually update", logger.WARNING)
-                    return False
-                elif result == 'downgrade':
-                    logger.log(u"We can't proceed with the update. New update has a old DB version. It's not possible to downgrade", logger.ERROR)
-                    return False
+                if result in message:
+                    logger.log(message[result]['text'], message[result]['type'])  # unpack the result message into a log entry
                 else:
                     logger.log(u"We can't proceed with the update. Unable to check remote DB version. Error: %s" % result, logger.ERROR)
-                    return False
-            except Exception as e:
-                logger.log(u"We can't proceed with the update. Unable to compare DB version. Error: %s" % repr(e), logger.ERROR)
+                return result in ['equal']  # add future True results to the list
+            except Exception as error:
+                logger.log(u"We can't proceed with the update. Unable to compare DB version. Error: %s" % repr(error), logger.ERROR)
                 return False
 
         def postprocessor_safe():
@@ -193,7 +197,7 @@ class CheckVersion(object):
         postprocessor_safe = postprocessor_safe()
         showupdate_safe = showupdate_safe()
 
-        if db_safe is True and postprocessor_safe is True and showupdate_safe is True:
+        if db_safe and postprocessor_safe and showupdate_safe:
             logger.log(u"Proceeding with auto update", logger.DEBUG)
             return True
         else:
