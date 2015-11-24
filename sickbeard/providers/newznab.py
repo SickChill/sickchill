@@ -125,7 +125,7 @@ class NewznabProvider(generic.NZBProvider):
             return False, return_categories, error_string
 
         for category in data.caps.categories.findAll('category'):
-            if hasattr(category, 'attrs') and category.attrs['name'] == 'TV':
+            if hasattr(category, 'attrs') and 'TV' in category.attrs['name']:
                 return_categories.append({'id': category.attrs['id'], 'name': category.attrs['name']})
                 for subcat in category.findAll('subcat'):
                     return_categories.append({'id': subcat.attrs['id'], 'name': subcat.attrs['name']})
@@ -282,18 +282,21 @@ class NewznabProvider(generic.NZBProvider):
             except (AttributeError, TypeError):
                 continue
 
-            if title and download_url:
-                size = seeders = leechers = None
-                for attr in item.findAll('newznab:attr') + item.findAll('torznab:attr'):
-                    size = helpers.tryInt(attr['value'], -1) if attr['name'] == 'size' else size
-                    seeders = helpers.tryInt(attr['value'], 1) if attr['name'] == 'seeders' else seeders
-                    leechers = helpers.tryInt(attr['value'], 0) if attr['name'] == 'leechers' else leechers
+            if not (title and download_url):
+                continue
 
-                if not size or (torznab and (seeders is None or leechers is None)):
-                    continue
+            seeders = leechers = None
+            size = helpers.tryInt(item.size, -1)
+            for attr in item.findAll('newznab:attr') + item.findAll('torznab:attr'):
+                size = helpers.tryInt(attr['value'], -1) if attr['name'] == 'size' else size
+                seeders = helpers.tryInt(attr['value'], 1) if attr['name'] == 'seeders' else seeders
+                leechers = helpers.tryInt(attr['value'], 0) if attr['name'] == 'peers' else leechers
 
-                result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
-                results.append(result)
+            if not size or (torznab and (seeders is None or leechers is None)):
+                continue
+
+            result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
+            results.append(result)
 
         data.decompose()
 
