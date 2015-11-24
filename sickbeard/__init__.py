@@ -1228,6 +1228,9 @@ def initialize(consoleLogging=True):
                                    curProvider.providerType == GenericProvider.TORRENT]:
             curTorrentProvider.enabled = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                 curTorrentProvider.getID(), 0))
+            if hasattr(curTorrentProvider, 'custom_url'):
+                curTorrentProvider.custom_url = check_setting_str(CFG, curTorrentProvider.getID().upper(),
+                                                                curTorrentProvider.getID() + '_custom_url', '', censor_log=True)                                           
             if hasattr(curTorrentProvider, 'api_key'):
                 curTorrentProvider.api_key = check_setting_str(CFG, curTorrentProvider.getID().upper(),
                                                                curTorrentProvider.getID() + '_api_key', '', censor_log=True)
@@ -1789,6 +1792,9 @@ def save_config():
                                curProvider.providerType == GenericProvider.TORRENT]:
         new_config[curTorrentProvider.getID().upper()] = {}
         new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID()] = int(curTorrentProvider.enabled)
+        if hasattr(curTorrentProvider, 'custom_url'):
+            new_config[curTorrentProvider.getID().upper()][
+                curTorrentProvider.getID() + '_custom_url'] = curTorrentProvider.custom_url
         if hasattr(curTorrentProvider, 'digest'):
             new_config[curTorrentProvider.getID().upper()][
                 curTorrentProvider.getID() + '_digest'] = curTorrentProvider.digest

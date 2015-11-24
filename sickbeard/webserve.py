@@ -4470,6 +4470,12 @@ class ConfigProviders(Config):
         for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
                                    curProvider.providerType == sickbeard.GenericProvider.TORRENT]:
 
+            if hasattr(curTorrentProvider, 'custom_url'):
+                try:
+                    curTorrentProvider.custom_url = str(kwargs[curTorrentProvider.getID() + '_custom_url']).strip()
+                except Exception:
+                    curTorrentProvider.custom_url = None
+
             if hasattr(curTorrentProvider, 'minseed'):
                 try:
                     curTorrentProvider.minseed = int(str(kwargs[curTorrentProvider.getID() + '_minseed']).strip())
