@@ -79,7 +79,7 @@ def _downloadResult(result):
         except EnvironmentError, e:
             logger.log(u"Error trying to save NZB to black hole: " + ex(e), logger.ERROR)
             newResult = False
-    elif resProvider.providerType == "torrent":
+    elif result.resultType == "torrent":
         newResult = resProvider.downloadResult(result)
     else:
         logger.log(u"Invalid provider type - this is a coding error, report it please", logger.ERROR)
