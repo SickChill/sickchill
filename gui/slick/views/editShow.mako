@@ -106,7 +106,7 @@
                             <label for="subtitles">
                                 <span class="component-title">Subtitles</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" id="subtitles" name="subtitles" ${('', 'checked="checked"')[show.subtitles == 1 and sickbeard.USE_SUBTITLES == True]} ${('disabled="disabled"', '')[bool(sickbeard.USE_SUBTITLES)]}/> search for subtitles
+                                    <input type="checkbox" id="subtitles" name="subtitles" ${('', 'checked="checked"')[show.subtitles == 1 and sickbeard.USE_SUBTITLES is True]} ${('disabled="disabled"', '')[bool(sickbeard.USE_SUBTITLES)]}/> search for subtitles
                                 </span>
                             </label>
                         </div>

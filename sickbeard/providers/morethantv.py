@@ -133,7 +133,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
                             link = cells[1].find('a', attrs={'title': 'Download'})
 
                             # skip if torrent has been nuked due to poor quality
-                            if cells[1].find('img', alt='Nuked') != None:
+                            if cells[1].find('img', alt='Nuked') is not None:
                                 continue
 
                             torrent_id_long = link['href'].replace('torrents.php?action=download&id=', '')

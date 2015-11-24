@@ -52,7 +52,7 @@ def _downloadResult(result):
     """
 
     resProvider = result.provider
-    if resProvider == None:
+    if resProvider is None:
         logger.log(u"Invalid provider name - this is a coding error, report it please", logger.ERROR)
         return False
 
@@ -106,7 +106,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
         for curEp in result.episodes:
             if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
                 result.priority = 1
-    if re.search(r'(^|[\. _-])(proper|repack)([\. _-]|$)', result.name, re.I) != None:
+    if re.search(r'(^|[\. _-])(proper|repack)([\. _-]|$)', result.name, re.I) is not None:
         endStatus = SNATCHED_PROPER
 
     if result.url.startswith('magnet') or result.url.endswith('torrent'):
@@ -480,7 +480,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
         search_mode = curProvider.search_mode
 
         # Always search for episode when manually searching when in sponly
-        if search_mode == 'sponly' and manualSearch == True:
+        if search_mode == 'sponly' and manualSearch is True:
             search_mode = 'eponly'
 
         while True:

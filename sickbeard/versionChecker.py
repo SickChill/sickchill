@@ -96,7 +96,7 @@ class CheckVersion(object):
             if not os.path.isdir(backupDir):
                 os.mkdir(backupDir)
 
-            if self._keeplatestbackup(backupDir) == True and self._backup(backupDir) == True:
+            if self._keeplatestbackup(backupDir) is True and self._backup(backupDir) is True:
                 logger.log(u"Config backup successful, updating...")
                 ui.notifications.message('Backup', 'Config backup successful, updating...')
                 return True
@@ -193,7 +193,7 @@ class CheckVersion(object):
         postprocessor_safe = postprocessor_safe()
         showupdate_safe = showupdate_safe()
 
-        if db_safe == True and postprocessor_safe == True and showupdate_safe == True:
+        if db_safe is True and postprocessor_safe is True and showupdate_safe is True:
             logger.log(u"Proceeding with auto update", logger.DEBUG)
             return True
         else:

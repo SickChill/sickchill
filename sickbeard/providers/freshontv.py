@@ -190,7 +190,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                             for individual_torrent in torrent_rows:
 
                                 # skip if torrent has been nuked due to poor quality
-                                if individual_torrent.find('img', alt='Nuked') != None:
+                                if individual_torrent.find('img', alt='Nuked') is not None:
                                     continue
 
                                 try:

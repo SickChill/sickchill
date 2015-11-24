@@ -2188,13 +2188,13 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
 
 
 def getEpList(epIDs, showid=None):
-    if epIDs == None or len(epIDs) == 0:
+    if epIDs is None or len(epIDs) == 0:
         return []
 
     query = "SELECT * FROM tv_episodes WHERE indexerid in (%s)" % (",".join(['?'] * len(epIDs)),)
     params = epIDs
 
-    if showid != None:
+    if showid is not None:
         query += " AND showid = ?"
         params.append(showid)
 

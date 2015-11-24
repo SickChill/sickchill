@@ -42,7 +42,7 @@
         cssClass = "Custom"
         qualityString = "Custom"
 
-    if overrideClass == None:
+    if overrideClass is None:
         cssClass = "quality " + cssClass
     else:
         cssClass = overrideClass

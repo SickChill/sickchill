@@ -108,7 +108,7 @@ class RarbgProvider(generic.TorrentProvider):
         if not self._doLogin():
             return results
 
-        if epObj != None:
+        if epObj is not None:
             ep_indexerid = epObj.show.indexerid
             ep_indexer = epObj.show.indexer
         else:

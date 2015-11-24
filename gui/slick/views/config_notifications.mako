@@ -409,7 +409,7 @@
                             <div class="field-pair">
                                 <label for="nmj_database">
                                     <span class="component-title">NMJ database</span>
-                                    <input type="text" name="nmj_database" id="nmj_database" value="${sickbeard.NMJ_DATABASE}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJ_DATABASE == True]}/>
+                                    <input type="text" name="nmj_database" id="nmj_database" value="${sickbeard.NMJ_DATABASE}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJ_DATABASE is True]}/>
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -419,7 +419,7 @@
                             <div class="field-pair">
                                 <label for="nmj_mount">
                                     <span class="component-title">NMJ mount url</span>
-                                    <input type="text" name="nmj_mount" id="nmj_mount" value="${sickbeard.NMJ_MOUNT}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJ_MOUNT == True]}/>
+                                    <input type="text" name="nmj_mount" id="nmj_mount" value="${sickbeard.NMJ_MOUNT}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJ_MOUNT is True]}/>
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -506,7 +506,7 @@
                             <div class="field-pair">
                                 <label for="nmjv2_database">
                                     <span class="component-title">NMJv2 database</span>
-                                    <input type="text" name="nmjv2_database" id="nmjv2_database" value="${sickbeard.NMJv2_DATABASE}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJv2_DATABASE == True]}/>
+                                    <input type="text" name="nmjv2_database" id="nmjv2_database" value="${sickbeard.NMJv2_DATABASE}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJv2_DATABASE is True]}/>
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
