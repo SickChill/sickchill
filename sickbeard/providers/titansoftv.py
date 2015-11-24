@@ -51,6 +51,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
 
         if 'error' in data:
             logger.log(u"Invalid api key. Check your settings", logger.WARNING)
+            return False
 
         return True
 
