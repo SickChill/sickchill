@@ -54,7 +54,7 @@ class AllTests(unittest.TestCase):
     def _get_module_strings(self):
         modules = []
         for file_string in self.test_file_strings:
-            modules.append(file_string[len(tests_dir):len(file_string) - 3].replace('/', '.'))
+            modules.append(file_string[len(tests_dir):len(file_string) - 3].replace(os.sep, '.'))
 
         return modules
 
