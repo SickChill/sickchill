@@ -33,9 +33,9 @@ class History:
         Clear all the history
         """
         self.db.action(
-                'DELETE '
-                'FROM history '
-                'WHERE 1 = 1'
+            'DELETE '
+            'FROM history '
+            'WHERE 1 = 1'
         )
 
     def get(self, limit=100, action=None):
@@ -88,10 +88,10 @@ class History:
         """
 
         self.db.action(
-                'DELETE '
-                'FROM history '
-                'WHERE date < ?',
-                [(datetime.today() - timedelta(days=30)).strftime(History.date_format)]
+            'DELETE '
+            'FROM history '
+            'WHERE date < ?',
+            [(datetime.today() - timedelta(days=30)).strftime(History.date_format)]
         )
 
     @staticmethod

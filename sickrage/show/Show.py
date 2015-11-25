@@ -64,11 +64,11 @@ class Show:
         total_status = [SKIPPED, WANTED]
 
         results = db.select(
-                'SELECT airdate, status '
-                'FROM tv_episodes '
-                'WHERE season > 0 '
-                'AND episode > 0 '
-                'AND airdate > 1'
+            'SELECT airdate, status '
+            'FROM tv_episodes '
+            'WHERE season > 0 '
+            'AND episode > 0 '
+            'AND airdate > 1'
         )
 
         stats = {
