@@ -47,7 +47,7 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import network_timezones
 from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickrage.helper.common import dateTimeFormat, remove_extension
+from sickrage.helper.common import dateTimeFormat, remove_extension, replace_extension
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeDeletedException, EpisodeNotFoundException, ex
 from sickrage.helper.exceptions import MultipleEpisodesInDatabaseException, MultipleShowsInDatabaseException
@@ -1736,7 +1736,7 @@ class TVEpisode(object):
                         Quality.statusFromName(self.location, anime=self.show.is_anime)), logger.DEBUG)
                     self.status = Quality.statusFromName(self.location, anime=self.show.is_anime)
 
-            nfoFile = sickbeard.helpers.replaceExtension(self.location, "nfo")
+            nfoFile = replace_extension(self.location, "nfo")
             logger.log(str(self.show.indexerid) + u": Using NFO name " + nfoFile, logger.DEBUG)
 
             if ek(os.path.isfile, nfoFile):
@@ -1793,7 +1793,7 @@ class TVEpisode(object):
             else:
                 self.hasnfo = False
 
-            if ek(os.path.isfile, sickbeard.helpers.replaceExtension(nfoFile, "tbn")):
+            if ek(os.path.isfile, replace_extension(nfoFile, "tbn")):
                 self.hastbn = True
             else:
                 self.hastbn = False

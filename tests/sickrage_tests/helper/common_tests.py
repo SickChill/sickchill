@@ -24,7 +24,7 @@ import sys
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from sickrage.helper.common import remove_extension
+from sickrage.helper.common import remove_extension, replace_extension
 
 
 class CommonTests(TestCase):
@@ -61,6 +61,72 @@ class CommonTests(TestCase):
 
         for (extension, result) in tests.iteritems():
             self.assertEqual(remove_extension(extension), result)
+
+    def test_replace_extension(self):
+        tests = {
+            (None, None): None,
+            (None, ''): None,
+            (None, u''): None,
+            ('', None): '',
+            ('', ''): '',
+            ('', u''): '',
+            (u'', None): u'',
+            (u'', ''): u'',
+            (u'', u''): u'',
+            ('.', None): '.',
+            ('.', ''): '.',
+            ('.', u''): '.',
+            ('.', 'avi'): '.',
+            ('.', u'avi'): '.',
+            (u'.', None): u'.',
+            (u'.', ''): u'.',
+            (u'.', u''): u'.',
+            (u'.', 'avi'): u'.',
+            (u'.', u'avi'): u'.',
+            ('filename', None): 'filename',
+            ('filename', ''): 'filename',
+            ('filename', u''): 'filename',
+            ('filename', 'avi'): 'filename',
+            ('filename', u'avi'): 'filename',
+            (u'filename', None): u'filename',
+            (u'filename', ''): u'filename',
+            (u'filename', u''): u'filename',
+            (u'filename', 'avi'): u'filename',
+            (u'filename', u'avi'): u'filename',
+            ('.bashrc', None): '.bashrc',
+            ('.bashrc', ''): '.bashrc',
+            ('.bashrc', u''): '.bashrc',
+            ('.bashrc', 'avi'): '.bashrc',
+            ('.bashrc', u'avi'): '.bashrc',
+            (u'.bashrc', None): u'.bashrc',
+            (u'.bashrc', ''): u'.bashrc',
+            (u'.bashrc', u''): u'.bashrc',
+            (u'.bashrc', 'avi'): u'.bashrc',
+            (u'.bashrc', u'avi'): u'.bashrc',
+            ('file.mkv', None): 'file.None',
+            ('file.mkv', ''): 'file.',
+            ('file.mkv', u''): 'file.',
+            ('file.mkv', 'avi'): 'file.avi',
+            ('file.mkv', u'avi'): 'file.avi',
+            (u'file.mkv', None): u'file.None',
+            (u'file.mkv', ''): u'file.',
+            (u'file.mkv', u''): u'file.',
+            (u'file.mkv', 'avi'): u'file.avi',
+            (u'file.mkv', u'avi'): u'file.avi',
+            ('file.name.mkv', None): 'file.name.None',
+            ('file.name.mkv', ''): 'file.name.',
+            ('file.name.mkv', u''): 'file.name.',
+            ('file.name.mkv', 'avi'): 'file.name.avi',
+            ('file.name.mkv', u'avi'): 'file.name.avi',
+            (u'file.name.mkv', None): u'file.name.None',
+            (u'file.name.mkv', ''): u'file.name.',
+            (u'file.name.mkv', u''): u'file.name.',
+            (u'file.name.mkv', 'avi'): u'file.name.avi',
+            (u'file.name.mkv', u'avi'): u'file.name.avi',
+        }
+
+        for ((filename, extension), result) in tests.iteritems():
+            self.assertEqual(replace_extension(filename, extension), result)
 
 
 if __name__ == '__main__':
