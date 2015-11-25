@@ -54,24 +54,16 @@ if SPOOF_USER_AGENT:
     shuffle(user_agents)
     USER_AGENT = user_agents[0]
 
-mediaExtensions = ['avi', 'mkv', 'mpg', 'mpeg', 'wmv',
-                   'ogm', 'mp4', 'iso', 'img', 'divx',
-                   'm2ts', 'm4v', 'ts', 'flv', 'f4v',
-                   'mov', 'rmvb', 'vob', 'dvr-ms', 'wtv',
-                   'ogv', '3gp', 'webm', 'tp']
-
-subtitleExtensions = ['srt', 'sub', 'ass', 'idx', 'ssa']
-
 cpu_presets = {'HIGH': 5,
                'NORMAL': 2,
                'LOW': 1
               }
 
-### Other constants
+# Other constants
 MULTI_EP_RESULT = -1
 SEASON_RESULT = -2
 
-### Notification Types
+# Notification Types
 NOTIFY_SNATCH = 1
 NOTIFY_DOWNLOAD = 2
 NOTIFY_SUBTITLE_DOWNLOAD = 3
@@ -85,7 +77,7 @@ notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD] = "Subtitle Download Finished"
 notifyStrings[NOTIFY_GIT_UPDATE] = "SickRage Updated"
 notifyStrings[NOTIFY_GIT_UPDATE_TEXT] = "SickRage Updated To Commit#: "
 
-### Episode statuses
+# Episode statuses
 UNKNOWN = -1  # should never happen
 UNAIRED = 1  # episodes that haven't aired yet
 SNATCHED = 2  # qualified with quality
@@ -572,6 +564,7 @@ statusStrings = StatusStrings(
      }
 )
 
+
 # pylint: disable=R0903
 class Overview(object):
     UNAIRED = UNAIRED  # 1
@@ -589,11 +582,6 @@ class Overview(object):
                        GOOD: "good",
                        UNAIRED: "unaired",
                        SNATCHED: "snatched"}
-
-
-# Get our xml namespaces correct for lxml
-XML_NSMAP = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-             'xsd': 'http://www.w3.org/2001/XMLSchema'}
 
 countryList = {'Australia': 'AU',
                'Canada': 'CA',
