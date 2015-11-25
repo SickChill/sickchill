@@ -2087,7 +2087,7 @@ class TVEpisode(object):
             if name:
                 name = helpers.remove_non_release_groups(helpers.remove_extension(name))
             else:
-                return ""
+                return ''
 
             try:
                 np = NameParser(name, showObj=show, naming_pattern=True)
@@ -2098,7 +2098,7 @@ class TVEpisode(object):
 
             if not parse_result.release_group:
                 return ''
-            return parse_result.release_group
+            return parse_result.release_group.strip('.- []{}')
 
         _, epQual = Quality.splitCompositeStatus(self.status)  # @UnusedVariable
 
@@ -2115,7 +2115,7 @@ class TVEpisode(object):
             if not rel_grp['location']:
                 del rel_grp['location']
         if hasattr(self, '_release_group'):  # from the release group field in db
-            rel_grp['database'] = self._release_group
+            rel_grp['database'] = self._release_group.strip('.- []{}')
             if not rel_grp['database']:
                 del rel_grp['database']
         if hasattr(self, 'release_name'):  # from the release name field in db
