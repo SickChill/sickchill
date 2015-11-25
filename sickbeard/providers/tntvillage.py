@@ -300,12 +300,12 @@ class TNTVillageProvider(generic.TorrentProvider):
                     if last_page:
                         break
 
-                    if mode is not 'RSS':
+                    if mode != 'RSS':
                         searchURL = (self.urls['search_page'] + '&filter={2}').format(z, self.categories, search_string)
                     else:
                         searchURL = self.urls['search_page'].format(z, self.categories)
 
-                    if mode is not 'RSS':
+                    if mode != 'RSS':
                         logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                     logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
@@ -379,12 +379,12 @@ class TNTVillageProvider(generic.TorrentProvider):
 
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
-                                    if mode is not 'RSS':
+                                    if mode != 'RSS':
                                         logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                     continue
 
                                 item = title, download_url, size, seeders, leechers
-                                if mode is not 'RSS':
+                                if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                                 items[mode].append(item)

@@ -54,7 +54,7 @@
     </td>
     <td align="center">
     <% provider = providers.getProviderClass(generic.GenericProvider.makeID(hItem["provider"])) %>
-    % if provider != None:
+    % if provider is not None:
         <img src="${srRoot}/images/providers/${provider.imageName()}" width="16" height="16" alt="${provider.name}" title="${provider.name}"/>
     % else:
         <img src="${srRoot}/images/providers/missing.png" width="16" height="16" alt="missing provider" title="missing provider"/>

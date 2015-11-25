@@ -55,11 +55,11 @@ class BTDIGGProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
                 search_params['q'] = search_string.encode('utf-8')
-                search_params['order'] = '1' if mode is not 'RSS' else '2'
+                search_params['order'] = '1' if mode != 'RSS' else '2'
 
                 searchURL = self.urls['api'] + '?' + urlencode(search_params)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
@@ -83,12 +83,12 @@ class BTDIGGProvider(generic.TorrentProvider):
 
                         # Filter unseeded torrent (Unsupported)
                         # if seeders < self.minseed or leechers < self.minleech:
-                        #    if mode is not 'RSS':
+                        #    if mode != 'RSS':
                         #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         #    continue
 
                         item = title, download_url, size, seeders, leechers
-                        if mode is not 'RSS':
+                        if mode != 'RSS':
                             logger.log(u"Found result: %s" % title, logger.DEBUG)
 
                         items[mode].append(item)

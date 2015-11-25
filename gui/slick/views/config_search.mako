@@ -318,7 +318,7 @@
                                 </label>
                             </div>
 
-                            % if sickbeard.ALLOW_HIGH_PRIORITY == True:
+                            % if sickbeard.ALLOW_HIGH_PRIORITY is True:
                             <div class="field-pair">
                                 <label for="sab_forced">
                                     <span class="component-title">Use forced priority</span>
