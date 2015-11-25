@@ -3051,7 +3051,7 @@ class Manage(Home, WebRoot):
             epCounts[Overview.SNATCHED] = 0
 
             sqlResults = myDB.select(
-                "SELECT * FROM tv_episodes WHERE tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
+                "SELECT status, season, episode, name, airdate FROM tv_episodes FROM tv_episodes WHERE tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
                 [curShow.indexerid])
 
             for curResult in sqlResults:
