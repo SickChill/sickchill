@@ -95,21 +95,6 @@ def indentXML(elem, level=0):
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
 
-
-def remove_extension(name):
-    """
-    Remove download or media extension from name (if any)
-    """
-
-    if name and "." in name:
-        # pylint: disable=W0612
-        base_name, sep, extension = name.rpartition('.')  # @UnusedVariable
-        if base_name and extension.lower() in ['nzb', 'torrent'] + media_extensions:
-            name = base_name
-
-    return name
-
-
 def remove_non_release_groups(name):
     """
     Remove non release groups from name

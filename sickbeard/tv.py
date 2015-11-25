@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import os.path
 import datetime
 import threading
@@ -48,7 +47,7 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import network_timezones
 from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickrage.helper.common import dateTimeFormat
+from sickrage.helper.common import dateTimeFormat, remove_extension
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeDeletedException, EpisodeNotFoundException, ex
 from sickrage.helper.exceptions import MultipleEpisodesInDatabaseException, MultipleShowsInDatabaseException
@@ -2066,12 +2065,12 @@ class TVEpisode(object):
 
         def release_name(name):
             if name:
-                name = helpers.remove_non_release_groups(helpers.remove_extension(name))
+                name = helpers.remove_non_release_groups(remove_extension(name))
             return name
 
         def release_group(show, name):
             if name:
-                name = helpers.remove_non_release_groups(helpers.remove_extension(name))
+                name = helpers.remove_non_release_groups(remove_extension(name))
             else:
                 return ''
 

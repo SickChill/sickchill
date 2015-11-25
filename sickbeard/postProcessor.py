@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import glob
 import fnmatch
 import os
@@ -36,7 +35,7 @@ from sickbeard import notifiers
 from sickbeard import show_name_helpers
 from sickbeard import failed_history
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickrage.helper.common import subtitle_extensions
+from sickrage.helper.common import remove_extension, subtitle_extensions
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
@@ -530,7 +529,7 @@ class PostProcessor(object):
                                          or parse_result.air_date) and parse_result.release_group:
 
             if not self.release_name:
-                self.release_name = helpers.remove_non_release_groups(helpers.remove_extension(ek(os.path.basename, parse_result.original_name)))
+                self.release_name = helpers.remove_non_release_groups(remove_extension(ek(os.path.basename, parse_result.original_name)))
 
         else:
             logger.log(u"Parse result not sufficient (all following have to be set). will not save release name",
@@ -558,7 +557,7 @@ class PostProcessor(object):
 
         logger.log(u"Analyzing name " + name, logger.DEBUG)
 
-        name = helpers.remove_non_release_groups(helpers.remove_extension(name))
+        name = helpers.remove_non_release_groups(remove_extension(name))
 
         # parse the name to break it into show name, season, and episode
         np = NameParser(True, tryIndexers=True)
