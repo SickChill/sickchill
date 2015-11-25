@@ -144,7 +144,6 @@ def strip_xmlns(element, xmlns):
     return element
 
 
-# TODO: change return to empty list on failure since it evaluates as False anyway
 def split_result(obj):
     """
     Split obj into separate episodes.
@@ -177,6 +176,7 @@ def split_result(obj):
     # TODO: Re-evaluate this whole section
     #   If we have valid results and hit an exception, we ignore the results found so far.
     #   Maybe we should return the results found or possibly continue with the next iteration of the loop
+    #   Also maybe turn this into a function and generate the results_list with a list comprehension instead
     for new_nzb in separate_nzbs:
         logger.log(u"Split out " + new_nzb + " from " + obj.name, logger.DEBUG)  # pylint: disable=no-member
 
@@ -214,9 +214,7 @@ def split_result(obj):
             continue
 
         # get all the associated episode objects
-        ep_obj_list = []
-        for cur_ep in parsed_obj.episode_numbers:
-            ep_obj_list.append(obj.extraInfo[0].getEpisode(season, cur_ep))
+        ep_obj_list = [obj.extraInfo[0].getEpisode(season, ep) for ep in parsed_obj.episode_numbers]
 
         # make a result
         cur_obj = classes.NZBDataSearchResult(ep_obj_list)
