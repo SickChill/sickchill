@@ -265,7 +265,7 @@ home.mako
     color: #fff;
 }
 
-.show {
+.show-container {
     margin: 12px;
     width: 188px;
     height: 352px;
