@@ -92,7 +92,7 @@ class newpctProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
 
             for search_string in search_strings[mode]:
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 self.search_params.update({'q': search_string.strip()})
@@ -136,12 +136,12 @@ class newpctProvider(generic.TorrentProvider):
 
                             # Filter unseeded torrent (Unsupported)
                             # if seeders < self.minseed or leechers < self.minleech:
-                            #     if mode is not 'RSS':
+                            #     if mode != 'RSS':
                             #         logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             #     continue
 
                             item = title, download_url, size, seeders, leechers
-                            if mode is not 'RSS':
+                            if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)
@@ -156,6 +156,19 @@ class newpctProvider(generic.TorrentProvider):
 
         return results
 
+    def getURL(self, url, post_data=None, params=None, timeout=30, json=False, needBytes=False):
+        """
+        needBytes=True when trying access to torrent info (For calling torrent client). Previously we must parse
+        the URL to get torrent file
+        """
+        if needBytes:
+            data = helpers.getURL(url, post_data=None, params=None, headers=self.headers, timeout=timeout,
+                              session=self.session, json=json, needBytes=False)
+            url = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
+            
+        return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
+                              session=self.session, json=json, needBytes=needBytes)
+        
     def downloadResult(self, result):
         """
         Save the result to disk.

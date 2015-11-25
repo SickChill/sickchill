@@ -21,7 +21,7 @@
     </a>
 
     <br><br>
-    % if sickbeard.USE_TRAKT == True:
+    % if sickbeard.USE_TRAKT is True:
     <a href="${srRoot}/home/addShows/trendingShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addtrendingshow"></div></div>
         <div class="buttontext">

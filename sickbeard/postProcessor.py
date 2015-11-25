@@ -192,18 +192,29 @@ class PostProcessor(object):
 
             checklist = glob.glob(ek(os.path.join, ek(os.path.dirname, globbable_file_path), '*')) # get a list of all the files in the folder
             for filefound in checklist: # loop through all the files in the folder, and check if they are the same name even when the cases don't match
+
                 file_name = filefound.rpartition('.')[0]
                 file_extension = filefound.rpartition('.')[2]
+                is_subtitle = None
+
+                if file_extension in common.subtitleExtensions:
+                    is_subtitle = True
+
                 if not base_name_only:
                     new_file_name = file_name + '.'
-                if new_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'): # if there's no difference in the filename add it to the filelist
-                    filelist.append(filefound)
-                elif file_extension in common.subtitleExtensions:
+                    sub_file_name = file_name.rpartition('.')[0] + '.'
+                else:
+                    new_file_name = file_name
+                    sub_file_name = file_name.rpartition('.')[0]
+
+                if is_subtitle and sub_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'):
                     language_extensions = tuple('.' + c for c in language_converters['opensubtitles'].codes)
                     if file_name.lower().endswith(language_extensions) and (len(filefound.rsplit('.', 2)[1]) is 2 or 3):
                         filelist.append(filefound)
                     elif file_name.lower().endswith('pt-br') and len(filefound.rsplit('.', 2)[1]) is 5:
                         filelist.append(filefound)
+                elif new_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'): # if there's no difference in the filename add it to the filelist
+                    filelist.append(filefound)
 
         for associated_file_path in filelist:
             # only add associated to list
@@ -333,7 +344,7 @@ class PostProcessor(object):
                     cur_extension = cur_lang + os.path.splitext(cur_extension)[1]
 
             # replace .nfo with .nfo-orig to avoid conflicts
-            if cur_extension == 'nfo' and sickbeard.NFO_RENAME == True:
+            if cur_extension == 'nfo' and sickbeard.NFO_RENAME is True:
                 cur_extension = 'nfo-orig'
 
             # If new base name then convert name
@@ -510,7 +521,7 @@ class PostProcessor(object):
 
         # remember whether it's a proper
         if parse_result.extra_info:
-            self.is_proper = re.search(r'(^|[\. _-])(proper|repack)([\. _-]|$)', parse_result.extra_info, re.I) != None
+            self.is_proper = re.search(r'(^|[\. _-])(proper|repack)([\. _-]|$)', parse_result.extra_info, re.I) is not None
 
         # if the result is complete then remember that for later
         # if the result is complete then set release name
@@ -648,7 +659,7 @@ class PostProcessor(object):
             if cur_version is not None:
                 version = cur_version
 
-            if cur_season != None:
+            if cur_season is not None:
                 season = cur_season
             if cur_episodes:
                 episodes = cur_episodes
@@ -685,12 +696,12 @@ class PostProcessor(object):
                         continue
 
             # if there's no season then we can hopefully just use 1 automatically
-            elif season == None and show:
+            elif season is None and show:
                 myDB = db.DBConnection()
                 numseasonsSQlResult = myDB.select(
                     "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and indexer = ? and season != 0",
                     [show.indexerid, show.indexer])
-                if int(numseasonsSQlResult[0][0]) == 1 and season == None:
+                if int(numseasonsSQlResult[0][0]) == 1 and season is None:
                     self._log(
                         u"Don't have a season number, but this show appears to only have 1 season, setting season number to 1...",
                         logger.DEBUG)
@@ -727,7 +738,7 @@ class PostProcessor(object):
                 raise EpisodePostProcessingFailedException()
 
             # associate all the episodes together under a single root episode
-            if root_ep == None:
+            if root_ep is None:
                 root_ep = curEp
                 root_ep.relatedEps = []
             elif curEp not in root_ep.relatedEps:
@@ -905,7 +916,7 @@ class PostProcessor(object):
         if not show:
             self._log(u"This show isn't in your list, you need to add it to SR before post-processing an episode")
             raise EpisodePostProcessingFailedException()
-        elif season == None or not episodes:
+        elif season is None or not episodes:
             self._log(u"Not enough information to determine what episode this is. Quitting post-processing")
             return False
 

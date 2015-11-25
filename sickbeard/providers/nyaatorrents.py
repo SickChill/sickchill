@@ -55,7 +55,7 @@ class NyaaProvider(generic.TorrentProvider):
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
                 params = {
@@ -64,7 +64,7 @@ class NyaaProvider(generic.TorrentProvider):
                     "sort": 2,     # Sort Descending By Seeders
                     "order": 1
                 }
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     params["term"] = search_string.encode('utf-8')
 
                 searchURL = self.url + '?' + urllib.urlencode(params)
@@ -85,16 +85,16 @@ class NyaaProvider(generic.TorrentProvider):
 
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
-                        if mode is not 'RSS':
+                        if mode != 'RSS':
                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
-                    if self.confirmed and not verified and mode is not 'RSS':
+                    if self.confirmed and not verified and mode != 'RSS':
                         logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                         continue
 
                     item = title, download_url, size, seeders, leechers
-                    if mode is not 'RSS':
+                    if mode != 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                     items[mode].append(item)

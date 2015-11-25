@@ -19,23 +19,20 @@
 
 <div id="HomeLayout" class="pull-right hidden-print" style="margin-top: -40px;">
     % if sickbeard.HOME_LAYOUT != 'poster':
+    <span>
         <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
-    % endif
-    <span> Layout:
-        <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
-            <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
-            <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
-            <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
-        </select>
-        % if sickbeard.HOME_LAYOUT != 'poster':
-        Search:
-            <input class="search form-control form-control-inline input-sm input200" type="search" data-column="2" placeholder="Search Show Name">
-            <button type="button" class="resetsorting btn btn-inline">Reset Search</button>
-        % endif
     </span>
+    &nbsp;
+    <span>
+        <button type="button" class="resetsorting btn btn-inline">Clear Filter(s)</button>
+    </span>
+    % endif
 
     % if sickbeard.HOME_LAYOUT == 'poster':
+    &nbsp;
+    <span>
+        <input id="filterShowName" class="form-control form-control-inline input-sm input200" type="search" placeholder="Filter Show Name">
+    </span>
     &nbsp;
     <span> Sort By:
         <select id="postersort" class="form-control form-control-inline input-sm">
@@ -46,15 +43,23 @@
         </select>
     </span>
     &nbsp;
-    <span> Sort Order:
+    <span> Direction:
         <select id="postersortdirection" class="form-control form-control-inline input-sm">
-            <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>Asc</option>
-            <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Desc</option>
+            <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>A &#10140; Z</option>
+            <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Z &#10140; A</option>
         </select>
     </span>
-    &nbsp;
-
     % endif
+
+    &nbsp;
+    <span> Layout:
+        <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+            <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
+            <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
+            <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
+            <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
+        </select>
+    </span>
 </div>
 
 % for curShowlist in showlists:
@@ -67,8 +72,8 @@
 <div id="${('container', 'container-anime')[curListType == 'Anime' and sickbeard.HOME_LAYOUT == 'poster']}" class="clearfix">
 <div class="posterview">
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
-    % if curLoadingShow.show == None:
-        <div class="show" data-name="0" data-date="010101" data-network="0" data-progress="101">
+    % if curLoadingShow.show is None:
+        <div class="show-container" data-name="0" data-date="010101" data-network="0" data-progress="101">
             <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="${srRoot}/images/poster.png" />
             <div class="show-details">
                 <div class="show-add">Loading... (${curLoadingShow.show_name})</div>
@@ -141,7 +146,7 @@
         elif 'nded' in display_status:
             data_date = '5000000100.0'
 %>
-    <div class="show" id="show${curShow.indexerid}" data-name="${curShow.name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
+    <div class="show-container" id="show${curShow.indexerid}" data-name="${curShow.name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
         <div class="show-image">
             <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
         </div>
@@ -244,14 +249,14 @@
     <tbody class="tablesorter-infoOnly">
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
 
-    % if curLoadingShow.show != None and curLoadingShow.show in sickbeard.showList:
+    % if curLoadingShow.show is not None and curLoadingShow.show in sickbeard.showList:
          <% continue %>
     % endif
   <tr>
     <td align="center">(loading)</td>
     <td></td>
     <td>
-    % if curLoadingShow.show == None:
+    % if curLoadingShow.show is None:
     <span title="">Loading... (${curLoadingShow.show_name})</span>
     % else:
     <a href="displayShow?show=${curLoadingShow.show.indexerid}">${curLoadingShow.show.name}</a>

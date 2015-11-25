@@ -152,7 +152,9 @@ class Show:
          - the show object corresponding to ``indexer_id`` if it exists, ``None`` otherwise
         """
 
-        if indexer_id is None:
+        try:
+            indexer_id = int(indexer_id)
+        except (TypeError, ValueError):
             return 'Invalid show ID', None
 
         try:

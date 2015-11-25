@@ -334,7 +334,7 @@
         <tr style="height: 60px;">
             <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
                 <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${("Specials", "Season " + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
-                % if sickbeard.DISPLAY_ALL_SEASONS == False:
+                % if sickbeard.DISPLAY_ALL_SEASONS is False:
                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
                     <script type="text/javascript">
                         $(function() {
@@ -374,7 +374,7 @@
         <tr style="height: 60px;">
             <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
                 <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${("Specials", "Season " + str(epResult["season"]))[bool(int(epResult["season"]))]}</h3>
-                % if sickbeard.DISPLAY_ALL_SEASONS == False:
+                % if sickbeard.DISPLAY_ALL_SEASONS is False:
                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
                     <script type="text/javascript">
                         $(function() {
@@ -410,7 +410,7 @@
         </tr>
             % endif
     </tbody>
-        % if sickbeard.DISPLAY_ALL_SEASONS == False:
+        % if sickbeard.DISPLAY_ALL_SEASONS is False:
         <tbody class="collapse${("", " in")[curSeason == -1]}" id="collapseSeason-${epResult['season']}">
         % else:
         <tbody>
@@ -428,7 +428,7 @@
             <td align="center">
             <%
                 text = str(epResult['episode'])
-                if epLoc != '' and epLoc != None:
+                if epLoc != '' and epLoc is not None:
                     text = '<span title="' + epLoc + '" class="addQTip">' + text + "</span>"
             %>
                 ${text}
@@ -459,7 +459,7 @@
                         style="padding: 0; text-align: center; max-width: 60px;" />
             </td>
             <td class="col-name">
-            % if epResult["description"] != "" and epResult["description"] != None:
+            % if epResult["description"] != "" and epResult["description"] is not None:
                 <img src="${srRoot}/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_${str(show.indexerid)}_${str(epResult["season"])}_${str(epResult["episode"])}" />
             % else:
                 <img src="${srRoot}/images/info32.png" width="16" height="16" class="plotInfoNone" alt="" />
