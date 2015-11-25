@@ -34,7 +34,6 @@
     <meta data-var="sickbeard.COMING_EPS_LAYOUT" data-content="${sickbeard.COMING_EPS_LAYOUT}">
     <meta data-var="sickbeard.COMING_EPS_SORT" data-content="${sickbeard.COMING_EPS_SORT}">
     <meta data-var="sickbeard.DATE_PRESET" data-content="${sickbeard.DATE_PRESET}">
-    <meta data-var="sickbeard.FILTER_ROW" data-content="${sickbeard.FILTER_ROW}">
     <meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
     <meta data-var="sickbeard.HISTORY_LAYOUT" data-content="${sickbeard.HISTORY_LAYOUT}">
     <meta data-var="sickbeard.HOME_LAYOUT" data-content="${sickbeard.HOME_LAYOUT}">
