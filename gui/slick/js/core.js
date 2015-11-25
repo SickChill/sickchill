@@ -1786,95 +1786,75 @@ var SICKRAGE = {
                     6: function(node) { return $(node).find("img").attr("alt"); }
                 },
                 widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
-                headers: (function(){
-                    if(metaToBool('sickbeard.FILTER_ROW')){
-                        return {
-                            0: { sorter: 'realISODate' },
-                            1: { sorter: 'realISODate' },
-                            2: { sorter: 'loadingNames' },
-                            4: { sorter: 'quality' },
-                            5: { sorter: 'eps' },
-                            6: { filter : 'parsed' }
-                        };
-                    } else {
-                        return {
-                            0: { sorter: 'realISODate' },
-                            1: { sorter: 'realISODate' },
-                            2: { sorter: 'loadingNames' },
-                            4: { sorter: 'quality' },
-                            5: { sorter: 'eps' }
-                        };
-                    }
-                }()),
-                widgetOptions: (function(){
-                    if(metaToBool('sickbeard.FILTER_ROW')){
-                        return {
-                            filter_columnFilters: true, // jshint ignore:line
-                            filter_hideFilters : true, // jshint ignore:line
-                            filter_saveFilters : true, // jshint ignore:line
-                            filter_functions : { // jshint ignore:line
-                                5:function(e, n, f) {
-                                    var test = false;
-                                    var pct = Math.floor((n % 1) * 1000);
-                                    if (f === '') {
-                                        test = true;
-                                    } else {
-                                        var result = f.match(/(<|<=|>=|>)\s(\d+)/i);
-                                        if (result) {
-                                            if (result[1] === "<") {
-                                                if (pct < parseInt(result[2])) {
-                                                    test = true;
-                                                }
-                                            } else if (result[1] === "<=") {
-                                                if (pct <= parseInt(result[2])) {
-                                                    test = true;
-                                                }
-                                            } else if (result[1] === ">=") {
-                                                if (pct >= parseInt(result[2])) {
-                                                    test = true;
-                                                }
-                                            } else if (result[1] === ">") {
-                                                if (pct > parseInt(result[2])) {
-                                                    test = true;
-                                                }
-                                            }
+                headers: {
+                    0: { sorter: 'realISODate' },
+                    1: { sorter: 'realISODate' },
+                    2: { sorter: 'loadingNames' },
+                    4: { sorter: 'quality' },
+                    5: { sorter: 'eps' },
+                    6: { filter: 'parsed' }
+                },
+                widgetOptions: {
+                    filter_columnFilters: true, // jshint ignore:line
+                    filter_hideFilters: true, // jshint ignore:line
+                    filter_saveFilters: true, // jshint ignore:line
+                    filter_functions: { // jshint ignore:line
+                        5: function(e, n, f) {
+                            var test = false;
+                            var pct = Math.floor((n % 1) * 1000);
+                            if (f === '') {
+                                test = true;
+                            } else {
+                                var result = f.match(/(<|<=|>=|>)\s(\d+)/i);
+                                if (result) {
+                                    if (result[1] === "<") {
+                                        if (pct < parseInt(result[2])) {
+                                            test = true;
                                         }
-
-                                        result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
-                                        if (result) {
-                                            if ((result[2] === "-") || (result[2] === "to")) {
-                                                if ((pct >= parseInt(result[1])) && (pct <= parseInt(result[3]))) {
-                                                    test = true;
-                                                }
-                                            }
+                                    } else if (result[1] === "<=") {
+                                        if (pct <= parseInt(result[2])) {
+                                            test = true;
                                         }
-
-                                        result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
-                                        if (result) {
-                                            if ((result[1] === "=") || (result[3] === "=")) {
-                                                if (parseInt(result[2]) === pct) {
-                                                    test = true;
-                                                }
-                                            }
+                                    } else if (result[1] === ">=") {
+                                        if (pct >= parseInt(result[2])) {
+                                            test = true;
                                         }
-
-                                        if (!isNaN(parseFloat(f)) && isFinite(f)) {
-                                            if (parseInt(f) === pct) {
-                                                test = true;
-                                            }
+                                    } else if (result[1] === ">") {
+                                        if (pct > parseInt(result[2])) {
+                                            test = true;
                                         }
                                     }
-                                    return test;
                                 }
-                            },
-                            'columnSelector_mediaquery': false
-                        };
-                    } else {
-                        return {
-                            'filter_columnFilters': false
-                        };
-                    }
-                }()),
+
+                                result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
+                                if (result) {
+                                    if ((result[2] === "-") || (result[2] === "to")) {
+                                        if ((pct >= parseInt(result[1])) && (pct <= parseInt(result[3]))) {
+                                            test = true;
+                                        }
+                                    }
+                                }
+
+                                result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
+                                if (result) {
+                                    if ((result[1] === "=") || (result[3] === "=")) {
+                                        if (parseInt(result[2]) === pct) {
+                                            test = true;
+                                        }
+                                    }
+                                }
+
+                                if (!isNaN(parseFloat(f)) && isFinite(f)) {
+                                    if (parseInt(f) === pct) {
+                                        test = true;
+                                    }
+                                }
+                            }
+                            return test;
+                        }
+                    },
+                    'columnSelector_mediaquery': false
+                },
                 sortStable: true,
                 sortAppend: [[2,0]]
             });
@@ -2102,7 +2082,7 @@ var SICKRAGE = {
                     'sceneSeason': sceneSeason,
                     'sceneEpisode': sceneEpisode
                 }, function(data) {
-                    //	Set the values we get back
+                    // Set the values we get back
                     if (data.sceneSeason === null || data.sceneEpisode === null) {
                         $('#sceneSeasonXEpisode_' + showId + '_' + forSeason + '_' + forEpisode).val('');
                     } else {
@@ -2132,7 +2112,7 @@ var SICKRAGE = {
                     'sceneAbsolute': sceneAbsolute
                 },
                 function(data) {
-                    //	Set the values we get back
+                    // Set the values we get back
                     if (data.sceneAbsolute === null) {
                         $('#sceneAbsolute_' + showId + '_' + forAbsolute).val('');
                     } else {
@@ -2149,7 +2129,7 @@ var SICKRAGE = {
             }
 
             $('.sceneSeasonXEpisode').on('change', function() {
-                //	Strip non-numeric characters
+                // Strip non-numeric characters
                 $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
                 var forSeason = $(this).attr('data-for-season');
                 var forEpisode = $(this).attr('data-for-episode');
@@ -2163,7 +2143,7 @@ var SICKRAGE = {
             });
 
             $('.sceneAbsolute').on('change', function() {
-                //	Strip non-numeric characters
+                // Strip non-numeric characters
                 $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
                 var forAbsolute = $(this).attr('data-for-absolute');
 
@@ -2586,21 +2566,12 @@ var SICKRAGE = {
                         8: { sorter: false },
                         9: { sorter: false }
                     },
-                    widgetOptions: (function() {
-                        if (metaToBool('sickbeard.FILTER_ROW')) {
-                            return {
-                                'filter_columnFilters': true,
-                                'filter_hideFilters': true,
-                                'filter_saveFilters': true,
-                                'columnSelector_mediaquery': false
-                            };
-                        } else {
-                            return {
-                                'filter_columnFilters': false,
-                                'columnSelector_mediaquery': false
-                            };
-                        }
-                    }())
+                    widgetOptions: {
+                        'filter_columnFilters': true,
+                        'filter_hideFilters': true,
+                        'filter_saveFilters': true,
+                        'columnSelector_mediaquery': false
+                    }
                 });
 
                 $('#srRoot').ajaxEpSearch();
