@@ -168,7 +168,7 @@ def remove_non_release_groups(name):
         elif remove_type == 'searchre':
             _name = re.sub(r'(?i)' + remove_string, '', _name)
 
-    return _name.strip('.- []{}')
+    return _name
 
 
 def replaceExtension(filename, newExt):
