@@ -627,7 +627,7 @@ home.mako
     margin: 0 auto;
 }
 
-.show {
+.show-container {
     margin: 12px;
     width: 188px;
     height: 352px;
@@ -644,28 +644,28 @@ home.mako
     border-top-right-radius: 5px;
 }
 
-.show .ui-progressbar {
+.show-container .ui-progressbar {
     height: 7px !important;
     top: -2px;
 }
 
-.show .ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br {
+.show-container .ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br {
     border-bottom-right-radius: 0px;
 }
 
-.show .ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl {
+.show-container .ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl {
     border-bottom-left-radius: 0px;
 }
 
-.show .ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr {
+.show-container .ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr {
     border-top-right-radius: 0px;
 }
 
-.show .ui-corner-all, .ui-corner-top, .ui-corner-left, .ui-corner-tl {
+.show-container .ui-corner-all, .ui-corner-top, .ui-corner-left, .ui-corner-tl {
     border-top-left-radius: 0px;
 }
 
-.show .ui-widget-content {
+.show-container .ui-widget-content {
     border-top: 1px solid #111;
     border-bottom: 1px solid #111;
     border-left: 0px;
@@ -677,10 +677,10 @@ home.mako
 .ui-progressbar .progress-20 {
     border: none;
 }
-.show .progress-20,
-.show .progress-40,
-.show .progress-60,
-.show .progress-80 {
+.show-container .progress-20,
+.show-container .progress-40,
+.show-container .progress-60,
+.show-container .progress-80 {
     border-radius: 0px;
     height: 7px
 }
