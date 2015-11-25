@@ -143,7 +143,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                         </span>
                                     </label>
                                 </div>
-                        
+
                         <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                         </div>
                     </fieldset>
