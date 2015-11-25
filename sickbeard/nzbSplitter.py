@@ -59,8 +59,10 @@ def getSeasonNZBs(name, urlData, season):
     if sceneNameMatch:
         showName, qualitySection, groupName = sceneNameMatch.groups()  # @UnusedVariable
     else:
-        logger.log(u"Unable to parse " + name + " into a scene name. If it's a valid one log a bug.", logger.ERROR)
-        return ({}, '')
+        # Make sure we aren't missing valid results after changing name_parser and the quality detection
+        # Most of these will likely be invalid shows
+        logger.log(u"Unable to parse " + name + " into a scene name.", logger.DEBUG)
+        return {}, ''
 
     regex = '(' + re.escape(showName) + '\.S%02d(?:[E0-9]+)\.[\w\._]+\-\w+' % season + ')'
     regex = regex.replace(' ', '.')
