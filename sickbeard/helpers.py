@@ -51,12 +51,11 @@ from socket import timeout as SocketTimeout
 
 from sickbeard import logger, classes
 from sickbeard.common import USER_AGENT
-from sickbeard.common import mediaExtensions
-from sickbeard.common import subtitleExtensions
 from sickbeard import db
 from sickbeard.notifiers.synoindex import notifier as synoindex_notifier
 from sickbeard import clients
 from sickbeard.subtitles import isValidLanguage
+from sickrage.helper.common import media_extensions, subtitle_extensions
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, MultipleShowObjectsException
 from cachecontrol import CacheControl, caches
@@ -105,7 +104,7 @@ def remove_extension(name):
     if name and "." in name:
         # pylint: disable=W0612
         base_name, sep, extension = name.rpartition('.')  # @UnusedVariable
-        if base_name and extension.lower() in ['nzb', 'torrent'] + mediaExtensions:
+        if base_name and extension.lower() in ['nzb', 'torrent'] + media_extensions:
             name = base_name
 
     return name
@@ -244,7 +243,7 @@ def isMediaFile(filename):
     if re.search('extras?$', sepFile[0], re.I):
         return False
 
-    if sepFile[2].lower() in mediaExtensions:
+    if sepFile[2].lower() in media_extensions:
         return True
     else:
         return False
@@ -649,7 +648,7 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
         cur_file_ext = cur_path[old_path_length:]
         cur_file_name = cur_path[:old_path_length]
 
-    if cur_file_ext[1:] in subtitleExtensions:
+    if cur_file_ext[1:] in subtitle_extensions:
         # Extract subtitle language from filename
         sublang = os.path.splitext(cur_file_name)[1][1:]
 

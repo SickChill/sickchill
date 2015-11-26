@@ -36,6 +36,7 @@ from sickbeard import notifiers
 from sickbeard import show_name_helpers
 from sickbeard import failed_history
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickrage.helper.common import subtitle_extensions
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
@@ -197,7 +198,7 @@ class PostProcessor(object):
                 file_extension = filefound.rpartition('.')[2]
                 is_subtitle = None
 
-                if file_extension in common.subtitleExtensions:
+                if file_extension in subtitle_extensions:
                     is_subtitle = True
 
                 if not base_name_only:
@@ -222,7 +223,7 @@ class PostProcessor(object):
                 continue
 
             # only list it if the only non-shared part is the extension or if it is a subtitle
-            if subtitles_only and not associated_file_path[len(associated_file_path) - 3:] in common.subtitleExtensions:
+            if subtitles_only and not associated_file_path[len(associated_file_path) - 3:] in subtitle_extensions:
                 continue
 
             # Exclude .rar files from associated list
@@ -232,7 +233,7 @@ class PostProcessor(object):
             # Add the extensions that the user doesn't allow to the 'extensions_to_delete' list
             if sickbeard.MOVE_ASSOCIATED_FILES and sickbeard.ALLOWED_EXTENSIONS:
                 allowed_extensions = sickbeard.ALLOWED_EXTENSIONS.split(",")
-                if not associated_file_path[-3:] in allowed_extensions and not associated_file_path[-3:] in common.subtitleExtensions:
+                if not associated_file_path[-3:] in allowed_extensions and not associated_file_path[-3:] in subtitle_extensions:
                     if ek(os.path.isfile, associated_file_path):
                         extensions_to_delete.append(associated_file_path)
 
@@ -335,7 +336,7 @@ class PostProcessor(object):
             cur_extension = cur_file_path[old_base_name_length + 1:]
 
             # check if file have subtitles language
-            if os.path.splitext(cur_extension)[1][1:] in common.subtitleExtensions:
+            if os.path.splitext(cur_extension)[1][1:] in subtitle_extensions:
                 cur_lang = os.path.splitext(cur_extension)[0]
                 if cur_lang:
                     cur_lang = cur_lang.lower()
@@ -354,7 +355,7 @@ class PostProcessor(object):
             else:
                 new_file_name = helpers.replaceExtension(cur_file_name, cur_extension)
 
-            if sickbeard.SUBTITLES_DIR and cur_extension[-3:] in common.subtitleExtensions:
+            if sickbeard.SUBTITLES_DIR and cur_extension[-3:] in subtitle_extensions:
                 subs_new_path = ek(os.path.join, new_path, sickbeard.SUBTITLES_DIR)
                 dir_exists = helpers.makeDir(subs_new_path)
                 if not dir_exists:
