@@ -31,7 +31,7 @@ import datetime
 import traceback
 
 import sickbeard
-from sickrage.helper.common import dateFormat, dateTimeFormat, timeFormat
+from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, timeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
 from sickrage.helper.quality import get_quality_string
@@ -755,7 +755,7 @@ class CMD_Episode(ApiCall):
         status, quality = Quality.splitCompositeStatus(int(episode["status"]))
         episode["status"] = _get_status_strings(status)
         episode["quality"] = get_quality_string(quality)
-        episode["file_size_human"] = helpers.pretty_filesize(episode["file_size"])
+        episode["file_size_human"] = pretty_file_size(episode["file_size"])
 
         return _responds(RESULT_SUCCESS, episode)
 

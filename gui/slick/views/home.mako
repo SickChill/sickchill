@@ -4,6 +4,7 @@
     import calendar
     from sickbeard import sbdatetime
     from sickbeard import network_timezones
+    from sickrage.helper.common import pretty_file_size
     import re
 %>
 <%block name="metas">
@@ -393,7 +394,7 @@
         </td>
 
         ## <% show_size = sickbeard.helpers.get_size(curShow._location) %>
-        ## <td align="center" data-show-size="${show_size}">${sickbeard.helpers.pretty_filesize(show_size)}</td>
+        ## <td align="center" data-show-size="${show_size}">${pretty_file_size(show_size)}</td>
 
         <td align="center">
             <% paused = int(curShow.paused) == 0 and curShow.status == 'Continuing' %>
