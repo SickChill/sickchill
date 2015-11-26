@@ -486,7 +486,7 @@ class PostProcessor(object):
         # search the database for a possible match and return immediately if we find one
         myDB = db.DBConnection()
         for curName in names:
-            search_name = re.sub(r"[\.\-\ ]", "_", curName)
+            search_name = re.sub(r"[\.\- ]", "_", curName)
             sql_results = myDB.select("SELECT * FROM history WHERE resource LIKE ?", [search_name])
 
             if len(sql_results) == 0:
@@ -504,7 +504,7 @@ class PostProcessor(object):
 
             self.in_history = True
             self.version = version
-            to_return = (show, season, [], quality, version)
+            to_return = (str(show), season, [], quality, version)
             self._log("Found result in history: " + str(to_return), logger.DEBUG)
 
             return to_return
@@ -853,6 +853,11 @@ class PostProcessor(object):
             return True
 
         _, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
+        self._log(u"old_ep_quality = %s, new_ep_quality %s" % (common.Quality.qualityStrings[old_ep_quality], common.Quality.qualityStrings[new_ep_quality]), logger.DEBUG)
+
+        if old_ep_quality == common.Quality.UNKNOWN and new_ep_quality != common.Quality.UNKNOWN:
+            self._log(u"Old episode has an unknown quality, so any known quality is better", logger.DEBUG)
+            return True
 
         # if SR downloaded this on purpose we likely have a priority download
         if self.in_history or ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
@@ -933,7 +938,7 @@ class PostProcessor(object):
         else:
             new_ep_quality = self._get_quality(ep_obj)
 
-        logger.log(u"Quality of the episode we're processing: %s" % new_ep_quality, logger.DEBUG)
+        logger.log(u"Quality of the episode we're processing: %s" % common.Quality.qualityStrings[new_ep_quality], logger.DEBUG)
 
         # see if this is a priority download (is it snatched, in history, PROPER, or BEST)
         priority_download = self._is_priority(ep_obj, new_ep_quality)
