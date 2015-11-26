@@ -70,12 +70,14 @@ shutil.copyfile = shutil_custom.copyfile_custom
 # Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
 
+
 def isValidLanguage(language):
     try:
         Language.fromopensubtitles(language)
     except Exception:
         return False
     return True
+
 
 def fixGlob(path):
     path = re.sub(r'\[', '[[]', path)
