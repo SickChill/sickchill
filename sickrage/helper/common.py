@@ -24,3 +24,21 @@ media_extensions = [
 ]
 subtitle_extensions = ['ass', 'idx', 'srt', 'ssa', 'sub']
 timeFormat = '%A %I:%M %p'
+
+
+def remove_extension(filename):
+    """
+    Remove the extension of the provided ``filename``.
+    The extension is only removed if it is in `sickrage.helper.common.media_extensions` or ['nzb', 'torrent'].
+    :param filename: The filename from which we want to remove the extension
+    :return: The ``filename`` without its extension.
+    """
+
+    if filename and '.' in filename:
+        # pylint: disable=W0612
+        basename, separator, extension = filename.rpartition('.')  # @UnusedVariable
+
+        if basename and extension.lower() in ['nzb', 'torrent'] + media_extensions:
+            return basename
+
+    return filename
