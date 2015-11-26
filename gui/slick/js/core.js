@@ -1729,6 +1729,9 @@ var SICKRAGE = {
                 placeholder: 'ui-state-highlight',
                 update: function() {
                     $(this).refreshServiceList();
+                },
+                create: function() {
+                    $(this).refreshServiceList();
                 }
             });
 
