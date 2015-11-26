@@ -28,7 +28,7 @@ from sickbeard.metadata import generic
 
 from sickbeard import logger, helpers
 
-from sickrage.helper.common import dateFormat
+from sickrage.helper.common import dateFormat, replace_extension
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, ShowNotFoundException
 
@@ -117,7 +117,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         """
 
         if ek(os.path.isfile, ep_obj.location):
-            xml_file_name = helpers.replaceExtension(ek(os.path.basename, ep_obj.location), self._ep_nfo_extension)
+            xml_file_name = replace_extension(ek(os.path.basename, ep_obj.location), self._ep_nfo_extension)
             metadata_dir_name = ek(os.path.join, ek(os.path.dirname, ep_obj.location), 'metadata')
             xml_file_path = ek(os.path.join, metadata_dir_name, xml_file_name)
         else:
@@ -136,7 +136,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         """
 
         if ek(os.path.isfile, ep_obj.location):
-            tbn_file_name = helpers.replaceExtension(ek(os.path.basename, ep_obj.location), 'jpg')
+            tbn_file_name = replace_extension(ek(os.path.basename, ep_obj.location), 'jpg')
             metadata_dir_name = ek(os.path.join, ek(os.path.dirname, ep_obj.location), 'metadata')
             tbn_file_path = ek(os.path.join, metadata_dir_name, tbn_file_name)
         else:

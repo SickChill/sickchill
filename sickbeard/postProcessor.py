@@ -35,7 +35,7 @@ from sickbeard import notifiers
 from sickbeard import show_name_helpers
 from sickbeard import failed_history
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickrage.helper.common import remove_extension, subtitle_extensions
+from sickrage.helper.common import remove_extension, replace_extension, subtitle_extensions
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
@@ -352,7 +352,7 @@ class PostProcessor(object):
                 new_file_name = new_base_name + '.' + cur_extension
             # if we're not renaming we still want to change extensions sometimes
             else:
-                new_file_name = helpers.replaceExtension(cur_file_name, cur_extension)
+                new_file_name = replace_extension(cur_file_name, cur_extension)
 
             if sickbeard.SUBTITLES_DIR and cur_extension[-3:] in subtitle_extensions:
                 subs_new_path = ek(os.path.join, new_path, sickbeard.SUBTITLES_DIR)

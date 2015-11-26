@@ -31,6 +31,7 @@ from babelfish import Error as BabelfishError, Language, language_converters
 from sickbeard import logger
 from sickbeard import history
 from sickbeard import db
+from sickbeard import processTV
 from sickrage.helper.common import media_extensions, dateTimeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex

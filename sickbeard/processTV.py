@@ -28,7 +28,7 @@ from sickbeard import logger
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import common
 from sickbeard import failedProcessor
-from sickrage.helper.common import subtitle_extensions
+from sickrage.helper.common import is_torrent_or_nzb_file, subtitle_extensions
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
@@ -176,7 +176,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
     path, dirs, files = get_path_dir_files(dirName, nzbName, proc_type)
 
-    files = [x for x in files if helpers.notTorNZBFile(x)]
+    files = [x for x in files if not is_torrent_or_nzb_file(x)]
     SyncFiles = [x for x in files if helpers.isSyncFile(x)]
 
     # Don't post process if files are still being synced and option is activated

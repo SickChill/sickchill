@@ -10,6 +10,7 @@
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED
     from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
     from sickbeard.helpers import anon_url
+    from sickrage.helper.common import pretty_file_size
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/lib/jquery.bookmarkscroll.js?${sbPID}"></script>
@@ -201,7 +202,7 @@
                     </tr>
                 % endif
 
-                <tr><td class="showLegend">Size:</td><td>${sickbeard.helpers.pretty_filesize(sickbeard.helpers.get_size(showLoc[0]))}</td></tr>
+                <tr><td class="showLegend">Size:</td><td>${pretty_file_size(sickbeard.helpers.get_size(showLoc[0]))}</td></tr>
 
                 </table>
 
@@ -469,8 +470,7 @@
             <td class="col-name">${epLoc}</td>
             <td class="col-ep">
                 % if epResult["file_size"]:
-                    <% file_size = sickbeard.helpers.pretty_filesize(epResult["file_size"]) %>
-                    ${file_size}
+                    ${pretty_file_size(epResult["file_size"])}
                 % endif
             </td>
             <td class="col-airdate">

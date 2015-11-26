@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import os
 import io
 import re
@@ -34,6 +33,7 @@ from sickbeard import helpers
 from sickbeard import logger
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard.show_name_helpers import allPossibleShowNames
+from sickrage.helper.common import replace_extension
 from sickrage.helper.exceptions import ex
 
 from tmdb_api.tmdb_api import TMDB
@@ -157,7 +157,7 @@ class GenericMetadata(object):
         return os.path.join(show_obj.location, self._show_metadata_filename)
 
     def get_episode_file_path(self, ep_obj):
-        return helpers.replaceExtension(ep_obj.location, self._ep_nfo_extension)
+        return replace_extension(ep_obj.location, self._ep_nfo_extension)
 
     def get_fanart_path(self, show_obj):
         return os.path.join(show_obj.location, self.fanart_name)
