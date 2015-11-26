@@ -76,10 +76,14 @@ $('#config-components').tabs();
                                     continue
 
                                 curName = curProvider.getID()
+                                if hasattr(curProvider, 'custom_url'):
+                                    curURL = curProvider.custom_url or curProvider.url
+                                else:
+                                    curURL = curProvider.url
                             %>
                             <li class="ui-state-default ${('nzb-provider', 'torrent-provider')[bool(curProvider.providerType == "torrent")]}" id="${curName}">
-                                <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.isEnabled() == True]}/>
-                                <a href="${anon_url(curProvider.url)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${srRoot}/images/providers/${curProvider.imageName()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
+                                <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.isEnabled() is True]}/>
+                                <a href="${anon_url(curURL)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${srRoot}/images/providers/${curProvider.imageName()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
                                 <span style="vertical-align:middle;">${curProvider.name}</span>
                                 ${('*', '')[bool(curProvider.supportsBacklog)]}
                                 <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
@@ -301,6 +305,24 @@ $('#config-components').tabs();
 
                     % for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if curProvider.providerType == GenericProvider.TORRENT]:
                     <div class="providerDiv" id="${curTorrentProvider.getID()}Div">
+
+                        % if hasattr(curTorrentProvider, 'custom_url'):
+                        <div class="field-pair">
+                            <label for="${curTorrentProvider.getID()}_custom_url">
+                                <span class="component-title">Custom URL:</span>
+                                <span class="component-desc">
+                                    <input type="text" name="${curTorrentProvider.getID()}_custom_url" id="${curTorrentProvider.getID()}_custom_url" value="${curTorrentProvider.custom_url}" class="form-control input-sm input350" />
+                                </span>
+                            </label>
+                            <label>
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">
+                                    <p>The URL should include the protocol (and port if applicable).  Examples:  http://192.168.1.4/ or http://localhost:3000/</p>
+                                </span>
+                            </label>
+                        </div>
+                        % endif
+
                         % if hasattr(curTorrentProvider, 'api_key'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_api_key">

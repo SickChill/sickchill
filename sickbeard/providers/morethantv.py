@@ -106,7 +106,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (search_string.replace('(', '').replace(')', ''))
@@ -133,7 +133,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
                             link = cells[1].find('a', attrs={'title': 'Download'})
 
                             # skip if torrent has been nuked due to poor quality
-                            if cells[1].find('img', alt='Nuked') != None:
+                            if cells[1].find('img', alt='Nuked') is not None:
                                 continue
 
                             torrent_id_long = link['href'].replace('torrents.php?action=download&id=', '')
@@ -162,12 +162,12 @@ class MoreThanTVProvider(generic.TorrentProvider):
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
-                                if mode is not 'RSS':
+                                if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             item = title, download_url, size, seeders, leechers
-                            if mode is not 'RSS':
+                            if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)

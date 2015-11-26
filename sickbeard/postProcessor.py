@@ -36,6 +36,7 @@ from sickbeard import notifiers
 from sickbeard import show_name_helpers
 from sickbeard import failed_history
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickrage.helper.common import subtitle_extensions
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
@@ -192,18 +193,29 @@ class PostProcessor(object):
 
             checklist = glob.glob(ek(os.path.join, ek(os.path.dirname, globbable_file_path), '*')) # get a list of all the files in the folder
             for filefound in checklist: # loop through all the files in the folder, and check if they are the same name even when the cases don't match
+
                 file_name = filefound.rpartition('.')[0]
                 file_extension = filefound.rpartition('.')[2]
+                is_subtitle = None
+
+                if file_extension in subtitle_extensions:
+                    is_subtitle = True
+
                 if not base_name_only:
                     new_file_name = file_name + '.'
-                if new_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'): # if there's no difference in the filename add it to the filelist
-                    filelist.append(filefound)
-                elif file_extension in common.subtitleExtensions:
+                    sub_file_name = file_name.rpartition('.')[0] + '.'
+                else:
+                    new_file_name = file_name
+                    sub_file_name = file_name.rpartition('.')[0]
+
+                if is_subtitle and sub_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'):
                     language_extensions = tuple('.' + c for c in language_converters['opensubtitles'].codes)
                     if file_name.lower().endswith(language_extensions) and (len(filefound.rsplit('.', 2)[1]) is 2 or 3):
                         filelist.append(filefound)
                     elif file_name.lower().endswith('pt-br') and len(filefound.rsplit('.', 2)[1]) is 5:
                         filelist.append(filefound)
+                elif new_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'): # if there's no difference in the filename add it to the filelist
+                    filelist.append(filefound)
 
         for associated_file_path in filelist:
             # only add associated to list
@@ -211,7 +223,7 @@ class PostProcessor(object):
                 continue
 
             # only list it if the only non-shared part is the extension or if it is a subtitle
-            if subtitles_only and not associated_file_path[len(associated_file_path) - 3:] in common.subtitleExtensions:
+            if subtitles_only and not associated_file_path[len(associated_file_path) - 3:] in subtitle_extensions:
                 continue
 
             # Exclude .rar files from associated list
@@ -221,7 +233,7 @@ class PostProcessor(object):
             # Add the extensions that the user doesn't allow to the 'extensions_to_delete' list
             if sickbeard.MOVE_ASSOCIATED_FILES and sickbeard.ALLOWED_EXTENSIONS:
                 allowed_extensions = sickbeard.ALLOWED_EXTENSIONS.split(",")
-                if not associated_file_path[-3:] in allowed_extensions and not associated_file_path[-3:] in common.subtitleExtensions:
+                if not associated_file_path[-3:] in allowed_extensions and not associated_file_path[-3:] in subtitle_extensions:
                     if ek(os.path.isfile, associated_file_path):
                         extensions_to_delete.append(associated_file_path)
 
@@ -324,7 +336,7 @@ class PostProcessor(object):
             cur_extension = cur_file_path[old_base_name_length + 1:]
 
             # check if file have subtitles language
-            if os.path.splitext(cur_extension)[1][1:] in common.subtitleExtensions:
+            if os.path.splitext(cur_extension)[1][1:] in subtitle_extensions:
                 cur_lang = os.path.splitext(cur_extension)[0]
                 if cur_lang:
                     cur_lang = cur_lang.lower()
@@ -333,7 +345,7 @@ class PostProcessor(object):
                     cur_extension = cur_lang + os.path.splitext(cur_extension)[1]
 
             # replace .nfo with .nfo-orig to avoid conflicts
-            if cur_extension == 'nfo' and sickbeard.NFO_RENAME == True:
+            if cur_extension == 'nfo' and sickbeard.NFO_RENAME is True:
                 cur_extension = 'nfo-orig'
 
             # If new base name then convert name
@@ -343,7 +355,7 @@ class PostProcessor(object):
             else:
                 new_file_name = helpers.replaceExtension(cur_file_name, cur_extension)
 
-            if sickbeard.SUBTITLES_DIR and cur_extension[-3:] in common.subtitleExtensions:
+            if sickbeard.SUBTITLES_DIR and cur_extension[-3:] in subtitle_extensions:
                 subs_new_path = ek(os.path.join, new_path, sickbeard.SUBTITLES_DIR)
                 dir_exists = helpers.makeDir(subs_new_path)
                 if not dir_exists:
@@ -474,7 +486,7 @@ class PostProcessor(object):
         # search the database for a possible match and return immediately if we find one
         myDB = db.DBConnection()
         for curName in names:
-            search_name = re.sub(r"[\.\-\ ]", "_", curName)
+            search_name = re.sub(r"[\.\- ]", "_", curName)
             sql_results = myDB.select("SELECT * FROM history WHERE resource LIKE ?", [search_name])
 
             if len(sql_results) == 0:
@@ -492,7 +504,7 @@ class PostProcessor(object):
 
             self.in_history = True
             self.version = version
-            to_return = (show, season, [], quality, version)
+            to_return = (str(show), season, [], quality, version)
             self._log("Found result in history: " + str(to_return), logger.DEBUG)
 
             return to_return
@@ -510,7 +522,7 @@ class PostProcessor(object):
 
         # remember whether it's a proper
         if parse_result.extra_info:
-            self.is_proper = re.search(r'(^|[\. _-])(proper|repack)([\. _-]|$)', parse_result.extra_info, re.I) != None
+            self.is_proper = re.search(r'(^|[\. _-])(proper|repack)([\. _-]|$)', parse_result.extra_info, re.I) is not None
 
         # if the result is complete then remember that for later
         # if the result is complete then set release name
@@ -648,7 +660,7 @@ class PostProcessor(object):
             if cur_version is not None:
                 version = cur_version
 
-            if cur_season != None:
+            if cur_season is not None:
                 season = cur_season
             if cur_episodes:
                 episodes = cur_episodes
@@ -685,12 +697,12 @@ class PostProcessor(object):
                         continue
 
             # if there's no season then we can hopefully just use 1 automatically
-            elif season == None and show:
+            elif season is None and show:
                 myDB = db.DBConnection()
                 numseasonsSQlResult = myDB.select(
                     "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and indexer = ? and season != 0",
                     [show.indexerid, show.indexer])
-                if int(numseasonsSQlResult[0][0]) == 1 and season == None:
+                if int(numseasonsSQlResult[0][0]) == 1 and season is None:
                     self._log(
                         u"Don't have a season number, but this show appears to only have 1 season, setting season number to 1...",
                         logger.DEBUG)
@@ -727,7 +739,7 @@ class PostProcessor(object):
                 raise EpisodePostProcessingFailedException()
 
             # associate all the episodes together under a single root episode
-            if root_ep == None:
+            if root_ep is None:
                 root_ep = curEp
                 root_ep.relatedEps = []
             elif curEp not in root_ep.relatedEps:
@@ -841,6 +853,11 @@ class PostProcessor(object):
             return True
 
         _, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
+        self._log(u"old_ep_quality = %s, new_ep_quality %s" % (common.Quality.qualityStrings[old_ep_quality], common.Quality.qualityStrings[new_ep_quality]), logger.DEBUG)
+
+        if old_ep_quality == common.Quality.UNKNOWN and new_ep_quality != common.Quality.UNKNOWN:
+            self._log(u"Old episode has an unknown quality, so any known quality is better", logger.DEBUG)
+            return True
 
         # if SR downloaded this on purpose we likely have a priority download
         if self.in_history or ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
@@ -905,7 +922,7 @@ class PostProcessor(object):
         if not show:
             self._log(u"This show isn't in your list, you need to add it to SR before post-processing an episode")
             raise EpisodePostProcessingFailedException()
-        elif season == None or not episodes:
+        elif season is None or not episodes:
             self._log(u"Not enough information to determine what episode this is. Quitting post-processing")
             return False
 
@@ -921,7 +938,7 @@ class PostProcessor(object):
         else:
             new_ep_quality = self._get_quality(ep_obj)
 
-        logger.log(u"Quality of the episode we're processing: %s" % new_ep_quality, logger.DEBUG)
+        logger.log(u"Quality of the episode we're processing: %s" % common.Quality.qualityStrings[new_ep_quality], logger.DEBUG)
 
         # see if this is a priority download (is it snatched, in history, PROPER, or BEST)
         priority_download = self._is_priority(ep_obj, new_ep_quality)

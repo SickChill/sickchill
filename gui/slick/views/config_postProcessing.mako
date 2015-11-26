@@ -1,6 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import os.path
+    import datetime
     import sickbeard
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets, multiEpStrings
@@ -378,6 +379,21 @@
                                           <td>%E_N</td>
                                           <td>Episode_Name</td>
                                         </tr>
+                                        <tr>
+                                          <td class="align-right"><b>Air Date:</b></td>
+                                          <td>%M</td>
+                                          <td>${datetime.date.today().month}</td>
+                                        </tr>
+                                        <tr class="even">
+                                          <td>&nbsp;</td>
+                                          <td>%D</td>
+                                          <td>${datetime.date.today().day}</td>
+                                        </tr>
+                                        <tr>
+                                          <td>&nbsp;</td>
+                                          <td>%Y</td>
+                                          <td>${datetime.date.today().year}</td>
+                                        </tr>                                  
                                         <tr>
                                           <td class="align-right"><b>Quality:</b></td>
                                           <td>%QN</td>

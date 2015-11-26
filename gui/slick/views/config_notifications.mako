@@ -409,7 +409,7 @@
                             <div class="field-pair">
                                 <label for="nmj_database">
                                     <span class="component-title">NMJ database</span>
-                                    <input type="text" name="nmj_database" id="nmj_database" value="${sickbeard.NMJ_DATABASE}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJ_DATABASE == True]}/>
+                                    <input type="text" name="nmj_database" id="nmj_database" value="${sickbeard.NMJ_DATABASE}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJ_DATABASE is True]}/>
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -419,7 +419,7 @@
                             <div class="field-pair">
                                 <label for="nmj_mount">
                                     <span class="component-title">NMJ mount url</span>
-                                    <input type="text" name="nmj_mount" id="nmj_mount" value="${sickbeard.NMJ_MOUNT}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJ_MOUNT == True]}/>
+                                    <input type="text" name="nmj_mount" id="nmj_mount" value="${sickbeard.NMJ_MOUNT}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJ_MOUNT is True]}/>
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -506,7 +506,7 @@
                             <div class="field-pair">
                                 <label for="nmjv2_database">
                                     <span class="component-title">NMJv2 database</span>
-                                    <input type="text" name="nmjv2_database" id="nmjv2_database" value="${sickbeard.NMJv2_DATABASE}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJv2_DATABASE == True]}/>
+                                    <input type="text" name="nmjv2_database" id="nmjv2_database" value="${sickbeard.NMJv2_DATABASE}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJv2_DATABASE is True]}/>
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -794,13 +794,45 @@
                                 </label>
                             </div>
                             <div class="field-pair">
+                                 <label for="prowl_message_title">
+                                     <span class="component-title">Prowl Message Title:</span>
+                                     <input type="text" name="prowl_message_title" id="prowl_message_title" value="${sickbeard.PROWL_MESSAGE_TITLE}" class="form-control input-sm input250" />
+                                 </label>
+                            </div>
+                            <div class="field-pair">
                                 <label for="prowl_api">
-                                    <span class="component-title">Prowl API key:</span>
+                                    <span class="component-title">Global Prowl API key(s):</span>
                                     <input type="text" name="prowl_api" id="prowl_api" value="${sickbeard.PROWL_API}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">get your key at: <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://www.prowlapp.com/api_settings.php</a></span>
+                                    <span class="component-desc">Prowl API(s) listed here, separated by commas if applicable, will<br /> receive notifications for <b>all</b> shows.  
+                                                                 Your Prowl API key is available at: 
+                                                                 <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
+                                                                 https://www.prowlapp.com/api_settings.php</a><br />
+                                                                 (This field may be blank except when testing.)</span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="prowl_show">
+                                    <span class="component-title">Show notification list</span>
+                                    <select name="prowl_show" id="prowl_show" class="form-control input-sm">
+                                        <option value="-1">-- Select a Show --</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <input type="text" name="prowl_show_list" id="prowl_show_list" class="form-control input-sm input350" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Configure per-show notifications here by entering Prowl API key(s), separated by commas,
+                                                                 after selecting a show in the drop-down box.   Be sure to activate the 'Save for this show'
+                                                                 button below after each entry.</span>
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <input id="prowl_show_save" class="btn" type="button" value="Save for this show" />
                                 </label>
                             </div>
                             <div class="field-pair">
@@ -1114,7 +1146,7 @@
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">(multiple keys must be seperated by commas, up to a maximum of 5)</span>
+                                    <span class="component-desc">(multiple keys must be separated by commas, up to a maximum of 5)</span>
                                 </label>
                             </div>
                             <div class="field-pair">
@@ -1560,7 +1592,7 @@
                                     </label>
                                     <label>
                                         <span class="component-title">&nbsp;</span>
-                                        <span class="component-desc">method in which to download episodes for new show's.</span>
+                                        <span class="component-desc">method in which to download episodes for new shows.</span>
                                     </label>
                                 </div>
                                 <div class="field-pair">
@@ -1595,7 +1627,7 @@
                                         <span class="component-title">Start paused</span>
                                         <span class="component-desc">
                                             <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_START_PAUSED)]}/>
-                                            <p>show's grabbed from your trakt watchlist start paused.</p>
+                                            <p>shows grabbed from your trakt watchlist start paused.</p>
                                         </span>
                                     </label>
                                 </div>
@@ -1728,7 +1760,8 @@
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">all emails here receive notifications for <b>all</b> shows.</span>
+                                    <span class="component-desc">Email addresses listed here, separated by commas if applicable, will<br /> receive notifications for <b>all</b> shows.<br />
+                                                                 (This field may be blank except when testing.)</span>
                                 </label>
                             </div>
                             <div class="field-pair">
@@ -1744,7 +1777,9 @@
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">configure per show notifications here.</span>
+                                    <span class="component-desc">Configure per-show notifications here by entering email address(es), separated by commas,
+                                                                 after selecting a show in the drop-down box.   Be sure to activate the 'Save for this show'
+                                                                 button below after each entry.</span>
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>

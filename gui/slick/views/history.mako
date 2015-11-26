@@ -87,7 +87,7 @@
                     % if hItem["provider"] > 0:
                         % if curStatus in [SNATCHED, FAILED]:
                             <% provider = providers.getProviderClass(generic.GenericProvider.makeID(hItem["provider"])) %>
-                            % if provider != None:
+                            % if provider is not None:
                                 <img src="${srRoot}/images/providers/${provider.imageName()}" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">${provider.name}</span>
                             % else:
                                 <img src="${srRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" title="missing provider"/> <span style="vertical-align:middle;">Missing Provider</span>
@@ -142,7 +142,7 @@
                         <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
                         % if curStatus in [SNATCHED, FAILED]:
                             <% provider = providers.getProviderClass(generic.GenericProvider.makeID(action["provider"])) %>
-                            % if provider != None:
+                            % if provider is not None:
                                 <img src="${srRoot}/images/providers/${provider.imageName()}" width="16" height="16" style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${os.path.basename(action["resource"])}"/>
                             % else:
                                 <img src="${srRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="missing provider" title="missing provider"/>

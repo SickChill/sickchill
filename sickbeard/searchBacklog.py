@@ -103,8 +103,9 @@ class BacklogSearcher:
 
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, segment)
                 sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
-            else:
-                logger.log(u"Nothing needs to be downloaded for {show_name}, skipping".format(show_name=curShow.name),logger.DEBUG)
+
+            if not segments:
+                logger.log(u"Nothing needs to be downloaded for %s, skipping" % curShow.name, logger.DEBUG)
 
         # don't consider this an actual backlog search if we only did recent eps
         # or if we only did certain shows
@@ -123,7 +124,7 @@ class BacklogSearcher:
 
         if len(sqlResults) == 0:
             lastBacklog = 1
-        elif sqlResults[0]["last_backlog"] == None or sqlResults[0]["last_backlog"] == "":
+        elif sqlResults[0]["last_backlog"] is None or sqlResults[0]["last_backlog"] == "":
             lastBacklog = 1
         else:
             lastBacklog = int(sqlResults[0]["last_backlog"])
@@ -143,7 +144,7 @@ class BacklogSearcher:
         logger.log(u"Seeing if we need anything from {show_name}".format(show_name=show.name), logger.DEBUG)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT status, season, episode FROM tv_episodes WHERE season > 0 AND airdate > ? AND showid = ?",
+        sqlResults = myDB.select("SELECT status, season, episode FROM tv_episodes WHERE airdate > ? AND showid = ?",
                 [fromDate.toordinal(), show.indexerid])
 
         # check through the list of statuses to see if we want any

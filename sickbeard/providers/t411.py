@@ -90,7 +90,7 @@ class T411Provider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURLS = ([self.urls['search'] % (search_string, u) for u in self.subcategories], [self.urls['rss']])[mode is 'RSS']
@@ -101,11 +101,11 @@ class T411Provider(generic.TorrentProvider):
                         continue
 
                     try:
-                        if 'torrents' not in data and mode is not 'RSS':
+                        if 'torrents' not in data and mode != 'RSS':
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
-                        torrents = data['torrents'] if mode is not 'RSS' else data
+                        torrents = data['torrents'] if mode != 'RSS' else data
 
                         if not torrents:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
@@ -129,16 +129,16 @@ class T411Provider(generic.TorrentProvider):
 
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
-                                    if mode is not 'RSS':
+                                    if mode != 'RSS':
                                         logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                     continue
 
-                                if self.confirmed and not verified and mode is not 'RSS':
+                                if self.confirmed and not verified and mode != 'RSS':
                                     logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                                     continue
 
                                 item = title, download_url, size, seeders, leechers
-                                if mode is not 'RSS':
+                                if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                                 items[mode].append(item)

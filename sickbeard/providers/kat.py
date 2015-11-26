@@ -1,6 +1,6 @@
 # coding=utf-8
-# Author: Mr_Orange <mr_orange@hotmail.it>
-# URL: http://code.google.com/p/sickbeard/
+# Author: Dustyn Gibson <miigotu@gmail.com>
+# URL: http://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,18 +18,17 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import posixpath  # Must use posixpath
 import traceback
-
 from urllib import urlencode
-
-import xmltodict
+from bs4 import BeautifulSoup
 
 import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
 from sickbeard.providers import generic
-from xml.parsers.expat import ExpatError
+from sickbeard.helpers import tryInt
 
 class KATProvider(generic.TorrentProvider):
     def __init__(self):
@@ -44,14 +43,14 @@ class KATProvider(generic.TorrentProvider):
         self.minseed = None
         self.minleech = None
 
-        self.cache = KATCache(self)
-
         self.urls = {
-            'base_url': 'https://kickass.unblocked.pe/',
-            'search': 'https://kickass.unblocked.pe/%s/',
+            'base_url': 'https://kat.cr/',
+            'search': 'https://kat.cr/%s/',
         }
 
         self.url = self.urls['base_url']
+        self.custom_url = None
+
         self.headers.update({'User-Agent': USER_AGENT})
 
         self.search_params = {
@@ -61,6 +60,8 @@ class KATProvider(generic.TorrentProvider):
             'rss': 1,
             'category': 'tv'
         }
+
+        self.cache = KATCache(self)
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
         results = []
@@ -74,79 +75,71 @@ class KATProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                self.search_params['q'] = search_string.encode('utf-8') if mode is not 'RSS' else ''
-                self.search_params['field'] = 'seeders' if mode is not 'RSS' else 'time_add'
+                self.search_params['q'] = search_string.encode('utf-8') if mode != 'RSS' else ''
+                self.search_params['field'] = 'seeders' if mode != 'RSS' else 'time_add'
 
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
-                url_fmt_string = 'usearch' if mode is not 'RSS' else search_string
+                url_fmt_string = 'usearch' if mode != 'RSS' else search_string
                 try:
                     searchURL = self.urls['search'] % url_fmt_string + '?' + urlencode(self.search_params)
+                    if self.custom_url:
+                        searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
+
                     logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                     data = self.getURL(searchURL)
-                    # data = self.getURL(self.urls[('search', 'rss')[mode is 'RSS']], params=self.search_params)
                     if not data:
-                        logger.log(u"No data returned from provider", logger.DEBUG)
+                        logger.log(u'URL did not return data, maybe try a custom url, or a different one', logger.DEBUG)
                         continue
 
                     if not data.startswith('<?xml'):
                         logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
                         continue
 
-                    try:
-                        data = xmltodict.parse(data)
-                    except ExpatError:
-                        logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
-                        continue
+                    data = BeautifulSoup(data, features=["html5lib", "permissive"])
 
-                    if not all([data, 'rss' in data, 'channel' in data['rss'], 'item' in data['rss']['channel']]):
-                        logger.log(u"Malformed rss returned, skipping", logger.DEBUG)
-                        continue
-
-                    # https://github.com/martinblech/xmltodict/issues/111
-                    entries = data['rss']['channel']['item']
-                    entries = entries if isinstance(entries, list) else [entries]
-
+                    entries = data.findAll('item')
                     for item in entries:
                         try:
-                            title = item['title']
+                            title = item.title.text
                             assert isinstance(title, unicode)
                             # Use the torcache link kat provides,
                             # unless it is not torcache or we are not using blackhole
                             # because we want to use magnets if connecting direct to client
                             # so that proxies work.
-                            download_url = item['enclosure']['@url']
+                            download_url = item.enclosure['url']
                             if sickbeard.TORRENT_METHOD != "blackhole" or 'torcache' not in download_url:
-                                download_url = item['torrent:magnetURI']
+                                download_url = item.find('torrent:magneturi').next.replace('CDATA', '').strip('[]')
 
-                            seeders = int(item['torrent:seeds'])
-                            leechers = int(item['torrent:peers'])
-                            verified = bool(int(item['torrent:verified']) or 0)
-                            size = int(item['torrent:contentLength'])
+                            if not (title and download_url):
+                                continue
 
-                            info_hash = item['torrent:infoHash']
+                            seeders = tryInt(item.find('torrent:seeds').text, 0)
+                            leechers = tryInt(item.find('torrent:peers').text, 0)
+                            verified = bool(tryInt(item.find('torrent:verified').text, 0))
+                            size = tryInt(item.find('torrent:contentlength').text)
+
+                            info_hash = item.find('torrent:infohash').text
                             # link = item['link']
 
-                        except (AttributeError, TypeError, KeyError):
+                        except (AttributeError, TypeError, KeyError, ValueError):
                             continue
 
-                        if not all([title, download_url]):
-                            continue
 
                         # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
-                            if mode is not 'RSS':
+                            if mode != 'RSS':
                                 logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
 
                         if self.confirmed and not verified:
-                            if mode is not 'RSS':
+                            if mode != 'RSS':
                                 logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                             continue
 
                         item = title, download_url, size, seeders, leechers, info_hash
-                        if mode is not 'RSS':
+                        if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                         items[mode].append(item)
