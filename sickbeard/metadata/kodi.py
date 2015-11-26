@@ -22,7 +22,7 @@ import os
 
 from sickbeard.metadata import generic
 from sickbeard.metadata import kodi_12plus
-from sickbeard import helpers
+from sickrage.helper.common import replace_extension
 from sickrage.helper.encoding import ek
 
 
@@ -100,7 +100,7 @@ class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
         if ek(os.path.isfile, ep_obj.location):
-            tbn_filename = helpers.replaceExtension(ep_obj.location, 'tbn')
+            tbn_filename = replace_extension(ep_obj.location, 'tbn')
         else:
             return None
 

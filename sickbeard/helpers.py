@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import os
 import io
 import ctypes
@@ -160,26 +159,6 @@ def remove_non_release_groups(name):
             _name = re.sub(r'(?i)' + remove_string, '', _name)
 
     return _name
-
-
-def replaceExtension(filename, newExt):
-    """
-    >>> replaceExtension('foo.avi', 'mkv')
-    'foo.mkv'
-    >>> replaceExtension('.vimrc', 'arglebargle')
-    '.vimrc'
-    >>> replaceExtension('a.b.c', 'd')
-    'a.b.d'
-    >>> replaceExtension('', 'a')
-    ''
-    >>> replaceExtension('foo.bar', '')
-    'foo.'
-    """
-    sepFile = filename.rpartition(".")
-    if sepFile[0] == "":
-        return filename
-    else:
-        return sepFile[0] + "." + newExt
 
 
 def notTorNZBFile(filename):

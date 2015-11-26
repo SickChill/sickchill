@@ -42,3 +42,21 @@ def remove_extension(filename):
             return basename
 
     return filename
+
+
+def replace_extension(filename, new_extension):
+    """
+    Replace the extension of the provided ``filename`` with a new extension.
+    :param filename: The filename for which we want to change the extension
+    :param new_extension: The new extension to apply on the ``filename``
+    :return: The ``filename`` with the new extension
+    """
+
+    if filename and '.' in filename:
+        # pylint: disable=W0612
+        basename, separator, extension = filename.rpartition('.')  # @UnusedVariable
+
+        if basename:
+            return '%s.%s' % (basename, new_extension)
+
+    return filename
