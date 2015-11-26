@@ -144,7 +144,7 @@ class BacklogSearcher:
         logger.log(u"Seeing if we need anything from {show_name}".format(show_name=show.name), logger.DEBUG)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT status, season, episode FROM tv_episodes WHERE season > 0 AND airdate > ? AND showid = ?",
+        sqlResults = myDB.select("SELECT status, season, episode FROM tv_episodes WHERE airdate > ? AND showid = ?",
                 [fromDate.toordinal(), show.indexerid])
 
         # check through the list of statuses to see if we want any
