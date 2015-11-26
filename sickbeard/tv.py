@@ -1298,37 +1298,23 @@ class TVShow(object):
             return Overview.SKIPPED
         elif epStatus in Quality.ARCHIVED:
             return Overview.GOOD
-        elif epStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.FAILED + Quality.SNATCHED_BEST:
-
-            _, bestQualities = Quality.splitQuality(self.quality)  # @UnusedVariable
-            if bestQualities:
-                maxBestQuality = max(bestQualities)
-                minBestQuality = min(bestQualities)
-            else:
-                maxBestQuality = None
-                minBestQuality = None
-
+        elif epStatus in Quality.FAILED:
+            return Overview.WANTED
+        elif epStatus in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+            return Overview.SNATCHED
+        elif epStatus in Quality.DOWNLOADED:
+            anyQualities, bestQualities = Quality.splitQuality(self.quality)  # @UnusedVariable
             epStatus, curQuality = Quality.splitCompositeStatus(epStatus)
 
-            if epStatus == FAILED:
-                return Overview.WANTED
-            if epStatus == DOWNLOADED and curQuality == Quality.UNKNOWN:
+            if curQuality not in anyQualities + bestQualities:
+                if curQuality != Quality.UNKNOWN and curQuality > max(anyQualities):
+                    return Overview.GOOD
+                else:
+                    return Overview.QUAL
+            elif self.archive_firstmatch:
+                return Overview.GOOD
+            elif bestQualities and curQuality not in bestQualities:
                 return Overview.QUAL
-            elif epStatus in (SNATCHED, SNATCHED_PROPER, SNATCHED_BEST):
-                return Overview.SNATCHED
-            # if they don't want re-downloads then we call it good if they have anything
-            elif maxBestQuality is None:
-                return Overview.GOOD
-            # if the want only first match and already have one call it good
-            elif self.archive_firstmatch and curQuality in bestQualities:
-                return Overview.GOOD
-            # if they want only first match and current quality is higher than minimal best quality call it good
-            elif self.archive_firstmatch and minBestQuality is not None and curQuality > minBestQuality:
-                return Overview.GOOD
-            # if they have one but it's not the best they want then mark it as qual
-            elif curQuality < maxBestQuality:
-                return Overview.QUAL
-            # if it's >= maxBestQuality then it's good
             else:
                 return Overview.GOOD
 
