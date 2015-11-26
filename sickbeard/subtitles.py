@@ -24,18 +24,16 @@ import traceback
 import subliminal
 import subprocess
 import pkg_resources
+import sickbeard
 from enzyme import MKV, MalformedMKVError
 from subliminal.api import provider_manager
 from babelfish import Error as BabelfishError, Language, language_converters
-
-import sickbeard
 from sickbeard import logger
 from sickbeard import history
 from sickbeard import db
-from sickrage.helper.common import dateTimeFormat
+from sickrage.helper.common import media_extensions, dateTimeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
-from sickrage.helper.common import media_extensions, subtitle_extensions
 
 distribution = pkg_resources.Distribution(location=os.path.dirname(os.path.dirname(__file__)),
                                           project_name='fake_entry_points', version='1.0.0')
@@ -154,7 +152,7 @@ def downloadSubtitles(subtitles_info):
 
         save_subtitles(video, found_subtitles, directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI)
 
-        if not sickbeard.EMBEDDED_SUBTITLES_ALL and sickbeard.SUBTITLES_EXTRA_SCRIPTS and video_path.endswith(('.mkv', '.mp4')):
+        if not sickbeard.EMBEDDED_SUBTITLES_ALL and sickbeard.SUBTITLES_EXTRA_SCRIPTS and video_path.rsplit(".", 1)[1] in media_extensions:
             run_subs_extra_scripts(subtitles_info, found_subtitles, video, single=not sickbeard.SUBTITLES_MULTI)
 
         current_subtitles = subtitlesLanguages(video_path)[0]
