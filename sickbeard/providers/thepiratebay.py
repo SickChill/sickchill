@@ -18,8 +18,8 @@
 
 
 import re
+import posixpath # Must use posixpath
 from urllib import urlencode
-
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.providers import generic
@@ -42,12 +42,14 @@ class ThePirateBayProvider(generic.TorrentProvider):
         self.cache = ThePirateBayCache(self)
 
         self.urls = {
-            'base_url': 'https://pirateproxy.pl/',
-            'search': 'https://pirateproxy.pl/s/',
-            'rss': 'https://pirateproxy.pl/tv/latest'
+            'base_url': 'https://thepiratebay.gd/',
+            'search': 'https://thepiratebay.gd/s/',
+            'rss': 'https://thepiratebay.gd/tv/latest'
         }
 
         self.url = self.urls['base_url']
+        self.custom_url = None
+
         self.headers.update({'User-Agent': USER_AGENT})
 
         """
@@ -79,10 +81,13 @@ class ThePirateBayProvider(generic.TorrentProvider):
                     logger.log(u"Search string: " + search_string, logger.DEBUG)
 
                 searchURL = self.urls[('search', 'rss')[mode is 'RSS']] + '?' + urlencode(self.search_params)
+                if self.custom_url:
+                    searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
+
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 data = self.getURL(searchURL)
-                # data = self.getURL(self.urls[('search', 'rss')[mode is 'RSS']], params=self.search_params)
                 if not data:
+                    logger.log(u'URL did not return data, maybe try a custom url, or a different one', logger.DEBUG)
                     continue
 
                 matches = re.compile(self.re_title_url, re.DOTALL).finditer(data)
