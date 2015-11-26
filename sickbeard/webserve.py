@@ -2824,7 +2824,7 @@ class Manage(Home, WebRoot):
     def showEpisodeStatuses(indexer_id, whichStatus):
         status_list = [int(whichStatus)]
         if status_list[0] == SNATCHED:
-            status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER
+            status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
 
         myDB = db.DBConnection()
         cur_show_results = myDB.select(
@@ -2889,7 +2889,7 @@ class Manage(Home, WebRoot):
     def changeEpisodeStatuses(self, oldStatus, newStatus, *args, **kwargs):
         status_list = [int(oldStatus)]
         if status_list[0] == SNATCHED:
-            status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER
+            status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
 
         to_change = {}
 
