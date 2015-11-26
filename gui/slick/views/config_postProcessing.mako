@@ -395,6 +395,21 @@
                                           <td>${datetime.date.today().year}</td>
                                         </tr>                                  
                                         <tr>
+                                          <td class="align-right"><b>Post-Processing Date:</b></td>
+                                          <td>%CM</td>
+                                          <td>${datetime.date.today().month}</td>
+                                        </tr>
+                                        <tr class="even">
+                                          <td>&nbsp;</td>
+                                          <td>%CD</td>
+                                          <td>${datetime.date.today().day}</td>
+                                        </tr>
+                                        <tr>
+                                          <td>&nbsp;</td>
+                                          <td>%CY</td>
+                                          <td>${datetime.date.today().year}</td>
+                                        </tr>                                  
+                                        <tr>
                                           <td class="align-right"><b>Quality:</b></td>
                                           <td>%QN</td>
                                           <td>720p BluRay</td>
