@@ -161,23 +161,6 @@ def remove_non_release_groups(name):
     return _name
 
 
-def isSyncFile(filename):
-    """
-    Returns true if filename is a syncfile, indicating filesystem may be in flux
-
-    :param filename: Filename to check
-    :return: True if this file is a syncfile, False otherwise
-    """
-
-    extension = filename.rpartition(".")[2].lower()
-    # if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
-    syncfiles = sickbeard.SYNC_FILES
-    if extension in syncfiles.split(",") or filename.startswith('.syncthing'):
-        return True
-    else:
-        return False
-
-
 def isMediaFile(filename):
     """
     Check if named file may contain media
@@ -239,29 +222,6 @@ def isBeingWritten(filepath):
         return True
 
     return False
-
-
-def sanitizeFileName(name):
-    """
-    >>> sanitizeFileName('a/b/c')
-    'a-b-c'
-    >>> sanitizeFileName('abc')
-    'abc'
-    >>> sanitizeFileName('a"b')
-    'ab'
-    >>> sanitizeFileName('.a.b..')
-    'a.b'
-    """
-
-    # remove bad chars from the filename
-    name = re.sub(r'[\\/\*]', '-', name)
-    name = re.sub(r'[:"<>|?]', '', name)
-    name = re.sub(ur'\u2122', '', name)  # Trade Mark Sign
-
-    # remove leading/trailing periods and spaces
-    name = name.strip(' .')
-
-    return name
 
 
 def remove_file_failed(failed_file):

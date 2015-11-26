@@ -53,6 +53,7 @@ from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
+from sickrage.helper.common import sanitize_filename
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOException, ShowDirectoryNotFoundException
@@ -2257,7 +2258,7 @@ class HomeAddShows(Home):
 
     @staticmethod
     def sanitizeFileName(name):
-        return helpers.sanitizeFileName(name)
+        return sanitize_filename(name)
 
     @staticmethod
     def searchIndexersForShowName(search_term, lang=None, indexer=None):
@@ -2585,7 +2586,7 @@ class HomeAddShows(Home):
             location = None
 
         if location:
-            show_dir = ek(os.path.join, location, helpers.sanitizeFileName(showName))
+            show_dir = ek(os.path.join, location, sanitize_filename(showName))
             dir_exists = helpers.makeDir(show_dir)
             if not dir_exists:
                 logger.log(u"Unable to create the folder " + show_dir + ", can't add the show", logger.ERROR)
@@ -2676,7 +2677,7 @@ class HomeAddShows(Home):
         if fullShowPath:
             show_dir = ek(os.path.normpath, fullShowPath)
         else:
-            show_dir = ek(os.path.join, rootDir, helpers.sanitizeFileName(show_name))
+            show_dir = ek(os.path.join, rootDir, sanitize_filename(show_name))
 
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
         if ek(os.path.isdir, show_dir) and not fullShowPath:

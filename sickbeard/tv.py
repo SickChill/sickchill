@@ -47,7 +47,7 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import network_timezones
 from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickrage.helper.common import dateTimeFormat, remove_extension, replace_extension
+from sickrage.helper.common import dateTimeFormat, remove_extension, replace_extension, sanitize_filename
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeDeletedException, EpisodeNotFoundException, ex
 from sickrage.helper.exceptions import MultipleEpisodesInDatabaseException, MultipleShowsInDatabaseException
@@ -55,8 +55,7 @@ from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOExcept
 from sickrage.helper.exceptions import ShowNotFoundException
 
 from sickbeard.common import Quality, Overview, statusStrings
-from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, ARCHIVED, IGNORED, UNAIRED, WANTED, SKIPPED, \
-    UNKNOWN, FAILED
+from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, ARCHIVED, IGNORED, UNAIRED, WANTED, SKIPPED, UNKNOWN
 from sickbeard.common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_SEPARATED_REPEAT, \
     NAMING_LIMITED_EXTEND_E_PREFIXED
 
@@ -2169,9 +2168,9 @@ class TVEpisode(object):
 
         # do the replacements
         for cur_replacement in sorted(replace_map.keys(), reverse=True):
-            result_name = result_name.replace(cur_replacement, helpers.sanitizeFileName(replace_map[cur_replacement]))
+            result_name = result_name.replace(cur_replacement, sanitize_filename(replace_map[cur_replacement]))
             result_name = result_name.replace(cur_replacement.lower(),
-                                              helpers.sanitizeFileName(replace_map[cur_replacement].lower()))
+                                              sanitize_filename(replace_map[cur_replacement].lower()))
 
         return result_name
 
@@ -2405,7 +2404,7 @@ class TVEpisode(object):
         # split off the dirs only, if they exist
         name_groups = re.split(r'[\\/]', pattern)
 
-        return helpers.sanitizeFileName(self._format_pattern(name_groups[-1], multi, anime_type))
+        return sanitize_filename(self._format_pattern(name_groups[-1], multi, anime_type))
 
     def rename(self):
         """

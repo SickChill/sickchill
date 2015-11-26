@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
+import sickbeard
+
 dateFormat = '%Y-%m-%d'
 dateTimeFormat = '%Y-%m-%d %H:%M:%S'
 media_extensions = [
@@ -26,17 +29,32 @@ subtitle_extensions = ['ass', 'idx', 'srt', 'ssa', 'sub']
 timeFormat = '%A %I:%M %p'
 
 
+def is_sync_file(filename):
+    """
+    Check if the provided ``filename`` is a sync file, based on its name.
+    :param filename: The filename to check
+    :return: ``True`` if the ``filename`` is a sync file, ``False`` otherwise
+    """
+
+    if isinstance(filename, (str, unicode)):
+        extension = filename.rpartition('.')[2].lower()
+
+        return extension in sickbeard.SYNC_FILES.split(',') or filename.startswith('.syncthing')
+
+    return False
+
+
 def is_torrent_or_nzb_file(filename):
     """
-    Check if the provided ``filename`` if a NZB file or a torrent file, based on its extension.
+    Check if the provided ``filename`` is a NZB file or a torrent file, based on its extension.
     :param filename: The filename to check
     :return: ``True`` if the ``filename`` is a NZB file or a torrent file, ``False`` otherwise
     """
 
-    if filename is None:
+    if not isinstance(filename, (str, unicode)):
         return False
 
-    return filename.endswith('.nzb') or filename.endswith('.torrent')
+    return filename.rpartition('.')[2].lower() in ['nzb', 'torrent']
 
 
 def pretty_file_size(size):
@@ -71,7 +89,7 @@ def remove_extension(filename):
     :return: The ``filename`` without its extension.
     """
 
-    if filename and '.' in filename:
+    if isinstance(filename, (str, unicode)) and '.' in filename:
         # pylint: disable=W0612
         basename, separator, extension = filename.rpartition('.')  # @UnusedVariable
 
@@ -89,7 +107,7 @@ def replace_extension(filename, new_extension):
     :return: The ``filename`` with the new extension
     """
 
-    if filename and '.' in filename:
+    if isinstance(filename, (str, unicode)) and '.' in filename:
         # pylint: disable=W0612
         basename, separator, extension = filename.rpartition('.')  # @UnusedVariable
 
@@ -97,3 +115,21 @@ def replace_extension(filename, new_extension):
             return '%s.%s' % (basename, new_extension)
 
     return filename
+
+
+def sanitize_filename(filename):
+    """
+    Remove specific characters from the provided ``filename``.
+    :param filename: The filename to clean
+    :return: The ``filename``cleaned
+    """
+
+    if isinstance(filename, (str, unicode)):
+        filename = re.sub(r'[\\/\*]', '-', filename)
+        filename = re.sub(r'[:"<>|?]', '', filename)
+        filename = re.sub(ur'\u2122', '', filename)  # Trade Mark Sign
+        filename = filename.strip(' .')
+
+        return filename
+
+    return ''
