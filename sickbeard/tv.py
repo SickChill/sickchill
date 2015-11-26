@@ -1303,19 +1303,27 @@ class TVShow(object):
         elif epStatus in Quality.FAILED:
             return Overview.WANTED
         elif epStatus in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+            # If user has more than one quality in "Preferred" and it's not the best one and not Archive first math then its "Low Quality"
+            # Quality profiles has more than one quality, so until higher quality is snatched, it will be "Low Quality"
             if len(bestQualities) > 1 and curQuality < max(bestQualities) and not self.archive_firstmatch:
                 return Overview.QUAL
+            # If user has more than one quality in "Allowed" and it's not the best one and not Archive first math then its "Low Quality"
             elif len(anyQualities) > 1 and curQuality < max(anyQualities) and not self.archive_firstmatch:
                 return Overview.QUAL
+            # Everything else is SNATCHED. Like: archive first match enabled or only one quality in Allowed or Preferred
             else:
                 return Overview.SNATCHED
         elif epStatus in Quality.DOWNLOADED:
+            # First check for UNKNOWN quality as is always "Low Quality"
             if curQuality == Quality.UNKNOWN:
                 return Overview.QUAL
+            # If user has more than one quality in "Preferred" and it's not the best one and not Archive first math then its "Low Quality"
             elif len(bestQualities) > 1 and curQuality < max(bestQualities) and not self.archive_firstmatch:
                 return Overview.QUAL
+            # If user has more than one quality in "Allowed" and it's not the best one and not Archive first math then its "Low Quality"
             elif len(anyQualities) > 1 and curQuality < max(anyQualities) and not self.archive_firstmatch:
                 return Overview.QUAL
+            # Everything else is GOOD. Like: archive first match enabled or only one quality in Allowed or Preferred
             else:
                 return Overview.GOOD
 
