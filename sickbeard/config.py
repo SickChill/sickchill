@@ -203,6 +203,7 @@ def change_AUTOPOSTPROCESSER_FREQUENCY(freq):
 
     sickbeard.autoPostProcesserScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSER_FREQUENCY)
 
+
 def change_DAILYSEARCH_FREQUENCY(freq):
     """
     Change frequency of daily search thread
@@ -215,6 +216,7 @@ def change_DAILYSEARCH_FREQUENCY(freq):
         sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.MIN_DAILYSEARCH_FREQUENCY
 
     sickbeard.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
+
 
 def change_BACKLOG_FREQUENCY(freq):
     """
@@ -230,6 +232,7 @@ def change_BACKLOG_FREQUENCY(freq):
 
     sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
 
+
 def change_UPDATE_FREQUENCY(freq):
     """
     Change frequency of daily updater thread
@@ -242,6 +245,7 @@ def change_UPDATE_FREQUENCY(freq):
         sickbeard.UPDATE_FREQUENCY = sickbeard.MIN_UPDATE_FREQUENCY
 
     sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
+
 
 def change_SHOWUPDATE_HOUR(freq):
     """
@@ -258,6 +262,7 @@ def change_SHOWUPDATE_HOUR(freq):
 
     sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
 
+
 def change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency):
     """
     Change frequency of subtitle thread
@@ -268,6 +273,7 @@ def change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency):
         subtitles_finder_frequency = 1
 
     sickbeard.SUBTITLES_FINDER_FREQUENCY = to_int(subtitles_finder_frequency, 1)
+
 
 def change_VERSION_NOTIFY(version_notify):
     """
@@ -284,6 +290,7 @@ def change_VERSION_NOTIFY(version_notify):
 
     if oldSetting is False and version_notify is True:
         sickbeard.versionCheckScheduler.forceRun()
+
 
 def change_DOWNLOAD_PROPERS(download_propers):
     """
@@ -309,6 +316,7 @@ def change_DOWNLOAD_PROPERS(download_propers):
         sickbeard.properFinderScheduler.enable = False
         sickbeard.traktCheckerScheduler.silent = True
         logger.log(u"Stopping PROPERFINDER thread", logger.INFO)
+
 
 def change_USE_TRAKT(use_trakt):
     """
@@ -361,6 +369,7 @@ def change_USE_SUBTITLES(use_subtitles):
         sickbeard.subtitlesFinderScheduler.silent = True
         logger.log(u"Stopping SUBTITLESFINDER thread", logger.INFO)
 
+
 def change_PROCESS_AUTOMATICALLY(process_automatically):
     """
     Enable/Disable postprocessor thread
@@ -385,6 +394,7 @@ def change_PROCESS_AUTOMATICALLY(process_automatically):
         logger.log(u"Stopping POSTPROCESSER thread", logger.INFO)
         sickbeard.autoPostProcesserScheduler.enable = False
         sickbeard.autoPostProcesserScheduler.silent = True
+
 
 def CheckSection(CFG, sec):
     """ Check if INI section exists, if not create it """
@@ -602,6 +612,7 @@ def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_
         logger.log(item_name + " -> " + my_val, logger.DEBUG)
 
     return my_val
+
 
 class ConfigMigrator():
     def __init__(self, config_obj):
