@@ -18,8 +18,8 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import posixpath  # Must use posixpath
 import traceback
-
 from urllib import urlencode
 from bs4 import BeautifulSoup
 
@@ -43,13 +43,14 @@ class KATProvider(generic.TorrentProvider):
         self.minseed = None
         self.minleech = None
 
-
         self.urls = {
-            'base_url': 'https://kickass.unblocked.pe/',
-            'search': 'https://kickass.unblocked.pe/%s/',
+            'base_url': 'https://kat.cr/',
+            'search': 'https://kat.cr/%s/',
         }
 
         self.url = self.urls['base_url']
+        self.custom_url = None
+
         self.headers.update({'User-Agent': USER_AGENT})
 
         self.search_params = {
@@ -61,7 +62,6 @@ class KATProvider(generic.TorrentProvider):
         }
 
         self.cache = KATCache(self)
-
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
         results = []
@@ -84,11 +84,13 @@ class KATProvider(generic.TorrentProvider):
                 url_fmt_string = 'usearch' if mode != 'RSS' else search_string
                 try:
                     searchURL = self.urls['search'] % url_fmt_string + '?' + urlencode(self.search_params)
+                    if self.custom_url:
+                        searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
+
                     logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                     data = self.getURL(searchURL)
-                    # data = self.getURL(self.urls[('search', 'rss')[mode is 'RSS']], params=self.search_params)
                     if not data:
-                        logger.log(u"No data returned from provider", logger.DEBUG)
+                        logger.log(u'URL did not return data, maybe try a custom url, or a different one', logger.DEBUG)
                         continue
 
                     if not data.startswith('<?xml'):
