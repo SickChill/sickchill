@@ -623,25 +623,37 @@ home.mako
     border-radius: 3px;
 }
 
+.show-grid {
+    display: none;
+}
+
 #container, #container-anime {
     margin: 0 auto;
 }
 
+.loading-spinner {
+    background-image: url("../images/loading32.gif");
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+}
+
 .show-container {
-    margin: 12px;
-    width: 188px;
-    height: 352px;
-    background-color: #DFDACF;
-    border: 1px solid #111;
-    border-radius: 6px;
+    margin: 4px;
+    background-color: #F3F3F3;
+    border: 5px solid #F3F3F3;
+    overflow: hidden;
+    box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.31);
+}
+
+.show-details {
+    height: 32px;
+    overflow: hidden;
 }
 
 .show-image {
     overflow: hidden;
-    height: 273px;
-    width: 186px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    max-width: 100%;
 }
 
 .show-container .ui-progressbar {
@@ -701,11 +713,11 @@ home.mako
     height: 100%;
     top: 0;
     right: 0;
-    background-image: -webkit-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -moz-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -ms-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -o-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: linear-gradient(to left, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
+    background-image: -webkit-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -moz-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -ms-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -o-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: linear-gradient(to left, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
 }
 
 .show-date {
@@ -714,6 +726,7 @@ home.mako
     white-space: nowrap;
     font-size: 11px;
     margin: 0px 4px 4px 4px;
+    color: #949494;
 }
 
 .show-date:after {
@@ -724,11 +737,11 @@ home.mako
     height: 100%;
     top: 0;
     right: 0;
-    background-image: -webkit-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -moz-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -ms-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -o-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: linear-gradient(to left, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
+    background-image: -webkit-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -moz-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -ms-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -o-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: linear-gradient(to left, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
 }
 
 .show-table {
@@ -3265,3 +3278,74 @@ IMDB Popular
 .popularShow p{
     margin-bottom:0px;
 }
+
+/*
+ * Temporary styles for jQuery UI slider
+ */
+
+.ui-slider {
+    position: relative;
+    text-align: left;
+}
+.ui-slider .ui-slider-handle {
+    position: absolute;
+    z-index: 2;
+    width: 1.2em;
+    height: 1.2em;
+    cursor: default;
+    -ms-touch-action: none;
+    touch-action: none;
+}
+.ui-slider .ui-slider-range {
+    position: absolute;
+    z-index: 1;
+    font-size: .7em;
+    display: block;
+    border: 0;
+    background-position: 0 0;
+}
+
+/* support: IE8 - See #6727 */
+.ui-slider.ui-state-disabled .ui-slider-handle,
+.ui-slider.ui-state-disabled .ui-slider-range {
+    filter: inherit;
+}
+
+.ui-slider-horizontal {
+    height: .8em;
+}
+.ui-slider-horizontal .ui-slider-handle {
+    top: -.3em;
+    margin-left: -.6em;
+}
+.ui-slider-horizontal .ui-slider-range {
+    top: 0;
+    height: 100%;
+}
+.ui-slider-horizontal .ui-slider-range-min {
+    left: 0;
+}
+.ui-slider-horizontal .ui-slider-range-max {
+    right: 0;
+}
+
+.ui-slider-vertical {
+    width: .8em;
+    height: 100px;
+}
+.ui-slider-vertical .ui-slider-handle {
+    left: -.3em;
+    margin-left: 0;
+    margin-bottom: -.6em;
+}
+.ui-slider-vertical .ui-slider-range {
+    left: 0;
+    width: 100%;
+}
+.ui-slider-vertical .ui-slider-range-min {
+    bottom: 0;
+}
+.ui-slider-vertical .ui-slider-range-max {
+    top: 0;
+}
+
