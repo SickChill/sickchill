@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# coding=utf-8
 # Author: raver2046 <raver2046@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -18,11 +18,11 @@
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
 import traceback
+import requests
 import re
 
 from requests.auth import AuthBase
 from sickbeard.providers import generic
-import requests
 from sickbeard.bs4_parser import BS4Parser
 
 from sickbeard import logger
@@ -39,7 +39,6 @@ class BLUETIGERSProvider(generic.TorrentProvider):
         self.password = None
         self.ratio = None
         self.token = None
-        self.tokenLastUpdate = None
 
         self.cache = BLUETIGERSCache(self)
 
@@ -67,13 +66,16 @@ class BLUETIGERSProvider(generic.TorrentProvider):
             }
 
         response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
-        if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
-            return False
 
-        if re.search('/account-logout.php', response):
-            return True
-        else:
+        if not response:
+            check_login = self.getURL(self.urls['base_url'], timeout=30)
+            if re.search('account-logout.php', check_login):
+                return True
+            else:
+                logger.log(u"Unable to connect to provider", logger.WARNING)
+                return False
+
+        if re.search('account-login.php', response):
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
@@ -83,8 +85,7 @@ class BLUETIGERSProvider(generic.TorrentProvider):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
-        
-        # check for auth
+
         if not self._doLogin():
             return results
 
@@ -92,7 +93,7 @@ class BLUETIGERSProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 self.search_params['search'] = search_string
@@ -112,7 +113,7 @@ class BLUETIGERSProvider(generic.TorrentProvider):
                         if result_linkz:
                             for link in result_linkz:
                                 title = link.text
-                                download_url = self.urls['base_url'] + "/" + link['href']
+                                download_url = self.urls['base_url'] + link['href']
                                 download_url = download_url.replace("torrents-details", "download")
                                 # FIXME
                                 size = -1
@@ -124,12 +125,12 @@ class BLUETIGERSProvider(generic.TorrentProvider):
 
                                 # Filter unseeded torrent
                                 # if seeders < self.minseed or leechers < self.minleech:
-                                #    if mode is not 'RSS':
+                                #    if mode != 'RSS':
                                 #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 #    continue
 
                                 item = title, download_url, size, seeders, leechers
-                                if mode is not 'RSS':
+                                if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                                 items[mode].append(item)

@@ -18,8 +18,8 @@
 
 
 import re
+import posixpath # Must use posixpath
 from urllib import urlencode
-
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.providers import generic
@@ -42,12 +42,14 @@ class ThePirateBayProvider(generic.TorrentProvider):
         self.cache = ThePirateBayCache(self)
 
         self.urls = {
-            'base_url': 'https://pirateproxy.pl/',
-            'search': 'https://pirateproxy.pl/s/',
-            'rss': 'https://pirateproxy.pl/tv/latest'
+            'base_url': 'https://thepiratebay.gd/',
+            'search': 'https://thepiratebay.gd/s/',
+            'rss': 'https://thepiratebay.gd/tv/latest'
         }
 
         self.url = self.urls['base_url']
+        self.custom_url = None
+
         self.headers.update({'User-Agent': USER_AGENT})
 
         """
@@ -75,14 +77,17 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
                 self.search_params.update({'q': search_string.strip()})
 
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: " + search_string, logger.DEBUG)
 
                 searchURL = self.urls[('search', 'rss')[mode is 'RSS']] + '?' + urlencode(self.search_params)
+                if self.custom_url:
+                    searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
+
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 data = self.getURL(searchURL)
-                # data = self.getURL(self.urls[('search', 'rss')[mode is 'RSS']], params=self.search_params)
                 if not data:
+                    logger.log(u'URL did not return data, maybe try a custom url, or a different one', logger.DEBUG)
                     continue
 
                 matches = re.compile(self.re_title_url, re.DOTALL).finditer(data)
@@ -99,18 +104,18 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
-                        if mode is not 'RSS':
+                        if mode != 'RSS':
                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
                     # Accept Torrent only from Good People for every Episode Search
                     if self.confirmed and re.search(r'(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None:
-                        if mode is not 'RSS':
+                        if mode != 'RSS':
                             logger.log(u"Found result %s but that doesn't seem like a trusted result so I'm ignoring it" % title, logger.DEBUG)
                         continue
 
                     item = title, download_url, size, seeders, leechers
-                    if mode is not 'RSS':
+                    if mode != 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                     items[mode].append(item)

@@ -183,7 +183,7 @@ class DBConnection(object):
         :param fetchone: Boolean to indicate one result must be fetched (to walk results for instance)
         :return: query results
         """
-        if query == None:
+        if query is None:
             return
 
         sqlResult = None
@@ -192,7 +192,7 @@ class DBConnection(object):
         with db_locks[self.filename]:
             while attempt < 5:
                 try:
-                    if args == None:
+                    if args is None:
                         logger.log(self.filename + ": " + query, logger.DB)
                     else:
                         logger.log(self.filename + ": " + query + " with args " + str(args), logger.DB)
@@ -229,7 +229,7 @@ class DBConnection(object):
 
         sqlResults = self.action(query, args, fetchall=True)
 
-        if sqlResults == None:
+        if sqlResults is None:
             return []
 
         return sqlResults
@@ -244,7 +244,7 @@ class DBConnection(object):
         """
         sqlResults = self.action(query, args, fetchone=True)
 
-        if sqlResults == None:
+        if sqlResults is None:
             return []
 
         return sqlResults

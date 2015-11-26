@@ -376,6 +376,7 @@ PROWL_NOTIFY_ONDOWNLOAD = False
 PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = False
 PROWL_API = None
 PROWL_PRIORITY = 0
+PROWL_MESSAGE_TITLE = 'SickRage'
 
 USE_TWITTER = False
 TWITTER_NOTIFY_ONSNATCH = False
@@ -508,7 +509,6 @@ TIMEZONE_DISPLAY = None
 THEME_NAME = None
 POSTER_SORTBY = None
 POSTER_SORTDIR = None
-FILTER_ROW = True
 
 USE_SUBTITLES = False
 SUBTITLES_LANGUAGES = []
@@ -586,7 +586,7 @@ def initialize(consoleLogging=True):
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, \
-            USE_GROWL, GROWL_HOST, GROWL_PASSWORD, USE_PROWL, PROWL_NOTIFY_ONSNATCH, PROWL_NOTIFY_ONDOWNLOAD, PROWL_NOTIFY_ONSUBTITLEDOWNLOAD, PROWL_API, PROWL_PRIORITY, \
+            USE_GROWL, GROWL_HOST, GROWL_PASSWORD, USE_PROWL, PROWL_NOTIFY_ONSNATCH, PROWL_NOTIFY_ONDOWNLOAD, PROWL_NOTIFY_ONSUBTITLEDOWNLOAD, PROWL_API, PROWL_PRIORITY, PROWL_MESSAGE_TITLE, \
             USE_PYTIVO, PYTIVO_NOTIFY_ONSNATCH, PYTIVO_NOTIFY_ONDOWNLOAD, PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD, PYTIVO_UPDATE_LIBRARY, PYTIVO_HOST, PYTIVO_SHARE_NAME, PYTIVO_TIVO_NAME, \
             USE_NMA, NMA_NOTIFY_ONSNATCH, NMA_NOTIFY_ONDOWNLOAD, NMA_NOTIFY_ONSUBTITLEDOWNLOAD, NMA_API, NMA_PRIORITY, \
             USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
@@ -605,7 +605,7 @@ def initialize(consoleLogging=True):
             USE_EMAIL, EMAIL_HOST, EMAIL_PORT, EMAIL_TLS, EMAIL_USER, EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, \
             USE_LISTVIEW, METADATA_KODI, METADATA_KODI_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, \
             NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, POSTPONE_IF_NO_SUBS, dailySearchScheduler, NFO_RENAME, \
-            GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, FILTER_ROW, \
+            GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
             USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, subtitlesFinderScheduler, \
@@ -1018,6 +1018,7 @@ def initialize(consoleLogging=True):
         PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'Prowl', 'prowl_notify_onsubtitledownload', 0))
         PROWL_API = check_setting_str(CFG, 'Prowl', 'prowl_api', '', censor_log=True)
         PROWL_PRIORITY = check_setting_str(CFG, 'Prowl', 'prowl_priority', "0")
+        PROWL_MESSAGE_TITLE = check_setting_str(CFG, 'Prowl', 'prowl_message_title', "SickRage")
 
         USE_TWITTER = bool(check_setting_int(CFG, 'Twitter', 'use_twitter', 0))
         TWITTER_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Twitter', 'twitter_notify_onsnatch', 0))
@@ -1209,7 +1210,6 @@ def initialize(consoleLogging=True):
         TIMEZONE_DISPLAY = check_setting_str(CFG, 'GUI', 'timezone_display', 'local')
         POSTER_SORTBY = check_setting_str(CFG, 'GUI', 'poster_sortby', 'name')
         POSTER_SORTDIR = check_setting_int(CFG, 'GUI', 'poster_sortdir', 1)
-        FILTER_ROW = bool(check_setting_int(CFG, 'GUI', 'filter_row', 1))
         DISPLAY_ALL_SEASONS = bool(check_setting_int(CFG, 'General', 'display_all_seasons', 1))
 
         # initialize NZB and TORRENT providers
@@ -1226,6 +1226,9 @@ def initialize(consoleLogging=True):
                                    curProvider.providerType == GenericProvider.TORRENT]:
             curTorrentProvider.enabled = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                 curTorrentProvider.getID(), 0))
+            if hasattr(curTorrentProvider, 'custom_url'):
+                curTorrentProvider.custom_url = check_setting_str(CFG, curTorrentProvider.getID().upper(),
+                                                                curTorrentProvider.getID() + '_custom_url', '', censor_log=True)                                           
             if hasattr(curTorrentProvider, 'api_key'):
                 curTorrentProvider.api_key = check_setting_str(CFG, curTorrentProvider.getID().upper(),
                                                                curTorrentProvider.getID() + '_api_key', '', censor_log=True)
@@ -1787,6 +1790,9 @@ def save_config():
                                curProvider.providerType == GenericProvider.TORRENT]:
         new_config[curTorrentProvider.getID().upper()] = {}
         new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID()] = int(curTorrentProvider.enabled)
+        if hasattr(curTorrentProvider, 'custom_url'):
+            new_config[curTorrentProvider.getID().upper()][
+                curTorrentProvider.getID() + '_custom_url'] = curTorrentProvider.custom_url
         if hasattr(curTorrentProvider, 'digest'):
             new_config[curTorrentProvider.getID().upper()][
                 curTorrentProvider.getID() + '_digest'] = curTorrentProvider.digest
@@ -1980,6 +1986,7 @@ def save_config():
     new_config['Prowl']['prowl_notify_onsubtitledownload'] = int(PROWL_NOTIFY_ONSUBTITLEDOWNLOAD)
     new_config['Prowl']['prowl_api'] = PROWL_API
     new_config['Prowl']['prowl_priority'] = PROWL_PRIORITY
+    new_config['Prowl']['prowl_message_title'] = PROWL_MESSAGE_TITLE
 
     new_config['Twitter'] = {}
     new_config['Twitter']['use_twitter'] = int(USE_TWITTER)
@@ -2125,7 +2132,6 @@ def save_config():
     new_config['GUI']['timezone_display'] = TIMEZONE_DISPLAY
     new_config['GUI']['poster_sortby'] = POSTER_SORTBY
     new_config['GUI']['poster_sortdir'] = POSTER_SORTDIR
-    new_config['GUI']['filter_row'] = int(FILTER_ROW)
 
     new_config['Subtitles'] = {}
     new_config['Subtitles']['use_subtitles'] = int(USE_SUBTITLES)
@@ -2182,13 +2188,13 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
 
 
 def getEpList(epIDs, showid=None):
-    if epIDs == None or len(epIDs) == 0:
+    if epIDs is None or len(epIDs) == 0:
         return []
 
     query = "SELECT * FROM tv_episodes WHERE indexerid in (%s)" % (",".join(['?'] * len(epIDs)),)
     params = epIDs
 
-    if showid != None:
+    if showid is not None:
         query += " AND showid = ?"
         params.append(showid)
 

@@ -121,7 +121,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                 <div class="field-pair">
                                     <label class="nocheck">
                                         <span class="component-title">Extra Scripts</span>
-                                           <input type="text" name="subtitles_extra_scripts" value="<%'|'.join(sickbeard.SUBTITLES_EXTRA_SCRIPTS)%>" class="form-control input-sm input350" />
+                                           <input type="text" name="subtitles_extra_scripts" value="${'|'.join(sickbeard.SUBTITLES_EXTRA_SCRIPTS)}" class="form-control input-sm input350" />
                                     </label>
                                     <label class="nocheck">
                                         <span class="component-title">&nbsp;</span>
@@ -162,7 +162,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                         <ul id="service_order_list">
                         % for curService in sickbeard.subtitles.sortedServiceList():
                             <li class="ui-state-default" id="${curService['name']}">
-                                <input type="checkbox" id="enable_${curService['name']}" class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] == True]}/>
+                                <input type="checkbox" id="enable_${curService['name']}" class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] is True]}/>
                                 <a href="${anon_url(curService['url'])}" class="imgLink" target="_new">
                                     <img src="${srRoot}/images/subtitles/${curService['image']}" alt="${curService['url']}" title="${curService['url']}" width="16" height="16" style="vertical-align:middle;"/>
                                 </a>
@@ -212,6 +212,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                         <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                     </fieldset>
                 </div><!-- /component-group3 //-->
+                <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
             </div><!-- /config-components //-->
 
 </form>

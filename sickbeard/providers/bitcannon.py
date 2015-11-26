@@ -75,7 +75,7 @@ class BitCannonProvider(generic.TorrentProvider):
 
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
-                        if mode is not 'RSS':
+                        if mode != 'RSS':
                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
@@ -83,7 +83,7 @@ class BitCannonProvider(generic.TorrentProvider):
                     download_url = 'magnet:?xt=urn:btih:%s&dn=%s&tr=%s' % (info_hash, quote_plus(title.encode('utf-8')), u'&tr='.join([quote_plus(x.encode('utf-8')) for x in trackers]))
 
                     item = title, download_url, size, seeders, leechers
-                    if mode is not 'RSS':
+                    if mode != 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                     items[mode].append(item)

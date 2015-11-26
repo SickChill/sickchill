@@ -272,18 +272,6 @@
                             </label>
                         </div>
                         <div class="field-pair">
-                            <label for="filter_row">
-                                <span class="component-title">Filter Row</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="filter_row" id="filter_row" ${('', 'checked="checked"')[bool(sickbeard.FILTER_ROW)]}/>
-                                    <p>Add a filter row to the show display on the home page</p>
-                                    <p>Supports =, >, >=, <=, <, xx to yy , xx - yy</p>
-                                    <p><b>Note:</b> =, >, >=, <=, < should be first, followed by a space, then the value.</p>
-                                    <p>Examples: '> 90', '= 100', '0 to 99'</p>
-                                </span>
-                            </label>
-                        </div>
-                        <div class="field-pair">
                             <label for="coming_eps_missed_range">
                                 <span class="component-title">Missed episodes range</span>
                                 <span class="component-desc">

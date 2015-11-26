@@ -87,7 +87,7 @@ class LibertaliaProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urlsearch % (urllib.quote(search_string), self.categories)
@@ -121,12 +121,12 @@ class LibertaliaProvider(generic.TorrentProvider):
 
                                 # Filter unseeded torrent
                                 # if seeders < self.minseed or leechers < self.minleech:
-                                #    if mode is not 'RSS':
+                                #    if mode != 'RSS':
                                 #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 #    continue
 
                                 item = title, download_url, size, seeders, leechers
-                                if mode is not 'RSS':
+                                if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                                 items[mode].append(item)

@@ -28,7 +28,8 @@ from sickbeard import logger
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import common
 from sickbeard import failedProcessor
-from sickrage.helper.encoding import ek, ss
+from sickrage.helper.common import subtitle_extensions
+from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
 from unrar2 import RarFile
@@ -547,15 +548,15 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
 
         try:
             processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority)
-            # This feature prevents PP for files that do not have subtitle associated with the video file        
+            # This feature prevents PP for files that do not have subtitle associated with the video file
             if sickbeard.POSTPONE_IF_NO_SUBS:
                 associatedFiles = processor.list_associated_files(cur_video_file_path, subtitles_only=True)
-                if not [associatedFile for associatedFile in associatedFiles if associatedFile[-3:] in common.subtitleExtensions]:
+                if not [associatedFile for associatedFile in associatedFiles if associatedFile[-3:] in subtitle_extensions]:
                     result.output += logHelper(u"No subtitles associated. Postponing the post-process of this file: %s" % cur_video_file, logger.DEBUG)
                     continue
                 else:
-                    result.output += logHelper(u"Found subtitles associated. Continuing the post-process of this file: %s" % cur_video_file) 
-        
+                    result.output += logHelper(u"Found subtitles associated. Continuing the post-process of this file: %s" % cur_video_file)
+
             result.result = processor.process()
             process_fail_message = ""
         except EpisodePostProcessingFailedException, e:
