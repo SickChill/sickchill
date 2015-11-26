@@ -24,13 +24,56 @@ import sys
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from sickrage.helper.common import is_torrent_or_nzb_file, pretty_file_size, remove_extension, replace_extension
+import sickbeard
+
+from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file, pretty_file_size, remove_extension
+from sickrage.helper.common import replace_extension, sanitize_filename
 
 
 class CommonTests(TestCase):
+    def test_is_sync_file(self):
+        sickbeard.SYNC_FILES = '!sync,lftp-pget-status,part'
+
+        tests = {
+            None: False,
+            42: False,
+            '': False,
+            u'': False,
+            'filename': False,
+            u'filename': False,
+            '.syncthingfilename': True,
+            u'.syncthingfilename': True,
+            '.syncthing.filename': True,
+            u'.syncthing.filename': True,
+            '.syncthing-filename': True,
+            u'.syncthing-filename': True,
+            '.!sync': True,
+            u'.!sync': True,
+            'file.!sync': True,
+            u'file.!sync': True,
+            'file.!sync.ext': False,
+            u'file.!sync.ext': False,
+            '.lftp-pget-status': True,
+            u'.lftp-pget-status': True,
+            'file.lftp-pget-status': True,
+            u'file.lftp-pget-status': True,
+            'file.lftp-pget-status.ext': False,
+            u'file.lftp-pget-status.ext': False,
+            '.part': True,
+            u'.part': True,
+            'file.part': True,
+            u'file.part': True,
+            'file.part.ext': False,
+            u'file.part.ext': False,
+        }
+
+        for (filename, result) in tests.iteritems():
+            self.assertEqual(is_sync_file(filename), result)
+
     def test_is_torrent_or_nzb_file(self):
         tests = {
             None: False,
+            42: False,
             '': False,
             u'': False,
             'filename': False,
@@ -85,6 +128,7 @@ class CommonTests(TestCase):
     def test_remove_extension(self):
         tests = {
             None: None,
+            42: 42,
             '': '',
             u'': u'',
             '.': '.',
@@ -121,6 +165,9 @@ class CommonTests(TestCase):
             (None, None): None,
             (None, ''): None,
             (None, u''): None,
+            (42, None): 42,
+            (42, ''): 42,
+            (42, u''): 42,
             ('', None): '',
             ('', ''): '',
             ('', u''): '',
@@ -181,6 +228,27 @@ class CommonTests(TestCase):
 
         for ((filename, extension), result) in tests.iteritems():
             self.assertEqual(replace_extension(filename, extension), result)
+
+    def test_sanitize_filename(self):
+        tests = {
+            None: '',
+            42: '',
+            '': '',
+            u'': u'',
+            'filename': 'filename',
+            u'filename': u'filename',
+            'fi\\le/na*me': 'fi-le-na-me',
+            u'fi\\le/na*me': u'fi-le-na-me',
+            'fi:le"na<me': 'filename',
+            u'fi:le"na<me': u'filename',
+            'fi>le|na?me': 'filename',
+            u'fi>le|na?me': u'filename',
+            ' . file\u2122name. .': 'file-u2122name',
+            u' . file\u2122name. .': u'filename',
+        }
+
+        for (filename, result) in tests.iteritems():
+            self.assertEqual(sanitize_filename(filename), result)
 
 
 if __name__ == '__main__':

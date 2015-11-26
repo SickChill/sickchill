@@ -31,7 +31,7 @@ import datetime
 import traceback
 
 import sickbeard
-from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, timeFormat
+from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
 from sickrage.helper.quality import get_quality_string
@@ -2168,7 +2168,7 @@ class CMD_ShowAddNew(ApiCall):
         indexer = indexer_result['data']['results'][0]['indexer']
 
         # moved the logic check to the end in an attempt to eliminate empty directory being created from previous errors
-        show_path = ek(os.path.join, self.location, helpers.sanitizeFileName(indexer_name))
+        show_path = ek(os.path.join, self.location, sanitize_filename(indexer_name))
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:

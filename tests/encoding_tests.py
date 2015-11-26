@@ -9,7 +9,7 @@ import locale
 import unittest
 
 import sickbeard
-from sickbeard.helpers import sanitizeFileName
+from sickrage.helper.common import sanitize_filename
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
@@ -33,7 +33,7 @@ class EncodingTests(unittest.TestCase):
 
         for s in strings:
             try:
-                show_dir = ek(os.path.join, rootDir, sanitizeFileName(s))
+                show_dir = ek(os.path.join, rootDir, sanitize_filename(s))
                 self.assertTrue(isinstance(show_dir, unicode))
             except Exception, e:
                 ex(e)
