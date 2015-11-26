@@ -1289,6 +1289,9 @@ class TVShow(object):
 
     def getOverview(self, epStatus):
 
+        anyQualities, bestQualities = Quality.splitQuality(self.quality)  # @UnusedVariable
+        epStatus, curQuality = Quality.splitCompositeStatus(epStatus)
+        
         if epStatus == WANTED:
             return Overview.WANTED
         elif epStatus in (UNAIRED, UNKNOWN):
@@ -1300,19 +1303,18 @@ class TVShow(object):
         elif epStatus in Quality.FAILED:
             return Overview.WANTED
         elif epStatus in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
-            return Overview.SNATCHED
+            if len(bestQualities) > 1 and curQuality < max(bestQualities) and not self.archive_firstmatch:
+                return Overview.QUAL
+            elif len(anyQualities) > 1 and curQuality < max(anyQualities) and not self.archive_firstmatch:
+                return Overview.QUAL
+            else:
+                return Overview.SNATCHED
         elif epStatus in Quality.DOWNLOADED:
-            anyQualities, bestQualities = Quality.splitQuality(self.quality)  # @UnusedVariable
-            epStatus, curQuality = Quality.splitCompositeStatus(epStatus)
-
-            if curQuality not in anyQualities + bestQualities:
-                if curQuality != Quality.UNKNOWN and curQuality > max(anyQualities):
-                    return Overview.GOOD
-                else:
-                    return Overview.QUAL
-            elif self.archive_firstmatch:
-                return Overview.GOOD
-            elif bestQualities and curQuality not in bestQualities:
+            if curQuality == Quality.UNKNOWN:
+                return Overview.QUAL
+            elif len(bestQualities) > 1 and curQuality < max(bestQualities) and not self.archive_firstmatch:
+                return Overview.QUAL
+            elif len(anyQualities) > 1 and curQuality < max(anyQualities) and not self.archive_firstmatch:
                 return Overview.QUAL
             else:
                 return Overview.GOOD
