@@ -99,6 +99,17 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                         </span>
                                     </label>
                                 </div>
+                                    <label class="clearfix" for="subtitles_download_in_pp">
+                                        <span class="component-title">Subtitles in Post-Process folder</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" name="subtitles_download_in_pp" id="subtitles_download_in_pp" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_DOWNLOAD_IN_PP)]}/>
+                                            <p>Download subtitles in post-process folder.</p>
+                                            <p>Usefull if you only want the episode to appear in Kodi/Plex library when has subtitles associated</p>
+                                            <p>You might want to enable the setting post-process setting 'Postpone if no subtitle'</p>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="field-pair">
                                 <div class="field-pair">
                                     <label class="clearfix" for="embedded_subtitles_all">
                                         <span class="component-title">Embedded Subtitles</span>

@@ -54,12 +54,11 @@ from sickbeard.common import USER_AGENT
 from sickbeard import db
 from sickbeard.notifiers.synoindex import notifier as synoindex_notifier
 from sickbeard import clients
-from sickbeard.subtitles import isValidLanguage
 from sickrage.helper.common import media_extensions, subtitle_extensions
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, MultipleShowObjectsException
 from cachecontrol import CacheControl, caches
-
+from babelfish import Language
 from itertools import izip, cycle
 
 import shutil
@@ -71,6 +70,12 @@ shutil.copyfile = shutil_custom.copyfile_custom
 # Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
 
+def isValidLanguage(language):
+    try:
+        Language.fromopensubtitles(language)
+    except Exception:
+        return False
+    return True
 
 def fixGlob(path):
     path = re.sub(r'\[', '[[]', path)
