@@ -33,7 +33,6 @@
     <span class="listing-key qual">Low Quality: <b>${totalQual}</b></span>
 </div><br>
 
-
 <div class="float-left">
 Jump to Show
     <select id="pickShow" class="form-control form-control-inline input-sm">
@@ -60,7 +59,7 @@ Jump to Show
 
     % for curResult in showSQLResults[curShow.indexerid]:
         <%
-            whichStr = str(curResult['season']) + 'x' + str(curResult['episode'])
+            whichStr = 'S%02dE%02d' % (curResult['season'], curResult['episode'])
             if whichStr not in showCats[curShow.indexerid] or showCats[curShow.indexerid][whichStr] not in (Overview.QUAL, Overview.WANTED):
                 continue
         %>

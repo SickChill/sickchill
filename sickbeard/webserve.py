@@ -3057,7 +3057,7 @@ class Manage(Home, WebRoot):
             for curResult in sqlResults:
                 curEpCat = curShow.getOverview(int(curResult["status"] or -1))
                 if curEpCat:
-                    epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
+                    epCats['S%02dE%02d' % (curResult['season'], curResult['episode'])] = curEpCat
                     epCounts[curEpCat] += 1
 
             showCounts[curShow.indexerid] = epCounts
