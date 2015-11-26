@@ -213,7 +213,7 @@ var episodes = ${episodes};
         <td>${parameter_help['desc'] if 'desc' in parameter_help else ''}</td>
         <td>${parameter_help['type'] if 'type' in parameter_help else ''}</td>
         <td>${parameter_help['defaultValue'] if 'defaultValue' in parameter_help else ''}</td>
-        <td>${parameter_help['allowedValues'] if 'allowedValues' in parameter_help else ''}</td>
+        <td>${parameter_help['allowed_values'] if 'allowed_values' in parameter_help else ''}</td>
     </tr>
 % endfor
 </tbody>
@@ -224,7 +224,7 @@ var episodes = ${episodes};
     % for parameter in parameters:
     <%
         parameter_help = parameters[parameter]
-        allowed_values = parameter_help['allowedValues'] if 'allowedValues' in parameter_help else ''
+        allowed_values = parameter_help['allowed_values'] if 'allowed_values' in parameter_help else ''
         type = parameter_help['type'] if 'type' in parameter_help else ''
     %>
 

@@ -305,10 +305,10 @@ class ApiCall(ApiHandler):
                 for paramName in paramDict:
                     if paramName not in self._help[paramType]:
                         self._help[paramType][paramName] = {}
-                    if paramDict[paramName]["allowedValues"]:
-                        self._help[paramType][paramName]["allowedValues"] = paramDict[paramName]["allowedValues"]
+                    if paramDict[paramName]["allowed_values"]:
+                        self._help[paramType][paramName]["allowed_values"] = paramDict[paramName]["allowed_values"]
                     else:
-                        self._help[paramType][paramName]["allowedValues"] = "see desc"
+                        self._help[paramType][paramName]["allowed_values"] = "see desc"
                     self._help[paramType][paramName]["defaultValue"] = paramDict[paramName]["defaultValue"]
                     self._help[paramType][paramName]["type"] = paramDict[paramName]["type"]
 
@@ -431,7 +431,7 @@ class ApiCall(ApiHandler):
     def _check_param_value(self, value, name, allowed_values):
         """ will check if value (or all values in it ) are in allowed values
             will raise an exception if value is "out of range"
-            if bool(allowedValue) is False a check is not performed and all values are excepted
+            if bool(allowed_value) is False a check is not performed and all values are excepted
         """
         if allowed_values:
             error = False
