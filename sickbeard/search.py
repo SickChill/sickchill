@@ -589,7 +589,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                     logger.log(u"Breaking apart the NZB and adding the individual ones to our results", logger.DEBUG)
 
                     # if not, break it apart and add them as the lowest priority results
-                    individualResults = nzbSplitter.splitResult(bestSeasonResult)
+                    individualResults = nzbSplitter.split_result(bestSeasonResult)
                     for curResult in individualResults:
                         if len(curResult.episodes) == 1:
                             epNum = curResult.episodes[0].episode
