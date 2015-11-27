@@ -22,10 +22,9 @@ import operator
 import platform
 import re
 import uuid
-from numdict import NumDict
+from sickbeard.numdict import NumDict
 
 import sys
-import os.path
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -406,7 +405,7 @@ class Quality(object):
         return (status, Quality.NONE)
 
     @staticmethod
-    def sceneQualityFromName(name, quality):
+    def sceneQualityFromName(name, quality): # pylint: disable=R0912
         """
         Get scene naming parameters from filename and quality
 
@@ -548,21 +547,20 @@ class StatusStrings(NumDict):
             return False
 
 # Assign strings to statuses
-statusStrings = StatusStrings(
-    {UNKNOWN: "Unknown",
-     UNAIRED: "Unaired",
-     SNATCHED: "Snatched",
-     DOWNLOADED: "Downloaded",
-     SKIPPED: "Skipped",
-     SNATCHED_PROPER: "Snatched (Proper)",
-     WANTED: "Wanted",
-     ARCHIVED: "Archived",
-     IGNORED: "Ignored",
-     SUBTITLED: "Subtitled",
-     FAILED: "Failed",
-     SNATCHED_BEST: "Snatched (Best)"
-     }
-)
+statusStrings = StatusStrings({
+    UNKNOWN: "Unknown",
+    UNAIRED: "Unaired",
+    SNATCHED: "Snatched",
+    DOWNLOADED: "Downloaded",
+    SKIPPED: "Skipped",
+    SNATCHED_PROPER: "Snatched (Proper)",
+    WANTED: "Wanted",
+    ARCHIVED: "Archived",
+    IGNORED: "Ignored",
+    SUBTITLED: "Subtitled",
+    FAILED: "Failed",
+    SNATCHED_BEST: "Snatched (Best)"
+})
 
 
 # pylint: disable=R0903
@@ -573,20 +571,25 @@ class Overview(object):
     GOOD = 4
     SKIPPED = SKIPPED  # 5
 
-    # For both snatched statuses. Note: SNATCHED/QUAL have same value and break dict.
-    SNATCHED = SNATCHED_PROPER = SNATCHED_BEST  # 9
+    # Note: SNATCHED/QUAL have same value and break dict, so must assign a new value
+    SNATCHED = 20
+    SNATCHED_PROPER = SNATCHED_PROPER  # 9
+    SNATCHED_BEST = SNATCHED_BEST # 12
 
-    overviewStrings = NumDict(
-        {SKIPPED: "skipped",
-         WANTED: "wanted",
-         QUAL: "qual",
-         GOOD: "good",
-         UNAIRED: "unaired",
-         SNATCHED: "snatched"
-         }
-    )
+    overviewStrings = {
+        SKIPPED: "skipped",
+        WANTED: "wanted",
+        QUAL: "qual",
+        GOOD: "good",
+        UNAIRED: "unaired",
+        SNATCHED: "snatched",
+        # we can give these a different class later, otherwise breaks checkboxes in displayshow for showing different statuses
+        SNATCHED_BEST: "snatched",
+        SNATCHED_PROPER: "snatched"
+    }
 
-countryList = {'Australia': 'AU',
-               'Canada': 'CA',
-               'USA': 'US'
-               }
+countryList = {
+    'Australia': 'AU',
+    'Canada': 'CA',
+    'USA': 'US'
+}

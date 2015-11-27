@@ -1298,8 +1298,12 @@ class TVShow(object):
             return Overview.GOOD
         elif epStatus in Quality.FAILED:
             return Overview.WANTED
-        elif epStatus in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+        elif epStatus in Quality.SNATCHED:
             return Overview.SNATCHED
+        elif epStatus in Quality.SNATCHED_PROPER:
+            return Overview.SNATCHED_PROPER
+        elif epStatus in Quality.SNATCHED_BEST:
+            return Overview.SNATCHED_BEST
         elif epStatus in Quality.DOWNLOADED:
             anyQualities, bestQualities = Quality.splitQuality(self.quality)  # @UnusedVariable
             epStatus, curQuality = Quality.splitCompositeStatus(epStatus)
