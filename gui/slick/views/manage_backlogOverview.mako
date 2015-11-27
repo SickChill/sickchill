@@ -20,12 +20,15 @@
 % endif
 
 <%
+    hasPreferredQual = lambda x: Quality.splitQuality(x.quality)[1]
+
     totalWanted = totalQual = totalQualSnatched = 0
     backLogShows = sorted([x for x in sickbeard.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + showCounts[x.indexerid][Overview.SNATCHED]], key=lambda x: x.name)
     for curShow in backLogShows:
         totalWanted += showCounts[curShow.indexerid][Overview.WANTED]
         totalQual += showCounts[curShow.indexerid][Overview.QUAL]
-        totalQualSnatched += showCounts[x.indexerid][Overview.SNATCHED]
+        if hasPreferredQual(curShow):
+            totalQualSnatched += showCounts[x.indexerid][Overview.SNATCHED]
 %>
 
 <div class="h2footer pull-right">
@@ -45,12 +48,17 @@ Jump to Show
 
 <table class="sickbeardTable" cellspacing="0" border="0" cellpadding="0">
 % for curShow in backLogShows:
+    % if not hasPreferredQual(curShow) and not showCounts[curShow.indexerid][Overview.WANTED] + showCounts[curShow.indexerid][Overview.QUAL]:
+        <% continue %>
+    % endif
     <tr class="seasonheader" id="show-${curShow.indexerid}">
         <td colspan="3" class="align-left">
             <br><h2><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></h2>
             <div class="pull-right">
                 <span class="listing-key wanted">Wanted: <b>${showCounts[curShow.indexerid][Overview.WANTED]}</b></span>
-                <span class="listing-key snatched">Snatched (Low Quality): <b>${showCounts[curShow.indexerid][Overview.SNATCHED]}</b></span>
+                % if hasPreferredQual(curShow):
+                    <span class="listing-key snatched">Snatched (Low Quality): <b>${showCounts[curShow.indexerid][Overview.SNATCHED]}</b></span>
+                % endif
                 <span class="listing-key qual">Low Quality: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>
                 <a class="btn btn-inline forceBacklog" href="${srRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> Force Backlog</a>
             </div>
@@ -63,6 +71,9 @@ Jump to Show
         <%
             whichStr = 'S%02dE%02d' % (curResult['season'], curResult['episode'])
             if whichStr not in showCats[curShow.indexerid] or showCats[curShow.indexerid][whichStr] not in (Overview.QUAL, Overview.WANTED, Overview.SNATCHED):
+                continue
+
+            if not hasPreferredQual(curShow) and showCats[curShow.indexerid][whichStr] == Overview.SNATCHED:
                 continue
         %>
         <tr class="seasonstyle ${Overview.overviewStrings[showCats[curShow.indexerid][whichStr]]}">
