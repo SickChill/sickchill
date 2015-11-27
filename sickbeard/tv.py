@@ -1406,7 +1406,9 @@ class TVEpisode(object):
 
     def refreshSubtitles(self):
         """Look for subtitles files and refresh the subtitles property"""
-        self.subtitles, save_subtitles = subtitles.subtitlesLanguages(self.location)
+        episode_info = {'show.name': self.show.name, 'location': self.location,
+                        'season': self.season, 'episode': self.episode}
+        self.subtitles, save_subtitles = subtitles.refresh_subtitles(episode_info, self.subtitles)
         if save_subtitles:
             self.saveToDB()
 
@@ -1416,31 +1418,29 @@ class TVEpisode(object):
                        (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
             return
 
-        logger.log(u"%s: Downloading subtitles for S%02dE%02d" % (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
+        logger.log(u"%s: Downloading subtitles for %s S%02dE%02d"
+                   % (self.show.indexerid, self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
 
-        # logging.getLogger('subliminal.api').addHandler(logging.StreamHandler())
-        # logging.getLogger('subliminal.api').setLevel(logging.DEBUG)
-        # logging.getLogger('subliminal').addHandler(logging.StreamHandler())
-        # logging.getLogger('subliminal').setLevel(logging.DEBUG)
+        subtitles_info = {'location': self.location, 'subtitles': self.subtitles, 'season': self.season,
+                          'episode': self.episode, 'name': self.name, 'show.name': self.show.name,
+                          'show.indexerid': self.show.indexerid, 'status': self.status}
 
-        subtitles_info = {'location': self.location, 'subtitles': self.subtitles, 'show.indexerid': self.show.indexerid, 'season': self.season,
-                          'episode': self.episode, 'name': self.name, 'show.name': self.show.name, 'status': self.status}
-
-        self.subtitles, newSubtitles = subtitles.downloadSubtitles(subtitles_info)
+        self.subtitles, newSubtitles = subtitles.download_subtitles(subtitles_info)
 
         self.subtitles_searchcount += 1 if self.subtitles_searchcount else 1
         self.subtitles_lastsearch = datetime.datetime.now().strftime(dateTimeFormat)
         self.saveToDB()
 
         if newSubtitles:
-            subtitleList = ", ".join([subtitles.fromietf(newSub).name for newSub in newSubtitles])
-            logger.log(u"%s: Downloaded %s subtitles for S%02dE%02d" %
-                       (self.show.indexerid, subtitleList, self.season or 0, self.episode or 0), logger.DEBUG)
+            subtitle_list = ", ".join([subtitles.fromietf(newSub).name for newSub in newSubtitles])
+            logger.log(u"%s: Downloaded %s subtitles for %s S%02dE%02d" %
+                       (self.show.indexerid, subtitle_list, self.show.name, self.season or 0,
+                        self.episode or 0), logger.DEBUG)
 
-            notifiers.notify_subtitle_download(self.prettyName(), subtitleList)
+            notifiers.notify_subtitle_download(self.prettyName(), subtitle_list)
         else:
-            logger.log(u"%s: No subtitles downloaded for S%02dE%02d" %
-                       (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
+            logger.log(u"%s: No subtitles downloaded for %s S%02dE%02d" %
+                       (self.show.indexerid, self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
 
     def checkForMetaFiles(self):
 
