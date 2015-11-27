@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import os
 import time
 import re
@@ -27,6 +26,7 @@ import regexes
 import sickbeard
 
 from sickbeard import logger, helpers, scene_numbering, common, scene_exceptions, db
+from sickrage.helper.common import remove_extension
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from dateutil import parser
@@ -410,7 +410,7 @@ class NameParser(object):
         dir_name, file_name = ek(os.path.split, name)
 
         if self.file_name:
-            base_file_name = helpers.remove_extension(file_name)
+            base_file_name = remove_extension(file_name)
         else:
             base_file_name = file_name
 

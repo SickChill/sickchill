@@ -538,7 +538,7 @@
                                 <span class="component-title">Verify SSL Certs</span>
                                     <span class="component-desc">
                                         <input type="checkbox" name="ssl_verify" id="ssl_verify" ${('', 'checked="checked"')[bool(sickbeard.SSL_VERIFY)]}/>
-                                        <p>Verify SSL Certificates (Disable this for broken SSL installs (Like QNAP)<p>
+                                        <p>Verify SSL Certificates (Disable this for broken SSL installs (Like QNAP))<p>
                                     </span>
                             </label>
                         </div>
@@ -613,7 +613,7 @@
                                 <span class="component-title">Skip Remove Detection</span>
                                 <span class="component-desc">
                                 <input type="checkbox" name="skip_removed_files" id="skip_removed_files" ${('', 'checked="checked"')[bool(sickbeard.SKIP_REMOVED_FILES)]}/>
-                                <p>Skip detection of removed files. If disable it will set default deleted status</p>
+                                <p>Skip detection of removed files. If disabled the episode will be set to the default deleted status</p>
                                  </span>
                                 <div class="clear-left">
                                 <span class="component-desc"><b>NOTE:</b> This may mean SickRage misses renames as well</span>

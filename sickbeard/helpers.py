@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import os
 import io
 import ctypes
@@ -54,12 +53,11 @@ from sickbeard.common import USER_AGENT
 from sickbeard import db
 from sickbeard.notifiers.synoindex import notifier as synoindex_notifier
 from sickbeard import clients
-from sickbeard.subtitles import isValidLanguage
-from sickrage.helper.common import media_extensions, subtitle_extensions
+from sickrage.helper.common import media_extensions, pretty_file_size, subtitle_extensions
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, MultipleShowObjectsException
 from cachecontrol import CacheControl, caches
-
+from babelfish import Language
 from itertools import izip, cycle
 
 import shutil
@@ -70,6 +68,14 @@ shutil.copyfile = shutil_custom.copyfile_custom
 # pylint: disable=W0212
 # Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
+
+
+def isValidLanguage(language):
+    try:
+        Language.fromopensubtitles(language)
+    except Exception:
+        return False
+    return True
 
 
 def fixGlob(path):
@@ -94,21 +100,6 @@ def indentXML(elem, level=0):
     else:
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
-
-
-def remove_extension(name):
-    """
-    Remove download or media extension from name (if any)
-    """
-
-    if name and "." in name:
-        # pylint: disable=W0612
-        base_name, sep, extension = name.rpartition('.')  # @UnusedVariable
-        if base_name and extension.lower() in ['nzb', 'torrent'] + media_extensions:
-            name = base_name
-
-    return name
-
 
 def remove_non_release_groups(name):
     """
@@ -168,54 +159,6 @@ def remove_non_release_groups(name):
             _name = re.sub(r'(?i)' + remove_string, '', _name)
 
     return _name
-
-
-def replaceExtension(filename, newExt):
-    """
-    >>> replaceExtension('foo.avi', 'mkv')
-    'foo.mkv'
-    >>> replaceExtension('.vimrc', 'arglebargle')
-    '.vimrc'
-    >>> replaceExtension('a.b.c', 'd')
-    'a.b.d'
-    >>> replaceExtension('', 'a')
-    ''
-    >>> replaceExtension('foo.bar', '')
-    'foo.'
-    """
-    sepFile = filename.rpartition(".")
-    if sepFile[0] == "":
-        return filename
-    else:
-        return sepFile[0] + "." + newExt
-
-
-def notTorNZBFile(filename):
-    """
-    Returns true if filename is not a NZB nor Torrent file
-
-    :param filename: Filename to check
-    :return: True if filename is not a NZB nor Torrent
-    """
-
-    return not (filename.endswith(".torrent") or filename.endswith(".nzb"))
-
-
-def isSyncFile(filename):
-    """
-    Returns true if filename is a syncfile, indicating filesystem may be in flux
-
-    :param filename: Filename to check
-    :return: True if this file is a syncfile, False otherwise
-    """
-
-    extension = filename.rpartition(".")[2].lower()
-    # if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
-    syncfiles = sickbeard.SYNC_FILES
-    if extension in syncfiles.split(",") or filename.startswith('.syncthing'):
-        return True
-    else:
-        return False
 
 
 def isMediaFile(filename):
@@ -279,29 +222,6 @@ def isBeingWritten(filepath):
         return True
 
     return False
-
-
-def sanitizeFileName(name):
-    """
-    >>> sanitizeFileName('a/b/c')
-    'a-b-c'
-    >>> sanitizeFileName('abc')
-    'abc'
-    >>> sanitizeFileName('a"b')
-    'ab'
-    >>> sanitizeFileName('.a.b..')
-    'a.b'
-    """
-
-    # remove bad chars from the filename
-    name = re.sub(r'[\\/\*]', '-', name)
-    name = re.sub(r'[:"<>|?]', '', name)
-    name = re.sub(ur'\u2122', '', name)  # Trade Mark Sign
-
-    # remove leading/trailing periods and spaces
-    name = name.strip(' .')
-
-    return name
 
 
 def remove_file_failed(failed_file):
@@ -1750,18 +1670,6 @@ def generateApiKey():
     return m.hexdigest()
 
 
-def pretty_filesize(file_bytes):
-    """Return humanly formatted sizes from bytes"""
-    for mod in ['B', 'KB', 'MB', 'GB', 'TB', 'PB']:
-        if file_bytes < 1024.00:
-            return "%3.2f %s" % (file_bytes, mod)
-        file_bytes /= 1024.00
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
-
-
 def remove_article(text=''):
     """Remove the english articles from a text string"""
 
@@ -1834,7 +1742,7 @@ def verify_freespace(src, dest, oldfile=None):
         return True
     else:
         logger.log(u"Not enough free space: Needed: %s bytes ( %s ), found: %s bytes ( %s )"
-                   % (neededspace, pretty_filesize(neededspace), diskfree, pretty_filesize(diskfree)), logger.WARNING)
+                   % (neededspace, pretty_file_size(neededspace), diskfree, pretty_file_size(diskfree)), logger.WARNING)
         return False
 
 
@@ -1905,9 +1813,9 @@ def getDiskSpaceUsage(diskPath=None):
         if platform.system() == 'Windows':
             free_bytes = ctypes.c_ulonglong(0)
             ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(diskPath), None, None, ctypes.pointer(free_bytes))
-            return pretty_filesize(free_bytes.value)
+            return pretty_file_size(free_bytes.value)
         else:
             st = os.statvfs(diskPath)
-            return pretty_filesize(st.f_bavail * st.f_frsize)
+            return pretty_file_size(st.f_bavail * st.f_frsize)
     else:
         return False

@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import os
 import stat
 
@@ -28,7 +27,7 @@ from sickbeard import logger
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import common
 from sickbeard import failedProcessor
-from sickrage.helper.common import subtitle_extensions
+from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file, subtitle_extensions
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
@@ -176,8 +175,8 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
     path, dirs, files = get_path_dir_files(dirName, nzbName, proc_type)
 
-    files = [x for x in files if helpers.notTorNZBFile(x)]
-    SyncFiles = [x for x in files if helpers.isSyncFile(x)]
+    files = [x for x in files if not is_torrent_or_nzb_file(x)]
+    SyncFiles = [x for x in files if is_sync_file(x)]
 
     # Don't post process if files are still being synced and option is activated
     if SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES:
@@ -241,7 +240,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
             postpone = False
 
-            SyncFiles = [x for x in fileList if helpers.isSyncFile(x)]
+            SyncFiles = [x for x in fileList if is_sync_file(x)]
 
             # Don't post process if files are still being synced and option is activated
             if SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES:

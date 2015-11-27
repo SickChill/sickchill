@@ -11,7 +11,9 @@ $(document).ready(function() {
         method: "POST",
         hintText: "Write to search a language and select it",
         preventDuplicates: true,
-        prePopulate: [${','.join("{\"id\": \"" + subtitles.fromietf(lang).opensubtitles + "\", name: \"" + subtitles.fromietf(lang).name + "\"}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''}]
+        prePopulate: [${','.join("{\"id\": \"" + subtitles.fromietf(lang).opensubtitles + "\", name: \"" + subtitles.fromietf(lang).name + "\"}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''}],
+        resultsFormatter: function(item){ return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' /> " + item.name + "</li>" },
+        tokenFormatter: function(item)  { return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' /> " + item.name + "</li>" },
     });
 });
 $('#config-components').tabs();
@@ -99,6 +101,17 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                         </span>
                                     </label>
                                 </div>
+                                    <label class="clearfix" for="subtitles_download_in_pp">
+                                        <span class="component-title">Subtitles in Post-Process folder</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" name="subtitles_download_in_pp" id="subtitles_download_in_pp" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_DOWNLOAD_IN_PP)]}/>
+                                            <p>Download subtitles in post-process folder.</p>
+                                            <p>Useful if you only want the episode to be post-processed when it has subtitles associated</p>
+                                            <p>You might also want to enable the post-process setting 'Postpone if no subtitle'</p>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="field-pair">
                                 <div class="field-pair">
                                     <label class="clearfix" for="embedded_subtitles_all">
                                         <span class="component-title">Embedded Subtitles</span>

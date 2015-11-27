@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import datetime
 import os
 import re
@@ -35,9 +34,11 @@ from sickbeard import tvcache
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality
 from sickbeard.common import user_agents
+from sickrage.helper.common import sanitize_filename
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickbeard import show_name_helpers
+
 
 class GenericProvider(object):
     NZB = "nzb"
@@ -163,12 +164,10 @@ class GenericProvider(object):
             urls = [result.url]
 
         if self.providerType == GenericProvider.TORRENT:
-            filename = ek(os.path.join, sickbeard.TORRENT_DIR,
-                          helpers.sanitizeFileName(result.name) + '.' + self.providerType)
+            filename = ek(os.path.join, sickbeard.TORRENT_DIR, sanitize_filename(result.name) + '.' + self.providerType)
 
         elif self.providerType == GenericProvider.NZB:
-            filename = ek(os.path.join, sickbeard.NZB_DIR,
-                          helpers.sanitizeFileName(result.name) + '.' + self.providerType)
+            filename = ek(os.path.join, sickbeard.NZB_DIR, sanitize_filename(result.name) + '.' + self.providerType)
 
         return urls, filename
 

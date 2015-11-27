@@ -44,7 +44,7 @@ Manage episodes with status <select name="whichStatus" class="form-control form-
 <br>
 
 <%
-    if int(whichStatus) in [common.IGNORED, common.SNATCHED] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED:
+    if int(whichStatus) in [common.IGNORED, common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED:
         row_class = "good"
     else:
         row_class = common.Overview.overviewStrings[int(whichStatus)]

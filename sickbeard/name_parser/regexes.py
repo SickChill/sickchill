@@ -67,6 +67,18 @@ normal_regexes = [
      -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
      '''),
 
+    ('newpct',
+     # American Horror Story - Temporada 4 HDTV x264[Cap.408_409]SPANISH AUDIO -NEWPCT
+     # American Horror Story - Temporada 4 [HDTV][Cap.408][Espanol Castellano]
+     # American Horror Story - Temporada 4 HDTV x264[Cap.408]SPANISH AUDIO –NEWPCT)
+     r'''
+     (?P<series_name>.+?).-.+\d{1,2}[ ,\.]       # Show name: American Horror Story
+     (?P<extra_info>.+)\[Cap\.                   # Quality: HDTV x264, [HDTV], HDTV x264
+     (?P<season_num>\d{1,2})                     # Season Number: 4
+     (?P<ep_num>\d{2})                           # Episode Number: 08
+     ((_\d{1,2}(?P<extra_ep_num>\d{2}))|.*])     # Episode number2: 09
+     '''),
+
     ('fov',
      # Show_Name.1x02.Source_Quality_Etc-Group
      # Show Name - 1x02 - My Ep Name
@@ -115,17 +127,6 @@ normal_regexes = [
      (?!264)                                     # don't count x264
      (?P<season_num>\d{1,2})                     # 1
      (?P<ep_num>\d{2})$                          # 02
-     '''),
-
-    ('newpct',
-     # Example: Sobrenatural - Temporada 10 [HDTV][Cap.1023][Espanol Castellano]
-     r'''
-     (?P<series_name>.+?)                      # Showw_Name: "Sobrenatural"
-     (?:.-.+\d{1,2}.\[)                        # Separator and junk: " - Temporada 10 ["
-     (?P<extra_info>.+)                        # Quality: "HDTV"
-     (?:\]\[.+\.)                              # junk: "][Cap."
-     (?P<season_num>\d{1,2})                   # Season number: "10"
-     (?P<ep_num>\d{2})(?:])                    # Episode number: "23"
      '''),
 
     ('verbose',

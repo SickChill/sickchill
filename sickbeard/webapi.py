@@ -31,7 +31,7 @@ import datetime
 import traceback
 
 import sickbeard
-from sickrage.helper.common import dateFormat, dateTimeFormat, timeFormat
+from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
 from sickrage.helper.quality import get_quality_string
@@ -305,10 +305,10 @@ class ApiCall(ApiHandler):
                 for paramName in paramDict:
                     if paramName not in self._help[paramType]:
                         self._help[paramType][paramName] = {}
-                    if paramDict[paramName]["allowedValues"]:
-                        self._help[paramType][paramName]["allowedValues"] = paramDict[paramName]["allowedValues"]
+                    if paramDict[paramName]["allowed_values"]:
+                        self._help[paramType][paramName]["allowed_values"] = paramDict[paramName]["allowed_values"]
                     else:
-                        self._help[paramType][paramName]["allowedValues"] = "see desc"
+                        self._help[paramType][paramName]["allowed_values"] = "see desc"
                     self._help[paramType][paramName]["defaultValue"] = paramDict[paramName]["defaultValue"]
                     self._help[paramType][paramName]["type"] = paramDict[paramName]["type"]
 
@@ -431,7 +431,7 @@ class ApiCall(ApiHandler):
     def _check_param_value(self, value, name, allowed_values):
         """ will check if value (or all values in it ) are in allowed values
             will raise an exception if value is "out of range"
-            if bool(allowedValue) is False a check is not performed and all values are excepted
+            if bool(allowed_value) is False a check is not performed and all values are excepted
         """
         if allowed_values:
             error = False
@@ -755,7 +755,7 @@ class CMD_Episode(ApiCall):
         status, quality = Quality.splitCompositeStatus(int(episode["status"]))
         episode["status"] = _get_status_strings(status)
         episode["quality"] = get_quality_string(quality)
-        episode["file_size_human"] = helpers.pretty_filesize(episode["file_size"])
+        episode["file_size_human"] = pretty_file_size(episode["file_size"])
 
         return _responds(RESULT_SUCCESS, episode)
 
@@ -2168,7 +2168,7 @@ class CMD_ShowAddNew(ApiCall):
         indexer = indexer_result['data']['results'][0]['indexer']
 
         # moved the logic check to the end in an attempt to eliminate empty directory being created from previous errors
-        show_path = ek(os.path.join, self.location, helpers.sanitizeFileName(indexer_name))
+        show_path = ek(os.path.join, self.location, sanitize_filename(indexer_name))
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
@@ -2798,8 +2798,8 @@ class CMD_Shows(ApiCall):
         shows = {}
         for curShow in sickbeard.showList:
 
-            if not self.paused and not curShow.paused:
-                continue
+            if not self.paused and curShow.paused:  # If we're not including paused shows, and the current show is paused
+                continue  # continue with the next show
 
             indexer_show = helpers.mapIndexersToShow(curShow)
 

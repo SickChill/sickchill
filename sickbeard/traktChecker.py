@@ -33,6 +33,7 @@ from sickbeard.common import SKIPPED
 from sickbeard.common import UNKNOWN
 from sickbeard.common import WANTED
 from sickbeard.common import Quality
+from sickrage.helper.common import sanitize_filename
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
@@ -453,7 +454,7 @@ class TraktChecker(object):
                 location = None
 
             if location:
-                showPath = ek(os.path.join, location, helpers.sanitizeFileName(name))
+                showPath = ek(os.path.join, location, sanitize_filename(name))
                 dir_exists = helpers.makeDir(showPath)
 
                 if not dir_exists:
