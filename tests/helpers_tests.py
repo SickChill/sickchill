@@ -1,22 +1,93 @@
 #!/usr/bin/env python2.7
+# Author: Dustyn Gibson <miigotu@gmail.com>
+# URL: http://github.com/SiCKRAGETV/SickRage
+#
+# This file is part of SickRage.
+#
+# SickRage is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# SickRage is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+
 """
-Author: Dustyn Gibson <miigotu@gmail.com>
-URL: http://github.com/SiCKRAGETV/SickRage
+Test sickbeard.helpers
 
-This file is part of SickRage.
-
-SickRage is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-SickRage is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+Methods:
+    isValidLanguage
+    fixGlob
+    indentXML
+    remove_non_release_groups
+    isMediaFile
+    isRarFile
+    isBeingWritten
+    remove_file_failed
+    findCertainShow
+    makeDir
+    searchDBForShow
+    searchIndexerForShowID
+    listMediaFiles
+    copyFile
+    moveFile
+    link
+    hardlinkFile
+    symlink
+    moveAndSymlinkFile
+    make_dirs
+    rename_ep_file
+    delete_empty_folders
+    fileBitFilter
+    chmodAsParent
+    fixSetGroupID
+    is_anime_in_show_list
+    update_anime_support
+    get_absolute_number_from_season_and_episode
+    get_all_episodes_from_absolute_number
+    sanitizeSceneName
+    arithmeticEval
+    create_https_certificates
+    backupVersionedFile
+    restoreVersionedFile
+    tryInt
+    md5_for_file
+    get_lan_ip
+    check_url
+    anon_url
+    encrypt
+    decrypt
+    full_sanitizeSceneName
+    _check_against_names
+    get_show
+    is_hidden_folder
+    real_path
+    validateShow
+    set_up_anidb_connection
+    makeZip
+    extractZip
+    backupConfigZip
+    restoreConfigZip
+    mapIndexersToShow
+    touchFile
+    _getTempDir
+    codeDescription
+    _setUpSession
+    getURL
+    download_file
+    get_size
+    generateApiKey
+    remove_article
+    generateCookieSecret
+    verify_freespace
+    pretty_time_delta
+    isFileLocked
+    getDiskSpaceUsage
 """
 
 import sys
@@ -27,12 +98,13 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import unittest
 
-from sickbeard.helpers import remove_non_release_groups
+from sickbeard.helpers import isValidLanguage, remove_non_release_groups
+from babelfish import language  # pylint: disable=import-error
 
-test_result = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
-test_cases = {
+TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
+TEST_CASES = {
     'removewords': [
-        test_result,
+        TEST_RESULT,
         'Show.Name.S01E01.HDTV.x264-RLSGROUP[cttv]',
         'Show.Name.S01E01.HDTV.x264-RLSGROUP.RiPSaLoT',
         'Show.Name.S01E01.HDTV.x264-RLSGROUP[GloDLS]',
@@ -71,25 +143,516 @@ test_cases = {
     ]
 }
 
+
 class HelpersTests(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(HelpersTests, self).__init__(*args, **kwargs)
 
+
 def test_generator(test_strings):
     def _test(self):
         for test_string in test_strings:
-            self.assertEqual(remove_non_release_groups(test_string), test_result)
+            self.assertEqual(remove_non_release_groups(test_string), TEST_RESULT)
     return _test
+
+
+class HelpersTests2(unittest.TestCase):
+    @unittest.expectedFailure
+    def test_is_valid_language(self):
+        # TODO: Determine why this fails and at such a high failure %
+        """
+        Test isValidLanguage
+        """
+        exception_count = 0
+        total = 0
+        for lang in language.LANGUAGES:
+            total += 1
+            try:
+                self.assertTrue(isValidLanguage(lang), lang)
+            except NameError:
+                exception_count += 1
+            except Exception as error:
+                raise error
+        if exception_count > 0:
+            raise Exception('Language failure ratio: %s [%s/%s]' %
+                            (100.0 * exception_count/total, exception_count, total))
+
+    @unittest.skip('Not yet implemented')
+    def test_fix_glob(self):
+        """
+        Test fixGlob
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_indent_xml(self):
+        """
+        Test indentXML
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_remove_non_release_groups(self):
+        """
+        Test remove_non_release_groups
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_is_media_file(self):
+        """
+        Test isMediaFile
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_is_rar_file(self):
+        """
+        Test isRarFile
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_is_being_written(self):
+        """
+        Test isBeingWritten
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_remove_file_failed(self):
+        """
+        Test remove_file_failed
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_find_certain_show(self):
+        """
+        Test findCertainShow
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_make_dir(self):
+        """
+        Test makeDir
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_search_db_for_show(self):
+        """
+        Test searchDBForShow
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_search_indexer_for_show_id(self):
+        """
+        Test searchIndexerForShowID
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_list_media_files(self):
+        """
+        Test listMediaFiles
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_copy_file(self):
+        """
+        Test copyFile
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_move_file(self):
+        """
+        Test moveFile
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_link(self):
+        """
+        Test link
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_hardlink_file(self):
+        """
+        Test hardlinkFile
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_symlink(self):
+        """
+        Test symlink
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_move_and_symlink_file(self):
+        """
+        Test moveAndSymlinkFile
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_make_dirs(self):
+        """
+        Test make_dirs
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_rename_ep_file(self):
+        """
+        Test rename_ep_file
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_delete_empty_folders(self):
+        """
+        Test delete_empty_folders
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_file_bit_filter(self):
+        """
+        Test fileBitFilter
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_chmod_as_parent(self):
+        """
+        Test chmodAsParent
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_fix_set_group_id(self):
+        """
+        Test fixSetGroupID
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_is_anime_in_show_list(self):
+        """
+        Test is_anime_in_show_list
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_update_anime_support(self):
+        """
+        Test update_anime_support
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_get_abs_no_from_season_and_ep(self):
+        """
+        Test get_absolute_number_from_season_and_episode
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_get_all_eps_from_abs_no(self):
+        """
+        Test get_all_episodes_from_absolute_number
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_sanitize_scene_name(self):
+        """
+        Test sanitizeSceneName
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_arithmetic_eval(self):
+        """
+        Test arithmeticEval
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_create_https_certificates(self):
+        """
+        Test create_https_certificates
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_backup_versioned_file(self):
+        """
+        Test backupVersionedFile
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_restore_versioned_file(self):
+        """
+        Test restoreVersionedFile
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_try_int(self):
+        """
+        Test tryInt
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_md5_for_file(self):
+        """
+        Test md5_for_file
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_get_lan_ip(self):
+        """
+        Test get_lan_ip
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_check_url(self):
+        """
+        Test check_url
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_anon_url(self):
+        """
+        Test anon_url
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_encrypt(self):
+        """
+        Test encrypt
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_decrypt(self):
+        """
+        Test decrypt
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_full_sanitize_scene_name(self):
+        """
+        Test full_sanitizeSceneName
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test__check_against_names(self):
+        """
+        Test _check_against_names
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_get_show(self):
+        """
+        Test get_show
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_is_hidden_folder(self):
+        """
+        Test is_hidden_folder
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_real_path(self):
+        """
+        Test real_path
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_validate_show(self):
+        """
+        Test validateShow
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_set_up_anidb_connection(self):
+        """
+        Test set_up_anidb_connection
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_make_zip(self):
+        """
+        Test makeZip
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_extract_zip(self):
+        """
+        Test extractZip
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_backup_config_zip(self):
+        """
+        Test backupConfigZip
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_restore_config_zip(self):
+        """
+        Test restoreConfigZip
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_map_indexers_to_show(self):
+        """
+        Test mapIndexersToShow
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_touch_file(self):
+        """
+        Test touchFile
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test__get_temp_dir(self):
+        """
+        Test _getTempDir
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_code_description(self):
+        """
+        Test codeDescription
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test__set_up_session(self):
+        """
+        Test _setUpSession
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_get_url(self):
+        """
+        Test getURL
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_download_file(self):
+        """
+        Test download_file
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_get_size(self):
+        """
+        Test get_size
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_generate_api_key(self):
+        """
+        Test generateApiKey
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_remove_article(self):
+        """
+        Test remove_article
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_generate_cookie_secret(self):
+        """
+        Test generateCookieSecret
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_verify_free_space(self):
+        """
+        Test verify_freespace
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_pretty_time_delta(self):
+        """
+        Test pretty_time_delta
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_is_file_locked(self):
+        """
+        Test isFileLocked
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_get_disk_space_usage(self):
+        """
+        Test getDiskSpaceUsage
+        """
+        pass
+
 
 if __name__ == '__main__':
     print "=================="
     print "STARTING - Helpers TESTS"
     print "=================="
     print "######################################################################"
-    for name, test_data in test_cases.items():
+    for name, test_data in TEST_CASES.items():
         test_name = 'test_%s' % name
         test = test_generator(test_data)
         setattr(HelpersTests, test_name, test)
 
-    suite = unittest.TestLoader().loadTestsFromTestCase(HelpersTests)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersTests2)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
