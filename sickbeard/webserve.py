@@ -1260,6 +1260,8 @@ class Home(WebRoot):
         epCounts[Overview.GOOD] = 0
         epCounts[Overview.UNAIRED] = 0
         epCounts[Overview.SNATCHED] = 0
+        epCounts[Overview.SNATCHED_PROPER] = 0
+        epCounts[Overview.SNATCHED_BEST] = 0
 
         for curResult in sqlResults:
             curEpCat = showObj.getOverview(int(curResult["status"] or -1))
@@ -3052,6 +3054,8 @@ class Manage(Home, WebRoot):
             epCounts[Overview.GOOD] = 0
             epCounts[Overview.UNAIRED] = 0
             epCounts[Overview.SNATCHED] = 0
+            epCounts[Overview.SNATCHED_PROPER] = 0
+            epCounts[Overview.SNATCHED_BEST] = 0
 
             sqlResults = myDB.select(
                 "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
