@@ -364,7 +364,7 @@ class SubtitlesFinder(object):
                 logger.log(u"Starting post-process with default settings now that we found subtitles")
                 processTV.processDir(sickbeard.TV_DOWNLOAD_DIR)
 
-    def run(self):
+    def run(self, force=False):
 
         if not sickbeard.USE_SUBTITLES:
             return
