@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import io
 import os
 import re
 import datetime
@@ -165,12 +164,22 @@ def download_subtitles(subtitles_info):
                                                        hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED,
                                                        only_one=not sickbeard.SUBTITLES_MULTI)
 
-        save_subtitles(video, found_subtitles, directory=subtitles_path, single=not sickbeard.SUBTITLES_MULTI)
+        subliminal.save_subtitles(video, found_subtitles, directory=subtitles_path,
+                                  single=not sickbeard.SUBTITLES_MULTI)
 
     except Exception:
         logger.log(u"Error occurred when downloading subtitles for: %s" % video_path)
         logger.log(traceback.format_exc(), logger.ERROR)
         return (existing_subtitles, None)
+
+    for subtitle in found_subtitles:
+        subtitle_path = subliminal.subtitle.get_subtitle_path(video.name,
+                                                              None if not sickbeard.SUBTITLES_MULTI else
+                                                              subtitle.language)
+        if subtitles_path is not None:
+            subtitle_path = os.path.join(subtitles_path, os.path.split(subtitle_path)[1])
+        sickbeard.helpers.chmodAsParent(subtitle_path)
+        sickbeard.helpers.fixSetGroupID(subtitle_path)
 
     if (not sickbeard.EMBEDDED_SUBTITLES_ALL and sickbeard.SUBTITLES_EXTRA_SCRIPTS and
             video_path.rsplit(".", 1)[1] in media_extensions):
@@ -188,44 +197,6 @@ def download_subtitles(subtitles_info):
                                 subtitles_info['episode'], subtitles_info['status'], subtitle)
 
     return (current_subtitles, new_subtitles)
-
-
-def save_subtitles(video, subtitles, single=False, directory=None):
-    saved_subtitles = []
-    for subtitle in subtitles:
-        # check content
-        if subtitle.content is None:
-            logger.log(u"Skipping subtitle for %s: no content" % video.name, logger.DEBUG)
-            continue
-
-        # check language
-        if subtitle.language in set(s.language for s in saved_subtitles):
-            logger.log(u"Skipping subtitle for %s: language already saved" % video.name, logger.DEBUG)
-            continue
-
-        # create subtitle path
-        subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, None if single else subtitle.language)
-        if directory is not None:
-            subtitle_path = os.path.join(directory, os.path.split(subtitle_path)[1])
-
-        # save content as is or in the specified encoding
-        logger.log(u"Saving subtitle for %s to %s" % (video.name, subtitle_path), logger.DEBUG)
-        if subtitle.encoding:
-            with io.open(subtitle_path, 'w', encoding=subtitle.encoding) as f:
-                f.write(subtitle.text)
-        else:
-            with io.open(subtitle_path, 'wb') as f:
-                f.write(subtitle.content)
-
-        # chmod and set group for the saved subtitle
-        sickbeard.helpers.chmodAsParent(subtitle_path)
-        sickbeard.helpers.fixSetGroupID(subtitle_path)
-
-        # check single
-        if single:
-            break
-
-    return saved_subtitles
 
 
 def get_needed_languages(subtitles):
