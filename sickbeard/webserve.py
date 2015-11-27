@@ -1129,17 +1129,19 @@ class Home(WebRoot):
 
         return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
-    def update(self, pid=None):
+    def update(self, pid=None, branch=None):
 
         if str(pid) != str(sickbeard.PID):
             return self.redirect('/home/')
 
         checkversion = CheckVersion()
-        backup = checkversion._runbackup()
+        backup = checkversion.updater and checkversion._runbackup()
 
         if backup is True:
+            if branch:
+                checkversion.updater.branch = branch
 
-            if sickbeard.versionCheckScheduler.action.update():
+            if checkversion.updater.update():
                 # do a hard restart
                 sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
@@ -1155,7 +1157,7 @@ class Home(WebRoot):
         if sickbeard.BRANCH != branch:
             sickbeard.BRANCH = branch
             ui.notifications.message('Checking out branch: ', branch)
-            return self.update(sickbeard.PID)
+            return self.update(sickbeard.PID, branch)
         else:
             ui.notifications.message('Already on branch: ', branch)
             return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
