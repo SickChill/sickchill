@@ -2,7 +2,31 @@
 
 """
 Unit Tests for sickbeard/common.py
+
+Classes:
+    Quality
+        _getStatusStrings
+        combineQualities
+        splitQuality
+        nameQuality
+        sceneQuality
+        assumeQuality
+        qualityFromFileMeta
+        compositeStatus
+        qualityDownloaded
+        splitCompositeStatus
+        sceneQualityFromName
+        statusFromName
+    StatusStrings
+        statusStrings
+        __missing__
+        __contains__
+    OverView
+
 """
+
+# TODO: Implement skipped tests
+
 
 import sys
 import os.path
@@ -14,158 +38,216 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from sickbeard import common
 
 
+class QualityStringTests(unittest.TestCase):
+    """
+    Test Case for strings in common.Quality
+    """
+    # TODO: Add more test cases
+    test_cases = {
+        'sd_tv': ["Test.Show.S01E02.PDTV.XViD-GROUP",
+                  "Test.Show.S01E02.PDTV.x264-GROUP",
+                  "Test.Show.S01E02.HDTV.XViD-GROUP",
+                  "Test.Show.S01E02.HDTV.x264-GROUP",
+                  "Test.Show.S01E02.DSR.XViD-GROUP",
+                  "Test.Show.S01E02.DSR.x264-GROUP",
+                  "Test.Show.S01E02.TVRip.XViD-GROUP",
+                  "Test.Show.S01E02.TVRip.x264-GROUP",
+                  "Test.Show.S01E02.WEBRip.XViD-GROUP",
+                  "Test.Show.S01E02.WEBRip.x264-GROUP",
+                  "Test.Show.S01E02.WEB-DL.x264-GROUP",
+                  "Test.Show.S01E02.WEB-DL.AAC2.0.H.264-GROUP",
+                  "Test.Show.S01E02 WEB-DL H 264-GROUP",
+                  "Test.Show.S01E02_WEB-DL_H_264-GROUP",
+                  "Test.Show.S01E02.WEB-DL.AAC2.0.H264-GROUP", ],
+        'sd_dvd': ["Test.Show.S01E02.DVDRiP.XViD-GROUP",
+                   "Test.Show.S01E02.DVDRiP.DiVX-GROUP",
+                   "Test.Show.S01E02.DVDRiP.x264-GROUP",
+                   "Test.Show.S01E02.DVDRip.WS.XViD-GROUP",
+                   "Test.Show.S01E02.DVDRip.WS.DiVX-GROUP",
+                   "Test.Show.S01E02.DVDRip.WS.x264-GROUP",
+                   "Test.Show.S01E02.BDRIP.XViD-GROUP",
+                   "Test.Show.S01E02.BDRIP.DiVX-GROUP",
+                   "Test.Show.S01E02.BDRIP.x264-GROUP",
+                   "Test.Show.S01E02.BDRIP.WS.XViD-GROUP",
+                   "Test.Show.S01E02.BDRIP.WS.DiVX-GROUP",
+                   "Test.Show.S01E02.BDRIP.WS.x264-GROUP", ],
+        'hd_tv': ["Test.Show.S01E02.720p.HDTV.x264-GROUP",
+                  "Test.Show.S01E02.HR.WS.PDTV.x264-GROUP", ],
+        'raw_hd_tv': ["Test.Show.S01E02.720p.HDTV.DD5.1.MPEG2-GROUP",
+                      "Test.Show.S01E02.1080i.HDTV.DD2.0.MPEG2-GROUP",
+                      "Test.Show.S01E02.1080i.HDTV.H.264.DD2.0-GROUP",
+                      "Test Show - S01E02 - 1080i HDTV MPA1.0 H.264 - GROUP",
+                      "Test.Show.S01E02.1080i.HDTV.DD.5.1.h264-GROUP", ],
+        'full_hd_tv': ["Test.Show.S01E02.1080p.HDTV.x264-GROUP", ],
+        'hd_web_dl': ["Test.Show.S01E02.720p.WEB-DL-GROUP",
+                      "Test.Show.S01E02.720p.WEBRip-GROUP",
+                      "Test.Show.S01E02.WEBRip.720p.H.264.AAC.2.0-GROUP",
+                      "Test.Show.S01E02.720p.WEB-DL.AAC2.0.H.264-GROUP",
+                      "Test Show S01E02 720p WEB-DL AAC2 0 H 264-GROUP",
+                      "Test_Show.S01E02_720p_WEB-DL_AAC2.0_H264-GROUP",
+                      "Test.Show.S01E02.720p.WEB-DL.AAC2.0.H264-GROUP",
+                      "Test.Show.S01E02.720p.iTunes.Rip.H264.AAC-GROUP", ],
+        'full_hd_web_dl': ["Test.Show.S01E02.1080p.WEB-DL-GROUP",
+                           "Test.Show.S01E02.1080p.WEBRip-GROUP",
+                           "Test.Show.S01E02.WEBRip.1080p.H.264.AAC.2.0-GROUP",
+                           "Test.Show.S01E02.WEBRip.1080p.H264.AAC.2.0-GROUP",
+                           "Test.Show.S01E02.1080p.iTunes.H.264.AAC-GROUP",
+                           "Test Show S01E02 1080p iTunes H 264 AAC-GROUP",
+                           "Test_Show_S01E02_1080p_iTunes_H_264_AAC-GROUP", ],
+        'hd_bluray': ["Test.Show.S01E02.720p.BluRay.x264-GROUP",
+                      "Test.Show.S01E02.720p.HDDVD.x264-GROUP", ],
+        'full_hd_bluray': ["Test.Show.S01E02.1080p.BluRay.x264-GROUP",
+                           "Test.Show.S01E02.1080p.HDDVD.x264-GROUP", ],
+        'unknown': ["Test.Show.S01E02-SiCKBEARD", ],
+    }
+
+    def test_sd_tv(self):
+        """
+        Test SDTV against nameQuality
+        """
+        cur_test = 'sd_tv'
+        cur_qual = common.Quality.SDTV
+
+        for name, tests in self.test_cases.items():
+            for test in tests:
+                if name == cur_test:
+                    self.assertEqual(cur_qual, common.Quality.nameQuality(test))
+                else:
+                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
+
+    def test_sd_dvd(self):
+        """
+        Test SDDVD against nameQuality
+        """
+        cur_test = 'sd_dvd'
+        cur_qual = common.Quality.SDDVD
+
+        for name, tests in self.test_cases.items():
+            for test in tests:
+                if name == cur_test:
+                    self.assertEqual(cur_qual, common.Quality.nameQuality(test))
+                else:
+                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
+
+    def test_hd_tv(self):
+        """
+        Test HDTV against nameQuality
+        """
+        cur_test = 'hd_tv'
+        cur_qual = common.Quality.HDTV
+
+        for name, tests in self.test_cases.items():
+            for test in tests:
+                if name == cur_test:
+                    self.assertEqual(cur_qual, common.Quality.nameQuality(test))
+                else:
+                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
+
+    def test_raw_hd_tv(self):
+        """
+        Test RAWHDTV against nameQuality
+        """
+        cur_test = 'raw_hd_tv'
+        cur_qual = common.Quality.RAWHDTV
+
+        for name, tests in self.test_cases.items():
+            for test in tests:
+                if name == cur_test:
+                    self.assertEqual(cur_qual, common.Quality.nameQuality(test))
+                else:
+                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
+
+    def test_full_hd_tv(self):
+        """
+        Test FULLHDTV against nameQuality
+        """
+        cur_test = 'full_hd_tv'
+        cur_qual = common.Quality.FULLHDTV
+
+        for name, tests in self.test_cases.items():
+            for test in tests:
+                if name == cur_test:
+                    self.assertEqual(cur_qual, common.Quality.nameQuality(test))
+                else:
+                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
+
+    def test_hd_web_dl(self):
+        """
+        Test HDWEBDL against nameQuality
+        """
+        cur_test = 'hd_web_dl'
+        cur_qual = common.Quality.HDWEBDL
+
+        for name, tests in self.test_cases.items():
+            for test in tests:
+                if name == cur_test:
+                    self.assertEqual(cur_qual, common.Quality.nameQuality(test))
+                else:
+                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
+
+    def test_full_hd_web_dl(self):
+        """
+        Test FULLHDWEBDL against nameQuality
+        """
+        cur_test = 'full_hd_web_dl'
+        cur_qual = common.Quality.FULLHDWEBDL
+
+        for name, tests in self.test_cases.items():
+            for test in tests:
+                if name == cur_test:
+                    self.assertEqual(cur_qual, common.Quality.nameQuality(test))
+                else:
+                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
+
+    def test_hd_bluray(self):
+        """
+        Test HDBLURAY against nameQuality
+        """
+        cur_test = 'hd_bluray'
+        cur_qual = common.Quality.HDBLURAY
+
+        for name, tests in self.test_cases.items():
+            for test in tests:
+                if name == cur_test:
+                    self.assertEqual(cur_qual, common.Quality.nameQuality(test))
+                else:
+                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
+
+    def test_full_hd_bluray(self):
+        """
+        Test FULLHDBLURAY against nameQuality
+        """
+        cur_test = 'full_hd_bluray'
+        cur_qual = common.Quality.FULLHDBLURAY
+
+        for name, tests in self.test_cases.items():
+            for test in tests:
+                if name == cur_test:
+                    self.assertEqual(cur_qual, common.Quality.nameQuality(test))
+                else:
+                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
+
+    def test_unknown(self):
+        """
+        Test UNKNOWN against nameQuality
+        """
+        cur_test = 'unknown'
+        cur_qual = common.Quality.UNKNOWN
+
+        for name, tests in self.test_cases.items():
+            for test in tests:
+                if name == cur_test:
+                    self.assertEqual(cur_qual, common.Quality.nameQuality(test))
+                else:
+                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
+
+
 class QualityTests(unittest.TestCase):
     """
     Test Case for common.Quality
     """
 
     # TODO: repack / proper ? air-by-date ? season rip? multi-ep?
-
-    def test_SDTV(self):
-        """
-        Test SDTV against nameQuality
-        """
-        tests = [
-            "Test.Show.S01E02.PDTV.XViD-GROUP",
-            "Test.Show.S01E02.PDTV.x264-GROUP",
-            "Test.Show.S01E02.HDTV.XViD-GROUP",
-            "Test.Show.S01E02.HDTV.x264-GROUP",
-            "Test.Show.S01E02.DSR.XViD-GROUP",
-            "Test.Show.S01E02.DSR.x264-GROUP",
-            "Test.Show.S01E02.TVRip.XViD-GROUP",
-            "Test.Show.S01E02.TVRip.x264-GROUP",
-            "Test.Show.S01E02.WEBRip.XViD-GROUP",
-            "Test.Show.S01E02.WEBRip.x264-GROUP",
-            "Test.Show.S01E02.WEB-DL.x264-GROUP",
-            "Test.Show.S01E02.WEB-DL.AAC2.0.H.264-GROUP",
-            "Test.Show.S01E02 WEB-DL H 264-GROUP",
-            "Test.Show.S01E02_WEB-DL_H_264-GROUP",
-            "Test.Show.S01E02.WEB-DL.AAC2.0.H264-GROUP",
-        ]
-        for test in tests:
-            self.assertEqual(common.Quality.SDTV, common.Quality.nameQuality(test))
-
-    def test_SDDVD(self):
-        """
-        Test SDDVD against nameQuality
-        """
-        tests = [
-            "Test.Show.S01E02.DVDRiP.XViD-GROUP",
-            "Test.Show.S01E02.DVDRiP.DiVX-GROUP",
-            "Test.Show.S01E02.DVDRiP.x264-GROUP",
-            "Test.Show.S01E02.DVDRip.WS.XViD-GROUP",
-            "Test.Show.S01E02.DVDRip.WS.DiVX-GROUP",
-            "Test.Show.S01E02.DVDRip.WS.x264-GROUP",
-            "Test.Show.S01E02.BDRIP.XViD-GROUP",
-            "Test.Show.S01E02.BDRIP.DiVX-GROUP",
-            "Test.Show.S01E02.BDRIP.x264-GROUP",
-            "Test.Show.S01E02.BDRIP.WS.XViD-GROUP",
-            "Test.Show.S01E02.BDRIP.WS.DiVX-GROUP",
-            "Test.Show.S01E02.BDRIP.WS.x264-GROUP",
-        ]
-        for test in tests:
-            self.assertEqual(common.Quality.SDDVD, common.Quality.nameQuality(test))
-
-    def test_HDTV(self):
-        """
-        Test HDTV against nameQuality
-        """
-        tests = [
-            "Test.Show.S01E02.720p.HDTV.x264-GROUP",
-            "Test.Show.S01E02.HR.WS.PDTV.x264-GROUP",
-        ]
-        for test in tests:
-            self.assertEqual(common.Quality.HDTV, common.Quality.nameQuality(test))
-
-    def test_RAWHDTV(self):
-        """
-        Test RAWHDTV against nameQuality
-        """
-        tests = [
-            "Test.Show.S01E02.720p.HDTV.DD5.1.MPEG2-GROUP",
-            "Test.Show.S01E02.1080i.HDTV.DD2.0.MPEG2-GROUP",
-            "Test.Show.S01E02.1080i.HDTV.H.264.DD2.0-GROUP",
-            "Test Show - S01E02 - 1080i HDTV MPA1.0 H.264 - GROUP",
-            "Test.Show.S01E02.1080i.HDTV.DD.5.1.h264-GROUP",
-        ]
-        for test in tests:
-            self.assertEqual(common.Quality.RAWHDTV, common.Quality.nameQuality(test))
-
-    def test_FULLHDTV(self):
-        """
-        Test FULLHDTV against nameQuality
-        """
-        tests = [
-            "Test.Show.S01E02.1080p.HDTV.x264-GROUP",
-        ]
-        for test in tests:
-            self.assertEqual(common.Quality.FULLHDTV, common.Quality.nameQuality(test))
-
-    def test_HDWEBDL(self):
-        """
-        Test HDWEBDL against nameQuality
-        """
-        tests = [
-            "Test.Show.S01E02.720p.WEB-DL-GROUP",
-            "Test.Show.S01E02.720p.WEBRip-GROUP",
-            "Test.Show.S01E02.WEBRip.720p.H.264.AAC.2.0-GROUP",
-            "Test.Show.S01E02.720p.WEB-DL.AAC2.0.H.264-GROUP",
-            "Test Show S01E02 720p WEB-DL AAC2 0 H 264-GROUP",
-            "Test_Show.S01E02_720p_WEB-DL_AAC2.0_H264-GROUP",
-            "Test.Show.S01E02.720p.WEB-DL.AAC2.0.H264-GROUP",
-            "Test.Show.S01E02.720p.iTunes.Rip.H264.AAC-GROUP",
-        ]
-        for test in tests:
-            self.assertEqual(common.Quality.HDWEBDL, common.Quality.nameQuality(test))
-
-    def test_FULLHDWEBDL(self):
-        """
-        Test FULLHDWEBDL against nameQuality
-        """
-        tests = [
-            "Test.Show.S01E02.1080p.WEB-DL-GROUP",
-            "Test.Show.S01E02.1080p.WEBRip-GROUP",
-            "Test.Show.S01E02.WEBRip.1080p.H.264.AAC.2.0-GROUP",
-            "Test.Show.S01E02.WEBRip.1080p.H264.AAC.2.0-GROUP",
-            "Test.Show.S01E02.1080p.iTunes.H.264.AAC-GROUP",
-            "Test Show S01E02 1080p iTunes H 264 AAC-GROUP",
-            "Test_Show_S01E02_1080p_iTunes_H_264_AAC-GROUP",
-        ]
-        for test in tests:
-            self.assertEqual(common.Quality.FULLHDWEBDL, common.Quality.nameQuality(test))
-
-    def test_HDBLURAY(self):
-        """
-        Test HDBLURAY against nameQuality
-        """
-        tests = [
-            "Test.Show.S01E02.720p.BluRay.x264-GROUP",
-            "Test.Show.S01E02.720p.HDDVD.x264-GROUP",
-        ]
-        for test in tests:
-            self.assertEqual(common.Quality.HDBLURAY, common.Quality.nameQuality(test))
-
-    def test_FULLHDBLURAY(self):
-        """
-        Test FULLHDBLURAY against nameQuality
-        """
-        tests = [
-            "Test.Show.S01E02.1080p.BluRay.x264-GROUP",
-            "Test.Show.S01E02.1080p.HDDVD.x264-GROUP",
-        ]
-        for test in tests:
-            self.assertEqual(common.Quality.FULLHDBLURAY, common.Quality.nameQuality(test))
-
-    def test_UNKNOWN(self):
-        """
-        Test UNKNOWN against nameQuality
-        """
-        tests = [
-            "Test.Show.S01E02-SiCKBEARD",
-        ]
-        for test in tests:
-            self.assertEqual(common.Quality.UNKNOWN, common.Quality.nameQuality(test))
-
     @unittest.expectedFailure
     # reverse parsing does not work
     def test_reverse_parsing(self):
@@ -189,8 +271,92 @@ class QualityTests(unittest.TestCase):
             self.assertEqual(quality, common.Quality.nameQuality(test),
                              (quality, common.Quality.nameQuality(test), test))
 
+    @unittest.skip('Not yet implemented')
+    def test_get_status_strings(self):
+        """
+        Test _getStatusStrings
+        """
+        pass
 
-class StatusStringsTest(unittest.TestCase):
+    @unittest.skip('Not yet implemented')
+    def test_combine_qualities(self):
+        """
+        Test combineQualities
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_split_quality(self):
+        """
+        Test splitQuality
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_name_quality(self):
+        """
+        Test nameQuality
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_scene_quality(self):
+        """
+        Test sceneQuality
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_assume_quality(self):
+        """
+        Test assumeQuality
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_quality_from_file_meta(self):
+        """
+        Test qualityFromFileMeta
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_composite_status(self):
+        """
+        Test compositeStatus
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_quality_downloaded(self):
+        """
+        Test qualityDownloaded
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_split_composite_status(self):
+        """
+        Test splitCompositeStatus
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_scene_quality_from_name(self):
+        """
+        Test sceneQualityFromName
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_status_from_name(self):
+        """
+        Test statusFromName
+        """
+        pass
+
+
+class StatusStringsTests(unittest.TestCase):
     """
     Test Case for common.StatusStrings
     """
@@ -242,13 +408,37 @@ class StatusStringsTest(unittest.TestCase):
                 status_strings[str(i)] = 1
             self.assertEqual(status_strings[i], 1)
 
+
+class OverviewTests(unittest.TestCase):
+    """
+    Test common.Overview
+    """
+    def test_overview_strings(self):
+        """
+        Test common.Overview.overviewStrings
+        """
+        overview = common.Overview()
+
+        self.assertEqual(overview.overviewStrings[overview.SKIPPED], "skipped")
+        self.assertEqual(overview.overviewStrings[overview.WANTED], "wanted")
+        self.assertEqual(overview.overviewStrings[overview.QUAL], "qual")
+        self.assertEqual(overview.overviewStrings[overview.GOOD], "good")
+        self.assertEqual(overview.overviewStrings[overview.UNAIRED], "unaired")
+        self.assertEqual(overview.overviewStrings[overview.SNATCHED], "snatched")
+
 if __name__ == '__main__':
     print "======================="
     print "STARTING - COMMON TESTS"
     print "======================="
 
-    suite = unittest.TestLoader().loadTestsFromTestCase(QualityTests)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(QualityStringTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
 
-    suite = unittest.TestLoader().loadTestsFromTestCase(StatusStringsTest)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(QualityTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(StatusStringsTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(OverviewTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
