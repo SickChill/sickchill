@@ -47,7 +47,7 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import network_timezones
 from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickrage.helper.common import dateTimeFormat, remove_extension, replace_extension, sanitize_filename
+from sickrage.helper.common import dateTimeFormat, remove_extension
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeDeletedException, EpisodeNotFoundException, ex
 from sickrage.helper.exceptions import MultipleEpisodesInDatabaseException, MultipleShowsInDatabaseException
@@ -55,7 +55,8 @@ from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOExcept
 from sickrage.helper.exceptions import ShowNotFoundException
 
 from sickbeard.common import Quality, Overview, statusStrings
-from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, ARCHIVED, IGNORED, UNAIRED, WANTED, SKIPPED, UNKNOWN
+from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, ARCHIVED, IGNORED, UNAIRED, WANTED, SKIPPED, \
+    UNKNOWN, FAILED
 from sickbeard.common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_SEPARATED_REPEAT, \
     NAMING_LIMITED_EXTEND_E_PREFIXED
 
@@ -1406,7 +1407,8 @@ class TVEpisode(object):
 
     def refreshSubtitles(self):
         """Look for subtitles files and refresh the subtitles property"""
-        self.subtitles, save_subtitles = subtitles.subtitlesLanguages(self.location)
+        episode_info = {'show.name': self.show.name, 'location': self.location, 'season': self.season, 'episode': self.episode}
+        self.subtitles, save_subtitles = subtitles.refresh_subtitles(episode_info, self.subtitles)
         if save_subtitles:
             self.saveToDB()
 
@@ -1416,12 +1418,8 @@ class TVEpisode(object):
                        (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
             return
 
-        logger.log(u"%s: Downloading subtitles for S%02dE%02d" % (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
-
-        # logging.getLogger('subliminal.api').addHandler(logging.StreamHandler())
-        # logging.getLogger('subliminal.api').setLevel(logging.DEBUG)
-        # logging.getLogger('subliminal').addHandler(logging.StreamHandler())
-        # logging.getLogger('subliminal').setLevel(logging.DEBUG)
+        logger.log(u"%s: Downloading subtitles for %s S%02dE%02d"
+        	       % (self.show.indexerid, self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
 
         subtitles_info = {'location': self.location, 'subtitles': self.subtitles, 'show.indexerid': self.show.indexerid, 'season': self.season,
                           'episode': self.episode, 'name': self.name, 'show.name': self.show.name, 'status': self.status}
@@ -1434,13 +1432,13 @@ class TVEpisode(object):
 
         if newSubtitles:
             subtitleList = ", ".join([subtitles.fromietf(newSub).name for newSub in newSubtitles])
-            logger.log(u"%s: Downloaded %s subtitles for S%02dE%02d" %
-                       (self.show.indexerid, subtitleList, self.season or 0, self.episode or 0), logger.DEBUG)
+            logger.log(u"%s: Downloaded %s subtitles for %s S%02dE%02d" %
+                       (self.show.indexerid, subtitleList, self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
 
             notifiers.notify_subtitle_download(self.prettyName(), subtitleList)
         else:
-            logger.log(u"%s: No subtitles downloaded for S%02dE%02d" %
-                       (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
+            logger.log(u"%s: No subtitles downloaded for %s S%02dE%02d" %
+                       (self.show.indexerid, self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
 
     def checkForMetaFiles(self):
 
@@ -1735,7 +1733,7 @@ class TVEpisode(object):
                         Quality.statusFromName(self.location, anime=self.show.is_anime)), logger.DEBUG)
                     self.status = Quality.statusFromName(self.location, anime=self.show.is_anime)
 
-            nfoFile = replace_extension(self.location, "nfo")
+            nfoFile = sickbeard.helpers.replaceExtension(self.location, "nfo")
             logger.log(str(self.show.indexerid) + u": Using NFO name " + nfoFile, logger.DEBUG)
 
             if ek(os.path.isfile, nfoFile):
@@ -1792,7 +1790,7 @@ class TVEpisode(object):
             else:
                 self.hasnfo = False
 
-            if ek(os.path.isfile, replace_extension(nfoFile, "tbn")):
+            if ek(os.path.isfile, sickbeard.helpers.replaceExtension(nfoFile, "tbn")):
                 self.hastbn = True
             else:
                 self.hastbn = False
@@ -2154,9 +2152,6 @@ class TVEpisode(object):
             '%Y': str(self.airdate.year),
             '%M': str(self.airdate.month),
             '%D': str(self.airdate.day),
-            '%CY': str(datetime.date.today().year),
-            '%CM': str(datetime.date.today().month),
-            '%CD': str(datetime.date.today().day),
             '%0M': '%02d' % self.airdate.month,
             '%0D': '%02d' % self.airdate.day,
             '%RT': "PROPER" if self.is_proper else "",
@@ -2171,9 +2166,9 @@ class TVEpisode(object):
 
         # do the replacements
         for cur_replacement in sorted(replace_map.keys(), reverse=True):
-            result_name = result_name.replace(cur_replacement, sanitize_filename(replace_map[cur_replacement]))
+            result_name = result_name.replace(cur_replacement, helpers.sanitizeFileName(replace_map[cur_replacement]))
             result_name = result_name.replace(cur_replacement.lower(),
-                                              sanitize_filename(replace_map[cur_replacement].lower()))
+                                              helpers.sanitizeFileName(replace_map[cur_replacement].lower()))
 
         return result_name
 
@@ -2407,7 +2402,7 @@ class TVEpisode(object):
         # split off the dirs only, if they exist
         name_groups = re.split(r'[\\/]', pattern)
 
-        return sanitize_filename(self._format_pattern(name_groups[-1], multi, anime_type))
+        return helpers.sanitizeFileName(self._format_pattern(name_groups[-1], multi, anime_type))
 
     def rename(self):
         """
