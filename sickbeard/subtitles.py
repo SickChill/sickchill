@@ -82,22 +82,22 @@ def sortedServiceList():
     lmgtfy = 'http://lmgtfy.com/?q=%s'
 
     current_index = 0
-    for curService in sickbeard.SUBTITLES_SERVICES_LIST:
-        if curService in subliminal.provider_manager.names():
-            new_list.append({'name': curService,
-                             'url': provider_urls[curService] if curService in provider_urls else
-                             lmgtfy % curService,
-                             'image': curService + '.png',
+    for current_service in sickbeard.SUBTITLES_SERVICES_LIST:
+        if current_service in subliminal.provider_manager.names():
+            new_list.append({'name': current_service,
+                             'url': provider_urls[current_service] if current_service in provider_urls else
+                             lmgtfy % current_service,
+                             'image': current_service + '.png',
                              'enabled': sickbeard.SUBTITLES_SERVICES_ENABLED[current_index] == 1
                              })
         current_index += 1
 
-    for curService in subliminal.provider_manager.names():
-        if curService not in [x['name'] for x in new_list]:
-            new_list.append({'name': curService,
-                             'url': provider_urls[curService] if curService in provider_urls else
-                             lmgtfy % curService,
-                             'image': curService + '.png',
+    for current_service in subliminal.provider_manager.names():
+        if current_service not in [x['name'] for x in new_list]:
+            new_list.append({'name': current_service,
+                             'url': provider_urls[current_service] if current_service in provider_urls else
+                             lmgtfy % current_service,
+                             'image': current_service + '.png',
                              'enabled': False,
                              })
 
