@@ -566,15 +566,15 @@ statusStrings = StatusStrings({
 # pylint: disable=R0903
 class Overview(object):
     UNAIRED = UNAIRED  # 1
-    QUAL = 2
+    SNATCHED = SNATCHED # 2
     WANTED = WANTED  # 3
-    GOOD = 4
+    GOOD = DOWNLOADED # 4
     SKIPPED = SKIPPED  # 5
-
-    # Note: SNATCHED/QUAL have same value and break dict, so must assign a new value
-    SNATCHED = 20
     SNATCHED_PROPER = SNATCHED_PROPER  # 9
     SNATCHED_BEST = SNATCHED_BEST # 12
+
+    # Should suffice!
+    QUAL = 50
 
     overviewStrings = {
         SKIPPED: "skipped",
