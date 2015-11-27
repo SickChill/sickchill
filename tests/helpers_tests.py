@@ -707,3 +707,27 @@ if __name__ == '__main__':
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersConnectionTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersDirectoryTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersEncryptionTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersFileLinksTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersFileTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersMiscTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersShowTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersZipTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
