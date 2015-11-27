@@ -2798,8 +2798,8 @@ class CMD_Shows(ApiCall):
         shows = {}
         for curShow in sickbeard.showList:
 
-            if not self.paused and not curShow.paused:
-                continue
+            if not self.paused and curShow.paused:  # If we're not including paused shows, and the current show is paused
+                continue  # continue with the next show
 
             indexer_show = helpers.mapIndexersToShow(curShow)
 
