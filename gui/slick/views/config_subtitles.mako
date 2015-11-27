@@ -11,7 +11,9 @@ $(document).ready(function() {
         method: "POST",
         hintText: "Write to search a language and select it",
         preventDuplicates: true,
-        prePopulate: [${','.join("{\"id\": \"" + subtitles.fromietf(lang).opensubtitles + "\", name: \"" + subtitles.fromietf(lang).name + "\"}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''}]
+        prePopulate: [${','.join("{\"id\": \"" + subtitles.fromietf(lang).opensubtitles + "\", name: \"" + subtitles.fromietf(lang).name + "\"}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''}],
+        resultsFormatter: function(item){ return "<li><img src='/images/subtitles/flags/" + item.id + ".png' /> " + item.name + "</li>" },
+        tokenFormatter: function(item)  { return "<li><img src='/images/subtitles/flags/" + item.id + ".png' /> " + item.name + "</li>" },
     });
 });
 $('#config-components').tabs();
