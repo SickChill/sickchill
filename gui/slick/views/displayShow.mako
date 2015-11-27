@@ -515,7 +515,7 @@
                 % endif
             <td class="col-search">
                 % if int(epResult["season"]) != 0:
-                    % if ( int(epResult["status"]) in Quality.SNATCHED + Quality.DOWNLOADED ) and sickbeard.USE_FAILED_DOWNLOADS:
+                    % if ( int(epResult["status"]) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.DOWNLOADED ) and sickbeard.USE_FAILED_DOWNLOADS:
                         <a class="epRetry" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="retryEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/search16.png" height="16" alt="retry" title="Retry Download" /></a>
                     % else:
                         <a class="epSearch" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="searchEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
