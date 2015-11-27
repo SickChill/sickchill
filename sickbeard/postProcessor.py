@@ -486,7 +486,7 @@ class PostProcessor(object):
         myDB = db.DBConnection()
         for curName in names:
             search_name = re.sub(r"[\.\- ]", "_", curName)
-            sql_results = myDB.select("SELECT * FROM history WHERE resource LIKE ?", [search_name])
+            sql_results = myDB.select("SELECT showid, season, quality, version, resource FROM history WHERE resource LIKE ? AND action LIKE '%4'", [search_name])
 
             if len(sql_results) == 0:
                 continue
@@ -677,16 +677,16 @@ class PostProcessor(object):
                     [show.indexerid, show.indexer, airdate])
 
                 if sql_result:
-                    season = int(sql_result[0][0])
-                    episodes = [int(sql_result[0][1])]
+                    season = int(sql_result[0]['season'])
+                    episodes = [int(sql_result[0]['episode'])]
                 else:
                     # Found no result, try with season 0
                     sql_result = myDB.select(
                         "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
                         [show.indexerid, show.indexer, airdate])
                     if sql_result:
-                        season = int(sql_result[0][0])
-                        episodes = [int(sql_result[0][1])]
+                        season = int(sql_result[0]['season'])
+                        episodes = [int(sql_result[0]['episode'])]
                     else:
                         self._log(
                             u"Unable to find episode with date " +
@@ -699,7 +699,7 @@ class PostProcessor(object):
             elif season is None and show:
                 myDB = db.DBConnection()
                 numseasonsSQlResult = myDB.select(
-                    "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and indexer = ? and season != 0",
+                    "SELECT COUNT(DISTINCT season) FROM tv_episodes WHERE showid = ? and indexer = ? and season != 0",
                     [show.indexerid, show.indexer])
                 if int(numseasonsSQlResult[0][0]) == 1 and season is None:
                     self._log(
@@ -980,8 +980,8 @@ class PostProcessor(object):
             if int(ep_obj.season) > 0:
                 myDB = db.DBConnection()
                 max_season = myDB.select(
-                    "SELECT MAX(season) as maxseason FROM tv_episodes WHERE showid = ? and indexer = ?",
-                    [show.indexerid, show.indexer])
+                    "SELECT MAX(season) FROM tv_episodes WHERE showid = ? and indexer = ?", [show.indexerid, show.indexer])
+
                 # If the file season (ep_obj.season) is bigger than the indexer season (max_season[0][0]), skip the file
                 if int(ep_obj.season) > int(max_season[0][0]):
                     self._log(u"File has season %s, while the indexer is on season %s. The file may be incorrectly labeled or fake, aborting."
