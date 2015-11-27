@@ -25,7 +25,7 @@
 
 <form action="${srRoot}/manage/episodeStatuses" method="get">
 Manage episodes with status <select name="whichStatus" class="form-control form-control-inline input-sm">
-% for curStatus in [common.SKIPPED, common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST, common.WANTED, common.IGNORED] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED:
+% for curStatus in [common.SKIPPED, common.SNATCHED, common.WANTED, common.IGNORED] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED:
     %if surStatus not in [common.ARCHIVED, common.DOWNLOADED]:
         <option value="${curStatus}">${common.statusStrings[curStatus]}</option>
     %endif
