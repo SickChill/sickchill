@@ -1,12 +1,18 @@
 # coding=utf-8
 
-import sys, os.path
+"""
+Test encoding
+"""
+
+# pylint: disable=line-too-long
+
+import sys
+import os.path
+import locale
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import locale
-import unittest
 
 import sickbeard
 from sickrage.helper.common import sanitize_filename
@@ -15,8 +21,14 @@ from sickrage.helper.exceptions import ex
 
 
 class EncodingTests(unittest.TestCase):
+    """
+    Test encodings
+    """
     def test_encoding(self):
-        rootDir = 'C:\\Temp\\TV'
+        """
+        Test encoding
+        """
+        root_dir = 'C:\\Temp\\TV'
         strings = [u'Les Enfants De La T\xe9l\xe9', u'RT� One']
 
         sickbeard.SYS_ENCODING = None
@@ -31,17 +43,18 @@ class EncodingTests(unittest.TestCase):
         if not sickbeard.SYS_ENCODING or sickbeard.SYS_ENCODING in ('ANSI_X3.4-1968', 'US-ASCII', 'ASCII'):
             sickbeard.SYS_ENCODING = 'UTF-8'
 
-        for s in strings:
+        for test in strings:
             try:
-                show_dir = ek(os.path.join, rootDir, sanitize_filename(s))
+                show_dir = ek(os.path.join, root_dir, sanitize_filename(test))
                 self.assertTrue(isinstance(show_dir, unicode))
-            except Exception, e:
-                ex(e)
+            except Exception as error:  # pylint: disable=broad-except
+                ex(error)
 
 if __name__ == "__main__":
     print "=================="
     print "STARTING - ENCODING TESTS"
     print "=================="
     print "######################################################################"
-    suite = unittest.TestLoader().loadTestsFromTestCase(EncodingTests)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(EncodingTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
