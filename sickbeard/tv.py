@@ -1425,14 +1425,14 @@ class TVEpisode(object):
                           'episode': self.episode, 'name': self.name, 'show.name': self.show.name,
                           'show.indexerid': self.show.indexerid, 'status': self.status}
 
-        self.subtitles, newSubtitles = subtitles.download_subtitles(subtitles_info)
+        self.subtitles, new_subtitles = subtitles.download_subtitles(subtitles_info)
 
         self.subtitles_searchcount += 1 if self.subtitles_searchcount else 1
         self.subtitles_lastsearch = datetime.datetime.now().strftime(dateTimeFormat)
         self.saveToDB()
 
-        if newSubtitles:
-            subtitle_list = ", ".join([subtitles.fromietf(newSub).name for newSub in newSubtitles])
+        if new_subtitles:
+            subtitle_list = ", ".join([subtitles.fromietf(new_subtitle).name for new_subtitle in new_subtitles])
             logger.log(u"%s: Downloaded %s subtitles for %s S%02dE%02d" %
                        (self.show.indexerid, subtitle_list, self.show.name, self.season or 0,
                         self.episode or 0), logger.DEBUG)
