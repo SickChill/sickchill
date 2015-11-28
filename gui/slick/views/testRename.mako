@@ -18,7 +18,7 @@
     <h1 class="title">${title}</h1>
 % endif
 
-<input type="hidden" id="showID" value="${show.indexerid}"  autocapitalize="off" />
+<input type="hidden" id="showID" value="${show.indexerid}" />
 
 <h3>Preview of the proposed name changes</h3>
 <blockquote>
@@ -42,7 +42,7 @@
             </td>
         </tr>
         <tr class="seasoncols" id="selectall">
-            <th class="col-checkbox"><input type="checkbox" class="seriesCheck" id="SelectAll"  autocapitalize="off" /></th>
+            <th class="col-checkbox"><input type="checkbox" class="seriesCheck" id="SelectAll" /></th>
             <th align="left" valign="top" class="nowrap">Select All</th>
             <th width="100%" class="col-name" style="visibility:hidden;"></th>
         </tr>
@@ -69,7 +69,7 @@
             </td>
         </tr>
         <tr class="seasoncols" id="season-${cur_ep_obj.season}-cols">
-            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${cur_ep_obj.season}"  autocapitalize="off" /></th>
+            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${cur_ep_obj.season}" /></th>
             <th class="nowrap">Episode</th>
             <th class="col-name">Old Location</th>
             <th class="col-name">New Location</th>
@@ -88,7 +88,7 @@ if len(epList) > 1:
         <tr class="season-${curSeason} ${('wanted', 'good')[curLoc == newLoc]} seasonstyle">
             <td class="col-checkbox">
             % if curLoc != newLoc:
-                <input type="checkbox" class="epCheck" id="${str(cur_ep_obj.season) + 'x' + str(cur_ep_obj.episode)}" name="${str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode)}"  autocapitalize="off" />
+                <input type="checkbox" class="epCheck" id="${str(cur_ep_obj.season) + 'x' + str(cur_ep_obj.episode)}" name="${str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode)}" />
             % endif
             </td>
             <td align="center" valign="top" class="nowrap">${"-".join(map(str, epList))}</td>

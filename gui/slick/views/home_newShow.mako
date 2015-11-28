@@ -34,16 +34,16 @@
         <legend class="legendStep">Find a show on theTVDB</legend>
 
         <div class="stepDiv">
-            <input type="hidden" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}"  autocapitalize="off" />
+            <input type="hidden" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}" />
 
             % if use_provided_info:
                 Show retrieved from existing metadata: <a href="${anon_url(sickbeard.indexerApi(provided_indexer).config['show_url'], provided_indexer_id)}">${provided_indexer_name}</a>
-                <input type="hidden" id="indexerLang" name="indexerLang" value="en"  autocapitalize="off" />
-                <input type="hidden" id="whichSeries" name="whichSeries" value="${provided_indexer_id}"  autocapitalize="off" />
-                <input type="hidden" id="providedIndexer" name="providedIndexer" value="${provided_indexer}"  autocapitalize="off" />
-                <input type="hidden" id="providedName" value="${provided_indexer_name}"  autocapitalize="off" />
+                <input type="hidden" id="indexerLang" name="indexerLang" value="en" />
+                <input type="hidden" id="whichSeries" name="whichSeries" value="${provided_indexer_id}" />
+                <input type="hidden" id="providedIndexer" name="providedIndexer" value="${provided_indexer}" />
+                <input type="hidden" id="providedName" value="${provided_indexer_name}" />
             % else:
-                <input type="text" id="nameToSearch" value="${default_show_name}" class="form-control form-control-inline input-sm input350"  autocapitalize="off" />
+                <input type="text" id="nameToSearch" value="${default_show_name}" class="form-control form-control-inline input-sm input350" />
                 &nbsp;&nbsp;
                 <select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="${sickbeard.INDEXER_DEFAULT_LANGUAGE}" data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}">
                 </select><b>*</b>
@@ -57,7 +57,7 @@
                     % endfor
                 </select>
                 &nbsp;
-                <input class="btn btn-inline" type="button" id="searchName" value="Search"  autocapitalize="off" />
+                <input class="btn btn-inline" type="button" id="searchName" value="Search" />
 
                 <br><br>
                 <b>*</b> This will only affect the language of the retrieved metadata file contents and episode filenames.<br>
@@ -74,7 +74,7 @@
         <div class="stepDiv">
             % if provided_show_dir:
                 Pre-chosen Destination Folder: <b>${provided_show_dir}</b> <br>
-                <input type="hidden" id="fullShowPath" name="fullShowPath" value="${provided_show_dir}"  autocapitalize="off" /><br>
+                <input type="hidden" id="fullShowPath" name="fullShowPath" value="${provided_show_dir}" /><br>
             % else:
                 <%include file="/inc_rootDirs.mako"/>
             % endif
@@ -89,17 +89,17 @@
     </fieldset>
 
     % for curNextDir in other_shows:
-    <input type="hidden" name="other_shows" value="${curNextDir}"  autocapitalize="off" />
+    <input type="hidden" name="other_shows" value="${curNextDir}" />
     % endfor
-    <input type="hidden" name="skipShow" id="skipShow" value=""  autocapitalize="off" />
+    <input type="hidden" name="skipShow" id="skipShow" value="" />
     </form>
 
 <br>
 
 <div style="width: 100%; text-align: center;">
-<input class="btn" type="button" id="addShowButton" value="Add Show" disabled="disabled"  autocapitalize="off" />
+<input class="btn" type="button" id="addShowButton" value="Add Show" disabled="disabled" />
 % if provided_show_dir:
-<input class="btn" type="button" id="skipShowButton" value="Skip Show"  autocapitalize="off" />
+<input class="btn" type="button" id="skipShowButton" value="Skip Show" />
 % endif
 </div>
 </div></div></div></div>

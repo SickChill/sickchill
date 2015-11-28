@@ -85,10 +85,10 @@
         <div class="collapse navbar-collapse" id="nav-collapsed">
             <div class="btn-group navbar-btn" data-toggle="buttons">
                 <label class="btn btn-primary">
-                    <input autocomplete="off" id="option-profile" type="checkbox"  autocapitalize="off" /> Profile
+                    <input autocomplete="off" id="option-profile" type="checkbox" /> Profile
                 </label>
                 <label class="btn btn-primary">
-                    <input autocomplete="off" id="option-jsonp" type="checkbox"  autocapitalize="off" /> JSONP
+                    <input autocomplete="off" id="option-jsonp" type="checkbox" /> JSONP
                 </label>
             </div>
 
@@ -103,7 +103,7 @@
 
             <form class="navbar-form navbar-right">
                 <div class="form-group">
-                    <input autocomplete="off" class="form-control" id="command-search" placeholder="Command name" type="search" autocapitalize="off" />
+                    <input autocomplete="off" class="form-control" id="command-search" placeholder="Command name" type="search"/>
                 </div>
             </form>
         </div>
@@ -271,10 +271,10 @@ var episodes = ${episodes};
         </select>
     % elif type == 'int':
         % if parameter not in ('episode', 'season'):
-        <input class="form-control" name="${parameter}" placeholder="${parameter}" type="number" data-command="${command}"  autocapitalize="off" />
+        <input class="form-control" name="${parameter}" placeholder="${parameter}" type="number" data-command="${command}" />
         % endif
     % elif type == 'string':
-        <input class="form-control" name="${parameter}" placeholder="${parameter}" type="text" data-command="${command}"  autocapitalize="off" />
+        <input class="form-control" name="${parameter}" placeholder="${parameter}" type="text" data-command="${command}" />
     % endif
 % endfor
 </div>

@@ -43,8 +43,8 @@
 
                             <br><br>
 
-                            <input type="text" name="backupDir" id="backupDir" class="form-control input-sm input350"  autocapitalize="off" />
-                            <input class="btn btn-inline" type="button" value="Backup" id="Backup"  autocapitalize="off" />
+                            <input type="text" name="backupDir" id="backupDir" class="form-control input-sm input350" />
+                            <input class="btn btn-inline" type="button" value="Backup" id="Backup" />
 
                             <br>
 
@@ -66,8 +66,8 @@
 
                             <br><br>
 
-                            <input type="text" name="backupFile" id="backupFile" class="form-control input-sm input350"  autocapitalize="off" />
-                            <input class="btn btn-inline" type="button" value="Restore" id="Restore"  autocapitalize="off" />
+                            <input type="text" name="backupFile" id="backupFile" class="form-control input-sm input350" />
+                            <input class="btn btn-inline" type="button" value="Restore" id="Restore" />
 
                             <br>
 
