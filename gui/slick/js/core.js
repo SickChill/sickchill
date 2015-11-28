@@ -888,14 +888,21 @@ var SICKRAGE = {
             // we have to call this function on dom ready to create the devices select
             getPushbulletDevices();
 
-            // @TODO Find out what notify_data actually does since it doesn't seem to be a real function
             $('#email_show').on('change', function() {
                 var key = parseInt($('#email_show').val(), 10);
-                $('#email_show_list').val(key >= 0 ? notify_data[key.toString()].list : ''); // jshint ignore:line
+                $.getJSON(srRoot + "/home/loadShowNotifyLists", function(notifyData) {
+                    if (notifyData._size > 0) {
+                        $('#email_show_list').val(key >= 0 ? notifyData[key.toString()].list : '');
+                    }
+                });
             });
             $('#prowl_show').on('change', function() {
                 var key = parseInt($('#prowl_show').val(), 10);
-                $('#prowl_show_list').val(key >= 0 ? notify_data[key.toString()].prowl_notify_list  : ''); // jshint ignore:line
+                $.getJSON(srRoot + "/home/loadShowNotifyLists", function(notifyData) {
+                    if (notifyData._size > 0) {
+                        $('#prowl_show_list').val(key >= 0 ? notifyData[key.toString()].prowl_notify_list  : '');   // jshint ignore:line
+                    }
+                });
             });
 
             // Update the internal data struct anytime settings are saved to the server
@@ -907,10 +914,8 @@ var SICKRAGE = {
             });
 
             function loadShowNotifyLists() {
-                $.get(srRoot + "/home/loadShowNotifyLists", function(data) {
-                    var list, html, s;
-                    list = $.parseJSON(data); // @TODO The line below this is the same as the $('#email_show') function above
-                    notify_data = list; // jshint ignore:line
+                $.getJSON(srRoot + "/home/loadShowNotifyLists", function(list) {
+                    var html, s;
                     if (list._size === 0) { return; }
 
                     // Convert the 'list' object to a js array of objects so that we can sort it
