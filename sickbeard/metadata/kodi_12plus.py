@@ -19,6 +19,7 @@
 
 import re
 import datetime
+from babelfish import Country
 
 import sickbeard
 from sickbeard.metadata import generic
@@ -94,7 +95,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
     @staticmethod
     def _split_info(info_string):
-        return {x.strip() for x in re.sub(r'[,/]*', '|', info_string).split('|') if x.strip()}
+        return {x.strip().title() for x in re.sub(r'[,/]+', '|', info_string).split('|') if x.strip()}
 
     def _show_data(self, show_obj):
         """
@@ -177,6 +178,16 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             for genre in self._split_info(myShow["genre"]):
                 cur_genre = etree.SubElement(tv_node, "genre")
                 cur_genre.text = genre
+
+        if 'country_codes' in show_obj.imdb_info:
+            for country in self._split_info(show_obj.imdb_info['country_codes']):
+                try:
+                    cur_country_name = Country(country.upper()).name.title()
+                except Exception:
+                    continue
+
+                cur_country = etree.SubElement(tv_node, "country")
+                cur_country.text = cur_country_name
 
         if getattr(myShow, 'firstaired', None):
             premiered = etree.SubElement(tv_node, "premiered")
