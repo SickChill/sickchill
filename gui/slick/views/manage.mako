@@ -19,7 +19,7 @@
 <table id="massUpdateTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
     <thead>
         <tr>
-            <th class="col-checkbox">Edit<br><input type="checkbox" class="bulkCheck" id="editCheck" /></th>
+            <th class="col-checkbox">Edit<br><input type="checkbox" class="bulkCheck" id="editCheck"  autocapitalize="off" /></th>
             <th class="nowrap" style="text-align: left;">Show Name</th>
             <th class="col-quality">Quality</th>
             <th class="col-legend">Sports</th>
@@ -31,22 +31,22 @@
             <th class="col-legend">Subtitle</th>
             <th class="col-legend">Default Ep<br>Status</th>
             <th class="col-legend">Status</th>
-            <th width="1%">Update<br><input type="checkbox" class="bulkCheck" id="updateCheck" /></th>
-            <th width="1%">Rescan<br><input type="checkbox" class="bulkCheck" id="refreshCheck" /></th>
-            <th width="1%">Rename<br><input type="checkbox" class="bulkCheck" id="renameCheck" /></th>
+            <th width="1%">Update<br><input type="checkbox" class="bulkCheck" id="updateCheck"  autocapitalize="off" /></th>
+            <th width="1%">Rescan<br><input type="checkbox" class="bulkCheck" id="refreshCheck"  autocapitalize="off" /></th>
+            <th width="1%">Rename<br><input type="checkbox" class="bulkCheck" id="renameCheck"  autocapitalize="off" /></th>
         % if sickbeard.USE_SUBTITLES:
-            <th width="1%">Search Subtitle<br><input type="checkbox" class="bulkCheck" id="subtitleCheck" /></th>
+            <th width="1%">Search Subtitle<br><input type="checkbox" class="bulkCheck" id="subtitleCheck"  autocapitalize="off" /></th>
         % endif
-            <!-- <th>Force Metadata Regen <input type="checkbox" class="bulkCheck" id="metadataCheck" /></th>//-->
-            <th width="1%">Delete<br><input type="checkbox" class="bulkCheck" id="deleteCheck" /></th>
-            <th width="1%">Remove<br><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
+            <!-- <th>Force Metadata Regen <input type="checkbox" class="bulkCheck" id="metadataCheck"  autocapitalize="off" /></th>//-->
+            <th width="1%">Delete<br><input type="checkbox" class="bulkCheck" id="deleteCheck"  autocapitalize="off" /></th>
+            <th width="1%">Remove<br><input type="checkbox" class="bulkCheck" id="removeCheck"  autocapitalize="off" /></th>
         </tr>
     </thead>
 
     <tfoot>
         <tr>
-            <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left" type="button" value="Edit Selected" id="submitMassEdit" /></td>
-            <td rowspan="1" colspan="${(15, 16)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right" type="button" value="Submit" id="submitMassUpdate" /></td>
+            <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left" type="button" value="Edit Selected" id="submitMassEdit"  autocapitalize="off" /></td>
+            <td rowspan="1" colspan="${(15, 16)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right" type="button" value="Submit" id="submitMassUpdate"  autocapitalize="off" /></td>
         </tr>
     </tfoot>
 
@@ -67,39 +67,39 @@
             <% curUpdate_disabled = "disabled=\"disabled\" " %>
         % endif
 
-        <% curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-"+str(curShow.indexerid)+"\" "+curUpdate_disabled+"/>" %>
+        <% curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-"+str(curShow.indexerid)+"\" "+curUpdate_disabled+" autocapitalize="off" />" %>
 
         % if sickbeard.showQueueScheduler.action.isBeingRefreshed(curShow) or sickbeard.showQueueScheduler.action.isInRefreshQueue(curShow):
             <% curRefresh_disabled = "disabled=\"disabled\" " %>
         % endif
 
-        <% curRefresh = "<input type=\"checkbox\" class=\"refreshCheck\" id=\"refresh-"+str(curShow.indexerid)+"\" "+curRefresh_disabled+"/>" %>
+        <% curRefresh = "<input type=\"checkbox\" class=\"refreshCheck\" id=\"refresh-"+str(curShow.indexerid)+"\" "+curRefresh_disabled+" autocapitalize="off" />" %>
 
         % if sickbeard.showQueueScheduler.action.isBeingRenamed(curShow) or sickbeard.showQueueScheduler.action.isInRenameQueue(curShow):
             <% curRename = "disabled=\"disabled\" " %>
         % endif
 
-        <% curRename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-"+str(curShow.indexerid)+"\" "+curRename_disabled+"/>" %>
+        <% curRename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-"+str(curShow.indexerid)+"\" "+curRename_disabled+" autocapitalize="off" />" %>
 
         % if not curShow.subtitles or sickbeard.showQueueScheduler.action.isBeingSubtitled(curShow) or sickbeard.showQueueScheduler.action.isInSubtitleQueue(curShow):
             <% curSubtitle_disabled = "disabled=\"disabled\" " %>
         % endif
 
-        <% curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-"+str(curShow.indexerid)+"\" "+curSubtitle_disabled+"/>" %>
+        <% curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-"+str(curShow.indexerid)+"\" "+curSubtitle_disabled+" autocapitalize="off" />" %>
 
         % if sickbeard.showQueueScheduler.action.isBeingRenamed(curShow) or sickbeard.showQueueScheduler.action.isInRenameQueue(curShow) or sickbeard.showQueueScheduler.action.isInRefreshQueue(curShow):
             <% curDelete = "disabled=\"disabled\" " %>
         % endif
 
-        <% curDelete = "<input type=\"checkbox\" class=\"deleteCheck\" id=\"delete-"+str(curShow.indexerid)+"\" "+curDelete_disabled+"/>" %>
+        <% curDelete = "<input type=\"checkbox\" class=\"deleteCheck\" id=\"delete-"+str(curShow.indexerid)+"\" "+curDelete_disabled+" autocapitalize="off" />" %>
 
         % if sickbeard.showQueueScheduler.action.isBeingRenamed(curShow) or sickbeard.showQueueScheduler.action.isInRenameQueue(curShow) or sickbeard.showQueueScheduler.action.isInRefreshQueue(curShow):
             <% curRemove = "disabled=\"disabled\" " %>
         % endif
 
-        <% curRemove = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-"+str(curShow.indexerid)+"\" "+curRemove_disabled+"/>" %>
+        <% curRemove = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-"+str(curShow.indexerid)+"\" "+curRemove_disabled+" autocapitalize="off" />" %>
         <tr>
-            <td align="center"><input type="checkbox" class="editCheck" id="edit-${curShow.indexerid}" /></td>
+            <td align="center"><input type="checkbox" class="editCheck" id="edit-${curShow.indexerid}"  autocapitalize="off" /></td>
             <td class="tvShow"><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
             <td align="center">${renderQualityPill(curShow.quality, showTitle=True)}</td>
             <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_sports) == 1]} width="16" height="16" /></td>
