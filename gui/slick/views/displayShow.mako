@@ -22,7 +22,7 @@
 </%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-<input type="hidden" id="srRoot" value="${srRoot}"  autocapitalize="off" />
+<input type="hidden" id="srRoot" value="${srRoot}" />
     <div class="pull-left form-inline">
         Change Show:
         <div class="navShow"><img id="prevShow" src="${srRoot}/images/prev.png" alt="&lt;&lt;" title="Prev Show" /></div>
@@ -240,20 +240,20 @@
             % endif
         % endfor
         </select>
-        <input type="hidden" id="showID" value="${show.indexerid}"  autocapitalize="off" />
-        <input type="hidden" id="indexer" value="${show.indexer}"  autocapitalize="off" />
-        <input class="btn btn-inline" type="button" id="changeStatus" value="Go"  autocapitalize="off" />
+        <input type="hidden" id="showID" value="${show.indexerid}" />
+        <input type="hidden" id="indexer" value="${show.indexer}" />
+        <input class="btn btn-inline" type="button" id="changeStatus" value="Go" />
     </div>
 
     </br>
 
     <div class="pull-right clearfix" id="checkboxControls">
         <div style="padding-bottom: 5px;">
-            <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked"  autocapitalize="off" /> Wanted: <b>${epCounts[Overview.WANTED]}</b></span></label>
-            <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked"  autocapitalize="off" /> Low Quality: <b>${epCounts[Overview.QUAL]}</b></span></label>
-            <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked"  autocapitalize="off" /> Downloaded: <b>${epCounts[Overview.GOOD]}</b></span></label>
-            <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked"  autocapitalize="off" /> Skipped: <b>${epCounts[Overview.SKIPPED]}</b></span></label>
-            <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked"  autocapitalize="off" /> Snatched: <b>${epCounts[Overview.SNATCHED]}</b></span></label>
+            <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> Wanted: <b>${epCounts[Overview.WANTED]}</b></span></label>
+            <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> Low Quality: <b>${epCounts[Overview.QUAL]}</b></span></label>
+            <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> Downloaded: <b>${epCounts[Overview.GOOD]}</b></span></label>
+            <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> Skipped: <b>${epCounts[Overview.SKIPPED]}</b></span></label>
+            <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> Snatched: <b>${epCounts[Overview.SNATCHED]}</b></span></label>
         </div>
 
         <button id="popover" type="button" class="btn btn-xs">Select Columns <b class="caret"></b></button>
@@ -314,7 +314,7 @@
             % if curSeason == -1:
     <thead>
         <tr class="seasoncols" style="display:none;">
-                <th data-sorter="false" data-priority="critical" class="col-checkbox"><input type="checkbox" class="seasonCheck" autocapitalize="off" /></th>
+                <th data-sorter="false" data-priority="critical" class="col-checkbox"><input type="checkbox" class="seasonCheck"/></th>
                 <th data-sorter="false" class="col-metadata">NFO</th>
                 <th data-sorter="false" class="col-metadata">TBN</th>
                 <th data-sorter="false" class="col-ep">Episode</th>
@@ -353,7 +353,7 @@
     </tbody>
     <tbody class="tablesorter-no-sort">
         <tr id="season-${epResult["season"]}-cols" class="seasoncols">
-            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${epResult["season"]}"  autocapitalize="off" /></th>
+            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${epResult["season"]}" /></th>
             <th class="col-metadata">NFO</th>
             <th class="col-metadata">TBN</th>
             <th class="col-ep">Episode</th>
@@ -393,7 +393,7 @@
     </tbody>
     <tbody class="tablesorter-no-sort">
         <tr id="season-${epResult["season"]}-cols" class="seasoncols">
-            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${epResult["season"]}"  autocapitalize="off" /></th>
+            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${epResult["season"]}" /></th>
             <th class="col-metadata">NFO</th>
             <th class="col-metadata">TBN</th>
             <th class="col-ep">Episode</th>
@@ -421,7 +421,7 @@
         <tr class="${Overview.overviewStrings[epCats[epStr]]} season-${curSeason} seasonstyle" id="${'S' + str(epResult["season"]) + 'E' + str(epResult["episode"])}">
             <td class="col-checkbox">
                 % if int(epResult["status"]) != UNAIRED:
-                    <input type="checkbox" class="epCheck" id="${str(epResult["season"])+'x'+str(epResult["episode"])}" name="${str(epResult["season"]) +"x"+str(epResult["episode"])}"  autocapitalize="off" />
+                    <input type="checkbox" class="epCheck" id="${str(epResult["season"])+'x'+str(epResult["episode"])}" name="${str(epResult["season"]) +"x"+str(epResult["episode"])}" />
                 % endif
             </td>
             <td align="center"><img src="${srRoot}/images/${("nfo-no.gif", "nfo.gif")[epResult["hasnfo"]]}" alt="${("N", "Y")[epResult["hasnfo"]]}" width="23" height="11" /></td>
@@ -445,7 +445,7 @@
                     % else:
                         value="${str(scSeas)}x${str(scEpis)}"
                     % endif
-                        style="padding: 0; text-align: center; max-width: 60px;"  autocapitalize="off" />
+                        style="padding: 0; text-align: center; max-width: 60px;" />
             </td>
             <td align="center">
                 <input type="text" placeholder="${str(dfltAbsolute)}" size="6" maxlength="8"
@@ -457,7 +457,7 @@
                     % else:
                         value="${str(scAbsolute)}"
                     % endif
-                        style="padding: 0; text-align: center; max-width: 60px;"  autocapitalize="off" />
+                        style="padding: 0; text-align: center; max-width: 60px;" />
             </td>
             <td class="col-name">
             % if epResult["description"] != "" and epResult["description"] is not None:

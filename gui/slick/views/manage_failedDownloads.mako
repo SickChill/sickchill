@@ -32,7 +32,7 @@
       <th width="10%">Size</th>
       <th width="14%">Provider</th>
       <th width="1%">Remove<br>
-          <input type="checkbox" class="bulkCheck" id="removeCheck"  autocapitalize="off" />
+          <input type="checkbox" class="bulkCheck" id="removeCheck" />
       </th>
     </tr>
   </thead>
@@ -60,7 +60,7 @@
         <img src="${srRoot}/images/providers/missing.png" width="16" height="16" alt="missing provider" title="missing provider"/>
     % endif
     </td>
-    <td align="center"><input type="checkbox" class="removeCheck" id="remove-${hItem["release"]}"  autocapitalize="off" /></td>
+    <td align="center"><input type="checkbox" class="removeCheck" id="remove-${hItem["release"]}" /></td>
   </tr>
 % endfor
   </tbody>

@@ -1,6 +1,6 @@
 <div id="blackwhitelist">
-    <input type="hidden" name="whitelist" id="whitelist" autocapitalize="off" />
-    <input type="hidden" name="blacklist" id="blacklist" autocapitalize="off" />
+    <input type="hidden" name="whitelist" id="whitelist"/>
+    <input type="hidden" name="blacklist" id="blacklist"/>
 
     <b>Fansub Groups:</b>
         <div >
@@ -22,7 +22,7 @@
                         % endfor
                     </select>
                     <br>
-                    <input class="btn" id="removeW" value="Remove" type="button" autocapitalize="off" />
+                    <input class="btn" id="removeW" value="Remove" type="button"/>
                 </div>
                 <div class="blackwhitelist pool">
                     <span><h4>Available Groups</h4></span>
@@ -34,8 +34,8 @@
                     % endfor
                     </select>
                     <br>
-                    <input class="btn" id="addW" value="Add to Whitelist" type="button" autocapitalize="off" />
-                    <input class="btn" id="addB" value="Add to Blacklist" type="button" autocapitalize="off" />
+                    <input class="btn" id="addW" value="Add to Whitelist" type="button"/>
+                    <input class="btn" id="addB" value="Add to Blacklist" type="button"/>
                 </div>
                 <div class="blackwhitelist black">
                     <span><h4>Blacklist</h4></span>
@@ -45,12 +45,12 @@
                         % endfor
                     </select>
                     <br>
-                    <input class="btn" id="removeB" value="Remove" type="button" autocapitalize="off" />
+                    <input class="btn" id="removeB" value="Remove" type="button"/>
                 </div>
             </div>
             <br style="clear:both" />
             <div class="blackwhitelist manual">
-                <input type="text" id="addToPoolText" class="form-control form-control-inline input-sm input250"  autocapitalize="off" />
+                <input type="text" id="addToPoolText" class="form-control form-control-inline input-sm input250" />
                 <input class="btn btn-inline" type="button" value="Add to Whitelist" id="addToWhite">
                 <input class="btn btn-inline" type="button" value="Add to Blacklist" id="addToBlack">
             </div>
