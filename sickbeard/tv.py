@@ -1309,7 +1309,10 @@ class TVShow(object):
             epStatus, curQuality = Quality.splitCompositeStatus(epStatus)
 
             if curQuality not in anyQualities + bestQualities:
-                if curQuality != Quality.UNKNOWN and curQuality > max(anyQualities):
+                if curQuality != Quality.UNKNOWN and (
+                    (anyQualities and curQuality > max(anyQualities)) or
+                    (bestQualities and curQuality > max(bestQualities))
+                ):
                     return Overview.GOOD
                 else:
                     return Overview.QUAL
