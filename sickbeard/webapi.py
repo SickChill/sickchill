@@ -120,9 +120,6 @@ class ApiHandler(RequestHandler):
             'image': self._out_as_image,
         }
 
-        access_msg = u"API :: " + self.request.remote_ip + " - gave correct API KEY. ACCESS GRANTED"
-        logger.log(access_msg, logger.DEBUG)
-
         # set the original call_dispatcher as the local _call_dispatcher
         _call_dispatcher = self.call_dispatcher
         # if profile was set wrap "_call_dispatcher" in the profile function
