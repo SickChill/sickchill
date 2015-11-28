@@ -209,7 +209,7 @@ def get_needed_languages(subtitles):
 
 # TODO: Filter here for non-languages in sickbeard.SUBTITLES_LANGUAGES
 def wantedLanguages(sql_like=None):
-    wanted = [x for x in sorted(sickbeard.SUBTITLES_LANGUAGES) if x in subtitle_code_filter()]
+    wanted = {language for language in sickbeard.SUBTITLES_LANGUAGES if language in subtitle_code_filter()}
     if sql_like:
         return '%' + ','.join(wanted) + '%'
 
@@ -282,13 +282,12 @@ def get_subtitles(video):
 
 # TODO: Return only languages our providers allow
 def subtitleLanguageFilter():
-    return [Language.fromopensubtitles(language) for language
-            in language_converters['opensubtitles'].codes if len(language) == 3]
+    return set([Language.fromopensubtitles(language) for language
+                in language_converters['opensubtitles'].codes if len(language) == 3])
 
 
 def subtitle_code_filter():
-    return [Language.fromopensubtitles(language).opensubtitles for language
-            in language_converters['opensubtitles'].codes if len(language) == 3]
+    return set([language.opensubtitles for language in subtitleLanguageFilter()])
 
 
 class SubtitlesFinder(object):
@@ -299,6 +298,7 @@ class SubtitlesFinder(object):
     def __init__(self):
         self.amActive = False
 
+    @staticmethod
     def subtitles_download_in_pp():
         logger.log(u'Checking for needed subtitles in Post-Process folder', logger.INFO)
 
@@ -314,7 +314,7 @@ class SubtitlesFinder(object):
 
         # Search for all wanted languages
         languages = set()
-        for language in set(wantedLanguages()):
+        for language in wantedLanguages():
             languages.add(fromietf(language))
         if not languages:
             return
