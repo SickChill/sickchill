@@ -50,7 +50,7 @@
                                 <span class="component-title">Show Location</span>
                                 <span class="component-desc">
                                     <input type="hidden" name="show" value="${show.indexerid}" />
-                                    <input type="text" name="location" id="location" value="${show._location}" class="form-control form-control-inline input-sm input350" />
+                                    <input type="text" name="location" id="location" value="${show._location}" class="form-control form-control-inline input-sm input350" autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -202,7 +202,7 @@
                             <label for="rls_ignore_words">
                                 <span class="component-title">Ignored Words</span>
                                 <span class="component-desc">
-                                    <input type="text" id="rls_ignore_words" name="rls_ignore_words" id="rls_ignore_words" value="${show.rls_ignore_words}" class="form-control form-control-inline input-sm input350" /><br>
+                                    <input type="text" id="rls_ignore_words" name="rls_ignore_words" id="rls_ignore_words" value="${show.rls_ignore_words}" class="form-control form-control-inline input-sm input350" autocapitalize="off" /><br>
                                     <div class="clear-left">
                                         <p>comma-separated <i>e.g. "word1,word2,word3"</i></>
                                         <p>Search results with one or more words from this list will be ignored.</p>
@@ -215,7 +215,7 @@
                             <label for="rls_require_words">
                                 <span class="component-title">Required Words</span>
                                 <span class="component-desc">
-                                    <input type="text" id="rls_require_words" name="rls_require_words" id="rls_require_words" value="${show.rls_require_words}" class="form-control form-control-inline input-sm input350" /><br>
+                                    <input type="text" id="rls_require_words" name="rls_require_words" id="rls_require_words" value="${show.rls_require_words}" class="form-control form-control-inline input-sm input350" autocapitalize="off" /><br>
                                     <div class="clear-left">
                                         <p>comma-separated <i>e.g. "word1,word2,word3"</i></p>
                                         <p>Search results with no words from this list will be ignored.</p>
@@ -228,7 +228,7 @@
                             <label for="SceneName">
                                 <span class="component-title">Scene Exception</span>
                                 <span class="component-desc">
-                                    <input type="text" id="SceneName" class="form-control form-control-inline input-sm input200" /><input class="btn btn-inline" type="button" value="Add" id="addSceneName" /><br><br>
+                                    <input type="text" id="SceneName" class="form-control form-control-inline input-sm input200" autocapitalize="off" /><input class="btn btn-inline" type="button" value="Add" id="addSceneName" /><br><br>
                                     <div class="pull-left">
                                         <select id="exceptions_list" name="exceptions_list" multiple="multiple" style="min-width:200px;height:99px;">
                                         % for cur_exception in show.exceptions:

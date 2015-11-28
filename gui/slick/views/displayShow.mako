@@ -445,7 +445,7 @@
                     % else:
                         value="${str(scSeas)}x${str(scEpis)}"
                     % endif
-                        style="padding: 0; text-align: center; max-width: 60px;" />
+                        style="padding: 0; text-align: center; max-width: 60px;" autocapitalize="off" />
             </td>
             <td align="center">
                 <input type="text" placeholder="${str(dfltAbsolute)}" size="6" maxlength="8"
@@ -457,7 +457,7 @@
                     % else:
                         value="${str(scAbsolute)}"
                     % endif
-                        style="padding: 0; text-align: center; max-width: 60px;" />
+                        style="padding: 0; text-align: center; max-width: 60px;" autocapitalize="off" />
             </td>
             <td class="col-name">
             % if epResult["description"] != "" and epResult["description"] is not None:
