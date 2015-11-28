@@ -1,12 +1,18 @@
-import sys, os.path
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+"""
+Test name parsing
+"""
 
+# pylint: disable=line-too-long
+
+import sys
+import os.path
 import datetime
 import unittest
 
-from tests import test_lib as test
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from tests import test_lib as test
 import sickbeard
 from sickbeard import tv
 from sickbeard.name_parser import parser
@@ -15,7 +21,7 @@ sickbeard.SYS_ENCODING = 'UTF-8'
 
 DEBUG = VERBOSE = False
 
-simple_test_cases = {
+SIMPLE_TEST_CASES = {
     'standard': {
         'Mr.Show.Name.S01E02.Source.Quality.Etc-Group': parser.ParseResult(None, 'Mr Show Name', 1, [2], 'Source.Quality.Etc', 'Group'),
         'Show.Name.S01E02': parser.ParseResult(None, 'Show Name', 1, [2]),
@@ -115,7 +121,7 @@ simple_test_cases = {
     },
 }
 
-combination_test_cases = [
+COMBINATION_TEST_CASES = [
     ('/test/path/to/Season 02/03 - Ep Name.avi',
      parser.ParseResult(None, None, 2, [3], 'Ep Name'),
      ['no_season', 'season_only']),
@@ -149,18 +155,20 @@ combination_test_cases = [
      ['no_season', 'season_only']),
 ]
 
-unicode_test_cases = [
+UNICODE_TEST_CASES = [
     (u'The.Big.Bang.Theory.2x07.The.Panty.Pi\xf1ata.Polarization.720p.HDTV.x264.AC3-SHELDON.mkv',
      parser.ParseResult(None, 'The.Big.Bang.Theory', 2, [7], u'The.Panty.Pi\xf1ata.Polarization.720p.HDTV.x264.AC3', 'SHELDON')),
     ('The.Big.Bang.Theory.2x07.The.Panty.Pi\xc3\xb1ata.Polarization.720p.HDTV.x264.AC3-SHELDON.mkv',
      parser.ParseResult(None, 'The.Big.Bang.Theory', 2, [7], u'The.Panty.Pi\xf1ata.Polarization.720p.HDTV.x264.AC3', 'SHELDON'))
 ]
 
-failure_cases = ['7sins-jfcs01e09-720p-bluray-x264']
+FAILURE_CASES = ['7sins-jfcs01e09-720p-bluray-x264']
 
 
 class UnicodeTests(test.SickbeardTestDBCase):
-
+    """
+    Test unicode
+    """
     def __init__(self, something):
         super(UnicodeTests, self).__init__(something)
         super(UnicodeTests, self).setUp()
@@ -168,24 +176,43 @@ class UnicodeTests(test.SickbeardTestDBCase):
         self.show.name = "The Big Bang Theory"
 
     def _test_unicode(self, name, result):
-        np = parser.NameParser(True, showObj=self.show)
-        parse_result = np.parse(name)
+        """
+        Test unicode
+
+        :param name:
+        :param result:
+        :return:
+        """
+        name_parser = parser.NameParser(True, showObj=self.show)
+        parse_result = name_parser.parse(name)
 
         # this shouldn't raise an exception
         repr(str(parse_result))
         self.assertEqual(parse_result.extra_info, result.extra_info)
 
     def test_unicode(self):
-        for (name, result) in unicode_test_cases:
+        """
+        Test unicode
+        """
+        for (name, result) in UNICODE_TEST_CASES:
             self._test_unicode(name, result)
 
-class FailureCaseTests(test.SickbeardTestDBCase):
 
+class FailureCaseTests(test.SickbeardTestDBCase):
+    """
+    Test cases that should fail
+    """
     @staticmethod
     def _test_name(name):
-        np = parser.NameParser(True)
+        """
+        Test name
+
+        :param name:
+        :return:
+        """
+        name_parser = parser.NameParser(True)
         try:
-            parse_result = np.parse(name)
+            parse_result = name_parser.parse(name)
         except (parser.InvalidNameException, parser.InvalidShowException):
             return True
 
@@ -194,21 +221,36 @@ class FailureCaseTests(test.SickbeardTestDBCase):
         return False
 
     def test_failures(self):
-        for name in failure_cases:
+        """
+        Test failures
+        """
+        for name in FAILURE_CASES:
             self.assertTrue(self._test_name(name))
 
+
 class ComboTests(test.SickbeardTestDBCase):
+    """
+    Perform combination tests
+    """
 
     def _test_combo(self, name, result, which_regexes):
+        """
+        Perform combination test
+
+        :param name:
+        :param result:
+        :param which_regexes:
+        :return:
+        """
 
         if VERBOSE:
             print
             print 'Testing', name
 
-        np = parser.NameParser(True)
+        name_parser = parser.NameParser(True)
 
         try:
-            test_result = np.parse(name)
+            test_result = name_parser.parse(name)
         except parser.InvalidShowException:
             return False
 
@@ -216,50 +258,63 @@ class ComboTests(test.SickbeardTestDBCase):
             print test_result, test_result.which_regex
             print result, which_regexes
 
-
         self.assertEqual(test_result, result)
         for cur_regex in which_regexes:
             self.assertTrue(cur_regex in test_result.which_regex)
         self.assertEqual(len(which_regexes), len(test_result.which_regex))
 
     def test_combos(self):
-
-        for (name, result, which_regexes) in combination_test_cases:
+        """
+        Perform combination tests
+        """
+        for (name, result, which_regexes) in COMBINATION_TEST_CASES:
             # Normalise the paths. Converts UNIX-style paths into Windows-style
             # paths when test is run on Windows.
             self._test_combo(os.path.normpath(name), result, which_regexes)
 
-class BasicTests(test.SickbeardTestDBCase):
 
+class BasicTests(test.SickbeardTestDBCase):
+    """
+    Basic name parsing tests
+    """
     def __init__(self, something):
         super(BasicTests, self).__init__(something)
         super(BasicTests, self).setUp()
         self.show = tv.TVShow(1, 1, 'en')
 
-    def _test_names(self, np, section, transform=None, verbose=False):
+    def _test_names(self, name_parser, section, transform=None, verbose=False):
+        """
+        Performs a test
+
+        :param name_parser: to use for test
+        :param section:
+        :param transform:
+        :param verbose:
+        :return:
+        """
 
         if VERBOSE or verbose:
             print
             print 'Running', section, 'tests'
-        for cur_test_base in simple_test_cases[section]:
+        for cur_test_base in SIMPLE_TEST_CASES[section]:
             if transform:
                 cur_test = transform(cur_test_base)
-                np.file_name = cur_test
+                name_parser.file_name = cur_test
             else:
                 cur_test = cur_test_base
             if VERBOSE or verbose:
                 print 'Testing', cur_test
 
-            result = simple_test_cases[section][cur_test_base]
+            result = SIMPLE_TEST_CASES[section][cur_test_base]
 
             self.show.name = result.series_name if result else None
-            np.showObj = self.show
+            name_parser.showObj = self.show
             if not result:
-                self.assertRaises(parser.InvalidNameException, np.parse, cur_test)
+                self.assertRaises(parser.InvalidNameException, name_parser.parse, cur_test)
                 return
             else:
                 result.which_regex = [section]
-                test_result = np.parse(cur_test)
+                test_result = name_parser.parse(cur_test)
 
             if DEBUG or verbose:
                 print 'air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date
@@ -270,109 +325,238 @@ class BasicTests(test.SickbeardTestDBCase):
             self.assertEqual(str(test_result), str(result))
 
     def test_standard_names(self):
-        np = parser.NameParser(True)
-        self._test_names(np, 'standard')
-
-    def test_standard_repeat_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'standard_repeat')
-
-    def test_fov_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'fov')
-
-    def test_fov_repeat_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'fov_repeat')
-
-    #def test_bare_names(self):
-    #    np = parser.NameParser(False)
-    #    self._test_names(np, 'bare')
-
-    def test_stupid_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'stupid')
-
-    #def test_no_season_names(self):
-    #    np = parser.NameParser(False)
-    #    self._test_names(np, 'no_season')
-
-    def test_no_season_general_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'no_season_general')
-
-    def test_no_season_multi_ep_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'no_season_multi_ep')
-
-    def test_season_only_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'season_only')
-
-    #def test_scene_date_format_names(self):
-    #    np = parser.NameParser(False)
-    #    self._test_names(np, 'scene_date_format')
+        """
+        Test standard names
+        """
+        name_parser = parser.NameParser(True)
+        self._test_names(name_parser, 'standard')
 
     def test_standard_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'standard', lambda x: x + '.avi')
+        """
+        Test standard file names
+        """
+        name_parser = parser.NameParser()
+        self._test_names(name_parser, 'standard', lambda x: x + '.avi')
+
+    def test_standard_repeat_names(self):
+        """
+        Test standard repeat names
+        """
+        name_parser = parser.NameParser(False)
+        self._test_names(name_parser, 'standard_repeat')
 
     def test_standard_repeat_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'standard_repeat', lambda x: x + '.avi')
+        """
+        Test standard repeat file names
+        """
+        name_parser = parser.NameParser()
+        self._test_names(name_parser, 'standard_repeat', lambda x: x + '.avi')
+
+    def test_fov_names(self):
+        """
+        Test fov names
+        """
+        name_parser = parser.NameParser(False)
+        self._test_names(name_parser, 'fov')
 
     def test_fov_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'fov', lambda x: x + '.avi')
+        """
+        Test fov file names
+        """
+        name_parser = parser.NameParser()
+        self._test_names(name_parser, 'fov', lambda x: x + '.avi')
+
+    def test_fov_repeat_names(self):
+        """
+        Test fov repeat names
+        """
+        name_parser = parser.NameParser(False)
+        self._test_names(name_parser, 'fov_repeat')
 
     def test_fov_repeat_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'fov_repeat', lambda x: x + '.avi')
+        """
+        Test fov repeat file names
+        """
+        name_parser = parser.NameParser()
+        self._test_names(name_parser, 'fov_repeat', lambda x: x + '.avi')
 
-    #def test_bare_file_names(self):
-    #    np = parser.NameParser()
-    #    self._test_names(np, 'bare', lambda x: x + '.avi')
+    def test_stupid_names(self):
+        """
+        Test stupid names
+        """
+        name_parser = parser.NameParser(False)
+        self._test_names(name_parser, 'stupid')
 
     def test_stupid_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'stupid', lambda x: x + '.avi')
+        """
+        Test stupid file names
+        """
+        name_parser = parser.NameParser()
+        self._test_names(name_parser, 'stupid', lambda x: x + '.avi')
 
-    #def test_no_season_file_names(self):
-    #    np = parser.NameParser()
-    #    self._test_names(np, 'no_season', lambda x: x + '.avi')
+    def test_no_s_general_names(self):
+        """
+        Test no season general names
+        """
+        name_parser = parser.NameParser(False)
+        self._test_names(name_parser, 'no_season_general')
 
-    def test_no_season_general_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'no_season_general', lambda x: x + '.avi')
+    def test_no_s_general_file_names(self):
+        """
+        Test no season general file names
+        """
+        name_parser = parser.NameParser()
+        self._test_names(name_parser, 'no_season_general', lambda x: x + '.avi')
 
-    def test_no_season_multi_ep_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'no_season_multi_ep', lambda x: x + '.avi')
+    def test_no_s_multi_ep_names(self):
+        """
+        Test no season multi episode names
+        """
+        name_parser = parser.NameParser(False)
+        self._test_names(name_parser, 'no_season_multi_ep')
 
-    def test_season_only_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'season_only', lambda x: x + '.avi')
+    def test_no_s_multi_ep_file_names(self):
+        """
+        Test no season multi episode file names
+        """
+        name_parser = parser.NameParser()
+        self._test_names(name_parser, 'no_season_multi_ep', lambda x: x + '.avi')
 
-    #def test_scene_date_format_file_names(self):
-    #    np = parser.NameParser()
-    #    self._test_names(np, 'scene_date_format', lambda x: x + '.avi')
+    def test_s_only_names(self):
+        """
+        Test season only names
+        """
+        name_parser = parser.NameParser(False)
+        self._test_names(name_parser, 'season_only')
 
+    def test_s_only_file_names(self):
+        """
+        Test season only file names
+        """
+        name_parser = parser.NameParser()
+        self._test_names(name_parser, 'season_only', lambda x: x + '.avi')
+
+
+# TODO: Make these work or document why they shouldn't
+class BasicFailedTests(test.SickbeardTestDBCase):
+    """
+    Basic tests that currently fail
+    """
+    def __init__(self, something):
+        super(BasicFailedTests, self).__init__(something)
+        super(BasicFailedTests, self).setUp()
+        self.show = tv.TVShow(1, 1, 'en')
+
+    def _test_names(self, name_parser, section, transform=None, verbose=False):
+        """
+        Performs a test
+
+        :param name_parser: to use for test
+        :param section:
+        :param transform:
+        :param verbose:
+        :return:
+        """
+        if VERBOSE or verbose:
+            print
+            print 'Running', section, 'tests'
+        for cur_test_base in SIMPLE_TEST_CASES[section]:
+            if transform:
+                cur_test = transform(cur_test_base)
+                name_parser.file_name = cur_test
+            else:
+                cur_test = cur_test_base
+            if VERBOSE or verbose:
+                print 'Testing', cur_test
+
+            result = SIMPLE_TEST_CASES[section][cur_test_base]
+
+            self.show.name = result.series_name if result else None
+            name_parser.showObj = self.show
+            if not result:
+                self.assertRaises(parser.InvalidNameException, name_parser.parse, cur_test)
+                return
+            else:
+                result.which_regex = [section]
+                test_result = name_parser.parse(cur_test)
+
+            if DEBUG or verbose:
+                print 'air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date
+                print 'anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers
+                print test_result
+                print result
+            self.assertEqual(test_result.which_regex, [section])
+            self.assertEqual(str(test_result), str(result))
+
+    @unittest.expectedFailure
+    def test_no_s_names(self):
+        """
+        Test no season names
+        """
+        name_parser = parser.NameParser(False)
+        self._test_names(name_parser, 'no_season')
+
+    @unittest.expectedFailure
+    def test_no_s_file_names(self):
+        """
+        Test no season file names
+        """
+        name_parser = parser.NameParser()
+        self._test_names(name_parser, 'no_season', lambda x: x + '.avi')
+
+    @unittest.expectedFailure
+    def test_bare_names(self):
+        """
+        Test bare names
+        """
+        name_parser = parser.NameParser(False)
+        self._test_names(name_parser, 'bare')
+
+    @unittest.expectedFailure
+    def test_bare_file_names(self):
+        """
+        Test bare file names
+        """
+        name_parser = parser.NameParser()
+        self._test_names(name_parser, 'bare', lambda x: x + '.avi')
+
+    @unittest.skip('Not yet implemented')
     def test_combination_names(self):
+        """
+        Test combination names
+        """
         pass
+
+    @unittest.skip('Not trying indexer')
+    def test_scene_date_fmt_names(self):
+        """
+        Test scene date format names
+        """
+        name_parser = parser.NameParser(False)
+        self._test_names(name_parser, 'scene_date_format')
+
+    @unittest.skip('Not trying indexer')
+    def test_scene_date_fmt_file_names(self):
+        """
+        Test scene date format file names
+        """
+        name_parser = parser.NameParser()
+        self._test_names(name_parser, 'scene_date_format', lambda x: x + '.avi')
+
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        suite = unittest.TestLoader().loadTestsFromName('name_parser_tests.BasicTests.test_'+sys.argv[1])
-        unittest.TextTestRunner(verbosity=2).run(suite)
+        SUITE = unittest.TestLoader().loadTestsFromName('name_parser_tests.BasicTests.test_'+sys.argv[1])
+        unittest.TextTestRunner(verbosity=2).run(SUITE)
     else:
-        suite = unittest.TestLoader().loadTestsFromTestCase(BasicTests)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+        SUITE = unittest.TestLoader().loadTestsFromTestCase(BasicTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
 
-    suite = unittest.TestLoader().loadTestsFromTestCase(ComboTests)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(ComboTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
 
-    suite = unittest.TestLoader().loadTestsFromTestCase(UnicodeTests)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(UnicodeTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
 
-    suite = unittest.TestLoader().loadTestsFromTestCase(FailureCaseTests)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(FailureCaseTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
