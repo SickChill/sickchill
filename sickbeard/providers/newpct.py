@@ -45,37 +45,29 @@ class newpctProvider(generic.TorrentProvider):
 
         self.urls = {
             'base_url': 'http://www.newpct.com',
-            'search': 'http://www.newpct.com/buscar-descargas/'
+            'search': 'http://www.newpct.com/index.php'
         }
 
         self.url = self.urls['base_url']
 
         """
         Search query:
-        http://www.newpct.com/buscar-descargas/cID=0&tLang=0&oBy=0&oMode=0&category_=767&subcategory_=All&idioma_=1&calidad_=All&oByAux=0&oModeAux=0&size_=0&btnb=Filtrar+Busqueda&q=the+strain
+        http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=767&idioma_=1&bus_de_=All
 
-        category_=767 => Category Shows
-        idioma_=1 => Language Spanish
-        calidad_=All=> Quality ALL
-        q => Search show
+        q => Show name
+        category_ = Category "Shows" (767)
+        idioma_ = Language Spanish (1)
+        bus_de_ = Date from (All, Semana)
+
         """
 
         self.search_params = {
-            'cID': 0,
-            'tLang': 0,
-            'oBy': 0,
-            'oMode': 0,
+            'l': 'doSearch',
+            'q': '',
             'category_': 767,
-            'subcategory_': 'All',
             'idioma_': 1,
-            'calidad_': 'All',
-            'oByAux': 0,
-            'oModeAux': 0,
-            'size_': 0,
-            'btnb': 'Filtrar+Busqueda',
-            'q': ''
+            'bus_de_': 'All'
         }
-
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
@@ -84,21 +76,26 @@ class newpctProvider(generic.TorrentProvider):
 
         # Only search if user conditions are true
         lang_info = '' if not epObj or not epObj.show else epObj.show.lang
-        if self.onlyspasearch and lang_info != 'es':
-            logger.log(u"Show info is not spanish, skipping provider search", logger.DEBUG)
-            return results
 
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+
+            # Only search if user conditions are true
+            if self.onlyspasearch and lang_info != 'es' and mode is not 'RSS':
+                logger.log(u"Show info is not spanish, skipping provider search", logger.DEBUG)
+                continue
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                self.search_params.update({'q': search_string.strip()})
+                self.search_params['q'] = search_string.strip() if mode is not 'RSS' else ''
+                self.search_params['bus_de_'] = 'All' if mode is not 'RSS' else 'semana'
 
-                logger.log(u"Search URL: %s" % self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params), logger.DEBUG)
-                data = self.getURL(self.urls['search'], post_data=self.search_params, timeout=30)
+                searchURL = self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+
+                data = self.getURL(searchURL, timeout=30)
                 if not data:
                     continue
 
@@ -220,26 +217,27 @@ class newpctProvider(generic.TorrentProvider):
 
     @staticmethod
     def _processTitle(title):
-
         # Remove "Mas informacion sobre " literal from title
         title = title[22:]
 
-        # Quality
-        title = title.replace('[HDTV]', '[720p HDTV x264]')
-        title = title.replace('[HDTV 720p AC3 5.1]', '[720p HDTV x264]')
-        title = title.replace('[HDTV 1080p AC3 5.1]', '[1080p HDTV x264]')
-        title = title.replace('[DVDRIP]', '[DVDrip x264]')
-        title = title.replace('[DVD Rip]', '[DVDrip x264]')
-        title = title.replace('[DVDrip]', '[DVDrip x264]')
-        title = title.replace('[DVDRIP-AC3.5.1]', '[DVDrip x264]')
-        title = title.replace('[BLuRayRip]', '[720p BlueRay x264]')
-        title = title.replace('[BRrip]', '[720p BlueRay x264]')
-        title = title.replace('[BDrip]', '[720p BlueRay x264]')
-        title = title.replace('[BluRay Rip]', '[720p BlueRay x264]')
-        title = title.replace('[BluRay 720p]', '[720p BlueRay x264]')
-        title = title.replace('[BluRay 1080p]', '[1080p BlueRay x264]')
-        title = title.replace('[BluRay MicroHD]', '[1080p BlueRay x264]')
-        title = title.replace('[MicroHD 1080p]', '[1080p BlueRay x264]')
+        # Quality - Use re module to avoid case sensitive problems with replace
+        title = re.sub('\[HDTV 1080p.*]', '1080p HDTV x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[HDTV 720p.*]', '720p HDTV x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[HDTV]', 'HDTV x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[DVD.*]', 'DVDrip x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[BluRay 1080p.*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[BluRay MicroHD.*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[MicroHD 1080p.*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[BLuRay.*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[BRrip.*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[BDrip.*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
+
+        #Language
+        title = re.sub('\[Spanish.*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
+        title = re.sub(ur'\[Español.*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
+        title = re.sub(u'\[AC3 5\.1 Español.*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
+
+        title += '-NEWPCT'
 
         return title.strip()
 
@@ -250,10 +248,11 @@ class newpctCache(tvcache.TVCache):
         tvcache.TVCache.__init__(self, provider_obj)
 
         # set this 0 to suppress log line, since we aren't updating it anyways
-        self.minTime = 0
+        self.minTime = 20
 
     def _getRSSData(self):
-        return {'entries': []}
+        search_params = {'RSS': ['']}
+        return {'entries': self.provider._doSearch(search_params)}
 
 
 provider = newpctProvider()

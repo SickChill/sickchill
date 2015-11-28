@@ -17,7 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
 import datetime
+from babelfish import Country
 
 import sickbeard
 from sickbeard.metadata import generic
@@ -74,22 +76,26 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                                          season_all_poster,
                                          season_all_banner)
 
-        self.name = 'KODI 12+'
+        self.name = u'KODI 12+'
 
-        self.poster_name = "poster.jpg"
-        self.season_all_poster_name = "season-all-poster.jpg"
+        self.poster_name = u"poster.jpg"
+        self.season_all_poster_name = u"season-all-poster.jpg"
 
         # web-ui metadata template
-        self.eg_show_metadata = "tvshow.nfo"
-        self.eg_episode_metadata = "Season##\\<i>filename</i>.nfo"
-        self.eg_fanart = "fanart.jpg"
-        self.eg_poster = "poster.jpg"
-        self.eg_banner = "banner.jpg"
-        self.eg_episode_thumbnails = "Season##\\<i>filename</i>-thumb.jpg"
-        self.eg_season_posters = "season##-poster.jpg"
-        self.eg_season_banners = "season##-banner.jpg"
-        self.eg_season_all_poster = "season-all-poster.jpg"
-        self.eg_season_all_banner = "season-all-banner.jpg"
+        self.eg_show_metadata = u"tvshow.nfo"
+        self.eg_episode_metadata = u"Season##\\<i>filename</i>.nfo"
+        self.eg_fanart = u"fanart.jpg"
+        self.eg_poster = u"poster.jpg"
+        self.eg_banner = u"banner.jpg"
+        self.eg_episode_thumbnails = u"Season##\\<i>filename</i>-thumb.jpg"
+        self.eg_season_posters = u"season##-poster.jpg"
+        self.eg_season_banners = u"season##-banner.jpg"
+        self.eg_season_all_poster = u"season-all-poster.jpg"
+        self.eg_season_all_banner = u"season-all-banner.jpg"
+
+    @staticmethod
+    def _split_info(info_string):
+        return {x.strip().title() for x in re.sub(r'[,/]+', '|', info_string).split('|') if x.strip()}
 
     def _show_data(self, show_obj):
         """
@@ -169,8 +175,19 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             indexerid.text = str(myShow["id"])
 
         if getattr(myShow, 'genre', None) and isinstance(myShow["genre"], basestring):
-            genre = etree.SubElement(tv_node, "genre")
-            genre.text = " / ".join(x.strip() for x in myShow["genre"].split('|') if x.strip())
+            for genre in self._split_info(myShow["genre"]):
+                cur_genre = etree.SubElement(tv_node, "genre")
+                cur_genre.text = genre
+
+        if 'country_codes' in show_obj.imdb_info:
+            for country in self._split_info(show_obj.imdb_info['country_codes']):
+                try:
+                    cur_country_name = Country(country.upper()).name.title()
+                except Exception:
+                    continue
+
+                cur_country = etree.SubElement(tv_node, "country")
+                cur_country.text = cur_country_name
 
         if getattr(myShow, 'firstaired', None):
             premiered = etree.SubElement(tv_node, "premiered")
@@ -179,6 +196,16 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         if getattr(myShow, 'network', None):
             studio = etree.SubElement(tv_node, "studio")
             studio.text = myShow["network"].strip()
+
+        if getattr(myShow, 'writer', None) and isinstance(myShow['writer'], basestring):
+            for writer in self._split_info(myShow['writer']):
+                cur_writer = etree.SubElement(tv_node, "credits")
+                cur_writer.text = writer
+
+        if getattr(myShow, 'director', None) and isinstance(myShow['director'], basestring):
+            for director in self._split_info(myShow['director']):
+                cur_director = etree.SubElement(tv_node, "director")
+                cur_director.text = director
 
         if getattr(myShow, '_actors', None):
             for actor in myShow['_actors']:
@@ -310,20 +337,23 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             # watched = etree.SubElement(episode, "watched")
             # watched.text = 'false'
 
-            if getattr(myEp, 'writer', None):
-                ep_credits = etree.SubElement(episode, "credits")
-                ep_credits.text = myEp['writer'].strip()
-
-            if getattr(myEp, 'director', None):
-                director = etree.SubElement(episode, "director")
-                director.text = myEp['director'].strip()
-
             if getattr(myEp, 'rating', None):
                 rating = etree.SubElement(episode, "rating")
                 rating.text = myEp['rating']
 
+
+            if getattr(myEp, 'writer', None) and isinstance(myEp['writer'], basestring):
+                for writer in self._split_info(myEp['writer']):
+                    cur_writer = etree.SubElement(episode, "credits")
+                    cur_writer.text = writer
+
+            if getattr(myEp, 'director', None) and isinstance(myEp['director'], basestring):
+                for director in self._split_info(myEp['director']):
+                    cur_director = etree.SubElement(episode, "director")
+                    cur_director.text = director
+
             if getattr(myEp, 'gueststars', None) and isinstance(myEp['gueststars'], basestring):
-                for actor in (x.strip() for x in myEp['gueststars'].split('|') if x.strip()):
+                for actor in self._split_info(myEp['gueststars']):
                     cur_actor = etree.SubElement(episode, "actor")
                     cur_actor_name = etree.SubElement(cur_actor, "name")
                     cur_actor_name.text = actor

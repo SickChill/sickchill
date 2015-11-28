@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+from helper.common_tests import CommonTests
 from helper.quality_tests import QualityTests
 from show.coming_episodes_tests import ComingEpisodesTests
 from show.history_tests import HistoryTests
@@ -29,6 +30,7 @@ if __name__ == '__main__':
 
     test_classes = [
         ComingEpisodesTests,
+        CommonTests,
         HistoryTests,
         QualityTests,
         RestartTests,

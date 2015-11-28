@@ -3,6 +3,7 @@
     import re
     import sickbeard
     from sickbeard import network_timezones
+    from sickrage.helper.common import pretty_file_size
     from sickrage.show.Show import Show
     from time import time
 
@@ -301,7 +302,7 @@
 
                 <div>
                     % if has_resource_module:
-                    Memory used: <span class="footerhighlight">${sickbeard.helpers.pretty_filesize(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span> |
+                    Memory used: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span> |
                     % endif
                     Load time: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
                     Branch: <span class="footerhighlight">${sickbeard.BRANCH}</span> |

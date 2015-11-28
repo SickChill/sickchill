@@ -11,7 +11,9 @@ $(document).ready(function() {
         method: "POST",
         hintText: "Write to search a language and select it",
         preventDuplicates: true,
-        prePopulate: [${','.join("{\"id\": \"" + subtitles.fromietf(lang).opensubtitles + "\", name: \"" + subtitles.fromietf(lang).name + "\"}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''}]
+        prePopulate: [${','.join("{\"id\": \"" + subtitles.fromietf(lang).opensubtitles + "\", name: \"" + subtitles.fromietf(lang).name + "\"}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''}],
+        resultsFormatter: function(item){ return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' /> " + item.name + "</li>" },
+        tokenFormatter: function(item)  { return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' /> " + item.name + "</li>" },
     });
 });
 $('#config-components').tabs();
@@ -57,7 +59,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                 <div class="field-pair">
                                     <label>
                                         <span class="component-title">Subtitle Languages</span>
-                                        <span class="component-desc"><input type="text" id="subtitles_languages" name="subtitles_languages" /></span>
+                                        <span class="component-desc"><input type="text" id="subtitles_languages" name="subtitles_languages"  autocapitalize="off" /></span>
                                     </label>
                                 </div>
                                 <div class="field-pair">
@@ -77,7 +79,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                 <div class="field-pair">
                                     <label>
                                         <span class="component-title">Subtitle Find Frequency</span>
-                                        <input type="number" name="subtitles_finder_frequency" value="${sickbeard.SUBTITLES_FINDER_FREQUENCY}" hours="1" class="form-control input-sm input75" />
+                                        <input type="number" name="subtitles_finder_frequency" value="${sickbeard.SUBTITLES_FINDER_FREQUENCY}" hours="1" class="form-control input-sm input75"  autocapitalize="off" />
                                         <span class="component-desc">time in hours between scans (default: 1)</span>
                                     </label>
                                 </div>
@@ -85,7 +87,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                     <label class="clearfix" for="subtitles_history">
                                         <span class="component-title">Subtitles History</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="subtitles_history" id="subtitles_history" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_HISTORY)]}/>
+                                            <input type="checkbox" name="subtitles_history" id="subtitles_history" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_HISTORY)]} autocapitalize="off" />
                                             <p>Log downloaded Subtitle on History page?</p>
                                         </span>
                                     </label>
@@ -94,16 +96,27 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                     <label class="clearfix" for="subtitles_multi">
                                         <span class="component-title">Subtitles Multi-Language</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="subtitles_multi" id="subtitles_multi" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_MULTI)]}/>
+                                            <input type="checkbox" name="subtitles_multi" id="subtitles_multi" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_MULTI)]} autocapitalize="off" />
                                             <p>Append language codes to subtitle filenames?</p>
                                         </span>
                                     </label>
                                 </div>
+                                    <label class="clearfix" for="subtitles_download_in_pp">
+                                        <span class="component-title">Subtitles in Post-Process folder</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" name="subtitles_download_in_pp" id="subtitles_download_in_pp" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_DOWNLOAD_IN_PP)]} autocapitalize="off" />
+                                            <p>Download subtitles in post-process folder.</p>
+                                            <p>Useful if you only want the episode to be post-processed when it has subtitles associated</p>
+                                            <p>You might also want to enable the post-process setting 'Postpone if no subtitle'</p>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="field-pair">
                                 <div class="field-pair">
                                     <label class="clearfix" for="embedded_subtitles_all">
                                         <span class="component-title">Embedded Subtitles</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="embedded_subtitles_all" id="embedded_subtitles_all" ${('', 'checked="checked"')[bool(sickbeard.EMBEDDED_SUBTITLES_ALL)]}/>
+                                            <input type="checkbox" name="embedded_subtitles_all" id="embedded_subtitles_all" ${('', 'checked="checked"')[bool(sickbeard.EMBEDDED_SUBTITLES_ALL)]} autocapitalize="off" />
                                             <p>Ignore subtitles embedded inside video file?</p>
                                             <p><b>Warning: </b>this will ignore <u>all</u> embedded subtitles for every video file!</p>
                                         </span>
@@ -113,7 +126,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                     <label class="clearfix" for="subtitles_hearing_impaired">
                                         <span class="component-title">Hearing Impaired Subtitles</span>
                                         <span class="component-desc">
-                                            <input type="checkbox" name="subtitles_hearing_impaired" id="subtitles_hearing_impaired" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_HEARING_IMPAIRED)]}/>
+                                            <input type="checkbox" name="subtitles_hearing_impaired" id="subtitles_hearing_impaired" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_HEARING_IMPAIRED)]} autocapitalize="off" />
                                             <p>Download hearing impaired style subtitles?</p>
                                         </span>
                                     </label>
@@ -121,7 +134,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                 <div class="field-pair">
                                     <label class="nocheck">
                                         <span class="component-title">Extra Scripts</span>
-                                           <input type="text" name="subtitles_extra_scripts" value="${'|'.join(sickbeard.SUBTITLES_EXTRA_SCRIPTS)}" class="form-control input-sm input350" />
+                                           <input type="text" name="subtitles_extra_scripts" value="${'|'.join(sickbeard.SUBTITLES_EXTRA_SCRIPTS)}" class="form-control input-sm input350"  autocapitalize="off" />
                                     </label>
                                     <label class="nocheck">
                                         <span class="component-title">&nbsp;</span>
@@ -144,7 +157,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                     </label>
                                 </div>
 
-                        <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
+                        <br><input type="submit" class="btn config_submitter" value="Save Changes"  autocapitalize="off" /><br>
                         </div>
                     </fieldset>
                 </div><!-- /component-group1 //-->
@@ -162,7 +175,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                         <ul id="service_order_list">
                         % for curService in sickbeard.subtitles.sortedServiceList():
                             <li class="ui-state-default" id="${curService['name']}">
-                                <input type="checkbox" id="enable_${curService['name']}" class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] is True]}/>
+                                <input type="checkbox" id="enable_${curService['name']}" class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] is True]} autocapitalize="off" />
                                 <a href="${anon_url(curService['url'])}" class="imgLink" target="_new">
                                     <img src="${srRoot}/images/subtitles/${curService['image']}" alt="${curService['url']}" title="${curService['url']}" width="16" height="16" style="vertical-align:middle;"/>
                                 </a>
@@ -171,9 +184,9 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                           </li>
                         % endfor
                         </ul>
-                        <input type="hidden" name="service_order" id="service_order" value="<%" ".join(['%s:%d' % (x['name'], x['enabled']) for x in sickbeard.subtitles.sortedServiceList()])%>"/>
+                        <input type="hidden" name="service_order" id="service_order" value="<%" ".join(['%s:%d' % (x['name'], x['enabled']) for x in sickbeard.subtitles.sortedServiceList()])%>" autocapitalize="off" />
 
-                        <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
+                        <br><input type="submit" class="btn config_submitter" value="Save Changes"  autocapitalize="off" /><br>
                     </fieldset>
                 </div><!-- /component-group2 //-->
                 <div id="core-component-group3" class="component-group">
@@ -198,21 +211,21 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                 <label class="nocheck" for="${curService['name']}_user">
                                     <span class="component-title">${curService['name'].capitalize()} User Name</span>
                                     <span class="component-desc">
-                                        <input type="text" name="${curService['name']}_user" id="${curService['name']}_user" value="${providerLoginDict[curService['name']]['user']}" class="form-control input-sm input300" />
+                                        <input type="text" name="${curService['name']}_user" id="${curService['name']}_user" value="${providerLoginDict[curService['name']]['user']}" class="form-control input-sm input300"  autocapitalize="off" />
                                     </span>
                                 </label>
                                 <label class="nocheck" for="${curService['name']}_pass">
                                     <span class="component-title">${curService['name'].capitalize()} Password</span>
                                     <span class="component-desc">
-                                        <input type="password" name="${curService['name']}_pass" id="${curService['name']}_pass" value="${providerLoginDict[curService['name']]['pass']}" class="form-control input-sm input300" />
+                                        <input type="password" name="${curService['name']}_pass" id="${curService['name']}_pass" value="${providerLoginDict[curService['name']]['pass']}" class="form-control input-sm input300"  autocapitalize="off" />
                                     </span>
                                 </label>
                             </div>
                         % endfor
-                        <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
+                        <br><input type="submit" class="btn config_submitter" value="Save Changes"  autocapitalize="off" /><br>
                     </fieldset>
                 </div><!-- /component-group3 //-->
-                <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
+                <br><input type="submit" class="btn config_submitter" value="Save Changes"  autocapitalize="off" /><br>
             </div><!-- /config-components //-->
 
 </form>

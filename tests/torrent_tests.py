@@ -25,18 +25,47 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import unittest
 
 import urlparse
-import test_lib as test
+import tests.test_lib as test
 from bs4 import BeautifulSoup
 from sickbeard.helpers import getURL
+from sickbeard.tv import TVEpisode, TVShow
 import requests
+
+from sickbeard.providers.bitcannon import BitCannonProvider
 
 class TorrentBasicTests(test.SickbeardTestDBCase):
 
-    def test_search(self):
-        self.url = 'http://kickass.to/'
-        searchURL = 'http://kickass.to/usearch/American%20Dad%21%20S08%20-S08E%20category%3Atv/?field=seeders&sorder=desc'
+    @classmethod
+    def setUpClass(cls):
+        cls.shows = []
 
-        html = getURL(searchURL, session=requests.Session())
+        show = TVShow(1, 121361)
+        show.name = "Italian Works"
+        show.episodes = []
+        episode = TVEpisode(show, 05, 10)
+        episode.name = "Pines of Rome"
+        episode.scene_season = 5
+        episode.scene_episode = 10
+        show.episodes.append(episode)
+        cls.shows.append(show)
+
+    def test_bitcannon(self):
+        bitcannon = BitCannonProvider()
+        bitcannon.custom_url = ""        # true testing requires a valid URL here (e.g., "http://localhost:3000/")
+        bitcannon.api_key = ""
+
+        if len(bitcannon.custom_url) > 0:
+            search_strings_list = bitcannon._get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
+            for search_strings in search_strings_list:
+                bitcannon._doSearch(search_strings)   # {'Episode': ['Italian Works S05E10']}
+
+        return True
+
+    def test_search(self):
+        url = 'http://kickass.to/'
+        search_url = 'http://kickass.to/usearch/American%20Dad%21%20S08%20-S08E%20category%3Atv/?field=seeders&sorder=desc'
+
+        html = getURL(search_url, session=requests.Session())
         if not html:
             return
 
@@ -50,14 +79,14 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
 
         #Continue only if one Release is found
         if len(torrent_rows) < 2:
-            print(u"The data returned does not contain any torrents")
+            print "The data returned does not contain any torrents"
             return
 
         for tr in torrent_rows[1:]:
 
             try:
-                link = urlparse.urljoin(self.url, (tr.find('div', {'class': 'torrentname'}).find_all('a')[1])['href'])
-                id = tr.get('id')[-7:]
+                link = urlparse.urljoin(url, (tr.find('div', {'class': 'torrentname'}).find_all('a')[1])['href'])
+                _id = tr.get('id')[-7:]
                 title = (tr.find('div', {'class': 'torrentname'}).find_all('a')[1]).text \
                     or (tr.find('div', {'class': 'torrentname'}).find_all('a')[2]).text
                 url = tr.find('a', 'imagnet')['href']

@@ -60,7 +60,7 @@ class Show:
         today = str(date.today().toordinal())
 
         downloaded_status = Quality.DOWNLOADED + Quality.ARCHIVED
-        snatched_status = Quality.SNATCHED + Quality.SNATCHED_PROPER
+        snatched_status = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
         total_status = [SKIPPED, WANTED]
 
         results = db.select(

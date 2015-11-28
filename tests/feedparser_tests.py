@@ -1,29 +1,41 @@
-import sys, os.path
+# coding=utf-8
+
+"""
+Test Feed Parser
+"""
+
+import sys
+import os.path
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import unittest
-
 from sickbeard.providers.womble import provider as womble
 
+
 class FeedParserTests(unittest.TestCase):
-    # pylint: disable=W0212
+    """
+    Test feed parser
+    """
     def test_womble(self):
+        """
+        Test womble
+        """
         result = womble.cache.getRSSFeed('http://newshost.co.za/rss/?sec=tv-sd&fr=false')
         self.assertTrue('entries' in result)
         self.assertTrue('feed' in result)
         for item in result['entries'] or []:
-            title, url = womble._get_title_and_url(item)
+            title, url = womble._get_title_and_url(item)     # pylint: disable=protected-access
             self.assertTrue(title and url)
 
 if __name__ == "__main__":
     print "=================="
-    print "STARTING - FEEDPARSER TESTS"
+    print "STARTING - FEED PARSER TESTS"
     print "=================="
     print "######################################################################"
-    suite = unittest.TestLoader().loadTestsFromTestCase(FeedParserTests)
-    testresults = unittest.TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(FeedParserTests)
+    TEST_RESULTS = unittest.TextTestRunner(verbosity=2).run(SUITE)
 
     # Return 0 if successful, 1 if there was a failure
-    sys.exit(not testresults.wasSuccessful())
+    sys.exit(not TEST_RESULTS.wasSuccessful())

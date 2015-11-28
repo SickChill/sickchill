@@ -53,6 +53,7 @@ from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
+from sickrage.helper.common import sanitize_filename
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOException, ShowDirectoryNotFoundException
@@ -1128,17 +1129,19 @@ class Home(WebRoot):
 
         return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
-    def update(self, pid=None):
+    def update(self, pid=None, branch=None):
 
         if str(pid) != str(sickbeard.PID):
             return self.redirect('/home/')
 
         checkversion = CheckVersion()
-        backup = checkversion._runbackup()
+        backup = checkversion.updater and checkversion._runbackup()
 
         if backup is True:
+            if branch:
+                checkversion.updater.branch = branch
 
-            if sickbeard.versionCheckScheduler.action.update():
+            if checkversion.updater.update():
                 # do a hard restart
                 sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
@@ -1154,7 +1157,7 @@ class Home(WebRoot):
         if sickbeard.BRANCH != branch:
             sickbeard.BRANCH = branch
             ui.notifications.message('Checking out branch: ', branch)
-            return self.update(sickbeard.PID)
+            return self.update(sickbeard.PID, branch)
         else:
             ui.notifications.message('Already on branch: ', branch)
             return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
@@ -1257,6 +1260,8 @@ class Home(WebRoot):
         epCounts[Overview.GOOD] = 0
         epCounts[Overview.UNAIRED] = 0
         epCounts[Overview.SNATCHED] = 0
+        epCounts[Overview.SNATCHED_PROPER] = 0
+        epCounts[Overview.SNATCHED_BEST] = 0
 
         for curResult in sqlResults:
             curEpCat = showObj.getOverview(int(curResult["status"] or -1))
@@ -1484,6 +1489,7 @@ class Home(WebRoot):
                 showObj.rls_ignore_words = rls_ignore_words.strip()
                 showObj.rls_require_words = rls_require_words.strip()
 
+            location = unicode(location, 'UTF-8')
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if os.path.normpath(showObj._location) != os.path.normpath(location):
                 logger.log(os.path.normpath(showObj._location) + " != " + os.path.normpath(location), logger.DEBUG)
@@ -2257,7 +2263,7 @@ class HomeAddShows(Home):
 
     @staticmethod
     def sanitizeFileName(name):
-        return helpers.sanitizeFileName(name)
+        return sanitize_filename(name)
 
     @staticmethod
     def searchIndexersForShowName(search_term, lang=None, indexer=None):
@@ -2585,7 +2591,7 @@ class HomeAddShows(Home):
             location = None
 
         if location:
-            show_dir = ek(os.path.join, location, helpers.sanitizeFileName(showName))
+            show_dir = ek(os.path.join, location, sanitize_filename(showName))
             dir_exists = helpers.makeDir(show_dir)
             if not dir_exists:
                 logger.log(u"Unable to create the folder " + show_dir + ", can't add the show", logger.ERROR)
@@ -2676,7 +2682,7 @@ class HomeAddShows(Home):
         if fullShowPath:
             show_dir = ek(os.path.normpath, fullShowPath)
         else:
-            show_dir = ek(os.path.join, rootDir, helpers.sanitizeFileName(show_name))
+            show_dir = ek(os.path.join, rootDir, sanitize_filename(show_name))
 
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
         if ek(os.path.isdir, show_dir) and not fullShowPath:
@@ -2823,7 +2829,7 @@ class Manage(Home, WebRoot):
     def showEpisodeStatuses(indexer_id, whichStatus):
         status_list = [int(whichStatus)]
         if status_list[0] == SNATCHED:
-            status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER
+            status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
 
         myDB = db.DBConnection()
         cur_show_results = myDB.select(
@@ -2888,7 +2894,7 @@ class Manage(Home, WebRoot):
     def changeEpisodeStatuses(self, oldStatus, newStatus, *args, **kwargs):
         status_list = [int(oldStatus)]
         if status_list[0] == SNATCHED:
-            status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER
+            status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
 
         to_change = {}
 
@@ -3049,6 +3055,8 @@ class Manage(Home, WebRoot):
             epCounts[Overview.GOOD] = 0
             epCounts[Overview.UNAIRED] = 0
             epCounts[Overview.SNATCHED] = 0
+            epCounts[Overview.SNATCHED_PROPER] = 0
+            epCounts[Overview.SNATCHED_BEST] = 0
 
             sqlResults = myDB.select(
                 "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
@@ -4914,7 +4922,7 @@ class ConfigSubtitles(Config):
                         controller="config", action="subtitles")
 
     def saveSubtitles(self, use_subtitles=None, subtitles_plugins=None, subtitles_languages=None, subtitles_dir=None,
-                      service_order=None, subtitles_history=None, subtitles_finder_frequency=None,
+                      service_order=None, subtitles_history=None, subtitles_finder_frequency=None, subtitles_download_in_pp=None,
                       subtitles_multi=None, embedded_subtitles_all=None, subtitles_extra_scripts=None, subtitles_hearing_impaired=None,
                       addic7ed_user=None, addic7ed_pass=None, legendastv_user=None, legendastv_pass=None, opensubtitles_user=None, opensubtitles_pass=None):
 
@@ -4929,6 +4937,7 @@ class ConfigSubtitles(Config):
         sickbeard.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)
         sickbeard.SUBTITLES_HEARING_IMPAIRED = config.checkbox_to_value(subtitles_hearing_impaired)
         sickbeard.SUBTITLES_MULTI = config.checkbox_to_value(subtitles_multi)
+        sickbeard.SUBTITLES_DOWNLOAD_IN_PP = config.checkbox_to_value(subtitles_download_in_pp)
         sickbeard.SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in subtitles_extra_scripts.split('|') if x.strip()]
 
         # Subtitles services
@@ -5097,7 +5106,10 @@ class ErrorLogs(WebRoot):
             'SHOWUPDATER': u'Show Updater',
             'CHECKVERSION': u'Check Version',
             'SHOWQUEUE': u'Show Queue',
-            'SEARCHQUEUE': u'Search Queue',
+            'SEARCHQUEUE': u'Search Queue (All)',
+            'SEARCHQUEUE-DAILY-SEARCH': u'Search Queue (Daily Searcher)',
+            'SEARCHQUEUE-BACKLOG': u'Search Queue (Backlog)',
+            'SEARCHQUEUE-MANUAL': u'Search Queue (Manual)',
             'FINDPROPERS': u'Find Propers',
             'POSTPROCESSER': u'Postprocesser',
             'FINDSUBTITLES': u'Find Subtitles',

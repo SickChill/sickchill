@@ -19,7 +19,7 @@
                 <b>Enter the folder containing the episode:</b>
             </td>
             <td>
-                <input type="text" name="dir" id="episodeDir" class="form-control form-control-inline input-sm input350" />
+                <input type="text" name="dir" id="episodeDir" class="form-control form-control-inline input-sm input350"  autocapitalize="off" />
             </td>
         </tr>
         <tr>
@@ -72,7 +72,7 @@
         </tr>
         % endif
     </table>
-        <input id="submit" class="btn" type="submit" value="Process" />
+        <input id="submit" class="btn" type="submit" value="Process"  autocapitalize="off" />
     </form>
 </div>
 </%block>

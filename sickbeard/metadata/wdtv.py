@@ -27,7 +27,7 @@ import sickbeard
 from sickbeard.metadata import generic
 
 from sickbeard import logger, helpers
-from sickrage.helper.common import dateFormat
+from sickrage.helper.common import dateFormat, replace_extension
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, ShowNotFoundException
 
@@ -130,7 +130,7 @@ class WDTVMetadata(generic.GenericMetadata):
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
         if ek(os.path.isfile, ep_obj.location):
-            tbn_filename = helpers.replaceExtension(ep_obj.location, 'metathumb')
+            tbn_filename = replace_extension(ep_obj.location, 'metathumb')
         else:
             return None
 

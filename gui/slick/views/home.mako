@@ -4,6 +4,7 @@
     import calendar
     from sickbeard import sbdatetime
     from sickbeard import network_timezones
+    from sickrage.helper.common import pretty_file_size
     import re
 %>
 <%block name="metas">
@@ -299,23 +300,21 @@
         if not cur_total:
             cur_total = 0
 
-    if cur_total != 0:
-        download_stat = str(cur_downloaded)
-        download_stat_tip = "Downloaded: " + str(cur_downloaded)
-        if cur_snatched > 0:
-            download_stat = download_stat + "+" + str(cur_snatched)
-            download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
+    download_stat = str(cur_downloaded)
+    download_stat_tip = "Downloaded: " + str(cur_downloaded)
+    if cur_snatched:
+        download_stat = download_stat + "+" + str(cur_snatched)
+        download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
 
-        download_stat = download_stat + " / " + str(cur_total)
-        download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
-    else:
-        download_stat = '?'
-        download_stat_tip = "no data"
+    download_stat = download_stat + " / " + str(cur_total)
+    download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
 
     nom = cur_downloaded
-    den = cur_total
-    if den == 0:
+    if cur_total:
+        den = cur_total
+    else:
         den = 1
+        download_stat_tip = "Unaired"
 
     progressbar_percent = nom * 100 / den
 %>
@@ -393,7 +392,7 @@
         </td>
 
         ## <% show_size = sickbeard.helpers.get_size(curShow._location) %>
-        ## <td align="center" data-show-size="${show_size}">${sickbeard.helpers.pretty_filesize(show_size)}</td>
+        ## <td align="center" data-show-size="${show_size}">${pretty_file_size(show_size)}</td>
 
         <td align="center">
             <% paused = int(curShow.paused) == 0 and curShow.status == 'Continuing' %>

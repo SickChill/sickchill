@@ -26,7 +26,7 @@ import sickbeard
 from sickbeard import logger, helpers
 from sickbeard.metadata import mediabrowser
 
-from sickrage.helper.common import dateFormat
+from sickrage.helper.common import dateFormat, replace_extension
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, ShowNotFoundException
 
@@ -86,11 +86,11 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
         # self.eg_season_all_banner = "<i>not supported</i>"
 
     def get_episode_file_path(self, ep_obj):
-        return helpers.replaceExtension(ep_obj.location, self._ep_nfo_extension)
+        return replace_extension(ep_obj.location, self._ep_nfo_extension)
 
     @staticmethod
     def get_episode_thumb_path(ep_obj):
-        return helpers.replaceExtension(ep_obj.location, 'jpg')
+        return replace_extension(ep_obj.location, 'jpg')
 
     def _show_data(self, show_obj):
         """

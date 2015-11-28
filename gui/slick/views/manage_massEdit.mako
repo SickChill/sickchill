@@ -26,7 +26,7 @@
 
     <div id="config-content">
         <form action="massEditSubmit" method="post">
-            <input type="hidden" name="toEdit" value="${showList}" />
+            <input type="hidden" name="toEdit" value="${showList}"  autocapitalize="off" />
 
             <div id="config-components">
                 <ul>
@@ -74,8 +74,8 @@
                                                 <td>
                                                     <a href="#" class="btn edit_root_dir" class="edit_root_dir" id="edit_root_dir_${cur_index}">Edit</a>
                                                     <a href="#" class="btn delete_root_dir" class="delete_root_dir" id="delete_root_dir_${cur_index}">Delete</a>
-                                                    <input type="hidden" name="orig_root_dir_${cur_index}" value="${cur_dir}" />
-                                                    <input type="text" style="display: none" name="new_root_dir_${cur_index}" id="new_root_dir_${cur_index}" class="new_root_dir" value="${cur_dir}" />
+                                                    <input type="hidden" name="orig_root_dir_${cur_index}" value="${cur_dir}"  autocapitalize="off" />
+                                                    <input type="text" style="display: none" name="new_root_dir_${cur_index}" id="new_root_dir_${cur_index}" class="new_root_dir" value="${cur_dir}"  autocapitalize="off" />
                                                 </td>
                                             </tr>
                                         % endfor
