@@ -76,22 +76,22 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                                          season_all_poster,
                                          season_all_banner)
 
-        self.name = 'KODI 12+'
+        self.name = u'KODI 12+'
 
-        self.poster_name = "poster.jpg"
-        self.season_all_poster_name = "season-all-poster.jpg"
+        self.poster_name = u"poster.jpg"
+        self.season_all_poster_name = u"season-all-poster.jpg"
 
         # web-ui metadata template
-        self.eg_show_metadata = "tvshow.nfo"
-        self.eg_episode_metadata = "Season##\\<i>filename</i>.nfo"
-        self.eg_fanart = "fanart.jpg"
-        self.eg_poster = "poster.jpg"
-        self.eg_banner = "banner.jpg"
-        self.eg_episode_thumbnails = "Season##\\<i>filename</i>-thumb.jpg"
-        self.eg_season_posters = "season##-poster.jpg"
-        self.eg_season_banners = "season##-banner.jpg"
-        self.eg_season_all_poster = "season-all-poster.jpg"
-        self.eg_season_all_banner = "season-all-banner.jpg"
+        self.eg_show_metadata = u"tvshow.nfo"
+        self.eg_episode_metadata = u"Season##\\<i>filename</i>.nfo"
+        self.eg_fanart = u"fanart.jpg"
+        self.eg_poster = u"poster.jpg"
+        self.eg_banner = u"banner.jpg"
+        self.eg_episode_thumbnails = u"Season##\\<i>filename</i>-thumb.jpg"
+        self.eg_season_posters = u"season##-poster.jpg"
+        self.eg_season_banners = u"season##-banner.jpg"
+        self.eg_season_all_poster = u"season-all-poster.jpg"
+        self.eg_season_all_banner = u"season-all-banner.jpg"
 
     @staticmethod
     def _split_info(info_string):
