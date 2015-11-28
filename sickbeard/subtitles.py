@@ -93,7 +93,7 @@ def sortedServiceList():
         current_index += 1
 
     for current_service in subliminal.provider_manager.names():
-        if current_service not in [x['name'] for x in new_list]:
+        if current_service not in [service['name'] for service in new_list]:
             new_list.append({'name': current_service,
                              'url': PROVIDER_URLS[current_service] if current_service in PROVIDER_URLS else
                                     lmgtfy % current_service,
@@ -105,7 +105,7 @@ def sortedServiceList():
 
 
 def getEnabledServiceList():
-    return [x['name'] for x in sortedServiceList() if x['enabled']]
+    return [service['name'] for service in sortedServiceList() if service['enabled']]
 
 
 # Hack around this for now.
