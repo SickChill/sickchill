@@ -192,8 +192,8 @@ class ApiHandler(RequestHandler):
             for cmd in commands:
                 cur_args, cur_kwargs = self.filter_params(cmd, args, kwargs)
 
-                cmd = cmd.split("_")  # was a index used for this cmd ?
-                cmd, cmd_index = cmd[0], cmd[1:]  # this gives us the clear cmd and the index
+                if len(cmd.split("_")) > 1:
+                    cmd, cmd_index = cmd.split("_")
 
                 logger.log(u"API :: " + cmd + ": cur_kwargs " + str(cur_kwargs), logger.DEBUG)
                 if not (cmd in ('show.getbanner', 'show.getfanart', 'show.getnetworklogo', 'show.getposter') and
