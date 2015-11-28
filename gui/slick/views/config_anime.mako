@@ -27,7 +27,7 @@
 
                     <fieldset class="component-group-list">
                         <div class="field-pair">
-                            <input type="checkbox" class="enabler" name="use_anidb" id="use_anidb" ${('', 'checked="checked"')[bool(sickbeard.USE_ANIDB)]} />
+                            <input type="checkbox" class="enabler" name="use_anidb" id="use_anidb" ${('', 'checked="checked"')[bool(sickbeard.USE_ANIDB)]}  autocapitalize="off" />
                             <label for="use_notifo">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">Should SickRage use data from AniDB?</span>
@@ -38,7 +38,7 @@
                             <div class="field-pair">
                                 <label class="nocheck">
                                     <span class="component-title">AniDB Username</span>
-                                    <input type="text" name="anidb_username" id="anidb_username" value="${sickbeard.ANIDB_USERNAME}" class="form-control input-sm input350" />
+                                    <input type="text" name="anidb_username" id="anidb_username" value="${sickbeard.ANIDB_USERNAME}" class="form-control input-sm input350"  autocapitalize="off" />
                                 </label>
                                 <label class="nocheck">
                                     <span class="component-title">&nbsp;</span>
@@ -49,7 +49,7 @@
                             <div class="field-pair">
                                 <label class="nocheck">
                                     <span class="component-title">AniDB Password</span>
-                                    <input type="password" name="anidb_password" id="anidb_password" value="${sickbeard.ANIDB_PASSWORD}" class="form-control input-sm input350" />
+                                    <input type="password" name="anidb_password" id="anidb_password" value="${sickbeard.ANIDB_PASSWORD}" class="form-control input-sm input350"  autocapitalize="off" />
                                 </label>
                                 <label class="nocheck">
                                     <span class="component-title">&nbsp;</span>
@@ -57,14 +57,14 @@
                                 </label>
                             </div>
                             <div class="field-pair">
-                                <input type="checkbox" name="anidb_use_mylist" id="anidb_use_mylist" ${('', 'checked="checked"')[bool(sickbeard.ANIDB_USE_MYLIST)]}/>
+                                <input type="checkbox" name="anidb_use_mylist" id="anidb_use_mylist" ${('', 'checked="checked"')[bool(sickbeard.ANIDB_USE_MYLIST)]} autocapitalize="off" />
                                 <label>
                                     <span class="component-title">AniDB MyList</span>
                                     <span class="component-desc">Do you want to add the PostProcessed Episodes to the MyList ?</span>
                                 </label>
                             </div>
                         </div>
-                        <input type="submit" class="btn config_submitter" value="Save Changes" />
+                        <input type="submit" class="btn config_submitter" value="Save Changes"  autocapitalize="off" />
                     </fieldset>
 
                 </div><!-- /component-group //-->
@@ -76,17 +76,17 @@
                     </div>
                     <fieldset class="component-group-list">
                         <div class="field-pair">
-                            <input type="checkbox" class="enabler" name="split_home" id="split_home" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME)]}/>
+                            <input type="checkbox" class="enabler" name="split_home" id="split_home" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME)]} autocapitalize="off" />
                             <label for="use_notifo">
                                 <span class="component-title">Split show lists</span>
                                 <span class="component-desc">Separate anime and normal shows in groups</span>
                             </label>
                         </div>
-                        <input type="submit" class="btn config_submitter" value="Save Changes" />
+                        <input type="submit" class="btn config_submitter" value="Save Changes"  autocapitalize="off" />
                    </fieldset>
                 </div><!-- /component-group //-->
 
-                <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
+                <br><input type="submit" class="btn config_submitter" value="Save Changes"  autocapitalize="off" /><br>
 
             </div><!-- /config-components //-->
 

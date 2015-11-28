@@ -82,7 +82,7 @@ $('#config-components').tabs();
                                     curURL = curProvider.url
                             %>
                             <li class="ui-state-default ${('nzb-provider', 'torrent-provider')[bool(curProvider.providerType == "torrent")]}" id="${curName}">
-                                <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.isEnabled() is True]}/>
+                                <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.isEnabled() is True]} autocapitalize="off" />
                                 <a href="${anon_url(curURL)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${srRoot}/images/providers/${curProvider.imageName()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
                                 <span style="vertical-align:middle;">${curProvider.name}</span>
                                 ${('*', '')[bool(curProvider.supportsBacklog)]}
@@ -91,8 +91,8 @@ $('#config-components').tabs();
                             </li>
                         % endfor
                         </ul>
-                        <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.getID()+':'+str(int(x.isEnabled())) for x in sickbeard.providers.sortedProviderList()])}"/>
-                        <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
+                        <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.getID()+':'+str(int(x.isEnabled())) for x in sickbeard.providers.sortedProviderList()])}" autocapitalize="off" />
+                        <br><input type="submit" class="btn config_submitter" value="Save Changes"  autocapitalize="off" /><br>
                     </fieldset>
                 </div><!-- /component-group1 //-->
 
@@ -140,7 +140,7 @@ $('#config-components').tabs();
                             <label for="${curNewznabProvider.getID()}_url">
                                 <span class="component-title">URL:</span>
                                 <span class="component-desc">
-                                    <input type="text" id="${curNewznabProvider.getID()}_url" value="${curNewznabProvider.url}" class="form-control input-sm input350" disabled/>
+                                    <input type="text" id="${curNewznabProvider.getID()}_url" value="${curNewznabProvider.url}" class="form-control input-sm input350" disabled autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -148,7 +148,7 @@ $('#config-components').tabs();
                             <label for="${curNewznabProvider.getID()}_hash">
                                 <span class="component-title">API key:</span>
                                 <span class="component-desc">
-                                    <input type="text" id="${curNewznabProvider.getID()}_hash" value="${curNewznabProvider.key}" newznab_name="${curNewznabProvider.getID()}_hash" class="newznab_key form-control input-sm input350" />
+                                    <input type="text" id="${curNewznabProvider.getID()}_hash" value="${curNewznabProvider.key}" newznab_name="${curNewznabProvider.getID()}_hash" class="newznab_key form-control input-sm input350"  autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -159,7 +159,7 @@ $('#config-components').tabs();
                             <label for="${curNewznabProvider.getID()}_enable_daily">
                                 <span class="component-title">Enable daily searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNewznabProvider.getID()}_enable_daily" id="${curNewznabProvider.getID()}_enable_daily" ${('', 'checked="checked"')[bool(curNewznabProvider.enable_daily)]}/>
+                                    <input type="checkbox" name="${curNewznabProvider.getID()}_enable_daily" id="${curNewznabProvider.getID()}_enable_daily" ${('', 'checked="checked"')[bool(curNewznabProvider.enable_daily)]} autocapitalize="off" />
                                     <p>enable provider to perform daily searches.</p>
                                 </span>
                             </label>
@@ -171,7 +171,7 @@ $('#config-components').tabs();
                             <label for="${curNewznabProvider.getID()}_enable_backlog">
                                 <span class="component-title">Enable backlog searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNewznabProvider.getID()}_enable_backlog" id="${curNewznabProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curNewznabProvider.enable_backlog and curNewznabProvider.supportsBacklog)]}/>
+                                    <input type="checkbox" name="${curNewznabProvider.getID()}_enable_backlog" id="${curNewznabProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curNewznabProvider.enable_backlog and curNewznabProvider.supportsBacklog)]} autocapitalize="off" />
                                     <p>enable provider to perform backlog searches.</p>
                                 </span>
                             </label>
@@ -183,7 +183,7 @@ $('#config-components').tabs();
                             <label for="${curNewznabProvider.getID()}_search_fallback">
                                 <span class="component-title">Season search fallback</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNewznabProvider.getID()}_search_fallback" id="${curNewznabProvider.getID()}_search_fallback" ${('', 'checked="checked"')[bool(curNewznabProvider.search_fallback)]}/>
+                                    <input type="checkbox" name="${curNewznabProvider.getID()}_search_fallback" id="${curNewznabProvider.getID()}_search_fallback" ${('', 'checked="checked"')[bool(curNewznabProvider.search_fallback)]} autocapitalize="off" />
                                     <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
@@ -201,13 +201,13 @@ $('#config-components').tabs();
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="sponly"]}/>season packs only.
+                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="sponly"]} autocapitalize="off" />season packs only.
                                 </span>
                             </label>
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="eponly"]}/>episodes only.
+                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="eponly"]} autocapitalize="off" />episodes only.
                                 </span>
                             </label>
                         </div>
@@ -223,7 +223,7 @@ $('#config-components').tabs();
                             <label for="${curNzbProvider.getID()}_username">
                                 <span class="component-title">Username:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curNzbProvider.getID()}_username" value="${curNzbProvider.username}" class="form-control input-sm input350" />
+                                    <input type="text" name="${curNzbProvider.getID()}_username" value="${curNzbProvider.username}" class="form-control input-sm input350"  autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -234,7 +234,7 @@ $('#config-components').tabs();
                             <label for="${curNzbProvider.getID()}_api_key">
                                 <span class="component-title">API key:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curNzbProvider.getID()}_api_key" value="${curNzbProvider.api_key}" class="form-control input-sm input350" />
+                                    <input type="text" name="${curNzbProvider.getID()}_api_key" value="${curNzbProvider.api_key}" class="form-control input-sm input350"  autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -246,7 +246,7 @@ $('#config-components').tabs();
                             <label for="${curNzbProvider.getID()}_enable_daily">
                                 <span class="component-title">Enable daily searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNzbProvider.getID()}_enable_daily" id="${curNzbProvider.getID()}_enable_daily" ${('', 'checked="checked"')[bool(curNzbProvider.enable_daily)]}/>
+                                    <input type="checkbox" name="${curNzbProvider.getID()}_enable_daily" id="${curNzbProvider.getID()}_enable_daily" ${('', 'checked="checked"')[bool(curNzbProvider.enable_daily)]} autocapitalize="off" />
                                     <p>enable provider to perform daily searches.</p>
                                 </span>
                             </label>
@@ -258,7 +258,7 @@ $('#config-components').tabs();
                             <label for="${curNzbProvider.getID()}_enable_backlog">
                                 <span class="component-title">Enable backlog searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNzbProvider.getID()}_enable_backlog" id="${curNzbProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curNzbProvider.enable_backlog and curNzbProvider.supportsBacklog)]}/>
+                                    <input type="checkbox" name="${curNzbProvider.getID()}_enable_backlog" id="${curNzbProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curNzbProvider.enable_backlog and curNzbProvider.supportsBacklog)]} autocapitalize="off" />
                                     <p>enable provider to perform backlog searches.</p>
                                 </span>
                             </label>
@@ -270,7 +270,7 @@ $('#config-components').tabs();
                             <label for="${curNzbProvider.getID()}_search_fallback">
                                 <span class="component-title">Season search fallback</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNzbProvider.getID()}_search_fallback" id="${curNzbProvider.getID()}_search_fallback" ${('', 'checked="checked"')[bool(curNzbProvider.search_fallback)]}/>
+                                    <input type="checkbox" name="${curNzbProvider.getID()}_search_fallback" id="${curNzbProvider.getID()}_search_fallback" ${('', 'checked="checked"')[bool(curNzbProvider.search_fallback)]} autocapitalize="off" />
                                     <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
@@ -288,13 +288,13 @@ $('#config-components').tabs();
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="sponly"]}/>season packs only.
+                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="sponly"]} autocapitalize="off" />season packs only.
                                 </span>
                             </label>
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="eponly"]}/>episodes only.
+                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="eponly"]} autocapitalize="off" />episodes only.
                                 </span>
                             </label>
                         </div>
@@ -311,7 +311,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_custom_url">
                                 <span class="component-title">Custom URL:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_custom_url" id="${curTorrentProvider.getID()}_custom_url" value="${curTorrentProvider.custom_url}" class="form-control input-sm input350" />
+                                    <input type="text" name="${curTorrentProvider.getID()}_custom_url" id="${curTorrentProvider.getID()}_custom_url" value="${curTorrentProvider.custom_url}" class="form-control input-sm input350"  autocapitalize="off" />
                                 </span>
                             </label>
                             <label>
@@ -328,7 +328,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_api_key">
                                 <span class="component-title">Api key:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_api_key" id="${curTorrentProvider.getID()}_api_key" value="${curTorrentProvider.api_key}" class="form-control input-sm input350" />
+                                    <input type="text" name="${curTorrentProvider.getID()}_api_key" id="${curTorrentProvider.getID()}_api_key" value="${curTorrentProvider.api_key}" class="form-control input-sm input350"  autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -339,7 +339,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_digest">
                                 <span class="component-title">Digest:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_digest" id="${curTorrentProvider.getID()}_digest" value="${curTorrentProvider.digest}" class="form-control input-sm input350" />
+                                    <input type="text" name="${curTorrentProvider.getID()}_digest" id="${curTorrentProvider.getID()}_digest" value="${curTorrentProvider.digest}" class="form-control input-sm input350"  autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -350,7 +350,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_hash">
                                 <span class="component-title">Hash:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_hash" id="${curTorrentProvider.getID()}_hash" value="${curTorrentProvider.hash}" class="form-control input-sm input350" />
+                                    <input type="text" name="${curTorrentProvider.getID()}_hash" id="${curTorrentProvider.getID()}_hash" value="${curTorrentProvider.hash}" class="form-control input-sm input350"  autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -361,7 +361,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_username">
                                 <span class="component-title">Username:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_username" id="${curTorrentProvider.getID()}_username" value="${curTorrentProvider.username}" class="form-control input-sm input350" />
+                                    <input type="text" name="${curTorrentProvider.getID()}_username" id="${curTorrentProvider.getID()}_username" value="${curTorrentProvider.username}" class="form-control input-sm input350"  autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -372,7 +372,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_password">
                                 <span class="component-title">Password:</span>
                                 <span class="component-desc">
-                                    <input type="password" name="${curTorrentProvider.getID()}_password" id="${curTorrentProvider.getID()}_password" value="${curTorrentProvider.password}" class="form-control input-sm input350" />
+                                    <input type="password" name="${curTorrentProvider.getID()}_password" id="${curTorrentProvider.getID()}_password" value="${curTorrentProvider.password}" class="form-control input-sm input350"  autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -383,7 +383,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_passkey">
                                 <span class="component-title">Passkey:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_passkey" id="${curTorrentProvider.getID()}_passkey" value="${curTorrentProvider.passkey}" class="form-control input-sm input350" />
+                                    <input type="text" name="${curTorrentProvider.getID()}_passkey" id="${curTorrentProvider.getID()}_passkey" value="${curTorrentProvider.passkey}" class="form-control input-sm input350"  autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -394,7 +394,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_pin">
                                 <span class="component-title">Pin:</span>
                                 <span class="component-desc">
-                                    <input type="password" name="${curTorrentProvider.getID()}_pin" id="${curTorrentProvider.getID()}_pin" value="${curTorrentProvider.pin}" class="form-control input-sm input100" />
+                                    <input type="password" name="${curTorrentProvider.getID()}_pin" id="${curTorrentProvider.getID()}_pin" value="${curTorrentProvider.pin}" class="form-control input-sm input100"  autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -405,7 +405,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_ratio">
                                 <span class="component-title" id="${curTorrentProvider.getID()}_ratio_desc">Seed ratio:</span>
                                 <span class="component-desc">
-                                    <input type="number" step="0.1" name="${curTorrentProvider.getID()}_ratio" id="${curTorrentProvider.getID()}_ratio" value="${curTorrentProvider.ratio}" class="form-control input-sm input75" />
+                                    <input type="number" step="0.1" name="${curTorrentProvider.getID()}_ratio" id="${curTorrentProvider.getID()}_ratio" value="${curTorrentProvider.ratio}" class="form-control input-sm input75"  autocapitalize="off" />
                                 </span>
                             </label>
                             <label>
@@ -422,7 +422,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_minseed">
                                 <span class="component-title" id="${curTorrentProvider.getID()}_minseed_desc">Minimum seeders:</span>
                                 <span class="component-desc">
-                                    <input type="number" name="${curTorrentProvider.getID()}_minseed" id="${curTorrentProvider.getID()}_minseed" value="${curTorrentProvider.minseed}" class="form-control input-sm input75" />
+                                    <input type="number" name="${curTorrentProvider.getID()}_minseed" id="${curTorrentProvider.getID()}_minseed" value="${curTorrentProvider.minseed}" class="form-control input-sm input75"  autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -433,7 +433,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_minleech">
                                 <span class="component-title" id="${curTorrentProvider.getID()}_minleech_desc">Minimum leechers:</span>
                                 <span class="component-desc">
-                                    <input type="number" name="${curTorrentProvider.getID()}_minleech" id="${curTorrentProvider.getID()}_minleech" value="${curTorrentProvider.minleech}" class="form-control input-sm input75" />
+                                    <input type="number" name="${curTorrentProvider.getID()}_minleech" id="${curTorrentProvider.getID()}_minleech" value="${curTorrentProvider.minleech}" class="form-control input-sm input75"  autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -444,7 +444,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_confirmed">
                                 <span class="component-title">Confirmed download</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_confirmed" id="${curTorrentProvider.getID()}_confirmed" ${('', 'checked="checked"')[bool(curTorrentProvider.confirmed)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_confirmed" id="${curTorrentProvider.getID()}_confirmed" ${('', 'checked="checked"')[bool(curTorrentProvider.confirmed)]} autocapitalize="off" />
                                     <p>only download torrents from trusted or verified uploaders ?</p>
                                 </span>
                             </label>
@@ -456,7 +456,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_ranked">
                                 <span class="component-title">Ranked torrents</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_ranked" id="${curTorrentProvider.getID()}_ranked" ${('', 'checked="checked"')[bool(curTorrentProvider.ranked)]} />
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_ranked" id="${curTorrentProvider.getID()}_ranked" ${('', 'checked="checked"')[bool(curTorrentProvider.ranked)]}  autocapitalize="off" />
                                     <p>only download ranked torrents (internal releases)</p>
                                 </span>
                             </label>
@@ -468,7 +468,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_engrelease">
                                 <span class="component-title">English torrents</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_engrelease" id="${curTorrentProvider.getID()}_engrelease" ${('', 'checked="checked"')[bool(curTorrentProvider.engrelease)]} />
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_engrelease" id="${curTorrentProvider.getID()}_engrelease" ${('', 'checked="checked"')[bool(curTorrentProvider.engrelease)]}  autocapitalize="off" />
                                     <p>only download english torrents ,or torrents containing english subtitles</p>
                                 </span>
                             </label>
@@ -480,7 +480,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_onlyspasearch">
                                 <span class="component-title">For Spanish torrents</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_onlyspasearch" id="${curTorrentProvider.getID()}_onlyspasearch" ${('', 'checked="checked"')[bool(curTorrentProvider.onlyspasearch)]} />
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_onlyspasearch" id="${curTorrentProvider.getID()}_onlyspasearch" ${('', 'checked="checked"')[bool(curTorrentProvider.onlyspasearch)]}  autocapitalize="off" />
                                     <p>ONLY search on this provider if show info is defined as "Spanish" (avoid provider's use for VOS shows)</p>
                                 </span>
                             </label>
@@ -507,7 +507,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_freeleech">
                                 <span class="component-title">Freeleech</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_freeleech" id="${curTorrentProvider.getID()}_freeleech" ${('', 'checked="checked"')[bool(curTorrentProvider.freeleech)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_freeleech" id="${curTorrentProvider.getID()}_freeleech" ${('', 'checked="checked"')[bool(curTorrentProvider.freeleech)]} autocapitalize="off" />
                                     <p>only download <b>[FreeLeech]</b> torrents.</p>
                                 </span>
                             </label>
@@ -519,7 +519,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_enable_daily">
                                 <span class="component-title">Enable daily searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_enable_daily" id="${curTorrentProvider.getID()}_enable_daily" ${('', 'checked="checked"')[bool(curTorrentProvider.enable_daily)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_enable_daily" id="${curTorrentProvider.getID()}_enable_daily" ${('', 'checked="checked"')[bool(curTorrentProvider.enable_daily)]} autocapitalize="off" />
                                     <p>enable provider to perform daily searches.</p>
                                 </span>
                             </label>
@@ -531,7 +531,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_enable_backlog">
                                 <span class="component-title">Enable backlog searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_enable_backlog" id="${curTorrentProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curTorrentProvider.enable_backlog and curTorrentProvider.supportsBacklog)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_enable_backlog" id="${curTorrentProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curTorrentProvider.enable_backlog and curTorrentProvider.supportsBacklog)]} autocapitalize="off" />
                                     <p>enable provider to perform backlog searches.</p>
                                 </span>
                             </label>
@@ -543,7 +543,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_search_fallback">
                                 <span class="component-title">Season search fallback</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_search_fallback" id="${curTorrentProvider.getID()}_search_fallback" ${('', 'checked="checked"')[bool(curTorrentProvider.search_fallback)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_search_fallback" id="${curTorrentProvider.getID()}_search_fallback" ${('', 'checked="checked"')[bool(curTorrentProvider.search_fallback)]} autocapitalize="off" />
                                     <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
@@ -561,13 +561,13 @@ $('#config-components').tabs();
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="sponly"]}/>season packs only.
+                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="sponly"]} autocapitalize="off" />season packs only.
                                 </span>
                             </label>
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="eponly"]}/>episodes only.
+                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="eponly"]} autocapitalize="off" />episodes only.
                                 </span>
                             </label>
                         </div>
@@ -593,7 +593,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.getID()}_subtitle">
                                 <span class="component-title">Subtitled</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_subtitle" id="${curTorrentProvider.getID()}_subtitle" ${('', 'checked="checked"')[bool(curTorrentProvider.subtitle)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_subtitle" id="${curTorrentProvider.getID()}_subtitle" ${('', 'checked="checked"')[bool(curTorrentProvider.subtitle)]} autocapitalize="off" />
                                     <p>select torrent with Italian subtitle</p>
                                 </span>
                             </label>
@@ -606,7 +606,7 @@ $('#config-components').tabs();
 
                     <!-- end div for editing providers -->
 
-                    <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
+                    <input type="submit" class="btn config_submitter" value="Save Changes"  autocapitalize="off" /><br>
 
                     </fieldset>
                 </div><!-- /component-group2 //-->
@@ -624,7 +624,7 @@ $('#config-components').tabs();
                             <label for="newznab_string">
                                 <span class="component-title">Select provider:</span>
                                 <span class="component-desc">
-                                    <input type="hidden" name="newznab_string" id="newznab_string" />
+                                    <input type="hidden" name="newznab_string" id="newznab_string"  autocapitalize="off" />
                                     <select id="editANewznabProvider" class="form-control input-sm">
                                         <option value="addNewznab">-- add new provider --</option>
                                     </select>
@@ -636,19 +636,19 @@ $('#config-components').tabs();
                         <div class="field-pair">
                             <label for="newznab_name">
                                 <span class="component-title">Provider name:</span>
-                                <input type="text" id="newznab_name" class="form-control input-sm input200" />
+                                <input type="text" id="newznab_name" class="form-control input-sm input200"  autocapitalize="off" />
                             </label>
                         </div>
                         <div class="field-pair">
                             <label for="newznab_url">
                                 <span class="component-title">Site URL:</span>
-                                <input type="text" id="newznab_url" class="form-control input-sm input350" />
+                                <input type="text" id="newznab_url" class="form-control input-sm input350"  autocapitalize="off" />
                             </label>
                         </div>
                         <div class="field-pair">
                             <label for="newznab_key">
                                 <span class="component-title">API key:</span>
-                                <input type="text" id="newznab_key" class="form-control input-sm input350" />
+                                <input type="text" id="newznab_key" class="form-control input-sm input350"  autocapitalize="off" />
                             </label>
                             <label>
                                 <span class="component-title">&nbsp;</span>
@@ -668,17 +668,17 @@ $('#config-components').tabs();
                             </label>
                             <label>
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><input class="btn" type="button" class="newznab_cat_update" id="newznab_cat_update" value="Update Categories" />
+                                <span class="component-desc"><input class="btn" type="button" class="newznab_cat_update" id="newznab_cat_update" value="Update Categories"  autocapitalize="off" />
                                     <span class="updating_categories"></span>
                                 </span>
                             </label>
                         </div>
 
                         <div id="newznab_add_div">
-                            <input class="btn" type="button" class="newznab_save" id="newznab_add" value="Add" />
+                            <input class="btn" type="button" class="newznab_save" id="newznab_add" value="Add"  autocapitalize="off" />
                         </div>
                         <div id="newznab_update_div" style="display: none;">
-                            <input class="btn btn-danger newznab_delete" type="button" class="newznab_delete" id="newznab_delete" value="Delete" />
+                            <input class="btn btn-danger newznab_delete" type="button" class="newznab_delete" id="newznab_delete" value="Delete"  autocapitalize="off" />
                         </div>
                     </div>
 
@@ -700,7 +700,7 @@ $('#config-components').tabs();
                         <label for="torrentrss_string">
                             <span class="component-title">Select provider:</span>
                             <span class="component-desc">
-                            <input type="hidden" name="torrentrss_string" id="torrentrss_string" />
+                            <input type="hidden" name="torrentrss_string" id="torrentrss_string"  autocapitalize="off" />
                                 <select id="editATorrentRssProvider" class="form-control input-sm">
                                     <option value="addTorrentRss">-- add new provider --</option>
                                 </select>
@@ -712,19 +712,19 @@ $('#config-components').tabs();
                         <div class="field-pair">
                             <label for="torrentrss_name">
                                 <span class="component-title">Provider name:</span>
-                                <input type="text" id="torrentrss_name" class="form-control input-sm input200" />
+                                <input type="text" id="torrentrss_name" class="form-control input-sm input200"  autocapitalize="off" />
                             </label>
                         </div>
                         <div class="field-pair">
                             <label for="torrentrss_url">
                                 <span class="component-title">RSS URL:</span>
-                                <input type="text" id="torrentrss_url" class="form-control input-sm input350" />
+                                <input type="text" id="torrentrss_url" class="form-control input-sm input350"  autocapitalize="off" />
                             </label>
                         </div>
                         <div class="field-pair">
                             <label for="torrentrss_cookies">
                                 <span class="component-title">Cookies:</span>
-                                <input type="text" id="torrentrss_cookies" class="form-control input-sm input350" />
+                                <input type="text" id="torrentrss_cookies" class="form-control input-sm input350"  autocapitalize="off" />
                             </label>
                             <label>
                                 <span class="component-title">&nbsp;</span>
@@ -734,7 +734,7 @@ $('#config-components').tabs();
                         <div class="field-pair">
                             <label for="torrentrss_titleTAG">
                                 <span class="component-title">Search element:</span>
-                                <input type="text" id="torrentrss_titleTAG" class="form-control input-sm input200" value="title"/>
+                                <input type="text" id="torrentrss_titleTAG" class="form-control input-sm input200" value="title" autocapitalize="off" />
                             </label>
                             <label>
                                 <span class="component-title">&nbsp;</span>
@@ -742,17 +742,17 @@ $('#config-components').tabs();
                             </label>
                         </div>
                         <div id="torrentrss_add_div">
-                            <input type="button" class="btn torrentrss_save" id="torrentrss_add" value="Add" />
+                            <input type="button" class="btn torrentrss_save" id="torrentrss_add" value="Add"  autocapitalize="off" />
                         </div>
                         <div id="torrentrss_update_div" style="display: none;">
-                            <input type="button" class="btn btn-danger torrentrss_delete" id="torrentrss_delete" value="Delete" />
+                            <input type="button" class="btn btn-danger torrentrss_delete" id="torrentrss_delete" value="Delete"  autocapitalize="off" />
                         </div>
                     </div>
                 </fieldset>
             </div><!-- /component-group4 //-->
             % endif
 
-            <br><input type="submit" class="btn config_submitter_refresh" value="Save Changes" /><br>
+            <br><input type="submit" class="btn config_submitter_refresh" value="Save Changes"  autocapitalize="off" /><br>
 
             </div><!-- /config-components //-->
 

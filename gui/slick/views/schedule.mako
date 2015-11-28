@@ -70,7 +70,7 @@
 <!-- start list view //-->
 <% show_div = 'listing-default' %>
 
-<input type="hidden" id="srRoot" value="${srRoot}" />
+<input type="hidden" id="srRoot" value="${srRoot}"  autocapitalize="off" />
 
 <table id="showListTable" class="sickbeardTable tablesorter seasonstyle" cellspacing="1" border="0" cellpadding="0">
 
@@ -355,7 +355,7 @@
 <br>
 <br>
 <div class="calendarWrapper">
-<input type="hidden" id="srRoot" value="${srRoot}" />
+<input type="hidden" id="srRoot" value="${srRoot}"  autocapitalize="off" />
     % for day in dates:
     <% tbl_day += 1 %>
         <table class="sickbeardTable tablesorter calendarTable ${'cal-%s' % (('even', 'odd')[bool(tbl_day % 2)])}" cellspacing="0" border="0" cellpadding="0">
