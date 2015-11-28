@@ -300,23 +300,21 @@
         if not cur_total:
             cur_total = 0
 
-    if cur_total != 0:
-        download_stat = str(cur_downloaded)
-        download_stat_tip = "Downloaded: " + str(cur_downloaded)
-        if cur_snatched > 0:
-            download_stat = download_stat + "+" + str(cur_snatched)
-            download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
+    download_stat = str(cur_downloaded)
+    download_stat_tip = "Downloaded: " + str(cur_downloaded)
+    if cur_snatched:
+        download_stat = download_stat + "+" + str(cur_snatched)
+        download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
 
-        download_stat = download_stat + " / " + str(cur_total)
-        download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
-    else:
-        download_stat = '?'
-        download_stat_tip = "no data"
+    download_stat = download_stat + " / " + str(cur_total)
+    download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
 
     nom = cur_downloaded
-    den = cur_total
-    if den == 0:
+    if cur_total:
+        den = cur_total
+    else:
         den = 1
+        download_stat_tip = "Unaired"
 
     progressbar_percent = nom * 100 / den
 %>
