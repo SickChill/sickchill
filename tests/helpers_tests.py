@@ -21,7 +21,6 @@
 Test sickbeard.helpers
 
 Methods:
-    isValidLanguage
     fixGlob
     indentXML
     remove_non_release_groups
@@ -98,8 +97,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import unittest
 
-from sickbeard.helpers import isValidLanguage, remove_non_release_groups
-from babelfish import language  # pylint: disable=import-error
+from sickbeard.helpers import remove_non_release_groups
 
 TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
 TEST_CASES = {
@@ -590,26 +588,6 @@ class HelpersMiscTests(unittest.TestCase):
     """
     Test misc helper methods
     """
-    @unittest.expectedFailure
-    def test_is_valid_language(self):
-        # TODO: Determine why this fails and at such a high failure %
-        """
-        Test isValidLanguage
-        """
-        exception_count = 0
-        total = 0
-        for lang in language.LANGUAGES:
-            total += 1
-            try:
-                self.assertTrue(isValidLanguage(lang), lang)
-            except NameError:
-                exception_count += 1
-            except Exception as error:
-                raise error
-        if exception_count > 0:
-            raise Exception('Language failure ratio: %s [%s/%s]' %
-                            (100.0 * exception_count/total, exception_count, total))
-
     @unittest.skip('Not yet implemented')
     def test_fix_glob(self):
         """

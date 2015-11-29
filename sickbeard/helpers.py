@@ -57,7 +57,6 @@ from sickrage.helper.common import media_extensions, pretty_file_size, subtitle_
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, MultipleShowObjectsException
 from cachecontrol import CacheControl, caches
-from babelfish import Language
 from itertools import izip, cycle
 
 import shutil
@@ -68,15 +67,6 @@ shutil.copyfile = shutil_custom.copyfile_custom
 # pylint: disable=W0212
 # Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
-
-
-def isValidLanguage(language):
-    try:
-        Language.fromopensubtitles(language)
-    except Exception:
-        return False
-    return True
-
 
 def fixGlob(path):
     path = re.sub(r'\[', '[[]', path)
@@ -573,7 +563,7 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
         sublang = ek(os.path.splitext, cur_file_name)[1][1:]
 
         # Check if the language extracted from filename is a valid language
-        if isValidLanguage(sublang):
+        if sublang in sickbeard.subtitles.subtitle_code_filter():
             cur_file_ext = '.' + sublang + cur_file_ext
 
     # put the extension on the incoming file
