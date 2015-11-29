@@ -77,7 +77,7 @@ PROVIDER_URLS = {
 }
 
 
-def sortedServiceList():
+def sorted_service_list():
     new_list = []
     lmgtfy = 'http://lmgtfy.com/?q=%s'
 
@@ -104,8 +104,8 @@ def sortedServiceList():
     return new_list
 
 
-def getEnabledServiceList():
-    return [service['name'] for service in sortedServiceList() if service['enabled']]
+def enabled_service_list():
+    return [service['name'] for service in sorted_service_list() if service['enabled']]
 
 
 def wanted_languages(sql_like=None):
@@ -137,7 +137,7 @@ def from_code(language):
     if language not in language_converters['opensubtitles'].codes:
         return Language('und')
 
-    return Language.fromopensubtitles(language) # pylint: disable=no-member
+    return Language.fromopensubtitles(language)  # pylint: disable=no-member
 
 
 def name_from_code(code):
@@ -153,7 +153,7 @@ def download_subtitles(subtitles_info):
 
     if not needs_subtitles(existing_subtitles):
         logger.log(u'Episode already has all needed subtitles, skipping  episode %dx%d of show %s'
-                     % (subtitles_info['season'], subtitles_info['episode'], subtitles_info['show_name']), logger.DEBUG)
+                   % (subtitles_info['season'], subtitles_info['episode'], subtitles_info['show_name']), logger.DEBUG)
         return (existing_subtitles, None)
 
     # Check if we really need subtitles
@@ -174,7 +174,7 @@ def download_subtitles(subtitles_info):
                       subtitles_info['episode']), logger.DEBUG)
         return (existing_subtitles, None)
 
-    providers = getEnabledServiceList()
+    providers = enabled_service_list()
     provider_configs = {'addic7ed': {'username': sickbeard.ADDIC7ED_USER,
                                      'password': sickbeard.ADDIC7ED_PASS},
                         'legendastv': {'username': sickbeard.LEGENDASTV_USER,
@@ -233,7 +233,11 @@ def download_subtitles(subtitles_info):
 
 
 def refresh_subtitles(episode_info, existing_subtitles):
-    current_subtitles = get_subtitles(get_video(episode_info['location']))
+    video = get_video(episode_info['location'])
+    if not video:
+        logger.log(u"Exception caught in subliminal.scan_video, subtitles couldn't be refreshed", logger.DEBUG)
+        return (existing_subtitles, None)
+    current_subtitles = get_subtitles(video)
     if existing_subtitles == current_subtitles:
         logger.log(u'No changed subtitles for %s S%02dE%02d'
                    % (episode_info['show_name'], episode_info['season'],
@@ -281,7 +285,7 @@ def get_subtitles(video):
 
     result_list = []
 
-    if not video.subtitle_languages:
+    if not video or not video.subtitle_languages:
         return result_list
 
     for language in video.subtitle_languages:
@@ -303,7 +307,7 @@ class SubtitlesFinder(object):
     def subtitles_download_in_pp():  # pylint: disable=R0914
         logger.log(u'Checking for needed subtitles in Post-Process folder', logger.INFO)
 
-        providers = getEnabledServiceList()
+        providers = enabled_service_list()
         provider_configs = {'addic7ed': {'username': sickbeard.ADDIC7ED_USER,
                                          'password': sickbeard.ADDIC7ED_PASS},
                             'legendastv': {'username': sickbeard.LEGENDASTV_USER,
@@ -373,7 +377,7 @@ class SubtitlesFinder(object):
         if not sickbeard.USE_SUBTITLES:
             return
 
-        if len(sickbeard.subtitles.getEnabledServiceList()) < 1:
+        if len(sickbeard.subtitles.enabled_service_list()) < 1:
             logger.log(u'Not enough services selected. At least 1 service is required to '
                        'search subtitles in the background', logger.WARNING)
             return
@@ -420,7 +424,7 @@ class SubtitlesFinder(object):
 
             if not needs_subtitles(ep_to_sub['subtitles']):
                 logger.log(u'Episode already has all needed subtitles, skipping  episode %dx%d of show %s'
-                             % (ep_to_sub['season'], ep_to_sub['episode'], ep_to_sub['show_name']), logger.DEBUG)
+                           % (ep_to_sub['season'], ep_to_sub['episode'], ep_to_sub['show_name']), logger.DEBUG)
                 continue
 
             # http://bugs.python.org/issue7980#msg221094

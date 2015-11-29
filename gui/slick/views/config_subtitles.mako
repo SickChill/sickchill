@@ -173,7 +173,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
 
                     <fieldset class="component-group-list" style="margin-left: 50px; margin-top:36px">
                         <ul id="service_order_list">
-                        % for curService in sickbeard.subtitles.sortedServiceList():
+                        % for curService in sickbeard.subtitles.sorted_service_list():
                             <li class="ui-state-default" id="${curService['name']}">
                                 <input type="checkbox" id="enable_${curService['name']}" class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] is True]}/>
                                 <a href="${anon_url(curService['url'])}" class="imgLink" target="_new">
@@ -184,7 +184,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                           </li>
                         % endfor
                         </ul>
-                        <input type="hidden" name="service_order" id="service_order" value="<%" ".join(['%s:%d' % (x['name'], x['enabled']) for x in sickbeard.subtitles.sortedServiceList()])%>"/>
+                        <input type="hidden" name="service_order" id="service_order" value="<%" ".join(['%s:%d' % (x['name'], x['enabled']) for x in sickbeard.subtitles.sorted_service_list()])%>"/>
 
                         <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                     </fieldset>
@@ -202,7 +202,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                 'addic7ed': {'user': sickbeard.ADDIC7ED_USER, 'pass': sickbeard.ADDIC7ED_PASS},
                                 'opensubtitles': {'user': sickbeard.OPENSUBTITLES_USER, 'pass': sickbeard.OPENSUBTITLES_PASS}}
                         %>
-                        % for curService in sickbeard.subtitles.sortedServiceList():
+                        % for curService in sickbeard.subtitles.sorted_service_list():
                             % if curService['name'] not in providerLoginDict.keys():
                                 <% continue %>
                             % endif
