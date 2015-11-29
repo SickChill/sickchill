@@ -288,7 +288,6 @@
     <div class="tvshowDiv">
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <tr>
-            ${layout}
             <th ${('class="nobg"', 'rowspan="2"')[layout == 'poster']} valign="top">
                 <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">
                     <img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}" src="${srRoot}/showPoster/?show=${cur_result['showid']}&amp;which=${(layout, 'poster_thumb')[layout == 'poster']}" />
