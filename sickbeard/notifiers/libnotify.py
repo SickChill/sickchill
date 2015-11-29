@@ -23,7 +23,7 @@ import cgi
 import sickbeard
 
 from sickbeard import logger, common
-
+from sickrage.helper.encoding import ek
 
 def diagnose():
     """
@@ -95,7 +95,7 @@ class LibnotifyNotifier(object):
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notify(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], ep_name + ": " + lang)
-            
+
     def notify_git_update(self, new_version="??"):
         if sickbeard.USE_LIBNOTIFY:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
@@ -113,7 +113,7 @@ class LibnotifyNotifier(object):
 
         # Can't make this a global constant because PROG_DIR isn't available
         # when the module is imported.
-        icon_path = os.path.join(sickbeard.PROG_DIR, 'gui', 'slick', 'images', 'ico', 'favicon-120.png')
+        icon_path = ek(os.path.join, sickbeard.PROG_DIR, 'gui', 'slick', 'images', 'ico', 'favicon-120.png')
 
         # If the session bus can't be acquired here a bunch of warning messages
         # will be printed but the call to show() will still return True.

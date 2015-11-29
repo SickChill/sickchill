@@ -17,19 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
+import uuid
 import os.path
 import operator
 import platform
-import re
-import uuid
-from sickbeard.numdict import NumDict
-
-import sys
-
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from random import shuffle
+
+from sickbeard.numdict import NumDict
+from sickrage.helper.encoding import ek
+
 
 SPOOF_USER_AGENT = False
 
@@ -247,7 +244,7 @@ class Quality(object):
         if not name:
             return ret
 
-        name = os.path.basename(name)
+        name = ek(os.path.basename, name)
 
         checkName = lambda list, func: func([re.search(x, name, re.I) for x in list])
 
@@ -370,7 +367,7 @@ class Quality(object):
         if not height:
             return Quality.UNKNOWN
 
-        base_filename = os.path.basename(filename)
+        base_filename = ek(os.path.basename, filename)
         bluray = re.search(r"blue?-?ray|hddvd|b[rd](rip|mux)", base_filename, re.I) is not None
         webdl = re.search(r"web.?dl|web(rip|mux|hd)", base_filename, re.I) is not None
 

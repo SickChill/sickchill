@@ -6,6 +6,8 @@ from sickbeard.webserve import LoginHandler, LogoutHandler, KeyHandler, Calendar
 from sickbeard.webapi import ApiHandler
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
+from sickrage.helper.encoding import ek
+
 from tornado.web import Application, StaticFileHandler, RedirectHandler
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -52,14 +54,14 @@ class SRWebServer(threading.Thread):
 
         if self.enable_https:
             # If either the HTTPS certificate or key do not exist, make some self-signed ones.
-            if not (self.https_cert and os.path.exists(self.https_cert)) or not (
-                        self.https_key and os.path.exists(self.https_key)):
+            if not (self.https_cert and ek(os.path.exists, self.https_cert)) or not (
+                        self.https_key and ek(os.path.exists, self.https_key)):
                 if not create_https_certificates(self.https_cert, self.https_key):
                     logger.log(u"Unable to create CERT/KEY files, disabling HTTPS")
                     sickbeard.ENABLE_HTTPS = False
                     self.enable_https = False
 
-            if not (os.path.exists(self.https_cert) and os.path.exists(self.https_key)):
+            if not (ek(os.path.exists, self.https_cert) and ek(os.path.exists, self.https_key)):
                 logger.log(u"Disabled HTTPS because of missing CERT and KEY files", logger.WARNING)
                 sickbeard.ENABLE_HTTPS = False
                 self.enable_https = False
@@ -101,23 +103,23 @@ class SRWebServer(threading.Thread):
         self.app.add_handlers(".*$", [
             # favicon
             (r'%s/(favicon\.ico)' % self.options['web_root'], StaticFileHandler,
-             {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}),
+             {"path": ek(os.path.join, self.options['data_root'], 'images/ico/favicon.ico')}),
 
             # images
             (r'%s/images/(.*)' % self.options['web_root'], StaticFileHandler,
-             {"path": os.path.join(self.options['data_root'], 'images')}),
+             {"path": ek(os.path.join, self.options['data_root'], 'images')}),
 
             # cached images
             (r'%s/cache/images/(.*)' % self.options['web_root'], StaticFileHandler,
-             {"path": os.path.join(sickbeard.CACHE_DIR, 'images')}),
+             {"path": ek(os.path.join, sickbeard.CACHE_DIR, 'images')}),
 
             # css
             (r'%s/css/(.*)' % self.options['web_root'], StaticFileHandler,
-             {"path": os.path.join(self.options['data_root'], 'css')}),
+             {"path": ek(os.path.join, self.options['data_root'], 'css')}),
 
             # javascript
             (r'%s/js/(.*)' % self.options['web_root'], StaticFileHandler,
-             {"path": os.path.join(self.options['data_root'], 'js')}),
+             {"path": ek(os.path.join, self.options['data_root'], 'js')}),
 
             # videos
         ] + [(r'%s/videos/(.*)' % self.options['web_root'], StaticFileHandler,

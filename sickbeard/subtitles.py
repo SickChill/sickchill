@@ -36,7 +36,7 @@ from sickrage.helper.common import media_extensions, dateTimeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
-distribution = pkg_resources.Distribution(location=os.path.dirname(os.path.dirname(__file__)),
+distribution = pkg_resources.Distribution(location=ek(os.path.dirname, ek(os.path.dirname, __file__)),
                                           project_name='fake_entry_points', version='1.0.0')
 
 entry_points = {
@@ -187,7 +187,7 @@ def save_subtitles(video, subtitles, single=False, directory=None):
         # create subtitle path
         subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, None if single else subtitle.language)
         if directory is not None:
-            subtitle_path = os.path.join(directory, os.path.split(subtitle_path)[1])
+            subtitle_path = ek(os.path.join, directory, ek(os.path.split, subtitle_path)[1])
 
         # save content as is or in the specified encoding
         logger.log(u"Saving subtitle for %s to %s" % (video.name, subtitle_path), logger.DEBUG)
@@ -224,7 +224,7 @@ def wantedLanguages(sqlLike=False):
     return wanted
 
 def getSubtitlesPath(video_path):
-    if os.path.isabs(sickbeard.SUBTITLES_DIR):
+    if ek(os.path.isabs, sickbeard.SUBTITLES_DIR):
         new_subtitles_path = sickbeard.SUBTITLES_DIR
     elif sickbeard.SUBTITLES_DIR:
         new_subtitles_path = ek(os.path.join, ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR)
@@ -247,12 +247,12 @@ def subtitlesLanguages(video_path):
         embedded_subtitle_languages = getEmbeddedLanguages(video_path.encode(sickbeard.SYS_ENCODING))
 
     # Search subtitles with the absolute path
-    if os.path.isabs(sickbeard.SUBTITLES_DIR):
+    if ek(os.path.isabs, sickbeard.SUBTITLES_DIR):
         video_path = ek(os.path.join, sickbeard.SUBTITLES_DIR, ek(os.path.basename, video_path))
     # Search subtitles with the relative path
     elif sickbeard.SUBTITLES_DIR:
         check_subtitles_path = ek(os.path.join, ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR)
-        if not os.path.exists(check_subtitles_path):
+        if not ek(os.path.exists, check_subtitles_path):
             getSubtitlesPath(video_path)
         video_path = ek(os.path.join, ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR, ek(os.path.basename, video_path))
     else:
@@ -321,15 +321,15 @@ def getEmbeddedLanguages(video_path):
 
 def scan_subtitle_languages(path):
     language_extensions = tuple('.' + c for c in language_converters['opensubtitles'].codes)
-    dirpath, filename = os.path.split(path)
+    dirpath, filename = ek(os.path.split, path)
     subtitles = set()
-    for p in os.listdir(dirpath):
-        if not isinstance(p, bytes) and p.startswith(os.path.splitext(filename)[0]) and p.endswith(subliminal.video.SUBTITLE_EXTENSIONS):
-            if os.path.splitext(p)[0].endswith(language_extensions) and len(os.path.splitext(p)[0].rsplit('.', 1)[1]) is 2:
-                subtitles.add(Language.fromopensubtitles(os.path.splitext(p)[0][-2:]))
-            elif os.path.splitext(p)[0].endswith(language_extensions) and len(os.path.splitext(p)[0].rsplit('.', 1)[1]) is 3:
-                subtitles.add(Language.fromopensubtitles(os.path.splitext(p)[0][-3:]))
-            elif os.path.splitext(p)[0].endswith('pt-BR') and len(os.path.splitext(p)[0].rsplit('.', 1)[1]) is 5:
+    for p in ek(os.listdir, dirpath):
+        if not isinstance(p, bytes) and p.startswith(ek(os.path.splitext, filename)[0]) and p.endswith(subliminal.video.SUBTITLE_EXTENSIONS):
+            if ek(os.path.splitext, p)[0].endswith(language_extensions) and len(ek(os.path.splitext, p)[0].rsplit('.', 1)[1]) is 2:
+                subtitles.add(Language.fromopensubtitles(ek(os.path.splitext, p)[0][-2:]))
+            elif ek(os.path.splitext, p)[0].endswith(language_extensions) and len(ek(os.path.splitext, p)[0].rsplit('.', 1)[1]) is 3:
+                subtitles.add(Language.fromopensubtitles(ek(os.path.splitext, p)[0][-3:]))
+            elif ek(os.path.splitext, p)[0].endswith('pt-BR') and len(ek(os.path.splitext, p)[0].rsplit('.', 1)[1]) is 5:
                 subtitles.add(Language.fromopensubtitles('pob'))
             else:
                 subtitles.add(Language('und'))
@@ -350,7 +350,7 @@ class SubtitlesFinder(object):
     """
     def __init__(self):
         self.amActive = False
-    
+
     def subtitles_download_in_pp(self):
         logger.log(u'Checking for needed subtitles in Post-Process folder', logger.INFO)
 
@@ -367,29 +367,29 @@ class SubtitlesFinder(object):
             languages.add(fromietf(language))
         if not languages:
             return
-        
+
         runPostProcess = False
         # Check if PP folder is set
-        if sickbeard.TV_DOWNLOAD_DIR and os.path.isdir(sickbeard.TV_DOWNLOAD_DIR):
-            for root, _, files in os.walk(sickbeard.TV_DOWNLOAD_DIR, topdown=False):
+        if sickbeard.TV_DOWNLOAD_DIR and ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
+            for root, _, files in ek(os.walk, sickbeard.TV_DOWNLOAD_DIR, topdown=False):
                 for videoFilename in sorted(files):
                     if videoFilename.rsplit(".", 1)[1] in media_extensions:
                         try:
-                            video = subliminal.scan_video(os.path.join(root, videoFilename), subtitles=False, embedded_subtitles=False)
+                            video = subliminal.scan_video(ek(os.path.join, root, videoFilename), subtitles=False, embedded_subtitles=False)
                             subtitles_list = pool.list_subtitles(video, languages)
-                            
+
                             if not subtitles_list:
-                                logger.log(u'No subtitles found for %s' % os.path.join(root, videoFilename), logger.DEBUG)
+                                logger.log(u'No subtitles found for %s' % ek(os.path.join, root, videoFilename), logger.DEBUG)
                                 continue
-        
+
                             found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED, only_one=not sickbeard.SUBTITLES_MULTI)
-                            
+
                             for subtitle in found_subtitles:
-                                logger.log(u"Found subtitle for %s in %s provider with language %s" % (os.path.join(root, videoFilename), subtitle.provider_name, subtitle.language.opensubtitles), logger.DEBUG)
+                                logger.log(u"Found subtitle for %s in %s provider with language %s" % (ek(os.path.join, root, videoFilename), subtitle.provider_name, subtitle.language.opensubtitles), logger.DEBUG)
                                 save_subtitles(video, found_subtitles, directory=root, single=not sickbeard.SUBTITLES_MULTI)
                                 runPostProcess = True
                         except Exception as e:
-                            logger.log(u"Error occurred when downloading subtitles for: %s. Error: %r" % (os.path.join(root, videoFilename), ex(e)))
+                            logger.log(u"Error occurred when downloading subtitles for: %s. Error: %r" % (ek(os.path.join, root, videoFilename), ex(e)))
             if runPostProcess:
                 logger.log(u"Starting post-process with defaults settings now that we found subtitles")
                 processTV.processDir(sickbeard.TV_DOWNLOAD_DIR)

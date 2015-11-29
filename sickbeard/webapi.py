@@ -1068,8 +1068,8 @@ class CMD_History(ApiCall):
             del row["action"]
 
             _rename_element(row, "show_id", "indexerid")
-            row["resource_path"] = os.path.dirname(row["resource"])
-            row["resource"] = os.path.basename(row["resource"])
+            row["resource_path"] = ek(os.path.dirname, row["resource"])
+            row["resource"] = ek(os.path.basename, row["resource"])
 
             # Add tvdbid for backward compatibility
             row['tvdbid'] = row['indexerid']
@@ -1205,7 +1205,7 @@ class CMD_Logs(ApiCall):
         min_level = logger.reverseNames[str(self.min_level).upper()]
 
         data = []
-        if os.path.isfile(logger.logFile):
+        if ek(os.path.isfile, logger.logFile):
             with io.open(logger.logFile, 'r', encoding='utf-8') as f:
                 data = f.readlines()
 

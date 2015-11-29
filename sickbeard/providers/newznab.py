@@ -110,7 +110,7 @@ class NewznabProvider(generic.NZBProvider):
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
-        url = os.path.join(self.url, 'api?') +  urllib.urlencode(params)
+        url = ek(os.path.join, self.url, 'api?') +  urllib.urlencode(params)
         data = self.getURL(url)
         if not data:
             error_string = u"Error getting xml for [%s]" % url
@@ -258,7 +258,7 @@ class NewznabProvider(generic.NZBProvider):
 
         params['maxage'] = min(params['maxage'], sickbeard.USENET_RETENTION)
 
-        search_url = os.path.join(self.url, 'api?') + urllib.urlencode(params)
+        search_url = ek(os.path.join, self.url, 'api?') + urllib.urlencode(params)
         logger.log(u"Search url: %s" % search_url, logger.DEBUG)
         data = self.getURL(search_url)
         if not data:
