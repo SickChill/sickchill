@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 Test name parsing
 """
@@ -8,11 +9,11 @@ import sys
 import os.path
 import datetime
 import unittest
+import tests.test_lib as test
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from tests import test_lib as test
 import sickbeard
 from sickbeard import tv
 from sickbeard.name_parser import parser
