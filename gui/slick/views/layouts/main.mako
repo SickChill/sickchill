@@ -317,7 +317,6 @@
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.selectboxes.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/formwizard.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/parsers.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/meta.js?${sbPID}"></script>
         % if sickbeard.DEVELOPER:
         <script type="text/javascript" src="${srRoot}/js/core.js?${sbPID}"></script>
         % else:
