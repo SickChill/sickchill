@@ -158,9 +158,9 @@ class PostProcessor(object):
         """
         def recursive_glob(treeroot, pattern):
             results = []
-            for base, _, files in os.walk(treeroot.encode(sickbeard.SYS_ENCODING)):
+            for base, _, files in ek(os.walk, treeroot.encode(sickbeard.SYS_ENCODING)):
                 goodfiles = fnmatch.filter(files, pattern)
-                results.extend(os.path.join(base, f) for f in goodfiles)
+                results.extend(ek(os.path.join, base, f) for f in goodfiles)
             return results
 
         if not file_path:
@@ -335,13 +335,13 @@ class PostProcessor(object):
             cur_extension = cur_file_path[old_base_name_length + 1:]
 
             # check if file have subtitles language
-            if os.path.splitext(cur_extension)[1][1:] in subtitle_extensions:
-                cur_lang = os.path.splitext(cur_extension)[0]
+            if ek(os.path.splitext, cur_extension)[1][1:] in subtitle_extensions:
+                cur_lang = ek(os.path.splitext, cur_extension)[0]
                 if cur_lang:
                     cur_lang = cur_lang.lower()
                     if cur_lang == 'pt-br':
                         cur_lang = 'pt-BR'
-                    cur_extension = cur_lang + os.path.splitext(cur_extension)[1]
+                    cur_extension = cur_lang + ek(os.path.splitext, cur_extension)[1]
 
             # replace .nfo with .nfo-orig to avoid conflicts
             if cur_extension == 'nfo' and sickbeard.NFO_RENAME is True:

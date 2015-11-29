@@ -9,6 +9,7 @@
     from sickbeard import metadata
     from sickbeard.metadata.generic import GenericMetadata
     from sickbeard import naming
+    from sickrage.helper.encoding import ek
 %>
 <%block name="content">
 <div id="content960">
@@ -269,7 +270,7 @@
                                             % if cur_preset == sickbeard.NAMING_PATTERN:
                                                 <% is_custom = False %>
                                             % endif
-                                            <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                            <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_PATTERN == cur_preset]}>${ek(os.path.join, tmp['dir'], tmp['name'])}</option>
                                         % endfor
                                         <option id="${sickbeard.NAMING_PATTERN}" ${('', 'selected="selected"')[bool(is_custom)]}>Custom...</option>
                                     </select>
@@ -393,7 +394,7 @@
                                           <td>&nbsp;</td>
                                           <td>%Y</td>
                                           <td>${datetime.date.today().year}</td>
-                                        </tr>                                  
+                                        </tr>
                                         <tr>
                                           <td class="align-right"><b>Post-Processing Date:</b></td>
                                           <td>%CM</td>
@@ -408,7 +409,7 @@
                                           <td>&nbsp;</td>
                                           <td>%CY</td>
                                           <td>${datetime.date.today().year}</td>
-                                        </tr>                                  
+                                        </tr>
                                         <tr>
                                           <td class="align-right"><b>Quality:</b></td>
                                           <td>%QN</td>
@@ -521,7 +522,7 @@
                                                 % if cur_preset == sickbeard.NAMING_ABD_PATTERN:
                                                     <% is_abd_custom = False %>
                                                 % endif
-                                                <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_ABD_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                                <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_ABD_PATTERN == cur_preset]}>${ek(os.path.join, tmp['dir'], tmp['name'])}</option>
                                             % endfor
                                             <option id="${sickbeard.NAMING_ABD_PATTERN}" ${('', 'selected="selected"')[bool(is_abd_custom)]}>Custom...</option>
                                         </select>
@@ -698,7 +699,7 @@
                                                 % if cur_preset == sickbeard.NAMING_SPORTS_PATTERN:
                                                     <% is_sports_custom = False %>
                                                 % endif
-                                                <option id="${cur_preset}" ${('', 'selected="selected"')[NAMING_SPORTS_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                                <option id="${cur_preset}" ${('', 'selected="selected"')[NAMING_SPORTS_PATTERN == cur_preset]}>${ek(os.path.join, tmp['dir'], tmp['name'])}</option>
                                             % endfor
                                             <option id="${sickbeard.NAMING_SPORTS_PATTERN}" ${('', 'selected="selected"')[bool(is_sports_custom)]}>Custom...</option>
                                         </select>
@@ -876,7 +877,7 @@
                                                 % if cur_preset == sickbeard.NAMING_ANIME_PATTERN:
                                                     <% is_anime_custom = False %>
                                                 % endif
-                                                <option id="${cur_preset}" ${('', 'selected="selected"')[cur_preset == sickbeard.NAMING_ANIME_PATTERN]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                                <option id="${cur_preset}" ${('', 'selected="selected"')[cur_preset == sickbeard.NAMING_ANIME_PATTERN]}>${ek(os.path.join, tmp['dir'], tmp['name'])}</option>
                                             % endfor
                                             <option id="${sickbeard.NAMING_ANIME_PATTERN}" ${('', 'selected="selected"')[bool(is_anime_custom)]}>Custom...</option>
                                         </select>

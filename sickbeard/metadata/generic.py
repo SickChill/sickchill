@@ -35,6 +35,7 @@ from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickrage.helper.common import replace_extension
 from sickrage.helper.exceptions import ex
+from sickrage.helper.encoding import ek
 
 from tmdb_api.tmdb_api import TMDB
 
@@ -118,7 +119,7 @@ class GenericMetadata(object):
     def _check_exists(location):
         if location:
             assert isinstance(location, unicode)
-            result = os.path.isfile(location)
+            result = ek(os.path.isfile, location)
             logger.log(u"Checking if " + location + " exists: " + str(result), logger.DEBUG)
             return result
         return False
@@ -154,19 +155,19 @@ class GenericMetadata(object):
         return self._check_exists(self.get_season_all_banner_path(show_obj))
 
     def get_show_file_path(self, show_obj):
-        return os.path.join(show_obj.location, self._show_metadata_filename)
+        return ek(os.path.join, show_obj.location, self._show_metadata_filename)
 
     def get_episode_file_path(self, ep_obj):
         return replace_extension(ep_obj.location, self._ep_nfo_extension)
 
     def get_fanart_path(self, show_obj):
-        return os.path.join(show_obj.location, self.fanart_name)
+        return ek(os.path.join, show_obj.location, self.fanart_name)
 
     def get_poster_path(self, show_obj):
-        return os.path.join(show_obj.location, self.poster_name)
+        return ek(os.path.join, show_obj.location, self.poster_name)
 
     def get_banner_path(self, show_obj):
-        return os.path.join(show_obj.location, self.banner_name)
+        return ek(os.path.join, show_obj.location, self.banner_name)
 
     @staticmethod
     def get_episode_thumb_path(ep_obj):
@@ -175,7 +176,7 @@ class GenericMetadata(object):
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
         assert isinstance(ep_obj.location, unicode)
-        if os.path.isfile(ep_obj.location):
+        if ek(os.path.isfile, ep_obj.location):
 
             tbn_filename = ep_obj.location.rpartition(".")
 
@@ -204,7 +205,7 @@ class GenericMetadata(object):
         else:
             season_poster_filename = 'season' + str(season).zfill(2)
 
-        return os.path.join(show_obj.location, season_poster_filename + '-poster.jpg')
+        return ek(os.path.join, show_obj.location, season_poster_filename + '-poster.jpg')
 
     @staticmethod
     def get_season_banner_path(show_obj, season):
@@ -222,13 +223,13 @@ class GenericMetadata(object):
         else:
             season_banner_filename = 'season' + str(season).zfill(2)
 
-        return os.path.join(show_obj.location, season_banner_filename + '-banner.jpg')
+        return ek(os.path.join, show_obj.location, season_banner_filename + '-banner.jpg')
 
     def get_season_all_poster_path(self, show_obj):
-        return os.path.join(show_obj.location, self.season_all_poster_name)
+        return ek(os.path.join, show_obj.location, self.season_all_poster_name)
 
     def get_season_all_banner_path(self, show_obj):
-        return os.path.join(show_obj.location, self.season_all_banner_name)
+        return ek(os.path.join, show_obj.location, self.season_all_banner_name)
 
     # pylint: disable=W0613,R0201
     def _show_data(self, show_obj):
@@ -400,12 +401,12 @@ class GenericMetadata(object):
         nfo_file_path = self.get_show_file_path(show_obj)
         assert isinstance(nfo_file_path, unicode)
 
-        nfo_file_dir = os.path.dirname(nfo_file_path)
+        nfo_file_dir = ek(os.path.dirname, nfo_file_path)
 
         try:
-            if not os.path.isdir(nfo_file_dir):
+            if not ek(os.path.isdir, nfo_file_dir):
                 logger.log(u"Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
-                os.makedirs(nfo_file_dir)
+                ek(os.makedirs, nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.log(u"Writing show nfo file to " + nfo_file_path, logger.DEBUG)
@@ -445,12 +446,12 @@ class GenericMetadata(object):
 
         nfo_file_path = self.get_episode_file_path(ep_obj)
         assert isinstance(nfo_file_path, unicode)
-        nfo_file_dir = os.path.dirname(nfo_file_path)
+        nfo_file_dir = ek(os.path.dirname, nfo_file_path)
 
         try:
-            if not os.path.isdir(nfo_file_dir):
+            if not ek(os.path.isdir, nfo_file_dir):
                 logger.log(u"Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
-                os.makedirs(nfo_file_dir)
+                ek(os.makedirs, nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
@@ -686,20 +687,20 @@ class GenericMetadata(object):
         assert isinstance(image_path, unicode)
 
         # don't bother overwriting it
-        if os.path.isfile(image_path):
+        if ek(os.path.isfile, image_path):
             logger.log(u"Image already exists, not downloading", logger.DEBUG)
             return False
 
-        image_dir = os.path.dirname(image_path)
+        image_dir = ek(os.path.dirname, image_path)
 
         if not image_data:
             logger.log(u"Unable to retrieve image to save in %s, skipping" % image_path, logger.DEBUG)
             return False
 
         try:
-            if not os.path.isdir(image_dir):
+            if not ek(os.path.isdir, image_dir):
                 logger.log(u"Metadata dir didn't exist, creating it at " + image_dir, logger.DEBUG)
-                os.makedirs(image_dir)
+                ek(os.makedirs, image_dir)
                 helpers.chmodAsParent(image_dir)
 
             outFile = io.open(image_path, 'wb')
@@ -905,9 +906,9 @@ class GenericMetadata(object):
 
         assert isinstance(folder, unicode)
 
-        metadata_path = os.path.join(folder, self._show_metadata_filename)
+        metadata_path = ek(os.path.join, folder, self._show_metadata_filename)
 
-        if not os.path.isdir(folder) or not os.path.isfile(metadata_path):
+        if not ek(os.path.isdir, folder) or not ek(os.path.isfile, metadata_path):
             logger.log(u"Can't load the metadata file from " + metadata_path + ", it doesn't exist", logger.DEBUG)
             return empty_return
 

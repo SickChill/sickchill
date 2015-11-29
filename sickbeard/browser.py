@@ -79,12 +79,12 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
     """
 
     # walk up the tree until we find a valid path
-    while path and not os.path.isdir(path):
-        if path == os.path.dirname(path):
+    while path and not ek(os.path.isdir, path):
+        if path == ek(os.path.dirname, path):
             path = ''
             break
         else:
-            path = os.path.dirname(path)
+            path = ek(os.path.dirname, path)
 
     if path == "":
         if os.name == 'nt':
@@ -97,8 +97,8 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
             path = '/'
 
     # fix up the path and find the parent
-    path = os.path.abspath(os.path.normpath(path))
-    parentPath = os.path.dirname(path)
+    path = ek(os.path.abspath, ek(os.path.normpath, path))
+    parentPath = ek(os.path.dirname, path)
 
     # if we're at the root then the next step is the meta-node showing our drive letters
     if path == parentPath and os.name == 'nt':
@@ -111,7 +111,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
         fileList = getFileList(parentPath, includeFiles)
 
     fileList = sorted(fileList,
-                      lambda x, y: cmp(os.path.basename(x['name']).lower(), os.path.basename(y['path']).lower()))
+                      lambda x, y: cmp(ek(os.path.basename, x['name']).lower(), ek(os.path.basename, y['path']).lower()))
 
     entries = [{'currentPath': path}]
     if includeParent and parentPath != path:
