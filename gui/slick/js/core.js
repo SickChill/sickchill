@@ -1754,13 +1754,67 @@ var SICKRAGE = {
 
             // Handle filtering in the poster layout
             $('#filterShowName').on('input', _.debounce(function (e) {
-                $('#container, #container-anime').isotope({
+                $('.show-grid').isotope({
                     filter: function () {
                       var name = $('div.show-title', this).text();
                       return (name.toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1);
                     }
                 });
             }, 500));
+
+            function resizePosters(newSize) {
+                var fontSize, logoWidth, borderRadius, borderWidth;
+                if (newSize < 125) { // small
+                    borderRadius = 3;
+                    borderWidth = 4;
+                } else if (newSize < 175) { // medium
+                    fontSize = 9;
+                    logoWidth = 40;
+                    borderRadius = 4;
+                    borderWidth = 5;
+                } else { // large
+                    fontSize = 11;
+                    logoWidth = 50;
+                    borderRadius = 6;
+                    borderWidth = 6;
+                }
+
+                if (fontSize === undefined) {
+                    $('.show-details').hide();
+                } else {
+                    $('.show-details').show();
+                    $('.show-dlstats, .show-quality').css('fontSize', fontSize);
+                    $('.show-network-image').css('width', logoWidth);
+                }
+
+                $('.show-container').css({
+                    width: newSize,
+                    borderWidth: borderWidth,
+                    borderRadius: borderRadius
+                });
+            }
+
+            var posterSize;
+            if (typeof(Storage) !== 'undefined') {
+                posterSize = parseInt(localStorage.getItem('posterSize'));
+            }
+            if (typeof(posterSize) !== 'number' || isNaN(posterSize)) {
+                posterSize = 188;
+            }
+            resizePosters(posterSize);
+
+            $('#posterSizeSlider').slider({
+                min: 75,
+                max: 250,
+                value: posterSize,
+                change: function (e, ui) {
+                    if (typeof(Storage) !== 'undefined') {
+                        localStorage.setItem('posterSize', ui.value);
+                    }
+                    resizePosters(ui.value);
+                    $('.show-grid').isotope('layout');
+                }
+            });
 
             // This needs to be refined to work a little faster.
             $('.progressbar').each(function(){
@@ -1862,29 +1916,27 @@ var SICKRAGE = {
                 sortAppend: [[2,0]]
             });
 
-            // @TODO we need to check if doing a $('') with a comma would be quicker than a seperate
-            //       isotope function for each as it does here
-            $.each([$('#container'), $('#container-anime')], function (){
-                this.isotope({
+            $('.show-grid').imagesLoaded(function () {
+                $('.loading-spinner').hide();
+                $('.show-grid').show().isotope({
                     itemSelector: '.show-container',
                     sortBy : getMeta('sickbeard.POSTER_SORTBY'),
                     sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
                     layoutMode: 'masonry',
                     masonry: {
-                        columnWidth: 13,
                         isFitWidth: true
                     },
                     getSortData: {
-                        name: function(itemElem){
+                        name: function (itemElem) {
                             var name = $(itemElem).attr('data-name');
                             return (metaToBool('sickbeard.SORT_ARTICLE') ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
                         },
                         network: '[data-network]',
-                        date: function(itemElem){
+                        date: function (itemElem) {
                             var date = $(itemElem).attr('data-date');
                             return date.length && parseInt(date, 10) || Number.POSITIVE_INFINITY;
                         },
-                        progress: function(itemElem){
+                        progress: function (itemElem) {
                             var progress = $(itemElem).attr('data-progress');
                             return progress.length && parseInt(progress, 10) || Number.NEGATIVE_INFINITY;
                         }
@@ -1893,12 +1945,12 @@ var SICKRAGE = {
             });
 
             $('#postersort').on('change', function(){
-                $('#container, #container-anime').isotope({sortBy: $(this).val()});
+                $('.show-grid').isotope({sortBy: $(this).val()});
                 $.get($(this).find('option[value=' + $(this).val() +']').attr('data-sort'));
             });
 
             $('#postersortdirection').on('change', function(){
-                $('#container, #container-anime').isotope({sortAscending: ($(this).val() === 'true')});
+                $('.show-grid').isotope({sortAscending: ($(this).val() === 'true')});
                 $.get($(this).find('option[value=' + $(this).val() +']').attr('data-sort'));
             });
 
