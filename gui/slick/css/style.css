@@ -623,6 +623,12 @@ home.mako
     border-radius: 3px;
 }
 
+span.show-option {
+    white-space: nowrap;
+    margin-left: 10px;
+    line-height: 40px;
+}
+
 .show-grid {
     display: none;
 }

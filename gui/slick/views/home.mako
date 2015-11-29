@@ -12,68 +12,79 @@
 </%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
+
+<table style="width: 100%;">
+    <tr>
+        <td nowrap>
+            % if not header is UNDEFINED:
+                <h1 class="header" style="margin: 0;">${header}</h1>
+            % else:
+                <h1 class="title" style="margin: 0;">${title}</h1>
+            % endif
+        </td>
+
+        <td align="right">
+            <div>
+                % if sickbeard.HOME_LAYOUT != 'poster':
+                    <span class="show-option">
+                        <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
+                    </span>
+
+                    <span class="show-option">
+                        <button type="button" class="resetsorting btn btn-inline">Clear Filter(s)</button>
+                    </span>
+                % endif
+
+                % if sickbeard.HOME_LAYOUT == 'poster':
+                    <span class="show-option"> Poster Size:
+                        <div style="width: 100px; display: inline-block; margin-left: 7px;" id="posterSizeSlider"></div>
+                    </span>
+
+                    <span class="show-option">
+                        <input id="filterShowName" class="form-control form-control-inline input-sm input200" type="search" placeholder="Filter Show Name">
+                    </span>
+
+                    <span class="show-option"> Sort By:
+                        <select id="postersort" class="form-control form-control-inline input-sm">
+                            <option value="name" data-sort="${srRoot}/setPosterSortBy/?sort=name" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'name']}>Name</option>
+                            <option value="date" data-sort="${srRoot}/setPosterSortBy/?sort=date" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'date']}>Next Episode</option>
+                            <option value="network" data-sort="${srRoot}/setPosterSortBy/?sort=network" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'network']}>Network</option>
+                            <option value="progress" data-sort="${srRoot}/setPosterSortBy/?sort=progress" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'progress']}>Progress</option>
+                        </select>
+                    </span>
+
+                    <span class="show-option"> Direction:
+                        <select id="postersortdirection" class="form-control form-control-inline input-sm">
+                            <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>A &#10140; Z</option>
+                            <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Z &#10140; A</option>
+                        </select>
+                    </span>
+                % endif
+
+                <span class="show-option"> Layout:
+                    <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+                        <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
+                        <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
+                        <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
+                        <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
+                    </select>
+                </span>
+            </div>
+        </td>
+    </tr>
+</table>
+% if sickbeard.HOME_LAYOUT == 'poster':
     <div class="loading-spinner"></div>
-
-<div id="HomeLayout" class="pull-right hidden-print" style="margin-top: -40px;">
-    % if sickbeard.HOME_LAYOUT != 'poster':
-    <span>
-        <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
-    </span>
-    &nbsp;
-    <span>
-        <button type="button" class="resetsorting btn btn-inline">Clear Filter(s)</button>
-    </span>
-    % endif
-
-    % if sickbeard.HOME_LAYOUT == 'poster':
-    &nbsp;
-    <span> Poster Size:
-        <div style="width: 100px; display: inline-block; margin-left: 7px;" id="posterSizeSlider"></div>
-    </span>
-    &nbsp;
-    <span>
-        <input id="filterShowName" class="form-control form-control-inline input-sm input200" type="search" placeholder="Filter Show Name">
-    </span>
-    &nbsp;
-    <span> Sort By:
-        <select id="postersort" class="form-control form-control-inline input-sm">
-            <option value="name" data-sort="${srRoot}/setPosterSortBy/?sort=name" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'name']}>Name</option>
-            <option value="date" data-sort="${srRoot}/setPosterSortBy/?sort=date" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'date']}>Next Episode</option>
-            <option value="network" data-sort="${srRoot}/setPosterSortBy/?sort=network" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'network']}>Network</option>
-            <option value="progress" data-sort="${srRoot}/setPosterSortBy/?sort=progress" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'progress']}>Progress</option>
-        </select>
-    </span>
-    &nbsp;
-    <span> Direction:
-        <select id="postersortdirection" class="form-control form-control-inline input-sm">
-            <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>A &#10140; Z</option>
-            <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Z &#10140; A</option>
-        </select>
-    </span>
-    % endif
-
-    &nbsp;
-    <span> Layout:
-        <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
-            <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
-            <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
-            <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
-        </select>
-    </span>
-</div>
+% endif
 
 % for curShowlist in showlists:
     <% curListType = curShowlist[0] %>
     <% myShowList = list(curShowlist[1]) %>
     % if curListType == "Anime":
         <h1 class="header">Anime List</h1>
-        <div class="loading-spinner"></div>
+        % if sickbeard.HOME_LAYOUT == 'poster':
+            <div class="loading-spinner"></div>
+	% endif
     % endif
 % if sickbeard.HOME_LAYOUT == 'poster':
 <div id="${('container', 'container-anime')[curListType == 'Anime' and sickbeard.HOME_LAYOUT == 'poster']}" class="show-grid clearfix">
@@ -188,7 +199,7 @@
 % endif
         </div>
 
-	<div class="show-details">
+        <div class="show-details">
             <table class="show-details" width="100%" cellspacing="1" border="0" cellpadding="0">
                 <tr>
                     <td class="show-table">
