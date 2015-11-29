@@ -33,11 +33,10 @@ Test notifiers
 import sys
 import os.path
 import unittest
+import tests.test_lib as test
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import tests.test_lib as test
 
 from sickbeard import db
 from sickbeard.tv import TVEpisode, TVShow
