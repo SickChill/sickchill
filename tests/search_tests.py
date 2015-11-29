@@ -62,7 +62,6 @@ def test_generator(cur_data, cur_name, cur_provider):
     :param cur_data:
     :param cur_name:
     :param cur_provider:
-    :param force_search:
     :return:
     """
 
