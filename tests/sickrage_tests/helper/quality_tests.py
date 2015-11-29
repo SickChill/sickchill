@@ -16,6 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Test qualities
+"""
+
+from __future__ import print_function
 import os
 import sys
 
@@ -24,11 +29,17 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 from sickbeard.common import ANY, HD, HD1080p, HD720p, Quality, SD
 from sickrage.helper.quality import get_quality_string
-from unittest import TestCase, TestLoader, TextTestRunner
+import unittest
 
 
-class QualityTests(TestCase):
+class QualityTests(unittest.TestCase):
+    """
+    Test qualities
+    """
     def test_get_quality_string(self):
+        """
+        Test get quality string
+        """
         tests = {
             ANY: 'Any',
             HD: 'HD',
@@ -56,5 +67,5 @@ class QualityTests(TestCase):
 if __name__ == '__main__':
     print('=====> Testing %s' % __file__)
 
-    suite = TestLoader().loadTestsFromTestCase(QualityTests)
-    TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(QualityTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
