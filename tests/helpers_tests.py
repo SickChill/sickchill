@@ -1,4 +1,5 @@
 #!/usr/bin/env python2.7
+# coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
 # URL: http://github.com/SiCKRAGETV/SickRage
 #
@@ -91,11 +92,10 @@ Methods:
 
 import sys
 import os.path
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import unittest
 
 from sickbeard.helpers import remove_non_release_groups
 
