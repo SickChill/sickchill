@@ -86,7 +86,7 @@
                             <label for="showupdate_hour">
                                 <span class="component-title">When to update shows</span>
                                 <span class="component-desc">
-                                    <input type="text" name="showupdate_hour" id="showupdate_hour" value="${sickbeard.SHOWUPDATE_HOUR}" class="form-control input-sm input75" />
+                                    <input type="text" name="showupdate_hour" id="showupdate_hour" value="${sickbeard.SHOWUPDATE_HOUR}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc. Anything over 23 or under 0 will be set to 0 (12am)</p>
                                 </span>
                             </label>
@@ -111,7 +111,7 @@
                             <label for="log_dir">
                                 <span class="component-title">Log file folder location</span>
                                 <span class="component-desc">
-                                    <input type="text" name="log_dir" id="log_dir" value="${sickbeard.ACTUAL_LOG_DIR}" class="form-control input-sm input350" />
+                                    <input type="text" name="log_dir" id="log_dir" value="${sickbeard.ACTUAL_LOG_DIR}" class="form-control input-sm input350" autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -120,7 +120,7 @@
                             <label for="log_nr">
                                 <span class="component-title">Number of Log files saved</span>
                                 <span class="component-desc">
-                                    <input type="text" name="log_nr" id="log_nr" value="${sickbeard.LOG_NR}" class="form-control input-sm input75" />
+                                    <input type="text" name="log_nr" id="log_nr" value="${sickbeard.LOG_NR}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)</p>
                                 </span>
                             </label>
@@ -130,7 +130,7 @@
                             <label for="log_size">
                                 <span class="component-title">Size of Log files saved</span>
                                 <span class="component-desc">
-                                    <input type="text" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" />
+                                    <input type="text" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>maximum size of a log file saved (default: 1048576 (1MB)) (REQUIRES RESTART)</p>
                                 </span>
                             </label>
@@ -155,7 +155,7 @@
                             <label for="indexer_timeout">
                                 <span class="component-title">Timeout show indexer at</span>
                                 <span class="component-desc">
-                                    <input type="text" name="indexer_timeout" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}" class="form-control input-sm input75" />
+                                    <input type="text" name="indexer_timeout" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>seconds of inactivity when finding new shows (default:10)</p>
                                 </span>
                             </label>
@@ -208,7 +208,7 @@
                             <label>
                                 <span class="component-title">Check the server every*</span>
                                 <span class="component-desc">
-                                    <input type="text" name="update_frequency" id="update_frequency" value="${sickbeard.UPDATE_FREQUENCY}" class="form-control input-sm input75" />
+                                    <input type="text" name="update_frequency" id="update_frequency" value="${sickbeard.UPDATE_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>hours for software updates (default:12)</p>
                                 </span>
                             </label>
@@ -353,7 +353,7 @@
                         <div class="field-pair">
                             <label for="download_url">
                                 <span class="component-title">Download url</span>
-                                <input type="text" name="download_url" id="download_url" value="${sickbeard.DOWNLOAD_URL}" size="35" />
+                                <input type="text" name="download_url" id="download_url" value="${sickbeard.DOWNLOAD_URL}" size="35" autocapitalize="off" />
                             </label>
                             <label>
                                 <span class="component-title">&nbsp;</span>
@@ -382,7 +382,7 @@
                             <label for="api_key">
                                 <span class="component-title">API key</span>
                                 <span class="component-desc">
-                                    <input type="text" name="api_key" id="api_key" value="${sickbeard.API_KEY}" class="form-control input-sm input300" readonly="readonly" />
+                                    <input type="text" name="api_key" id="api_key" value="${sickbeard.API_KEY}" class="form-control input-sm input300" readonly="readonly" autocapitalize="off" />
                                     <input class="btn btn-inline" type="button" id="generate_new_apikey" value="Generate">
                                     <div class="clear-left">
                                         <p>used to give 3rd party programs limited access to SickRage</p>
@@ -406,7 +406,7 @@
                             <label for="web_username">
                                 <span class="component-title">HTTP username</span>
                                 <span class="component-desc">
-                                    <input type="text" name="web_username" id="web_username" value="${sickbeard.WEB_USERNAME}" class="form-control input-sm input300" />
+                                    <input type="text" name="web_username" id="web_username" value="${sickbeard.WEB_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
                                     <p>set blank for no login</p>
                                 </span>
                             </label>
@@ -416,7 +416,7 @@
                             <label for="web_password">
                                 <span class="component-title">HTTP password</span>
                                 <span class="component-desc">
-                                    <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" />
+                                    <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
                                     <p>blank = no authentication</span>
                             </label>
                         </div>
@@ -425,7 +425,7 @@
                             <label for="web_port">
                                 <span class="component-title">HTTP port</span>
                                 <span class="component-desc">
-                                    <input type="text" name="web_port" id="web_port" value="${sickbeard.WEB_PORT}" class="form-control input-sm input100" />
+                                    <input type="text" name="web_port" id="web_port" value="${sickbeard.WEB_PORT}" class="form-control input-sm input100" autocapitalize="off" />
                                     <p>web port to browse and access SickRage (default:8081)</p>
                                 </span>
                             </label>
@@ -455,7 +455,7 @@
                                 <label for="https_cert">
                                     <span class="component-title">HTTPS certificate</span>
                                     <span class="component-desc">
-                                        <input type="text" name="https_cert" id="https_cert" value="${sickbeard.HTTPS_CERT}" class="form-control input-sm input300" />
+                                        <input type="text" name="https_cert" id="https_cert" value="${sickbeard.HTTPS_CERT}" class="form-control input-sm input300" autocapitalize="off" />
                                         <div class="clear-left"><p>file name or path to HTTPS certificate</p></div>
                                     </span>
                                 </label>
@@ -464,7 +464,7 @@
                                 <label for="https_key">
                                     <span class="component-title">HTTPS key</span>
                                     <span class="component-desc">
-                                        <input type="text" name="https_key" id="https_key" value="${sickbeard.HTTPS_KEY}" class="form-control input-sm input300" />
+                                        <input type="text" name="https_key" id="https_key" value="${sickbeard.HTTPS_KEY}" class="form-control input-sm input300" autocapitalize="off" />
                                         <div class="clear-left"><p>file name or path to HTTPS key</p></div>
                                     </span>
                                 </label>
@@ -517,7 +517,7 @@
                             <label>
                                 <span class="component-title">Anonymous redirect</span>
                                 <span class="component-desc">
-                                    <input type="text" name="anon_redirect" value="${sickbeard.ANON_REDIRECT}" class="form-control input-sm input300" />
+                                    <input type="text" name="anon_redirect" value="${sickbeard.ANON_REDIRECT}" class="form-control input-sm input300" autocapitalize="off" />
                                     <div class="clear-left"><p>backlink protection via anonymizer service, must end in "?"</p></div>
                                 </span>
                             </label>
@@ -593,7 +593,7 @@
                             <label>
                                 <span class="component-title">Proxy host</span>
                                 <span class="component-desc">
-                                    <input type="text" name="proxy_setting" value="${sickbeard.PROXY_SETTING}" class="form-control input-sm input300" />
+                                    <input type="text" name="proxy_setting" value="${sickbeard.PROXY_SETTING}" class="form-control input-sm input300" autocapitalize="off" />
                                     <div class="clear-left"><p>blank to disable or proxy to use when connecting to providers</p></div>
                             </label>
                         </div>
@@ -695,7 +695,7 @@
                             <label for="git_username">
                                 <span class="component-title">GitHub username</span>
                                 <span class="component-desc">
-                                    <input type="text" name="git_username" id="git_username" value="${sickbeard.GIT_USERNAME}" class="form-control input-sm input300" />
+                                    <input type="text" name="git_username" id="git_username" value="${sickbeard.GIT_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
                                     <div class="clear-left"><p>*** (REQUIRED FOR SUBMITTING ISSUES) ***</p></div>
                                 </span>
                             </label>
@@ -705,7 +705,7 @@
                             <label for="git_password">
                                 <span class="component-title">GitHub password</span>
                                 <span class="component-desc">
-                                    <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD}" class="form-control input-sm input300" />
+                                    <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
                                     <div class="clear-left"><p>*** (REQUIRED FOR SUBMITTING ISSUES) ***</p></div>
                                 </span>
                             </label>
@@ -715,7 +715,7 @@
                             <label for="git_remote">
                                 <span class="component-title">GitHub remote for branch</span>
                                 <span class="component-desc">
-                                    <input type="text" name="git_remote" id="git_remote" value="${sickbeard.GIT_REMOTE}" class="form-control input-sm input300" />
+                                    <input type="text" name="git_remote" id="git_remote" value="${sickbeard.GIT_REMOTE}" class="form-control input-sm input300" autocapitalize="off" />
                                     <div class="clear-left"><p>default:origin. Access repo configured remotes (save then refresh browser)</p></div>
                                 </span>
                             </label>
@@ -725,7 +725,7 @@
                             <label>
                                 <span class="component-title">Git executable path</span>
                                 <span class="component-desc">
-                                    <input type="text" name="git_path" value="${sickbeard.GIT_PATH}" class="form-control input-sm input300" />
+                                    <input type="text" name="git_path" value="${sickbeard.GIT_PATH}" class="form-control input-sm input300" autocapitalize="off" />
                                     <div class="clear-left"><p>only needed if OS is unable to locate git from env</p></div>
                                 </span>
                             </label>

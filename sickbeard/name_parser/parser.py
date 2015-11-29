@@ -421,7 +421,7 @@ class NameParser(object):
         file_name_result = self._parse_string(base_file_name)
 
         # use only the direct parent dir
-        dir_name = os.path.basename(dir_name)
+        dir_name = ek(os.path.basename, dir_name)
 
         # parse the dirname for extra info if needed
         dir_name_result = self._parse_string(dir_name)

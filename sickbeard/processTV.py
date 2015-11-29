@@ -79,7 +79,7 @@ def delete_folder(folder, check_empty=True):
 
         try:
             logger.log(u"Deleting folder (if it's empty): " + folder)
-            os.rmdir(folder)
+            ek(os.rmdir, folder)
         except (OSError, IOError), e:
             logger.log(u"Warning: unable to delete folder: " + folder + ": " + ex(e), logger.WARNING)
             return False
@@ -331,11 +331,11 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
         return False
 
     if failed:
-        process_failed(os.path.join(path, dirName), nzbNameOriginal, result)
+        process_failed(ek(os.path.join, path, dirName), nzbNameOriginal, result)
         result.missedfiles.append(dirName + " : Failed download")
         return False
 
-    if helpers.is_hidden_folder(os.path.join(path, dirName)):
+    if helpers.is_hidden_folder(ek(os.path.join, path, dirName)):
         result.output += logHelper(u"Ignoring hidden folder: " + dirName, logger.DEBUG)
         result.missedfiles.append(dirName + " : Hidden folder")
         return False
@@ -414,11 +414,11 @@ def unRAR(path, rarFiles, force, result):
             result.output += logHelper(u"Unpacking archive: " + archive, logger.DEBUG)
 
             try:
-                rar_handle = RarFile(os.path.join(path, archive))
+                rar_handle = RarFile(ek(os.path.join, path, archive))
 
                 # Skip extraction if any file in archive has previously been extracted
                 skip_file = False
-                for file_in_archive in [os.path.basename(x.filename) for x in rar_handle.infolist() if not x.isdir]:
+                for file_in_archive in [ek(os.path.basename, x.filename) for x in rar_handle.infolist() if not x.isdir]:
                     if already_postprocessed(path, file_in_archive, force, result):
                         result.output += logHelper(
                             u"Archive file already post-processed, extraction skipped: " + file_in_archive,
@@ -432,7 +432,7 @@ def unRAR(path, rarFiles, force, result):
                 rar_handle.extract(path=path, withSubpath=False, overwrite=False)
                 for x in rar_handle.infolist():
                     if not x.isdir:
-                        basename = os.path.basename(x.filename)
+                        basename = ek(os.path.basename, x.filename)
                         if basename not in unpacked_files:
                             unpacked_files.append(basename)
                 del rar_handle
@@ -592,10 +592,10 @@ def get_path_dir_files(dirName, nzbName, proc_type):
             break
     else:
         path, dirs = ek(os.path.split, dirName)  # Script Post Processing
-        if not nzbName is None and not nzbName.endswith('.nzb') and os.path.isfile(
-                os.path.join(dirName, nzbName)):  # For single torrent file without Dir
+        if not nzbName is None and not nzbName.endswith('.nzb') and ek(os.path.isfile, 
+                ek(os.path.join, dirName, nzbName)):  # For single torrent file without Dir
             dirs = []
-            files = [os.path.join(dirName, nzbName)]
+            files = [ek(os.path.join, dirName, nzbName)]
         else:
             dirs = [dirs]
             files = []

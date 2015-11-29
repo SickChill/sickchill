@@ -16,6 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Test coming episodes
+"""
+
+# pylint: disable=line-too-long
+
+from __future__ import print_function
 import os
 import sys
 
@@ -23,11 +30,17 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 from sickrage.show.ComingEpisodes import ComingEpisodes
-from unittest import TestCase, TestLoader, TextTestRunner
+import unittest
 
 
-class ComingEpisodesTests(TestCase):
+class ComingEpisodesTests(unittest.TestCase):
+    """
+    Test comping episodes
+    """
     def test_get_categories(self):
+        """
+        Test get categories
+        """
         categories_list = [
             None, [], ['A', 'B'], [u'A', u'B'], '', 'A|B', u'A|B',
         ]
@@ -36,14 +49,17 @@ class ComingEpisodesTests(TestCase):
         ]
 
         self.assertEqual(
-                len(categories_list), len(results_list),
-                'Number of parameters (%d) and results (%d) does not match' % (len(categories_list), len(results_list))
+            len(categories_list), len(results_list),
+            'Number of parameters (%d) and results (%d) does not match' % (len(categories_list), len(results_list))
         )
 
         for (index, categories) in enumerate(categories_list):
-            self.assertEqual(ComingEpisodes._get_categories(categories), results_list[index])
+            self.assertEqual(ComingEpisodes._get_categories(categories), results_list[index])  # pylint: disable=protected-access
 
     def test_get_categories_map(self):
+        """
+        Test get categories map
+        """
         categories_list = [
             None, [], ['A', 'B'], [u'A', u'B']
         ]
@@ -52,40 +68,47 @@ class ComingEpisodesTests(TestCase):
         ]
 
         self.assertEqual(
-                len(categories_list), len(results_list),
-                'Number of parameters (%d) and results (%d) does not match' % (len(categories_list), len(results_list))
+            len(categories_list), len(results_list),
+            'Number of parameters (%d) and results (%d) does not match' % (len(categories_list), len(results_list))
         )
 
         for (index, categories) in enumerate(categories_list):
-            self.assertEqual(ComingEpisodes._get_categories_map(categories), results_list[index])
+            self.assertEqual(ComingEpisodes._get_categories_map(categories), results_list[index])  # pylint: disable=protected-access
 
     def test_get_sort(self):
-        tests = {
+        """
+        Test get sort
+        """
+        test_cases = {
             None: 'date',
             '': 'date',
-            u'': 'date',
             'wrong': 'date',
-            u'wrong': 'date',
             'date': 'date',
-            u'date': 'date',
             'Date': 'date',
-            u'Date': 'date',
             'network': 'network',
-            u'network': 'network',
             'NetWork': 'network',
-            u'NetWork': 'network',
             'show': 'show',
-            u'show': 'show',
             'Show': 'show',
+        }
+
+        unicode_test_cases = {
+            u'': 'date',
+            u'wrong': 'date',
+            u'date': 'date',
+            u'Date': 'date',
+            u'network': 'network',
+            u'NetWork': 'network',
+            u'show': 'show',
             u'Show': 'show',
         }
 
-        for (sort, result) in tests.iteritems():
-            self.assertEqual(ComingEpisodes._get_sort(sort), result)
+        for tests in test_cases, unicode_test_cases:
+            for (sort, result) in tests.iteritems():
+                self.assertEqual(ComingEpisodes._get_sort(sort), result)  # pylint: disable=protected-access
 
 
 if __name__ == '__main__':
     print('=====> Testing %s' % __file__)
 
-    suite = TestLoader().loadTestsFromTestCase(ComingEpisodesTests)
-    TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(ComingEpisodesTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)

@@ -70,6 +70,8 @@ from sickbeard.webserveInit import SRWebServer
 from sickbeard.event_queue import Events
 from configobj import ConfigObj
 
+from sickrage.helper.encoding import ek
+
 # http://bugs.python.org/issue7980#msg221094
 throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 
@@ -138,9 +140,9 @@ class SickRage(object):
     # Too many statements
     def start(self):
         # do some preliminary stuff
-        sickbeard.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
-        sickbeard.MY_NAME = os.path.basename(sickbeard.MY_FULLNAME)
-        sickbeard.PROG_DIR = os.path.dirname(sickbeard.MY_FULLNAME)
+        sickbeard.MY_FULLNAME = ek(os.path.normpath, ek(os.path.abspath, __file__))
+        sickbeard.MY_NAME = ek(os.path.basename, sickbeard.MY_FULLNAME)
+        sickbeard.PROG_DIR = ek(os.path.dirname, sickbeard.MY_FULLNAME)
         sickbeard.DATA_DIR = sickbeard.PROG_DIR
         sickbeard.MY_ARGS = sys.argv[1:]
 
@@ -219,16 +221,16 @@ class SickRage(object):
                 self.PIDFILE = str(a)
 
                 # If the pidfile already exists, sickbeard may still be running, so exit
-                if os.path.exists(self.PIDFILE):
+                if ek(os.path.exists, self.PIDFILE):
                     sys.exit("PID file: " + self.PIDFILE + " already exists. Exiting.")
 
             # Specify folder to load the config file from
             if o in ('--config',):
-                sickbeard.CONFIG_FILE = os.path.abspath(a)
+                sickbeard.CONFIG_FILE = ek(os.path.abspath, a)
 
             # Specify folder to use as the data dir
             if o in ('--datadir',):
-                sickbeard.DATA_DIR = os.path.abspath(a)
+                sickbeard.DATA_DIR = ek(os.path.abspath, a)
 
             # Prevent resizing of the banner/posters even if PIL is installed
             if o in ('--noresize',):
@@ -237,10 +239,10 @@ class SickRage(object):
         # The pidfile is only useful in daemon mode, make sure we can write the file properly
         if self.CREATEPID:
             if self.runAsDaemon:
-                pid_dir = os.path.dirname(self.PIDFILE)
-                if not os.access(pid_dir, os.F_OK):
+                pid_dir = ek(os.path.dirname, self.PIDFILE)
+                if not ek(os.access, pid_dir, os.F_OK):
                     sys.exit("PID dir: " + pid_dir + " doesn't exist. Exiting.")
-                if not os.access(pid_dir, os.W_OK):
+                if not ek(os.access, pid_dir, os.W_OK):
                     sys.exit("PID dir: " + pid_dir + " must be writable (write permissions). Exiting.")
 
             else:
@@ -251,38 +253,38 @@ class SickRage(object):
 
         # If they don't specify a config file then put it in the data dir
         if not sickbeard.CONFIG_FILE:
-            sickbeard.CONFIG_FILE = os.path.join(sickbeard.DATA_DIR, "config.ini")
+            sickbeard.CONFIG_FILE = ek(os.path.join, sickbeard.DATA_DIR, "config.ini")
 
         # Make sure that we can create the data dir
-        if not os.access(sickbeard.DATA_DIR, os.F_OK):
+        if not ek(os.access, sickbeard.DATA_DIR, os.F_OK):
             try:
-                os.makedirs(sickbeard.DATA_DIR, 0744)
+                ek(os.makedirs, sickbeard.DATA_DIR, 0744)
             except os.error:
                 raise SystemExit("Unable to create datadir '" + sickbeard.DATA_DIR + "'")
 
         # Make sure we can write to the data dir
-        if not os.access(sickbeard.DATA_DIR, os.W_OK):
+        if not ek(os.access, sickbeard.DATA_DIR, os.W_OK):
             raise SystemExit("Datadir must be writeable '" + sickbeard.DATA_DIR + "'")
 
         # Make sure we can write to the config file
-        if not os.access(sickbeard.CONFIG_FILE, os.W_OK):
-            if os.path.isfile(sickbeard.CONFIG_FILE):
+        if not ek(os.access, sickbeard.CONFIG_FILE, os.W_OK):
+            if ek(os.path.isfile, sickbeard.CONFIG_FILE):
                 raise SystemExit("Config file '" + sickbeard.CONFIG_FILE + "' must be writeable.")
-            elif not os.access(os.path.dirname(sickbeard.CONFIG_FILE), os.W_OK):
+            elif not ek(os.access, ek(os.path.dirname, sickbeard.CONFIG_FILE), os.W_OK):
                 raise SystemExit(
-                    "Config file root dir '" + os.path.dirname(sickbeard.CONFIG_FILE) + "' must be writeable.")
+                    "Config file root dir '" + ek(os.path.dirname, sickbeard.CONFIG_FILE) + "' must be writeable.")
 
-        os.chdir(sickbeard.DATA_DIR)
+        ek(os.chdir, sickbeard.DATA_DIR)
 
         # Check if we need to perform a restore first
-        restoreDir = os.path.join(sickbeard.DATA_DIR, 'restore')
-        if os.path.exists(restoreDir):
+        restoreDir = ek(os.path.join, sickbeard.DATA_DIR, 'restore')
+        if ek(os.path.exists, restoreDir):
             success = self.restoreDB(restoreDir, sickbeard.DATA_DIR)
             if self.consoleLogging:
                 sys.stdout.write(u"Restore: restoring DB and config.ini %s!\n" % ("FAILED", "SUCCESSFUL")[success])
 
         # Load the config and publish it to the sickbeard package
-        if self.consoleLogging and not os.path.isfile(sickbeard.CONFIG_FILE):
+        if self.consoleLogging and not ek(os.path.isfile, sickbeard.CONFIG_FILE):
             sys.stdout.write(u"Unable to find '" + sickbeard.CONFIG_FILE + "' , all settings will be default!" + "\n")
 
         sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE)
@@ -324,15 +326,15 @@ class SickRage(object):
         self.web_options = {
             'port': int(self.startPort),
             'host': self.webhost,
-            'data_root': os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME),
+            'data_root': ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME),
             'web_root': sickbeard.WEB_ROOT,
             'log_dir': self.log_dir,
             'username': sickbeard.WEB_USERNAME,
             'password': sickbeard.WEB_PASSWORD,
             'enable_https': sickbeard.ENABLE_HTTPS,
             'handle_reverse_proxy': sickbeard.HANDLE_REVERSE_PROXY,
-            'https_cert': os.path.join(sickbeard.PROG_DIR, sickbeard.HTTPS_CERT),
-            'https_key': os.path.join(sickbeard.PROG_DIR, sickbeard.HTTPS_KEY),
+            'https_cert': ek(os.path.join, sickbeard.PROG_DIR, sickbeard.HTTPS_CERT),
+            'https_key': ek(os.path.join, sickbeard.PROG_DIR, sickbeard.HTTPS_KEY),
         }
 
         # start web server
@@ -344,12 +346,12 @@ class SickRage(object):
 
         # Clean up after update
         if sickbeard.GIT_NEWVER:
-            toclean = os.path.join(sickbeard.CACHE_DIR, 'mako')
-            for root, dirs, files in os.walk(toclean, topdown=False):
+            toclean = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
+            for root, dirs, files in ek(os.walk, toclean, topdown=False):
                 for name in files:
-                    os.remove(os.path.join(root, name))
+                    ek(os.remove, ek(os.path.join, root, name))
                 for name in dirs:
-                    os.rmdir(os.path.join(root, name))
+                    ek(os.rmdir, ek(os.path.join, root, name))
             sickbeard.GIT_NEWVER = False
 
         # Fire up all our threads
@@ -438,8 +440,8 @@ class SickRage(object):
     @staticmethod
     def remove_pid_file(PIDFILE):
         try:
-            if os.path.exists(PIDFILE):
-                os.remove(PIDFILE)
+            if ek(os.path.exists, PIDFILE):
+                ek(os.remove, PIDFILE)
         except (IOError, OSError):
             return False
 
@@ -473,10 +475,10 @@ class SickRage(object):
             filesList = ['sickbeard.db', 'config.ini', 'failed.db', 'cache.db']
 
             for filename in filesList:
-                srcFile = os.path.join(srcDir, filename)
-                dstFile = os.path.join(dstDir, filename)
-                bakFile = os.path.join(dstDir, '{0}.bak-{1}'.format(filename, datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
-                if os.path.isfile(dstFile):
+                srcFile = ek(os.path.join, srcDir, filename)
+                dstFile = ek(os.path.join, dstDir, filename)
+                bakFile = ek(os.path.join, dstDir, '{0}.bak-{1}'.format(filename, datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
+                if ek(os.path.isfile, dstFile):
                     shutil.move(dstFile, bakFile)
                 shutil.move(srcFile, dstFile)
             return True

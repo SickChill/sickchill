@@ -966,15 +966,15 @@ class CMD_SubtitleSearch(ApiCall):
         previous_subtitles = ep_obj.subtitles
 
         try:
-            subtitles = ep_obj.downloadSubtitles()
+            subtitles = ep_obj.download_subtitles()
         except Exception:
             return _responds(RESULT_FAILURE, msg='Unable to find subtitles')
 
         # return the correct json value
         new_subtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
         if new_subtitles:
-            new_languages = [subtitles.fromietf(newSub) for newSub in new_subtitles]
-            status = 'New subtitles downloaded: %s' % ', '.join([new_language.name for new_language in new_languages])
+            new_languages = [subtitles.name_from_code(code) for code in new_subtitles]
+            status = 'New subtitles downloaded: %s' % ', '.join(new_languages)
             response = _responds(RESULT_SUCCESS, msg='New subtitles found')
         else:
             status = 'No subtitles downloaded'
@@ -1068,8 +1068,8 @@ class CMD_History(ApiCall):
             del row["action"]
 
             _rename_element(row, "show_id", "indexerid")
-            row["resource_path"] = os.path.dirname(row["resource"])
-            row["resource"] = os.path.basename(row["resource"])
+            row["resource_path"] = ek(os.path.dirname, row["resource"])
+            row["resource"] = ek(os.path.basename, row["resource"])
 
             # Add tvdbid for backward compatibility
             row['tvdbid'] = row['indexerid']
@@ -1205,7 +1205,7 @@ class CMD_Logs(ApiCall):
         min_level = logger.reverseNames[str(self.min_level).upper()]
 
         data = []
-        if os.path.isfile(logger.logFile):
+        if ek(os.path.isfile, logger.logFile):
             with io.open(logger.logFile, 'r', encoding='utf-8') as f:
                 data = f.readlines()
 

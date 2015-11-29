@@ -1005,7 +1005,7 @@ class TVShow(object):
                 if sickbeard.TRASH_REMOVE_SHOW:
                     send2trash(cache_file)
                 else:
-                    os.remove(cache_file)
+                    ek(os.remove, cache_file)
 
             except OSError, e:
                 logger.log(u'Unable to %s %s: %s / %s' % (action, cache_file, repr(e), str(e)), logger.WARNING)
@@ -1065,7 +1065,7 @@ class TVShow(object):
 
         sql_l = []
         for ep in sqlResults:
-            curLoc = os.path.normpath(ep["location"])
+            curLoc = ek(os.path.normpath, ep["location"])
             season = int(ep["season"])
             episode = int(ep["episode"])
 
@@ -1079,8 +1079,8 @@ class TVShow(object):
                 continue
 
             # if the path doesn't exist or if it's not in our show dir
-            if not ek(os.path.isfile, curLoc) or not os.path.normpath(curLoc).startswith(
-                    os.path.normpath(self.location)):
+            if not ek(os.path.isfile, curLoc) or not ek(os.path.normpath, curLoc).startswith(
+                    ek(os.path.normpath, self.location)):
 
                 # check if downloaded files still exist, update our data if this has changed
                 if not sickbeard.SKIP_REMOVED_FILES:
@@ -1116,7 +1116,7 @@ class TVShow(object):
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
-    def downloadSubtitles(self, force=False):
+    def download_subtitles(self, force=False):
         # TODO: Add support for force option
         if not ek(os.path.isdir, self._location):
             logger.log(str(self.indexerid) + ": Show dir doesn't exist, can't download subtitles", logger.DEBUG)
@@ -1131,7 +1131,7 @@ class TVShow(object):
                 return
 
             for episode in episodes:
-                episode.downloadSubtitles(force=force)
+                episode.download_subtitles(force=force)
 
         except Exception:
             logger.log(u"%s: Error occurred when downloading subtitles for %s" % (self.indexerid, self.name), logger.DEBUG)
@@ -1413,41 +1413,46 @@ class TVEpisode(object):
 
     def refreshSubtitles(self):
         """Look for subtitles files and refresh the subtitles property"""
-        self.subtitles, save_subtitles = subtitles.subtitlesLanguages(self.location)
+        episode_info = {'show_name': self.show.name, 'location': self.location,
+                        'season': self.season, 'episode': self.episode}
+        self.subtitles, save_subtitles = subtitles.refresh_subtitles(episode_info, self.subtitles)
         if save_subtitles:
             self.saveToDB()
 
-    def downloadSubtitles(self, force=False):
+    def download_subtitles(self, force=False):
         if not ek(os.path.isfile, self.location):
             logger.log(u"%s: Episode file doesn't exist, can't download subtitles for S%02dE%02d" %
                        (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
             return
 
-        logger.log(u"%s: Downloading subtitles for S%02dE%02d" % (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
+        if not subtitles.needs_subtitles(self.subtitles):
+            logger.log(u'Episode already has all needed subtitles, skipping  episode %dx%d of show %s'
+                         % (self.season or 0,  self.episode or 0, self.show.name), logger.DEBUG)
+            return
 
-        # logging.getLogger('subliminal.api').addHandler(logging.StreamHandler())
-        # logging.getLogger('subliminal.api').setLevel(logging.DEBUG)
-        # logging.getLogger('subliminal').addHandler(logging.StreamHandler())
-        # logging.getLogger('subliminal').setLevel(logging.DEBUG)
+        logger.log(u"%s: Downloading subtitles for %s S%02dE%02d"
+                   % (self.show.indexerid, self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
 
-        subtitles_info = {'location': self.location, 'subtitles': self.subtitles, 'show.indexerid': self.show.indexerid, 'season': self.season,
-                          'episode': self.episode, 'name': self.name, 'show.name': self.show.name, 'status': self.status}
+        subtitles_info = {'location': self.location, 'subtitles': self.subtitles, 'season': self.season,
+                          'episode': self.episode, 'name': self.name, 'show_name': self.show.name,
+                          'show_indexerid': self.show.indexerid, 'status': self.status}
 
-        self.subtitles, newSubtitles = subtitles.downloadSubtitles(subtitles_info)
+        self.subtitles, new_subtitles = subtitles.download_subtitles(subtitles_info)
 
         self.subtitles_searchcount += 1 if self.subtitles_searchcount else 1
         self.subtitles_lastsearch = datetime.datetime.now().strftime(dateTimeFormat)
         self.saveToDB()
 
-        if newSubtitles:
-            subtitleList = ", ".join([subtitles.fromietf(newSub).name for newSub in newSubtitles])
-            logger.log(u"%s: Downloaded %s subtitles for S%02dE%02d" %
-                       (self.show.indexerid, subtitleList, self.season or 0, self.episode or 0), logger.DEBUG)
+        if new_subtitles:
+            subtitle_list = ", ".join([subtitles.name_from_code(code) for code in new_subtitles])
+            logger.log(u"%s: Downloaded %s subtitles for %s S%02dE%02d" %
+                       (self.show.indexerid, subtitle_list, self.show.name, self.season or 0,
+                        self.episode or 0), logger.DEBUG)
 
-            notifiers.notify_subtitle_download(self.prettyName(), subtitleList)
+            notifiers.notify_subtitle_download(self.prettyName(), subtitle_list)
         else:
-            logger.log(u"%s: No subtitles downloaded for S%02dE%02d" %
-                       (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
+            logger.log(u"%s: No subtitles downloaded for %s S%02dE%02d" %
+                       (self.show.indexerid, self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
 
     def checkForMetaFiles(self):
 
@@ -1534,7 +1539,7 @@ class TVEpisode(object):
 
             # don't overwrite my location
             if sqlResults[0]["location"] and sqlResults[0]["location"]:
-                self.location = os.path.normpath(sqlResults[0]["location"])
+                self.location = ek(os.path.normpath, sqlResults[0]["location"])
             if sqlResults[0]["file_size"]:
                 self.file_size = int(sqlResults[0]["file_size"])
             else:
@@ -2524,7 +2529,7 @@ class TVEpisode(object):
         if sickbeard.FILE_TIMESTAMP_TIMEZONE == 'local':
             airdatetime = airdatetime.astimezone(network_timezones.sb_timezone)
 
-        filemtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location)).replace(tzinfo=network_timezones.sb_timezone)
+        filemtime = datetime.datetime.fromtimestamp(ek(os.path.getmtime, self.location)).replace(tzinfo=network_timezones.sb_timezone)
 
         if filemtime != airdatetime:
             import time
@@ -2534,13 +2539,13 @@ class TVEpisode(object):
                        "' to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime), logger.DEBUG)
             try:
                 if helpers.touchFile(self.location, time.mktime(airdatetime)):
-                    logger.log(str(self.show.indexerid) + u": Changed modify date of " + os.path.basename(self.location)
+                    logger.log(str(self.show.indexerid) + u": Changed modify date of " + ek(os.path.basename, self.location)
                                + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime))
                 else:
-                    logger.log(str(self.show.indexerid) + u": Unable to modify date of " + os.path.basename(self.location)
+                    logger.log(str(self.show.indexerid) + u": Unable to modify date of " + ek(os.path.basename, self.location)
                                + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime), logger.WARNING)
             except Exception as e:
-                logger.log(str(self.show.indexerid) + u": Failed to modify date of '" + os.path.basename(self.location)
+                logger.log(str(self.show.indexerid) + u": Failed to modify date of '" + ek(os.path.basename, self.location)
                            + "' to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime) + ". Error: %s" % ex(e), logger.WARNING)
 
     def __getstate__(self):

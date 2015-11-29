@@ -9,6 +9,7 @@
     from sickbeard import metadata
     from sickbeard.metadata.generic import GenericMetadata
     from sickbeard import naming
+    from sickrage.helper.encoding import ek
 %>
 <%block name="content">
 <div id="content960">
@@ -46,7 +47,7 @@
                         <div class="field-pair">
                             <label class="nocheck" for="tv_download_dir">
                                 <span class="component-title">Post Processing Dir</span>
-                                <input type="text" name="tv_download_dir" id="tv_download_dir" value="${sickbeard.TV_DOWNLOAD_DIR}" class="form-control input-sm input350" />
+                                <input type="text" name="tv_download_dir" id="tv_download_dir" value="${sickbeard.TV_DOWNLOAD_DIR}" class="form-control input-sm input350" autocapitalize="off" />
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
@@ -98,7 +99,7 @@
                         <div class="field-pair">
                             <label class="nocheck">
                                 <span class="component-title">Sync File Extensions</span>
-                                <input type="text" name="sync_files" id="sync_files" value="${sickbeard.SYNC_FILES}" class="form-control input-sm input350" />
+                                <input type="text" name="sync_files" id="sync_files" value="${sickbeard.SYNC_FILES}" class="form-control input-sm input350" autocapitalize="off" />
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
@@ -144,7 +145,7 @@
                         <div class="field-pair">
                             <label class="nocheck">
                                 <span class="component-title">Allowed associated file extensions</span>
-                                <input type="text" name="allowed_extensions" id="allowed_extensions" value="${sickbeard.ALLOWED_EXTENSIONS}" class="form-control input-sm input350" />
+                                <input type="text" name="allowed_extensions" id="allowed_extensions" value="${sickbeard.ALLOWED_EXTENSIONS}" class="form-control input-sm input350" autocapitalize="off" />
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
@@ -240,7 +241,7 @@
                         <div class="field-pair">
                             <label class="nocheck">
                                 <span class="component-title">Extra Scripts</span>
-                                <input type="text" name="extra_scripts" value="${'|'.join(sickbeard.EXTRA_SCRIPTS)}" class="form-control input-sm input350" />
+                                <input type="text" name="extra_scripts" value="${'|'.join(sickbeard.EXTRA_SCRIPTS)}" class="form-control input-sm input350" autocapitalize="off" />
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
@@ -269,7 +270,7 @@
                                             % if cur_preset == sickbeard.NAMING_PATTERN:
                                                 <% is_custom = False %>
                                             % endif
-                                            <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                            <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_PATTERN == cur_preset]}>${ek(os.path.join, tmp['dir'], tmp['name'])}</option>
                                         % endfor
                                         <option id="${sickbeard.NAMING_PATTERN}" ${('', 'selected="selected"')[bool(is_custom)]}>Custom...</option>
                                     </select>
@@ -284,7 +285,7 @@
                                         &nbsp;
                                     </span>
                                     <span class="component-desc">
-                                        <input type="text" name="naming_pattern" id="naming_pattern" value="${sickbeard.NAMING_PATTERN}" class="form-control input-sm input350" />
+                                        <input type="text" name="naming_pattern" id="naming_pattern" value="${sickbeard.NAMING_PATTERN}" class="form-control input-sm input350" autocapitalize="off" />
                                         <img src="${srRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_key" title="Toggle Naming Legend" class="legend" class="legend" />
                                     </span>
                                 </label>
@@ -393,7 +394,7 @@
                                           <td>&nbsp;</td>
                                           <td>%Y</td>
                                           <td>${datetime.date.today().year}</td>
-                                        </tr>                                  
+                                        </tr>
                                         <tr>
                                           <td class="align-right"><b>Post-Processing Date:</b></td>
                                           <td>%CM</td>
@@ -408,7 +409,7 @@
                                           <td>&nbsp;</td>
                                           <td>%CY</td>
                                           <td>${datetime.date.today().year}</td>
-                                        </tr>                                  
+                                        </tr>
                                         <tr>
                                           <td class="align-right"><b>Quality:</b></td>
                                           <td>%QN</td>
@@ -521,7 +522,7 @@
                                                 % if cur_preset == sickbeard.NAMING_ABD_PATTERN:
                                                     <% is_abd_custom = False %>
                                                 % endif
-                                                <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_ABD_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                                <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_ABD_PATTERN == cur_preset]}>${ek(os.path.join, tmp['dir'], tmp['name'])}</option>
                                             % endfor
                                             <option id="${sickbeard.NAMING_ABD_PATTERN}" ${('', 'selected="selected"')[bool(is_abd_custom)]}>Custom...</option>
                                         </select>
@@ -536,7 +537,7 @@
                                             &nbsp;
                                         </span>
                                         <span class="component-desc">
-                                            <input type="text" name="naming_abd_pattern" id="naming_abd_pattern" value="${sickbeard.NAMING_ABD_PATTERN}" class="form-control input-sm input350" />
+                                            <input type="text" name="naming_abd_pattern" id="naming_abd_pattern" value="${sickbeard.NAMING_ABD_PATTERN}" class="form-control input-sm input350" autocapitalize="off" />
                                             <img src="${srRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_abd_key" title="Toggle ABD Naming Legend" class="legend" />
                                         </span>
                                     </label>
@@ -698,7 +699,7 @@
                                                 % if cur_preset == sickbeard.NAMING_SPORTS_PATTERN:
                                                     <% is_sports_custom = False %>
                                                 % endif
-                                                <option id="${cur_preset}" ${('', 'selected="selected"')[NAMING_SPORTS_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                                <option id="${cur_preset}" ${('', 'selected="selected"')[NAMING_SPORTS_PATTERN == cur_preset]}>${ek(os.path.join, tmp['dir'], tmp['name'])}</option>
                                             % endfor
                                             <option id="${sickbeard.NAMING_SPORTS_PATTERN}" ${('', 'selected="selected"')[bool(is_sports_custom)]}>Custom...</option>
                                         </select>
@@ -713,7 +714,7 @@
                                             &nbsp;
                                         </span>
                                         <span class="component-desc">
-                                            <input type="text" name="naming_sports_pattern" id="naming_sports_pattern" value="${sickbeard.NAMING_SPORTS_PATTERN}" class="form-control input-sm input350" />
+                                            <input type="text" name="naming_sports_pattern" id="naming_sports_pattern" value="${sickbeard.NAMING_SPORTS_PATTERN}" class="form-control input-sm input350" autocapitalize="off" />
                                             <img src="${srRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_sports_key" title="Toggle Sports Naming Legend" class="legend" />
                                         </span>
                                     </label>
@@ -876,7 +877,7 @@
                                                 % if cur_preset == sickbeard.NAMING_ANIME_PATTERN:
                                                     <% is_anime_custom = False %>
                                                 % endif
-                                                <option id="${cur_preset}" ${('', 'selected="selected"')[cur_preset == sickbeard.NAMING_ANIME_PATTERN]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                                <option id="${cur_preset}" ${('', 'selected="selected"')[cur_preset == sickbeard.NAMING_ANIME_PATTERN]}>${ek(os.path.join, tmp['dir'], tmp['name'])}</option>
                                             % endfor
                                             <option id="${sickbeard.NAMING_ANIME_PATTERN}" ${('', 'selected="selected"')[bool(is_anime_custom)]}>Custom...</option>
                                         </select>
@@ -891,7 +892,7 @@
                                             &nbsp;
                                         </span>
                                         <span class="component-desc">
-                                            <input type="text" name="naming_anime_pattern" id="naming_anime_pattern" value="${sickbeard.NAMING_ANIME_PATTERN}" class="form-control input-sm input350" />
+                                            <input type="text" name="naming_anime_pattern" id="naming_anime_pattern" value="${sickbeard.NAMING_ANIME_PATTERN}" class="form-control input-sm input350" autocapitalize="off" />
                                             <img src="${srRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_anime_key" title="Toggle Anime Naming Legend" class="legend" />
                                         </span>
                                     </label>

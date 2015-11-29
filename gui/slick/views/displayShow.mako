@@ -207,7 +207,7 @@
                 </table>
 
                 <table style="width:180px; float: right; vertical-align: middle; height: 100%;">
-                    <% info_flag = subtitles.fromietf(show.lang).opensubtitles if show.lang else '' %>
+                    <% info_flag = subtitles.code_from_code(show.lang) if show.lang else '' %>
                     <tr><td class="showLegend">Info Language:</td><td><img src="${srRoot}/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';"/></td></tr>
                     % if sickbeard.USE_SUBTITLES:
                     <tr><td class="showLegend">Subtitles: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td></tr>
@@ -445,7 +445,7 @@
                     % else:
                         value="${str(scSeas)}x${str(scEpis)}"
                     % endif
-                        style="padding: 0; text-align: center; max-width: 60px;" />
+                        style="padding: 0; text-align: center; max-width: 60px;" autocapitalize="off" />
             </td>
             <td align="center">
                 <input type="text" placeholder="${str(dfltAbsolute)}" size="6" maxlength="8"
@@ -457,7 +457,7 @@
                     % else:
                         value="${str(scAbsolute)}"
                     % endif
-                        style="padding: 0; text-align: center; max-width: 60px;" />
+                        style="padding: 0; text-align: center; max-width: 60px;" autocapitalize="off" />
             </td>
             <td class="col-name">
             % if epResult["description"] != "" and epResult["description"] is not None:
@@ -499,12 +499,10 @@
                 % endif
             </td>
             <td class="col-subtitles" align="center">
-            % for sub_lang in [subtitles.fromietf(x) for x in epResult["subtitles"].split(',') if epResult["subtitles"]]:
-                <% flag = sub_lang.opensubtitles %>
-                % if (not sickbeard.SUBTITLES_MULTI and len(subtitles.wantedLanguages()) is 1) and subtitles.wantedLanguages()[0] in sub_lang.opensubtitles:
-                    <% flag = 'checkbox' %>
+            % for flag in (epResult["subtitles"] or '').split(','):
+                % if flag.strip():
+                    <img src="${srRoot}/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${subtitles.name_from_code(flag)}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';" />
                 % endif
-                <img src="${srRoot}/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${sub_lang.name}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';" />
             % endfor
             </td>
                 <% curStatus, curQuality = Quality.splitCompositeStatus(int(epResult["status"])) %>
@@ -521,7 +519,7 @@
                         <a class="epSearch" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="searchEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
                     % endif
                 % endif
-                % if sickbeard.USE_SUBTITLES and show.subtitles and epResult["location"] and frozenset(subtitles.wantedLanguages()).difference(epResult["subtitles"].split(',')):
+                % if sickbeard.USE_SUBTITLES and show.subtitles and epResult["location"] and subtitles.needs_subtitles(epResult['subtitles']):
                     <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
                 % endif
             </td>

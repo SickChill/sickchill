@@ -119,7 +119,7 @@ class ConfigTestBasic(unittest.TestCase):
                     self.assertEqual(config.clean_url(test_url.dirty), test_url.clean)
             elif test_url.expected_result is True:
                 self.assertEqual(config.clean_url(test_url.dirty), test_url.clean)
-            elif not test_url.expected_result is False:
+            elif test_url.expected_result is False:
                 self.assertNotEqual(config.clean_url(test_url.dirty), test_url.clean)
             else:
                 log.error('Test not defined for %s', test_url)

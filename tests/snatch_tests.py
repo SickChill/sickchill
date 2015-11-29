@@ -17,27 +17,39 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys, os.path
+# pylint: disable=line-too-long
+
+"""
+Test snatching
+"""
+
+import sys
+import os.path
+import unittest
+import tests.test_lib as test
+
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import random
-import unittest
-
-import test_lib as test
 
 import sickbeard.search as search
 import sickbeard
 from sickbeard.tv import TVEpisode, TVShow
 import sickbeard.common as c
 
-tests = {"Dexter": {"a": 1, "q": c.HD, "s": 5, "e": [7], "b": 'Dexter.S05E07.720p.BluRay.X264-REWARD', "i": ['Dexter.S05E07.720p.BluRay.X264-REWARD', 'Dexter.S05E07.720p.X264-REWARD']},
-         "House": {"a": 1, "q": c.HD, "s": 4, "e": [5], "b": 'House.4x5.720p.BluRay.X264-REWARD', "i": ['Dexter.S05E04.720p.X264-REWARD', 'House.4x5.720p.BluRay.X264-REWARD']},
-         "Hells Kitchen": {"a": 1, "q": c.SD, "s": 6, "e": [14, 15], "b": 'Hells.Kitchen.s6e14e15.HDTV.XviD-ASAP', "i": ['Hells.Kitchen.S06E14.HDTV.XviD-ASAP', 'Hells.Kitchen.6x14.HDTV.XviD-ASAP', 'Hells.Kitchen.s6e14e15.HDTV.XviD-ASAP']}
-       }
+TESTS = {
+    "Dexter": {"a": 1, "q": c.HD, "s": 5, "e": [7], "b": 'Dexter.S05E07.720p.BluRay.X264-REWARD', "i": ['Dexter.S05E07.720p.BluRay.X264-REWARD', 'Dexter.S05E07.720p.X264-REWARD']},
+    "House": {"a": 1, "q": c.HD, "s": 4, "e": [5], "b": 'House.4x5.720p.BluRay.X264-REWARD', "i": ['Dexter.S05E04.720p.X264-REWARD', 'House.4x5.720p.BluRay.X264-REWARD']},
+    "Hells Kitchen": {"a": 1, "q": c.SD, "s": 6, "e": [14, 15], "b": 'Hells.Kitchen.s6e14e15.HDTV.XviD-ASAP', "i": ['Hells.Kitchen.S06E14.HDTV.XviD-ASAP', 'Hells.Kitchen.6x14.HDTV.XviD-ASAP', 'Hells.Kitchen.s6e14e15.HDTV.XviD-ASAP']}
+}
 
 
 def _create_fake_xml(items):
+    """
+    Create fake xml
+
+    :param items:
+    :return:
+    """
     xml = '<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/" encoding="utf-8"><channel>'
     for item in items:
         xml += '<item><title>' + item + '</title>\n'
@@ -45,49 +57,83 @@ def _create_fake_xml(items):
     xml += '</channel></rss>'
     return xml
 
-
-searchItems = []
+# pylint: disable=invalid-name
+search_items = []
 
 
 class SearchTest(test.SickbeardTestDBCase):
+    """
+    Perform search tests
+    """
 
-    def _fake_getURL(self, url, headers=None):
-        global searchItems
-        return _create_fake_xml(searchItems)
+    @staticmethod
+    def _fake_get_url(url, headers=None):
+        """
+        Fake getting a url
 
-    def _fake_isActive(self):
+        :param url:
+        :param headers:
+        :return:
+        """
+        _ = url, headers
+        return _create_fake_xml(search_items)
+
+    @staticmethod
+    def _fake_is_active():
+        """
+        Fake is active
+        """
         return True
 
     def __init__(self, something):
+        """
+        Initialize tests
+
+        :param something:
+        :return:
+        """
+
         for provider in sickbeard.providers.sortedProviderList():
-            provider.getURL = self._fake_getURL
-            #provider.isActive = self._fake_isActive
+            provider.getURL = self._fake_get_url
+            # provider.isActive = self._fake_is_active
 
         super(SearchTest, self).__init__(something)
 
 
-def test_generator(tvdbdid, show_name, curData, forceSearch):
+def test_generator(tvdb_id, show_name, cur_data, force_search):
+    """
+    Generate tests
 
-    def test(self):
-        global searchItems
-        searchItems = curData["i"]
-        show = TVShow(1, tvdbdid)
+    :param tvdb_id:
+    :param show_name:
+    :param cur_data:
+    :param force_search:
+    :return:
+    """
+    def do_test():
+        """
+        Test to perform
+        """
+        global search_items  # pylint: disable=global-statement
+        search_items = cur_data["i"]
+        show = TVShow(1, tvdb_id)
         show.name = show_name
-        show.quality = curData["q"]
+        show.quality = cur_data["q"]
         show.saveToDB()
         sickbeard.showList.append(show)
         episode = None
 
-        for epNumber in curData["e"]:
-            episode = TVEpisode(show, curData["s"], epNumber)
+        for epNumber in cur_data["e"]:
+            episode = TVEpisode(show, cur_data["s"], epNumber)
             episode.status = c.WANTED
             episode.saveToDB()
 
-        bestResult = search.searchProviders(show, episode.episode, forceSearch)
-        if not bestResult:
-            self.assertEqual(curData["b"], bestResult)
-        self.assertEqual(curData["b"], bestResult.name) #first is expected, second is choosen one
-    return test
+        best_result = search.searchProviders(show, episode.episode, force_search)
+        if not best_result:
+            assert cur_data["b"] == best_result
+        # pylint: disable=no-member
+        assert cur_data["b"] == best_result.name  # first is expected, second is chosen one
+    return do_test
 
 if __name__ == '__main__':
     print "=================="
@@ -95,20 +141,20 @@ if __name__ == '__main__':
     print "=================="
     print "######################################################################"
     # create the test methods
-    tvdbdid = 1
+    cur_tvdb_id = 1
     for forceSearch in (True, False):
-        for name, curData in tests.items():
-            if not curData["a"]:
+        for name, data in TESTS.items():
+            if not data["a"]:
                 continue
-            fname = name.replace(' ', '_')
+            filename = name.replace(' ', '_')
             if forceSearch:
-                test_name = 'test_manual_%s_%s' % (fname, tvdbdid)
+                test_name = 'test_manual_%s_%s' % (filename, cur_tvdb_id)
             else:
-                test_name = 'test_%s_%s' % (fname, tvdbdid)
+                test_name = 'test_%s_%s' % (filename, cur_tvdb_id)
 
-            test = test_generator(tvdbdid, name, curData, forceSearch)
+            test = test_generator(cur_tvdb_id, name, data, forceSearch)
             setattr(SearchTest, test_name, test)
-            tvdbdid += 1
+            cur_tvdb_id += 1
 
     suite = unittest.TestLoader().loadTestsFromTestCase(SearchTest)
     unittest.TextTestRunner(verbosity=2).run(suite)

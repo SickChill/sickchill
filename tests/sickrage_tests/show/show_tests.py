@@ -16,6 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Test shows
+"""
+
+# pylint: disable=line-too-long
+
+from __future__ import print_function
 import os
 import sys
 
@@ -27,11 +34,17 @@ import sickbeard
 from sickbeard.common import Quality
 from sickbeard.tv import TVShow
 from sickrage.show.Show import Show
-from unittest import TestCase, TestLoader, TextTestRunner
+import unittest
 
 
-class ShowTests(TestCase):
+class ShowTests(unittest.TestCase):
+    """
+    Test shows
+    """
     def test_validate_indexer_id(self):
+        """
+        Test validate indexer id
+        """
         sickbeard.QUALITY_DEFAULT = Quality.FULLHDTV
 
         show123 = TestTVShow(0, 123)
@@ -56,12 +69,12 @@ class ShowTests(TestCase):
         ]
 
         self.assertEqual(
-                len(indexer_id_list), len(results_list),
-                'Number of parameters (%d) and results (%d) does not match' % (len(indexer_id_list), len(results_list))
+            len(indexer_id_list), len(results_list),
+            'Number of parameters (%d) and results (%d) does not match' % (len(indexer_id_list), len(results_list))
         )
 
         for (index, indexer_id) in enumerate(indexer_id_list):
-            self.assertEqual(Show._validate_indexer_id(indexer_id), results_list[index])
+            self.assertEqual(Show._validate_indexer_id(indexer_id), results_list[index])  # pylint: disable=protected-access
 
 
 class TestTVShow(TVShow):
@@ -79,5 +92,5 @@ class TestTVShow(TVShow):
 if __name__ == '__main__':
     print('=====> Testing %s' % __file__)
 
-    suite = TestLoader().loadTestsFromTestCase(ShowTests)
-    TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(ShowTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)

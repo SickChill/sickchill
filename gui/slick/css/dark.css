@@ -265,13 +265,13 @@ home.mako
     color: #fff;
 }
 
+.loading-spinner {
+    background-image: url("../images/loading32-dark.gif");
+}
+
 .show-container {
-    margin: 12px;
-    width: 188px;
-    height: 352px;
     background-color: #333;
-    border: 1px solid #111;
-    border-radius: 6px;
+    border-color: #333;
 }
 
 .show-title:after {

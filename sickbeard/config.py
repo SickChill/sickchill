@@ -28,6 +28,8 @@ from sickbeard import logger
 from sickbeard import naming
 from sickbeard import db
 
+from sickrage.helper.encoding import ek
+
 # Address poor support for scgi over unix domain sockets
 # this is not nicely handled by python currently
 # http://bugs.python.org/issue23636
@@ -65,9 +67,9 @@ def change_HTTPS_CERT(https_cert):
         sickbeard.HTTPS_CERT = ''
         return True
 
-    if os.path.normpath(sickbeard.HTTPS_CERT) != os.path.normpath(https_cert):
-        if helpers.makeDir(os.path.dirname(os.path.abspath(https_cert))):
-            sickbeard.HTTPS_CERT = os.path.normpath(https_cert)
+    if ek(os.path.normpath, sickbeard.HTTPS_CERT) != ek(os.path.normpath, https_cert):
+        if helpers.makeDir(ek(os.path.dirname, ek(os.path.abspath, https_cert))):
+            sickbeard.HTTPS_CERT = ek(os.path.normpath, https_cert)
             logger.log(u"Changed https cert path to " + https_cert)
         else:
             return False
@@ -86,9 +88,9 @@ def change_HTTPS_KEY(https_key):
         sickbeard.HTTPS_KEY = ''
         return True
 
-    if os.path.normpath(sickbeard.HTTPS_KEY) != os.path.normpath(https_key):
-        if helpers.makeDir(os.path.dirname(os.path.abspath(https_key))):
-            sickbeard.HTTPS_KEY = os.path.normpath(https_key)
+    if ek(os.path.normpath, sickbeard.HTTPS_KEY) != ek(os.path.normpath, https_key):
+        if helpers.makeDir(ek(os.path.dirname, ek(os.path.abspath, https_key))):
+            sickbeard.HTTPS_KEY = ek(os.path.normpath, https_key)
             logger.log(u"Changed https key path to " + https_key)
         else:
             return False
@@ -105,12 +107,12 @@ def change_LOG_DIR(log_dir, web_log):
     :return: True on success, False on failure
     """
     log_dir_changed = False
-    abs_log_dir = os.path.normpath(os.path.join(sickbeard.DATA_DIR, log_dir))
+    abs_log_dir = ek(os.path.normpath, ek(os.path.join, sickbeard.DATA_DIR, log_dir))
     web_log_value = checkbox_to_value(web_log)
 
-    if os.path.normpath(sickbeard.LOG_DIR) != abs_log_dir:
+    if ek(os.path.normpath, sickbeard.LOG_DIR) != abs_log_dir:
         if helpers.makeDir(abs_log_dir):
-            sickbeard.ACTUAL_LOG_DIR = os.path.normpath(log_dir)
+            sickbeard.ACTUAL_LOG_DIR = ek(os.path.normpath, log_dir)
             sickbeard.LOG_DIR = abs_log_dir
 
             logger.initLogging()
@@ -137,9 +139,9 @@ def change_NZB_DIR(nzb_dir):
         sickbeard.NZB_DIR = ''
         return True
 
-    if os.path.normpath(sickbeard.NZB_DIR) != os.path.normpath(nzb_dir):
+    if ek(os.path.normpath, sickbeard.NZB_DIR) != ek(os.path.normpath, nzb_dir):
         if helpers.makeDir(nzb_dir):
-            sickbeard.NZB_DIR = os.path.normpath(nzb_dir)
+            sickbeard.NZB_DIR = ek(os.path.normpath, nzb_dir)
             logger.log(u"Changed NZB folder to " + nzb_dir)
         else:
             return False
@@ -158,9 +160,9 @@ def change_TORRENT_DIR(torrent_dir):
         sickbeard.TORRENT_DIR = ''
         return True
 
-    if os.path.normpath(sickbeard.TORRENT_DIR) != os.path.normpath(torrent_dir):
+    if ek(os.path.normpath, sickbeard.TORRENT_DIR) != ek(os.path.normpath, torrent_dir):
         if helpers.makeDir(torrent_dir):
-            sickbeard.TORRENT_DIR = os.path.normpath(torrent_dir)
+            sickbeard.TORRENT_DIR = ek(os.path.normpath, torrent_dir)
             logger.log(u"Changed torrent folder to " + torrent_dir)
         else:
             return False
@@ -179,9 +181,9 @@ def change_TV_DOWNLOAD_DIR(tv_download_dir):
         sickbeard.TV_DOWNLOAD_DIR = ''
         return True
 
-    if os.path.normpath(sickbeard.TV_DOWNLOAD_DIR) != os.path.normpath(tv_download_dir):
+    if ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR) != ek(os.path.normpath, tv_download_dir):
         if helpers.makeDir(tv_download_dir):
-            sickbeard.TV_DOWNLOAD_DIR = os.path.normpath(tv_download_dir)
+            sickbeard.TV_DOWNLOAD_DIR = ek(os.path.normpath, tv_download_dir)
             logger.log(u"Changed TV download folder to " + tv_download_dir)
         else:
             return False

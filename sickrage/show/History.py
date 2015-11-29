@@ -96,7 +96,7 @@ class History:
 
     @staticmethod
     def _get_actions(action):
-        action = action.lower() if isinstance(action, str) else ''
+        action = action.lower() if isinstance(action, (str, unicode)) else ''
 
         if action == 'downloaded':
             return Quality.DOWNLOADED

@@ -22,6 +22,26 @@ var configSuccess = function(){
     $('#prowl_show').trigger('notify');
 };
 
+function metaToBool(pyVar){
+    var meta = $('meta[data-var="' + pyVar + '"]').data('content');
+    if(meta === undefined){
+        console.log(pyVar + ' is empty, did you forget to add this to main.mako?');
+        return meta;
+    } else {
+        meta = (isNaN(meta) ? meta.toLowerCase() : meta.toString());
+        return !(meta === 'false' || meta === 'none' || meta === '0');
+    }
+}
+
+function getMeta(pyVar){
+    return $('meta[data-var="' + pyVar + '"]').data('content');
+}
+
+function isMeta(pyVar, result){
+    var reg = new RegExp(result.length > 1 ? result.join('|') : result);
+    return (reg).test($('meta[data-var="' + pyVar + '"]').data('content'));
+}
+
 var SICKRAGE = {
     common: {
         init: function() {
@@ -868,14 +888,21 @@ var SICKRAGE = {
             // we have to call this function on dom ready to create the devices select
             getPushbulletDevices();
 
-            // @TODO Find out what notify_data actually does since it doesn't seem to be a real function
             $('#email_show').on('change', function() {
                 var key = parseInt($('#email_show').val(), 10);
-                $('#email_show_list').val(key >= 0 ? notify_data[key.toString()].list : ''); // jshint ignore:line
+                $.getJSON(srRoot + "/home/loadShowNotifyLists", function(notifyData) {
+                    if (notifyData._size > 0) {
+                        $('#email_show_list').val(key >= 0 ? notifyData[key.toString()].list : '');
+                    }
+                });
             });
             $('#prowl_show').on('change', function() {
                 var key = parseInt($('#prowl_show').val(), 10);
-                $('#prowl_show_list').val(key >= 0 ? notify_data[key.toString()].prowl_notify_list  : ''); // jshint ignore:line
+                $.getJSON(srRoot + "/home/loadShowNotifyLists", function(notifyData) {
+                    if (notifyData._size > 0) {
+                        $('#prowl_show_list').val(key >= 0 ? notifyData[key.toString()].prowl_notify_list  : '');   // jshint ignore:line
+                    }
+                });
             });
 
             // Update the internal data struct anytime settings are saved to the server
@@ -887,10 +914,8 @@ var SICKRAGE = {
             });
 
             function loadShowNotifyLists() {
-                $.get(srRoot + "/home/loadShowNotifyLists", function(data) {
-                    var list, html, s;
-                    list = $.parseJSON(data); // @TODO The line below this is the same as the $('#email_show') function above
-                    notify_data = list; // jshint ignore:line
+                $.getJSON(srRoot + "/home/loadShowNotifyLists", function(list) {
+                    var html, s;
                     if (list._size === 0) { return; }
 
                     // Convert the 'list' object to a js array of objects so that we can sort it
@@ -1754,13 +1779,67 @@ var SICKRAGE = {
 
             // Handle filtering in the poster layout
             $('#filterShowName').on('input', _.debounce(function (e) {
-                $('#container, #container-anime').isotope({
+                $('.show-grid').isotope({
                     filter: function () {
                       var name = $('div.show-title', this).text();
                       return (name.toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1);
                     }
                 });
             }, 500));
+
+            function resizePosters(newSize) {
+                var fontSize, logoWidth, borderRadius, borderWidth;
+                if (newSize < 125) { // small
+                    borderRadius = 3;
+                    borderWidth = 4;
+                } else if (newSize < 175) { // medium
+                    fontSize = 9;
+                    logoWidth = 40;
+                    borderRadius = 4;
+                    borderWidth = 5;
+                } else { // large
+                    fontSize = 11;
+                    logoWidth = 50;
+                    borderRadius = 6;
+                    borderWidth = 6;
+                }
+
+                if (fontSize === undefined) {
+                    $('.show-details').hide();
+                } else {
+                    $('.show-details').show();
+                    $('.show-dlstats, .show-quality').css('fontSize', fontSize);
+                    $('.show-network-image').css('width', logoWidth);
+                }
+
+                $('.show-container').css({
+                    width: newSize,
+                    borderWidth: borderWidth,
+                    borderRadius: borderRadius
+                });
+            }
+
+            var posterSize;
+            if (typeof(Storage) !== 'undefined') {
+                posterSize = parseInt(localStorage.getItem('posterSize'));
+            }
+            if (typeof(posterSize) !== 'number' || isNaN(posterSize)) {
+                posterSize = 188;
+            }
+            resizePosters(posterSize);
+
+            $('#posterSizeSlider').slider({
+                min: 75,
+                max: 250,
+                value: posterSize,
+                change: function (e, ui) {
+                    if (typeof(Storage) !== 'undefined') {
+                        localStorage.setItem('posterSize', ui.value);
+                    }
+                    resizePosters(ui.value);
+                    $('.show-grid').isotope('layout');
+                }
+            });
 
             // This needs to be refined to work a little faster.
             $('.progressbar').each(function(){
@@ -1862,29 +1941,27 @@ var SICKRAGE = {
                 sortAppend: [[2,0]]
             });
 
-            // @TODO we need to check if doing a $('') with a comma would be quicker than a seperate
-            //       isotope function for each as it does here
-            $.each([$('#container'), $('#container-anime')], function (){
-                this.isotope({
+            $('.show-grid').imagesLoaded(function () {
+                $('.loading-spinner').hide();
+                $('.show-grid').show().isotope({
                     itemSelector: '.show-container',
                     sortBy : getMeta('sickbeard.POSTER_SORTBY'),
                     sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
                     layoutMode: 'masonry',
                     masonry: {
-                        columnWidth: 13,
                         isFitWidth: true
                     },
                     getSortData: {
-                        name: function(itemElem){
+                        name: function (itemElem) {
                             var name = $(itemElem).attr('data-name');
                             return (metaToBool('sickbeard.SORT_ARTICLE') ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
                         },
                         network: '[data-network]',
-                        date: function(itemElem){
+                        date: function (itemElem) {
                             var date = $(itemElem).attr('data-date');
                             return date.length && parseInt(date, 10) || Number.POSITIVE_INFINITY;
                         },
-                        progress: function(itemElem){
+                        progress: function (itemElem) {
                             var progress = $(itemElem).attr('data-progress');
                             return progress.length && parseInt(progress, 10) || Number.NEGATIVE_INFINITY;
                         }
@@ -1893,12 +1970,12 @@ var SICKRAGE = {
             });
 
             $('#postersort').on('change', function(){
-                $('#container, #container-anime').isotope({sortBy: $(this).val()});
+                $('.show-grid').isotope({sortBy: $(this).val()});
                 $.get($(this).find('option[value=' + $(this).val() +']').attr('data-sort'));
             });
 
             $('#postersortdirection').on('change', function(){
-                $('#container, #container-anime').isotope({sortAscending: ($(this).val() === 'true')});
+                $('.show-grid').isotope({sortAscending: ($(this).val() === 'true')});
                 $.get($(this).find('option[value=' + $(this).val() +']').attr('data-sort'));
             });
 

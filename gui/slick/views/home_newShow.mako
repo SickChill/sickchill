@@ -43,7 +43,7 @@
                 <input type="hidden" id="providedIndexer" name="providedIndexer" value="${provided_indexer}" />
                 <input type="hidden" id="providedName" value="${provided_indexer_name}" />
             % else:
-                <input type="text" id="nameToSearch" value="${default_show_name}" class="form-control form-control-inline input-sm input350" />
+                <input type="text" id="nameToSearch" value="${default_show_name}" class="form-control form-control-inline input-sm input350" autocapitalize="off" />
                 &nbsp;&nbsp;
                 <select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="${sickbeard.INDEXER_DEFAULT_LANGUAGE}" data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}">
                 </select><b>*</b>
