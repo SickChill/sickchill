@@ -16,6 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Test shutdown
+"""
+
+from __future__ import print_function
 import os
 import sys
 
@@ -26,32 +31,42 @@ import sickbeard
 
 from sickbeard.event_queue import Events
 from sickrage.system.Shutdown import Shutdown
-from unittest import TestCase, TestLoader, TextTestRunner
+import unittest
 
 
-class ShutdownTests(TestCase):
+class ShutdownTests(unittest.TestCase):
+    """
+    Test shutdown
+    """
     def test_shutdown(self):
+        """
+        Test shutdown
+        """
         sickbeard.PID = 123456
         sickbeard.events = Events(None)
 
-        tests = {
+        test_cases = {
             0: False,
             '0': False,
-            u'0': False,
             123: False,
             '123': False,
-            u'123': False,
             123456: True,
             '123456': True,
+        }
+
+        unicode_test_cases = {
+            u'0': False,
+            u'123': False,
             u'123456': True,
         }
 
-        for (pid, result) in tests.iteritems():
-            self.assertEqual(Shutdown.stop(pid), result)
+        for tests in test_cases, unicode_test_cases:
+            for (pid, result) in tests.iteritems():
+                self.assertEqual(Shutdown.stop(pid), result)
 
 
 if __name__ == '__main__':
     print('=====> Testing %s' % __file__)
 
-    suite = TestLoader().loadTestsFromTestCase(ShutdownTests)
-    TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(ShutdownTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
