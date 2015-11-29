@@ -24,11 +24,10 @@ Test post processing
 import sys
 import os.path
 import unittest
+import tests.test_lib as test
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import tests.test_lib as test
 
 from sickbeard.postProcessor import PostProcessor
 import sickbeard
