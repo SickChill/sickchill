@@ -60,7 +60,6 @@ class TNTVillageProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, "TNTVillage")
 
-        self.supportsBacklog = True
 
         self._uid = None
         self._hash = None

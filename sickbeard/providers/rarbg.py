@@ -39,7 +39,6 @@ class RarbgProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, "Rarbg")
 
-        self.supportsBacklog = True
         self.public = True
         self.ratio = None
         self.minseed = None

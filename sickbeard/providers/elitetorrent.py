@@ -33,7 +33,6 @@ class elitetorrentProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "EliteTorrent")
 
-        self.supportsBacklog = True
         self.onlyspasearch = None
         self.minseed = None
         self.minleech = None

@@ -34,7 +34,6 @@ class SCCProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "SceneAccess")
 
-        self.supportsBacklog = True
 
 
         self.username = None

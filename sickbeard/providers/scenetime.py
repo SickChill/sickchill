@@ -32,7 +32,6 @@ class SceneTimeProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "SceneTime")
 
-        self.supportsBacklog = True
 
 
         self.username = None

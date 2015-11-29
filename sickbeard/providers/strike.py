@@ -26,7 +26,6 @@ class STRIKEProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, "Strike")
 
-        self.supportsBacklog = True
         self.public = True
         self.url = 'https://getstrike.net/'
         self.ratio = 0

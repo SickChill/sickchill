@@ -35,7 +35,6 @@ class KATProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "KickAssTorrents")
 
-        self.supportsBacklog = True
         self.public = True
 
         self.confirmed = True
@@ -125,7 +124,6 @@ class KATProvider(generic.TorrentProvider):
 
                         except (AttributeError, TypeError, KeyError, ValueError):
                             continue
-
 
                         # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:

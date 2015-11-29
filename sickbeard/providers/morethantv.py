@@ -37,7 +37,6 @@ class MoreThanTVProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "MoreThanTV")
 
-        self.supportsBacklog = True
 
         self._uid = None
         self._hash = None

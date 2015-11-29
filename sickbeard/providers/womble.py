@@ -29,7 +29,7 @@ class WombleProvider(generic.NZBProvider):
         self.cache = WombleCache(self)
         self.urls = {'base_url': 'http://newshost.co.za/'}
         self.url = self.urls['base_url']
-
+        self.supportsBacklog = False
 
 class WombleCache(tvcache.TVCache):
     def __init__(self, provider_obj):

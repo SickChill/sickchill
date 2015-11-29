@@ -27,7 +27,6 @@ class TorrentDayProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "TorrentDay")
 
-        self.supportsBacklog = True
 
 
         self._uid = None

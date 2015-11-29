@@ -29,7 +29,6 @@ class NyaaProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "NyaaTorrents")
 
-        self.supportsBacklog = True
         self.public = True
         self.supportsAbsoluteNumbering = True
         self.anime_only = True

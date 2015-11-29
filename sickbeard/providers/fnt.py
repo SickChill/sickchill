@@ -31,7 +31,6 @@ class FNTProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, "FNT")
 
-        self.supportsBacklog = True
 
         self.username = None
         self.password = None

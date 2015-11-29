@@ -16,39 +16,36 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import re
 import traceback
-import xmltodict
-from xml.parsers.expat import ExpatError
+from bs4 import BeautifulSoup
 
+import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import helpers
-from sickbeard.common import USER_AGENT
+from sickbeard.helpers import tryInt
 from sickbeard.providers import generic
 
 
-class BitSnoopProvider(generic.TorrentProvider):
+class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=R0902,R0913
     def __init__(self):
         generic.TorrentProvider.__init__(self, "BitSnoop")
 
         self.urls = {
             'index': 'http://bitsnoop.com',
-            'rss': 'http://bitsnoop.com/search/video/',
+            'search': 'http://bitsnoop.com/search/video/',
+            'rss': 'http://bitsnoop.com/new_video.html?fmt=rss'
             }
 
         self.url = self.urls['index']
 
-        self.supportsBacklog = True
         self.public = True
         self.ratio = None
         self.minseed = None
         self.minleech = None
 
         self.cache = BitSnoopCache(self)
-        self.headers.update({'User-Agent': USER_AGENT})
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=R0912,R0913,R0914
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -57,11 +54,11 @@ class BitSnoopProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 try:
-                    url = self.urls['rss'] + search_string + '/s/d/1/?fmt=rss'
+                    url = (self.urls['rss'], self.urls['search'] + search_string + '/s/d/1/?fmt=rss')[mode != 'RSS']
                     data = self.getURL(url)
                     if not data:
                         logger.log(u"No data returned from provider", logger.DEBUG)
@@ -71,39 +68,45 @@ class BitSnoopProvider(generic.TorrentProvider):
                         logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
                         continue
 
-                    try:
-                        data = xmltodict.parse(data)
-                    except ExpatError:
-                        logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
-                        continue
+                    data = BeautifulSoup(data, features=["html5lib", "permissive"])
 
-                    if not all([data, 'rss' in data, 'channel' in data['rss'], 'item' in data['rss']['channel']]):
-                        logger.log(u"Malformed rss returned, skipping", logger.DEBUG)
-                        continue
-
-                    # https://github.com/martinblech/xmltodict/issues/111
-                    entries = data['rss']['channel']['item']
-                    entries = entries if isinstance(entries, list) else [entries]
+                    entries = entries = data.findAll('item')
 
                     for item in entries:
-                        title = item['title'].decode('utf-8')
-                       # info_hash = item['info_hash']
-                        size = int(item['size'])
-                        seeders = helpers.tryInt(item['numSeeders'], 0)
-                        leechers = helpers.tryInt(item['numLeechers'], 0)
-                        download_url = self._magnet_from_details(item['link'])
+                        try:
+                            if not item.category.text.endswith(('TV', 'Anime')):
+                                continue
 
-                        if not all([title, download_url]):
+                            title = item.title.text
+                            assert isinstance(title, unicode)
+                            # Use the torcache link bitsnoop provides,
+                            # unless it is not torcache or we are not using blackhole
+                            # because we want to use magnets if connecting direct to client
+                            # so that proxies work.
+                            download_url = item.enclosure['url']
+                            if sickbeard.TORRENT_METHOD != "blackhole" or 'torcache' not in download_url:
+                                download_url = item.find('magneturi').next.replace('CDATA', '').strip('[]')
+
+                            if not (title and download_url):
+                                continue
+
+                            seeders = tryInt(item.find('numseeders').text, 0)
+                            leechers = tryInt(item.find('numleechers').text, 0)
+                            size = tryInt(item.find('size').text, -1)
+
+                            info_hash = item.find('infohash').text
+
+                        except (AttributeError, TypeError, KeyError, ValueError):
                             continue
 
                             # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
-                            if mode is not 'RSS':
+                            if mode != 'RSS':
                                 logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        item = title, download_url, size, seeders, leechers
-                        if mode is not 'RSS':
+                        item = title, download_url, size, seeders, leechers, info_hash
+                        if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                         items[mode].append(item)
@@ -118,16 +121,6 @@ class BitSnoopProvider(generic.TorrentProvider):
 
         return results
 
-    def _magnet_from_details(self, link):
-        details = self.getURL(link)
-        if not details:
-            return ''
-
-        match = re.search(r'href="(magnet.*?)"', details)
-        if not match:
-            return ''
-
-        return match.group(1)
 
     def seedRatio(self):
         return self.ratio
@@ -138,10 +131,10 @@ class BitSnoopCache(tvcache.TVCache):
 
         tvcache.TVCache.__init__(self, provider_obj)
 
-        self.minTime = 15
+        self.minTime = 20
 
     def _getRSSData(self):
-        search_strings = {'RSS': ['x264']}
+        search_strings = {'RSS': ['rss']}
         return {'entries': self.provider._doSearch(search_strings)}
 
 

@@ -33,7 +33,6 @@ class XthorProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "Xthor")
 
-        self.supportsBacklog = True
 
         self.cj = cookielib.CookieJar()
 
