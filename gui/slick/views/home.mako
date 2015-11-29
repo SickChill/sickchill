@@ -33,7 +33,7 @@
     % if sickbeard.HOME_LAYOUT == 'poster':
     &nbsp;
     <span> Poster Size:
-        <div style="width: 100px; display: inline-block;" id="posterSizeSlider"></div>
+        <div style="width: 100px; display: inline-block; margin-left: 7px;" id="posterSizeSlider"></div>
     </span>
     &nbsp;
     <span>
