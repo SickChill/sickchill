@@ -16,19 +16,25 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-from helper.common_tests import CommonTests
-from helper.quality_tests import QualityTests
-from show.coming_episodes_tests import ComingEpisodesTests
-from show.history_tests import HistoryTests
-from show.show_tests import ShowTests
-from system.restart_tests import RestartTests
-from system.shutdown_tests import ShutdownTests
+"""
+Tests for SickRage
+"""
+
+from __future__ import print_function
+
+from tests.sickrage_tests.helper.common_tests import CommonTests
+from tests.sickrage_tests.helper.quality_tests import QualityTests
+from tests.sickrage_tests.show.coming_episodes_tests import ComingEpisodesTests
+from tests.sickrage_tests.show.history_tests import HistoryTests
+from tests.sickrage_tests.show.show_tests import ShowTests
+from tests.sickrage_tests.system.restart_tests import RestartTests
+from tests.sickrage_tests.system.shutdown_tests import ShutdownTests
 from unittest import TestLoader, TextTestRunner
 
 if __name__ == '__main__':
     print('=====> Running all test in "sickrage_tests" <=====')
 
-    test_classes = [
+    TEST_CLASSES = [
         ComingEpisodesTests,
         CommonTests,
         HistoryTests,
@@ -38,6 +44,6 @@ if __name__ == '__main__':
         ShutdownTests,
     ]
 
-    for test_class in test_classes:
+    for test_class in TEST_CLASSES:
         suite = TestLoader().loadTestsFromTestCase(test_class)
         TextTestRunner(verbosity=2).run(suite)
