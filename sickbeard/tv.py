@@ -1116,7 +1116,7 @@ class TVShow(object):
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
-    def downloadSubtitles(self, force=False):
+    def download_subtitles(self, force=False):
         # TODO: Add support for force option
         if not ek(os.path.isdir, self._location):
             logger.log(str(self.indexerid) + ": Show dir doesn't exist, can't download subtitles", logger.DEBUG)
@@ -1131,7 +1131,7 @@ class TVShow(object):
                 return
 
             for episode in episodes:
-                episode.downloadSubtitles(force=force)
+                episode.download_subtitles(force=force)
 
         except Exception:
             logger.log(u"%s: Error occurred when downloading subtitles for %s" % (self.indexerid, self.name), logger.DEBUG)
@@ -1413,24 +1413,29 @@ class TVEpisode(object):
 
     def refreshSubtitles(self):
         """Look for subtitles files and refresh the subtitles property"""
-        episode_info = {'show.name': self.show.name, 'location': self.location,
+        episode_info = {'show_name': self.show.name, 'location': self.location,
                         'season': self.season, 'episode': self.episode}
         self.subtitles, save_subtitles = subtitles.refresh_subtitles(episode_info, self.subtitles)
         if save_subtitles:
             self.saveToDB()
 
-    def downloadSubtitles(self, force=False):
+    def download_subtitles(self, force=False):
         if not ek(os.path.isfile, self.location):
             logger.log(u"%s: Episode file doesn't exist, can't download subtitles for S%02dE%02d" %
                        (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
+            return
+
+        if not subtitles.needs_subtitles(self.subtitles):
+            logger.log(u'Episode already has all needed subtitles, skipping  episode %dx%d of show %s'
+                         % (self.season or 0,  self.episode or 0, self.show.name), logger.DEBUG)
             return
 
         logger.log(u"%s: Downloading subtitles for %s S%02dE%02d"
                    % (self.show.indexerid, self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
 
         subtitles_info = {'location': self.location, 'subtitles': self.subtitles, 'season': self.season,
-                          'episode': self.episode, 'name': self.name, 'show.name': self.show.name,
-                          'show.indexerid': self.show.indexerid, 'status': self.status}
+                          'episode': self.episode, 'name': self.name, 'show_name': self.show.name,
+                          'show_indexerid': self.show.indexerid, 'status': self.status}
 
         self.subtitles, new_subtitles = subtitles.download_subtitles(subtitles_info)
 
@@ -1439,7 +1444,7 @@ class TVEpisode(object):
         self.saveToDB()
 
         if new_subtitles:
-            subtitle_list = ", ".join([subtitles.fromietf(new_subtitle).name for new_subtitle in new_subtitles])
+            subtitle_list = ", ".join([subtitles.name_from_code(code) for code in new_subtitles])
             logger.log(u"%s: Downloaded %s subtitles for %s S%02dE%02d" %
                        (self.show.indexerid, subtitle_list, self.show.name, self.season or 0,
                         self.episode or 0), logger.DEBUG)

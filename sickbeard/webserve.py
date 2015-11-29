@@ -1624,7 +1624,7 @@ class Home(WebRoot):
             return self._genericMessage("Error", "Unable to find the specified show")
 
         # search and download subtitles
-        sickbeard.showQueueScheduler.action.downloadSubtitles(showObj, bool(force))
+        sickbeard.showQueueScheduler.action.download_subtitles(showObj, bool(force))
 
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
@@ -2025,15 +2025,15 @@ class Home(WebRoot):
         # try do download subtitles for that episode
         previous_subtitles = ep_obj.subtitles
         try:
-            ep_obj.downloadSubtitles()
+            ep_obj.download_subtitles()
         except Exception:
             return json.dumps({'result': 'failure'})
 
         # return the correct json value
-        newSubtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
-        if newSubtitles:
-            newLangs = [subtitles.fromietf(newSub) for newSub in newSubtitles]
-            status = 'New subtitles downloaded: %s' % ', '.join([newLang.name for newLang in newLangs])
+        new_subtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
+        if new_subtitles:
+            new_languages = [subtitles.name_from_code(code) for code in new_subtitles]
+            status = 'New subtitles downloaded: %s' % ', '.join(new_languages)
         else:
             status = 'No subtitles downloaded'
         ui.notifications.message(ep_obj.show.name, status)
@@ -2937,7 +2937,7 @@ class Manage(Home, WebRoot):
         result = {}
         for cur_result in cur_show_results:
             if whichSubs == 'all':
-                if not frozenset(subtitles.wantedLanguages()).difference(cur_result["subtitles"].split(',')):
+                if not frozenset(subtitles.wanted_languages()).difference(cur_result["subtitles"].split(',')):
                     continue
             elif whichSubs in cur_result["subtitles"]:
                 continue
@@ -2977,7 +2977,7 @@ class Manage(Home, WebRoot):
         sorted_show_ids = []
         for cur_status_result in status_results:
             if whichSubs == 'all':
-                if not frozenset(subtitles.wantedLanguages()).difference(cur_status_result["subtitles"].split(',')):
+                if not frozenset(subtitles.wanted_languages()).difference(cur_status_result["subtitles"].split(',')):
                     continue
             elif whichSubs in cur_status_result["subtitles"]:
                 continue
@@ -3025,7 +3025,7 @@ class Manage(Home, WebRoot):
                 season, episode = epResult.split('x')
 
                 show = sickbeard.helpers.findCertainShow(sickbeard.showList, int(cur_indexer_id))
-                show.getEpisode(int(season), int(episode)).downloadSubtitles()
+                show.getEpisode(int(season), int(episode)).download_subtitles()
 
         return self.redirect('/manage/subtitleMissed/')
 
@@ -3404,7 +3404,7 @@ class Manage(Home, WebRoot):
                 renames.append(showObj.name)
 
             if curShowID in toSubtitle:
-                sickbeard.showQueueScheduler.action.downloadSubtitles(showObj)
+                sickbeard.showQueueScheduler.action.download_subtitles(showObj)
                 subtitles.append(showObj.name)
 
         if errors:
@@ -4931,7 +4931,7 @@ class ConfigSubtitles(Config):
         config.change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency)
         config.change_USE_SUBTITLES(use_subtitles)
 
-        sickbeard.SUBTITLES_LANGUAGES = [lang.strip() for lang in subtitles_languages.split(',') if subtitles.isValidLanguage(lang.strip())] if subtitles_languages else []
+        sickbeard.SUBTITLES_LANGUAGES = [code.strip() for code in subtitles_languages.split(',') if code.strip() in subtitles.subtitle_code_filter()] if subtitles_languages else []
         sickbeard.SUBTITLES_DIR = subtitles_dir
         sickbeard.SUBTITLES_HISTORY = config.checkbox_to_value(subtitles_history)
         sickbeard.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)

@@ -209,7 +209,7 @@ def download_subtitles(subtitles_info):
                                                               None if not sickbeard.SUBTITLES_MULTI else
                                                               subtitle.language)
         if subtitles_path is not None:
-            subtitle_path = os.path.join(subtitles_path, os.path.split(subtitle_path)[1])
+            subtitle_path = ek(os.path.join, subtitles_path, ek(os.path.split, subtitle_path)[1])
         sickbeard.helpers.chmodAsParent(subtitle_path)
         sickbeard.helpers.fixSetGroupID(subtitle_path)
 
@@ -261,7 +261,7 @@ def get_video(video_path, subtitles_path=None):
 
 
 def get_subtitles_path(video_path):
-    if os.path.isabs(sickbeard.SUBTITLES_DIR):
+    if ek(os.path.isabs, sickbeard.SUBTITLES_DIR):
         new_subtitles_path = sickbeard.SUBTITLES_DIR
     elif sickbeard.SUBTITLES_DIR:
         new_subtitles_path = ek(os.path.join, ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR)
@@ -320,8 +320,8 @@ class SubtitlesFinder(object):
 
         run_post_process = False
         # Check if PP folder is set
-        if sickbeard.TV_DOWNLOAD_DIR and os.path.isdir(sickbeard.TV_DOWNLOAD_DIR):
-            for root, _, files in os.walk(sickbeard.TV_DOWNLOAD_DIR, topdown=False):
+        if sickbeard.TV_DOWNLOAD_DIR and ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
+            for root, _, files in ek(os.walk, sickbeard.TV_DOWNLOAD_DIR, topdown=False):
                 for video_filename in sorted(files):
                     if video_filename.rsplit(".", 1)[1] in media_extensions:
                         try:
@@ -331,7 +331,7 @@ class SubtitlesFinder(object):
 
                             if not subtitles_list:
                                 logger.log(u'No subtitles found for %s'
-                                           % os.path.join(root, video_filename), logger.DEBUG)
+                                           % ek(os.path.join, root, video_filename), logger.DEBUG)
                                 continue
 
                             hearing_impaired = sickbeard.SUBTITLES_HEARING_IMPAIRED
@@ -352,7 +352,7 @@ class SubtitlesFinder(object):
                                                                                       None if subtitles_multi else
                                                                                       subtitle.language)
                                 if root is not None:
-                                    subtitle_path = os.path.join(root, os.path.split(subtitle_path)[1])
+                                    subtitle_path = ek(os.path.join, root, ek(os.path.split, subtitle_path)[1])
                                 sickbeard.helpers.chmodAsParent(subtitle_path)
                                 sickbeard.helpers.fixSetGroupID(subtitle_path)
 
