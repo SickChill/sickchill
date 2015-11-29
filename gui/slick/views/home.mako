@@ -17,6 +17,7 @@
 % else:
     <h1 class="title">${title}</h1>
 % endif
+    <div class="loading-spinner"></div>
 
 <div id="HomeLayout" class="pull-right hidden-print" style="margin-top: -40px;">
     % if sickbeard.HOME_LAYOUT != 'poster':
@@ -30,6 +31,10 @@
     % endif
 
     % if sickbeard.HOME_LAYOUT == 'poster':
+    &nbsp;
+    <span> Poster Size:
+        <div style="width: 100px; display: inline-block;" id="posterSizeSlider"></div>
+    </span>
     &nbsp;
     <span>
         <input id="filterShowName" class="form-control form-control-inline input-sm input200" type="search" placeholder="Filter Show Name">
@@ -68,9 +73,10 @@
     <% myShowList = list(curShowlist[1]) %>
     % if curListType == "Anime":
         <h1 class="header">Anime List</h1>
+        <div class="loading-spinner"></div>
     % endif
 % if sickbeard.HOME_LAYOUT == 'poster':
-<div id="${('container', 'container-anime')[curListType == 'Anime' and sickbeard.HOME_LAYOUT == 'poster']}" class="clearfix">
+<div id="${('container', 'container-anime')[curListType == 'Anime' and sickbeard.HOME_LAYOUT == 'poster']}" class="show-grid clearfix">
 <div class="posterview">
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
     % if curLoadingShow.show is None:
@@ -116,23 +122,22 @@
         if not cur_total:
             cur_total = 0
 
-    if cur_total != 0:
-        download_stat = str(cur_downloaded)
-        download_stat_tip = "Downloaded: " + str(cur_downloaded)
-        if cur_snatched > 0:
-            download_stat = download_stat
-            download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
+    download_stat = str(cur_downloaded)
+    download_stat_tip = "Downloaded: " + str(cur_downloaded)
 
-        download_stat = download_stat + " / " + str(cur_total)
-        download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
-    else:
-        download_stat = '?'
-        download_stat_tip = "no data"
+    if cur_snatched:
+        download_stat = download_stat + "+" + str(cur_snatched)
+        download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
+
+    download_stat = download_stat + " / " + str(cur_total)
+    download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
 
     nom = cur_downloaded
-    den = cur_total
-    if den == 0:
+    if cur_total:
+        den = cur_total
+    else:
         den = 1
+        download_stat_tip = "Unaired"
 
     progressbar_percent = nom * 100 / den
 
@@ -183,29 +188,31 @@
 % endif
         </div>
 
-        <table width="100%" cellspacing="1" border="0" cellpadding="0">
-            <tr>
-                <td class="show-table">
-                    <span class="show-dlstats" title="${download_stat_tip}">${download_stat}</span>
-                </td>
+	<div class="show-details">
+            <table class="show-details" width="100%" cellspacing="1" border="0" cellpadding="0">
+                <tr>
+                    <td class="show-table">
+                        <span class="show-dlstats" title="${download_stat_tip}">${download_stat}</span>
+                    </td>
 
-                <td class="show-table">
-                    % if sickbeard.HOME_LAYOUT != 'simple':
-                        % if curShow.network:
-                            <span title="${curShow.network}"><img class="show-network-image" src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
+                    <td class="show-table">
+                        % if sickbeard.HOME_LAYOUT != 'simple':
+                            % if curShow.network:
+                                <span title="${curShow.network}"><img class="show-network-image" src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
+                            % else:
+                                <span title="No Network"><img class="show-network-image" src="${srRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+                            % endif
                         % else:
-                            <span title="No Network"><img class="show-network-image" src="${srRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+                            <span title="${curShow.network}">${curShow.network}</span>
                         % endif
-                    % else:
-                        <span title="${curShow.network}">${curShow.network}</span>
-                    % endif
-                </td>
+                    </td>
 
-                <td class="show-table">
-                    ${renderQualityPill(curShow.quality, showTitle=True, overrideClass="show-quality")}
-                </td>
-            </tr>
-        </table>
+                    <td class="show-table">
+                        ${renderQualityPill(curShow.quality, showTitle=True, overrideClass="show-quality")}
+                    </td>
+                </tr>
+            </table>
+        </div>
 
     </div>
 
@@ -302,6 +309,7 @@
 
     download_stat = str(cur_downloaded)
     download_stat_tip = "Downloaded: " + str(cur_downloaded)
+
     if cur_snatched:
         download_stat = download_stat + "+" + str(cur_snatched)
         download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)

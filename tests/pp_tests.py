@@ -17,14 +17,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys, os.path
+"""
+Test post processing
+"""
+
+import sys
+import os.path
+import unittest
+
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import random
-import unittest
-
-import test_lib as test
+import tests.test_lib as test
 
 from sickbeard.postProcessor import PostProcessor
 import sickbeard
@@ -33,34 +37,51 @@ from sickbeard.name_cache import addNameToCache
 
 
 class PPInitTests(unittest.TestCase):
-
+    """
+    Init tests
+    """
     def setUp(self):
-        self.pp = PostProcessor(test.FILE_PATH)
+        """
+        Set up tests
+        """
+        self.post_processor = PostProcessor(test.FILE_PATH)
 
     def test_init_file_name(self):
-        self.assertEqual(self.pp.file_name, test.FILENAME)
+        """
+        Test file name
+        """
+        self.assertEqual(self.post_processor.file_name, test.FILENAME)
 
     def test_init_folder_name(self):
-        self.assertEqual(self.pp.folder_name, test.SHOW_NAME)
+        """
+        Test folder name
+        """
+        self.assertEqual(self.post_processor.folder_name, test.SHOW_NAME)
+
 
 class PPBasicTests(test.SickbeardTestDBCase):
-
+    """
+    Basic tests
+    """
     def test_process(self):
-        show = TVShow(1,3)
+        """
+        Test process
+        """
+        show = TVShow(1, 3)
         show.name = test.SHOW_NAME
         show.location = test.SHOW_DIR
         show.saveToDB()
 
         sickbeard.showList = [show]
-        ep = TVEpisode(show, test.SEASON, test.EPISODE)
-        ep.name = "some ep name"
-        ep.saveToDB()
+        episode = TVEpisode(show, test.SEASON, test.EPISODE)
+        episode.name = "some episode name"
+        episode.saveToDB()
 
         addNameToCache('show name', 3)
         sickbeard.PROCESS_METHOD = 'move'
 
-        pp = PostProcessor(test.FILE_PATH)
-        self.assertTrue(pp.process())
+        post_processor = PostProcessor(test.FILE_PATH)
+        self.assertTrue(post_processor.process())
 
 
 if __name__ == '__main__':
@@ -68,8 +89,11 @@ if __name__ == '__main__':
     print "STARTING - PostProcessor TESTS"
     print "=================="
     print "######################################################################"
-    suite = unittest.TestLoader().loadTestsFromTestCase(PPInitTests)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(PPInitTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
     print "######################################################################"
-    suite = unittest.TestLoader().loadTestsFromTestCase(PPBasicTests)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(PPBasicTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
