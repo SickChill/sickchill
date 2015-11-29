@@ -16,6 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Test history
+"""
+
+from __future__ import print_function
 import os
 import sys
 
@@ -24,57 +29,74 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 from sickbeard.common import Quality
 from sickrage.show.History import History
-from unittest import TestCase, TestLoader, TextTestRunner
+import unittest
 
 
-class HistoryTests(TestCase):
+class HistoryTests(unittest.TestCase):
+    """
+    Test history
+    """
     def test_get_actions(self):
-        tests = {
+        """
+        Test get actions
+        """
+        test_cases = {
             None: [],
             '': [],
-            u'': [],
             'wrong': [],
-            u'wrong': [],
             'downloaded': Quality.DOWNLOADED,
-            u'downloaded': Quality.DOWNLOADED,
             'Downloaded': Quality.DOWNLOADED,
-            u'Downloaded': Quality.DOWNLOADED,
             'snatched': Quality.SNATCHED,
-            u'snatched': Quality.SNATCHED,
             'Snatched': Quality.SNATCHED,
+        }
+
+        unicode_test_cases = {
+            u'': [],
+            u'wrong': [],
+            u'downloaded': Quality.DOWNLOADED,
+            u'Downloaded': Quality.DOWNLOADED,
+            u'snatched': Quality.SNATCHED,
             u'Snatched': Quality.SNATCHED,
         }
 
-        for (action, result) in tests.iteritems():
-            self.assertEqual(History._get_actions(action), result)
+        for tests in test_cases, unicode_test_cases:
+            for (action, result) in tests.iteritems():
+                self.assertEqual(History._get_actions(action), result)  # pylint: disable=protected-access
 
     def test_get_limit(self):
-        tests = {
+        """
+        Test get limit
+        """
+        test_cases = {
             None: 0,
             '': 0,
-            u'': 0,
             '0': 0,
-            u'0': 0,
             '5': 5,
-            u'5': 5,
             '-5': 0,
-            u'-5': 0,
             '1.5': 0,
-            u'1.5': 0,
             '-1.5': 0,
-            u'-1.5': 0,
             5: 5,
             -5: 0,
             1.5: 1,
             -1.5: 0,
         }
 
-        for (action, result) in tests.iteritems():
-            self.assertEqual(History._get_limit(action), result)
+        unicode_test_cases = {
+            u'': 0,
+            u'0': 0,
+            u'5': 5,
+            u'-5': 0,
+            u'1.5': 0,
+            u'-1.5': 0,
+        }
+
+        for tests in test_cases, unicode_test_cases:
+            for (action, result) in tests.iteritems():
+                self.assertEqual(History._get_limit(action), result)  # pylint: disable=protected-access
 
 
 if __name__ == '__main__':
     print('=====> Testing %s' % __file__)
 
-    suite = TestLoader().loadTestsFromTestCase(HistoryTests)
-    TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(HistoryTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
