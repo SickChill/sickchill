@@ -1810,6 +1810,9 @@ var SICKRAGE = {
                     borderWidth = 6;
                 }
 
+                // If there's a poster popup, remove it before resizing
+                $('#posterPopup').remove();
+
                 if (fontSize === undefined) {
                     $('.show-details').hide();
                 } else {
@@ -1974,6 +1977,63 @@ var SICKRAGE = {
                             var progress = $(itemElem).attr('data-progress');
                             return progress.length && parseInt(progress, 10) || Number.NEGATIVE_INFINITY;
                         }
+                    }
+                });
+
+                // When posters are small enough to not display the .show-details
+                // table, display a larger poster when hovering.
+                var posterHoverTimer = null;
+                $('.show-container').on('mouseenter', function () {
+                    var poster = $(this);
+                    if (poster.find('.show-details').css('display') !== 'none') {
+                        return;
+                    }
+                    posterHoverTimer = setTimeout(function () {
+                        posterHoverTimer = null;
+                        $('#posterPopup').remove();
+                        var popup = poster.clone().attr({
+                            id: 'posterPopup'
+                        });
+                        var origLeft = poster.offset().left;
+                        var origTop  = poster.offset().top;
+                        popup.css({
+                            position: 'absolute',
+                            margin: 0,
+                            top: origTop,
+                            left: origLeft
+                        });
+                        popup.find('.show-details').show();
+                        popup.on('mouseleave', function () {
+                            $(this).remove();
+                        });
+                        popup.zIndex(9999);
+                        popup.appendTo('body');
+
+                        var height = 438, width = 250;
+                        var newTop = (origTop+poster.height()/2)-(height/2);
+                        var newLeft = (origLeft+poster.width()/2)-(width/2);
+
+                        // Make sure the popup isn't outside the viewport
+                        var margin = 5;
+                        var scrollTop = $(window).scrollTop();
+                        var scrollLeft = $(window).scrollLeft();
+                        var scrollBottom = scrollTop + $(window).innerHeight();
+                        var scrollRight = scrollLeft + $(window).innerWidth();
+                        if (newTop < scrollTop+margin) { newTop = scrollTop+margin; }
+                        if (newLeft < scrollLeft+margin) { newLeft = scrollLeft+margin; }
+                        if (newTop+height+margin > scrollBottom) { newTop = scrollBottom-height-margin; }
+                        if (newLeft+width+margin > scrollRight) { newLeft = scrollRight-width-margin; }
+
+                        popup.animate({
+                            top: newTop,
+                            left: newLeft,
+                            width: 250,
+                            height: 438
+                        });
+                    }, 300);
+                }).on('mouseleave', function () {
+                    if (posterHoverTimer !== null) {
+                        clearTimeout(posterHoverTimer);
                     }
                 });
             });
