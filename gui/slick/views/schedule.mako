@@ -288,7 +288,8 @@
     <div class="tvshowDiv">
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <tr>
-            <th ${('class="nobg"', 'rowspan="2"')[banner == layout]} valign="top">
+            ${layout}
+            <th ${('class="nobg"', 'rowspan="2"')[layout == 'poster']} valign="top">
                 <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">
                     <img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}" src="${srRoot}/showPoster/?show=${cur_result['showid']}&amp;which=${(layout, 'poster_thumb')[layout == 'poster']}" />
                 </a>
@@ -324,10 +325,10 @@
                     <span class="title">Quality:</span>
                     ${renderQualityPill(cur_result['quality'], showTitle=True)}
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">
+            ##</td>
+        ##</tr>
+        ##<tr>
+            ##<td style="vertical-align: top;">
                 <div>
 % if cur_result['description']:
                         <span class="title" style="vertical-align:middle;">Plot:</span>
