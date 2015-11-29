@@ -63,11 +63,9 @@ def pretty_file_size(size):
     :param size: The size to convert
     :return: The converted size
     """
-
-    if isinstance(size, str) and size.isdigit():
+    if isinstance(size, (str, unicode)) and size.isdigit():
         size = float(size)
-
-    if not isinstance(size, (int, long, float)):
+    elif not isinstance(size, (int, long, float)):
         return ''
 
     remaining_size = size
