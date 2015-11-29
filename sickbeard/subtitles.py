@@ -233,7 +233,7 @@ def download_subtitles(subtitles_info):
 
 
 def refresh_subtitles(episode_info, existing_subtitles):
-    video = get_video(episode_info['location'])
+    video = get_video(episode_info['location'].encode(sickbeard.SYS_ENCODING))
     if not video:
         logger.log(u"Exception caught in subliminal.scan_video, subtitles couldn't be refreshed", logger.DEBUG)
         return (existing_subtitles, None)
