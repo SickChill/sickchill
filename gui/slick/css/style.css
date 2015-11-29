@@ -3284,3 +3284,8 @@ IMDB Popular
 .popularShow p{
     margin-bottom:0px;
 }
+
+table.home-header {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}

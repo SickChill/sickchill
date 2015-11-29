@@ -13,7 +13,7 @@
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 
-<table style="width: 100%;">
+<table style="width: 100%;" class="home-header">
     <tr>
         <td nowrap>
             % if not header is UNDEFINED:
@@ -84,7 +84,7 @@
         <h1 class="header">Anime List</h1>
         % if sickbeard.HOME_LAYOUT == 'poster':
             <div class="loading-spinner"></div>
-	% endif
+    % endif
     % endif
 % if sickbeard.HOME_LAYOUT == 'poster':
 <div id="${('container', 'container-anime')[curListType == 'Anime' and sickbeard.HOME_LAYOUT == 'poster']}" class="show-grid clearfix">
