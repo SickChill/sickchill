@@ -29,7 +29,7 @@ from tests.sickrage_tests.show.history_tests import HistoryTests
 from tests.sickrage_tests.show.show_tests import ShowTests
 from tests.sickrage_tests.system.restart_tests import RestartTests
 from tests.sickrage_tests.system.shutdown_tests import ShutdownTests
-from unittest import TestLoader, TextTestRunner
+import unittest
 
 if __name__ == '__main__':
     print('=====> Running all test in "sickrage_tests" <=====')
@@ -45,5 +45,5 @@ if __name__ == '__main__':
     ]
 
     for test_class in TEST_CLASSES:
-        suite = TestLoader().loadTestsFromTestCase(test_class)
-        TextTestRunner(verbosity=2).run(suite)
+        SUITE = unittest.TestLoader().loadTestsFromTestCase(test_class)
+        unittest.TextTestRunner(verbosity=2).run(SUITE)
