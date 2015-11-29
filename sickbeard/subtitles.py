@@ -285,7 +285,7 @@ def get_subtitles(video):
 
     result_list = []
 
-    if not video or not video.subtitle_languages:
+    if not video.subtitle_languages:
         return result_list
 
     for language in video.subtitle_languages:
