@@ -18,12 +18,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=line-too-long
-
 """
 Perform all tests in tests/
 """
 
+# pylint: disable=line-too-long
 
 import fnmatch
 import os
