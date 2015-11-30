@@ -20,7 +20,7 @@ $(document).ready(function() {
             return false;
         }
 
-        window.location.href = srRoot + '/home/addShows/addExistingShows?promptForSettings=' + ($('#promptForSettings').prop('checked') ? 'on' : 'off') + '&shows_to_add=' + dirArr.join('&shows_to_add=');
+        window.location.href = srRoot + '/addShows/addExistingShows?promptForSettings=' + ($('#promptForSettings').prop('checked') ? 'on' : 'off') + '&shows_to_add=' + dirArr.join('&shows_to_add=');
     });
 
 
@@ -36,7 +36,7 @@ $(document).ready(function() {
         });
 
         $('#tableDiv').html('<img id="searchingAnim" src="' + srRoot + '/images/loading32.gif" height="32" width="32" /> loading folders...');
-        $.get(srRoot + '/home/addShows/massAddTable/', url, function(data) {
+        $.get(srRoot + '/addShows/massAddTable/', url, function(data) {
             $('#tableDiv').html(data);
             $("#addRootDirTable").tablesorter({
                 //sortList: [[1,0]],
