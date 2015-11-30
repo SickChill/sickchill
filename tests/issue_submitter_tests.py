@@ -21,15 +21,14 @@
 Test exception logging
 """
 
-import sys
 import os.path
+import sys
 import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import logger
-from sickrage.helper.exceptions import ex
+from sickbeard import logger, ex
 
 
 def exception_generator():

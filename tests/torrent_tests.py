@@ -17,27 +17,26 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=line-too-long
-
 """
 Test torrents
 """
 
-import sys
+# pylint: disable=line-too-long
+
 import os.path
+import sys
 import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import urlparse
-import tests.test_lib as test
 from bs4 import BeautifulSoup
 from sickbeard.helpers import getURL
+from sickbeard.providers.bitcannon import BitCannonProvider
 from sickbeard.tv import TVEpisode, TVShow
 import requests  # pylint: disable=import-error
-
-from sickbeard.providers.bitcannon import BitCannonProvider
+import tests.test_lib as test
+import urlparse
 
 
 class TorrentBasicTests(test.SickbeardTestDBCase):

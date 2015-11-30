@@ -5,17 +5,16 @@ Test scene helpers
 
 # pylint: disable=line-too-long
 
-import sys
 import os.path
+import sys
 import unittest
-import tests.test_lib as test
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import show_name_helpers, scene_exceptions, common, name_cache
-from sickbeard import db
+from sickbeard import show_name_helpers, scene_exceptions, common, name_cache, db
 from sickbeard.tv import TVShow as Show
+import tests.test_lib as test
 
 
 class SceneTests(test.SickbeardTestDBCase):

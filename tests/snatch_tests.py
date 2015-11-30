@@ -23,23 +23,23 @@
 Test snatching
 """
 
-import sys
 import os.path
+import sys
 import unittest
-import tests.test_lib as test
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import sickbeard.search as search
-import sickbeard
 from sickbeard.tv import TVEpisode, TVShow
-import sickbeard.common as c
+import sickbeard
+import sickbeard.search as search
+import sickbeard.common as common
+import tests.test_lib as test
 
 TESTS = {
-    "Dexter": {"a": 1, "q": c.HD, "s": 5, "e": [7], "b": 'Dexter.S05E07.720p.BluRay.X264-REWARD', "i": ['Dexter.S05E07.720p.BluRay.X264-REWARD', 'Dexter.S05E07.720p.X264-REWARD']},
-    "House": {"a": 1, "q": c.HD, "s": 4, "e": [5], "b": 'House.4x5.720p.BluRay.X264-REWARD', "i": ['Dexter.S05E04.720p.X264-REWARD', 'House.4x5.720p.BluRay.X264-REWARD']},
-    "Hells Kitchen": {"a": 1, "q": c.SD, "s": 6, "e": [14, 15], "b": 'Hells.Kitchen.s6e14e15.HDTV.XviD-ASAP', "i": ['Hells.Kitchen.S06E14.HDTV.XviD-ASAP', 'Hells.Kitchen.6x14.HDTV.XviD-ASAP', 'Hells.Kitchen.s6e14e15.HDTV.XviD-ASAP']}
+    "Dexter": {"a": 1, "q": common.HD, "s": 5, "e": [7], "b": 'Dexter.S05E07.720p.BluRay.X264-REWARD', "i": ['Dexter.S05E07.720p.BluRay.X264-REWARD', 'Dexter.S05E07.720p.X264-REWARD']},
+    "House": {"a": 1, "q": common.HD, "s": 4, "e": [5], "b": 'House.4x5.720p.BluRay.X264-REWARD', "i": ['Dexter.S05E04.720p.X264-REWARD', 'House.4x5.720p.BluRay.X264-REWARD']},
+    "Hells Kitchen": {"a": 1, "q": common.SD, "s": 6, "e": [14, 15], "b": 'Hells.Kitchen.s6e14e15.HDTV.XviD-ASAP', "i": ['Hells.Kitchen.S06E14.HDTV.XviD-ASAP', 'Hells.Kitchen.6x14.HDTV.XviD-ASAP', 'Hells.Kitchen.s6e14e15.HDTV.XviD-ASAP']}
 }
 
 
@@ -125,7 +125,7 @@ def test_generator(tvdb_id, show_name, cur_data, force_search):
 
         for epNumber in cur_data["e"]:
             episode = TVEpisode(show, cur_data["s"], epNumber)
-            episode.status = c.WANTED
+            episode.status = common.WANTED
             episode.saveToDB()
 
         best_result = search.searchProviders(show, episode.episode, force_search)

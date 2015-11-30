@@ -17,23 +17,23 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=line-too-long
-
 """
 Test XEM
 """
 
-import sys
+# pylint: disable=line-too-long
+
 import os.path
-import unittest
 import re
+import sys
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import tests.test_lib as test
-import sickbeard
 from sickbeard.tv import TVShow
+import sickbeard
+import tests.test_lib as test
 
 
 class XEMBasicTests(test.SickbeardTestDBCase):
