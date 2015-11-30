@@ -2249,7 +2249,7 @@ class HomePostProcess(Home):
             return self._genericMessage("Postprocessing results", result)
 
 
-@route('/home/addShows(/?.*)')
+@route('/addShows(/?.*)')
 class HomeAddShows(Home):
     def __init__(self, *args, **kwargs):
         super(HomeAddShows, self).__init__(*args, **kwargs)
@@ -2574,7 +2574,7 @@ class HomeAddShows(Home):
 
         trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items", data, method='POST')
 
-        return self.redirect('/home/addShows/trendingShows/')
+        return self.redirect('/addShows/trendingShows/')
 
     def existingShows(self):
         """
@@ -2666,7 +2666,7 @@ class HomeAddShows(Home):
                 logger.log(u"Unable to add show due to show selection. Not anough arguments: %s" % (repr(series_pieces)),
                            logger.ERROR)
                 ui.notifications.error("Unknown error. Unable to add show due to problem with show selection.")
-                return self.redirect('/home/addShows/existingShows/')
+                return self.redirect('/addShows/existingShows/')
 
             indexer = int(series_pieces[1])
             indexer_id = int(series_pieces[3])
@@ -2690,7 +2690,7 @@ class HomeAddShows(Home):
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
         if ek(os.path.isdir, show_dir) and not fullShowPath:
             ui.notifications.error("Unable to add show", "Folder " + show_dir + " exists already")
-            return self.redirect('/home/addShows/existingShows/')
+            return self.redirect('/addShows/existingShows/')
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
