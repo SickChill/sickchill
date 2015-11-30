@@ -1,6 +1,7 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
-# URL: https://sickrage.github.io
+# URL: https://SickRage.GitHub.io
 # Git: https://github.com/SickRage/SickRage.git
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -23,18 +24,18 @@ Test shows
 # pylint: disable=line-too-long
 
 from __future__ import print_function
+
 import os
 import sys
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
-
 from sickbeard.common import Quality
 from sickbeard.tv import TVShow
 from sickrage.show.Show import Show
-import unittest
 
 
 class ShowTests(unittest.TestCase):
@@ -79,13 +80,18 @@ class ShowTests(unittest.TestCase):
 
 class TestTVShow(TVShow):
     """
-    A test ``TVShow`` object that do not need DB access.
+    A test `TVShow` object that does not need DB access.
     """
 
     def __init__(self, indexer, indexer_id):
         super(TestTVShow, self).__init__(indexer, indexer_id)
 
     def loadFromDB(self, skip_nfo=False):
+        """
+        Override TVShow.loadFromDB to avoid DB access during testing
+
+        :param skip_nfo: ...not used
+        """
         pass
 
 
