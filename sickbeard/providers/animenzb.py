@@ -42,11 +42,10 @@ class animenzb(generic.NZBProvider):
         self.supportsAbsoluteNumbering = True
         self.anime_only = True
 
-        self.cache = animenzbCache(self)
-
         self.urls = {'base_url': 'http://animenzb.com//'}
-
         self.url = self.urls['base_url']
+
+        self.cache = animenzbCache(self)
 
     def _get_season_search_strings(self, ep_obj):
         return [x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, ep_obj)]

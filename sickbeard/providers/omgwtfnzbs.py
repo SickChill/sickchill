@@ -38,7 +38,6 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
         self.urls = {'base_url': 'https://omgwtfnzbs.org/'}
         self.url = self.urls['base_url']
 
-        self.supportsBacklog = True
 
     def _checkAuth(self):
 

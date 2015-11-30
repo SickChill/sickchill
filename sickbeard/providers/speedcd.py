@@ -29,7 +29,6 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "Speedcd")
 
-        self.supportsBacklog = True
 
         self.username = None
         self.password = None

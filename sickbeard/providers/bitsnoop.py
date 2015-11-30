@@ -1,7 +1,6 @@
 # coding=utf-8
-# Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://sickrage.github.io
-#
+# Author: Gonçalo (aka duramato) <matigonkas@outlook.com>
+# URL: https://github.com/SickRage/sickrage
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -17,79 +16,52 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
-import posixpath  # Must use posixpath
 import traceback
-from urllib import urlencode
 from bs4 import BeautifulSoup
 
 import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.common import USER_AGENT
-from sickbeard.providers import generic
 from sickbeard.helpers import tryInt
+from sickbeard.providers import generic
 
-class KATProvider(generic.TorrentProvider):
+
+class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=R0902,R0913
     def __init__(self):
+        generic.TorrentProvider.__init__(self, "BitSnoop")
 
-        generic.TorrentProvider.__init__(self, "KickAssTorrents")
+        self.urls = {
+            'index': 'http://bitsnoop.com',
+            'search': 'http://bitsnoop.com/search/video/',
+            'rss': 'http://bitsnoop.com/new_video.html?fmt=rss'
+            }
+
+        self.url = self.urls['index']
 
         self.public = True
-
-        self.confirmed = True
         self.ratio = None
         self.minseed = None
         self.minleech = None
 
-        self.urls = {
-            'base_url': 'https://kat.cr/',
-            'search': 'https://kat.cr/%s/',
-        }
+        self.cache = BitSnoopCache(self)
 
-        self.url = self.urls['base_url']
-        self.custom_url = None
+    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=R0912,R0913,R0914
 
-        self.headers.update({'User-Agent': USER_AGENT})
-
-        self.search_params = {
-            'q': '',
-            'field': 'seeders',
-            'sorder': 'desc',
-            'rss': 1,
-            'category': 'tv'
-        }
-
-        self.cache = KATCache(self)
-
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        # select the correct category
-        anime = (self.show and self.show.anime) or (epObj and epObj.show and epObj.show.anime) or False
-        self.search_params['category'] = ('tv', 'anime')[anime]
 
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                self.search_params['q'] = search_string.encode('utf-8') if mode != 'RSS' else ''
-                self.search_params['field'] = 'seeders' if mode != 'RSS' else 'time_add'
-
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s" % search_string, logger.DEBUG)
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                url_fmt_string = 'usearch' if mode != 'RSS' else search_string
                 try:
-                    searchURL = self.urls['search'] % url_fmt_string + '?' + urlencode(self.search_params)
-                    if self.custom_url:
-                        searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
-
-                    logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                    data = self.getURL(searchURL)
+                    url = (self.urls['rss'], self.urls['search'] + search_string + '/s/d/1/?fmt=rss')[mode != 'RSS']
+                    data = self.getURL(url)
                     if not data:
-                        logger.log(u'URL did not return data, maybe try a custom url, or a different one', logger.DEBUG)
+                        logger.log(u"No data returned from provider", logger.DEBUG)
                         continue
 
                     if not data.startswith('<?xml'):
@@ -98,42 +70,39 @@ class KATProvider(generic.TorrentProvider):
 
                     data = BeautifulSoup(data, features=["html5lib", "permissive"])
 
-                    entries = data.findAll('item')
+                    entries = entries = data.findAll('item')
+
                     for item in entries:
                         try:
+                            if not item.category.text.endswith(('TV', 'Anime')):
+                                continue
+
                             title = item.title.text
                             assert isinstance(title, unicode)
-                            # Use the torcache link kat provides,
+                            # Use the torcache link bitsnoop provides,
                             # unless it is not torcache or we are not using blackhole
                             # because we want to use magnets if connecting direct to client
                             # so that proxies work.
                             download_url = item.enclosure['url']
                             if sickbeard.TORRENT_METHOD != "blackhole" or 'torcache' not in download_url:
-                                download_url = item.find('torrent:magneturi').next.replace('CDATA', '').strip('[]')
+                                download_url = item.find('magneturi').next.replace('CDATA', '').strip('[]')
 
                             if not (title and download_url):
                                 continue
 
-                            seeders = tryInt(item.find('torrent:seeds').text, 0)
-                            leechers = tryInt(item.find('torrent:peers').text, 0)
-                            verified = bool(tryInt(item.find('torrent:verified').text, 0))
-                            size = tryInt(item.find('torrent:contentlength').text)
+                            seeders = tryInt(item.find('numseeders').text, 0)
+                            leechers = tryInt(item.find('numleechers').text, 0)
+                            size = tryInt(item.find('size').text, -1)
 
-                            info_hash = item.find('torrent:infohash').text
-                            # link = item['link']
+                            info_hash = item.find('infohash').text
 
                         except (AttributeError, TypeError, KeyError, ValueError):
                             continue
 
-                        # Filter unseeded torrent
+                            # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
                                 logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                            continue
-
-                        if self.confirmed and not verified:
-                            if mode != 'RSS':
-                                logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                             continue
 
                         item = title, download_url, size, seeders, leechers, info_hash
@@ -142,7 +111,7 @@ class KATProvider(generic.TorrentProvider):
 
                         items[mode].append(item)
 
-                except Exception:
+                except (AttributeError, TypeError, KeyError, ValueError):
                     logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
@@ -152,20 +121,21 @@ class KATProvider(generic.TorrentProvider):
 
         return results
 
+
     def seedRatio(self):
         return self.ratio
 
 
-class KATCache(tvcache.TVCache):
+class BitSnoopCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
         tvcache.TVCache.__init__(self, provider_obj)
 
-        # only poll KickAss every 10 minutes max
         self.minTime = 20
 
     def _getRSSData(self):
-        search_params = {'RSS': ['tv', 'anime']}
-        return {'entries': self.provider._doSearch(search_params)}
+        search_strings = {'RSS': ['rss']}
+        return {'entries': self.provider._doSearch(search_strings)}
 
-provider = KATProvider()
+
+provider = BitSnoopProvider()

@@ -31,7 +31,7 @@ class BinSearchProvider(generic.NZBProvider):
         self.cache = BinSearchCache(self)
         self.urls = {'base_url': 'https://www.binsearch.info/'}
         self.url = self.urls['base_url']
-
+        self.supportsBacklog = False
 
 class BinSearchCache(tvcache.TVCache):
     def __init__(self, provider_obj):

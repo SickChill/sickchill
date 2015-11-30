@@ -32,7 +32,6 @@ class TorrentLeechProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "TorrentLeech")
 
-        self.supportsBacklog = True
 
         self.username = None
         self.password = None

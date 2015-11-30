@@ -31,7 +31,6 @@ class BTDIGGProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, "BTDigg")
 
-        self.supportsBacklog = True
         self.public = True
         self.ratio = 0
         self.urls = {'url': u'https://btdigg.org/',

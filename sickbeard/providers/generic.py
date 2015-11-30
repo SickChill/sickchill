@@ -57,7 +57,7 @@ class GenericProvider(object):
 
         self.show = None
 
-        self.supportsBacklog = False
+        self.supportsBacklog = True
         self.supportsAbsoluteNumbering = False
         self.anime_only = False
 

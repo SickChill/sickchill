@@ -30,7 +30,6 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, "TorrentProject")
 
-        self.supportsBacklog = True
         self.public = True
         self.ratio = 0
         self.urls = {'api': u'https://torrentproject.se/',}

@@ -35,7 +35,6 @@ class newpctProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "Newpct")
 
-        self.supportsBacklog = True
         self.onlyspasearch = None
         self.cache = newpctCache(self)
 

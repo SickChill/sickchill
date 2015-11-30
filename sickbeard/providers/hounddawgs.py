@@ -30,7 +30,6 @@ class HoundDawgsProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "HoundDawgs")
 
-        self.supportsBacklog = True
 
         self.username = None
         self.password = None

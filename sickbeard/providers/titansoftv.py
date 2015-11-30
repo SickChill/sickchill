@@ -29,7 +29,6 @@ from sickrage.helper.exceptions import AuthException
 class TitansOfTVProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, 'TitansOfTV')
-        self.supportsBacklog = True
 
         self.supportsAbsoluteNumbering = True
         self.api_key = None

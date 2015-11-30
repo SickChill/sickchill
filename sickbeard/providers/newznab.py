@@ -63,7 +63,6 @@ class NewznabProvider(generic.NZBProvider):
         self.enable_daily = enable_daily
         self.enable_backlog = enable_backlog
 
-        self.supportsBacklog = True
 
         # 0 in the key spot indicates that no key is needed
         self.needs_auth = self.key != '0'

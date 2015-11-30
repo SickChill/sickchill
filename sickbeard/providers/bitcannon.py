@@ -29,7 +29,6 @@ class BitCannonProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "BitCannon")
 
-        self.supportsBacklog = True
         self.public = True
 
         self.minseed = None

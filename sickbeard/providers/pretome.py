@@ -32,7 +32,6 @@ class PretomeProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "Pretome")
 
-        self.supportsBacklog = True
 
         self.username = None
         self.password = None

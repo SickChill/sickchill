@@ -39,7 +39,6 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
         self.url = self.urls['index']
 
-        self.supportsBacklog = True
         self.public = True
         self.ratio = None
         self.minseed = None
