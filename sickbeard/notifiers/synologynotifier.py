@@ -47,6 +47,12 @@ class synologyNotifier(object):
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._send_synologyNotifier(update_text + new_version, title)
 
+    def notify_login(self, ipaddress=""):
+        if sickbeard.USE_SYNOLOGYNOTIFIER:
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            self._send_synologyNotifier(update_text.format(ipaddress), title)
+
     def _send_synologyNotifier(self, message, title):
         synodsmnotify_cmd = ["/usr/syno/bin/synodsmnotify", "@administrators", title, message]
         logger.log(u"Executing command " + str(synodsmnotify_cmd))

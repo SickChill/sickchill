@@ -432,6 +432,16 @@
                         </div>
 
                         <div class="field-pair">
+                            <label for="notify_on_login">
+                                <span class="component-title">Notify on login</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" name="notify_on_login" class="enabler" id="notify_on_login" ${('', 'checked="checked"')[bool(sickbeard.NOTIFY_ON_LOGIN)]}/>
+                                    <p>enable to be notified when a new login happens in webserver</p>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
                             <label for="web_ipv6">
                                 <span class="component-title">Listen on IPv6</span>
                                 <span class="component-desc">

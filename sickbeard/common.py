@@ -78,13 +78,17 @@ NOTIFY_DOWNLOAD = 2
 NOTIFY_SUBTITLE_DOWNLOAD = 3
 NOTIFY_GIT_UPDATE = 4
 NOTIFY_GIT_UPDATE_TEXT = 5
+NOTIFY_LOGIN = 6
+NOTIFY_LOGIN_TEXT = 7
 
 notifyStrings = NumDict({
     NOTIFY_SNATCH: "Started Download",
     NOTIFY_DOWNLOAD: "Download Finished",
     NOTIFY_SUBTITLE_DOWNLOAD: "Subtitle Download Finished",
     NOTIFY_GIT_UPDATE: "SickRage Updated",
-    NOTIFY_GIT_UPDATE_TEXT: "SickRage Updated To Commit#: "
+    NOTIFY_GIT_UPDATE_TEXT: "SickRage Updated To Commit#: ",
+    NOTIFY_LOGIN : "SickRage new login",
+    NOTIFY_LOGIN_TEXT : "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
 })
 
 # Episode statuses

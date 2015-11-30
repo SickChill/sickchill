@@ -47,6 +47,9 @@ class NMJv2Notifier(object):
         return False
         # Not implemented, no reason to start scanner.
 
+    def notify_login(self, ipaddress=""):
+        return False
+
     def test_notify(self, host):
         return self._sendNMJ(host)
 
