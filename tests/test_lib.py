@@ -40,27 +40,23 @@ Classes:
     TestCacheDBConnection
 """
 
-import sys
 import os.path
-import unittest
 import shutil
+import sys
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# pylint: disable=F0401
-# Unable to import
-import shutil_custom
-
-import sickbeard
-from sickbeard import db, providers
-from sickbeard.databases import mainDB
-from sickbeard.databases import cache_db, failed_db
-from sickbeard.tv import TVEpisode
-
-# pylint: disable=F0401
-# Unable to import
 from configobj import ConfigObj
+from sickbeard import db, providers
+from sickbeard.databases import cache_db, failed_db, mainDB
+from sickbeard.tv import TVEpisode
+import shutil_custom  # pylint: disable=import-error
+import sickbeard
+
+# pylint: disable=F0401
+# Unable to import
 
 
 shutil.copyfile = shutil_custom.copyfile_custom
@@ -159,16 +155,15 @@ def _dummy_save_config():
 mainDB.sickbeard.save_config = _dummy_save_config
 
 
-# pylint: disable=W0613
-# Unused arguments
 def _fake_specify_ep(self, season, episode):
     """
     Override contact to TVDB indexer.
 
-    :param self:
+    :param self: ...not used
     :param season: Season to search for  ...not used
     :param episode: Episode to search for  ...not used
     """
+    _ = self, season, episode  # throw away unused variables
     pass
 
 # the real one tries to contact TVDB just stop it from getting more info on the ep

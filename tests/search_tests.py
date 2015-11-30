@@ -24,19 +24,18 @@
 Test searches
 """
 
-import sys
 import os.path
+import sys
 import unittest
-import tests.test_lib as test
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import sickbeard
-import sickbeard.common as c
 from sickbeard.tv import TVEpisode, TVShow
-
 from sickbeard.providers.generic import GenericProvider
+import sickbeard
+import sickbeard.common as common
+import tests.test_lib as test
 
 TESTS = {
     "Game of Thrones": {
@@ -71,13 +70,13 @@ def test_generator(cur_data, cur_name, cur_provider):
         """
         show = TVShow(1, int(cur_data["tvdbid"]))
         show.name = cur_name
-        show.quality = c.ANY | c.Quality.UNKNOWN | c.Quality.RAWHDTV
+        show.quality = common.ANY | common.Quality.UNKNOWN | common.Quality.RAWHDTV
         show.saveToDB()
         sickbeard.showList.append(show)
 
         for ep_number in cur_data["e"]:
             episode = TVEpisode(show, cur_data["s"], ep_number)
-            episode.status = c.WANTED
+            episode.status = common.WANTED
 
             # We aren't updating scene numbers, so fake it here
             episode.scene_season = cur_data["s"]

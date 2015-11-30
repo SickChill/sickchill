@@ -30,10 +30,9 @@ Test notifiers
 """
 
 
-import sys
 import os.path
+import sys
 import unittest
-import tests.test_lib as test
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -43,8 +42,8 @@ from sickbeard.tv import TVEpisode, TVShow
 from sickbeard.webserve import Home
 from sickbeard.notifiers.emailnotify import EmailNotifier
 from sickbeard.notifiers.prowl import ProwlNotifier
-
 from sickrage.helper.encoding import ss
+import tests.test_lib as test
 
 
 class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-public-methods

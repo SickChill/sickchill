@@ -23,17 +23,17 @@
 Test SNI and SSL
 """
 
-import sys
 import os.path
+import sys
 import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from sickbeard import ex
+import certifi  # pylint: disable=import-error
 import requests  # pylint: disable=import-error
 import sickbeard.providers as providers
-import certifi  # pylint: disable=import-error
-from sickrage.helper.exceptions import ex
 
 
 class SniTests(unittest.TestCase):

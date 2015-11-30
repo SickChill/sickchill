@@ -21,18 +21,18 @@
 Test post processing
 """
 
-import sys
 import os.path
+import sys
 import unittest
-import tests.test_lib as test
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard.postProcessor import PostProcessor
-import sickbeard
-from sickbeard.tv import TVEpisode, TVShow
 from sickbeard.name_cache import addNameToCache
+from sickbeard.postProcessor import PostProcessor
+from sickbeard.tv import TVEpisode, TVShow
+import sickbeard
+import tests.test_lib as test
 
 
 class PPInitTests(unittest.TestCase):

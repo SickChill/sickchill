@@ -6,18 +6,17 @@ Test encoding
 
 # pylint: disable=line-too-long
 
-import sys
-import os.path
 import locale
+import os.path
+import sys
 import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import sickbeard
+from sickbeard import ek, ex
 from sickrage.helper.common import sanitize_filename
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
 
 
 class EncodingTests(unittest.TestCase):

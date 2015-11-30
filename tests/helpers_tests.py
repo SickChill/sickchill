@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://github.com/SiCKRAGETV/SickRage
+# URL: http://github.com/SickRage/SickRage
 #
 # This file is part of SickRage.
 #
@@ -90,8 +90,8 @@ Methods:
     getDiskSpaceUsage
 """
 
-import sys
 import os.path
+import sys
 import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
