@@ -60,8 +60,8 @@ Thumbs.db
 ######################
 lib/unrar2/UnRAR.exe
 
-# Bower #
+# Grunt #
 ######################
 .build/bower_components
 .build/node_modules
-.build/_bower*
+.build/dist
