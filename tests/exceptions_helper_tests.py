@@ -4,16 +4,16 @@
 Test exceptions helpers
 """
 
-import sys
-import os.path
-import unittest
-
 # pylint: disable=line-too-long
+
+import os.path
+import sys
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickrage.helper.exceptions import ex
+from sickbeard import ex
 
 
 class ExceptionsHelperTestCase(unittest.TestCase):
@@ -47,7 +47,7 @@ class ExceptionsHelperTestCase(unittest.TestCase):
         self.assertEqual(ex(Exception('hi')), 'hi')
 
     # TODO why doesn't this work?@
-    @unittest.expectedFailure
+    @unittest.skip('Errors with unicode conversion')
     def test_ex_ret_args_ustring(self):
         """
         Test exception returns args ustring
