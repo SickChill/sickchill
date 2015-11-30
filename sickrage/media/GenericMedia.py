@@ -21,9 +21,9 @@ import sickbeard
 from abc import abstractmethod
 from mimetypes import guess_type
 from os.path import isfile, join, normpath
-from sickbeard.helpers import findCertainShow
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import MultipleShowObjectsException
+from sickrage.show.Show import Show
 
 
 class GenericMedia:
@@ -98,7 +98,7 @@ class GenericMedia:
         """
 
         try:
-            return findCertainShow(sickbeard.showList, self.indexer_id)
+            return Show.find(sickbeard.showList, self.indexer_id)
         except MultipleShowObjectsException:
             return None
 

@@ -29,7 +29,6 @@ Methods:
     isRarFile
     isBeingWritten
     remove_file_failed
-    findCertainShow
     makeDir
     searchDBForShow
     searchIndexerForShowID
@@ -459,13 +458,6 @@ class HelpersShowTests(unittest.TestCase):
     """
     Test show methods
     """
-    @unittest.skip('Not yet implemented')
-    def test_find_certain_show(self):
-        """
-        Test findCertainShow
-        """
-        pass
-
     @unittest.skip('Not yet implemented')
     def test_search_db_for_show(self):
         """

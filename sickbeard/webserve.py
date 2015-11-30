@@ -651,7 +651,7 @@ class Home(WebRoot):
         if show is None:
             return "Invalid show parameters"
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if showObj is None:
             return "Invalid show paramaters"
@@ -1186,7 +1186,7 @@ class Home(WebRoot):
         # todo: add more comprehensive show validation
         try:
             show = int(show)  # fails if show id ends in a period SickRage/sickrage-issues#65
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, show)
+            showObj = Show.find(sickbeard.showList, show)
         except (ValueError, TypeError):
             return self._genericMessage("Error", "Invalid show ID: %s" % str(show))
 
@@ -1359,7 +1359,7 @@ class Home(WebRoot):
             else:
                 return self._genericMessage("Error", errString)
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if not showObj:
             errString = "Unable to find the specified show: " + str(show)
@@ -1598,7 +1598,7 @@ class Home(WebRoot):
         if show is None:
             return self._genericMessage("Error", "Invalid show ID")
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if showObj is None:
             return self._genericMessage("Error", "Unable to find the specified show")
@@ -1619,7 +1619,7 @@ class Home(WebRoot):
         if show is None:
             return self._genericMessage("Error", "Invalid show ID")
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if showObj is None:
             return self._genericMessage("Error", "Unable to find the specified show")
@@ -1636,7 +1636,7 @@ class Home(WebRoot):
         showObj = None
 
         if show:
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+            showObj = Show.find(sickbeard.showList, int(show))
             if showObj:
                 showName = urllib.quote_plus(showObj.name.encode('utf-8'))
 
@@ -1667,7 +1667,7 @@ class Home(WebRoot):
         showObj = None
 
         if show:
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+            showObj = Show.find(sickbeard.showList, int(show))
 
         if notifiers.emby_notifier.update_library(showObj):
             ui.notifications.message(
@@ -1699,7 +1699,7 @@ class Home(WebRoot):
             else:
                 return self._genericMessage("Error", errMsg)
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if not showObj:
             errMsg = "Error", "Show not in show list"
@@ -1829,7 +1829,7 @@ class Home(WebRoot):
         if show is None:
             return self._genericMessage("Error", "You must specify a show")
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if showObj is None:
             return self._genericMessage("Error", "Show not in show list")
@@ -1875,7 +1875,7 @@ class Home(WebRoot):
             errMsg = "You must specify a show and at least one episode"
             return self._genericMessage("Error", errMsg)
 
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        show_obj = Show.find(sickbeard.showList, int(show))
 
         if show_obj is None:
             errMsg = "Error", "Show not in show list"
@@ -1942,7 +1942,7 @@ class Home(WebRoot):
     def getManualSearchStatus(self, show=None):
         def getEpisodes(searchThread, searchstatus):
             results = []
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(searchThread.show.indexerid))
+            showObj = Show.find(sickbeard.showList, int(searchThread.show.indexerid))
 
             if not showObj:
                 logger.log(u'No Show Object found for show with indexerID: ' + str(searchThread.show.indexerid), logger.ERROR)
@@ -2057,7 +2057,7 @@ class Home(WebRoot):
         if sceneAbsolute in ['null', '']:
             sceneAbsolute = None
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if showObj.is_anime:
             result = {
@@ -2397,7 +2397,7 @@ class HomeAddShows(Home):
 
                 cur_dir['existing_info'] = (indexer_id, show_name, indexer)
 
-                if indexer_id and helpers.findCertainShow(sickbeard.showList, indexer_id):
+                if indexer_id and Show.find(sickbeard.showList, indexer_id):
                     cur_dir['added_already'] = True
         return t.render(dirList=dir_list)
 
@@ -2479,7 +2479,7 @@ class HomeAddShows(Home):
             for show_detail in shows:
                 show = {'show': show_detail}
                 try:
-                    if not helpers.findCertainShow(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
+                    if not Show.find(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
                         if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
                             if not_liked_show:
                                 if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
@@ -2534,7 +2534,7 @@ class HomeAddShows(Home):
             library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
             for show in shows:
                 try:
-                    if not helpers.findCertainShow(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
+                    if not Show.find(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
                         if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
                             if not_liked_show:
                                 if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
@@ -2590,7 +2590,7 @@ class HomeAddShows(Home):
                 controller="addShows", action="addExistingShow")
 
     def addTraktShow(self, indexer_id, showName):
-        if helpers.findCertainShow(sickbeard.showList, int(indexer_id)):
+        if Show.find(sickbeard.showList, int(indexer_id)):
             return
 
         if sickbeard.ROOT_DIRS:
@@ -3033,13 +3033,13 @@ class Manage(Home, WebRoot):
             for epResult in to_download[cur_indexer_id]:
                 season, episode = epResult.split('x')
 
-                show = sickbeard.helpers.findCertainShow(sickbeard.showList, int(cur_indexer_id))
+                show = Show.find(sickbeard.showList, int(cur_indexer_id))
                 show.getEpisode(int(season), int(episode)).download_subtitles()
 
         return self.redirect('/manage/subtitleMissed/')
 
     def backlogShow(self, indexer_id):
-        show_obj = helpers.findCertainShow(sickbeard.showList, int(indexer_id))
+        show_obj = Show.find(sickbeard.showList, int(indexer_id))
 
         if show_obj:
             sickbeard.backlogSearchScheduler.action.searchBacklog([show_obj])
@@ -3095,7 +3095,7 @@ class Manage(Home, WebRoot):
         showNames = []
         for curID in showIDs:
             curID = int(curID)
-            showObj = helpers.findCertainShow(sickbeard.showList, curID)
+            showObj = Show.find(sickbeard.showList, curID)
             if showObj:
                 showList.append(showObj)
                 showNames.append(showObj.name)
@@ -3235,7 +3235,7 @@ class Manage(Home, WebRoot):
         errors = []
         for curShow in showIDs:
             curErrors = []
-            showObj = helpers.findCertainShow(sickbeard.showList, int(curShow))
+            showObj = Show.find(sickbeard.showList, int(curShow))
             if not showObj:
                 continue
 
@@ -3378,7 +3378,7 @@ class Manage(Home, WebRoot):
             if curShowID == '':
                 continue
 
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(curShowID))
+            showObj = Show.find(sickbeard.showList, int(curShowID))
 
             if showObj is None:
                 continue

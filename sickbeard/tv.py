@@ -53,6 +53,7 @@ from sickrage.helper.exceptions import EpisodeDeletedException, EpisodeNotFoundE
 from sickrage.helper.exceptions import MultipleEpisodesInDatabaseException, MultipleShowsInDatabaseException
 from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOException, ShowDirectoryNotFoundException
 from sickrage.helper.exceptions import ShowNotFoundException
+from sickrage.show.Show import Show
 
 from sickbeard.common import Quality, Overview, statusStrings
 from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, ARCHIVED, IGNORED, UNAIRED, WANTED, SKIPPED, UNKNOWN
@@ -112,7 +113,7 @@ class TVShow(object):
         self.nextaired = ""
         self.release_groups = None
 
-        otherShow = helpers.findCertainShow(sickbeard.showList, self.indexerid)
+        otherShow = Show.find(sickbeard.showList, self.indexerid)
         if otherShow is not None:
             raise MultipleShowObjectsException("Can't create a show if it already exists")
 

@@ -55,7 +55,8 @@ from sickbeard.notifiers.synoindex import notifier as synoindex_notifier
 from sickbeard import clients
 from sickrage.helper.common import media_extensions, pretty_file_size, subtitle_extensions
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex, MultipleShowObjectsException
+from sickrage.helper.exceptions import ex
+from sickrage.show.Show import Show
 from cachecontrol import CacheControl, caches
 from itertools import izip, cycle
 
@@ -67,6 +68,7 @@ shutil.copyfile = shutil_custom.copyfile_custom
 # pylint: disable=W0212
 # Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
+
 
 def fixGlob(path):
     path = re.sub(r'\[', '[[]', path)
@@ -90,6 +92,7 @@ def indentXML(elem, level=0):
     else:
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
+
 
 def remove_non_release_groups(name):
     """
@@ -227,32 +230,6 @@ def remove_file_failed(failed_file):
         pass
 
 
-def findCertainShow(showList, indexerid):
-    """
-    Find a show by indexer ID in the show list
-
-    :param showList: List of shows to search in (needle)
-    :param indexerid: Show to look for
-    :return: result list
-    """
-
-    results = []
-
-    if not isinstance(indexerid, list):
-        indexerid = [indexerid]
-
-    if showList and indexerid:
-        results = [show for show in showList if show.indexerid in indexerid]
-
-    if not results:
-        return None
-
-    if len(results) == 1:
-        return results[0]
-    elif len(results) > 1:
-        raise MultipleShowObjectsException()
-
-
 def makeDir(path):
     """
     Make a directory on the filesystem
@@ -357,7 +334,7 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
 
             if not (seriesname and series_id):
                 continue
-            ShowObj = findCertainShow(sickbeard.showList, int(series_id))
+            ShowObj = Show.find(sickbeard.showList, int(series_id))
             # Check if we can find the show in our list (if not, it's not the right show)
             if (indexer_id is None) and (ShowObj is not None) and (ShowObj.indexerid == int(series_id)):
                 return seriesname, i, int(series_id)
@@ -775,7 +752,7 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
 
     if len(absolute_numbers):
         if not show and indexer_id:
-            show = findCertainShow(sickbeard.showList, indexer_id)
+            show = Show.find(sickbeard.showList, indexer_id)
 
         for absolute_number in absolute_numbers if show else []:
             ep = show.getEpisode(None, None, absolute_number=absolute_number)
@@ -1130,18 +1107,18 @@ def get_show(name, tryIndexers=False):
         cache = sickbeard.name_cache.retrieveNameFromCache(name)
         if cache:
             fromCache = True
-            showObj = findCertainShow(sickbeard.showList, int(cache))
+            showObj = Show.find(sickbeard.showList, int(cache))
 
         # try indexers
         if not showObj and tryIndexers:
-            showObj = findCertainShow(sickbeard.showList,
+            showObj = Show.find(sickbeard.showList,
                                       searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
 
         # try scene exceptions
         if not showObj:
             ShowID = sickbeard.scene_exceptions.get_scene_exception_by_name(name)[0]
             if ShowID:
-                showObj = findCertainShow(sickbeard.showList, int(ShowID))
+                showObj = Show.find(sickbeard.showList, int(ShowID))
 
         # add show to cache
         if showObj and not fromCache:

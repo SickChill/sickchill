@@ -37,6 +37,7 @@ from sickbeard import db
 from sickbeard.common import Quality
 from sickbeard.providers import generic
 from sickrage.helper.encoding import ek
+from sickrage.show.Show import Show
 from sickbeard.common import USER_AGENT
 
 
@@ -333,7 +334,7 @@ class NewznabProvider(generic.NZBProvider):
             return results
 
         for sqlshow in sqlResults:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
+            self.show = Show.find(sickbeard.showList, int(sqlshow["showid"]))
             if self.show:
                 curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
                 searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')

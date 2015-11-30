@@ -719,7 +719,7 @@ class CMD_Episode(ApiCall):
 
     def run(self):
         """ Get detailed information about an episode """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -784,7 +784,7 @@ class CMD_EpisodeSearch(ApiCall):
 
     def run(self):
         """ Search for an episode """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -840,7 +840,7 @@ class CMD_EpisodeSetStatus(ApiCall):
 
     def run(self):
         """ Set the status of an episode or a season (when no episode is provided) """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -953,7 +953,7 @@ class CMD_SubtitleSearch(ApiCall):
 
     def run(self):
         """ Search for an episode subtitles """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1016,7 +1016,7 @@ class CMD_Exceptions(ApiCall):
                 scene_exceptions[indexerid].append(row["show_name"])
 
         else:
-            show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+            show_obj = Show.find(sickbeard.showList, int(self.indexerid))
             if not show_obj:
                 return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1853,7 +1853,7 @@ class CMD_Show(ApiCall):
 
     def run(self):
         """ Get detailed information about a show """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1961,7 +1961,7 @@ class CMD_ShowAddExisting(ApiCall):
 
     def run(self):
         """ Add an existing show in SickRage """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in the database")
 
@@ -2076,7 +2076,7 @@ class CMD_ShowAddNew(ApiCall):
 
     def run(self):
         """ Add a new show to SickRage """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in database")
 
@@ -2211,7 +2211,7 @@ class CMD_ShowCache(ApiCall):
 
     def run(self):
         """ Check SickRage's cache to see if the images (poster, banner, fanart) for a show are valid """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2283,7 +2283,7 @@ class CMD_ShowGetQuality(ApiCall):
 
     def run(self):
         """ Get the quality setting of a show """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2478,7 +2478,7 @@ class CMD_ShowSeasonList(ApiCall):
 
     def run(self):
         """ Get the list of seasons of a show """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2518,7 +2518,7 @@ class CMD_ShowSeasons(ApiCall):
 
     def run(self):
         """ Get the list of episodes for one or all seasons of a show """
-        sho_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        sho_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not sho_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2604,7 +2604,7 @@ class CMD_ShowSetQuality(ApiCall):
 
     def run(self):
         """ Set the quality setting of a show. If no quality is provided, the default user setting is used. """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2659,7 +2659,7 @@ class CMD_ShowStats(ApiCall):
 
     def run(self):
         """ Get episode statistics for a given show """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2764,7 +2764,7 @@ class CMD_ShowUpdate(ApiCall):
 
     def run(self):
         """ Update a show in SickRage """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 

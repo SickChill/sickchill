@@ -58,6 +58,7 @@ from sickbeard.databases import mainDB, cache_db, failed_db
 
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
+from sickrage.show.Show import Show
 from sickrage.system.Shutdown import Shutdown
 
 from configobj import ConfigObj
@@ -2207,7 +2208,7 @@ def getEpList(epIDs, showid=None):
     epList = []
 
     for curEp in sqlResults:
-        curShowObj = helpers.findCertainShow(showList, int(curEp["showid"]))
+        curShowObj = Show.find(showList, int(curEp["showid"]))
         curEpObj = curShowObj.getEpisode(int(curEp["season"]), int(curEp["episode"]))
         epList.append(curEpObj)
 

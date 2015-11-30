@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import datetime
 import threading
 
@@ -25,8 +24,8 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import db
 from sickbeard import common
-from sickbeard import helpers
 from sickbeard import network_timezones
+from sickrage.show.Show import Show
 from sickrage.helper.exceptions import MultipleShowObjectsException
 
 
@@ -68,7 +67,7 @@ class DailySearcher():
         for sqlEp in sqlResults:
             try:
                 if not show or int(sqlEp["showid"]) != show.indexerid:
-                    show = helpers.findCertainShow(sickbeard.showList, int(sqlEp["showid"]))
+                    show = Show.find(sickbeard.showList, int(sqlEp["showid"]))
 
                 # for when there is orphaned series in the database but not loaded into our showlist
                 if not show or show.paused:
