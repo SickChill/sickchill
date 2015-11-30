@@ -2143,10 +2143,13 @@ class Home(WebRoot):
     def fetch_releasegroups(show_name):
         logger.log(u'ReleaseGroups: %s' % show_name, logger.INFO)
         if helpers.set_up_anidb_connection():
-            anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_name)
-            groups = anime.get_groups()
-            logger.log(u'ReleaseGroups: %s' % groups, logger.INFO)
-            return json.dumps({'result': 'success', 'groups': groups})
+            try:
+                anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_name)
+                groups = anime.get_groups()
+                logger.log(u'ReleaseGroups: %s' % groups, logger.INFO)
+                return json.dumps({'result': 'success', 'groups': groups})
+            except AttributeError as error:
+                logger.log(u'Unable to get ReleaseGroups: %s' % error, logger.DEBUG)
 
         return json.dumps({'result': 'failure'})
 
