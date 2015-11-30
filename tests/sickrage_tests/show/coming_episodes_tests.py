@@ -1,6 +1,7 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
-# URL: https://sickrage.github.io
+# URL: https://SickRage.GitHub.io
 # Git: https://github.com/SickRage/SickRage.git
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -23,14 +24,15 @@ Test coming episodes
 # pylint: disable=line-too-long
 
 from __future__ import print_function
+
 import os
 import sys
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 from sickrage.show.ComingEpisodes import ComingEpisodes
-import unittest
 
 
 class ComingEpisodesTests(unittest.TestCase):
