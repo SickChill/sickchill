@@ -1,6 +1,7 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
-# URL: https://sickrage.github.io
+# URL: https://SickRage.GitHub.io
 # Git: https://github.com/SickRage/SickRage.git
 #
 # SickRage is free software: you can redistribute it and/or modify
