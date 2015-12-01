@@ -37,6 +37,7 @@ from sickbeard.common import user_agents
 from sickrage.helper.common import sanitize_filename
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
+from sickrage.show.Show import Show
 from sickbeard import show_name_helpers
 
 
@@ -655,7 +656,7 @@ class TorrentProvider(GenericProvider):
         )
 
         for sqlshow in sqlResults or []:
-            show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
+            show = Show.find(sickbeard.showList, int(sqlshow["showid"]))
             if show:
                 curEp = show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
                 for term in self.proper_strings:

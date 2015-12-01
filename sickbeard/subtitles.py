@@ -35,6 +35,7 @@ from sickbeard import processTV
 from sickrage.helper.common import media_extensions, dateTimeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
+from sickrage.show.Show import Show
 
 DISTRIBUTION = pkg_resources.Distribution(location=os.path.dirname(os.path.dirname(__file__)),
                                           project_name='fake_entry_points', version='1.0.0')
@@ -440,7 +441,7 @@ class SubtitlesFinder(object):
                 logger.log(u'Downloading subtitles for episode %dx%d of show %s'
                            % (ep_to_sub['season'], ep_to_sub['episode'], ep_to_sub['show_name']), logger.DEBUG)
 
-                show_object = sickbeard.helpers.findCertainShow(sickbeard.showList, int(ep_to_sub['showid']))
+                show_object = Show.find(sickbeard.showList, int(ep_to_sub['showid']))
                 if not show_object:
                     logger.log(u'Show not found', logger.DEBUG)
                     self.amActive = False

@@ -33,8 +33,10 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
+
 from sickbeard.common import Quality
 from sickbeard.tv import TVShow
+from sickrage.helper.exceptions import MultipleShowObjectsException
 from sickrage.show.Show import Show
 
 
@@ -42,6 +44,51 @@ class ShowTests(unittest.TestCase):
     """
     Test shows
     """
+
+    def test_find(self):
+        """
+        Test find
+        """
+        sickbeard.QUALITY_DEFAULT = Quality.FULLHDTV
+
+        show123 = TestTVShow(0, 123)
+        show456 = TestTVShow(0, 456)
+        show789 = TestTVShow(0, 789)
+        shows = [show123, show456, show789]
+        shows_duplicate = shows + shows
+
+        test_cases = {
+            (False, None): None,
+            (False, ''): None,
+            (False, '123'): None,
+            (False, 123): None,
+            (False, 12.3): None,
+            (True, None): None,
+            (True, ''): None,
+            (True, '123'): None,
+            (True, 123): show123,
+            (True, 12.3): None,
+            (True, 456): show456,
+            (True, 789): show789,
+        }
+
+        unicode_test_cases = {
+            (False, u''): None,
+            (False, u'123'): None,
+            (True, u''): None,
+            (True, u'123'): None,
+        }
+
+        for tests in test_cases, unicode_test_cases:
+            for ((use_shows, indexer_id), result) in tests.iteritems():
+                if use_shows:
+                    self.assertEqual(Show.find(shows, indexer_id), result)
+                else:
+                    self.assertEqual(Show.find(None, indexer_id), result)
+
+        with self.assertRaises(MultipleShowObjectsException):
+            Show.find(shows_duplicate, 456)
+
     def test_validate_indexer_id(self):
         """
         Test validate indexer id

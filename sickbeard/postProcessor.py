@@ -39,6 +39,7 @@ from sickrage.helper.common import remove_extension, replace_extension, subtitle
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
+from sickrage.show.Show import Show
 from babelfish import language_converters
 
 import adba
@@ -499,7 +500,7 @@ class PostProcessor(object):
             if quality == common.Quality.UNKNOWN:
                 quality = None
 
-            show = helpers.findCertainShow(sickbeard.showList, indexer_id)
+            show = Show.find(sickbeard.showList, indexer_id)
 
             self.in_history = True
             self.version = version

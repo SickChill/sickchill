@@ -36,6 +36,7 @@ from sickbeard.common import Quality
 from sickrage.helper.common import sanitize_filename
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
+from sickrage.show.Show import Show
 
 
 def setEpisodeToWanted(show, s, e):
@@ -388,7 +389,7 @@ class TraktChecker(object):
                 self.addDefaultShow(indexer, indexer_id, show['title'], WANTED)
 
             if int(sickbeard.TRAKT_METHOD_ADD) == 1:
-                newShow = helpers.findCertainShow(sickbeard.showList, indexer_id)
+                newShow = Show.find(sickbeard.showList, indexer_id)
 
                 if newShow is not None:
                     setEpisodeToWanted(newShow, 1, 1)
@@ -415,7 +416,7 @@ class TraktChecker(object):
             indexer_id = int(show_el)
             show = self.EpisodeWatchlist[trakt_id][show_el]
 
-            newShow = helpers.findCertainShow(sickbeard.showList, indexer_id)
+            newShow = Show.find(sickbeard.showList, indexer_id)
 
             try:
                 if newShow is None:
@@ -444,7 +445,7 @@ class TraktChecker(object):
         """
         Adds a new show with the default settings
         """
-        if not helpers.findCertainShow(sickbeard.showList, int(indexer_id)):
+        if not Show.find(sickbeard.showList, int(indexer_id)):
             logger.log(u"Adding show " + str(indexer_id))
             root_dirs = sickbeard.ROOT_DIRS.split('|')
 
