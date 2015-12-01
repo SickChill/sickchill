@@ -63,17 +63,23 @@ $(document).ready(function() {
         }
 
         refreshRootDirs();
-        $.get(srRoot+'/config/general/saveRootDirs', {rootDirString: $('#rootDirText').val()});
+        $.get(srRoot+'/config/general/saveRootDirs', {
+            rootDirString: $('#rootDirText').val()
+        });
     }
 
-    $('#addRootDir').click(function(){$(this).nFileBrowser(addRootDir);});
-    $('#editRootDir').click(function(){$(this).nFileBrowser(editRootDir, {initialDir: $("#rootDirs option:selected").val()});});
+    $('#addRootDir').on('click', function(){
+        $(this).nFileBrowser(addRootDir);
+    });
+    $('#editRootDir').on('click', function(){
+        $(this).nFileBrowser(editRootDir, {
+            'initialDir': $("#rootDirs option:selected").val()
+        });
+    });
 
-    $('#deleteRootDir').click(function() {
+    $('#deleteRootDir').on('click', function() {
         if ($("#rootDirs option:selected").length) {
-
             var toDelete = $("#rootDirs option:selected");
-
             var newDefault = (toDelete.attr('id') === $("#whichDefaultRootDir").val());
             var deletedNum = $("#rootDirs option:selected").attr('id').substr(3);
 
@@ -81,7 +87,6 @@ $(document).ready(function() {
             syncOptionIDs();
 
             if (newDefault) {
-
                 console.log('new default when deleting');
 
                 // we deleted the default so this isn't valid anymore
@@ -101,15 +106,19 @@ $(document).ready(function() {
 
         }
         refreshRootDirs();
-        $.get(srRoot+'/config/general/saveRootDirs', {rootDirString: $('#rootDirText').val()});
+        $.get(srRoot+'/config/general/saveRootDirs', {
+            'rootDirString': $('#rootDirText').val()
+        });
     });
 
-    $('#defaultRootDir').click(function(){
+    $('#defaultRootDir').on('click', function(){
         if ($("#rootDirs option:selected").length) {
             setDefault($("#rootDirs option:selected").attr('id'));
         }
         refreshRootDirs();
-        $.get(srRoot+'/config/general/saveRootDirs', {rootDirString: $('#rootDirText').val()});
+        $.get(srRoot + '/config/general/saveRootDirs', {
+            rootDirString: $('#rootDirText').val()
+        });
     });
 
     function setDefault(which, force){
