@@ -28,7 +28,7 @@ $(document).ready(function() {
         return;
     }
 
-    $('#qualityPreset').change(function() {
+    $('#qualityPreset').on('change', function() {
         setFromPresets($('#qualityPreset :selected').val());
     });
 

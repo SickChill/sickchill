@@ -2256,7 +2256,7 @@ class HomeAddShows(Home):
 
     def index(self):
         t = PageTemplate(rh=self, filename="home_addShows.mako")
-        return t.render(title='Add Shows', header='Add Shows', topmenu='home', controller="home", action="addShows")
+        return t.render(title='Add Shows', header='Add Shows', topmenu='home', controller="addShows", action="index")
 
     @staticmethod
     def getIndexerLanguages():
@@ -2444,7 +2444,8 @@ class HomeAddShows(Home):
             provided_show_dir=show_dir, provided_indexer_id=provided_indexer_id,
             provided_indexer_name=provided_indexer_name, provided_indexer=provided_indexer,
             indexers=sickbeard.indexerApi().indexers, whitelist=[], blacklist=[], groups=[],
-            title='New Show', header='New Show', topmenu='home'
+            title='New Show', header='New Show', topmenu='home',
+            controller="addShows", action="newShow"
         )
 
     def recommendedShows(self):
@@ -2453,7 +2454,8 @@ class HomeAddShows(Home):
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, filename="home_recommendedShows.mako")
-        return t.render(title="Recommended Shows", header="Recommended Shows", enable_anime_options=False)
+        return t.render(title="Recommended Shows", header="Recommended Shows", enable_anime_options=False,
+                controller="addShows", action="recommendedShows")
 
     def getRecommendedShows(self):
         t = PageTemplate(rh=self, filename="trendingShows.mako")
@@ -2503,7 +2505,8 @@ class HomeAddShows(Home):
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, filename="home_trendingShows.mako")
-        return t.render(title="Trending Shows", header="Trending Shows", enable_anime_options=False)
+        return t.render(title="Trending Shows", header="Trending Shows", enable_anime_options=False,
+                controller="addShows", action="trendingShows")
 
     def getTrendingShows(self):
         """
@@ -2564,7 +2567,8 @@ class HomeAddShows(Home):
             # print traceback.format_exc()
             popular_shows = None
 
-        return t.render(title="Popular Shows", header="Popular Shows", popular_shows=popular_shows, imdb_exception=e, topmenu="home")
+        return t.render(title="Popular Shows", header="Popular Shows", popular_shows=popular_shows, imdb_exception=e, topmenu="home",
+                controller="addShows", action="popularShows")
 
     def addShowToBlacklist(self, indexer_id):
         # URL parameters
@@ -2581,7 +2585,8 @@ class HomeAddShows(Home):
         Prints out the page to add existing shows from a root dir
         """
         t = PageTemplate(rh=self, filename="home_addExistingShow.mako")
-        return t.render(enable_anime_options=False, title='Existing Show', header='Existing Show', topmenu="home")
+        return t.render(enable_anime_options=False, title='Existing Show', header='Existing Show', topmenu="home",
+                controller="addShows", action="existingShows")
 
     def addTraktShow(self, indexer_id, showName):
         if helpers.findCertainShow(sickbeard.showList, int(indexer_id)):
