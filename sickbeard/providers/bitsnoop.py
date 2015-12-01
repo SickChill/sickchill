@@ -22,8 +22,8 @@ from bs4 import BeautifulSoup
 import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.helpers import tryInt
 from sickbeard.providers import generic
+from sickrage.helper.common import try_int
 
 
 class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=R0902,R0913
@@ -90,9 +90,9 @@ class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=R0902,R0913
                             if not (title and download_url):
                                 continue
 
-                            seeders = tryInt(item.find('numseeders').text, 0)
-                            leechers = tryInt(item.find('numleechers').text, 0)
-                            size = tryInt(item.find('size').text, -1)
+                            seeders = try_int(item.find('numseeders').text, 0)
+                            leechers = try_int(item.find('numleechers').text, 0)
+                            size = try_int(item.find('size').text, -1)
 
                             info_hash = item.find('infohash').text
 

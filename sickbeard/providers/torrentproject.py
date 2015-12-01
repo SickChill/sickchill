@@ -20,13 +20,12 @@ from urllib import quote_plus
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import helpers
 from sickbeard.providers import generic
 from sickbeard.common import USER_AGENT
+from sickrage.helper.common import try_int
 
 
 class TORRENTPROJECTProvider(generic.TorrentProvider):
-
     def __init__(self):
         generic.TorrentProvider.__init__(self, "TorrentProject")
 
@@ -64,8 +63,8 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                 results = []
                 for i in torrents:
                     title = torrents[i]["title"]
-                    seeders = helpers.tryInt(torrents[i]["seeds"], 1)
-                    leechers = helpers.tryInt(torrents[i]["leechs"], 0)
+                    seeders = try_int(torrents[i]["seeds"], 1)
+                    leechers = try_int(torrents[i]["leechs"], 0)
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
                             logger.log(u"Torrent doesn't meet minimum seeds & leechers not selecting : %s" % title, logger.DEBUG)

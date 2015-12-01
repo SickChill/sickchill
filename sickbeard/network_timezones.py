@@ -25,6 +25,7 @@ from dateutil import tz
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import logger
+from sickrage.helper.common import try_int
 
 # regex to parse time (12/24 hour format)
 time_regex = re.compile(r'(\d{1,2})(([:.](\d{2,2}))? ?([PA][. ]? ?M)|[:.](\d{2,2}))\b', flags=re.IGNORECASE)
@@ -136,8 +137,8 @@ def parse_date_time(d, t, network):
     if mo is not None and len(mo.groups()) >= 5:
         if mo.group(5) is not None:
             try:
-                hr = helpers.tryInt(mo.group(1))
-                m = helpers.tryInt(mo.group(4))
+                hr = try_int(mo.group(1))
+                m = try_int(mo.group(4))
                 ap = mo.group(5)
                 # convert am/pm to 24 hour clock
                 if ap is not None:
@@ -150,8 +151,8 @@ def parse_date_time(d, t, network):
                 m = 0
         else:
             try:
-                hr = helpers.tryInt(mo.group(1))
-                m = helpers.tryInt(mo.group(6))
+                hr = try_int(mo.group(1))
+                m = try_int(mo.group(6))
             except Exception:
                 hr = 0
                 m = 0
@@ -162,7 +163,7 @@ def parse_date_time(d, t, network):
         hr = 0
         m = 0
 
-    te = datetime.datetime.fromordinal(helpers.tryInt(d) or 1)
+    te = datetime.datetime.fromordinal(try_int(d) or 1)
     try:
         foreign_timezone = get_network_timezone(network, network_dict)
         return datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=foreign_timezone)

@@ -54,7 +54,6 @@ Methods:
     create_https_certificates
     backupVersionedFile
     restoreVersionedFile
-    tryInt
     md5_for_file
     get_lan_ip
     check_url
@@ -75,7 +74,6 @@ Methods:
     mapIndexersToShow
     touchFile
     _getTempDir
-    codeDescription
     _setUpSession
     getURL
     download_file
@@ -630,23 +628,9 @@ class HelpersMiscTests(unittest.TestCase):
         pass
 
     @unittest.skip('Not yet implemented')
-    def test_try_int(self):
-        """
-        Test tryInt
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
     def test_full_sanitize_scene_name(self):
         """
         Test full_sanitizeSceneName
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_code_description(self):
-        """
-        Test codeDescription
         """
         pass
 

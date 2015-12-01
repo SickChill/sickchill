@@ -38,6 +38,7 @@ from sickbeard.common import Quality
 from sickbeard.providers import generic
 from sickrage.helper.encoding import ek
 from sickrage.show.Show import Show
+from sickrage.helper.common import try_int
 from sickbeard.common import USER_AGENT
 
 
@@ -286,11 +287,11 @@ class NewznabProvider(generic.NZBProvider):
                 continue
 
             seeders = leechers = None
-            size = helpers.tryInt(item.size, -1)
+            size = try_int(item.size, -1)
             for attr in item.findAll('newznab:attr') + item.findAll('torznab:attr'):
-                size = helpers.tryInt(attr['value'], -1) if attr['name'] == 'size' else size
-                seeders = helpers.tryInt(attr['value'], 1) if attr['name'] == 'seeders' else seeders
-                leechers = helpers.tryInt(attr['value'], 0) if attr['name'] == 'peers' else leechers
+                size = try_int(attr['value'], -1) if attr['name'] == 'size' else size
+                seeders = try_int(attr['value'], 1) if attr['name'] == 'seeders' else seeders
+                leechers = try_int(attr['value'], 0) if attr['name'] == 'peers' else leechers
 
             if not size or (torznab and (seeders is None or leechers is None)):
                 continue
@@ -305,14 +306,12 @@ class NewznabProvider(generic.NZBProvider):
 
         return results
 
-
     def _get_size(self, item):
         """
         Gets size info from a result item
         Returns int size or -1
         """
-        return helpers.tryInt(item.get('size', -1), -1)
-
+        return try_int(item.get('size', -1), -1)
 
     def findPropers(self, search_date=datetime.datetime.today()):
         """

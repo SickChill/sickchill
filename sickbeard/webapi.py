@@ -31,7 +31,7 @@ import datetime
 import traceback
 
 import sickbeard
-from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat
+from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
 from sickrage.helper.quality import get_quality_string
@@ -746,7 +746,7 @@ class CMD_Episode(ApiCall):
             episode["location"] = episode["location"][show_path_length:]
 
         # convert stuff to human form
-        if helpers.tryInt(episode['airdate'], 1) > 693595:  # 1900
+        if try_int(episode['airdate'], 1) > 693595:  # 1900
             episode['airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(
                 network_timezones.parse_date_time(int(episode['airdate']), show_obj.airs, show_obj.network)), d_preset=dateFormat)
         else:
@@ -1913,7 +1913,7 @@ class CMD_Show(ApiCall):
             show_dict["network"] = ""
         show_dict["status"] = show_obj.status
 
-        if helpers.tryInt(show_obj.nextaired, 1) > 693595:
+        if try_int(show_obj.nextaired, 1) > 693595:
             dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
                 network_timezones.parse_date_time(show_obj.nextaired, show_dict['airs'], show_dict['network']))
             show_dict['airs'] = sbdatetime.sbdatetime.sbftime(dt_episode_airs, t_preset=timeFormat).lstrip('0').replace(
@@ -2533,7 +2533,7 @@ class CMD_ShowSeasons(ApiCall):
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
                 row["status"] = _get_status_strings(status)
                 row["quality"] = get_quality_string(quality)
-                if helpers.tryInt(row['airdate'], 1) > 693595:  # 1900
+                if try_int(row['airdate'], 1) > 693595:  # 1900
                     dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
                         network_timezones.parse_date_time(row['airdate'], sho_obj.airs, sho_obj.network))
                     row['airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
@@ -2560,7 +2560,7 @@ class CMD_ShowSeasons(ApiCall):
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
                 row["status"] = _get_status_strings(status)
                 row["quality"] = get_quality_string(quality)
-                if helpers.tryInt(row['airdate'], 1) > 693595:  # 1900
+                if try_int(row['airdate'], 1) > 693595:  # 1900
                     dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
                         network_timezones.parse_date_time(row['airdate'], sho_obj.airs, sho_obj.network))
                     row['airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
@@ -2818,7 +2818,7 @@ class CMD_Shows(ApiCall):
                 "subtitles": (0, 1)[curShow.subtitles],
             }
 
-            if helpers.tryInt(curShow.nextaired, 1) > 693595:  # 1900
+            if try_int(curShow.nextaired, 1) > 693595:  # 1900
                 dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
                     network_timezones.parse_date_time(curShow.nextaired, curShow.airs, show_dict['network']))
                 show_dict['next_ep_airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
