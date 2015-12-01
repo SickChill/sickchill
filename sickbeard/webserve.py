@@ -1142,7 +1142,7 @@ class Home(WebRoot):
             if branch:
                 checkversion.updater.branch = branch
 
-            if checkversion.updater.update():
+            if checkversion.updater.need_update() and checkversion.updater.update():
                 # do a hard restart
                 sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
