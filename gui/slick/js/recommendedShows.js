@@ -6,7 +6,7 @@ $.fn.loadContent = function(path, loadingTxt, errorTxt) {
 };
 
 $(document).ready(function() {
-    $('#trendingShows').loadContent('/home/addShows/getRecommendedShows/', 'Loading recommended shows...', 'Trakt timed out, refresh page to try again');
+    $('#trendingShows').loadContent('/addShows/getRecommendedShows/', 'Loading recommended shows...', 'Trakt timed out, refresh page to try again');
     $('#container').isotope({
         itemSelector: '.trakt_show',
         layoutMode: 'fitRows'

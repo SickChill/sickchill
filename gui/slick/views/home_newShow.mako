@@ -28,7 +28,7 @@
     <div id="displayText">aoeu</div>
     <br>
 
-    <form id="addShowForm" method="post" action="${srRoot}/home/addShows/addNewShow" accept-charset="utf-8">
+    <form id="addShowForm" method="post" action="${srRoot}/addShows/addNewShow" accept-charset="utf-8">
 
     <fieldset class="sectionwrap">
         <legend class="legendStep">Find a show on theTVDB</legend>

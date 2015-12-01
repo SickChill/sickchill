@@ -11,7 +11,7 @@ $(document).ready(function () {
         $('#searchResults').empty().html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> searching ' + searchingFor + '...');
 
         searchRequestXhr = $.ajax({
-            url: srRoot + '/home/addShows/searchIndexersForShowName',
+            url: srRoot + '/addShows/searchIndexersForShowName',
             data: {'search_term': $('#nameToSearch').val().trim(), 'lang': $('#indexerLangSelect').val(), 'indexer': $('#providedIndexer').val()},
             timeout: parseInt($('#indexer_timeout').val(), 10) * 1000,
             dataType: 'json',
@@ -164,7 +164,7 @@ $(document).ready(function () {
 
         // if we have a show name then sanitize and use it for the dir name
         if (showName.length) {
-            $.get(srRoot + '/home/addShows/sanitizeFileName', {name: showName}, function (data) {
+            $.get(srRoot + '/addShows/sanitizeFileName', {name: showName}, function (data) {
                 $('#displayText').html(sampleText.replace('||', data));
             });
         // if not then it's unknown
