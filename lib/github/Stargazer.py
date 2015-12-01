@@ -2,7 +2,16 @@
 
 # ########################## Copyrights and license ############################
 #                                                                              #
+# Copyright 2012 Christopher Gilbert <christopher.john.gilbert@gmail.com>      #
+# Copyright 2012 Steve English <steve.english@navetas.com>                     #
+# Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2012 Zearin <zearin@gonk.net>                                      #
+# Copyright 2013 AKFish <akfish@gmail.com>                                     #
+# Copyright 2013 Adrian Petrescu <adrian.petrescu@maluuba.com>                 #
+# Copyright 2013 Mark Roddy <markroddy@gmail.com>                              #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2013 martinqt <m.ki2@laposte.net>                                  #
+# Copyright 2015 Dan Vanderkam <danvdk@gmail.com>                              #
 #                                                                              #
 # This file is part of PyGithub. http://jacquev6.github.com/PyGithub/          #
 #                                                                              #
@@ -21,41 +30,35 @@
 #                                                                              #
 # ##############################################################################
 
-import github.GithubObject
+import github
 
 
-class StatsCodeFrequency(github.GithubObject.NonCompletableGithubObject):
+class Stargazer(github.GithubObject.NonCompletableGithubObject):
     """
-    This class represents statistics of code frequency. The reference can be found here http://developer.github.com/v3/repos/statistics/#get-the-number-of-additions-and-deletions-per-week
+    This class represents Stargazers with the date of starring as returned by
+    https://developer.github.com/v3/activity/starring/#alternative-response-with-star-creation-timestamps
     """
-
     @property
-    def week(self):
+    def starred_at(self):
         """
         :type: datetime.datetime
         """
-        return self._week.value
+        return self._starred_at.value
 
     @property
-    def additions(self):
+    def user(self):
         """
-        :type: int
+        :type: :class:`github.NamedUser`
         """
-        return self._additions.value
-
-    @property
-    def deletions(self):
-        """
-        :type: int
-        """
-        return self._deletions.value
+        return self._user.value
 
     def _initAttributes(self):
-        self._week = github.GithubObject.NotSet
-        self._additions = github.GithubObject.NotSet
-        self._deletions = github.GithubObject.NotSet
+        self._starred_at = github.GithubObject.NotSet
+        self._user = github.GithubObject.NotSet
+        self._url = github.GithubObject.NotSet
 
     def _useAttributes(self, attributes):
-        self._week = self._makeTimestampAttribute(attributes[0])
-        self._additions = self._makeIntAttribute(attributes[1])
-        self._deletions = self._makeIntAttribute(attributes[2])
+        if 'starred_at' in attributes:
+            self._starred_at = self._makeDatetimeAttribute(attributes['starred_at'])
+        if 'user' in attributes:
+            self._user = self._makeClassAttribute(github.NamedUser.NamedUser, attributes['user'])
