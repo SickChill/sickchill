@@ -2342,9 +2342,9 @@ var SICKRAGE = {
                     8: function(node) { return $(node).find("img").attr("alt"); },
                     9: function(node) { return $(node).find("img").attr("alt"); },
                 },
-                widgets: ['zebra'],
+                widgets: ['zebra', 'filter'],
                 headers: {
-                    0: { sorter: false},
+                    0: { sorter: false, filter: false},
                     1: { sorter: 'showNames'},
                     2: { sorter: 'quality'},
                     3: { sorter: 'sports'},
