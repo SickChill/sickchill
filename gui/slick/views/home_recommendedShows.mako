@@ -3,10 +3,8 @@
     import sickbeard
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/recommendedShows.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/home_recommendedShows.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -45,6 +43,6 @@
 </div>
 
 <br>
-<div id="trendingShows"></div>
+<div id="recommendedShows"></div>
 <br>
 </%block>

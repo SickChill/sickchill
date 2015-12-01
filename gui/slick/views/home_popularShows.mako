@@ -6,16 +6,13 @@
 <%block name="metas">
 <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 </%block>
-<%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/trendingShows.js"></script>
-</%block>
 <%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
     <h1 class="title">${title}</h1>
 % endif
-    
+
 <div id="tabs">
     <span>Sort By:</span>
     <select id="showsort" class="form-control form-control-inline input-sm">
@@ -42,22 +39,22 @@
         <div class="trakt_show" style="width:100%; margin-top:20px">
             <p class="red-text">Fetching of IMDB Data failed. Are you online?
             <strong>Exception:</strong>
-            <p>${imdb_exception}</p>        
+            <p>${imdb_exception}</p>
         </div>
     % else:
         % for cur_result in popular_shows:
             % if cur_result['imdb_tt'] in imdb_tt:
                 <% continue %>
             % endif
-            
+
             % if 'rating' in cur_result and cur_result['rating']:
                 <% cur_rating = cur_result['rating'] %>
                 <% cur_votes = cur_result['votes'] %>
             % else:
                 <% cur_rating = '0' %>
-                <% cur_votes = '0' %>        
+                <% cur_votes = '0' %>
             % endif
-            
+
             <div class="trakt_show" data-name="${cur_result['name']}" data-rating="${cur_rating}" data-votes="${cur_votes}">
                 <div class="traktContainer">
                     <div class="trakt-image">
@@ -68,13 +65,13 @@
                         ${(cur_result['name'], '<span>&nbsp;</span>')['' == cur_result['name']]}
                     </div>
 
-            <div class="clearfix">
-                    <p>${int(float(cur_rating)*10)}% <img src="${srRoot}/images/heart.png"></p>
-                    <i>${cur_votes} votes</i>
-                    <div class="traktShowTitleIcons">
-                        <a href="${srRoot}/addShows/newShow/?search_string=${cur_result['name']}" class="btn btn-xs">Add Show</a>
+                    <div class="clearfix">
+                        <p>${int(float(cur_rating)*10)}% <img src="${srRoot}/images/heart.png"></p>
+                        <i>${cur_votes} votes</i>
+                        <div class="traktShowTitleIcons">
+                            <a href="${srRoot}/addShows/newShow/?search_string=${cur_result['name']}" class="btn btn-xs">Add Show</a>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
         % endfor

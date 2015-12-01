@@ -2678,6 +2678,171 @@ var SICKRAGE = {
                 $.tablesorter.columnSelector.attachTo( $('#showListTable'), '#popover-target');
             });
         }
+    },
+    addShows: {
+        init: function() {
+            $('#tabs').tabs({
+                collapsible: true,
+                selected: (metaToBool('sickbeard.SORT_ARTICLE') ? -1 : 0)
+            });
+
+            $.initRemoteShowGrid = function(){
+                // Set defaults on page load
+                $('#showsort').val('original');
+                $('#showsortdirection').val('asc');
+
+                $('#showsort').on('change', function() {
+                    var sortCriteria;
+                    switch (this.value) {
+                        case 'original':
+                            sortCriteria = 'original-order';
+                            break;
+                        case 'rating':
+                            /* randomise, else the rating_votes can already
+                             * have sorted leaving this with nothing to do.
+                             */
+                            $('#container').isotope({sortBy: 'random'});
+                            sortCriteria = 'rating';
+                            break;
+                        case 'rating_votes':
+                            sortCriteria = ['rating', 'votes'];
+                            break;
+                        case 'votes':
+                            sortCriteria = 'votes';
+                            break;
+                        default:
+                            sortCriteria = 'name';
+                            break;
+                    }
+                    $('#container').isotope({
+                        sortBy: sortCriteria
+                    });
+                });
+
+                $('#showsortdirection').on('change', function() {
+                    $('#container').isotope({
+                        sortAscending: ('asc' === this.value)
+                    });
+                });
+
+                $('#container').imagesLoaded(function() {
+                    $('#container').isotope({
+                        sortBy: 'original-order',
+                        layoutMode: 'fitRows',
+                        getSortData: {
+                            name: function(itemElem) {
+                                var name = $(itemElem).attr('data-name') || '';
+                                return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^(The|A|An)\s/i, '')).toLowerCase();
+                            },
+                            rating: '[data-rating] parseInt',
+                            votes: '[data-votes] parseInt',
+                        }
+                    });
+                });
+            };
+
+            $.fn.loadRemoteShows = function(path, loadingTxt, errorTxt) {
+                $(this).html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt);
+                $(this).load(srRoot + path + ' #container', function(response, status) {
+                    if (status === "error") {
+                        $(this).empty().html(errorTxt);
+                    } else {
+                        $.initRemoteShowGrid();
+                    }
+                });
+            };
+        },
+        index: function() {
+
+        },
+        addExistingShow: function(){
+            $('#tableDiv').on('click', '#checkAll', function() {
+                var seasCheck = this;
+                $('.dirCheck').each(function() {
+                    this.checked = seasCheck.checked;
+                });
+            });
+
+            $('#submitShowDirs').click(function() {
+                var dirArr = [];
+                $('.dirCheck').each(function() {
+                    if (this.checked === true) {
+                        var show = $(this).attr('id');
+                        var indexer = $(this).closest('tr').find('select').val();
+                        dirArr.push(encodeURIComponent(indexer + '|' + show));
+                    }
+                });
+
+                if (dirArr.length === 0) {
+                    return false;
+                }
+
+                window.location.href = srRoot + '/addShows/addExistingShows?promptForSettings=' + ($('#promptForSettings').prop('checked') ? 'on' : 'off') + '&shows_to_add=' + dirArr.join('&shows_to_add=');
+            });
+
+            function loadContent() {
+                var url = '';
+                $('.dir_check').each(function(i,w) {
+                    if ($(w).is(':checked')) {
+                        if (url.length) {
+                            url += '&';
+                        }
+                        url += 'rootDir=' + encodeURIComponent($(w).attr('id'));
+                    }
+                });
+
+                $('#tableDiv').html('<img id="searchingAnim" src="' + srRoot + '/images/loading32.gif" height="32" width="32" /> loading folders...');
+                $.get(srRoot + '/addShows/massAddTable/', url, function(data) {
+                    $('#tableDiv').html(data);
+                    $("#addRootDirTable").tablesorter({
+                        //sortList: [[1,0]],
+                        widgets: ['zebra'],
+                        headers: {
+                            0: { sorter: false }
+                        }
+                    });
+                });
+            }
+
+            var lastTxt = '';
+            $('#rootDirText').change(function() {
+                if (lastTxt === $('#rootDirText').val()) {
+                    return false;
+                } else {
+                    lastTxt = $('#rootDirText').val();
+                }
+                $('#rootDirStaticList').html('');
+                $('#rootDirs option').each(function(i, w) {
+                    $('#rootDirStaticList').append('<li class="ui-state-default ui-corner-all"><input type="checkbox" class="cb dir_check" id="' + $(w).val() + '" checked=checked> <label for="' + $(w).val() + '"><b>' + $(w).val() + '</b></label></li>');
+                });
+                loadContent();
+            });
+
+            $('#rootDirStaticList').on('click', '.dir_check', loadContent);
+
+            $('#tableDiv').on('click', '.showManage', function(event) {
+                event.preventDefault();
+                $("#tabs").tabs('option', 'active', 0);
+                $('html,body').animate({scrollTop:0}, 1000);
+            });
+        },
+        recommendedShows: function(){
+            $('#recommendedShows').loadRemoteShows(
+                '/addShows/getRecommendedShows/',
+                'Loading recommended shows...',
+                'Trakt timed out, refresh page to try again'
+            );
+        },
+        trendingShows: function(){
+            $('#trendingShows').loadRemoteShows(
+                '/addShows/getTrendingShows/',
+                'Loading trending shows...',
+                'Trakt timed out, refresh page to try again'
+            );
+        },
+        popularShows: function(){
+            $.initRemoteShowGrid();
+        }
     }
 };
 
