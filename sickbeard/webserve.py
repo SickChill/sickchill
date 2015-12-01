@@ -2256,7 +2256,7 @@ class HomeAddShows(Home):
         super(HomeAddShows, self).__init__(*args, **kwargs)
 
     def index(self):
-        t = PageTemplate(rh=self, filename="home_addShows.mako")
+        t = PageTemplate(rh=self, filename="addShows.mako")
         return t.render(title='Add Shows', header='Add Shows', topmenu='home', controller="addShows", action="index")
 
     @staticmethod
@@ -2406,7 +2406,7 @@ class HomeAddShows(Home):
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
-        t = PageTemplate(rh=self, filename="home_newShow.mako")
+        t = PageTemplate(rh=self, filename="addShows_newShow.mako")
 
         indexer, show_dir, indexer_id, show_name = self.split_extra_show(show_to_add)
 
@@ -2454,7 +2454,7 @@ class HomeAddShows(Home):
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
-        t = PageTemplate(rh=self, filename="home_recommendedShows.mako")
+        t = PageTemplate(rh=self, filename="addShows_recommendedShows.mako")
         return t.render(title="Recommended Shows", header="Recommended Shows", enable_anime_options=False,
                 controller="addShows", action="recommendedShows")
 
@@ -2505,7 +2505,7 @@ class HomeAddShows(Home):
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
-        t = PageTemplate(rh=self, filename="home_trendingShows.mako")
+        t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
         return t.render(title="Trending Shows", header="Trending Shows", enable_anime_options=False,
                 controller="addShows", action="trendingShows")
 
@@ -2559,7 +2559,7 @@ class HomeAddShows(Home):
         """
         Fetches data from IMDB to show a list of popular shows.
         """
-        t = PageTemplate(rh=self, filename="home_popularShows.mako")
+        t = PageTemplate(rh=self, filename="addShows_popularShows.mako")
         e = None
 
         try:
@@ -2585,9 +2585,9 @@ class HomeAddShows(Home):
         """
         Prints out the page to add existing shows from a root dir
         """
-        t = PageTemplate(rh=self, filename="home_addExistingShow.mako")
+        t = PageTemplate(rh=self, filename="addShows_addExistingShow.mako")
         return t.render(enable_anime_options=False, title='Existing Show', header='Existing Show', topmenu="home",
-                controller="addShows", action="existingShows")
+                controller="addShows", action="addExistingShow")
 
     def addTraktShow(self, indexer_id, showName):
         if helpers.findCertainShow(sickbeard.showList, int(indexer_id)):

@@ -2989,7 +2989,7 @@ var SICKRAGE = {
                 });
             });
 
-            $('#submitShowDirs').click(function() {
+            $('#submitShowDirs').on('click', function() {
                 var dirArr = [];
                 $('.dirCheck').each(function() {
                     if (this.checked === true) {
@@ -3031,7 +3031,9 @@ var SICKRAGE = {
             }
 
             var lastTxt = '';
-            $('#rootDirText').change(function() {
+            // @TODO this needs a real name, for now this fixes the issue of the page not loading at all,
+            //       before I added this I couldn't get the directories to show in the table
+            var a = function() {
                 if (lastTxt === $('#rootDirText').val()) {
                     return false;
                 } else {
@@ -3042,7 +3044,11 @@ var SICKRAGE = {
                     $('#rootDirStaticList').append('<li class="ui-state-default ui-corner-all"><input type="checkbox" class="cb dir_check" id="' + $(w).val() + '" checked=checked> <label for="' + $(w).val() + '"><b>' + $(w).val() + '</b></label></li>');
                 });
                 loadContent();
-            });
+            };
+
+            a();
+
+            $('#rootDirText').on('change', a);
 
             $('#rootDirStaticList').on('click', '.dir_check', loadContent);
 
