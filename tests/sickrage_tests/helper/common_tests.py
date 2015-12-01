@@ -33,14 +33,41 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
-from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file, pretty_file_size, remove_extension
-from sickrage.helper.common import replace_extension, sanitize_filename
+from sickrage.helper.common import http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size
+from sickrage.helper.common import remove_extension, replace_extension, sanitize_filename, try_int
 
 
 class CommonTests(unittest.TestCase):
     """
     Test common
     """
+
+    def test_http_code_description(self):
+        test_cases = {
+            None: None,
+            '': None,
+            '300': None,
+            0: None,
+            123: None,
+            12.3: None,
+            -123: None,
+            -12.3: None,
+            300: 'Multiple Choices',
+            451: '(Redirect, Unavailable For Legal Reasons)',
+            497: 'HTTP to HTTPS',
+            499: '(Client Closed Request, Token required)',
+            600: None,
+        }
+
+        unicode_test_cases = {
+            u'': None,
+            u'300': None,
+        }
+
+        for test in test_cases, unicode_test_cases:
+            for (http_code, result) in test.iteritems():
+                self.assertEqual(http_code_description(http_code), result)
+
     def test_is_sync_file(self):
         """
         Test is sync file
@@ -300,6 +327,67 @@ class CommonTests(unittest.TestCase):
         for tests in test_cases, unicode_test_cases:
             for (filename, result) in tests.iteritems():
                 self.assertEqual(sanitize_filename(filename), result)
+
+    def test_try_int(self):
+        """
+        Test try int
+        """
+        test_cases = {
+            None: 0,
+            '': 0,
+            '123': 123,
+            '-123': -123,
+            '12.3': 0,
+            '-12.3': 0,
+            0: 0,
+            123: 123,
+            -123: -123,
+            12.3: 12,
+            -12.3: -12,
+        }
+
+        unicode_test_cases = {
+            u'': 0,
+            u'123': 123,
+            u'-123': -123,
+            u'12.3': 0,
+            u'-12.3': 0,
+        }
+
+        for test in test_cases, unicode_test_cases:
+            for (candidate, result) in test.iteritems():
+                self.assertEqual(try_int(candidate), result)
+
+    def test_try_int_with_default(self):
+        """
+        Test try int
+        """
+        default_value = 42
+        test_cases = {
+            None: default_value,
+            '': default_value,
+            '123': 123,
+            '-123': -123,
+            '12.3': default_value,
+            '-12.3': default_value,
+            0: 0,
+            123: 123,
+            -123: -123,
+            12.3: 12,
+            -12.3: -12,
+        }
+
+        unicode_test_cases = {
+            u'': default_value,
+            u'123': 123,
+            u'-123': -123,
+            u'12.3': default_value,
+            u'-12.3': default_value,
+        }
+
+        for test in test_cases, unicode_test_cases:
+            for (candidate, result) in test.iteritems():
+                self.assertEqual(try_int(candidate, default_value), result)
 
 
 if __name__ == '__main__':

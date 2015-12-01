@@ -52,8 +52,7 @@ from sickbeard import logger, classes
 from sickbeard.common import USER_AGENT
 from sickbeard import db
 from sickbeard.notifiers.synoindex import notifier as synoindex_notifier
-from sickbeard import clients
-from sickrage.helper.common import media_extensions, pretty_file_size, subtitle_extensions
+from sickrage.helper.common import http_code_description, media_extensions, pretty_file_size, subtitle_extensions
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
@@ -955,22 +954,6 @@ def restoreVersionedFile(backup_file, version):
     return True
 
 
-# try to convert to int, if it fails the default will be returned
-def tryInt(s, s_default=0):
-    """
-    Try to convert to int, if it fails, the default will be returned
-
-    :param s: Value to attempt to convert to int
-    :param s_default: Default value to return on failure (defaults to 0)
-    :return: integer, or default value on failure
-    """
-
-    try:
-        return int(s)
-    except Exception:
-        return s_default
-
-
 # generates a md5 hash of a file
 def md5_for_file(filename, block_size=2 ** 16):
     """
@@ -1420,17 +1403,6 @@ def _getTempDir():
     return ek(os.path.join, tempfile.gettempdir(), "sickrage-%s" % uid)
 
 
-def codeDescription(status_code):
-    """
-    Returns the description of the URL error code
-    """
-    if status_code in clients.http_error_code:
-        return clients.http_error_code[status_code]
-    else:
-        logger.log(u"Unknown error code: %s. Please submit an issue" % status_code, logger.ERROR)
-        return 'unknown'
-
-
 def _setUpSession(session, headers):
     """
     Returns a session initialized with default cache and parameter settings
@@ -1504,7 +1476,7 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
 
         if not resp.ok:
             logger.log(u"Requested getURL %s returned status code is %s: %s"
-                       % (url, resp.status_code, codeDescription(resp.status_code)), logger.DEBUG)
+                       % (url, resp.status_code, http_code_description(resp.status_code)), logger.DEBUG)
             return None
 
     except (SocketTimeout, TypeError) as e:
@@ -1549,7 +1521,7 @@ def download_file(url, filename, session=None, headers=None):
         with closing(session.get(url, allow_redirects=True, verify=session.verify)) as resp:
             if not resp.ok:
                 logger.log(u"Requested download url %s returned status code is %s: %s"
-                           % (url, resp.status_code, codeDescription(resp.status_code)), logger.DEBUG)
+                           % (url, resp.status_code, http_code_description(resp.status_code)), logger.DEBUG)
                 return False
 
             try:

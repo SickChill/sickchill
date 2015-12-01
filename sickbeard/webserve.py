@@ -53,7 +53,7 @@ from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
-from sickrage.helper.common import sanitize_filename
+from sickrage.helper.common import sanitize_filename, try_int
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOException, ShowDirectoryNotFoundException
@@ -557,7 +557,7 @@ class CalendarHandler(BaseHandler):
                 air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"],
                                                                   show['network']).astimezone(utc)
                 air_date_time_end = air_date_time + datetime.timedelta(
-                    minutes=helpers.tryInt(show["runtime"], 60))
+                    minutes=try_int(show["runtime"], 60))
 
                 # Create event for episode
                 ical += 'BEGIN:VEVENT\r\n'
@@ -1370,7 +1370,7 @@ class Home(WebRoot):
 
         showObj.exceptions = sickbeard.scene_exceptions.get_scene_exceptions(showObj.indexerid)
 
-        if helpers.tryInt(quality_preset, None):
+        if try_int(quality_preset, None):
             bestQualities = []
 
         if not location and not anyQualities and not bestQualities and not flatten_folders:
@@ -2726,7 +2726,7 @@ class HomeAddShows(Home):
 
         if not anyQualities:
             anyQualities = []
-        if not bestQualities or helpers.tryInt(quality_preset, None):
+        if not bestQualities or try_int(quality_preset, None):
             bestQualities = []
         if not isinstance(anyQualities, list):
             anyQualities = [anyQualities]
@@ -3304,7 +3304,7 @@ class Manage(Home, WebRoot):
 
             if quality_preset == 'keep':
                 anyQualities, bestQualities = Quality.splitQuality(showObj.quality)
-            elif helpers.tryInt(quality_preset, None):
+            elif try_int(quality_preset, None):
                 bestQualities = []
 
             exceptions_list = []

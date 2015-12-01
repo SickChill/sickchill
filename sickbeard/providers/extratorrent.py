@@ -23,9 +23,9 @@ from xml.parsers.expat import ExpatError
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import helpers
 from sickbeard.common import USER_AGENT
 from sickbeard.providers import generic
+from sickrage.helper.common import try_int
 
 
 class ExtraTorrentProvider(generic.TorrentProvider):
@@ -89,8 +89,8 @@ class ExtraTorrentProvider(generic.TorrentProvider):
                         title = item['title'].decode('utf-8')
                        # info_hash = item['info_hash']
                         size = int(item['size'])
-                        seeders = helpers.tryInt(item['seeders'], 0)
-                        leechers = helpers.tryInt(item['leechers'], 0)
+                        seeders = try_int(item['seeders'], 0)
+                        leechers = try_int(item['leechers'], 0)
                         download_url = item['enclosure']['@url'] if 'enclosure' in item else self._magnet_from_details(item['link'])
 
                         if not all([title, download_url]):
