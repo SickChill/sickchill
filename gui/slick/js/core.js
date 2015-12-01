@@ -1865,7 +1865,9 @@ var SICKRAGE = {
                     3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
                     4: function(node) { return $(node).find("span").text().toLowerCase(); },
                     5: function(node) { return $(node).find("span:first").text(); },
-                    6: function(node) { return $(node).find("img").attr("alt"); }
+                    6: function(node) { return $(node).data('show-size'); },
+                    7: function(node) { return $(node).find("img").attr("alt"); }
+
                 },
                 widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
                 headers: {
@@ -1874,7 +1876,8 @@ var SICKRAGE = {
                     2: { sorter: 'loadingNames' },
                     4: { sorter: 'quality' },
                     5: { sorter: 'eps' },
-                    6: { filter: 'parsed' }
+                    6: { sorter: 'digit' },
+                    7: { filter: 'parsed' }
                 },
                 widgetOptions: {
                     filter_columnFilters: true, // jshint ignore:line
