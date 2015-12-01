@@ -7,10 +7,10 @@ from base64 import b16encode, b32decode
 
 import sickbeard
 from sickbeard import logger
-from sickbeard.clients import http_error_code
 from bencode import bencode, bdecode
 import requests
 from bencode.BTL import BTFailure
+from sickrage.helper.common import http_code_description
 
 
 class GenericClient(object):
@@ -66,8 +66,10 @@ class GenericClient(object):
             logger.log(self.name + u': Invalid Username or Password, check your config', logger.ERROR)
             return False
 
-        if self.response.status_code in http_error_code.keys():
-            logger.log(self.name + u': ' + http_error_code[self.response.status_code], logger.DEBUG)
+        code_description = http_code_description(self.response.status_code)
+
+        if code_description is not None:
+            logger.log(self.name + u': ' + code_description, logger.DEBUG)
             return False
 
         logger.log(self.name + u': Response to ' + method.upper() + ' request is ' + self.response.text, logger.DEBUG)

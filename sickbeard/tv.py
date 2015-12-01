@@ -47,7 +47,7 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import network_timezones
 from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickrage.helper.common import dateTimeFormat, remove_extension, replace_extension, sanitize_filename
+from sickrage.helper.common import dateTimeFormat, remove_extension, replace_extension, sanitize_filename, try_int
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeDeletedException, EpisodeNotFoundException, ex
 from sickrage.helper.exceptions import MultipleEpisodesInDatabaseException, MultipleShowsInDatabaseException
@@ -1551,9 +1551,9 @@ class TVEpisode(object):
 
             sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
-            self.scene_season = helpers.tryInt(sqlResults[0]["scene_season"], 0)
-            self.scene_episode = helpers.tryInt(sqlResults[0]["scene_episode"], 0)
-            self.scene_absolute_number = helpers.tryInt(sqlResults[0]["scene_absolute_number"], 0)
+            self.scene_season = try_int(sqlResults[0]["scene_season"], 0)
+            self.scene_episode = try_int(sqlResults[0]["scene_episode"], 0)
+            self.scene_absolute_number = try_int(sqlResults[0]["scene_absolute_number"], 0)
 
             if self.scene_absolute_number == 0:
                 self.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(
