@@ -2700,5 +2700,6 @@ var UTIL = {
         UTIL.exec(controller, action);
     }
 };
-
-$(document).ready(UTIL.init);
+if (navigator.userAgent.indexOf('PhantomJS') === -1) {
+    $(document).ready(UTIL.init);
+}

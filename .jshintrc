@@ -12,6 +12,7 @@
     "latedef": true,
     "maxerr": 100,
     "maxlen": 1000,
+    "mocha": true,
     "noarg": true,
     "noempty": true,
     "nonbsp": true,
@@ -19,6 +20,8 @@
     "unused": true,
     "node": true,
     "predef": {
+        "chai": true,
+        "mocha": true,
         "srRoot": true,
         "themeSpinner": true,
         "metaToBool": true,
