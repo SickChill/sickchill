@@ -132,8 +132,8 @@ def revertEpisode(epObj):
                 logger.log(u"Found in history")
                 epObj.status = history_eps[epObj.episode]['old_status']
             else:
-                logger.log(u"WARNING: Episode not found in history. Setting it back to WANTED",
-                           logger.WARNING)
+                logger.log(u"Episode don't have a previous snatched status to revert. Setting it back to WANTED",
+                           logger.DEBUG)
                 epObj.status = WANTED
                 epObj.saveToDB()
 
