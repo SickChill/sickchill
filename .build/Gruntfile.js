@@ -117,7 +117,9 @@ module.exports = function(grunt) {
         'bower_concat',
         'uglify',
         'sass',
-        'cssmin'
+        'cssmin',
+        'jshint',
+        'mocha'
     ]);
     grunt.registerTask('travis', [
         'jshint',

@@ -11,7 +11,8 @@
   },
   "homepage": "https://github.com/SickRage/SickRage#readme",
   "scripts": {
-    "test": "mocha test"
+    "test": "grunt travis",
+    "security": "snyk test"
   },
   "devDependencies": {
     "chai": "^3.4.1",
