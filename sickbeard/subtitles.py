@@ -372,7 +372,7 @@ class SubtitlesFinder(object):
                 logger.log(u"Starting post-process with default settings now that we found subtitles")
                 processTV.processDir(sickbeard.TV_DOWNLOAD_DIR)
 
-    def run(self, force=False):  # pylint: disable=unused-argument
+    def run(self, force=False):
 
         if not sickbeard.USE_SUBTITLES:
             return
@@ -452,7 +452,11 @@ class SubtitlesFinder(object):
                     self.amActive = False
                     return
 
-                existing_subtitles = episode_object.subtitles
+                existing_subtitles = ""
+                if not force:
+                    existing_subtitles = episode_object.subtitles
+                else:
+                    logger.log(u'Forced subtitle search. Re-downloading subtitle')
 
                 try:
                     episode_object.download_subtitles()
