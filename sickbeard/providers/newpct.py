@@ -51,19 +51,19 @@ class newpctProvider(generic.TorrentProvider):
 
         """
         Search query:
-        http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=767&idioma_=1&bus_de_=All
+        http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=All&idioma_=1&bus_de_=All
 
         q => Show name
         category_ = Category "Shows" (767)
         idioma_ = Language Spanish (1)
-        bus_de_ = Date from (All, Semana)
+        bus_de_ = Date from (All, hoy)
 
         """
 
         self.search_params = {
             'l': 'doSearch',
             'q': '',
-            'category_': 767,
+            'category_': 'All',
             'idioma_': 1,
             'bus_de_': 'All'
         }
@@ -80,7 +80,7 @@ class newpctProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
 
             # Only search if user conditions are true
-            if self.onlyspasearch and lang_info != 'es' and mode is not 'RSS':
+            if self.onlyspasearch and lang_info != 'es' and mode != 'RSS':
                 logger.log(u"Show info is not spanish, skipping provider search", logger.DEBUG)
                 continue
 
@@ -88,8 +88,8 @@ class newpctProvider(generic.TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                self.search_params['q'] = search_string.strip() if mode is not 'RSS' else ''
-                self.search_params['bus_de_'] = 'All' if mode is not 'RSS' else 'semana'
+                self.search_params['q'] = search_string.strip() if mode != 'RSS' else ''
+                self.search_params['bus_de_'] = 'All' if mode != 'RSS' else 'hoy'
 
                 searchURL = self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params)
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
@@ -220,21 +220,23 @@ class newpctProvider(generic.TorrentProvider):
         title = title[22:]
 
         # Quality - Use re module to avoid case sensitive problems with replace
-        title = re.sub('\[HDTV 1080p.*]', '1080p HDTV x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[HDTV 720p.*]', '720p HDTV x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[HDTV 1080p[^\[]*]', '1080p HDTV x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[HDTV 720p[^\[]*]', '720p HDTV x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[ALTA DEFINICION 720p[^\[]*]', '720p HDTV x264', title, flags=re.IGNORECASE)
         title = re.sub('\[HDTV]', 'HDTV x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[DVD.*]', 'DVDrip x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[BluRay 1080p.*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[BluRay MicroHD.*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[MicroHD 1080p.*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[BLuRay.*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[BRrip.*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[BDrip.*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[DVD[^\[]*]', 'DVDrip x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[BluRay 1080p[^\[]*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[BluRay MicroHD[^\[]*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[MicroHD 1080p[^\[]*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[BLuRay[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[BRrip[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub('\[BDrip[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
 
         #Language
-        title = re.sub('\[Spanish.*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
-        title = re.sub(ur'\[Español.*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
-        title = re.sub(u'\[AC3 5\.1 Español.*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
+        title = re.sub('\[Spanish[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
+        title = re.sub('\[Castellano[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
+        title = re.sub(ur'\[Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
+        title = re.sub(u'\[AC3 5\.1 Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
 
         title += '-NEWPCT'
 
