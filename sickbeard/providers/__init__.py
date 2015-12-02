@@ -26,6 +26,7 @@ from sickbeard import logger
 from sickbeard.providers import btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, torrentz, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, nextgen, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, \
     freshontv, titansoftv, libertalia, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
+<<<<<<< HEAD
     scenetime, btdigg, strike, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, bitsnoop
 
 __all__ = [
@@ -38,6 +39,59 @@ __all__ = [
     'torrentproject', 'extratorrent', 'bitcannon', 'torrentz', 'pretome', 'gftracker',
     'hdspace', 'newpct', 'elitetorrent', 'bitsnoop'
 ]
+=======
+    scenetime, btdigg, strike, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, abnormal
+
+__all__ = ['womble',
+           'btn',
+           'thepiratebay',
+           'kat',
+           'torrentleech',
+           'scc',
+           'hdtorrents',
+           'torrentday',
+           'hdbits',
+           'hounddawgs',
+           'iptorrents',
+           'omgwtfnzbs',
+           'nextgen',
+           'speedcd',
+           'nyaatorrents',
+           'animenzb',
+           'torrentbytes',
+           'freshontv',
+           'titansoftv',
+           'libertalia',
+           'morethantv',
+           'bitsoup',
+           't411',
+           'tokyotoshokan',
+           'alpharatio',
+           'shazbat',
+           'rarbg',
+           'tntvillage',
+           'binsearch',
+           'bluetigers',
+           'cpasbien',
+           'fnt',
+           'xthor',
+           'scenetime',
+           'btdigg',
+           'strike',
+           'transmitthenet',
+           'tvchaosuk',
+           'torrentproject',
+           'extratorrent',
+           'bitcannon',
+           'torrentz',
+           'pretome',
+           'gftracker',
+           'hdspace',
+           'newpct',
+           'elitetorrent',
+           'abnormal'
+           ]
+>>>>>>> master
 
 
 def sortedProviderList(randomize=False):
