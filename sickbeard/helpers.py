@@ -62,6 +62,9 @@ from itertools import izip, cycle
 import shutil
 import shutil_custom
 
+import xml.etree.ElementTree as ET
+import json
+
 shutil.copyfile = shutil_custom.copyfile_custom
 
 # pylint: disable=W0212
@@ -1758,3 +1761,39 @@ def getDiskSpaceUsage(diskPath=None):
             return pretty_file_size(st.f_bavail * st.f_frsize)
     else:
         return False
+
+
+def getTVDBFromID(indexer_id, indexer):
+    tvdb_id = ''
+    if indexer == 'IMDB':
+        url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=%s" % (indexer_id)
+        data = urllib.urlopen(url)
+        try:
+            tree = ET.parse(data)
+            for show in tree.getiterator("Series"):
+                tvdb_id = show.findtext("seriesid")
+
+        except SyntaxError:
+            pass
+
+        return tvdb_id
+    elif indexer == 'ZAP2IT':
+        url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it=%s" % (indexer_id)
+        data = urllib.urlopen(url)
+        try:
+            tree = ET.parse(data)
+            for show in tree.getiterator("Series"):
+                tvdb_id = show.findtext("seriesid")
+
+        except SyntaxError:
+            pass
+
+        return tvdb_id
+    elif indexer == 'TVMAZE':
+        url = "http://api.tvmaze.com/shows/%s" % (indexer_id)
+        response = urllib2.urlopen(url)
+        data = json.load(response)
+        tvdb_id = data['externals']['thetvdb']
+        return tvdb_id
+    else:
+        return tvdb_id
