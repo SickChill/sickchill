@@ -21,6 +21,7 @@ import sickbeard
 from abc import abstractmethod
 from mimetypes import guess_type
 from os.path import isfile, join, normpath
+from sickrage.helper.common import try_int
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import MultipleShowObjectsException
 from sickrage.show.Show import Show
@@ -33,15 +34,12 @@ class GenericMedia:
         :param media_format: The format of the media to get. Must be either 'normal' or 'thumb'
         """
 
+        self.indexer_id = try_int(indexer_id, 0)
+
         if media_format in ('normal', 'thumb'):
             self.media_format = media_format
         else:
             self.media_format = 'normal'
-
-        try:
-            self.indexer_id = int(indexer_id)
-        except ValueError:
-            self.indexer_id = 0
 
     @abstractmethod
     def get_default_media_name(self):

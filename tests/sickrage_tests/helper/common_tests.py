@@ -46,6 +46,10 @@ class CommonTests(unittest.TestCase):
         test_cases = {
             None: None,
             '': None,
+            '123': None,
+            '12.3': None,
+            '-123': None,
+            '-12.3': None,
             '300': None,
             0: None,
             123: None,
@@ -61,6 +65,10 @@ class CommonTests(unittest.TestCase):
 
         unicode_test_cases = {
             u'': None,
+            u'123': None,
+            u'12.3': None,
+            u'-123': None,
+            u'-12.3': None,
             u'300': None,
         }
 
