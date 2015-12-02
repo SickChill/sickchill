@@ -17,16 +17,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+
 import os
 import sickbeard
+from sickrage.helper.common import try_int
 from sickrage.helper.encoding import ek
 
 from indexer_config import initConfig
 from indexer_config import indexerConfig
 
+
 class indexerApi(object):
     def __init__(self, indexerID=None):
-        self.indexerID = int(indexerID) if indexerID else None
+        self.indexerID = try_int(indexerID, None)
 
     def __del__(self):
         pass

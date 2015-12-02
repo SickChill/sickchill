@@ -3767,10 +3767,10 @@ class ConfigGeneral(Config):
         sickbeard.DEBUG = config.checkbox_to_value(debug)
         sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
-        sickbeard.COMING_EPS_MISSED_RANGE = config.to_int(coming_eps_missed_range, default=7)
+        sickbeard.COMING_EPS_MISSED_RANGE = try_int(coming_eps_missed_range, 7)
         sickbeard.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
 
-        sickbeard.WEB_PORT = config.to_int(web_port)
+        sickbeard.WEB_PORT = try_int(web_port)
         sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
         # sickbeard.WEB_LOG is set in config.change_LOG_DIR()
         if config.checkbox_to_value(encryption_version) == 1:
@@ -3787,10 +3787,10 @@ class ConfigGeneral(Config):
             sickbeard.DATE_PRESET = date_preset
 
         if indexer_default:
-            sickbeard.INDEXER_DEFAULT = config.to_int(indexer_default)
+            sickbeard.INDEXER_DEFAULT = try_int(indexer_default)
 
         if indexer_timeout:
-            sickbeard.INDEXER_TIMEOUT = config.to_int(indexer_timeout)
+            sickbeard.INDEXER_TIMEOUT = try_int(indexer_timeout)
 
         if time_preset:
             sickbeard.TIME_PRESET_W_SECONDS = time_preset
@@ -3930,14 +3930,14 @@ class ConfigSearch(Config):
         config.change_DAILYSEARCH_FREQUENCY(dailysearch_frequency)
 
         config.change_BACKLOG_FREQUENCY(backlog_frequency)
-        sickbeard.BACKLOG_DAYS = config.to_int(backlog_days, default=7)
+        sickbeard.BACKLOG_DAYS = try_int(backlog_days, 7)
 
         sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
         sickbeard.USE_TORRENTS = config.checkbox_to_value(use_torrents)
 
         sickbeard.NZB_METHOD = nzb_method
         sickbeard.TORRENT_METHOD = torrent_method
-        sickbeard.USENET_RETENTION = config.to_int(usenet_retention, default=500)
+        sickbeard.USENET_RETENTION = try_int(usenet_retention, 500)
 
         sickbeard.IGNORE_WORDS = ignore_words if ignore_words else ""
         sickbeard.TRACKERS_LIST = trackers_list if trackers_list else ""
@@ -3973,7 +3973,7 @@ class ConfigSearch(Config):
         sickbeard.NZBGET_CATEGORY_ANIME_BACKLOG = nzbget_category_anime_backlog
         sickbeard.NZBGET_HOST = config.clean_host(nzbget_host)
         sickbeard.NZBGET_USE_HTTPS = config.checkbox_to_value(nzbget_use_https)
-        sickbeard.NZBGET_PRIORITY = config.to_int(nzbget_priority, default=100)
+        sickbeard.NZBGET_PRIORITY = try_int(nzbget_priority, 100)
 
         sickbeard.TORRENT_USERNAME = torrent_username
         sickbeard.TORRENT_PASSWORD = torrent_password
@@ -4463,7 +4463,7 @@ class ConfigProviders(Config):
         # do the enable/disable
         for curProviderStr in provider_str_list:
             curProvider, curEnabled = curProviderStr.split(':')
-            curEnabled = config.to_int(curEnabled)
+            curEnabled = try_int(curEnabled)
 
             curProvObj = [x for x in sickbeard.providers.sortedProviderList() if
                           x.getID() == curProvider and hasattr(x, 'enabled')]
@@ -4869,7 +4869,7 @@ class ConfigNotifications(Config):
         sickbeard.EMAIL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(email_notify_ondownload)
         sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(email_notify_onsubtitledownload)
         sickbeard.EMAIL_HOST = config.clean_host(email_host)
-        sickbeard.EMAIL_PORT = config.to_int(email_port, default=25)
+        sickbeard.EMAIL_PORT = try_int(email_port, 25)
         sickbeard.EMAIL_FROM = email_from
         sickbeard.EMAIL_TLS = config.checkbox_to_value(email_tls)
         sickbeard.EMAIL_USER = email_user

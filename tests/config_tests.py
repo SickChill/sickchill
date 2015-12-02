@@ -37,7 +37,6 @@ Methods
     clean_host
     clean_hosts
     clean_url
-    to_int
     minimax
     check_setting_int
     check_setting_float
@@ -123,13 +122,6 @@ class ConfigTestBasic(unittest.TestCase):
                 self.assertNotEqual(config.clean_url(test_url.dirty), test_url.clean)
             else:
                 log.error('Test not defined for %s', test_url)
-
-    @unittest.skip('Test not implemented')
-    def test_to_int(self):
-        """
-        Test to_int
-        """
-        pass
 
     @unittest.skip('Test not implemented')
     def test_mini_max(self):
