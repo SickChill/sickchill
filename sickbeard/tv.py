@@ -467,7 +467,7 @@ class TVShow(object):
         logger.log(u"Loading all episodes from the DB", logger.DEBUG)
 
         myDB = db.DBConnection()
-        sql = "SELECT * FROM tv_episodes WHERE showid = ?"
+        sql = "SELECT season, episode, showid FROM tv_episodes WHERE showid = ?"
         sqlResults = myDB.select(sql, [self.indexerid])
 
         scannedEps = {}
@@ -501,8 +501,8 @@ class TVShow(object):
                 try:
                     cachedSeasons[curSeason] = cachedShow[curSeason]
                 except sickbeard.indexer_seasonnotfound, e:
-                    logger.log(u"%s: Error when trying to load the episode from %s. Message: %s " %
-                               (curShowid, sickbeard.indexerApi(self.indexer).name, e.message), logger.WARNING)
+                    logger.log(u"%s: %s (unaired/deleted) in the indexer %s. Removing existing records from database" %
+                               (curShowid, e.message, sickbeard.indexerApi(self.indexer).name), logger.DEBUG)                    
                     deleteEp = True
 
             if not curSeason in scannedEps:
