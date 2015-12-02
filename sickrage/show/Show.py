@@ -181,7 +181,7 @@ class Show:
             return 'Invalid show ID', None
 
         try:
-            show = Show.find(sickbeard.showList, int(indexer_id))
+            show = Show.find(sickbeard.showList, indexer_id)
         except MultipleShowObjectsException:
             return 'Unable to find the specified show', None
 

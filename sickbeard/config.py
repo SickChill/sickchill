@@ -28,6 +28,7 @@ from sickbeard import logger
 from sickbeard import naming
 from sickbeard import db
 
+from sickrage.helper.common import try_int
 from sickrage.helper.encoding import ek
 
 # Address poor support for scgi over unix domain sockets
@@ -198,7 +199,7 @@ def change_AUTOPOSTPROCESSER_FREQUENCY(freq):
 
     :param freq: New frequency
     """
-    sickbeard.AUTOPOSTPROCESSER_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_AUTOPOSTPROCESSER_FREQUENCY)
+    sickbeard.AUTOPOSTPROCESSER_FREQUENCY = try_int(freq, sickbeard.DEFAULT_AUTOPOSTPROCESSER_FREQUENCY)
 
     if sickbeard.AUTOPOSTPROCESSER_FREQUENCY < sickbeard.MIN_AUTOPOSTPROCESSER_FREQUENCY:
         sickbeard.AUTOPOSTPROCESSER_FREQUENCY = sickbeard.MIN_AUTOPOSTPROCESSER_FREQUENCY
@@ -212,7 +213,7 @@ def change_DAILYSEARCH_FREQUENCY(freq):
 
     :param freq: New frequency
     """
-    sickbeard.DAILYSEARCH_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
+    sickbeard.DAILYSEARCH_FREQUENCY = try_int(freq, sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
 
     if sickbeard.DAILYSEARCH_FREQUENCY < sickbeard.MIN_DAILYSEARCH_FREQUENCY:
         sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.MIN_DAILYSEARCH_FREQUENCY
@@ -226,7 +227,7 @@ def change_BACKLOG_FREQUENCY(freq):
 
     :param freq: New frequency
     """
-    sickbeard.BACKLOG_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_BACKLOG_FREQUENCY)
+    sickbeard.BACKLOG_FREQUENCY = try_int(freq, sickbeard.DEFAULT_BACKLOG_FREQUENCY)
 
     sickbeard.MIN_BACKLOG_FREQUENCY = sickbeard.get_backlog_cycle_time()
     if sickbeard.BACKLOG_FREQUENCY < sickbeard.MIN_BACKLOG_FREQUENCY:
@@ -241,7 +242,7 @@ def change_UPDATE_FREQUENCY(freq):
 
     :param freq: New frequency
     """
-    sickbeard.UPDATE_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_UPDATE_FREQUENCY)
+    sickbeard.UPDATE_FREQUENCY = try_int(freq, sickbeard.DEFAULT_UPDATE_FREQUENCY)
 
     if sickbeard.UPDATE_FREQUENCY < sickbeard.MIN_UPDATE_FREQUENCY:
         sickbeard.UPDATE_FREQUENCY = sickbeard.MIN_UPDATE_FREQUENCY
@@ -255,7 +256,7 @@ def change_SHOWUPDATE_HOUR(freq):
 
     :param freq: New frequency
     """
-    sickbeard.SHOWUPDATE_HOUR = to_int(freq, default=sickbeard.DEFAULT_SHOWUPDATE_HOUR)
+    sickbeard.SHOWUPDATE_HOUR = try_int(freq, sickbeard.DEFAULT_SHOWUPDATE_HOUR)
 
     if sickbeard.SHOWUPDATE_HOUR > 23:
         sickbeard.SHOWUPDATE_HOUR = 0
@@ -274,7 +275,7 @@ def change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency):
     if subtitles_finder_frequency == '' or subtitles_finder_frequency is None:
         subtitles_finder_frequency = 1
 
-    sickbeard.SUBTITLES_FINDER_FREQUENCY = to_int(subtitles_finder_frequency, 1)
+    sickbeard.SUBTITLES_FINDER_FREQUENCY = try_int(subtitles_finder_frequency, 1)
 
 
 def change_VERSION_NOTIFY(version_notify):
@@ -506,24 +507,13 @@ def clean_url(url):
     return cleaned_url
 
 
-def to_int(val, default=0):
-    """ Return int value of val or default on error """
-
-    try:
-        val = int(val)
-    except Exception:
-        val = default
-
-    return val
-
-
 ################################################################################
 # Check_setting_int                                                            #
 ################################################################################
 def minimax(val, default, low, high):
     """ Return value forced within range """
 
-    val = to_int(val, default=default)
+    val = try_int(val, default)
 
     if val < low:
         return low

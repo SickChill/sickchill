@@ -20,6 +20,7 @@ from datetime import datetime
 from datetime import timedelta
 from sickbeard.common import Quality
 from sickbeard.db import DBConnection
+from sickrage.helper.common import try_int
 
 
 class History:
@@ -108,12 +109,6 @@ class History:
 
     @staticmethod
     def _get_limit(limit):
-        try:
-            limit = int(limit)
-        except (TypeError, ValueError):
-            return 0
+        limit = try_int(limit, 0)
 
-        if limit < 0:
-            return 0
-
-        return int(limit)
+        return max(limit, 0)
