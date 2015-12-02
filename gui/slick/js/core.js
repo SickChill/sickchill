@@ -154,7 +154,7 @@ var SICKRAGE = {
                 $("[datetime]").timeago();
             }
 
-            $('a[data-no-redirect]').on('click', function(e){
+            $(document.body).on('click', 'a[data-no-redirect]', function(e){
                 e.preventDefault();
                 $.get($(this).attr('href'));
                 return false;
