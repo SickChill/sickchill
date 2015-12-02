@@ -43,6 +43,8 @@ class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=R0902,R0913
         self.minseed = None
         self.minleech = None
 
+        self.proper_strings = ['PROPER', 'REPACK']
+
         self.cache = BitSnoopCache(self)
 
     def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=R0912,R0913,R0914
