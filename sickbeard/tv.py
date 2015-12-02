@@ -465,12 +465,15 @@ class TVShow(object):
     def loadEpisodesFromDB(self):
 
         logger.log(u"Loading all episodes from the DB", logger.DEBUG)
-
-        myDB = db.DBConnection()
-        sql = "SELECT * FROM tv_episodes WHERE showid = ?"
-        sqlResults = myDB.select(sql, [self.indexerid])
-
         scannedEps = {}
+
+        try:
+            myDB = db.DBConnection()
+            sql = "SELECT season, episode, showid, show_name FROM tv_episodes JOIN tv_shows WHERE showid = indexer_id and showid = ?"
+            sqlResults = myDB.select(sql, [self.indexerid])
+        except Exception as error:
+            logger.log(u"Could not load episodes from the DB. Error: %s" % error, logger.ERROR)
+            return scannedEps
 
         lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
 
@@ -493,23 +496,24 @@ class TVShow(object):
             curSeason = int(curResult["season"])
             curEpisode = int(curResult["episode"])
             curShowid = int(curResult['showid'])
+            curShowName = str(curResult['show_name'])
 
-            logger.log(u"%s: loading Episodes from DB" % curShowid, logger.DEBUG)
+            logger.log(u"%s: Loading %s episodes from DB" % (curShowid, curShowName), logger.DEBUG)
             deleteEp = False
 
             if curSeason not in cachedSeasons:
                 try:
                     cachedSeasons[curSeason] = cachedShow[curSeason]
-                except sickbeard.indexer_seasonnotfound, e:
-                    logger.log(u"%s: Error when trying to load the episode from %s. Message: %s " %
-                               (curShowid, sickbeard.indexerApi(self.indexer).name, e.message), logger.WARNING)
+                except sickbeard.indexer_seasonnotfound as error:
+                    logger.log(u"%s: %s (unaired/deleted) in the indexer %s for %s. Removing existing records from database" %
+                               (curShowid, error.message, sickbeard.indexerApi(self.indexer).name, curShowName), logger.DEBUG)
                     deleteEp = True
 
             if not curSeason in scannedEps:
-                logger.log(u"Not curSeason in scannedEps", logger.DEBUG)
+                logger.log(u"%s: Not curSeason in scannedEps" % curShowid, logger.DEBUG)
                 scannedEps[curSeason] = {}
 
-            logger.log(u"%s: Loading episode S%02dE%02d from the DB" % (curShowid, curSeason or 0, curEpisode or 0), logger.DEBUG)
+            logger.log(u"%s: Loading %s S%02dE%02d from the DB" % (curShowid, curShowName, curSeason or 0, curEpisode or 0), logger.DEBUG)
 
             try:
                 curEp = self.getEpisode(curSeason, curEpisode)
@@ -524,11 +528,11 @@ class TVShow(object):
                 curEp.loadFromIndexer(tvapi=t, cachedSeason=cachedSeasons[curSeason])
                 scannedEps[curSeason][curEpisode] = True
             except EpisodeDeletedException:
-                logger.log(u"Tried loading an episode from the DB that should have been deleted, skipping it",
+                logger.log(u"%s: Tried loading %s S%02dE%02d from the DB that should have been deleted, skipping it" % (curShowid, curShowName, curSeason or 0, curEpisode or 0),
                            logger.DEBUG)
                 continue
 
-        logger.log(u"Finished loading all episodes from the DB", logger.DEBUG)
+        logger.log(u"%s: Finished loading all episodes for %s from the DB" % (curShowName, curShowid), logger.DEBUG)
 
         return scannedEps
 
@@ -1508,7 +1512,7 @@ class TVEpisode(object):
                         raise EpisodeNotFoundException("Couldn't find episode S%02dE%02d" % (season or 0, episode or 0))
 
     def loadFromDB(self, season, episode):
-        logger.log(u"%s: Loading episode details from DB for episode %s S%02dE%02d" % (self.show.indexerid, self.show.name, season or 0, episode or 0), logger.DEBUG)
+        logger.log(u"%s: Loading episode details for %s S%02dE%02d from DB" % (self.show.indexerid, self.show.name, season or 0, episode or 0), logger.DEBUG)
 
         myDB = db.DBConnection()
         sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
@@ -1591,8 +1595,8 @@ class TVEpisode(object):
         if episode is None:
             episode = self.episode
 
-        logger.log(u"%s: Loading episode details from %s for episode S%02dE%02d" %
-                   (self.show.indexerid, sickbeard.indexerApi(self.show.indexer).name, season or 0, episode or 0), logger.DEBUG)
+        logger.log(u"%s: Loading episode details for %s S%02dE%02d from %s" %
+                   (self.show.indexerid, self.show.name, season or 0, episode or 0, sickbeard.indexerApi(self.show.indexer).name), logger.DEBUG)
 
         indexer_lang = self.show.lang
 
@@ -1646,7 +1650,7 @@ class TVEpisode(object):
             # return False
 
         if getattr(myEp, 'absolute_number', None) is None:
-            logger.log(u"This episode %s - S%02dE%02d has no absolute number on %s" %(self.show.name, season or 0, episode or 0, sickbeard.indexerApi(self.indexer).name), logger.DEBUG)
+            logger.log(u"%s: This episode %s - S%02dE%02d has no absolute number on %s" %(self.show.indexerid, self.show.name, season or 0, episode or 0, sickbeard.indexerApi(self.indexer).name), logger.DEBUG)
         else:
             logger.log(u"%s: The absolute_number for S%02dE%02d is: %s " % (self.show.indexerid, season or 0, episode or 0, myEp["absolute_number"]), logger.DEBUG)
             self.absolute_number = int(myEp["absolute_number"])
@@ -1704,7 +1708,7 @@ class TVEpisode(object):
 
         if not ek(os.path.isfile, self.location):
             if self.airdate >= datetime.date.today() or self.airdate == datetime.date.fromordinal(1):
-                logger.log(u"Episode airs in the future or has no airdate, marking it %s" % statusStrings[UNAIRED], logger.DEBUG)
+                logger.log(u"%s: Episode airs in the future or has no airdate, marking it %s" % (self.show.indexerid, statusStrings[UNAIRED]), logger.DEBUG)
                 self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:
                 # Only do UNAIRED/UNKNOWN, it could already be snatched/ignored/skipped, or downloaded/archived to disconnected media
