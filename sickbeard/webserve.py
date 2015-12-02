@@ -2589,7 +2589,13 @@ class HomeAddShows(Home):
         return t.render(enable_anime_options=False, title='Existing Show', header='Existing Show', topmenu="home",
                 controller="addShows", action="addExistingShow")
 
-    def addTraktShow(self, indexer_id, showName):
+    def addShowByID(self, indexer_id, showName, indexer="TVDB"):
+
+        if indexer is not "TVDB":
+            tvdb_id = helpers.getTVDBFromID(indexer_id, indexer.upper())
+            if tvdb_id is not '':
+                indexer_id = tvdb_id
+
         if Show.find(sickbeard.showList, int(indexer_id)):
             return
 

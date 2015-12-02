@@ -69,7 +69,7 @@
                         <p>${int(float(cur_rating)*10)}% <img src="${srRoot}/images/heart.png"></p>
                         <i>${cur_votes} votes</i>
                         <div class="traktShowTitleIcons">
-                            <a href="${srRoot}/addShows/newShow/?search_string=${cur_result['name']}" class="btn btn-xs">Add Show</a>
+                            <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_result['imdb_tt']}&amp;showName=${cur_result['name']}&amp;indexer=IMDB" class="btn btn-xs" data-no-redirect>Add Show</a>
                         </div>
                     </div>
                 </div>
