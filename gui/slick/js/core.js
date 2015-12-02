@@ -153,6 +153,12 @@ var SICKRAGE = {
                 };
                 $("[datetime]").timeago();
             }
+
+            $('a[data-no-redirect]').on('click', function(e){
+                e.preventDefault();
+                $.get($(this).attr('href'));
+                return false;
+            });
         }
     },
     config: {
