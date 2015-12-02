@@ -510,7 +510,7 @@ class TVShow(object):
                     deleteEp = True
 
             if not curSeason in scannedEps:
-                logger.log(u"Not curSeason in scannedEps", logger.DEBUG)
+                logger.log(u"%s: Not curSeason in scannedEps" % curShowid, logger.DEBUG)
                 scannedEps[curSeason] = {}
 
             logger.log(u"%s: Loading %s S%02dE%02d from the DB" % (curShowid, curShowName, curSeason or 0, curEpisode or 0), logger.DEBUG)
@@ -1650,7 +1650,7 @@ class TVEpisode(object):
             # return False
 
         if getattr(myEp, 'absolute_number', None) is None:
-            logger.log(u"This episode %s - S%02dE%02d has no absolute number on %s" %(self.show.name, season or 0, episode or 0, sickbeard.indexerApi(self.indexer).name), logger.DEBUG)
+            logger.log(u"%s: This episode %s - S%02dE%02d has no absolute number on %s" %(self.show.indexerid, self.show.name, season or 0, episode or 0, sickbeard.indexerApi(self.indexer).name), logger.DEBUG)
         else:
             logger.log(u"%s: The absolute_number for S%02dE%02d is: %s " % (self.show.indexerid, season or 0, episode or 0, myEp["absolute_number"]), logger.DEBUG)
             self.absolute_number = int(myEp["absolute_number"])
@@ -1708,7 +1708,7 @@ class TVEpisode(object):
 
         if not ek(os.path.isfile, self.location):
             if self.airdate >= datetime.date.today() or self.airdate == datetime.date.fromordinal(1):
-                logger.log(u"Episode airs in the future or has no airdate, marking it %s" % statusStrings[UNAIRED], logger.DEBUG)
+                logger.log(u"%s: Episode airs in the future or has no airdate, marking it %s" % (self.show.indexerid, statusStrings[UNAIRED]), logger.DEBUG)
                 self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:
                 # Only do UNAIRED/UNKNOWN, it could already be snatched/ignored/skipped, or downloaded/archived to disconnected media
