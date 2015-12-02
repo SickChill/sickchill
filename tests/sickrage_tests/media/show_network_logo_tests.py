@@ -18,27 +18,36 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-Tests for SickRage
+Test ShowNetworkLogo
 """
 
-from __future__ import print_function
+from generic_media_tests import GenericMediaTests
 
-import helper
-import media
-import show
-import system
+import os
+import sys
 import unittest
 
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+
+from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
+
+
+class ShowNetworkLogoTests(GenericMediaTests):
+    """
+    Test ShowNetworkLogo
+    """
+
+    def test_get_default_media_name(self):
+        """
+        Test get_default_media_name
+        """
+
+        self.assertEqual(ShowNetworkLogo(0, '').get_default_media_name(), 'network/nonetwork.png')
+
+
 if __name__ == '__main__':
-    print('=====> Running all test in "sickrage_tests" <=====')
+    print('=====> Testing %s' % __file__)
 
-    TEST_MODULES = [
-        helper,
-        media,
-        show,
-        system,
-    ]
-
-    for test_module in TEST_MODULES:
-        SUITE = unittest.TestLoader().loadTestsFromModule(test_module)
-        unittest.TextTestRunner(verbosity=2).run(SUITE)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(ShowNetworkLogoTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
