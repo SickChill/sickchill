@@ -19,7 +19,7 @@
             <p>For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for it's episodes, and adds it to SickRage.</p>
         </div>
     </a>
-
+% if sickbeard.USE_TRAKT is True:
     <br><br>
     <a href="${srRoot}/addShows/trendingShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addtrendingshow"></div></div>
@@ -38,7 +38,7 @@
             <p>For shows that you haven't downloaded yet, this option recommends shows to add based on your Trakt.tv show library, creates a directory for its episodes, and adds it to SickRage.</p>
         </div>
     </a>
-
+% endif
     <br><br>
 
     <a href="${srRoot}/addShows/popularShows/" id="btnNewShow" class="btn btn-large">
