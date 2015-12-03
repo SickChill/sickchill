@@ -234,8 +234,7 @@
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
         </nav>
-
-        % if not submenu is UNDEFINED:
+        % if submenu:
         <div id="SubMenu" class="hidden-print">
             <span>
             <% first = True %>
@@ -261,7 +260,6 @@
             </span>
         </div>
         % endif
-
         % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and srLogin:
         <div class="alert alert-danger upgrade-notification hidden-print" role="alert">
             <span>You're using the ${sickbeard.BRANCH} branch. Please use 'master' unless specifically asked</span>

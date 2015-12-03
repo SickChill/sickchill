@@ -143,6 +143,7 @@ class PageTemplate(MakoTemplate):
         self.arguments['title'] = "FixME"
         self.arguments['header'] = "FixME"
         self.arguments['topmenu'] = "FixME"
+        self.arguments['submenu'] = []
         self.arguments['controller'] = "FixME"
         self.arguments['action'] = "FixME"
 
@@ -999,7 +1000,7 @@ class Home(WebRoot):
         size = 0
         for r in rows:
             NotifyList = {'emails':'', 'prowlAPIs':''}
-            if (r['notify_list'] and len(r['notify_list']) > 0):
+            if r['notify_list'] and len(r['notify_list']) > 0:
                 # First, handle legacy format (emails only)
                 if not r['notify_list'][0] == '{':
                     NotifyList['emails'] = r['notify_list']
