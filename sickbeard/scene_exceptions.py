@@ -235,7 +235,7 @@ def retrieve_exceptions():
     queries = []
     myDB = db.DBConnection('cache.db')
     for cur_indexer_id in exception_dict:
-        sql_ex = myDB.select("SELECT * FROM scene_exceptions WHERE indexer_id = ?;", [cur_indexer_id])
+        sql_ex = myDB.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ?;", [cur_indexer_id])
         existing_exceptions = [x["show_name"] for x in sql_ex]
         if not cur_indexer_id in exception_dict:
             continue

@@ -1052,8 +1052,8 @@ def get_show(name, tryIndexers=False):
 
         # try indexers
         if not showObj and tryIndexers:
-            showObj = Show.find(sickbeard.showList,
-                                      searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
+            showObj = Show.find(
+                sickbeard.showList, searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
 
         # try scene exceptions
         if not showObj:
@@ -1279,6 +1279,7 @@ def mapIndexersToShow(showObj):
             logger.log(u"Found indexer mapping in cache for show: " + showObj.name, logger.DEBUG)
             mapped[int(curResult['mindexer'])] = int(curResult['mindexer_id'])
             return mapped
+            break
     else:
         sql_l = []
         for indexer in sickbeard.indexerApi().indexers:

@@ -275,7 +275,7 @@ class ProperFinder:
         logger.log(u"Setting the last Proper search in the DB to " + str(when), logger.DEBUG)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM info")
+        sqlResults = myDB.select("SELECT last_proper_search FROM info")
 
         if len(sqlResults) == 0:
             myDB.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)",
@@ -289,11 +289,11 @@ class ProperFinder:
         """
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM info")
+        sqlResults = myDB.select("SELECT last_proper_search FROM info")
 
         try:
             last_proper_search = datetime.date.fromordinal(int(sqlResults[0]["last_proper_search"]))
-        except:
+        except Exception:
             return datetime.date.fromordinal(1)
 
         return last_proper_search
