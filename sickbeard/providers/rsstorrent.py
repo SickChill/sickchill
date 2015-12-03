@@ -101,7 +101,7 @@ class TorrentRssProvider(generic.TorrentProvider):
                 if not cookie_validator.match(self.cookies):
                     return (False, 'Cookie is not correctly formatted: ' + self.cookies)
 
-            # pylint: disable=W0212
+            # pylint: disable=protected-access
             # Access to a protected member of a client class
             data = self.cache._getRSSData()['entries']
             if not data:

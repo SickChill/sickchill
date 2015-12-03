@@ -19,7 +19,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=R0902,R0913
+# pylint: disable=too-many-instance-attributes,too-many-arguments
 
 import os
 import re
@@ -234,7 +234,7 @@ class NewznabProvider(generic.NZBProvider):
 
         return False
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=R0913,R0914
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=too-many-arguments,too-many-locals
         """
         Searches indexer using the params in search_params, either for latest releases, or a string/id search
         Returns: list of results in dict form

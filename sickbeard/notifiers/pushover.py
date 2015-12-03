@@ -30,8 +30,11 @@ from sickrage.helper.exceptions import ex
 
 API_URL = "https://api.pushover.net/1/messages.json"
 
-# pylint: disable=W0232
+
 class PushoverNotifier(object):
+    def __init__(self):
+        pass
+
     def test_notify(self, userKey=None, apiKey=None):
         return self._notifyPushover("This is a test notification from SickRage", 'Test', userKey=userKey, apiKey=apiKey, force=True)
 

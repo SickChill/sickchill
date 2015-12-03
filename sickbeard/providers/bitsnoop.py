@@ -26,7 +26,7 @@ from sickbeard.providers import generic
 from sickrage.helper.common import try_int
 
 
-class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=R0902,R0913
+class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=too-many-instance-attributes,too-many-arguments
     def __init__(self):
         generic.TorrentProvider.__init__(self, "BitSnoop")
 
@@ -47,7 +47,7 @@ class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=R0902,R0913
 
         self.cache = BitSnoopCache(self)
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=R0912,R0913,R0914
+    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=too-many-branches,too-many-arguments,too-many-locals
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}

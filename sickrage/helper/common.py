@@ -187,8 +187,7 @@ def remove_extension(filename):
     """
 
     if isinstance(filename, (str, unicode)) and '.' in filename:
-        # pylint: disable=W0612
-        basename, separator, extension = filename.rpartition('.')  # @UnusedVariable
+        basename, _, extension = filename.rpartition('.')
 
         if basename and extension.lower() in ['nzb', 'torrent'] + media_extensions:
             return basename
@@ -205,8 +204,7 @@ def replace_extension(filename, new_extension):
     """
 
     if isinstance(filename, (str, unicode)) and '.' in filename:
-        # pylint: disable=W0612
-        basename, separator, extension = filename.rpartition('.')  # @UnusedVariable
+        basename, _, _ = filename.rpartition('.')
 
         if basename:
             return '%s.%s' % (basename, new_extension)

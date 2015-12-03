@@ -98,7 +98,7 @@ class GenericProvider(object):
     def imageName(self):
         return self.getID() + '.png'
 
-    # pylint: disable=R0201,W0612
+    # pylint: disable=no-self-use,unused-variable
     # Method could be a function, Unused variable
     def _checkAuth(self):
         return True
@@ -219,7 +219,7 @@ class GenericProvider(object):
             try:
                 parser = createParser(file_name)
                 if parser:
-                    # pylint: disable=W0212
+                    # pylint: disable=protected-access
                     # Access to a protected member of a client class
                     mime_type = parser._getMimeType()
                     try:
@@ -251,8 +251,7 @@ class GenericProvider(object):
         quality = Quality.sceneQuality(title, anime)
         return quality
 
-    # pylint: disable=R0201,W0613
-    # Method could be a function, Unused argument
+    # pylint: disable=no-self-use,unused-argument
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
         return []
 
@@ -447,7 +446,7 @@ class GenericProvider(object):
             # add parsed result to cache for usage later on
             if addCacheEntry:
                 logger.log(u"Adding item from search to cache: " + title, logger.DEBUG)
-                # pylint: disable=W0212
+                # pylint: disable=protected-access
                 # Access to a protected member of a client class
                 ci = self.cache._addCacheEntry(title, url, parse_result=parse_result)
                 if ci is not None:
@@ -504,7 +503,7 @@ class GenericProvider(object):
 
         # check if we have items to add to cache
         if len(cl) > 0:
-            # pylint: disable=W0212
+            # pylint: disable=protected-access
             # Access to a protected member of a client class
             myDB = self.cache._getDB()
             myDB.mass_action(cl)

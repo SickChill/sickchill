@@ -19,8 +19,8 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 # TODO: break this up into separate files
-# pylint: disable=C0301,C0302
-# pylint: disable=E1101,E0202,C0111,C0103
+# pylint: disable=line-too-long,too-many-lines,abstract-method
+# pylint: disable=no-member,method-hidden,missing-docstring,invalid-name
 
 import io
 import os
@@ -68,10 +68,10 @@ from sickbeard.common import statusStrings
 try:
     import json
 except ImportError:
-    # pylint: disable=F0401
+    # pylint: disable=import-error
     import simplejson as json
 
-# pylint: disable=F0401
+# pylint: disable=import-error
 from tornado.web import RequestHandler
 
 indexer_ids = ["indexerid", "tvdbid"]
@@ -1708,7 +1708,7 @@ class CMD_SickBeardSearchTVRAGE(CMD_SickBeardSearchIndexers):
 
     def __init__(self, args, kwargs):
         # Leave this one as APICall so it doesnt try and search anything
-        # pylint: disable=W0233,W0231
+        # pylint: disable=non-parent-init-called,super-init-not-called
         ApiCall.__init__(self, args, kwargs)
 
     def run(self):

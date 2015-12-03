@@ -177,7 +177,7 @@ class Logger(object):
         else:
             sys.exit(1)
 
-    def submit_errors(self): # Too many local variables, too many branches, pylint: disable=R0912,R0914
+    def submit_errors(self): # Too many local variables, too many branches, pylint: disable=too-many-branches,too-many-locals
 
         submitter_result = u''
         issue_id = None
@@ -326,7 +326,7 @@ class Logger(object):
 
         return submitter_result, issue_id
 
-# pylint: disable=R0903
+# pylint: disable=too-few-public-methods
 class Wrapper(object):
     instance = Logger()
 
