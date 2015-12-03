@@ -21,7 +21,6 @@
     </a>
 
     <br><br>
-    % if sickbeard.USE_TRAKT is True:
     <a href="${srRoot}/addShows/trendingShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addtrendingshow"></div></div>
         <div class="buttontext">
@@ -41,7 +40,6 @@
     </a>
 
     <br><br>
-    % endif
 
     <a href="${srRoot}/addShows/popularShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addtrendingshow"></div></div>

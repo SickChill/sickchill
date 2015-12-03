@@ -4,7 +4,7 @@
     import datetime
     import sickbeard
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets, multiEpStrings
+    from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets, MULTI_EP_STRINGS
     from sickbeard import config
     from sickbeard import metadata
     from sickbeard.metadata.generic import GenericMetadata
@@ -466,7 +466,7 @@
                                 <span class="component-title">Multi-Episode Style:</span>
                                 <span class="component-desc">
                                     <select id="naming_multi_ep" name="naming_multi_ep" class="form-control input-sm">
-                                    % for cur_multi_ep in sorted(multiEpStrings.iteritems(), key=lambda x: x[1]):
+                                    % for cur_multi_ep in sorted(MULTI_EP_STRINGS.iteritems(), key=lambda x: x[1]):
                                         <option value="${cur_multi_ep[0]}" ${('', 'selected="selected"')[cur_multi_ep[0] == sickbeard.NAMING_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                     % endfor
                                     </select>
@@ -1024,7 +1024,7 @@
                                     <span class="component-title">Multi-Episode Style:</span>
                                     <span class="component-desc">
                                         <select id="naming_anime_multi_ep" name="naming_anime_multi_ep" class="form-control input-sm">
-                                        % for cur_multi_ep in sorted(multiEpStrings.iteritems(), key=lambda x: x[1]):
+                                        % for cur_multi_ep in sorted(MULTI_EP_STRINGS.iteritems(), key=lambda x: x[1]):
                                             <option value="${cur_multi_ep[0]}" ${('', 'selected="selected" class="selected"')[cur_multi_ep[0] == sickbeard.NAMING_ANIME_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                         % endfor
                                         </select>
