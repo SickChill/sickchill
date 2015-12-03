@@ -46,9 +46,7 @@
                             <label for="shows">
                                 <span class="component-title">Selected Shows</span>
                                 <span class="component-desc">
-                                    % for curName in sorted(showNames):
-                                    <span style="font-size: 14px;">${curName}</span><br>
-                                    % endfor
+                                    <span style="font-size: 14px;">${', '.join(sorted(showNames))}</span><br>
                                 </span>
                             </label>
                         </div>
@@ -94,7 +92,6 @@
                                             initial_quality = int(quality_value)
                                         else:
                                             initial_quality = common.SD
-                                        endif
 
                                         anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
                                     %>
