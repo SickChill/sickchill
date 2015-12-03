@@ -58,7 +58,7 @@ ENTRY_POINTS = {
     ]
 }
 
-# pylint: disable=W0212
+# pylint: disable=protected-access
 # Access to a protected member of a client class
 DISTRIBUTION._ep_map = pkg_resources.EntryPoint.parse_map(ENTRY_POINTS, DISTRIBUTION)
 pkg_resources.working_set.add(DISTRIBUTION)
@@ -310,7 +310,7 @@ class SubtitlesFinder(object):
         self.amActive = False
 
     @staticmethod
-    def subtitles_download_in_pp():  # pylint: disable=R0914
+    def subtitles_download_in_pp():  # pylint: disable=too-many-locals
         logger.log(u'Checking for needed subtitles in Post-Process folder', logger.INFO)
 
         providers = enabled_service_list()

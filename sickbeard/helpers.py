@@ -67,7 +67,7 @@ import json
 
 shutil.copyfile = shutil_custom.copyfile_custom
 
-# pylint: disable=W0212
+# pylint: disable=protected-access
 # Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
 
@@ -859,7 +859,7 @@ def create_https_certificates(ssl_cert, ssl_key):
 
     # Save the key and certificate to disk
     try:
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # Module has no member
         io.open(ssl_key, 'wb').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         io.open(ssl_cert, 'wb').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
@@ -1420,7 +1420,7 @@ def _setUpSession(session, headers):
     session = CacheControl(sess=session, cache=caches.FileCache(ek(os.path.join, cache_dir, 'sessions'), use_dir_lock=True), cache_etags=False)
 
     # request session clear residual referer
-    # pylint: disable=C0325
+    # pylint: disable=superfluous-parens
     # These extra parens are necessary!
     if 'Referer' in session.headers and 'Referer' not in (headers or {}):
         session.headers.pop('Referer')

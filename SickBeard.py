@@ -20,7 +20,7 @@
 
 # Check needed software dependencies to nudge users to fix their setup
 
-# pylint: disable=W0703
+# pylint: disable=broad-except
 # Catching too general exception
 
 import codecs
@@ -48,7 +48,7 @@ if sys.version_info < (2, 7):
 # https://mail.python.org/pipermail/python-dev/2014-September/136300.html
 if sys.version_info >= (2, 7, 9):
     import ssl
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # Access to a protected member of a client class
     ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -80,7 +80,7 @@ signal.signal(signal.SIGTERM, sickbeard.sig_handler)
 
 
 class SickRage(object):
-    # pylint: disable=R0902
+    # pylint: disable=too-many-instance-attributes
     # Too many instance attributes
     def __init__(self):
         # system event callback for shutdown/restart
@@ -135,7 +135,7 @@ class SickRage(object):
 
         return help_msg
 
-    # pylint: disable=R0912,R0915
+    # pylint: disable=too-many-branches,too-many-statements
     # Too many branches
     # Too many statements
     def start(self):
@@ -152,7 +152,7 @@ class SickRage(object):
         except (locale.Error, IOError):
             sickbeard.SYS_ENCODING = 'UTF-8'
 
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         if not sickbeard.SYS_ENCODING or sickbeard.SYS_ENCODING.lower() in ('ansi_x3.4-1968', 'us-ascii', 'ascii', 'charmap') or \
             (sys.platform.startswith('win') and sys.getwindowsversion()[0] >= 6 and str(getattr(sys.stdout, 'device', sys.stdout).encoding).lower() in ('cp65001', 'charmap')):
             sickbeard.SYS_ENCODING = 'UTF-8'
@@ -162,7 +162,7 @@ class SickRage(object):
             reload(sys)
 
         try:
-            # pylint: disable=E1101
+            # pylint: disable=no-member
             # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
             sys.setdefaultencoding(sickbeard.SYS_ENCODING)
         except Exception:
@@ -382,7 +382,7 @@ class SickRage(object):
         """
         Fork off as a daemon
         """
-        # pylint: disable=E1101,W0212
+        # pylint: disable=no-member,protected-access
         # An object is accessed for a non-existent member.
         # Access to a protected member of a client class
         # Make a non-session-leader child process
@@ -527,7 +527,7 @@ class SickRage(object):
 
         # system exit
         logger.shutdown()  # Make sure the logger has stopped, just in case
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # Access to a protected member of a client class
         os._exit(0)
 
