@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import time
 import datetime
 import itertools
@@ -25,12 +24,12 @@ import urllib2
 import sickbeard
 from sickbeard import db
 from sickbeard import logger
-from sickbeard import helpers
 from sickbeard.common import Quality
 from sickbeard.rssfeeds import getFeed
 from sickbeard import show_name_helpers
 from sickrage.helper.encoding import ss
 from sickrage.helper.exceptions import AuthException, ex
+from sickrage.show.Show import Show
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 
@@ -246,7 +245,7 @@ class TVCache(object):
             # create showObj from indexer_id if available
             showObj = None
             if indexer_id:
-                showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
+                showObj = Show.find(sickbeard.showList, indexer_id)
 
             try:
                 myParser = NameParser(showObj=showObj)
@@ -333,7 +332,7 @@ class TVCache(object):
                 continue
 
             # get the show object, or if it's not one of our shows then ignore it
-            showObj = helpers.findCertainShow(sickbeard.showList, int(curResult["indexerid"]))
+            showObj = Show.find(sickbeard.showList, int(curResult["indexerid"]))
             if not showObj:
                 continue
 

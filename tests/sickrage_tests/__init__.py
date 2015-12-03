@@ -1,6 +1,7 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
-# URL: https://sickrage.github.io
+# URL: https://SickRage.GitHub.io
 # Git: https://github.com/SickRage/SickRage.git
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -16,28 +17,28 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-from helper.common_tests import CommonTests
-from helper.quality_tests import QualityTests
-from show.coming_episodes_tests import ComingEpisodesTests
-from show.history_tests import HistoryTests
-from show.show_tests import ShowTests
-from system.restart_tests import RestartTests
-from system.shutdown_tests import ShutdownTests
-from unittest import TestLoader, TextTestRunner
+"""
+Tests for SickRage
+"""
+
+from __future__ import print_function
+
+import helper
+import media
+import show
+import system
+import unittest
 
 if __name__ == '__main__':
     print('=====> Running all test in "sickrage_tests" <=====')
 
-    test_classes = [
-        ComingEpisodesTests,
-        CommonTests,
-        HistoryTests,
-        QualityTests,
-        RestartTests,
-        ShowTests,
-        ShutdownTests,
+    TEST_MODULES = [
+        helper,
+        media,
+        show,
+        system,
     ]
 
-    for test_class in test_classes:
-        suite = TestLoader().loadTestsFromTestCase(test_class)
-        TextTestRunner(verbosity=2).run(suite)
+    for test_module in TEST_MODULES:
+        SUITE = unittest.TestLoader().loadTestsFromModule(test_module)
+        unittest.TextTestRunner(verbosity=2).run(SUITE)

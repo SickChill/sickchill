@@ -17,24 +17,32 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Test torrents
+"""
 
-import sys, os.path
+# pylint: disable=line-too-long
+
+import os.path
+import sys
+import unittest
+
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import unittest
-
-import urlparse
-import tests.test_lib as test
 from bs4 import BeautifulSoup
 from sickbeard.helpers import getURL
-from sickbeard.tv import TVEpisode, TVShow
-import requests
-
 from sickbeard.providers.bitcannon import BitCannonProvider
+from sickbeard.tv import TVEpisode, TVShow
+import requests  # pylint: disable=import-error
+import tests.test_lib as test
+import urlparse
+
 
 class TorrentBasicTests(test.SickbeardTestDBCase):
-
+    """
+    Test torrents
+    """
     @classmethod
     def setUpClass(cls):
         cls.shows = []
@@ -50,18 +58,26 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         cls.shows.append(show)
 
     def test_bitcannon(self):
+        """
+        Test bitcannon
+        """
         bitcannon = BitCannonProvider()
         bitcannon.custom_url = ""        # true testing requires a valid URL here (e.g., "http://localhost:3000/")
         bitcannon.api_key = ""
 
         if len(bitcannon.custom_url) > 0:
+            # pylint: disable=protected-access
             search_strings_list = bitcannon._get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
             for search_strings in search_strings_list:
-                bitcannon._doSearch(search_strings)   # {'Episode': ['Italian Works S05E10']}
+                bitcannon._doSearch(search_strings)   # {'Episode': ['Italian Works S05E10']} # pylint: disable=protected-access
 
         return True
 
-    def test_search(self):
+    @staticmethod
+    def test_search():  # pylint: disable=too-many-locals
+        """
+        Test searching
+        """
         url = 'http://kickass.to/'
         search_url = 'http://kickass.to/usearch/American%20Dad%21%20S08%20-S08E%20category%3Atv/?field=seeders&sorder=desc'
 
@@ -77,23 +93,23 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         # cleanup memory
         soup.clear(True)
 
-        #Continue only if one Release is found
+        # Continue only if one Release is found
         if len(torrent_rows) < 2:
             print "The data returned does not contain any torrents"
             return
 
-        for tr in torrent_rows[1:]:
-
+        for row in torrent_rows[1:]:
             try:
-                link = urlparse.urljoin(url, (tr.find('div', {'class': 'torrentname'}).find_all('a')[1])['href'])
-                _id = tr.get('id')[-7:]
-                title = (tr.find('div', {'class': 'torrentname'}).find_all('a')[1]).text \
-                    or (tr.find('div', {'class': 'torrentname'}).find_all('a')[2]).text
-                url = tr.find('a', 'imagnet')['href']
-                verified = True if tr.find('a', 'iverify') else False
-                trusted = True if tr.find('img', {'alt': 'verified'}) else False
-                seeders = int(tr.find_all('td')[-2].text)
-                leechers = int(tr.find_all('td')[-1].text)
+                link = urlparse.urljoin(url, (row.find('div', {'class': 'torrentname'}).find_all('a')[1])['href'])
+                _id = row.get('id')[-7:]
+                title = (row.find('div', {'class': 'torrentname'}).find_all('a')[1]).text \
+                    or (row.find('div', {'class': 'torrentname'}).find_all('a')[2]).text
+                url = row.find('a', 'imagnet')['href']
+                verified = True if row.find('a', 'iverify') else False
+                trusted = True if row.find('img', {'alt': 'verified'}) else False
+                seeders = int(row.find_all('td')[-2].text)
+                leechers = int(row.find_all('td')[-1].text)
+                _ = link, _id, verified, trusted, seeders, leechers
             except (AttributeError, TypeError):
                 continue
 
@@ -104,5 +120,5 @@ if __name__ == "__main__":
     print "STARTING - Torrent Basic TESTS"
     print "=================="
     print "######################################################################"
-    suite = unittest.TestLoader().loadTestsFromTestCase(TorrentBasicTests)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(TorrentBasicTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)

@@ -1,12 +1,16 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
+    import datetime
+    import re
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
+    from sickbeard import sbdatetime
+    from sickbeard.helpers import anon_url
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/recommendedShows.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/home_recommendedShows.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:

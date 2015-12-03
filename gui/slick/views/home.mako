@@ -12,65 +12,82 @@
 </%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
+
+<table style="width: 100%;" class="home-header">
+    <tr>
+        <td nowrap>
+            % if not header is UNDEFINED:
+                <h1 class="header" style="margin: 0;">${header}</h1>
+            % else:
+                <h1 class="title" style="margin: 0;">${title}</h1>
+            % endif
+        </td>
+
+        <td align="right">
+            <div>
+                % if sickbeard.HOME_LAYOUT != 'poster':
+                    <span class="show-option">
+                        <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
+                    </span>
+
+                    <span class="show-option">
+                        <button type="button" class="resetsorting btn btn-inline">Clear Filter(s)</button>
+                    </span>
+                % endif
+
+                % if sickbeard.HOME_LAYOUT == 'poster':
+                    <span class="show-option"> Poster Size:
+                        <div style="width: 100px; display: inline-block; margin-left: 7px;" id="posterSizeSlider"></div>
+                    </span>
+
+                    <span class="show-option">
+                        <input id="filterShowName" class="form-control form-control-inline input-sm input200" type="search" placeholder="Filter Show Name">
+                    </span>
+
+                    <span class="show-option"> Sort By:
+                        <select id="postersort" class="form-control form-control-inline input-sm">
+                            <option value="name" data-sort="${srRoot}/setPosterSortBy/?sort=name" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'name']}>Name</option>
+                            <option value="date" data-sort="${srRoot}/setPosterSortBy/?sort=date" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'date']}>Next Episode</option>
+                            <option value="network" data-sort="${srRoot}/setPosterSortBy/?sort=network" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'network']}>Network</option>
+                            <option value="progress" data-sort="${srRoot}/setPosterSortBy/?sort=progress" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'progress']}>Progress</option>
+                        </select>
+                    </span>
+
+                    <span class="show-option"> Direction:
+                        <select id="postersortdirection" class="form-control form-control-inline input-sm">
+                            <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>A &#10140; Z</option>
+                            <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Z &#10140; A</option>
+                        </select>
+                    </span>
+                % endif
+
+                <span class="show-option"> Layout:
+                    <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+                        <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
+                        <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
+                        <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
+                        <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
+                    </select>
+                </span>
+            </div>
+        </td>
+    </tr>
+</table>
+% if sickbeard.HOME_LAYOUT == 'poster':
+    <div class="loading-spinner"></div>
 % endif
-
-<div id="HomeLayout" class="pull-right hidden-print" style="margin-top: -40px;">
-    % if sickbeard.HOME_LAYOUT != 'poster':
-    <span>
-        <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
-    </span>
-    &nbsp;
-    <span>
-        <button type="button" class="resetsorting btn btn-inline">Clear Filter(s)</button>
-    </span>
-    % endif
-
-    % if sickbeard.HOME_LAYOUT == 'poster':
-    &nbsp;
-    <span>
-        <input id="filterShowName" class="form-control form-control-inline input-sm input200" type="search" placeholder="Filter Show Name">
-    </span>
-    &nbsp;
-    <span> Sort By:
-        <select id="postersort" class="form-control form-control-inline input-sm">
-            <option value="name" data-sort="${srRoot}/setPosterSortBy/?sort=name" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'name']}>Name</option>
-            <option value="date" data-sort="${srRoot}/setPosterSortBy/?sort=date" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'date']}>Next Episode</option>
-            <option value="network" data-sort="${srRoot}/setPosterSortBy/?sort=network" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'network']}>Network</option>
-            <option value="progress" data-sort="${srRoot}/setPosterSortBy/?sort=progress" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'progress']}>Progress</option>
-        </select>
-    </span>
-    &nbsp;
-    <span> Direction:
-        <select id="postersortdirection" class="form-control form-control-inline input-sm">
-            <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>A &#10140; Z</option>
-            <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Z &#10140; A</option>
-        </select>
-    </span>
-    % endif
-
-    &nbsp;
-    <span> Layout:
-        <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
-            <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
-            <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
-            <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
-        </select>
-    </span>
-</div>
 
 % for curShowlist in showlists:
     <% curListType = curShowlist[0] %>
     <% myShowList = list(curShowlist[1]) %>
     % if curListType == "Anime":
         <h1 class="header">Anime List</h1>
+        % if sickbeard.HOME_LAYOUT == 'poster':
+            <div class="loading-spinner"></div>
+    % endif
     % endif
 % if sickbeard.HOME_LAYOUT == 'poster':
-<div id="${('container', 'container-anime')[curListType == 'Anime' and sickbeard.HOME_LAYOUT == 'poster']}" class="clearfix">
+<div id="${('container', 'container-anime')[curListType == 'Anime' and sickbeard.HOME_LAYOUT == 'poster']}" class="show-grid clearfix">
 <div class="posterview">
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
     % if curLoadingShow.show is None:
@@ -116,23 +133,22 @@
         if not cur_total:
             cur_total = 0
 
-    if cur_total != 0:
-        download_stat = str(cur_downloaded)
-        download_stat_tip = "Downloaded: " + str(cur_downloaded)
-        if cur_snatched > 0:
-            download_stat = download_stat
-            download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
+    download_stat = str(cur_downloaded)
+    download_stat_tip = "Downloaded: " + str(cur_downloaded)
 
-        download_stat = download_stat + " / " + str(cur_total)
-        download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
-    else:
-        download_stat = '?'
-        download_stat_tip = "no data"
+    if cur_snatched:
+        download_stat = download_stat + "+" + str(cur_snatched)
+        download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
+
+    download_stat = download_stat + " / " + str(cur_total)
+    download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
 
     nom = cur_downloaded
-    den = cur_total
-    if den == 0:
+    if cur_total:
+        den = cur_total
+    else:
         den = 1
+        download_stat_tip = "Unaired"
 
     progressbar_percent = nom * 100 / den
 
@@ -183,29 +199,31 @@
 % endif
         </div>
 
-        <table width="100%" cellspacing="1" border="0" cellpadding="0">
-            <tr>
-                <td class="show-table">
-                    <span class="show-dlstats" title="${download_stat_tip}">${download_stat}</span>
-                </td>
+        <div class="show-details">
+            <table class="show-details" width="100%" cellspacing="1" border="0" cellpadding="0">
+                <tr>
+                    <td class="show-table">
+                        <span class="show-dlstats" title="${download_stat_tip}">${download_stat}</span>
+                    </td>
 
-                <td class="show-table">
-                    % if sickbeard.HOME_LAYOUT != 'simple':
-                        % if curShow.network:
-                            <span title="${curShow.network}"><img class="show-network-image" src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
+                    <td class="show-table">
+                        % if sickbeard.HOME_LAYOUT != 'simple':
+                            % if curShow.network:
+                                <span title="${curShow.network}"><img class="show-network-image" src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
+                            % else:
+                                <span title="No Network"><img class="show-network-image" src="${srRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+                            % endif
                         % else:
-                            <span title="No Network"><img class="show-network-image" src="${srRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+                            <span title="${curShow.network}">${curShow.network}</span>
                         % endif
-                    % else:
-                        <span title="${curShow.network}">${curShow.network}</span>
-                    % endif
-                </td>
+                    </td>
 
-                <td class="show-table">
-                    ${renderQualityPill(curShow.quality, showTitle=True, overrideClass="show-quality")}
-                </td>
-            </tr>
-        </table>
+                    <td class="show-table">
+                        ${renderQualityPill(curShow.quality, showTitle=True, overrideClass="show-quality")}
+                    </td>
+                </tr>
+            </table>
+        </div>
 
     </div>
 
@@ -225,7 +243,7 @@
             <th>Network</th>
             <th>Quality</th>
             <th>Downloads</th>
-            ## <th>Size</th>
+            <th>Size</th>
             <th>Active</th>
             <th>Status</th>
         </tr>
@@ -233,13 +251,13 @@
 
     <tfoot class="hidden-print">
         <tr>
-            <th rowspan="1" colspan="1" align="center"><a href="${srRoot}/home/addShows/">Add ${('Show', 'Anime')[curListType == 'Anime']}</a></th>
+            <th rowspan="1" colspan="1" align="center"><a href="${srRoot}/addShows/">Add ${('Show', 'Anime')[curListType == 'Anime']}</a></th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
-            ## <th>&nbsp;</th> // This is needed for size
+            <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
         </tr>
@@ -282,6 +300,7 @@
     cur_snatched = 0
     cur_downloaded = 0
     cur_total = 0
+    show_size = 0
     download_stat_tip = ''
 
     if curShow.indexerid in show_stat:
@@ -300,8 +319,11 @@
         if not cur_total:
             cur_total = 0
 
+        show_size = show_stat[curShow.indexerid]['show_size']
+
     download_stat = str(cur_downloaded)
     download_stat_tip = "Downloaded: " + str(cur_downloaded)
+
     if cur_snatched:
         download_stat = download_stat + "+" + str(cur_snatched)
         download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
@@ -391,8 +413,7 @@
             <span class="visible-print-inline">${download_stat}</span>
         </td>
 
-        ## <% show_size = sickbeard.helpers.get_size(curShow._location) %>
-        ## <td align="center" data-show-size="${show_size}">${pretty_file_size(show_size)}</td>
+        <td align="center" data-show-size="${show_size}">${pretty_file_size(show_size)}</td>
 
         <td align="center">
             <% paused = int(curShow.paused) == 0 and curShow.status == 'Continuing' %>

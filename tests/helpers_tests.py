@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.7
+# coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://github.com/SiCKRAGETV/SickRage
+# URL: http://github.com/SickRage/SickRage
 #
 # This file is part of SickRage.
 #
@@ -21,7 +22,6 @@
 Test sickbeard.helpers
 
 Methods:
-    isValidLanguage
     fixGlob
     indentXML
     remove_non_release_groups
@@ -29,7 +29,6 @@ Methods:
     isRarFile
     isBeingWritten
     remove_file_failed
-    findCertainShow
     makeDir
     searchDBForShow
     searchIndexerForShowID
@@ -55,7 +54,6 @@ Methods:
     create_https_certificates
     backupVersionedFile
     restoreVersionedFile
-    tryInt
     md5_for_file
     get_lan_ip
     check_url
@@ -76,7 +74,6 @@ Methods:
     mapIndexersToShow
     touchFile
     _getTempDir
-    codeDescription
     _setUpSession
     getURL
     download_file
@@ -90,16 +87,14 @@ Methods:
     getDiskSpaceUsage
 """
 
-import sys
 import os.path
+import sys
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import unittest
-
-from sickbeard.helpers import isValidLanguage, remove_non_release_groups
-from babelfish import language  # pylint: disable=import-error
+from sickbeard.helpers import remove_non_release_groups
 
 TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
 TEST_CASES = {
@@ -462,13 +457,6 @@ class HelpersShowTests(unittest.TestCase):
     Test show methods
     """
     @unittest.skip('Not yet implemented')
-    def test_find_certain_show(self):
-        """
-        Test findCertainShow
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
     def test_search_db_for_show(self):
         """
         Test searchDBForShow
@@ -590,26 +578,6 @@ class HelpersMiscTests(unittest.TestCase):
     """
     Test misc helper methods
     """
-    @unittest.expectedFailure
-    def test_is_valid_language(self):
-        # TODO: Determine why this fails and at such a high failure %
-        """
-        Test isValidLanguage
-        """
-        exception_count = 0
-        total = 0
-        for lang in language.LANGUAGES:
-            total += 1
-            try:
-                self.assertTrue(isValidLanguage(lang), lang)
-            except NameError:
-                exception_count += 1
-            except Exception as error:
-                raise error
-        if exception_count > 0:
-            raise Exception('Language failure ratio: %s [%s/%s]' %
-                            (100.0 * exception_count/total, exception_count, total))
-
     @unittest.skip('Not yet implemented')
     def test_fix_glob(self):
         """
@@ -660,23 +628,9 @@ class HelpersMiscTests(unittest.TestCase):
         pass
 
     @unittest.skip('Not yet implemented')
-    def test_try_int(self):
-        """
-        Test tryInt
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
     def test_full_sanitize_scene_name(self):
         """
         Test full_sanitizeSceneName
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_code_description(self):
-        """
-        Test codeDescription
         """
         pass
 

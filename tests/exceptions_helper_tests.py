@@ -1,42 +1,75 @@
 # -*- coding: utf-8 -*-
 
-import sys, os.path
+"""
+Test exceptions helpers
+"""
+
+# pylint: disable=line-too-long
+
+import os.path
+import sys
+import unittest
+
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import unittest
+from sickbeard import ex
 
-import test_lib as test
-from sickrage.helper.exceptions import ex
 
 class ExceptionsHelperTestCase(unittest.TestCase):
+    """
+    Test exceptions helper
+    """
 
     def test_none_returns_empty(self):
+        """
+        Test none returns empty
+        """
         self.assertEqual(ex(None), u'')
 
     def test_empty_args_returns_empty(self):
+        """
+        Test empty args returns empty
+        """
         self.assertEqual(ex(Exception()), u'')
 
     def test_args_of_none_returns_empty(self):
+        """
+        Test args of none returns empty
+        """
         self.assertEqual(ex(Exception(None, None)), u'')
 
-    def test_Exception_returns_args_string(self):
+    def test_ex_ret_args_string(self):
+        """
+        Test exception returns args strings
+        :return:
+        """
         self.assertEqual(ex(Exception('hi')), 'hi')
 
-# TODO why doesn't this work?
-#    def test_Exception_returns_args_ustring(self):
-#        self.assertEqual(ex(Exception('\xc3\xa4h')), u'äh')
+    # TODO why doesn't this work?@
+    @unittest.skip('Errors with unicode conversion')
+    def test_ex_ret_args_ustring(self):
+        """
+        Test exception returns args ustring
+        """
+        self.assertEqual(ex(Exception('\xc3\xa4h')), u'äh')
 
-    def test_Exception_returns_concatenated_args_strings(self):
+    def test_ex_ret_concat_args_strings(self):
+        """
+        Test exception returns concatenated args and strings
+        """
         self.assertEqual(ex(Exception('lots', 'of', 'strings')), 'lots : of : strings')
 
-    def test_Exception_returns_stringified_args(self):
+    def test_ex_ret_stringed_args(self):
+        """
+        Test exception returns stringed args
+        """
         self.assertEqual(ex(Exception(303)), 'error 303')
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        suite = unittest.TestLoader().loadTestsFromName('exceptions_helper_tests.ExceptionsHelperTestCase.test_' + sys.argv[1])
-        unittest.TextTestRunner(verbosity=2).run(suite)
+        SUITE = unittest.TestLoader().loadTestsFromName('exceptions_helper_tests.ExceptionsHelperTestCase.test_' + sys.argv[1])
+        unittest.TextTestRunner(verbosity=2).run(SUITE)
     else:
-        suite = unittest.TestLoader().loadTestsFromTestCase(ExceptionsHelperTestCase)
-        unittest.TextTestRunner(verbosity=2).run(suite)
+        SUITE = unittest.TestLoader().loadTestsFromTestCase(ExceptionsHelperTestCase)
+        unittest.TextTestRunner(verbosity=2).run(SUITE)

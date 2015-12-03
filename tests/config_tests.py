@@ -37,7 +37,6 @@ Methods
     clean_host
     clean_hosts
     clean_url
-    to_int
     minimax
     check_setting_int
     check_setting_float
@@ -46,11 +45,11 @@ Methods
 
 # pylint: disable=line-too-long
 
-import sys
-import os.path
-import unittest
-import logging
 from collections import namedtuple
+import logging
+import os.path
+import sys
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -119,17 +118,10 @@ class ConfigTestBasic(unittest.TestCase):
                     self.assertEqual(config.clean_url(test_url.dirty), test_url.clean)
             elif test_url.expected_result is True:
                 self.assertEqual(config.clean_url(test_url.dirty), test_url.clean)
-            elif not test_url.expected_result is False:
+            elif test_url.expected_result is False:
                 self.assertNotEqual(config.clean_url(test_url.dirty), test_url.clean)
             else:
                 log.error('Test not defined for %s', test_url)
-
-    @unittest.skip('Test not implemented')
-    def test_to_int(self):
-        """
-        Test to_int
-        """
-        pass
 
     @unittest.skip('Test not implemented')
     def test_mini_max(self):

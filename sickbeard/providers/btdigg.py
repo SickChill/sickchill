@@ -31,11 +31,12 @@ class BTDIGGProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, "BTDigg")
 
-        self.supportsBacklog = True
         self.public = True
         self.ratio = 0
         self.urls = {'url': u'https://btdigg.org/',
                      'api': u'https://api.btdigg.org/api/private-341ada3245790954/s02'}
+
+        self.proper_strings = ['PROPER', 'REPACK']
 
         self.url = self.urls['url']
 

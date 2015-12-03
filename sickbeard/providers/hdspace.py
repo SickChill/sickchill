@@ -31,7 +31,6 @@ class HDSpaceProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, "HDSpace")
 
-        self.supportsBacklog = True
 
         self.username = None
         self.password = None

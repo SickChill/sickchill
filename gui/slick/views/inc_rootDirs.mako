@@ -26,4 +26,4 @@
     <input class="btn" type="button" id="deleteRootDir" value="Delete" />
     <input class="btn" type="button" id="defaultRootDir" value="Set as Default *" />
 </div>
-<input type="text" style="display: none" id="rootDirText" />
+<input type="text" style="display: none" id="rootDirText" autocapitalize="off" />

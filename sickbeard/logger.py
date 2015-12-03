@@ -33,10 +33,11 @@ from github import Github, InputFileContent
 
 import sickbeard
 from sickbeard import classes
-from sickrage.helper.common import dateTimeFormat
-from sickrage.helper.exceptions import ex
-from sickrage.helper.encoding import ss
 
+from sickrage.helper.encoding import ss
+from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ex
+from sickrage.helper.common import dateTimeFormat
 
 # log levels
 ERROR = logging.ERROR
@@ -102,7 +103,7 @@ class Logger(object):
         self.submitter_running = False
 
     def initLogging(self, consoleLogging=False, fileLogging=False, debugLogging=False):
-        self.logFile = self.logFile or os.path.join(sickbeard.LOG_DIR, 'sickrage.log')
+        self.logFile = self.logFile or ek(os.path.join, sickbeard.LOG_DIR, 'sickrage.log')
         self.debugLogging = debugLogging
         self.consoleLogging = consoleLogging
         self.fileLogging = fileLogging
@@ -213,12 +214,12 @@ class Logger(object):
             # read log file
             log_data = None
 
-            if os.path.isfile(self.logFile):
+            if ek(os.path.isfile, self.logFile):
                 with io.open(self.logFile, 'r', encoding='utf-8') as f:
                     log_data = f.readlines()
 
             for i in range(1, int(sickbeard.LOG_NR)):
-                if os.path.isfile(self.logFile + ".%i" % i) and (len(log_data) <= 500):
+                if ek(os.path.isfile, self.logFile + ".%i" % i) and (len(log_data) <= 500):
                     with io.open(self.logFile + ".%i" % i, 'r', encoding='utf-8') as f:
                         log_data += f.readlines()
 

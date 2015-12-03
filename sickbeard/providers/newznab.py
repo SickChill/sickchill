@@ -37,6 +37,8 @@ from sickbeard import db
 from sickbeard.common import Quality
 from sickbeard.providers import generic
 from sickrage.helper.encoding import ek
+from sickrage.show.Show import Show
+from sickrage.helper.common import try_int
 from sickbeard.common import USER_AGENT
 
 
@@ -63,7 +65,6 @@ class NewznabProvider(generic.NZBProvider):
         self.enable_daily = enable_daily
         self.enable_backlog = enable_backlog
 
-        self.supportsBacklog = True
 
         # 0 in the key spot indicates that no key is needed
         self.needs_auth = self.key != '0'
@@ -110,7 +111,7 @@ class NewznabProvider(generic.NZBProvider):
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
-        url = os.path.join(self.url, 'api?') +  urllib.urlencode(params)
+        url = ek(os.path.join, self.url, 'api?') +  urllib.urlencode(params)
         data = self.getURL(url)
         if not data:
             error_string = u"Error getting xml for [%s]" % url
@@ -258,7 +259,7 @@ class NewznabProvider(generic.NZBProvider):
 
         params['maxage'] = min(params['maxage'], sickbeard.USENET_RETENTION)
 
-        search_url = os.path.join(self.url, 'api?') + urllib.urlencode(params)
+        search_url = ek(os.path.join, self.url, 'api?') + urllib.urlencode(params)
         logger.log(u"Search url: %s" % search_url, logger.DEBUG)
         data = self.getURL(search_url)
         if not data:
@@ -286,11 +287,11 @@ class NewznabProvider(generic.NZBProvider):
                 continue
 
             seeders = leechers = None
-            size = helpers.tryInt(item.size, -1)
+            size = try_int(item.size, -1)
             for attr in item.findAll('newznab:attr') + item.findAll('torznab:attr'):
-                size = helpers.tryInt(attr['value'], -1) if attr['name'] == 'size' else size
-                seeders = helpers.tryInt(attr['value'], 1) if attr['name'] == 'seeders' else seeders
-                leechers = helpers.tryInt(attr['value'], 0) if attr['name'] == 'peers' else leechers
+                size = try_int(attr['value'], -1) if attr['name'] == 'size' else size
+                seeders = try_int(attr['value'], 1) if attr['name'] == 'seeders' else seeders
+                leechers = try_int(attr['value'], 0) if attr['name'] == 'peers' else leechers
 
             if not size or (torznab and (seeders is None or leechers is None)):
                 continue
@@ -305,14 +306,12 @@ class NewznabProvider(generic.NZBProvider):
 
         return results
 
-
     def _get_size(self, item):
         """
         Gets size info from a result item
         Returns int size or -1
         """
-        return helpers.tryInt(item.get('size', -1), -1)
-
+        return try_int(item.get('size', -1), -1)
 
     def findPropers(self, search_date=datetime.datetime.today()):
         """
@@ -334,7 +333,7 @@ class NewznabProvider(generic.NZBProvider):
             return results
 
         for sqlshow in sqlResults:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
+            self.show = Show.find(sickbeard.showList, int(sqlshow["showid"]))
             if self.show:
                 curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
                 searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')

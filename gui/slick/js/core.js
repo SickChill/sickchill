@@ -22,6 +22,26 @@ var configSuccess = function(){
     $('#prowl_show').trigger('notify');
 };
 
+function metaToBool(pyVar){
+    var meta = $('meta[data-var="' + pyVar + '"]').data('content');
+    if(meta === undefined){
+        console.log(pyVar + ' is empty, did you forget to add this to main.mako?');
+        return meta;
+    } else {
+        meta = (isNaN(meta) ? meta.toLowerCase() : meta.toString());
+        return !(meta === 'false' || meta === 'none' || meta === '0');
+    }
+}
+
+function getMeta(pyVar){
+    return $('meta[data-var="' + pyVar + '"]').data('content');
+}
+
+function isMeta(pyVar, result){
+    var reg = new RegExp(result.length > 1 ? result.join('|') : result);
+    return (reg).test($('meta[data-var="' + pyVar + '"]').data('content'));
+}
+
 var SICKRAGE = {
     common: {
         init: function() {
@@ -133,6 +153,12 @@ var SICKRAGE = {
                 };
                 $("[datetime]").timeago();
             }
+
+            $(document.body).on('click', 'a[data-no-redirect]', function(e){
+                e.preventDefault();
+                $.get($(this).attr('href'));
+                return false;
+            });
         }
     },
     config: {
@@ -868,14 +894,21 @@ var SICKRAGE = {
             // we have to call this function on dom ready to create the devices select
             getPushbulletDevices();
 
-            // @TODO Find out what notify_data actually does since it doesn't seem to be a real function
             $('#email_show').on('change', function() {
                 var key = parseInt($('#email_show').val(), 10);
-                $('#email_show_list').val(key >= 0 ? notify_data[key.toString()].list : ''); // jshint ignore:line
+                $.getJSON(srRoot + "/home/loadShowNotifyLists", function(notifyData) {
+                    if (notifyData._size > 0) {
+                        $('#email_show_list').val(key >= 0 ? notifyData[key.toString()].list : '');
+                    }
+                });
             });
             $('#prowl_show').on('change', function() {
                 var key = parseInt($('#prowl_show').val(), 10);
-                $('#prowl_show_list').val(key >= 0 ? notify_data[key.toString()].prowl_notify_list  : ''); // jshint ignore:line
+                $.getJSON(srRoot + "/home/loadShowNotifyLists", function(notifyData) {
+                    if (notifyData._size > 0) {
+                        $('#prowl_show_list').val(key >= 0 ? notifyData[key.toString()].prowl_notify_list  : '');   // jshint ignore:line
+                    }
+                });
             });
 
             // Update the internal data struct anytime settings are saved to the server
@@ -887,10 +920,8 @@ var SICKRAGE = {
             });
 
             function loadShowNotifyLists() {
-                $.get(srRoot + "/home/loadShowNotifyLists", function(data) {
-                    var list, html, s;
-                    list = $.parseJSON(data); // @TODO The line below this is the same as the $('#email_show') function above
-                    notify_data = list; // jshint ignore:line
+                $.getJSON(srRoot + "/home/loadShowNotifyLists", function(list) {
+                    var html, s;
                     if (list._size === 0) { return; }
 
                     // Convert the 'list' object to a js array of objects so that we can sort it
@@ -1754,13 +1785,70 @@ var SICKRAGE = {
 
             // Handle filtering in the poster layout
             $('#filterShowName').on('input', _.debounce(function (e) {
-                $('#container, #container-anime').isotope({
+                $('.show-grid').isotope({
                     filter: function () {
                       var name = $('div.show-title', this).text();
                       return (name.toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1);
                     }
                 });
             }, 500));
+
+            function resizePosters(newSize) {
+                var fontSize, logoWidth, borderRadius, borderWidth;
+                if (newSize < 125) { // small
+                    borderRadius = 3;
+                    borderWidth = 4;
+                } else if (newSize < 175) { // medium
+                    fontSize = 9;
+                    logoWidth = 40;
+                    borderRadius = 4;
+                    borderWidth = 5;
+                } else { // large
+                    fontSize = 11;
+                    logoWidth = 50;
+                    borderRadius = 6;
+                    borderWidth = 6;
+                }
+
+                // If there's a poster popup, remove it before resizing
+                $('#posterPopup').remove();
+
+                if (fontSize === undefined) {
+                    $('.show-details').hide();
+                } else {
+                    $('.show-details').show();
+                    $('.show-dlstats, .show-quality').css('fontSize', fontSize);
+                    $('.show-network-image').css('width', logoWidth);
+                }
+
+                $('.show-container').css({
+                    width: newSize,
+                    borderWidth: borderWidth,
+                    borderRadius: borderRadius
+                });
+            }
+
+            var posterSize;
+            if (typeof(Storage) !== 'undefined') {
+                posterSize = parseInt(localStorage.getItem('posterSize'));
+            }
+            if (typeof(posterSize) !== 'number' || isNaN(posterSize)) {
+                posterSize = 188;
+            }
+            resizePosters(posterSize);
+
+            $('#posterSizeSlider').slider({
+                min: 75,
+                max: 250,
+                value: posterSize,
+                change: function (e, ui) {
+                    if (typeof(Storage) !== 'undefined') {
+                        localStorage.setItem('posterSize', ui.value);
+                    }
+                    resizePosters(ui.value);
+                    $('.show-grid').isotope('layout');
+                }
+            });
 
             // This needs to be refined to work a little faster.
             $('.progressbar').each(function(){
@@ -1786,7 +1874,9 @@ var SICKRAGE = {
                     3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
                     4: function(node) { return $(node).find("span").text().toLowerCase(); },
                     5: function(node) { return $(node).find("span:first").text(); },
-                    6: function(node) { return $(node).find("img").attr("alt"); }
+                    6: function(node) { return $(node).data('show-size'); },
+                    7: function(node) { return $(node).find("img").attr("alt"); }
+
                 },
                 widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
                 headers: {
@@ -1795,7 +1885,8 @@ var SICKRAGE = {
                     2: { sorter: 'loadingNames' },
                     4: { sorter: 'quality' },
                     5: { sorter: 'eps' },
-                    6: { filter: 'parsed' }
+                    6: { sorter: 'digit' },
+                    7: { filter: 'parsed' }
                 },
                 widgetOptions: {
                     filter_columnFilters: true, // jshint ignore:line
@@ -1862,43 +1953,98 @@ var SICKRAGE = {
                 sortAppend: [[2,0]]
             });
 
-            // @TODO we need to check if doing a $('') with a comma would be quicker than a seperate
-            //       isotope function for each as it does here
-            $.each([$('#container'), $('#container-anime')], function (){
-                this.isotope({
+            $('.show-grid').imagesLoaded(function () {
+                $('.loading-spinner').hide();
+                $('.show-grid').show().isotope({
                     itemSelector: '.show-container',
                     sortBy : getMeta('sickbeard.POSTER_SORTBY'),
                     sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
                     layoutMode: 'masonry',
                     masonry: {
-                        columnWidth: 13,
                         isFitWidth: true
                     },
                     getSortData: {
-                        name: function(itemElem){
+                        name: function (itemElem) {
                             var name = $(itemElem).attr('data-name');
                             return (metaToBool('sickbeard.SORT_ARTICLE') ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
                         },
                         network: '[data-network]',
-                        date: function(itemElem){
+                        date: function (itemElem) {
                             var date = $(itemElem).attr('data-date');
                             return date.length && parseInt(date, 10) || Number.POSITIVE_INFINITY;
                         },
-                        progress: function(itemElem){
+                        progress: function (itemElem) {
                             var progress = $(itemElem).attr('data-progress');
                             return progress.length && parseInt(progress, 10) || Number.NEGATIVE_INFINITY;
                         }
                     }
                 });
+
+                // When posters are small enough to not display the .show-details
+                // table, display a larger poster when hovering.
+                var posterHoverTimer = null;
+                $('.show-container').on('mouseenter', function () {
+                    var poster = $(this);
+                    if (poster.find('.show-details').css('display') !== 'none') {
+                        return;
+                    }
+                    posterHoverTimer = setTimeout(function () {
+                        posterHoverTimer = null;
+                        $('#posterPopup').remove();
+                        var popup = poster.clone().attr({
+                            id: 'posterPopup'
+                        });
+                        var origLeft = poster.offset().left;
+                        var origTop  = poster.offset().top;
+                        popup.css({
+                            position: 'absolute',
+                            margin: 0,
+                            top: origTop,
+                            left: origLeft
+                        });
+                        popup.find('.show-details').show();
+                        popup.on('mouseleave', function () {
+                            $(this).remove();
+                        });
+                        popup.zIndex(9999);
+                        popup.appendTo('body');
+
+                        var height = 438, width = 250;
+                        var newTop = (origTop+poster.height()/2)-(height/2);
+                        var newLeft = (origLeft+poster.width()/2)-(width/2);
+
+                        // Make sure the popup isn't outside the viewport
+                        var margin = 5;
+                        var scrollTop = $(window).scrollTop();
+                        var scrollLeft = $(window).scrollLeft();
+                        var scrollBottom = scrollTop + $(window).innerHeight();
+                        var scrollRight = scrollLeft + $(window).innerWidth();
+                        if (newTop < scrollTop+margin) { newTop = scrollTop+margin; }
+                        if (newLeft < scrollLeft+margin) { newLeft = scrollLeft+margin; }
+                        if (newTop+height+margin > scrollBottom) { newTop = scrollBottom-height-margin; }
+                        if (newLeft+width+margin > scrollRight) { newLeft = scrollRight-width-margin; }
+
+                        popup.animate({
+                            top: newTop,
+                            left: newLeft,
+                            width: 250,
+                            height: 438
+                        });
+                    }, 300);
+                }).on('mouseleave', function () {
+                    if (posterHoverTimer !== null) {
+                        clearTimeout(posterHoverTimer);
+                    }
+                });
             });
 
             $('#postersort').on('change', function(){
-                $('#container, #container-anime').isotope({sortBy: $(this).val()});
+                $('.show-grid').isotope({sortBy: $(this).val()});
                 $.get($(this).find('option[value=' + $(this).val() +']').attr('data-sort'));
             });
 
             $('#postersortdirection').on('change', function(){
-                $('#container, #container-anime').isotope({sortAscending: ($(this).val() === 'true')});
+                $('.show-grid').isotope({sortAscending: ($(this).val() === 'true')});
                 $.get($(this).find('option[value=' + $(this).val() +']').attr('data-sort'));
             });
 
@@ -2262,9 +2408,9 @@ var SICKRAGE = {
                     8: function(node) { return $(node).find("img").attr("alt"); },
                     9: function(node) { return $(node).find("img").attr("alt"); },
                 },
-                widgets: ['zebra'],
+                widgets: ['zebra', 'filter'],
                 headers: {
-                    0: { sorter: false},
+                    0: { sorter: false, filter: false},
                     1: { sorter: 'showNames'},
                     2: { sorter: 'quality'},
                     3: { sorter: 'sports'},
@@ -2601,6 +2747,403 @@ var SICKRAGE = {
                 $.tablesorter.columnSelector.attachTo( $('#showListTable'), '#popover-target');
             });
         }
+    },
+    addShows: {
+        init: function() {
+            $('#tabs').tabs({
+                collapsible: true,
+                selected: (metaToBool('sickbeard.SORT_ARTICLE') ? -1 : 0)
+            });
+
+            $.initRemoteShowGrid = function(){
+                // Set defaults on page load
+                $('#showsort').val('original');
+                $('#showsortdirection').val('asc');
+
+                $('#showsort').on('change', function() {
+                    var sortCriteria;
+                    switch (this.value) {
+                        case 'original':
+                            sortCriteria = 'original-order';
+                            break;
+                        case 'rating':
+                            /* randomise, else the rating_votes can already
+                             * have sorted leaving this with nothing to do.
+                             */
+                            $('#container').isotope({sortBy: 'random'});
+                            sortCriteria = 'rating';
+                            break;
+                        case 'rating_votes':
+                            sortCriteria = ['rating', 'votes'];
+                            break;
+                        case 'votes':
+                            sortCriteria = 'votes';
+                            break;
+                        default:
+                            sortCriteria = 'name';
+                            break;
+                    }
+                    $('#container').isotope({
+                        sortBy: sortCriteria
+                    });
+                });
+
+                $('#showsortdirection').on('change', function() {
+                    $('#container').isotope({
+                        sortAscending: ('asc' === this.value)
+                    });
+                });
+
+                $('#container').imagesLoaded(function() {
+                    $('#container').isotope({
+                        sortBy: 'original-order',
+                        layoutMode: 'fitRows',
+                        getSortData: {
+                            name: function(itemElem) {
+                                var name = $(itemElem).attr('data-name') || '';
+                                return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^(The|A|An)\s/i, '')).toLowerCase();
+                            },
+                            rating: '[data-rating] parseInt',
+                            votes: '[data-votes] parseInt',
+                        }
+                    });
+                });
+            };
+
+            $.fn.loadRemoteShows = function(path, loadingTxt, errorTxt) {
+                $(this).html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt);
+                $(this).load(srRoot + path + ' #container', function(response, status) {
+                    if (status === "error") {
+                        $(this).empty().html(errorTxt);
+                    } else {
+                        $.initRemoteShowGrid();
+                    }
+                });
+            };
+        },
+        index: function() {
+
+        },
+        newShow: function() {
+            var searchRequestXhr = null;
+
+            function searchIndexers() {
+                if (!$('#nameToSearch').val().length) { return; }
+
+                if (searchRequestXhr) { searchRequestXhr.abort(); }
+
+                var searchingFor = $('#nameToSearch').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
+                $('#searchResults').empty().html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> searching ' + searchingFor + '...');
+
+                searchRequestXhr = $.ajax({
+                    url: srRoot + '/addShows/searchIndexersForShowName',
+                    data: {
+                        'search_term': $('#nameToSearch').val().trim(),
+                        'lang': $('#indexerLangSelect').val(),
+                        'indexer': $('#providedIndexer').val()},
+                    timeout: parseInt($('#indexer_timeout').val(), 10) * 1000,
+                    dataType: 'json',
+                    error: function () {
+                        $('#searchResults').empty().html('search timed out, try again or try another indexer');
+                    },
+                    success: function (data) {
+                        var firstResult = true;
+                        var resultStr = '<fieldset>\n<legend class="legendStep">Search Results:</legend>\n';
+                        var checked = '';
+
+                        if (data.results.length === 0) {
+                            resultStr += '<b>No results found, try a different search.</b>';
+                        } else {
+                            $.each(data.results, function(index, obj) {
+                                if (firstResult) {
+                                    checked = ' checked';
+                                    firstResult = false;
+                                } else {
+                                    checked = '';
+                                }
+
+                                var whichSeries = obj.join('|');
+
+                                resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries.replace(/"/g, '')  + '"' + checked + ' /> ';
+                                if (data.langid && data.langid !== '') {
+                                    resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '&lid=' + data.langid + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
+                                } else {
+                                    resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
+                                }
+
+                                if (obj[5] !== null) {
+                                    var startDate = new Date(obj[5]);
+                                    var today = new Date();
+                                    if (startDate > today) {
+                                        resultStr += ' (will debut on ' + obj[5] + ')';
+                                    } else {
+                                        resultStr += ' (started on ' + obj[5] + ')';
+                                    }
+                                }
+
+                                if (obj[0] !== null) {
+                                    resultStr += ' [' + obj[0] + ']';
+                                }
+
+                                resultStr += '<br>';
+                            });
+                            resultStr += '</ul>';
+                        }
+                        resultStr += '</fieldset>';
+                        $('#searchResults').html(resultStr);
+                        updateSampleText();
+                        myform.loadsection(0);
+                    }
+                });
+            }
+
+            $('#searchName').click(function () { searchIndexers(); });
+
+            if ($('#nameToSearch').length && $('#nameToSearch').val().length) {
+                $('#searchName').click();
+            }
+
+            $('#addShowButton').click(function () {
+                // if they haven't picked a show don't let them submit
+                if (!$('input:radio[name="whichSeries"]:checked').val() && !$('input:hidden[name="whichSeries"]').val().length) {
+                    alert('You must choose a show to continue');
+                    return false;
+                }
+                generateBlackWhiteList();
+                $('#addShowForm').submit();
+            });
+
+            $('#skipShowButton').click(function () {
+                $('#skipShow').val('1');
+                $('#addShowForm').submit();
+            });
+
+            $('#qualityPreset').change(function () {
+                myform.loadsection(2);
+            });
+
+            /***********************************************
+            * jQuery Form to Form Wizard- (c) Dynamic Drive (www.dynamicdrive.com)
+            * This notice MUST stay intact for legal use
+            * Visit http://www.dynamicdrive.com/ for this script and 100s more.
+            ***********************************************/
+
+            // @TODO we need to move to real forms instead of this
+
+            var myform = new formtowizard({ // jshint ignore:line
+                formid: 'addShowForm',
+                revealfx: ['slide', 500],
+                oninit: function () {
+                    updateSampleText();
+                    if ($('input:hidden[name=whichSeries]').length && $('#fullShowPath').length) {
+                        goToStep(3);
+                    }
+                }
+            });
+
+            function goToStep(num) {
+                $('.step').each(function () {
+                    if ($.data(this, 'section') + 1 === num) {
+                        $(this).click();
+                    }
+                });
+            }
+
+            $('#nameToSearch').focus();
+
+            function updateSampleText() {
+                // if something's selected then we have some behavior to figure out
+
+                var showName, sepChar;
+                // if they've picked a radio button then use that
+                if ($('input:radio[name=whichSeries]:checked').length) {
+                    showName = $('input:radio[name=whichSeries]:checked').val().split('|')[4];
+                } else if ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length) { // if we provided a show in the hidden field, use that
+                    showName = $('#providedName').val();
+                } else {
+                    showName = '';
+                }
+                updateBlackWhiteList(showName);
+                var sampleText = 'Adding show <b>' + showName + '</b> into <b>';
+
+                // if we have a root dir selected, figure out the path
+                if ($('#rootDirs option:selected').length) {
+                    var rootDirectoryText = $('#rootDirs option:selected').val();
+                    if (rootDirectoryText.indexOf('/') >= 0) {
+                        sepChar = '/';
+                    } else if (rootDirectoryText.indexOf('\\') >= 0) {
+                        sepChar = '\\';
+                    } else {
+                        sepChar = '';
+                    }
+
+                    if (rootDirectoryText.substr(sampleText.length - 1) !== sepChar) {
+                        rootDirectoryText += sepChar;
+                    }
+                    rootDirectoryText += '<i>||</i>' + sepChar;
+
+                    sampleText += rootDirectoryText;
+                } else if ($('#fullShowPath').length && $('#fullShowPath').val().length) {
+                    sampleText += $('#fullShowPath').val();
+                } else {
+                    sampleText += 'unknown dir.';
+                }
+
+                sampleText += '</b>';
+
+                // if we have a show name then sanitize and use it for the dir name
+                if (showName.length) {
+                    $.get(srRoot + '/addShows/sanitizeFileName', {name: showName}, function (data) {
+                        $('#displayText').html(sampleText.replace('||', data));
+                    });
+                // if not then it's unknown
+                } else {
+                    $('#displayText').html(sampleText.replace('||', '??'));
+                }
+
+                // also toggle the add show button
+                if (($("#rootDirs option:selected").length || ($('#fullShowPath').length && $('#fullShowPath').val().length)) &&
+                    ($('input:radio[name=whichSeries]:checked').length) || ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length)) {
+                    $('#addShowButton').attr('disabled', false);
+                } else {
+                    $('#addShowButton').attr('disabled', true);
+                }
+            }
+
+            $('#rootDirText').change(updateSampleText);
+            $('#searchResults').on('change', '#whichSeries', updateSampleText);
+
+            $('#nameToSearch').keyup(function(event) {
+                if (event.keyCode === 13) {
+                    $('#searchName').click();
+                }
+            });
+
+            $('#anime').change (function() {
+                updateSampleText();
+                myform.loadsection(2);
+            });
+
+            function updateBlackWhiteList(showName) {
+                $('#white').children().remove();
+                $('#black').children().remove();
+                $('#pool').children().remove();
+
+                if ($('#anime').prop('checked')) {
+                    $('#blackwhitelist').show();
+                    if (showName) {
+                        $.getJSON(srRoot + '/home/fetch_releasegroups', {
+                            'show_name': showName
+                        }, function (data) {
+                            if (data.result === 'success') {
+                                $.each(data.groups, function(i, group) {
+                                    var option = $("<option>");
+                                    option.attr("value", group.name);
+                                    option.html(group.name + ' | ' + group.rating + ' | ' + group.range);
+                                    option.appendTo('#pool');
+                                });
+                            }
+                        });
+                    }
+                } else {
+                    $('#blackwhitelist').hide();
+                }
+            }
+        },
+        addExistingShow: function(){
+            $('#tableDiv').on('click', '#checkAll', function() {
+                var seasCheck = this;
+                $('.dirCheck').each(function() {
+                    this.checked = seasCheck.checked;
+                });
+            });
+
+            $('#submitShowDirs').on('click', function() {
+                var dirArr = [];
+                $('.dirCheck').each(function() {
+                    if (this.checked === true) {
+                        var show = $(this).attr('id');
+                        var indexer = $(this).closest('tr').find('select').val();
+                        dirArr.push(encodeURIComponent(indexer + '|' + show));
+                    }
+                });
+
+                if (dirArr.length === 0) {
+                    return false;
+                }
+
+                window.location.href = srRoot + '/addShows/addExistingShows?promptForSettings=' + ($('#promptForSettings').prop('checked') ? 'on' : 'off') + '&shows_to_add=' + dirArr.join('&shows_to_add=');
+            });
+
+            function loadContent() {
+                var url = '';
+                $('.dir_check').each(function(i,w) {
+                    if ($(w).is(':checked')) {
+                        if (url.length) {
+                            url += '&';
+                        }
+                        url += 'rootDir=' + encodeURIComponent($(w).attr('id'));
+                    }
+                });
+
+                $('#tableDiv').html('<img id="searchingAnim" src="' + srRoot + '/images/loading32.gif" height="32" width="32" /> loading folders...');
+                $.get(srRoot + '/addShows/massAddTable/', url, function(data) {
+                    $('#tableDiv').html(data);
+                    $("#addRootDirTable").tablesorter({
+                        //sortList: [[1,0]],
+                        widgets: ['zebra'],
+                        headers: {
+                            0: { sorter: false }
+                        }
+                    });
+                });
+            }
+
+            var lastTxt = '';
+            // @TODO this needs a real name, for now this fixes the issue of the page not loading at all,
+            //       before I added this I couldn't get the directories to show in the table
+            var a = function() {
+                if (lastTxt === $('#rootDirText').val()) {
+                    return false;
+                } else {
+                    lastTxt = $('#rootDirText').val();
+                }
+                $('#rootDirStaticList').html('');
+                $('#rootDirs option').each(function(i, w) {
+                    $('#rootDirStaticList').append('<li class="ui-state-default ui-corner-all"><input type="checkbox" class="cb dir_check" id="' + $(w).val() + '" checked=checked> <label for="' + $(w).val() + '"><b>' + $(w).val() + '</b></label></li>');
+                });
+                loadContent();
+            };
+
+            a();
+
+            $('#rootDirText').on('change', a);
+
+            $('#rootDirStaticList').on('click', '.dir_check', loadContent);
+
+            $('#tableDiv').on('click', '.showManage', function(event) {
+                event.preventDefault();
+                $("#tabs").tabs('option', 'active', 0);
+                $('html,body').animate({scrollTop:0}, 1000);
+            });
+        },
+        recommendedShows: function(){
+            $('#recommendedShows').loadRemoteShows(
+                '/addShows/getRecommendedShows/',
+                'Loading recommended shows...',
+                'Trakt timed out, refresh page to try again'
+            );
+        },
+        trendingShows: function(){
+            $('#trendingShows').loadRemoteShows(
+                '/addShows/getTrendingShows/',
+                'Loading trending shows...',
+                'Trakt timed out, refresh page to try again'
+            );
+        },
+        popularShows: function(){
+            $.initRemoteShowGrid();
+        }
     }
 };
 
@@ -2623,5 +3166,6 @@ var UTIL = {
         UTIL.exec(controller, action);
     }
 };
-
-$(document).ready(UTIL.init);
+if (navigator.userAgent.indexOf('PhantomJS') === -1) {
+    $(document).ready(UTIL.init);
+}

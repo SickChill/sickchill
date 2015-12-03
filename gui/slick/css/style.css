@@ -623,25 +623,43 @@ home.mako
     border-radius: 3px;
 }
 
+span.show-option {
+    white-space: nowrap;
+    margin-left: 10px;
+    line-height: 40px;
+}
+
+.show-grid {
+    display: none;
+}
+
 #container, #container-anime {
     margin: 0 auto;
 }
 
+.loading-spinner {
+    background-image: url("../images/loading32.gif");
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+}
+
 .show-container {
-    margin: 12px;
-    width: 188px;
-    height: 352px;
-    background-color: #DFDACF;
-    border: 1px solid #111;
-    border-radius: 6px;
+    margin: 4px;
+    background-color: #F3F3F3;
+    border: 5px solid #F3F3F3;
+    overflow: hidden;
+    box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.31);
+}
+
+.show-details {
+    height: 32px;
+    overflow: hidden;
 }
 
 .show-image {
     overflow: hidden;
-    height: 273px;
-    width: 186px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    max-width: 100%;
 }
 
 .show-container .ui-progressbar {
@@ -701,11 +719,11 @@ home.mako
     height: 100%;
     top: 0;
     right: 0;
-    background-image: -webkit-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -moz-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -ms-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -o-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: linear-gradient(to left, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
+    background-image: -webkit-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -moz-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -ms-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -o-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: linear-gradient(to left, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
 }
 
 .show-date {
@@ -714,6 +732,7 @@ home.mako
     white-space: nowrap;
     font-size: 11px;
     margin: 0px 4px 4px 4px;
+    color: #949494;
 }
 
 .show-date:after {
@@ -724,11 +743,11 @@ home.mako
     height: 100%;
     top: 0;
     right: 0;
-    background-image: -webkit-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -moz-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -ms-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: -o-linear-gradient(right, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
-    background-image: linear-gradient(to left, rgba(223, 218, 207, 1), rgba(223, 218, 207, 0));
+    background-image: -webkit-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -moz-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -ms-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -o-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: linear-gradient(to left, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
 }
 
 .show-table {
@@ -3264,4 +3283,13 @@ IMDB Popular
 
 .popularShow p{
     margin-bottom:0px;
+}
+
+table.home-header {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+input.tablesorter-filter.disabled {
+    display: none;
 }

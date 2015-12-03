@@ -18,60 +18,81 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys, os.path
+# pylint: disable=line-too-long
+
+"""
+Test searches
+"""
+
+import os.path
+import sys
+import unittest
+
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import random
-import unittest
-
-import test_lib as test
-
-import sickbeard.search as search
-import sickbeard
 from sickbeard.tv import TVEpisode, TVShow
-import sickbeard.common as c
-
 from sickbeard.providers.generic import GenericProvider
+import sickbeard
+import sickbeard.common as common
+import tests.test_lib as test
 
-tests = {"Game of Thrones":
-               {"tvdbid": 121361, "s": 5, "e": [10],
-                "s_strings": [{"Season": [u"Game of Thrones S05"]}],
-                "e_strings": [{"Episode": [u"Game of Thrones S05E10"]}]}}
+TESTS = {
+    "Game of Thrones": {
+        "tvdbid": 121361, "s": 5, "e": [10],
+        "s_strings": [{"Season": [u"Game of Thrones S05"]}],
+        "e_strings": [{"Episode": [u"Game of Thrones S05E10"]}]
+    }
+}
+
 
 class SearchTest(test.SickbeardTestDBCase):
-
+    """
+    Test search
+    """
     def __init__(self, something):
         super(SearchTest, self).__init__(something)
 
 
-def test_generator(curData, name, provider, forceSearch):
+def test_generator(cur_data, cur_name, cur_provider):
+    """
+    Generate test
 
-    def test(self):
-        show = TVShow(1, int(curData["tvdbid"]))
-        show.name = name
-        show.quality = c.ANY | c.Quality.UNKNOWN | c.Quality.RAWHDTV
+    :param cur_data:
+    :param cur_name:
+    :param cur_provider:
+    :return:
+    """
+
+    def do_test():
+        """
+        Test to perform
+        """
+        show = TVShow(1, int(cur_data["tvdbid"]))
+        show.name = cur_name
+        show.quality = common.ANY | common.Quality.UNKNOWN | common.Quality.RAWHDTV
         show.saveToDB()
         sickbeard.showList.append(show)
 
-        for epNumber in curData["e"]:
-            episode = TVEpisode(show, curData["s"], epNumber)
-            episode.status = c.WANTED
+        for ep_number in cur_data["e"]:
+            episode = TVEpisode(show, cur_data["s"], ep_number)
+            episode.status = common.WANTED
 
-            # We arent updating scene numbers, so fake it here
-            episode.scene_season = curData["s"]
-            episode.scene_episode = epNumber
+            # We aren't updating scene numbers, so fake it here
+            episode.scene_season = cur_data["s"]
+            episode.scene_episode = ep_number
 
             episode.saveToDB()
 
-            provider.show = show
-            season_strings = provider._get_season_search_strings(episode)
-            episode_strings = provider._get_episode_search_strings(episode)
+            cur_provider.show = show
+            season_strings = cur_provider._get_season_search_strings(episode)  # pylint: disable=protected-access
+            episode_strings = cur_provider._get_episode_search_strings(episode)  # pylint: disable=protected-access
 
             fail = False
+            cur_string = ''
             for cur_string in season_strings, episode_strings:
                 if not all([isinstance(cur_string, list), isinstance(cur_string[0], dict)]):
-                    print " %s is using a wrong string format!" % provider.name
+                    print " %s is using a wrong string format!" % cur_provider.name
                     print cur_string
                     fail = True
                     continue
@@ -80,44 +101,45 @@ def test_generator(curData, name, provider, forceSearch):
                 continue
 
             try:
-                assert(season_strings == curData["s_strings"])
-                assert(episode_strings == curData["e_strings"])
+                assert season_strings == cur_data["s_strings"]
+                assert episode_strings == cur_data["e_strings"]
             except AssertionError:
-                print " %s is using a wrong string format!" % provider.name
+                print " %s is using a wrong string format!" % cur_provider.name
                 print cur_string
                 continue
 
             search_strings = episode_strings[0]
-            #search_strings.update(season_strings[0])
-            #search_strings.update({"RSS":['']})
+            # search_strings.update(season_strings[0])
+            # search_strings.update({"RSS":['']})
 
-            #print search_strings
+            # print search_strings
 
-            if not provider.public:
+            if not cur_provider.public:
                 continue
 
-            items = provider._doSearch(search_strings)
+            items = cur_provider._doSearch(search_strings)  # pylint: disable=protected-access
             if not items:
-                print "No results from provider?"
+                print "No results from cur_provider?"
                 continue
 
-            title, url = provider._get_title_and_url(items[0])
+            title, url = cur_provider._get_title_and_url(items[0])  # pylint: disable=protected-access
             for word in show.name.split(" "):
                 if not word.lower() in title.lower():
-                    print "Show name not in title: %s. URL: %s" % (title, url)
+                    print "Show cur_name not in title: %s. URL: %s" % (title, url)
                     continue
 
             if not url:
                 print "url is empty"
                 continue
 
-            quality = provider.getQuality(items[0])
-            size = provider._get_size(items[0])
+            quality = cur_provider.getQuality(items[0])
+            size = cur_provider._get_size(items[0])  # pylint: disable=protected-access
+
             if not show.quality & quality:
-                print "Quality not in common.ANY, %r" % quality
+                print "Quality not in common.ANY, %r %s" % (quality, size)
                 continue
 
-    return test
+    return do_test
 
 if __name__ == '__main__':
     print "=================="
@@ -126,17 +148,17 @@ if __name__ == '__main__':
     print "######################################################################"
     # create the test methods
     for forceSearch in (True, False):
-        for name, curData in tests.items():
-            fname = name.replace(' ', '_')
+        for name, data in TESTS.items():
+            filename = name.replace(' ', '_')
 
             for provider in sickbeard.providers.sortedProviderList():
                 if provider.providerType == GenericProvider.TORRENT:
                     if forceSearch:
-                        test_name = 'test_manual_%s_%s_%s' % (fname, curData["tvdbid"], provider.name)
+                        test_name = 'test_manual_%s_%s_%s' % (filename, data["tvdbid"], provider.name)
                     else:
-                        test_name = 'test_%s_%s_%s' % (fname, curData["tvdbid"], provider.name)
-                    test = test_generator(curData, name, provider, forceSearch)
+                        test_name = 'test_%s_%s_%s' % (filename, data["tvdbid"], provider.name)
+                    test = test_generator(data, name, provider)
                     setattr(SearchTest, test_name, test)
 
-    suite = unittest.TestLoader().loadTestsFromTestCase(SearchTest)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(SearchTest)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)

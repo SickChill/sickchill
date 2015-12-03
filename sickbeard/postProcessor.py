@@ -39,6 +39,7 @@ from sickrage.helper.common import remove_extension, replace_extension, subtitle
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
+from sickrage.show.Show import Show
 from babelfish import language_converters
 
 import adba
@@ -158,9 +159,9 @@ class PostProcessor(object):
         """
         def recursive_glob(treeroot, pattern):
             results = []
-            for base, _, files in os.walk(treeroot.encode(sickbeard.SYS_ENCODING)):
+            for base, _, files in ek(os.walk, treeroot.encode(sickbeard.SYS_ENCODING)):
                 goodfiles = fnmatch.filter(files, pattern)
-                results.extend(os.path.join(base, f) for f in goodfiles)
+                results.extend(ek(os.path.join, base, f) for f in goodfiles)
             return results
 
         if not file_path:
@@ -335,13 +336,13 @@ class PostProcessor(object):
             cur_extension = cur_file_path[old_base_name_length + 1:]
 
             # check if file have subtitles language
-            if os.path.splitext(cur_extension)[1][1:] in subtitle_extensions:
-                cur_lang = os.path.splitext(cur_extension)[0]
+            if ek(os.path.splitext, cur_extension)[1][1:] in subtitle_extensions:
+                cur_lang = ek(os.path.splitext, cur_extension)[0]
                 if cur_lang:
                     cur_lang = cur_lang.lower()
                     if cur_lang == 'pt-br':
                         cur_lang = 'pt-BR'
-                    cur_extension = cur_lang + os.path.splitext(cur_extension)[1]
+                    cur_extension = cur_lang + ek(os.path.splitext, cur_extension)[1]
 
             # replace .nfo with .nfo-orig to avoid conflicts
             if cur_extension == 'nfo' and sickbeard.NFO_RENAME is True:
@@ -499,7 +500,7 @@ class PostProcessor(object):
             if quality == common.Quality.UNKNOWN:
                 quality = None
 
-            show = helpers.findCertainShow(sickbeard.showList, indexer_id)
+            show = Show.find(sickbeard.showList, indexer_id)
 
             self.in_history = True
             self.version = version
@@ -1139,7 +1140,7 @@ class PostProcessor(object):
                 with cur_ep.lock:
                     cur_ep.location = ek(os.path.join, dest_path, new_file_name)
                     cur_ep.refreshSubtitles()
-                    cur_ep.downloadSubtitles(force=True)
+                    cur_ep.download_subtitles(force=True)
 
         # now that processing has finished, we can put the info in the DB. If we do it earlier, then when processing fails, it won't try again.
         if len(sql_l) > 0:

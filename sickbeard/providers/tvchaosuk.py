@@ -37,7 +37,6 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
         self.url = self.urls['base_url']
 
-        self.supportsBacklog = True
 
         self.username = None
         self.password = None

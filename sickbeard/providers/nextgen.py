@@ -32,7 +32,6 @@ class NextGenProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "NextGen")
 
-        self.supportsBacklog = True
 
 
         self.username = None

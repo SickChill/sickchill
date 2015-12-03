@@ -16,7 +16,7 @@
 % endif
 <form name="massUpdateForm" method="post" action="massUpdate">
 
-<table id="massUpdateTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
+<table id="massUpdateTable" class="tablesorter" cellspacing="1" border="0" cellpadding="0">
     <thead>
         <tr>
             <th class="col-checkbox">Edit<br><input type="checkbox" class="bulkCheck" id="editCheck" /></th>
@@ -29,7 +29,7 @@
             <th class="col-legend">Archive first match</th>
             <th class="col-legend">Paused</th>
             <th class="col-legend">Subtitle</th>
-            <th class="col-legend">Default Ep<br>Status</th>
+            <th class="col-legend">Default Ep Status</th>
             <th class="col-legend">Status</th>
             <th width="1%">Update<br><input type="checkbox" class="bulkCheck" id="updateCheck" /></th>
             <th width="1%">Rescan<br><input type="checkbox" class="bulkCheck" id="refreshCheck" /></th>

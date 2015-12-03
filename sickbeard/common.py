@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io/
 # Git: https://github.com/SickRage/SickRage.git
@@ -17,34 +18,42 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import os.path
+"""
+Common interface for Quality and Status
+"""
+
+# pylint: disable=line-too-long
+
+
 import operator
+from os import path
 import platform
+from random import shuffle
 import re
 import uuid
+
+from hachoir_parser import createParser  # pylint: disable=import-error
+from hachoir_metadata import extractMetadata  # pylint: disable=import-error
+from hachoir_core.log import log  # pylint: disable=import-error
+
 from sickbeard.numdict import NumDict
-
-import sys
-
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from random import shuffle
+from sickrage.helper.encoding import ek
 
 SPOOF_USER_AGENT = False
 
 # If some provider has an issue with functionality of SR, other than user agents, it's best to come talk to us rather than block.
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
 # This is disabled, was only added for testing, and has no config.ini or web ui setting. To enable, set SPOOF_USER_AGENT = True
-user_agents = ['Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
-               'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.1 Safari/537.36'
-               'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'
-               'Mozilla/5.0 (X11; Linux i586; rv:31.0) Gecko/20100101 Firefox/31.0'
-               'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A'
-               'Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25'
-               'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko'
-               'Mozilla/5.0 (compatible, MSIE 11, Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko'
-              ]
+user_agents = [
+    'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.1 Safari/537.36'
+    'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'
+    'Mozilla/5.0 (X11; Linux i586; rv:31.0) Gecko/20100101 Firefox/31.0'
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A'
+    'Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25'
+    'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko'
+    'Mozilla/5.0 (compatible, MSIE 11, Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko'
+]
 
 INSTANCE_ID = str(uuid.uuid1())
 USER_AGENT = ('SickRage/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
@@ -53,10 +62,11 @@ if SPOOF_USER_AGENT:
     shuffle(user_agents)
     USER_AGENT = user_agents[0]
 
-cpu_presets = {'HIGH': 5,
-               'NORMAL': 2,
-               'LOW': 1
-              }
+cpu_presets = {
+    'HIGH': 5,
+    'NORMAL': 2,
+    'LOW': 1
+}
 
 # Other constants
 MULTI_EP_RESULT = -1
@@ -69,12 +79,13 @@ NOTIFY_SUBTITLE_DOWNLOAD = 3
 NOTIFY_GIT_UPDATE = 4
 NOTIFY_GIT_UPDATE_TEXT = 5
 
-notifyStrings = {}
-notifyStrings[NOTIFY_SNATCH] = "Started Download"
-notifyStrings[NOTIFY_DOWNLOAD] = "Download Finished"
-notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD] = "Subtitle Download Finished"
-notifyStrings[NOTIFY_GIT_UPDATE] = "SickRage Updated"
-notifyStrings[NOTIFY_GIT_UPDATE_TEXT] = "SickRage Updated To Commit#: "
+notifyStrings = NumDict({
+    NOTIFY_SNATCH: "Started Download",
+    NOTIFY_DOWNLOAD: "Download Finished",
+    NOTIFY_SUBTITLE_DOWNLOAD: "Subtitle Download Finished",
+    NOTIFY_GIT_UPDATE: "SickRage Updated",
+    NOTIFY_GIT_UPDATE_TEXT: "SickRage Updated To Commit#: "
+})
 
 # Episode statuses
 UNKNOWN = -1  # should never happen
@@ -88,7 +99,7 @@ IGNORED = 7  # episodes that you don't want included in your download stats
 SNATCHED_PROPER = 9  # qualified with quality
 SUBTITLED = 10  # qualified with quality
 FAILED = 11  # episode downloaded or snatched we don't want
-SNATCHED_BEST = 12  # episode redownloaded using best quality
+SNATCHED_BEST = 12  # episode re-downloaded using best quality
 
 NAMING_REPEAT = 1
 NAMING_EXTEND = 2
@@ -97,16 +108,20 @@ NAMING_LIMITED_EXTEND = 8
 NAMING_SEPARATED_REPEAT = 16
 NAMING_LIMITED_EXTEND_E_PREFIXED = 32
 
-multiEpStrings = {}
-multiEpStrings[NAMING_REPEAT] = "Repeat"
-multiEpStrings[NAMING_SEPARATED_REPEAT] = "Repeat (Separated)"
-multiEpStrings[NAMING_DUPLICATE] = "Duplicate"
-multiEpStrings[NAMING_EXTEND] = "Extend"
-multiEpStrings[NAMING_LIMITED_EXTEND] = "Extend (Limited)"
-multiEpStrings[NAMING_LIMITED_EXTEND_E_PREFIXED] = "Extend (Limited, E-prefixed)"
+MULTI_EP_STRINGS = NumDict({
+    NAMING_REPEAT: "Repeat",
+    NAMING_SEPARATED_REPEAT: "Repeat (Separated)",
+    NAMING_DUPLICATE: "Duplicate",
+    NAMING_EXTEND: "Extend",
+    NAMING_LIMITED_EXTEND: "Extend (Limited)",
+    NAMING_LIMITED_EXTEND_E_PREFIXED: "Extend (Limited, E-prefixed)"
+})
 
-# pylint: disable=W0232
+
 class Quality(object):
+    """
+    Determine quality and set status codes
+    """
     NONE = 0  # 0
     SDTV = 1  # 1
     SDDVD = 1 << 1  # 2
@@ -124,55 +139,66 @@ class Quality(object):
     # put these bits at the other end of the spectrum, far enough out that they shouldn't interfere
     UNKNOWN = 1 << 15  # 32768
 
-    qualityStrings = {NONE: "N/A",
-                      UNKNOWN: "Unknown",
-                      SDTV: "SDTV",
-                      SDDVD: "SD DVD",
-                      HDTV: "720p HDTV",
-                      RAWHDTV: "RawHD",
-                      FULLHDTV: "1080p HDTV",
-                      HDWEBDL: "720p WEB-DL",
-                      FULLHDWEBDL: "1080p WEB-DL",
-                      HDBLURAY: "720p BluRay",
-                      FULLHDBLURAY: "1080p BluRay"}
+    qualityStrings = NumDict({
+        NONE: "N/A",
+        UNKNOWN: "Unknown",
+        SDTV: "SDTV",
+        SDDVD: "SD DVD",
+        HDTV: "720p HDTV",
+        RAWHDTV: "RawHD",
+        FULLHDTV: "1080p HDTV",
+        HDWEBDL: "720p WEB-DL",
+        FULLHDWEBDL: "1080p WEB-DL",
+        HDBLURAY: "720p BluRay",
+        FULLHDBLURAY: "1080p BluRay"
+    })
 
-    sceneQualityStrings = {NONE: "N/A",
-                           UNKNOWN: "Unknown",
-                           SDTV: "HDTV",
-                           SDDVD: "",
-                           HDTV: "720p HDTV",
-                           RAWHDTV: "1080i HDTV",
-                           FULLHDTV: "1080p HDTV",
-                           HDWEBDL: "720p WEB-DL",
-                           FULLHDWEBDL: "1080p WEB-DL",
-                           HDBLURAY: "720p BluRay",
-                           FULLHDBLURAY: "1080p BluRay"}
+    sceneQualityStrings = NumDict({
+        NONE: "N/A",
+        UNKNOWN: "Unknown",
+        SDTV: "HDTV",
+        SDDVD: "",
+        HDTV: "720p HDTV",
+        RAWHDTV: "1080i HDTV",
+        FULLHDTV: "1080p HDTV",
+        HDWEBDL: "720p WEB-DL",
+        FULLHDWEBDL: "1080p WEB-DL",
+        HDBLURAY: "720p BluRay",
+        FULLHDBLURAY: "1080p BluRay"
+    })
 
-    combinedQualityStrings = {ANYHDTV: "HDTV",
-                              ANYWEBDL: "WEB-DL",
-                              ANYBLURAY: "BluRay"}
+    combinedQualityStrings = NumDict({
+        ANYHDTV: "HDTV",
+        ANYWEBDL: "WEB-DL",
+        ANYBLURAY: "BluRay"
+    })
 
-    cssClassStrings = {NONE: "N/A",
-                       UNKNOWN: "Unknown",
-                       SDTV: "SDTV",
-                       SDDVD: "SDDVD",
-                       HDTV: "HD720p",
-                       RAWHDTV: "RawHD",
-                       FULLHDTV: "HD1080p",
-                       HDWEBDL: "HD720p",
-                       FULLHDWEBDL: "HD1080p",
-                       HDBLURAY: "HD720p",
-                       FULLHDBLURAY: "HD1080p",
-                       ANYHDTV: "any-hd",
-                       ANYWEBDL: "any-hd",
-                       ANYBLURAY: "any-hd"}
+    cssClassStrings = NumDict({
+        NONE: "N/A",
+        UNKNOWN: "Unknown",
+        SDTV: "SDTV",
+        SDDVD: "SDDVD",
+        HDTV: "HD720p",
+        RAWHDTV: "RawHD",
+        FULLHDTV: "HD1080p",
+        HDWEBDL: "HD720p",
+        FULLHDWEBDL: "HD1080p",
+        HDBLURAY: "HD720p",
+        FULLHDBLURAY: "HD1080p",
+        ANYHDTV: "any-hd",
+        ANYWEBDL: "any-hd",
+        ANYBLURAY: "any-hd"
+    })
 
-    statusPrefixes = {DOWNLOADED: "Downloaded",
-                      SNATCHED: "Snatched",
-                      SNATCHED_PROPER: "Snatched (Proper)",
-                      FAILED: "Failed",
-                      SNATCHED_BEST: "Snatched (Best)",
-                      ARCHIVED: "Archived"}
+    statusPrefixes = NumDict({
+        DOWNLOADED: "Downloaded",
+        SNATCHED: "Snatched",
+        SNATCHED_PROPER: "Snatched (Proper)",
+        FAILED: "Failed",
+        SNATCHED_BEST: "Snatched (Best)",
+        ARCHIVED: "Archived"
+    })
+
     @staticmethod
     def _getStatusStrings(status):
         """
@@ -181,33 +207,33 @@ class Quality(object):
         :param status: Status prefix to resolve
         :return: Human readable status value
         """
-        toReturn = {}
-        for q in Quality.qualityStrings.keys():
-            toReturn[Quality.compositeStatus(status, q)] = Quality.statusPrefixes[status] + " (" + \
-                                                           Quality.qualityStrings[q] + ")"
-        return toReturn
+        to_return = {}
+        for quality in Quality.qualityStrings:
+            to_return[Quality.compositeStatus(status, quality)] = Quality.statusPrefixes[status] + " (" + \
+                                                           Quality.qualityStrings[quality] + ")"
+        return to_return
 
     @staticmethod
-    def combineQualities(anyQualities, bestQualities):
-        anyQuality = 0
-        bestQuality = 0
-        if anyQualities:
-            anyQuality = reduce(operator.or_, anyQualities)
-        if bestQualities:
-            bestQuality = reduce(operator.or_, bestQualities)
-        return anyQuality | (bestQuality << 16)
+    def combineQualities(any_qualities, best_qualities):
+        any_quality = 0
+        best_quality = 0
+        if any_qualities:
+            any_quality = reduce(operator.or_, any_qualities)
+        if best_qualities:
+            best_quality = reduce(operator.or_, best_qualities)
+        return any_quality | (best_quality << 16)
 
     @staticmethod
     def splitQuality(quality):
-        anyQualities = []
-        bestQualities = []
-        for curQual in Quality.qualityStrings.keys():
-            if curQual & quality:
-                anyQualities.append(curQual)
-            if curQual << 16 & quality:
-                bestQualities.append(curQual)
+        any_qualities = []
+        best_qualities = []
+        for cur_qual in Quality.qualityStrings:
+            if cur_qual & quality:
+                any_qualities.append(cur_qual)
+            if cur_qual << 16 & quality:
+                best_qualities.append(cur_qual)
 
-        return (sorted(anyQualities), sorted(bestQualities))
+        return sorted(any_qualities), sorted(best_qualities)
 
     @staticmethod
     def nameQuality(name, anime=False):
@@ -215,6 +241,7 @@ class Quality(object):
         Return The quality from an episode File renamed by SickRage
         If no quality is achieved it will try sceneQuality regex
 
+        :param name: to parse
         :param anime: Boolean to indicate if the show we're resolving is Anime
         :return: Quality prefix
         """
@@ -230,9 +257,8 @@ class Quality(object):
 
         return Quality.UNKNOWN
 
-
     @staticmethod
-    def sceneQuality(name, anime=False):
+    def sceneQuality(name, anime=False):  # pylint: disable=too-many-branches
         """
         Return The quality from the scene episode File
 
@@ -241,60 +267,55 @@ class Quality(object):
         :return: Quality prefix
         """
 
-        # pylint: disable=R0912
-
         ret = Quality.UNKNOWN
         if not name:
             return ret
 
-        name = os.path.basename(name)
+        name = ek(path.basename, name)
 
-        checkName = lambda list, func: func([re.search(x, name, re.I) for x in list])
+        check_name = lambda regex_list, func: func([re.search(regex, name, re.I) for regex in regex_list])
 
         if anime:
-            dvdOptions = checkName([r"dvd", r"dvdrip"], any)
-            blueRayOptions = checkName([r"BD", r"blue?-?ray"], any)
-            sdOptions = checkName([r"360p", r"480p", r"848x480", r"XviD"], any)
-            hdOptions = checkName([r"720p", r"1280x720", r"960x720"], any)
-            fullHD = checkName([r"1080p", r"1920x1080"], any)
+            dvd_options = check_name([r"dvd", r"dvdrip"], any)
+            bluray_options = check_name([r"BD", r"blue?-?ray"], any)
+            sd_options = check_name([r"360p", r"480p", r"848x480", r"XviD"], any)
+            hd_options = check_name([r"720p", r"1280x720", r"960x720"], any)
+            full_hd = check_name([r"1080p", r"1920x1080"], any)
 
-            if sdOptions and not blueRayOptions and not dvdOptions:
+            if sd_options and not bluray_options and not dvd_options:
                 ret = Quality.SDTV
-            elif dvdOptions:
+            elif dvd_options:
                 ret = Quality.SDDVD
-            elif hdOptions and not blueRayOptions and not fullHD:
+            elif hd_options and not bluray_options and not full_hd:
                 ret = Quality.HDTV
-            elif fullHD and not blueRayOptions and not hdOptions:
+            elif full_hd and not bluray_options and not hd_options:
                 ret = Quality.FULLHDTV
-            elif hdOptions and not blueRayOptions and not fullHD:
+            elif hd_options and not bluray_options and not full_hd:
                 ret = Quality.HDWEBDL
-            elif blueRayOptions and hdOptions and not fullHD:
+            elif bluray_options and hd_options and not full_hd:
                 ret = Quality.HDBLURAY
-            elif blueRayOptions and fullHD and not hdOptions:
+            elif bluray_options and full_hd and not hd_options:
                 ret = Quality.FULLHDBLURAY
 
             return ret
 
-        if (checkName([r"480p|web.?dl|web(rip|mux|hd)|[sph]d.?tv|dsr|tv(rip|mux)|satrip", r"xvid|divx|[xh].?26[45]"], all)
-                and not checkName([r"(720|1080)[pi]"], all) and not checkName([r"hr.ws.pdtv.[xh].?26[45]"], any)):
+        if check_name([r"480p|web.?dl|web(rip|mux|hd)|[sph]d.?tv|dsr|tv(rip|mux)|satrip", r"xvid|divx|[xh].?26[45]"], all) and not check_name([r"(720|1080)[pi]"], all) and not check_name([r"hr.ws.pdtv.[xh].?26[45]"], any):
             ret = Quality.SDTV
-        elif (checkName([r"dvd(rip|mux)|b[rd](rip|mux)|blue?-?ray", r"xvid|divx|[xh].?26[45]"], all)
-              and not checkName([r"(720|1080)[pi]"], all) and not checkName([r"hr.ws.pdtv.[xh].?26[45]"], any)):
+        elif check_name([r"dvd(rip|mux)|b[rd](rip|mux)|blue?-?ray", r"xvid|divx|[xh].?26[45]"], all) and not check_name([r"(720|1080)[pi]"], all) and not check_name([r"hr.ws.pdtv.[xh].?26[45]"], any):
             ret = Quality.SDDVD
-        elif (checkName([r"720p", r"hd.?tv", r"[xh].?26[45]"], all) or checkName([r"hr.ws.pdtv.[xh].?26[45]"], any)
-              and not checkName([r"1080[pi]"], all)):
+        elif check_name([r"720p", r"hd.?tv", r"[xh].?26[45]"], all) or check_name([r"hr.ws.pdtv.[xh].?26[45]"], any) and not check_name([r"1080[pi]"], all):
             ret = Quality.HDTV
-        elif checkName([r"720p|1080i", r"hd.?tv", r"mpeg-?2"], all) or checkName([r"1080[pi].hdtv", r"h.?26[45]"], all):
+        elif check_name([r"720p|1080i", r"hd.?tv", r"mpeg-?2"], all) or check_name([r"1080[pi].hdtv", r"h.?26[45]"], all):
             ret = Quality.RAWHDTV
-        elif checkName([r"1080p", r"hd.?tv", r"[xh].?26[45]"], all):
+        elif check_name([r"1080p", r"hd.?tv", r"[xh].?26[45]"], all):
             ret = Quality.FULLHDTV
-        elif checkName([r"720p", r"web.?dl|web(rip|mux|hd)"], all) or checkName([r"720p", r"itunes", r"[xh].?26[45]"], all):
+        elif check_name([r"720p", r"web.?dl|web(rip|mux|hd)"], all) or check_name([r"720p", r"itunes", r"[xh].?26[45]"], all):
             ret = Quality.HDWEBDL
-        elif checkName([r"1080p", r"web.?dl|web(rip|mux|hd)"], all) or checkName([r"1080p", r"itunes", r"[xh].?26[45]"], all):
+        elif check_name([r"1080p", r"web.?dl|web(rip|mux|hd)"], all) or check_name([r"1080p", r"itunes", r"[xh].?26[45]"], all):
             ret = Quality.FULLHDWEBDL
-        elif checkName([r"720p", r"blue?-?ray|hddvd|b[rd](rip|mux)", r"[xh].?26[45]"], all):
+        elif check_name([r"720p", r"blue?-?ray|hddvd|b[rd](rip|mux)", r"[xh].?26[45]"], all):
             ret = Quality.HDBLURAY
-        elif checkName([r"1080p", r"blue?-?ray|hddvd|b[rd](rip|mux)", r"[xh].?26[45]"], all):
+        elif check_name([r"1080p", r"blue?-?ray|hddvd|b[rd](rip|mux)", r"[xh].?26[45]"], all):
             ret = Quality.FULLHDBLURAY
 
         return ret
@@ -317,7 +338,7 @@ class Quality(object):
             return Quality.UNKNOWN
 
     @staticmethod
-    def qualityFromFileMeta(filename):
+    def qualityFromFileMeta(filename):  # pylint: disable=too-many-branches
         """
         Get quality file file metadata
 
@@ -325,17 +346,11 @@ class Quality(object):
         :return: Quality prefix
         """
 
-        # pylint: disable=R0912
-
-        from hachoir_parser import createParser
-        from hachoir_metadata import extractMetadata
-        from hachoir_core.log import log
         log.use_print = False
 
         try:
             parser = createParser(filename)
-        # pylint: disable=W0703
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             parser = None
 
         if not parser:
@@ -343,15 +358,12 @@ class Quality(object):
 
         try:
             metadata = extractMetadata(parser)
-        # pylint: disable=W0703
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             metadata = None
 
         try:
-            # pylint: disable=W0212
-            parser.stream._input.close()
-        # pylint: disable=W0703
-        except Exception:
+            parser.stream._input.close()  # pylint: disable=protected-access
+        except Exception:  # pylint: disable=broad-except
             pass
 
         if not metadata:
@@ -370,14 +382,14 @@ class Quality(object):
         if not height:
             return Quality.UNKNOWN
 
-        base_filename = os.path.basename(filename)
+        base_filename = ek(path.basename, filename)
         bluray = re.search(r"blue?-?ray|hddvd|b[rd](rip|mux)", base_filename, re.I) is not None
         webdl = re.search(r"web.?dl|web(rip|mux|hd)", base_filename, re.I) is not None
 
         ret = Quality.UNKNOWN
         if height > 1000:
             ret = ((Quality.FULLHDTV, Quality.FULLHDBLURAY)[bluray], Quality.FULLHDWEBDL)[webdl]
-        elif height > 680 and height < 800:
+        elif 680 < height < 800:
             ret = ((Quality.HDTV, Quality.HDBLURAY)[bluray], Quality.HDWEBDL)[webdl]
         elif height < 680:
             ret = (Quality.SDTV, Quality.SDDVD)[re.search(r'dvd|b[rd]rip|blue?-?ray', base_filename, re.I) is not None]
@@ -394,18 +406,23 @@ class Quality(object):
 
     @staticmethod
     def splitCompositeStatus(status):
-        """Returns a tuple containing (status, quality)"""
+        """
+        Split a composite status code into a status and quality.
+
+        :param status: to split
+        :returns: a tuple containing (status, quality)
+        """
         if status == UNKNOWN:
-            return (UNKNOWN, Quality.UNKNOWN)
+            return UNKNOWN, Quality.UNKNOWN
 
         for q in sorted(Quality.qualityStrings.keys(), reverse=True):
             if status > q * 100:
-                return (status - q * 100, q)
+                return status - q * 100, q
 
-        return (status, Quality.NONE)
+        return status, Quality.NONE
 
     @staticmethod
-    def sceneQualityFromName(name, quality): # pylint: disable=R0912
+    def sceneQualityFromName(name, quality):  # pylint: disable=too-many-branches
         """
         Get scene naming parameters from filename and quality
 
@@ -413,17 +430,17 @@ class Quality(object):
         :param quality: int of quality to make sure we get the right rip type
         :return: encoder type for scene quality naming
         """
-        codecList = ['xvid', 'divx']
-        x264List = ['x264', 'x 264', 'x.264']
-        h264List = ['h264', 'h 264', 'h.264', 'avc']
-        x265List = ['x265', 'x 265', 'x.265']
-        h265List = ['h265', 'h 265', 'h.265', 'hevc']
-        codecList.extend(x264List + h264List + x265List + h265List)
+        codec_list = ['xvid', 'divx']
+        x264_list = ['x264', 'x 264', 'x.264']
+        h264_list = ['h264', 'h 264', 'h.264', 'avc']
+        x265_list = ['x265', 'x 265', 'x.265']
+        h265_list = ['h265', 'h 265', 'h.265', 'hevc']
+        codec_list += x264_list + h264_list + x265_list + h265_list
 
         found_codecs = {}
         found_codec = None
 
-        for codec in codecList:
+        for codec in codec_list:
             if codec in name.lower():
                 found_codecs[name.lower().rfind(codec)] = codec
 
@@ -441,18 +458,18 @@ class Quality(object):
                 rip_type = ""
 
         if found_codec:
-            if codecList[0] in found_codec:
+            if codec_list[0] in found_codec:
                 found_codec = 'XviD'
-            elif codecList[1] in found_codec:
+            elif codec_list[1] in found_codec:
                 found_codec = 'DivX'
-            elif found_codec in x264List:
-                found_codec = x264List[0]
-            elif found_codec in h264List:
-                found_codec = h264List[0]
-            elif found_codec in x265List:
-                found_codec = x265List[0]
-            elif found_codec in h265List:
-                found_codec = h265List[0]
+            elif found_codec in x264_list:
+                found_codec = x264_list[0]
+            elif found_codec in h264_list:
+                found_codec = h264_list[0]
+            elif found_codec in x265_list:
+                found_codec = x265_list[0]
+            elif found_codec in h265_list:
+                found_codec = h265_list[0]
 
             if quality == 2:
                 return rip_type + " " + found_codec
@@ -485,12 +502,12 @@ class Quality(object):
     SNATCHED_BEST = None
     ARCHIVED = None
 
-Quality.DOWNLOADED = [Quality.compositeStatus(DOWNLOADED, x) for x in Quality.qualityStrings.keys()]
-Quality.SNATCHED = [Quality.compositeStatus(SNATCHED, x) for x in Quality.qualityStrings.keys()]
-Quality.SNATCHED_PROPER = [Quality.compositeStatus(SNATCHED_PROPER, x) for x in Quality.qualityStrings.keys()]
-Quality.FAILED = [Quality.compositeStatus(FAILED, x) for x in Quality.qualityStrings.keys()]
-Quality.SNATCHED_BEST = [Quality.compositeStatus(SNATCHED_BEST, x) for x in Quality.qualityStrings.keys()]
-Quality.ARCHIVED = [Quality.compositeStatus(ARCHIVED, x) for x in Quality.qualityStrings.keys()]
+Quality.DOWNLOADED = [Quality.compositeStatus(DOWNLOADED, x) for x in Quality.qualityStrings]
+Quality.SNATCHED = [Quality.compositeStatus(SNATCHED, x) for x in Quality.qualityStrings]
+Quality.SNATCHED_PROPER = [Quality.compositeStatus(SNATCHED_PROPER, x) for x in Quality.qualityStrings]
+Quality.FAILED = [Quality.compositeStatus(FAILED, x) for x in Quality.qualityStrings]
+Quality.SNATCHED_BEST = [Quality.compositeStatus(SNATCHED_BEST, x) for x in Quality.qualityStrings]
+Quality.ARCHIVED = [Quality.compositeStatus(ARCHIVED, x) for x in Quality.qualityStrings]
 
 HD720p = Quality.combineQualities([Quality.HDTV, Quality.HDWEBDL, Quality.HDBLURAY], [])
 HD1080p = Quality.combineQualities([Quality.FULLHDTV, Quality.FULLHDWEBDL, Quality.FULLHDBLURAY], [])
@@ -503,27 +520,22 @@ ANY = Quality.combineQualities([SD, HD], [])
 BEST = Quality.combineQualities([Quality.SDTV, Quality.HDTV, Quality.HDWEBDL], [Quality.HDTV])
 
 qualityPresets = (SD, HD, HD720p, HD1080p, ANY)
-qualityPresetStrings = {SD: "SD",
-                        HD: "HD",
-                        HD720p: "HD720p",
-                        HD1080p: "HD1080p",
-                        ANY: "Any"}
+qualityPresetStrings = NumDict({
+    SD: "SD",
+    HD: "HD",
+    HD720p: "HD720p",
+    HD1080p: "HD1080p",
+    ANY: "Any"
+})
 
 
 class StatusStrings(NumDict):
     """
     Dictionary containing strings for status codes
     """
-    # todo: Deprecate StatusStrings().statusStrings and use StatusStrings() directly
-    # todo: Deprecate .has_key and switch to 'x in y'
     # todo: Make views return Qualities too
-    # todo:
 
     qualities = Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.ARCHIVED + Quality.FAILED
-
-    @property
-    def statusStrings(self):  # for backwards compatibility
-        return self.data
 
     def __missing__(self, key):
         """
@@ -563,30 +575,30 @@ statusStrings = StatusStrings({
 })
 
 
-# pylint: disable=R0903
-class Overview(object):
+class Overview(object):  # pylint: disable=too-few-public-methods
     UNAIRED = UNAIRED  # 1
-    SNATCHED = SNATCHED # 2
+    SNATCHED = SNATCHED  # 2
     WANTED = WANTED  # 3
-    GOOD = DOWNLOADED # 4
+    GOOD = DOWNLOADED  # 4
     SKIPPED = SKIPPED  # 5
     SNATCHED_PROPER = SNATCHED_PROPER  # 9
-    SNATCHED_BEST = SNATCHED_BEST # 12
+    SNATCHED_BEST = SNATCHED_BEST  # 12
 
     # Should suffice!
     QUAL = 50
 
-    overviewStrings = {
+    overviewStrings = NumDict({
         SKIPPED: "skipped",
         WANTED: "wanted",
         QUAL: "qual",
         GOOD: "good",
         UNAIRED: "unaired",
         SNATCHED: "snatched",
-        # we can give these a different class later, otherwise breaks checkboxes in displayshow for showing different statuses
+        # we can give these a different class later, otherwise
+        # breaks checkboxes in displayShow for showing different statuses
         SNATCHED_BEST: "snatched",
         SNATCHED_PROPER: "snatched"
-    }
+    })
 
 countryList = {
     'Australia': 'AU',

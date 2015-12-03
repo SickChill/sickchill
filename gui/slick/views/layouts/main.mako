@@ -112,7 +112,7 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/home/"><i class="menu-icon-home"></i>&nbsp;Show List</a></li>
-                                <li><a href="${srRoot}/home/addShows/"><i class="menu-icon-addshow"></i>&nbsp;Add Shows</a></li>
+                                <li><a href="${srRoot}/addShows/"><i class="menu-icon-addshow"></i>&nbsp;Add Shows</a></li>
                                 <li><a href="${srRoot}/home/postprocess/"><i class="menu-icon-postprocess"></i>&nbsp;Manual Post-Processing</a></li>
                                 % if sickbeard.SHOWS_RECENT:
                                     <li role="separator" class="divider"></li>
@@ -317,7 +317,7 @@
         <script type="text/javascript" src="${srRoot}/js/lib/jquery.selectboxes.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/lib/formwizard.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/parsers.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/meta.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
         % if sickbeard.DEVELOPER:
         <script type="text/javascript" src="${srRoot}/js/core.js?${sbPID}"></script>
         % else:

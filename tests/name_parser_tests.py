@@ -1,23 +1,23 @@
+# coding=utf-8
 """
 Test name parsing
 """
 
 # pylint: disable=line-too-long
 
-import sys
-import os.path
 import datetime
+import os.path
+import sys
 import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from tests import test_lib as test
-import sickbeard
 from sickbeard import tv
 from sickbeard.name_parser import parser
+import tests.test_lib as test
 
-sickbeard.SYS_ENCODING = 'UTF-8'
+SYS_ENCODING = 'UTF-8'
 
 DEBUG = VERBOSE = False
 

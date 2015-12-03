@@ -21,12 +21,111 @@ import sickbeard
 
 dateFormat = '%Y-%m-%d'
 dateTimeFormat = '%Y-%m-%d %H:%M:%S'
+# Mapping HTTP status codes to official W3C names
+http_status_code = {
+    300: 'Multiple Choices',
+    301: 'Moved Permanently',
+    302: 'Found',
+    303: 'See Other',
+    304: 'Not Modified',
+    305: 'Use Proxy',
+    306: 'Switch Proxy',
+    307: 'Temporary Redirect',
+    308: 'Permanent Redirect',
+    400: 'Bad Request',
+    401: 'Unauthorized',
+    402: 'Payment Required',
+    403: 'Forbidden',
+    404: 'Not Found',
+    405: 'Method Not Allowed',
+    406: 'Not Acceptable',
+    407: 'Proxy Authentication Required',
+    408: 'Request Timeout',
+    409: 'Conflict',
+    410: 'Gone',
+    411: 'Length Required',
+    412: 'Precondition Failed',
+    413: 'Request Entity Too Large',
+    414: 'Request-URI Too Long',
+    415: 'Unsupported Media Type',
+    416: 'Requested Range Not Satisfiable',
+    417: 'Expectation Failed',
+    418: 'Im a teapot',
+    419: 'Authentication Timeout',
+    420: 'Enhance Your Calm',
+    422: 'Unprocessable Entity',
+    423: 'Locked',
+    424: 'Failed Dependency',
+    426: 'Upgrade Required',
+    428: 'Precondition Required',
+    429: 'Too Many Requests',
+    431: 'Request Header Fields Too Large',
+    440: 'Login Timeout',
+    444: 'No Response',
+    449: 'Retry With',
+    450: 'Blocked by Windows Parental Controls',
+    451: [
+        'Redirect',
+        'Unavailable For Legal Reasons',
+    ],
+    494: 'Request Header Too Large',
+    495: 'Cert Error',
+    496: 'No Cert',
+    497: 'HTTP to HTTPS',
+    498: 'Token expired/invalid',
+    499: [
+        'Client Closed Request',
+        'Token required',
+    ],
+    500: 'Internal Server Error',
+    501: 'Not Implemented',
+    502: 'Bad Gateway',
+    503: 'Service Unavailable',
+    504: 'Gateway Timeout',
+    505: 'HTTP Version Not Supported',
+    506: 'Variant Also Negotiates',
+    507: 'Insufficient Storage',
+    508: 'Loop Detected',
+    509: 'Bandwidth Limit Exceeded',
+    510: 'Not Extended',
+    511: 'Network Authentication Required',
+    520: 'Cloudfare - Web server is returning an unknown error',
+    521: 'Cloudfare - Web server is down',
+    522: 'Cloudfare - Connection timed out',
+    523: 'Cloudfare - Origin is unreachable',
+    524: 'Cloudfare - A timeout occurred',
+    525: 'Cloudfare - SSL handshake failed',
+    526: 'Cloudfare - Invalid SSL certificate',
+    598: 'Network read timeout error',
+    599: 'Network connect timeout error',
+}
 media_extensions = [
     '3gp', 'avi', 'divx', 'dvr-ms', 'f4v', 'flv', 'img', 'iso', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg',
     'ogm', 'ogv', 'rmvb', 'tp', 'ts', 'vob', 'webm', 'wmv', 'wtv',
 ]
 subtitle_extensions = ['ass', 'idx', 'srt', 'ssa', 'sub']
 timeFormat = '%A %I:%M %p'
+
+
+def http_code_description(http_code):
+    """
+    Get the description of the provided HTTP status code.
+    :param http_code: The HTTP status code
+    :return: The description of the provided ``http_code``
+    """
+
+    if http_code in http_status_code:
+        description = http_status_code[http_code]
+
+        if isinstance(description, list):
+            return '(%s)' % ', '.join(description)
+
+        return description
+
+    # TODO Restore logger import
+    # logger.log(u'Unknown HTTP status code %s. Please submit an issue' % http_code, logger.ERROR)
+
+    return None
 
 
 def is_sync_file(filename):
@@ -63,11 +162,9 @@ def pretty_file_size(size):
     :param size: The size to convert
     :return: The converted size
     """
-
-    if isinstance(size, str) and size.isdigit():
+    if isinstance(size, (str, unicode)) and size.isdigit():
         size = float(size)
-
-    if not isinstance(size, (int, long, float)):
+    elif not isinstance(size, (int, long, float)):
         return ''
 
     remaining_size = size
@@ -133,3 +230,17 @@ def sanitize_filename(filename):
         return filename
 
     return ''
+
+
+def try_int(candidate, default_value=0):
+    """
+    Try to convert ``candidate`` to int, or return the ``default_value``.
+    :param candidate: The value to convert to int
+    :param default_value: The value to return if the conversion fails
+    :return: ``candidate`` as int, or ``default_value`` if the conversion fails
+    """
+
+    try:
+        return int(candidate)
+    except Exception:
+        return default_value

@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import httplib
 import datetime
 from base64 import standard_b64encode
@@ -25,8 +24,9 @@ import xmlrpclib
 
 import sickbeard
 from sickbeard.providers.generic import GenericProvider
-from sickbeard import logger, helpers
+from sickbeard import logger
 from sickbeard.common import Quality
+from sickrage.helper.common import try_int
 
 
 def sendNZB(nzb, proper=False):
@@ -108,7 +108,7 @@ def sendNZB(nzb, proper=False):
     try:
         # Find out if nzbget supports priority (Version 9.0+), old versions beginning with a 0.x will use the old command
         nzbget_version_str = nzbGetRPC.version()
-        nzbget_version = helpers.tryInt(nzbget_version_str[:nzbget_version_str.find(".")])
+        nzbget_version = try_int(nzbget_version_str[:nzbget_version_str.find(".")])
         if nzbget_version == 0:
             if nzbcontent64 is not None:
                 nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", category, addToTop, nzbcontent64)

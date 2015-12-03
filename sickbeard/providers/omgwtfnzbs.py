@@ -25,6 +25,7 @@ from sickbeard import classes
 from sickbeard import logger
 from sickbeard import show_name_helpers
 from sickbeard.providers import generic
+from sickrage.helper.common import try_int
 
 
 class OmgwtfnzbsProvider(generic.NZBProvider):
@@ -38,7 +39,6 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
         self.urls = {'base_url': 'https://omgwtfnzbs.org/'}
         self.url = self.urls['base_url']
 
-        self.supportsBacklog = True
 
     def _checkAuth(self):
 
@@ -83,12 +83,7 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
         return (item['release'], item['getnzb'])
 
     def _get_size(self, item):
-        try:
-            size = int(item['sizebytes'])
-        except (ValueError, TypeError, AttributeError, KeyError):
-            return -1
-
-        return size
+        return try_int(item['sizebytes'], -1)
 
     def _doSearch(self, search, search_mode='eponly', epcount=0, retention=0, epObj=None):
 

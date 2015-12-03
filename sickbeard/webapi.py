@@ -31,7 +31,7 @@ import datetime
 import traceback
 
 import sickbeard
-from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat
+from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
 from sickrage.helper.quality import get_quality_string
@@ -719,7 +719,7 @@ class CMD_Episode(ApiCall):
 
     def run(self):
         """ Get detailed information about an episode """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -746,7 +746,7 @@ class CMD_Episode(ApiCall):
             episode["location"] = episode["location"][show_path_length:]
 
         # convert stuff to human form
-        if helpers.tryInt(episode['airdate'], 1) > 693595:  # 1900
+        if try_int(episode['airdate'], 1) > 693595:  # 1900
             episode['airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(
                 network_timezones.parse_date_time(int(episode['airdate']), show_obj.airs, show_obj.network)), d_preset=dateFormat)
         else:
@@ -784,7 +784,7 @@ class CMD_EpisodeSearch(ApiCall):
 
     def run(self):
         """ Search for an episode """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -840,7 +840,7 @@ class CMD_EpisodeSetStatus(ApiCall):
 
     def run(self):
         """ Set the status of an episode or a season (when no episode is provided) """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -953,7 +953,7 @@ class CMD_SubtitleSearch(ApiCall):
 
     def run(self):
         """ Search for an episode subtitles """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -966,15 +966,15 @@ class CMD_SubtitleSearch(ApiCall):
         previous_subtitles = ep_obj.subtitles
 
         try:
-            subtitles = ep_obj.downloadSubtitles()
+            subtitles = ep_obj.download_subtitles()
         except Exception:
             return _responds(RESULT_FAILURE, msg='Unable to find subtitles')
 
         # return the correct json value
         new_subtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
         if new_subtitles:
-            new_languages = [subtitles.fromietf(newSub) for newSub in new_subtitles]
-            status = 'New subtitles downloaded: %s' % ', '.join([new_language.name for new_language in new_languages])
+            new_languages = [subtitles.name_from_code(code) for code in new_subtitles]
+            status = 'New subtitles downloaded: %s' % ', '.join(new_languages)
             response = _responds(RESULT_SUCCESS, msg='New subtitles found')
         else:
             status = 'No subtitles downloaded'
@@ -1016,7 +1016,7 @@ class CMD_Exceptions(ApiCall):
                 scene_exceptions[indexerid].append(row["show_name"])
 
         else:
-            show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+            show_obj = Show.find(sickbeard.showList, int(self.indexerid))
             if not show_obj:
                 return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1068,8 +1068,8 @@ class CMD_History(ApiCall):
             del row["action"]
 
             _rename_element(row, "show_id", "indexerid")
-            row["resource_path"] = os.path.dirname(row["resource"])
-            row["resource"] = os.path.basename(row["resource"])
+            row["resource_path"] = ek(os.path.dirname, row["resource"])
+            row["resource"] = ek(os.path.basename, row["resource"])
 
             # Add tvdbid for backward compatibility
             row['tvdbid'] = row['indexerid']
@@ -1205,7 +1205,7 @@ class CMD_Logs(ApiCall):
         min_level = logger.reverseNames[str(self.min_level).upper()]
 
         data = []
-        if os.path.isfile(logger.logFile):
+        if ek(os.path.isfile, logger.logFile):
             with io.open(logger.logFile, 'r', encoding='utf-8') as f:
                 data = f.readlines()
 
@@ -1853,7 +1853,7 @@ class CMD_Show(ApiCall):
 
     def run(self):
         """ Get detailed information about a show """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1913,7 +1913,7 @@ class CMD_Show(ApiCall):
             show_dict["network"] = ""
         show_dict["status"] = show_obj.status
 
-        if helpers.tryInt(show_obj.nextaired, 1) > 693595:
+        if try_int(show_obj.nextaired, 1) > 693595:
             dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
                 network_timezones.parse_date_time(show_obj.nextaired, show_dict['airs'], show_dict['network']))
             show_dict['airs'] = sbdatetime.sbdatetime.sbftime(dt_episode_airs, t_preset=timeFormat).lstrip('0').replace(
@@ -1961,7 +1961,7 @@ class CMD_ShowAddExisting(ApiCall):
 
     def run(self):
         """ Add an existing show in SickRage """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in the database")
 
@@ -2076,7 +2076,7 @@ class CMD_ShowAddNew(ApiCall):
 
     def run(self):
         """ Add a new show to SickRage """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in database")
 
@@ -2211,7 +2211,7 @@ class CMD_ShowCache(ApiCall):
 
     def run(self):
         """ Check SickRage's cache to see if the images (poster, banner, fanart) for a show are valid """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2283,7 +2283,7 @@ class CMD_ShowGetQuality(ApiCall):
 
     def run(self):
         """ Get the quality setting of a show """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2478,7 +2478,7 @@ class CMD_ShowSeasonList(ApiCall):
 
     def run(self):
         """ Get the list of seasons of a show """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2518,7 +2518,7 @@ class CMD_ShowSeasons(ApiCall):
 
     def run(self):
         """ Get the list of episodes for one or all seasons of a show """
-        sho_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        sho_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not sho_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2533,7 +2533,7 @@ class CMD_ShowSeasons(ApiCall):
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
                 row["status"] = _get_status_strings(status)
                 row["quality"] = get_quality_string(quality)
-                if helpers.tryInt(row['airdate'], 1) > 693595:  # 1900
+                if try_int(row['airdate'], 1) > 693595:  # 1900
                     dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
                         network_timezones.parse_date_time(row['airdate'], sho_obj.airs, sho_obj.network))
                     row['airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
@@ -2560,7 +2560,7 @@ class CMD_ShowSeasons(ApiCall):
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
                 row["status"] = _get_status_strings(status)
                 row["quality"] = get_quality_string(quality)
-                if helpers.tryInt(row['airdate'], 1) > 693595:  # 1900
+                if try_int(row['airdate'], 1) > 693595:  # 1900
                     dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
                         network_timezones.parse_date_time(row['airdate'], sho_obj.airs, sho_obj.network))
                     row['airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
@@ -2604,7 +2604,7 @@ class CMD_ShowSetQuality(ApiCall):
 
     def run(self):
         """ Set the quality setting of a show. If no quality is provided, the default user setting is used. """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2659,7 +2659,7 @@ class CMD_ShowStats(ApiCall):
 
     def run(self):
         """ Get episode statistics for a given show """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2764,7 +2764,7 @@ class CMD_ShowUpdate(ApiCall):
 
     def run(self):
         """ Update a show in SickRage """
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2818,7 +2818,7 @@ class CMD_Shows(ApiCall):
                 "subtitles": (0, 1)[curShow.subtitles],
             }
 
-            if helpers.tryInt(curShow.nextaired, 1) > 693595:  # 1900
+            if try_int(curShow.nextaired, 1) > 693595:  # 1900
                 dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
                     network_timezones.parse_date_time(curShow.nextaired, curShow.airs, show_dict['network']))
                 show_dict['next_ep_airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)

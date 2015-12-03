@@ -1,6 +1,7 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
-# URL: https://sickrage.github.io
+# URL: https://SickRage.GitHub.io
 # Git: https://github.com/SickRage/SickRage.git
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -16,42 +17,57 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Test restart
+"""
+
+from __future__ import print_function
+
 import os
 import sys
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
-
 from sickbeard.event_queue import Events
 from sickrage.system.Restart import Restart
-from unittest import TestCase, TestLoader, TextTestRunner
 
 
-class RestartTests(TestCase):
+class RestartTests(unittest.TestCase):
+    """
+    Test restart
+    """
     def test_restart(self):
+        """
+        Test restart
+        """
         sickbeard.PID = 123456
         sickbeard.events = Events(None)
 
-        tests = {
+        test_cases = {
             0: False,
             '0': False,
-            u'0': False,
             123: False,
             '123': False,
-            u'123': False,
             123456: True,
             '123456': True,
+        }
+
+        unicode_test_cases = {
+            u'0': False,
+            u'123': False,
             u'123456': True,
         }
 
-        for (pid, result) in tests.iteritems():
-            self.assertEqual(Restart.restart(pid), result)
+        for tests in test_cases, unicode_test_cases:
+            for (pid, result) in tests.iteritems():
+                self.assertEqual(Restart.restart(pid), result)
 
 
 if __name__ == '__main__':
     print('=====> Testing %s' % __file__)
 
-    suite = TestLoader().loadTestsFromTestCase(RestartTests)
-    TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(RestartTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)

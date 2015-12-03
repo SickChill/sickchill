@@ -90,7 +90,11 @@
                 autoOpen:    false
             });
         }
-
+        else {
+            // The title may change, even if fileBrowserDialog already exists
+            fileBrowserDialog.dialog('option', 'title', options.title);   
+        }
+        
         fileBrowserDialog.dialog('option', 'buttons', [
             {
                 text: 'Ok',

@@ -37,7 +37,6 @@ class TORRENTZProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "Torrentz")
         self.public = True
-        self.supportsBacklog = True
         self.confirmed = True
         self.ratio = None
         self.minseed = None

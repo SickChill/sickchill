@@ -1,18 +1,10 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
-    import datetime
-    import re
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
-    from sickbeard import sbdatetime
-    from sickbeard.helpers import anon_url
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/addTrendingShow.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/home_trendingShows.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -51,6 +43,6 @@
 </div>
 
 <br>
-<div id="trendingShows"></div>
+<div id="recommendedShows"></div>
 <br>
 </%block>

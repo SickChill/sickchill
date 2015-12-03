@@ -133,7 +133,7 @@ class ShowQueue(generic_queue.GenericQueue):
 
         return queueItemObj
 
-    def downloadSubtitles(self, show, force=False):
+    def download_subtitles(self, show, force=False):
 
         queueItemObj = QueueItemSubtitle(show)
 
@@ -560,7 +560,7 @@ class QueueItemSubtitle(ShowQueueItem):
 
         logger.log(u"Downloading subtitles for " + self.show.name)
 
-        self.show.downloadSubtitles()
+        self.show.download_subtitles()
         self.finish()
 
 class QueueItemUpdate(ShowQueueItem):

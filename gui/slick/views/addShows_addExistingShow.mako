@@ -4,10 +4,7 @@
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/addExistingShow.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/addShowOptions.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/home_addExistingShow.js"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -22,7 +19,7 @@
 
     <div id="core-component-group1" class="tab-pane active component-group">
 
-    <form id="addShowForm" method="post" action="${srRoot}/home/addShows/addNewShow" accept-charset="utf-8">
+    <form id="addShowForm" method="post" action="${srRoot}/addShows/addNewShow" accept-charset="utf-8">
 
     <div id="tabs">
         <ul>

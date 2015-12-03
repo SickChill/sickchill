@@ -79,7 +79,7 @@ def delete_folder(folder, check_empty=True):
 
         try:
             logger.log(u"Deleting folder (if it's empty): " + folder)
-            os.rmdir(folder)
+            ek(os.rmdir, folder)
         except (OSError, IOError), e:
             logger.log(u"Warning: unable to delete folder: " + folder + ": " + ex(e), logger.WARNING)
             return False
@@ -331,18 +331,18 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
         return False
 
     if failed:
-        process_failed(os.path.join(path, dirName), nzbNameOriginal, result)
+        process_failed(ek(os.path.join, path, dirName), nzbNameOriginal, result)
         result.missedfiles.append(dirName + " : Failed download")
         return False
 
-    if helpers.is_hidden_folder(os.path.join(path, dirName)):
+    if helpers.is_hidden_folder(ek(os.path.join, path, dirName)):
         result.output += logHelper(u"Ignoring hidden folder: " + dirName, logger.DEBUG)
         result.missedfiles.append(dirName + " : Hidden folder")
         return False
 
     # make sure the dir isn't inside a show dir
     myDB = db.DBConnection()
-    sqlResults = myDB.select("SELECT * FROM tv_shows")
+    sqlResults = myDB.select("SELECT location FROM tv_shows")
 
     for sqlShow in sqlResults:
         if dirName.lower().startswith(ek(os.path.realpath, sqlShow["location"]).lower() + os.sep) or \
@@ -414,11 +414,11 @@ def unRAR(path, rarFiles, force, result):
             result.output += logHelper(u"Unpacking archive: " + archive, logger.DEBUG)
 
             try:
-                rar_handle = RarFile(os.path.join(path, archive))
+                rar_handle = RarFile(ek(os.path.join, path, archive))
 
                 # Skip extraction if any file in archive has previously been extracted
                 skip_file = False
-                for file_in_archive in [os.path.basename(x.filename) for x in rar_handle.infolist() if not x.isdir]:
+                for file_in_archive in [ek(os.path.basename, x.filename) for x in rar_handle.infolist() if not x.isdir]:
                     if already_postprocessed(path, file_in_archive, force, result):
                         result.output += logHelper(
                             u"Archive file already post-processed, extraction skipped: " + file_in_archive,
@@ -432,7 +432,7 @@ def unRAR(path, rarFiles, force, result):
                 rar_handle.extract(path=path, withSubpath=False, overwrite=False)
                 for x in rar_handle.infolist():
                     if not x.isdir:
-                        basename = os.path.basename(x.filename)
+                        basename = ek(os.path.basename, x.filename)
                         if basename not in unpacked_files:
                             unpacked_files.append(basename)
                 del rar_handle
@@ -488,38 +488,31 @@ def already_postprocessed(dirName, videofile, force, result):
 
     # Avoid processing the same dir again if we use a process method <> move
     myDB = db.DBConnection()
-    sqlResult = myDB.select("SELECT * FROM tv_episodes WHERE release_name = ?", [dirName])
+    sqlResult = myDB.select("SELECT release_name FROM tv_episodes WHERE release_name in (?, ?) LIMIT 1", [dirName, videofile.rpartition('.')[0]])
     if sqlResult:
         # result.output += logHelper(u"You're trying to post process a dir that's already been processed, skipping", logger.DEBUG)
         return True
 
-    else:
-        sqlResult = myDB.select("SELECT * FROM tv_episodes WHERE release_name = ?", [videofile.rpartition('.')[0]])
-        if sqlResult:
-            # result.output += logHelper(u"You're trying to post process a video that's already been processed, skipping", logger.DEBUG)
-            return True
+    # Needed if we have downloaded the same episode @ different quality
+    # But we need to make sure we check the history of the episode we're going to PP, and not others
+    np = NameParser(dirName, tryIndexers=True)
+    try:  # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
+        parse_result = np.parse(dirName)
+    except Exception:  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
+        parse_result = False
 
-        # Needed if we have downloaded the same episode @ different quality
-        # But we need to make sure we check the history of the episode we're going to PP, and not others
-        np = NameParser(dirName, tryIndexers=True)
-        try:  # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
-            parse_result = np.parse(dirName)
-        except Exception:  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
-            parse_result = False
+    search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same
+    search_sql += " WHERE history.season=tv_episodes.season and history.episode=tv_episodes.episode"
+    # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
+    if parse_result and (parse_result.show.indexerid and parse_result.episode_numbers and parse_result.season_number):
+        search_sql += " and tv_episodes.showid = '" + str(parse_result.show.indexerid) + "' and tv_episodes.season = '" + str(parse_result.season_number) + "' and tv_episodes.episode = '" + str(parse_result.episode_numbers[0]) + "'"
 
-
-        search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same
-        search_sql += " WHERE history.season=tv_episodes.season and history.episode=tv_episodes.episode"
-        # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
-        if parse_result and (parse_result.show.indexerid and parse_result.episode_numbers and parse_result.season_number):
-            search_sql += " and tv_episodes.showid = '" + str(parse_result.show.indexerid) + "' and tv_episodes.season = '" + str(parse_result.season_number) + "' and tv_episodes.episode = '" + str(parse_result.episode_numbers[0]) + "'"
-
-        search_sql += " and tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED]) + ")"
-        search_sql += " and history.resource LIKE ?"
-        sqlResult = myDB.select(search_sql, ['%' + videofile])
-        if sqlResult:
-            # result.output += logHelper(u"You're trying to post process a video that's already been processed, skipping", logger.DEBUG)
-            return True
+    search_sql += " and tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED]) + ")"
+    search_sql += " and history.resource LIKE ? LIMIT 1"
+    sqlResult = myDB.select(search_sql, ['%' + videofile])
+    if sqlResult:
+        # result.output += logHelper(u"You're trying to post process a video that's already been processed, skipping", logger.DEBUG)
+        return True
 
     return False
 
@@ -592,10 +585,10 @@ def get_path_dir_files(dirName, nzbName, proc_type):
             break
     else:
         path, dirs = ek(os.path.split, dirName)  # Script Post Processing
-        if not nzbName is None and not nzbName.endswith('.nzb') and os.path.isfile(
-                os.path.join(dirName, nzbName)):  # For single torrent file without Dir
+        if not nzbName is None and not nzbName.endswith('.nzb') and ek(os.path.isfile,
+                ek(os.path.join, dirName, nzbName)):  # For single torrent file without Dir
             dirs = []
-            files = [os.path.join(dirName, nzbName)]
+            files = [ek(os.path.join, dirName, nzbName)]
         else:
             dirs = [dirs]
             files = []

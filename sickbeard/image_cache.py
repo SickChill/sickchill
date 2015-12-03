@@ -286,7 +286,7 @@ class ImageCache:
                     logger.log(u"Checking if we can use the show image from the " + cur_provider.name + " metadata",
                                logger.DEBUG)
                     if ek(os.path.isfile, cur_provider.get_poster_path(show_obj)):
-                        cur_file_name = os.path.abspath(cur_provider.get_poster_path(show_obj))
+                        cur_file_name = ek(os.path.abspath, cur_provider.get_poster_path(show_obj))
                         cur_file_type = self.which_type(cur_file_name)
 
                         if cur_file_type is None:

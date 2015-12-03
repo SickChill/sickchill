@@ -23,17 +23,16 @@ import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.helpers import tryInt
 from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import try_int
+
 
 class FreshOnTVProvider(generic.TorrentProvider):
-
     def __init__(self):
 
         generic.TorrentProvider.__init__(self, "FreshOnTV")
 
-        self.supportsBacklog = True
 
 
         self._uid = None
@@ -203,8 +202,8 @@ class FreshOnTVProvider(generic.TorrentProvider):
                                     details_url = individual_torrent.find('a', {'class': 'torrent_name_link'})['href']
                                     torrent_id = int((re.match('.*?([0-9]+)$', details_url).group(1)).strip())
                                     download_url = self.urls['download'] % (str(torrent_id))
-                                    seeders = tryInt(individual_torrent.find('td', {'class': 'table_seeders'}).find('span').text.strip(), 1)
-                                    leechers = tryInt(individual_torrent.find('td', {'class': 'table_leechers'}).find('a').text.strip(), 0)
+                                    seeders = try_int(individual_torrent.find('td', {'class': 'table_seeders'}).find('span').text.strip(), 1)
+                                    leechers = try_int(individual_torrent.find('td', {'class': 'table_leechers'}).find('a').text.strip(), 0)
                                     # FIXME
                                     size = -1
                                 except Exception:

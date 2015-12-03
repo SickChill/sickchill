@@ -1,9 +1,22 @@
 module.exports = function(grunt) {
+    require('load-grunt-tasks')(grunt);
+
     grunt.initConfig({
-        bower_concat: {
+        clean: {
+            dist: './dist/',
+            bower_components: './bower_components' // jshint ignore:line
+        },
+        bower: {
+            install: {
+                options: {
+                    copy: false
+                }
+            }
+        },
+        bower_concat: { // jshint ignore:line
             all: {
-                dest: './_bower.js',
-                cssDest: './_bower.css',
+                dest: './dist/bower.js',
+                cssDest: './dist/bower.css',
                 exclude: [
                 ],
                 dependencies: {
@@ -32,10 +45,24 @@ module.exports = function(grunt) {
             }
         },
         uglify: {
-            my_target: {
+            bower: {
                 files: {
-                    '../gui/slick/js/vender.min.js': ['./_bower.js'],
+                    '../gui/slick/js/vender.min.js': ['./dist/bower.js']
+                }
+            },
+            core: {
+                files: {
                     '../gui/slick/js/core.min.js': ['../gui/slick/js/core.js']
+                }
+            }
+        },
+        sass: {
+            options: {
+                sourceMap: true
+            },
+            core: {
+                files: {
+                    './dist/core.css': ['../gui/slick/scss/core.scss']
                 }
             }
         },
@@ -44,10 +71,14 @@ module.exports = function(grunt) {
                 shorthandCompacting: false,
                 roundingPrecision: -1
             },
-            target: {
+            bower: {
                 files: {
-                    '../gui/slick/css/vender.min.css': ['./_bower.css'],
-                    // '../gui/slick/css/core.min.css': ['./gui/slick/css/core.css']
+                    '../gui/slick/css/vender.min.css': ['./dist/bower.css']
+                }
+            },
+            core: {
+                files: {
+                    '../gui/slick/css/core.min.css': ['./dist/core.css']
                 }
             }
         },
@@ -61,20 +92,37 @@ module.exports = function(grunt) {
                 '!../gui/slick/js/ajaxNotifications.js',
                 '!../gui/slick/js/**/*.min.js', // We use this because ignores doesn't seem to work :(
             ]
+        },
+        mocha: {
+            all: {
+                src: ['tests/testrunner.html'],
+            },
+            options: {
+                run: true
+            }
         }
     });
 
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-bower-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-mocha');
 
     grunt.registerTask('default', [
+        'clean',
+        'bower',
         'bower_concat',
         'uglify',
-        'cssmin']
-    );
+        'sass',
+        'cssmin',
+        'jshint',
+        'mocha'
+    ]);
     grunt.registerTask('travis', [
-        'jshint'
+        'jshint',
+        'mocha'
     ]);
 };

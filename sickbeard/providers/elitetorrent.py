@@ -33,7 +33,6 @@ class elitetorrentProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "EliteTorrent")
 
-        self.supportsBacklog = True
         self.onlyspasearch = None
         self.minseed = None
         self.minleech = None
@@ -77,16 +76,16 @@ class elitetorrentProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             
             # Only search if user conditions are true
-            if self.onlyspasearch and lang_info != 'es' and mode is not 'RSS':
+            if self.onlyspasearch and lang_info != 'es' and mode != 'RSS':
                 logger.log(u"Show info is not spanish, skipping provider search", logger.DEBUG)
                 continue
 
             for search_string in search_strings[mode]:
-                if mode is not 'RSS':
+                if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
                 
                 search_string = re.sub(r'S0*(\d*)E(\d*)', r'\1x\2', search_string)
-                self.search_params['buscar'] = search_string.strip() if mode is not 'RSS' else ''
+                self.search_params['buscar'] = search_string.strip() if mode != 'RSS' else ''
                 
                 searchURL = self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params)
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
@@ -130,12 +129,12 @@ class elitetorrentProvider(generic.TorrentProvider):
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
-                                if mode is not 'RSS':
+                                if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             item = title, download_url, size, seeders, leechers
-                            if mode is not 'RSS':
+                            if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)

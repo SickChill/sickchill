@@ -32,7 +32,6 @@ class GFTrackerProvider(generic.TorrentProvider):
 
         generic.TorrentProvider.__init__(self, "GFTracker")
 
-        self.supportsBacklog = True
 
         self.username = None
         self.password = None

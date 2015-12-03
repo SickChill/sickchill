@@ -21,7 +21,6 @@ import sickbeard
 from datetime import date
 from sickbeard.common import Quality, SKIPPED, WANTED
 from sickbeard.db import DBConnection
-from sickbeard.helpers import findCertainShow
 from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, ex
 from sickrage.helper.exceptions import MultipleShowObjectsException
 
@@ -52,6 +51,30 @@ class Show:
             return ex(exception), show
 
         return None, show
+
+    @staticmethod
+    def find(shows, indexer_id):
+        """
+        Find a show by its indexer id in the provided list of shows
+        :param shows: The list of shows to search in
+        :param indexer_id: The indexer id of the desired show
+        :return: The desired show if found, ``None`` if not found
+        :throw: ``MultipleShowObjectsException`` if multiple shows match the provided ``indexer_id``
+        """
+
+        if indexer_id is None or shows is None or len(shows) == 0:
+            return None
+
+        indexer_ids = [indexer_id] if not isinstance(indexer_id, list) else indexer_id
+        results = [show for show in shows if show.indexerid in indexer_ids]
+
+        if len(results) == 0:
+            return None
+
+        if len(results) == 1:
+            return results[0]
+
+        raise MultipleShowObjectsException()
 
     @staticmethod
     def overall_stats():
@@ -158,7 +181,7 @@ class Show:
             return 'Invalid show ID', None
 
         try:
-            show = findCertainShow(sickbeard.showList, int(indexer_id))
+            show = Show.find(sickbeard.showList, indexer_id)
         except MultipleShowObjectsException:
             return 'Unable to find the specified show', None
 

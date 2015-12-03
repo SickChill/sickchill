@@ -1,6 +1,7 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
-# URL: https://sickrage.github.io
+# URL: https://SickRage.GitHub.io
 # Git: https://github.com/SickRage/SickRage.git
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -16,8 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Test shows
+"""
+
+# pylint: disable=line-too-long
+
+from __future__ import print_function
+
 import os
 import sys
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
@@ -26,12 +36,63 @@ import sickbeard
 
 from sickbeard.common import Quality
 from sickbeard.tv import TVShow
+from sickrage.helper.exceptions import MultipleShowObjectsException
 from sickrage.show.Show import Show
-from unittest import TestCase, TestLoader, TextTestRunner
 
 
-class ShowTests(TestCase):
+class ShowTests(unittest.TestCase):
+    """
+    Test shows
+    """
+
+    def test_find(self):
+        """
+        Test find
+        """
+        sickbeard.QUALITY_DEFAULT = Quality.FULLHDTV
+
+        show123 = TestTVShow(0, 123)
+        show456 = TestTVShow(0, 456)
+        show789 = TestTVShow(0, 789)
+        shows = [show123, show456, show789]
+        shows_duplicate = shows + shows
+
+        test_cases = {
+            (False, None): None,
+            (False, ''): None,
+            (False, '123'): None,
+            (False, 123): None,
+            (False, 12.3): None,
+            (True, None): None,
+            (True, ''): None,
+            (True, '123'): None,
+            (True, 123): show123,
+            (True, 12.3): None,
+            (True, 456): show456,
+            (True, 789): show789,
+        }
+
+        unicode_test_cases = {
+            (False, u''): None,
+            (False, u'123'): None,
+            (True, u''): None,
+            (True, u'123'): None,
+        }
+
+        for tests in test_cases, unicode_test_cases:
+            for ((use_shows, indexer_id), result) in tests.iteritems():
+                if use_shows:
+                    self.assertEqual(Show.find(shows, indexer_id), result)
+                else:
+                    self.assertEqual(Show.find(None, indexer_id), result)
+
+        with self.assertRaises(MultipleShowObjectsException):
+            Show.find(shows_duplicate, 456)
+
     def test_validate_indexer_id(self):
+        """
+        Test validate indexer id
+        """
         sickbeard.QUALITY_DEFAULT = Quality.FULLHDTV
 
         show123 = TestTVShow(0, 123)
@@ -56,28 +117,33 @@ class ShowTests(TestCase):
         ]
 
         self.assertEqual(
-                len(indexer_id_list), len(results_list),
-                'Number of parameters (%d) and results (%d) does not match' % (len(indexer_id_list), len(results_list))
+            len(indexer_id_list), len(results_list),
+            'Number of parameters (%d) and results (%d) does not match' % (len(indexer_id_list), len(results_list))
         )
 
         for (index, indexer_id) in enumerate(indexer_id_list):
-            self.assertEqual(Show._validate_indexer_id(indexer_id), results_list[index])
+            self.assertEqual(Show._validate_indexer_id(indexer_id), results_list[index])  # pylint: disable=protected-access
 
 
 class TestTVShow(TVShow):
     """
-    A test ``TVShow`` object that do not need DB access.
+    A test `TVShow` object that does not need DB access.
     """
 
     def __init__(self, indexer, indexer_id):
         super(TestTVShow, self).__init__(indexer, indexer_id)
 
     def loadFromDB(self, skip_nfo=False):
+        """
+        Override TVShow.loadFromDB to avoid DB access during testing
+
+        :param skip_nfo: ...not used
+        """
         pass
 
 
 if __name__ == '__main__':
     print('=====> Testing %s' % __file__)
 
-    suite = TestLoader().loadTestsFromTestCase(ShowTests)
-    TextTestRunner(verbosity=2).run(suite)
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(ShowTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)

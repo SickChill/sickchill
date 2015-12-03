@@ -53,7 +53,7 @@ from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
-from sickrage.helper.common import sanitize_filename
+from sickrage.helper.common import sanitize_filename, try_int
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOException, ShowDirectoryNotFoundException
@@ -98,9 +98,9 @@ def get_lookup():
     global mako_path  # pylint: disable=W0603
 
     if mako_path is None:
-        mako_path = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")
+        mako_path = ek(os.path.join, sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")
     if mako_cache is None:
-        mako_cache = os.path.join(sickbeard.CACHE_DIR, 'mako')
+        mako_cache = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
     if mako_lookup is None:
         mako_lookup = TemplateLookup(directories=[mako_path], module_directory=mako_cache, format_exceptions=True)
     return mako_lookup
@@ -557,7 +557,7 @@ class CalendarHandler(BaseHandler):
                 air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"],
                                                                   show['network']).astimezone(utc)
                 air_date_time_end = air_date_time + datetime.timedelta(
-                    minutes=helpers.tryInt(show["runtime"], 60))
+                    minutes=try_int(show["runtime"], 60))
 
                 # Create event for episode
                 ical += 'BEGIN:VEVENT\r\n'
@@ -631,7 +631,7 @@ class WebFileBrowser(WebRoot):
     def complete(self, term, includeFiles=0, *args, **kwargs):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header("Content-Type", "application/json")
-        paths = [entry['path'] for entry in foldersAtPath(os.path.dirname(term), includeFiles=bool(int(includeFiles)))
+        paths = [entry['path'] for entry in foldersAtPath(ek(os.path.dirname, term), includeFiles=bool(int(includeFiles)))
                  if 'path' in entry]
 
         return json.dumps(paths)
@@ -651,7 +651,7 @@ class Home(WebRoot):
         if show is None:
             return "Invalid show parameters"
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if showObj is None:
             return "Invalid show paramaters"
@@ -702,7 +702,8 @@ class Home(WebRoot):
         sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total, '
 
         sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + today + ' AND (status = ' + str(UNAIRED) + ' OR status = ' + str(WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
-        sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str(UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev '
+        sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str(UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev, '
+        sql_statement += ' (SELECT SUM(file_size) FROM tv_episodes WHERE showid=tv_eps.showid) AS show_size'
         sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
         sql_result = myDB.select(sql_statement)
@@ -1141,7 +1142,7 @@ class Home(WebRoot):
             if branch:
                 checkversion.updater.branch = branch
 
-            if checkversion.updater.update():
+            if checkversion.updater.need_update() and checkversion.updater.update():
                 # do a hard restart
                 sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
@@ -1185,7 +1186,7 @@ class Home(WebRoot):
         # todo: add more comprehensive show validation
         try:
             show = int(show)  # fails if show id ends in a period SickRage/sickrage-issues#65
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, show)
+            showObj = Show.find(sickbeard.showList, show)
         except (ValueError, TypeError):
             return self._genericMessage("Error", "Invalid show ID: %s" % str(show))
 
@@ -1358,7 +1359,7 @@ class Home(WebRoot):
             else:
                 return self._genericMessage("Error", errString)
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if not showObj:
             errString = "Unable to find the specified show: " + str(show)
@@ -1369,7 +1370,7 @@ class Home(WebRoot):
 
         showObj.exceptions = sickbeard.scene_exceptions.get_scene_exceptions(showObj.indexerid)
 
-        if helpers.tryInt(quality_preset, None):
+        if try_int(quality_preset, None):
             bestQualities = []
 
         if not location and not anyQualities and not bestQualities and not flatten_folders:
@@ -1491,8 +1492,8 @@ class Home(WebRoot):
 
             location = location.decode('UTF-8')
             # if we change location clear the db of episodes, change it, write to db, and rescan
-            if os.path.normpath(showObj._location) != os.path.normpath(location):
-                logger.log(os.path.normpath(showObj._location) + " != " + os.path.normpath(location), logger.DEBUG)
+            if ek(os.path.normpath, showObj._location) != ek(os.path.normpath, location):
+                logger.log(ek(os.path.normpath, showObj._location) + " != " + ek(os.path.normpath, location), logger.DEBUG)
                 if not ek(os.path.isdir, location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
                     errors.append("New location <tt>%s</tt> does not exist" % location)
 
@@ -1597,7 +1598,7 @@ class Home(WebRoot):
         if show is None:
             return self._genericMessage("Error", "Invalid show ID")
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if showObj is None:
             return self._genericMessage("Error", "Unable to find the specified show")
@@ -1618,13 +1619,13 @@ class Home(WebRoot):
         if show is None:
             return self._genericMessage("Error", "Invalid show ID")
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if showObj is None:
             return self._genericMessage("Error", "Unable to find the specified show")
 
         # search and download subtitles
-        sickbeard.showQueueScheduler.action.downloadSubtitles(showObj, bool(force))
+        sickbeard.showQueueScheduler.action.download_subtitles(showObj, bool(force))
 
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
@@ -1635,7 +1636,7 @@ class Home(WebRoot):
         showObj = None
 
         if show:
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+            showObj = Show.find(sickbeard.showList, int(show))
             if showObj:
                 showName = urllib.quote_plus(showObj.name.encode('utf-8'))
 
@@ -1666,7 +1667,7 @@ class Home(WebRoot):
         showObj = None
 
         if show:
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+            showObj = Show.find(sickbeard.showList, int(show))
 
         if notifiers.emby_notifier.update_library(showObj):
             ui.notifications.message(
@@ -1698,7 +1699,7 @@ class Home(WebRoot):
             else:
                 return self._genericMessage("Error", errMsg)
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if not showObj:
             errMsg = "Error", "Show not in show list"
@@ -1828,7 +1829,7 @@ class Home(WebRoot):
         if show is None:
             return self._genericMessage("Error", "You must specify a show")
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if showObj is None:
             return self._genericMessage("Error", "Show not in show list")
@@ -1874,7 +1875,7 @@ class Home(WebRoot):
             errMsg = "You must specify a show and at least one episode"
             return self._genericMessage("Error", errMsg)
 
-        show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        show_obj = Show.find(sickbeard.showList, int(show))
 
         if show_obj is None:
             errMsg = "Error", "Show not in show list"
@@ -1941,7 +1942,7 @@ class Home(WebRoot):
     def getManualSearchStatus(self, show=None):
         def getEpisodes(searchThread, searchstatus):
             results = []
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(searchThread.show.indexerid))
+            showObj = Show.find(sickbeard.showList, int(searchThread.show.indexerid))
 
             if not showObj:
                 logger.log(u'No Show Object found for show with indexerID: ' + str(searchThread.show.indexerid), logger.ERROR)
@@ -2025,15 +2026,15 @@ class Home(WebRoot):
         # try do download subtitles for that episode
         previous_subtitles = ep_obj.subtitles
         try:
-            ep_obj.downloadSubtitles()
+            ep_obj.download_subtitles()
         except Exception:
             return json.dumps({'result': 'failure'})
 
         # return the correct json value
-        newSubtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
-        if newSubtitles:
-            newLangs = [subtitles.fromietf(newSub) for newSub in newSubtitles]
-            status = 'New subtitles downloaded: %s' % ', '.join([newLang.name for newLang in newLangs])
+        new_subtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
+        if new_subtitles:
+            new_languages = [subtitles.name_from_code(code) for code in new_subtitles]
+            status = 'New subtitles downloaded: %s' % ', '.join(new_languages)
         else:
             status = 'No subtitles downloaded'
         ui.notifications.message(ep_obj.show.name, status)
@@ -2056,7 +2057,7 @@ class Home(WebRoot):
         if sceneAbsolute in ['null', '']:
             sceneAbsolute = None
 
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+        showObj = Show.find(sickbeard.showList, int(show))
 
         if showObj.is_anime:
             result = {
@@ -2143,10 +2144,13 @@ class Home(WebRoot):
     def fetch_releasegroups(show_name):
         logger.log(u'ReleaseGroups: %s' % show_name, logger.INFO)
         if helpers.set_up_anidb_connection():
-            anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_name)
-            groups = anime.get_groups()
-            logger.log(u'ReleaseGroups: %s' % groups, logger.INFO)
-            return json.dumps({'result': 'success', 'groups': groups})
+            try:
+                anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_name)
+                groups = anime.get_groups()
+                logger.log(u'ReleaseGroups: %s' % groups, logger.INFO)
+                return json.dumps({'result': 'success', 'groups': groups})
+            except AttributeError as error:
+                logger.log(u'Unable to get ReleaseGroups: %s' % error, logger.DEBUG)
 
         return json.dumps({'result': 'failure'})
 
@@ -2246,14 +2250,14 @@ class HomePostProcess(Home):
             return self._genericMessage("Postprocessing results", result)
 
 
-@route('/home/addShows(/?.*)')
+@route('/addShows(/?.*)')
 class HomeAddShows(Home):
     def __init__(self, *args, **kwargs):
         super(HomeAddShows, self).__init__(*args, **kwargs)
 
     def index(self):
-        t = PageTemplate(rh=self, filename="home_addShows.mako")
-        return t.render(title='Add Shows', header='Add Shows', topmenu='home', controller="home", action="addShows")
+        t = PageTemplate(rh=self, filename="addShows.mako")
+        return t.render(title='Add Shows', header='Add Shows', topmenu='home', controller="addShows", action="index")
 
     @staticmethod
     def getIndexerLanguages():
@@ -2393,7 +2397,7 @@ class HomeAddShows(Home):
 
                 cur_dir['existing_info'] = (indexer_id, show_name, indexer)
 
-                if indexer_id and helpers.findCertainShow(sickbeard.showList, indexer_id):
+                if indexer_id and Show.find(sickbeard.showList, indexer_id):
                     cur_dir['added_already'] = True
         return t.render(dirList=dir_list)
 
@@ -2402,7 +2406,7 @@ class HomeAddShows(Home):
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
-        t = PageTemplate(rh=self, filename="home_newShow.mako")
+        t = PageTemplate(rh=self, filename="addShows_newShow.mako")
 
         indexer, show_dir, indexer_id, show_name = self.split_extra_show(show_to_add)
 
@@ -2441,7 +2445,8 @@ class HomeAddShows(Home):
             provided_show_dir=show_dir, provided_indexer_id=provided_indexer_id,
             provided_indexer_name=provided_indexer_name, provided_indexer=provided_indexer,
             indexers=sickbeard.indexerApi().indexers, whitelist=[], blacklist=[], groups=[],
-            title='New Show', header='New Show', topmenu='home'
+            title='New Show', header='New Show', topmenu='home',
+            controller="addShows", action="newShow"
         )
 
     def recommendedShows(self):
@@ -2449,8 +2454,9 @@ class HomeAddShows(Home):
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
-        t = PageTemplate(rh=self, filename="home_recommendedShows.mako")
-        return t.render(title="Recommended Shows", header="Recommended Shows", enable_anime_options=False)
+        t = PageTemplate(rh=self, filename="addShows_recommendedShows.mako")
+        return t.render(title="Recommended Shows", header="Recommended Shows", enable_anime_options=False,
+                controller="addShows", action="recommendedShows")
 
     def getRecommendedShows(self):
         t = PageTemplate(rh=self, filename="trendingShows.mako")
@@ -2473,7 +2479,7 @@ class HomeAddShows(Home):
             for show_detail in shows:
                 show = {'show': show_detail}
                 try:
-                    if not helpers.findCertainShow(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
+                    if not Show.find(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
                         if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
                             if not_liked_show:
                                 if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
@@ -2499,8 +2505,9 @@ class HomeAddShows(Home):
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
-        t = PageTemplate(rh=self, filename="home_trendingShows.mako")
-        return t.render(title="Trending Shows", header="Trending Shows", enable_anime_options=False)
+        t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
+        return t.render(title="Trending Shows", header="Trending Shows", enable_anime_options=False,
+                controller="addShows", action="trendingShows")
 
     def getTrendingShows(self):
         """
@@ -2527,7 +2534,7 @@ class HomeAddShows(Home):
             library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
             for show in shows:
                 try:
-                    if not helpers.findCertainShow(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
+                    if not Show.find(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
                         if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
                             if not_liked_show:
                                 if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
@@ -2552,7 +2559,7 @@ class HomeAddShows(Home):
         """
         Fetches data from IMDB to show a list of popular shows.
         """
-        t = PageTemplate(rh=self, filename="home_popularShows.mako")
+        t = PageTemplate(rh=self, filename="addShows_popularShows.mako")
         e = None
 
         try:
@@ -2561,7 +2568,8 @@ class HomeAddShows(Home):
             # print traceback.format_exc()
             popular_shows = None
 
-        return t.render(title="Popular Shows", header="Popular Shows", popular_shows=popular_shows, imdb_exception=e, topmenu="home")
+        return t.render(title="Popular Shows", header="Popular Shows", popular_shows=popular_shows, imdb_exception=e, topmenu="home",
+                controller="addShows", action="popularShows")
 
     def addShowToBlacklist(self, indexer_id):
         # URL parameters
@@ -2571,17 +2579,24 @@ class HomeAddShows(Home):
 
         trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items", data, method='POST')
 
-        return self.redirect('/home/addShows/trendingShows/')
+        return self.redirect('/addShows/trendingShows/')
 
     def existingShows(self):
         """
         Prints out the page to add existing shows from a root dir
         """
-        t = PageTemplate(rh=self, filename="home_addExistingShow.mako")
-        return t.render(enable_anime_options=False, title='Existing Show', header='Existing Show', topmenu="home")
+        t = PageTemplate(rh=self, filename="addShows_addExistingShow.mako")
+        return t.render(enable_anime_options=False, title='Existing Show', header='Existing Show', topmenu="home",
+                controller="addShows", action="addExistingShow")
 
-    def addTraktShow(self, indexer_id, showName):
-        if helpers.findCertainShow(sickbeard.showList, int(indexer_id)):
+    def addShowByID(self, indexer_id, showName, indexer="TVDB"):
+
+        if indexer is not "TVDB":
+            tvdb_id = helpers.getTVDBFromID(indexer_id, indexer.upper())
+            if tvdb_id is not '':
+                indexer_id = tvdb_id
+
+        if Show.find(sickbeard.showList, int(indexer_id)):
             return
 
         if sickbeard.ROOT_DIRS:
@@ -2663,7 +2678,7 @@ class HomeAddShows(Home):
                 logger.log(u"Unable to add show due to show selection. Not anough arguments: %s" % (repr(series_pieces)),
                            logger.ERROR)
                 ui.notifications.error("Unknown error. Unable to add show due to problem with show selection.")
-                return self.redirect('/home/addShows/existingShows/')
+                return self.redirect('/addShows/existingShows/')
 
             indexer = int(series_pieces[1])
             indexer_id = int(series_pieces[3])
@@ -2676,7 +2691,7 @@ class HomeAddShows(Home):
 
             indexer = int(providedIndexer)
             indexer_id = int(whichSeries)
-            show_name = os.path.basename(os.path.normpath(fullShowPath))
+            show_name = ek(os.path.basename, ek(os.path.normpath, fullShowPath))
 
         # use the whole path if it's given, or else append the show name to the root dir to get the full show path
         if fullShowPath:
@@ -2687,7 +2702,7 @@ class HomeAddShows(Home):
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
         if ek(os.path.isdir, show_dir) and not fullShowPath:
             ui.notifications.error("Unable to add show", "Folder " + show_dir + " exists already")
-            return self.redirect('/home/addShows/existingShows/')
+            return self.redirect('/addShows/existingShows/')
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
@@ -2717,7 +2732,7 @@ class HomeAddShows(Home):
 
         if not anyQualities:
             anyQualities = []
-        if not bestQualities or helpers.tryInt(quality_preset, None):
+        if not bestQualities or try_int(quality_preset, None):
             bestQualities = []
         if not isinstance(anyQualities, list):
             anyQualities = [anyQualities]
@@ -2937,7 +2952,7 @@ class Manage(Home, WebRoot):
         result = {}
         for cur_result in cur_show_results:
             if whichSubs == 'all':
-                if not frozenset(subtitles.wantedLanguages()).difference(cur_result["subtitles"].split(',')):
+                if not frozenset(subtitles.wanted_languages()).difference(cur_result["subtitles"].split(',')):
                     continue
             elif whichSubs in cur_result["subtitles"]:
                 continue
@@ -2977,7 +2992,7 @@ class Manage(Home, WebRoot):
         sorted_show_ids = []
         for cur_status_result in status_results:
             if whichSubs == 'all':
-                if not frozenset(subtitles.wantedLanguages()).difference(cur_status_result["subtitles"].split(',')):
+                if not frozenset(subtitles.wanted_languages()).difference(cur_status_result["subtitles"].split(',')):
                     continue
             elif whichSubs in cur_status_result["subtitles"]:
                 continue
@@ -3024,13 +3039,13 @@ class Manage(Home, WebRoot):
             for epResult in to_download[cur_indexer_id]:
                 season, episode = epResult.split('x')
 
-                show = sickbeard.helpers.findCertainShow(sickbeard.showList, int(cur_indexer_id))
-                show.getEpisode(int(season), int(episode)).downloadSubtitles()
+                show = Show.find(sickbeard.showList, int(cur_indexer_id))
+                show.getEpisode(int(season), int(episode)).download_subtitles()
 
         return self.redirect('/manage/subtitleMissed/')
 
     def backlogShow(self, indexer_id):
-        show_obj = helpers.findCertainShow(sickbeard.showList, int(indexer_id))
+        show_obj = Show.find(sickbeard.showList, int(indexer_id))
 
         if show_obj:
             sickbeard.backlogSearchScheduler.action.searchBacklog([show_obj])
@@ -3086,7 +3101,7 @@ class Manage(Home, WebRoot):
         showNames = []
         for curID in showIDs:
             curID = int(curID)
-            showObj = helpers.findCertainShow(sickbeard.showList, curID)
+            showObj = Show.find(sickbeard.showList, curID)
             if showObj:
                 showList.append(showObj)
                 showNames.append(showObj.name)
@@ -3226,7 +3241,7 @@ class Manage(Home, WebRoot):
         errors = []
         for curShow in showIDs:
             curErrors = []
-            showObj = helpers.findCertainShow(sickbeard.showList, int(curShow))
+            showObj = Show.find(sickbeard.showList, int(curShow))
             if not showObj:
                 continue
 
@@ -3295,7 +3310,7 @@ class Manage(Home, WebRoot):
 
             if quality_preset == 'keep':
                 anyQualities, bestQualities = Quality.splitQuality(showObj.quality)
-            elif helpers.tryInt(quality_preset, None):
+            elif try_int(quality_preset, None):
                 bestQualities = []
 
             exceptions_list = []
@@ -3369,7 +3384,7 @@ class Manage(Home, WebRoot):
             if curShowID == '':
                 continue
 
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(curShowID))
+            showObj = Show.find(sickbeard.showList, int(curShowID))
 
             if showObj is None:
                 continue
@@ -3404,7 +3419,7 @@ class Manage(Home, WebRoot):
                 renames.append(showObj.name)
 
             if curShowID in toSubtitle:
-                sickbeard.showQueueScheduler.action.downloadSubtitles(showObj)
+                sickbeard.showQueueScheduler.action.download_subtitles(showObj)
                 subtitles.append(showObj.name)
 
         if errors:
@@ -3758,10 +3773,10 @@ class ConfigGeneral(Config):
         sickbeard.DEBUG = config.checkbox_to_value(debug)
         sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
-        sickbeard.COMING_EPS_MISSED_RANGE = config.to_int(coming_eps_missed_range, default=7)
+        sickbeard.COMING_EPS_MISSED_RANGE = try_int(coming_eps_missed_range, 7)
         sickbeard.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
 
-        sickbeard.WEB_PORT = config.to_int(web_port)
+        sickbeard.WEB_PORT = try_int(web_port)
         sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
         # sickbeard.WEB_LOG is set in config.change_LOG_DIR()
         if config.checkbox_to_value(encryption_version) == 1:
@@ -3778,10 +3793,10 @@ class ConfigGeneral(Config):
             sickbeard.DATE_PRESET = date_preset
 
         if indexer_default:
-            sickbeard.INDEXER_DEFAULT = config.to_int(indexer_default)
+            sickbeard.INDEXER_DEFAULT = try_int(indexer_default)
 
         if indexer_timeout:
-            sickbeard.INDEXER_TIMEOUT = config.to_int(indexer_timeout)
+            sickbeard.INDEXER_TIMEOUT = try_int(indexer_timeout)
 
         if time_preset:
             sickbeard.TIME_PRESET_W_SECONDS = time_preset
@@ -3790,7 +3805,7 @@ class ConfigGeneral(Config):
         sickbeard.TIMEZONE_DISPLAY = timezone_display
 
         if not config.change_LOG_DIR(log_dir, web_log):
-            results += ["Unable to create directory " + os.path.normpath(log_dir) + ", log directory not changed."]
+            results += ["Unable to create directory " + ek(os.path.normpath, log_dir) + ", log directory not changed."]
 
         sickbeard.API_KEY = api_key
 
@@ -3798,11 +3813,11 @@ class ConfigGeneral(Config):
 
         if not config.change_HTTPS_CERT(https_cert):
             results += [
-                "Unable to create directory " + os.path.normpath(https_cert) + ", https cert directory not changed."]
+                "Unable to create directory " + ek(os.path.normpath, https_cert) + ", https cert directory not changed."]
 
         if not config.change_HTTPS_KEY(https_key):
             results += [
-                "Unable to create directory " + os.path.normpath(https_key) + ", https key directory not changed."]
+                "Unable to create directory " + ek(os.path.normpath, https_key) + ", https key directory not changed."]
 
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
@@ -3841,17 +3856,17 @@ class ConfigBackupRestore(Config):
         finalResult = ''
 
         if backupDir:
-            source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE,
-                      os.path.join(sickbeard.DATA_DIR, 'failed.db'),
-                      os.path.join(sickbeard.DATA_DIR, 'cache.db')]
-            target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
+            source = [ek(os.path.join, sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE,
+                      ek(os.path.join, sickbeard.DATA_DIR, 'failed.db'),
+                      ek(os.path.join, sickbeard.DATA_DIR, 'cache.db')]
+            target = ek(os.path.join, backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
-            for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
+            for (path, dirs, files) in ek(os.walk, sickbeard.CACHE_DIR, topdown=True):
                 for dirname in dirs:
                     if path == sickbeard.CACHE_DIR and dirname not in ['images']:
                         dirs.remove(dirname)
                 for filename in files:
-                    source.append(os.path.join(path, filename))
+                    source.append(ek(os.path.join, path, filename))
 
             if helpers.backupConfigZip(source, target, sickbeard.DATA_DIR):
                 finalResult += "Successful backup to " + target
@@ -3871,7 +3886,7 @@ class ConfigBackupRestore(Config):
 
         if backupFile:
             source = backupFile
-            target_dir = os.path.join(sickbeard.DATA_DIR, 'restore')
+            target_dir = ek(os.path.join, sickbeard.DATA_DIR, 'restore')
 
             if helpers.restoreConfigZip(source, target_dir):
                 finalResult += "Successfully extracted restore files to " + target_dir
@@ -3913,22 +3928,22 @@ class ConfigSearch(Config):
         results = []
 
         if not config.change_NZB_DIR(nzb_dir):
-            results += ["Unable to create directory " + os.path.normpath(nzb_dir) + ", dir not changed."]
+            results += ["Unable to create directory " + ek(os.path.normpath, nzb_dir) + ", dir not changed."]
 
         if not config.change_TORRENT_DIR(torrent_dir):
-            results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
+            results += ["Unable to create directory " + ek(os.path.normpath, torrent_dir) + ", dir not changed."]
 
         config.change_DAILYSEARCH_FREQUENCY(dailysearch_frequency)
 
         config.change_BACKLOG_FREQUENCY(backlog_frequency)
-        sickbeard.BACKLOG_DAYS = config.to_int(backlog_days, default=7)
+        sickbeard.BACKLOG_DAYS = try_int(backlog_days, 7)
 
         sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
         sickbeard.USE_TORRENTS = config.checkbox_to_value(use_torrents)
 
         sickbeard.NZB_METHOD = nzb_method
         sickbeard.TORRENT_METHOD = torrent_method
-        sickbeard.USENET_RETENTION = config.to_int(usenet_retention, default=500)
+        sickbeard.USENET_RETENTION = try_int(usenet_retention, 500)
 
         sickbeard.IGNORE_WORDS = ignore_words if ignore_words else ""
         sickbeard.TRACKERS_LIST = trackers_list if trackers_list else ""
@@ -3964,7 +3979,7 @@ class ConfigSearch(Config):
         sickbeard.NZBGET_CATEGORY_ANIME_BACKLOG = nzbget_category_anime_backlog
         sickbeard.NZBGET_HOST = config.clean_host(nzbget_host)
         sickbeard.NZBGET_USE_HTTPS = config.checkbox_to_value(nzbget_use_https)
-        sickbeard.NZBGET_PRIORITY = config.to_int(nzbget_priority, default=100)
+        sickbeard.NZBGET_PRIORITY = try_int(nzbget_priority, 100)
 
         sickbeard.TORRENT_USERNAME = torrent_username
         sickbeard.TORRENT_PASSWORD = torrent_password
@@ -4023,7 +4038,7 @@ class ConfigPostProcessing(Config):
         results = []
 
         if not config.change_TV_DOWNLOAD_DIR(tv_download_dir):
-            results += ["Unable to create directory " + os.path.normpath(tv_download_dir) + ", dir not changed."]
+            results += ["Unable to create directory " + ek(os.path.normpath, tv_download_dir) + ", dir not changed."]
 
         config.change_AUTOPOSTPROCESSER_FREQUENCY(autopostprocesser_frequency)
         config.change_PROCESS_AUTOMATICALLY(process_automatically)
@@ -4179,7 +4194,7 @@ class ConfigPostProcessing(Config):
         """
 
         try:
-            rar_path = os.path.join(sickbeard.PROG_DIR, 'lib', 'unrar2', 'test.rar')
+            rar_path = ek(os.path.join, sickbeard.PROG_DIR, 'lib', 'unrar2', 'test.rar')
             testing = RarFile(rar_path).read_files('*test.txt')
             if testing[0][1] == 'This is only a test.':
                 return 'supported'
@@ -4454,7 +4469,7 @@ class ConfigProviders(Config):
         # do the enable/disable
         for curProviderStr in provider_str_list:
             curProvider, curEnabled = curProviderStr.split(':')
-            curEnabled = config.to_int(curEnabled)
+            curEnabled = try_int(curEnabled)
 
             curProvObj = [x for x in sickbeard.providers.sortedProviderList() if
                           x.getID() == curProvider and hasattr(x, 'enabled')]
@@ -4860,7 +4875,7 @@ class ConfigNotifications(Config):
         sickbeard.EMAIL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(email_notify_ondownload)
         sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(email_notify_onsubtitledownload)
         sickbeard.EMAIL_HOST = config.clean_host(email_host)
-        sickbeard.EMAIL_PORT = config.to_int(email_port, default=25)
+        sickbeard.EMAIL_PORT = try_int(email_port, 25)
         sickbeard.EMAIL_FROM = email_from
         sickbeard.EMAIL_TLS = config.checkbox_to_value(email_tls)
         sickbeard.EMAIL_USER = email_user
@@ -4931,7 +4946,7 @@ class ConfigSubtitles(Config):
         config.change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency)
         config.change_USE_SUBTITLES(use_subtitles)
 
-        sickbeard.SUBTITLES_LANGUAGES = [lang.strip() for lang in subtitles_languages.split(',') if subtitles.isValidLanguage(lang.strip())] if subtitles_languages else []
+        sickbeard.SUBTITLES_LANGUAGES = [code.strip() for code in subtitles_languages.split(',') if code.strip() in subtitles.subtitle_code_filter()] if subtitles_languages else []
         sickbeard.SUBTITLES_DIR = subtitles_dir
         sickbeard.SUBTITLES_HISTORY = config.checkbox_to_value(subtitles_history)
         sickbeard.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)
@@ -5128,12 +5143,12 @@ class ErrorLogs(WebRoot):
 
         data = []
 
-        if os.path.isfile(logger.logFile):
+        if ek(os.path.isfile, logger.logFile):
             with io.open(logger.logFile, 'r', encoding='utf-8') as f:
                 data = Get_Data(minLevel, f.readlines(), 0, regex, logFilter, logSearch, maxLines)
 
         for i in range(1, int(sickbeard.LOG_NR)):
-            if os.path.isfile(logger.logFile + "." + str(i)) and (len(data) <= maxLines):
+            if ek(os.path.isfile, logger.logFile + "." + str(i)) and (len(data) <= maxLines):
                 with io.open(logger.logFile + "." + str(i), 'r', encoding='utf-8') as f:
                     data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 

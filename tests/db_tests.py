@@ -25,10 +25,10 @@ Tests:
     DBMultiTests
 """
 
-import sys
 import os.path
-import unittest
+import sys
 import threading
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

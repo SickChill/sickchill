@@ -45,7 +45,7 @@ class imdbPopular(object):
             if image_td:
                 image = image_td.find("img")
                 show['image_url_large'] = self.change_size(image['src'], 3)
-                show['image_path'] = os.path.join('images', 'imdb_popular', os.path.basename(show['image_url_large']))
+                show['image_path'] = ek(os.path.join, 'images', 'imdb_popular', ek(os.path.basename, show['image_url_large']))
 
                 self.cache_image(show['image_url_large'])
 
@@ -91,7 +91,7 @@ class imdbPopular(object):
 
         if match:
             matches = match.groups()
-            os.path.basename(image_url)
+            ek(os.path.basename, image_url)
             matches = list(matches)
             matches[2] = int(matches[2]) * factor
             matches[4] = int(matches[4]) * factor
@@ -111,12 +111,12 @@ class imdbPopular(object):
         """
         path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'imdb_popular'))
 
-        if not os.path.exists(path):
-            os.makedirs(path)
+        if not ek(os.path.exists, path):
+            ek(os.makedirs, path)
 
-        full_path = os.path.join(path, os.path.basename(image_url))
+        full_path = ek(os.path.join, path, ek(os.path.basename, image_url))
 
-        if not os.path.isfile(full_path):
+        if not ek(os.path.isfile, full_path):
             helpers.download_file(image_url, full_path, session=self.session)
 
 imdb_popular = imdbPopular()
