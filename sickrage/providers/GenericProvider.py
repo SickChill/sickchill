@@ -43,6 +43,8 @@ class GenericProvider:
     def __init__(self, name):
         shuffle(user_agents)
 
+        self.name = name
+
         self.anime_only = False
         self.bt_cache_urls = [
             'http://torcache.net/torrent/{torrent_hash}.torrent',
@@ -58,7 +60,6 @@ class GenericProvider:
         self.headers = {
             'User-Agent': user_agents[0]
         }
-        self.name = name
         self.proper_strings = ['PROPER|REPACK|REAL']
         self.provider_type = None
         self.public = False
