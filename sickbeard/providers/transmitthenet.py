@@ -22,7 +22,7 @@ from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.providers import generic
 from sickrage.helper.exceptions import AuthException
-
+from sickrage.helper.common import try_int
 
 class TransmitTheNetProvider(generic.TorrentProvider):
     def __init__(self):
@@ -31,25 +31,20 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
         self.urls = {
             'base_url': 'https://transmithe.net/',
-            'index': 'https://transmithe.net/index.php',
+            'login': 'https://transmithe.net/login.php',
+            'search': 'https://transmithe.net/torrents.php',
         }
 
         self.url = self.urls['base_url']
-
 
         self.username = None
         self.password = None
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.freeleech = None
 
         self.cache = TransmitTheNetCache(self)
-
-        self.search_params = {
-            "page": 'torrents',
-            "category": 0,
-            "active": 1
-        }
 
     def _checkAuth(self):
 
@@ -61,13 +56,13 @@ class TransmitTheNetProvider(generic.TorrentProvider):
     def _doLogin(self):
 
         login_params = {
-            'uid': self.username,
-            'pwd': self.password,
-            'remember_me': 'on',
-            'login': 'submit'
+            'username': self.username,
+            'password': self.password,
+            'keeplogged': 'on',
+            'login': 'Login'
         }
 
-        response = self.getURL(self.urls['index'], params={'page': 'login'}, post_data=login_params, timeout=30)
+        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -92,40 +87,48 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                data = self.getURL(self.urls['index'], params=self.search_params)
-                searchURL = self.urls['index'] + "?" + urlencode(self.search_params)
+                search_params = {
+                    'searchtext': search_string,
+                    'filter_freeleech': (0, 1)[self.freeleech is True],
+                    'order_by': ('seeders', 'time')[mode == 'RSS'],
+                    "order_way": "desc"
+                }
+
+                if not search_string:
+                    del search_params['searchtext']
+
+                searchURL = self.urls['search'] + "?" + urlencode(search_params)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
+                data = self.getURL(self.urls['search'], params=search_params)
                 if not data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 try:
-                    with BS4Parser(data) as html:
-
-                        torrent_rows = []
-
-                        down_elems = html.findAll("img", {"alt": "Download Torrent"})
-                        for down_elem in down_elems:
-                            if down_elem:
-                                torr_row = down_elem.findParent('tr')
-                                if torr_row:
-                                    torrent_rows.append(torr_row)
-
+                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                        torrent_table = html.find('table', {'id':'torrent_table'})
+                        torrent_rows = torrent_table.findAll('tr', {'class':'torrent'})
                         # Continue only if one Release is found
-                        if len(torrent_rows) < 1:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        if not torrent_rows:
+                            logger.log(u"Data returned from %s does not contain any torrents" % self.name, logger.DEBUG)
                             continue
 
                         for torrent_row in torrent_rows:
+                            freeleech = torrent_row.find('img', alt="Freeleech") is not None
+                            if self.freeleech and not freeleech:
+                                continue
 
-                            title = torrent_row.find('a', {"data-src": True})['data-src'].rsplit('.', 1)[0]
-                            download_href = torrent_row.find('img', {"alt": 'Download Torrent'}).findParent()['href']
-                            seeders = int(torrent_row.findAll('a', {'title': 'Click here to view peers details'})[0].text.strip())
-                            leechers = int(torrent_row.findAll('a', {'title': 'Click here to view peers details'})[1].text.strip())
-                            download_url = self.urls['base_url'] + download_href
-                            # FIXME
-                            size = -1
+                            download_url = self.urls['base_url'] + torrent_row.find('a', {"title": 'Download Torrent'})['href']
+
+                            temp_anchor = torrent_row.find('a', {"data-src": True})
+                            title = temp_anchor['data-src'].rsplit('.', 1)[0]
+                            size = try_int(temp_anchor['data-filesize'])
+
+                            temp_anchor = torrent_row.find('span', class_='time').parent.find_next_sibling()
+                            seeders = try_int(temp_anchor.text.strip())
+                            leechers = try_int(temp_anchor.find_next_sibling().text.strip())
+
 
                             if not all([title, download_url]):
                                 continue
