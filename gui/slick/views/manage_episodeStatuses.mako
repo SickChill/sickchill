@@ -4,9 +4,7 @@
     import sickbeard
 %>
 <%block name="scripts">
-% if whichStatus or (whichStatus and ep_counts):
 <script type="text/javascript" src="${srRoot}/js/manageEpisodeStatuses.js?${sbPID}"></script>
-% endif:
 </%block>
 <%block name="content">
 <div id="content960">
@@ -16,19 +14,16 @@
     <h1 class="title">${title}</h1>
 % endif
 
-% if not whichStatus or (whichStatus and not ep_counts):
-
-% if whichStatus:
+% if whichStatus and not ep_counts:
 <h2>None of your episodes have status ${common.statusStrings[whichStatus]}</h2>
 <br>
 % endif
 
+% if not whichStatus or (whichStatus and not ep_counts):
 <form action="${srRoot}/manage/episodeStatuses" method="get">
 Manage episodes with status <select name="whichStatus" class="form-control form-control-inline input-sm">
-% for curStatus in [common.SKIPPED, common.SNATCHED, common.WANTED, common.IGNORED] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED:
-    %if curStatus not in [common.ARCHIVED, common.DOWNLOADED]:
-        <option value="${curStatus}">${common.statusStrings[curStatus]}</option>
-    %endif
+% for curStatus in [common.SKIPPED, common.SNATCHED, common.WANTED, common.IGNORED, common.DOWNLOADED, common.ARCHIVED, common.FAILED]:
+    <option value="${curStatus}">${common.statusStrings[curStatus]}</option>
 % endfor
 </select>
 <input class="btn btn-inline" type="submit" value="Manage" />
@@ -42,26 +37,15 @@ Manage episodes with status <select name="whichStatus" class="form-control form-
 <h2>Shows containing ${common.statusStrings[whichStatus]} episodes</h2>
 
 <br>
-
-<%
-    if int(whichStatus) in [common.IGNORED, common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED:
-        row_class = "good"
-    else:
-        row_class = common.Overview.overviewStrings[int(whichStatus)]
-%>
-
-<input type="hidden" id="row_class" value="${row_class}" />
+<input type="hidden" id="row_class" value="${common.Overview.overviewStrings[int(whichStatus)]}" />
 
 Set checked shows/episodes to <select name="newStatus" class="form-control form-control-inline input-sm">
 <%
-    statusList = [common.SKIPPED, common.WANTED, common.IGNORED] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED
-    # Do not allow setting to bare downloaded or archived!
-    statusList.remove(common.DOWNLOADED)
-    statusList.remove(common.ARCHIVED)
+    statusList = [common.SKIPPED, common.WANTED, common.IGNORED, common.DOWNLOADED, common.ARCHIVED]
     if int(whichStatus) in statusList:
         statusList.remove(int(whichStatus))
 
-    if int(whichStatus) in [common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST] + common.Quality.ARCHIVED + common.Quality.DOWNLOADED and sickbeard.USE_FAILED_DOWNLOADS:
+    if int(whichStatus) in [common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST, common.ARCHIVED, common.DOWNLOADED] and sickbeard.USE_FAILED_DOWNLOADS:
         statusList.append(common.FAILED)
 %>
 
