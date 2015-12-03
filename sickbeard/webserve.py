@@ -86,6 +86,7 @@ from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
+from mako.runtime import UNDEFINED
 
 mako_lookup = None
 mako_cache = None
@@ -147,6 +148,7 @@ class PageTemplate(MakoTemplate):
         self.arguments['submenu'] = []
         self.arguments['controller'] = "FixME"
         self.arguments['action'] = "FixME"
+        self.arguments['show'] = UNDEFINED
 
     def render(self, *args, **kwargs):
         for key in self.arguments:
