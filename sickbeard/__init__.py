@@ -2189,27 +2189,3 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
             webbrowser.open(browserURL, 1, 1)
         except Exception:
             logger.log(u"Unable to launch a browser", logger.ERROR)
-
-
-def getEpList(epIDs, showid=None):
-    if epIDs is None or len(epIDs) == 0:
-        return []
-
-    query = "SELECT * FROM tv_episodes WHERE indexerid in (%s)" % (",".join(['?'] * len(epIDs)),)
-    params = epIDs
-
-    if showid is not None:
-        query += " AND showid = ?"
-        params.append(showid)
-
-    myDB = db.DBConnection()
-    sqlResults = myDB.select(query, params)
-
-    epList = []
-
-    for curEp in sqlResults:
-        curShowObj = Show.find(showList, int(curEp["showid"]))
-        curEpObj = curShowObj.getEpisode(int(curEp["season"]), int(curEp["episode"]))
-        epList.append(curEpObj)
-
-    return epList
