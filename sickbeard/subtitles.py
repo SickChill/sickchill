@@ -193,7 +193,12 @@ def download_subtitles(subtitles_info):
                           subtitles_info['episode']), logger.DEBUG)
             return (existing_subtitles, None)
 
-        found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
+        for sub in subtitles_list:
+                    matches = sub.get_matches(video, hearing_impaired=False)
+                    score = subliminal.subtitle.compute_score(matches, video)
+                    logger.log(u"[%s] Subtitle score for %s is: %s (min=132)" % (sub.provider_name, sub.id, score), logger.DEBUG)
+
+        found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages, min_score=132,
                                                        hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED,
                                                        only_one=not sickbeard.SUBTITLES_MULTI)
 
@@ -341,8 +346,13 @@ class SubtitlesFinder(object):
 
                             hearing_impaired = sickbeard.SUBTITLES_HEARING_IMPAIRED
                             found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
-                                                                           hearing_impaired=hearing_impaired,
+                                                                           hearing_impaired=hearing_impaired, min_score=132,
                                                                            only_one=not sickbeard.SUBTITLES_MULTI)
+
+                            for sub in subtitles_list:
+                                        matches = sub.get_matches(video, hearing_impaired=False)
+                                        score = subliminal.subtitle.compute_score(matches, video)
+                                        logger.log(u"[%s] Subtitle score for %s is: %s (min=132)" % (sub.provider_name, sub.id, score), logger.DEBUG)
 
                             downloaded_languages = set()
                             for subtitle in found_subtitles:
