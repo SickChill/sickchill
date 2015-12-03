@@ -230,14 +230,12 @@
     <div class="pull-left" >
         Change selected episodes to:</br>
         <select id="statusSelect" class="form-control form-control-inline input-sm">
-        <% availableStatus = [WANTED, SKIPPED, IGNORED, FAILED] %>
+        <% availableStatus = [WANTED, SKIPPED, IGNORED, FAILED, DOWNLOADED, ARCHIVED] %>
         % if not sickbeard.USE_FAILED_DOWNLOADS:
         <% availableStatus.remove(FAILED) %>
         % endif
-        % for curStatus in availableStatus + Quality.DOWNLOADED + Quality.ARCHIVED:
-            % if curStatus not in [DOWNLOADED, ARCHIVED]:
+        % for curStatus in availableStatus:
             <option value="${curStatus}">${statusStrings[curStatus]}</option>
-            % endif
         % endfor
         </select>
         <input type="hidden" id="showID" value="${show.indexerid}" />

@@ -38,7 +38,7 @@ from sickbeard import subtitles
 from sickbeard import network_timezones
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, cpu_presets
-from sickbeard.common import SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
+from sickbeard.common import SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED, DOWNLOADED, ARCHIVED
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
 from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
@@ -999,14 +999,14 @@ class Home(WebRoot):
         size = 0
         for r in rows:
             NotifyList = {'emails':'', 'prowlAPIs':''}
-            if (r['notify_list'] and len(r['notify_list']) > 0):
+            if r['notify_list'] and len(r['notify_list']) > 0:
                 # First, handle legacy format (emails only)
                 if not r['notify_list'][0] == '{':
                     NotifyList['emails'] = r['notify_list']
                 else:
                     NotifyList = dict(ast.literal_eval(r['notify_list']))
 
-            data[r['show_id']] = {'id': r['show_id'],'name': r['show_name'],
+            data[r['show_id']] = {'id': r['show_id'], 'name': r['show_name'],
                                   'list': NotifyList['emails'],
                                   'prowl_notify_list': NotifyList['prowlAPIs']
                                  }
@@ -1022,19 +1022,19 @@ class Home(WebRoot):
 
         # Get current data
         for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_id = ?", [show]):
-            if (subs['notify_list'] and len(subs['notify_list']) > 0):
+            if subs['notify_list'] and len(subs['notify_list']) > 0:
                 # First, handle legacy format (emails only)
                 if not subs['notify_list'][0] == '{':
                     entries['emails'] = subs['notify_list']
                 else:
                     entries = dict(ast.literal_eval(subs['notify_list']))
 
-        if (emails is not None):
+        if emails is not None:
             entries['emails'] = emails
             if not myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
                 return 'ERROR'
 
-        if (prowlAPIs is not None):
+        if prowlAPIs is not None:
             entries['prowlAPIs'] = prowlAPIs
             if not myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
                 return 'ERROR'
@@ -1101,8 +1101,9 @@ class Home(WebRoot):
                 rootDir[subject] = helpers.getDiskSpaceUsage(subject)
 
         t = PageTemplate(rh=self, filename="status.mako")
-        return t.render(title='Status', header='Status', topmenu='system', tvdirFree=tvdirFree, rootDir=rootDir,
-                controller="home", action="status")
+        return t.render(title='Status', header='Status', topmenu='system',
+                        tvdirFree=tvdirFree, rootDir=rootDir,
+                        controller="home", action="status")
 
     def shutdown(self, pid=None):
         if not Shutdown.stop(pid):
@@ -1759,7 +1760,11 @@ class Home(WebRoot):
                         logger.log(u"Removing release_name for episode as you want to set a downloaded episode back to wanted, so obviously you want it replaced")
                         epObj.release_name = ""
 
-                    epObj.status = int(status)
+                    if int(status) in [FAILED, DOWNLOADED, ARCHIVED]:
+                        _, old_quality = Quality.splitCompositeStatus(int(epObj.status))
+                        epObj.status = Quality.compositeStatus(int(status), old_quality)
+                    else:
+                        epObj.status = int(status)
 
                     # mass add to database
                     sql_l.append(epObj.get_sql())
@@ -2586,8 +2591,9 @@ class HomeAddShows(Home):
         Prints out the page to add existing shows from a root dir
         """
         t = PageTemplate(rh=self, filename="addShows_addExistingShow.mako")
-        return t.render(enable_anime_options=False, title='Existing Show', header='Existing Show', topmenu="home",
-                controller="addShows", action="addExistingShow")
+        return t.render(enable_anime_options=False, title='Existing Show',
+                        header='Existing Show', topmenu="home",
+                        controller="addShows", action="addExistingShow")
 
     def addShowByID(self, indexer_id, showName, indexer="TVDB"):
 
@@ -2845,6 +2851,12 @@ class Manage(Home, WebRoot):
         status_list = [int(whichStatus)]
         if status_list[0] == SNATCHED:
             status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
+        elif status_list[0] == DOWNLOADED:
+            status_list = Quality.DOWNLOADED
+        elif status_list[0] == ARCHIVED:
+            status_list = Quality.ARCHIVED
+        elif status_list[0] == FAILED:
+            status_list = Quality.FAILED
 
         myDB = db.DBConnection()
         cur_show_results = myDB.select(
@@ -2868,6 +2880,12 @@ class Manage(Home, WebRoot):
             status_list = [int(whichStatus)]
             if status_list[0] == SNATCHED:
                 status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
+            elif status_list[0] == DOWNLOADED:
+                status_list = Quality.DOWNLOADED
+            elif status_list[0] == ARCHIVED:
+                status_list = Quality.ARCHIVED
+            elif status_list[0] == FAILED:
+                status_list = Quality.FAILED
         else:
             status_list = []
 
@@ -2912,6 +2930,12 @@ class Manage(Home, WebRoot):
         status_list = [int(oldStatus)]
         if status_list[0] == SNATCHED:
             status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
+        elif status_list[0] == DOWNLOADED:
+            status_list = Quality.DOWNLOADED
+        elif status_list[0] == ARCHIVED:
+            status_list = Quality.ARCHIVED
+        elif status_list[0] == FAILED:
+            status_list = Quality.FAILED
 
         to_change = {}
 
