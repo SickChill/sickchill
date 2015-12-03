@@ -1,4 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
+<%!
+import sickbeard
+%>
 <%block name="scripts">
 <%
     try:
@@ -7,7 +10,7 @@
         curSBHttpsEnabled = sbHttpsEnabled
         curSBHandleReverseProxy = sbHandleReverseProxy
         themeSpinner = sbThemeName
-    except NameMapper.NotFound:
+    except NameError:
         curSBHost = "localhost"
         curSBHttpPort = sickbeard.WEB_PORT
         curSBHttpsEnabled = "False"
@@ -39,7 +42,7 @@ sbDefaultPage = "${sbDefaultPage}";
         curSBHttpsEnabled = sbHttpsEnabled
         curSBHandleReverseProxy = sbHandleReverseProxy
         themeSpinner = sbThemeName
-    except NameMapper.NotFound:
+    except NameError:
         curSBHost = "localhost"
         curSBHttpPort = sickbeard.WEB_PORT
         curSBHttpsEnabled = "False"
