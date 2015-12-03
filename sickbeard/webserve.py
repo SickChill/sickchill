@@ -102,7 +102,8 @@ def get_lookup():
     if mako_cache is None:
         mako_cache = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
     if mako_lookup is None:
-        mako_lookup = TemplateLookup(directories=[mako_path], module_directory=mako_cache, format_exceptions=True, strict_undefined=True)
+        use_strict = sickbeard.BRANCH and sickbeard.BRANCH != 'master'
+        mako_lookup = TemplateLookup(directories=[mako_path], module_directory=mako_cache, format_exceptions=True, strict_undefined=use_strict)
     return mako_lookup
 
 
