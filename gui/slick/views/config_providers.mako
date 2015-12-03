@@ -648,7 +648,7 @@ $('#config-components').tabs();
                         <div class="field-pair">
                             <label for="newznab_key">
                                 <span class="component-title">API key:</span>
-                                <input type="text" id="newznab_key" class="form-control input-sm input350" autocapitalize="off" />
+                                <input type="password" id="newznab_key" class="form-control input-sm input350" autocapitalize="off" />
                             </label>
                             <label>
                                 <span class="component-title">&nbsp;</span>
