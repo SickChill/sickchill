@@ -4,7 +4,7 @@
     import re
     from sickbeard.helpers import anon_url
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets, multiEpStrings
+    from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets, MULTI_EP_STRINGS
 %>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -806,8 +806,8 @@
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">Prowl API(s) listed here, separated by commas if applicable, will<br /> receive notifications for <b>all</b> shows.  
-                                                                 Your Prowl API key is available at: 
+                                    <span class="component-desc">Prowl API(s) listed here, separated by commas if applicable, will<br /> receive notifications for <b>all</b> shows.
+                                                                 Your Prowl API key is available at:
                                                                  <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
                                                                  https://www.prowlapp.com/api_settings.php</a><br />
                                                                  (This field may be blank except when testing.)</span>
