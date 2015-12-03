@@ -101,17 +101,17 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                         </span>
                                     </label>
                                 </div>
+                                <div class="field-pair">
                                     <label class="clearfix" for="subtitles_download_in_pp">
                                         <span class="component-title">Subtitles in Post-Process folder</span>
                                         <span class="component-desc">
                                             <input type="checkbox" name="subtitles_download_in_pp" id="subtitles_download_in_pp" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_DOWNLOAD_IN_PP)]}/>
-                                            <p>Download subtitles in post-process folder.</p>
+                                            <p>Download subtitles in post-process folder</p>
                                             <p>Useful if you only want the episode to be post-processed when it has subtitles associated</p>
                                             <p>You might also want to enable the post-process setting 'Postpone if no subtitle'</p>
                                         </span>
                                     </label>
                                 </div>
-                                <div class="field-pair">
                                 <div class="field-pair">
                                     <label class="clearfix" for="embedded_subtitles_all">
                                         <span class="component-title">Embedded Subtitles</span>
@@ -132,16 +132,11 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                     </label>
                                 </div>
                                 <div class="field-pair">
-                                    <label class="nocheck">
+                                        <label>
                                         <span class="component-title">Extra Scripts</span>
                                            <input type="text" name="subtitles_extra_scripts" value="${'|'.join(sickbeard.SUBTITLES_EXTRA_SCRIPTS)}" class="form-control input-sm input350" autocapitalize="off" />
-                                    </label>
-                                    <label class="nocheck">
-                                        <span class="component-title">&nbsp;</span>
-                                        <span class="component-desc"><b>NOTE:</b></span>
-                                    </label>
-                                    <label class="nocheck">
-                                        <span class="component-title">&nbsp;</span>
+                                        </label>
+                                        <label>
                                         <span class="component-desc">
                                             <ul>
                                                     <li>See <a href="https://github.com/SickRage/SickRage/wiki/Subtitle%20Scripts"><font color='red'><b>Wiki</b></font></a> for a script arguments description.</li>
@@ -154,11 +149,10 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                                     </ul>
                                             </ul>
                                         </span>
-                                    </label>
+                                        </label>
                                 </div>
-
-                        <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                         </div>
+                        <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                     </fieldset>
                 </div><!-- /component-group1 //-->
 
