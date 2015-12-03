@@ -487,7 +487,7 @@ class PostProcessor(object):
         myDB = db.DBConnection()
         for curName in names:
             search_name = re.sub(r"[\.\- ]", "_", curName)
-            sql_results = myDB.select("SELECT showid, season, quality, version, resource FROM history WHERE resource LIKE ? AND action LIKE '%4'", [search_name])
+            sql_results = myDB.select("SELECT showid, season, quality, version, resource FROM history WHERE resource LIKE ?", [search_name])
 
             if len(sql_results) == 0:
                 continue
@@ -853,11 +853,6 @@ class PostProcessor(object):
             return True
 
         _, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
-        self._log(u"old_ep_quality = %s, new_ep_quality %s" % (common.Quality.qualityStrings[old_ep_quality], common.Quality.qualityStrings[new_ep_quality]), logger.DEBUG)
-
-        if old_ep_quality == common.Quality.UNKNOWN and new_ep_quality != common.Quality.UNKNOWN:
-            self._log(u"Old episode has an unknown quality, so any known quality is better", logger.DEBUG)
-            return True
 
         # if SR downloaded this on purpose we likely have a priority download
         if self.in_history or ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
@@ -955,26 +950,17 @@ class PostProcessor(object):
         # check for an existing file
         existing_file_status = self._checkForExistingFile(ep_obj.location)
 
-        # if it's not priority then we don't want to replace smaller files in case it was a mistake
         if not priority_download:
-
-            # Not a priority and the quality is lower than what we already have
-            if (new_ep_quality < old_ep_quality and old_ep_quality != common.Quality.UNKNOWN) and not existing_file_status == PostProcessor.DOESNT_EXIST:
-                self._log(u"File exists and new file quality is lower than existing, marking it unsafe to replace")
-                return False
-
-            # if there's an existing file that we don't want to replace stop here
-            if existing_file_status == PostProcessor.EXISTS_LARGER:
-                if self.is_proper:
-                    self._log(
-                        u"File exists and new file is smaller, new file is a proper/repack, marking it safe to replace")
-                else:
-                    self._log(u"File exists and new file is smaller, marking it unsafe to replace")
-                    return False
-
-            elif existing_file_status == PostProcessor.EXISTS_SAME:
+            if existing_file_status == PostProcessor.EXISTS_SAME:
                 self._log(u"File exists and new file is same size, marking it unsafe to replace")
                 return False
+
+            if new_ep_quality <= old_ep_quality and old_ep_quality != common.Quality.UNKNOWN and existing_file_status != PostProcessor.DOESNT_EXIST:
+                if self.is_proper and new_ep_quality == old_ep_quality:
+                    self._log(u"New file is a proper/repack, marking it safe to replace")
+                else:
+                    self._log(u"File exists and new file is the same or lower quality than existing, marking it unsafe to replace")
+                    return False
 
             # Check if the processed file season is already in our indexer. If not, the file is most probably mislabled/fake and will be skipped
             # Only proceed if the file season is > 0
