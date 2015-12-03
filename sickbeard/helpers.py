@@ -266,7 +266,7 @@ def searchDBForShow(regShowName, log=False):
     myDB = db.DBConnection()
     for showName in showNames:
 
-        sqlResults = myDB.select("SELECT * FROM tv_shows WHERE show_name LIKE ?",
+        sqlResults = myDB.select("SELECT indexer_id FROM tv_shows WHERE show_name LIKE ?",
                                  [showName])
 
         if len(sqlResults) == 1:
