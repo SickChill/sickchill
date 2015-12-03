@@ -250,51 +250,6 @@ def makeDir(path):
     return True
 
 
-def searchDBForShow(regShowName, log=False):
-    """
-    Searches if show names are present in the DB
-
-    :param regShowName: list of show names to look for
-    :param log: Boolean, log debug results of search (defaults to False)
-    :return: Indexer ID of found show
-    """
-
-    showNames = [re.sub('[. -]', ' ', regShowName)]
-
-    yearRegex = r"([^()]+?)\s*(\()?(\d{4})(?(2)\))$"
-
-    myDB = db.DBConnection()
-    for showName in showNames:
-
-        sqlResults = myDB.select("SELECT indexer_id FROM tv_shows WHERE show_name LIKE ?",
-                                 [showName])
-
-        if len(sqlResults) == 1:
-            return int(sqlResults[0]["indexer_id"])
-        else:
-            # if we didn't get exactly one result then try again with the year stripped off if possible
-            match = re.match(yearRegex, showName)
-            if match and match.group(1):
-                if log:
-                    logger.log(u"Unable to match original name but trying to manually strip and specify show year",
-                               logger.DEBUG)
-                sqlResults = myDB.select(
-                    "SELECT * FROM tv_shows WHERE (show_name LIKE ?) AND startyear = ?",
-                    [match.group(1) + '%', match.group(3)])
-
-            if len(sqlResults) == 0:
-                if log:
-                    logger.log(u"Unable to match a record in the DB for " + showName, logger.DEBUG)
-                continue
-            elif len(sqlResults) > 1:
-                if log:
-                    logger.log(u"Multiple results for " + showName + " in the DB, unable to match show name",
-                               logger.DEBUG)
-                continue
-            else:
-                return int(sqlResults[0]["indexer_id"])
-
-
 def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
     """
     Contacts indexer to check for information on shows by showid

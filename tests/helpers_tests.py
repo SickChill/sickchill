@@ -30,7 +30,6 @@ Methods:
     isBeingWritten
     remove_file_failed
     makeDir
-    searchDBForShow
     searchIndexerForShowID
     listMediaFiles
     copyFile
@@ -456,13 +455,6 @@ class HelpersShowTests(unittest.TestCase):
     """
     Test show methods
     """
-    @unittest.skip('Not yet implemented')
-    def test_search_db_for_show(self):
-        """
-        Test searchDBForShow
-        """
-        pass
-
     @unittest.skip('Not yet implemented')
     def test_search_indexer_for_show_id(self):
         """
