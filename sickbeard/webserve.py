@@ -102,7 +102,7 @@ def get_lookup():
     if mako_cache is None:
         mako_cache = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
     if mako_lookup is None:
-        mako_lookup = TemplateLookup(directories=[mako_path], module_directory=mako_cache, format_exceptions=True)
+        mako_lookup = TemplateLookup(directories=[mako_path], module_directory=mako_cache, format_exceptions=True, strict_undefined=True)
     return mako_lookup
 
 
@@ -2877,7 +2877,9 @@ class Manage(Home, WebRoot):
         if not status_list:
             return t.render(
                 title="Episode Overview", header="Episode Overview",
-                topmenu="manage", whichStatus=whichStatus, controller="manage", action="episodeStatuses")
+                topmenu="manage", show_names=None, whichStatus=whichStatus,
+                ep_counts=None, sorted_show_ids=None,
+                controller="manage", action="episodeStatuses")
 
         myDB = db.DBConnection()
         status_results = myDB.select(
@@ -2978,6 +2980,7 @@ class Manage(Home, WebRoot):
         if not whichSubs:
             return t.render(whichSubs=whichSubs, title='Episode Overview',
                             header='Episode Overview', topmenu='manage',
+                            show_names=None, ep_counts=None, sorted_show_ids=None,
                             controller="manage", action="subtitleMissed")
 
         myDB = db.DBConnection()
