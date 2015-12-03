@@ -47,3 +47,6 @@ class NZBProvider(GenericProvider):
             logger.log(u'The size was not found in the provider response', logger.DEBUG)
 
         return try_int(size, -1)
+
+    def _get_storage_dir(self):
+        return sickbeard.NZB_DIR

@@ -18,17 +18,16 @@
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickrage.helper.exceptions import AuthException
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class ShazbatProvider(generic.TorrentProvider):
+class ShazbatProvider(TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "Shazbat.tv")
+        TorrentProvider.__init__(self, "Shazbat.tv")
 
-        self.supportsBacklog = False
-
+        self.supports_backlog = False
 
         self.passkey = None
         self.ratio = None
@@ -40,7 +39,7 @@ class ShazbatProvider(generic.TorrentProvider):
                      'website': u'http://www.shazbat.tv/login',}
         self.url = self.urls['website']
 
-    def _checkAuth(self):
+    def _check_auth(self):
         if not self.passkey:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
@@ -48,13 +47,13 @@ class ShazbatProvider(generic.TorrentProvider):
 
     def _checkAuthFromData(self, data):
         if not self.passkey:
-            self._checkAuth()
+            self._check_auth()
         elif not (data['entries'] and data['feed']):
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
 
         return True
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 

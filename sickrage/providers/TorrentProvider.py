@@ -18,9 +18,18 @@
 
 import sickbeard
 
-from sickbeard.classes import TorrentSearchResult
+from datetime import datetime
+from feedparser.util import FeedParserDict
+from hachoir_parser import createParser
+from sickbeard import logger
+from sickbeard.classes import Proper, TorrentSearchResult
+from sickbeard.common import Quality
+from sickbeard.db import DBConnection
+from sickbeard.show_name_helpers import allPossibleShowNames
 from sickrage.helper.common import try_int
+from sickrage.helper.exceptions import ex
 from sickrage.providers.GenericProvider import GenericProvider
+from sickrage.show.Show import Show
 
 
 class TorrentProvider(GenericProvider):
@@ -30,8 +39,32 @@ class TorrentProvider(GenericProvider):
         self.provider_type = GenericProvider.TORRENT
 
     def find_propers(self, search_date=None):
-        # TODO
-        pass
+        results = []
+        db = DBConnection()
+        placeholder = ','.join([str(x) for x in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST])
+        sql_results = db.select(
+                'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate'
+                ' FROM tv_episodes AS e'
+                ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)'
+                ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
+                ' AND e.status IN (' + placeholder + ')'
+        )
+
+        for result in sql_results or []:
+            show = Show.find(sickbeard.showList, int(result['showid']))
+
+            if show:
+                episode = show.getEpisode(int(result['season']), int(result['episode']))
+
+                for term in self.proper_strings:
+                    search_strings = self._get_episode_search_strings(episode, add_string=term)
+
+                    for item in self._do_search(search_strings[0]):
+                        title, url = self._get_title_and_url(item)
+
+                        results.append(Proper(title, url, datetime.today(), show))
+
+        return results
 
     def is_active(self):
         return sickbeard.USE_TORRENTS and self.is_enabled()
@@ -43,20 +76,69 @@ class TorrentProvider(GenericProvider):
 
         return title.replace(' ', '.')
 
+    @property
     def _custom_trackers(self):
-        # TODO
-        pass
+        if sickbeard.TRACKERS_LIST:
+            if not self.public:
+                return ''
+
+            return '&tr=' + '&tr='.join(set([x.strip() for x in sickbeard.TRACKERS_LIST.split(',') if x.strip()]))
+
+        return ''
 
     def _get_episode_search_strings(self, episode, add_string=''):
-        # TODO
-        pass
+        if not episode:
+            return []
+
+        search_string = {
+            'Episode': []
+        }
+
+        for show_name in set(allPossibleShowNames(episode.show)):
+            episode_string = show_name + ' '
+
+            if episode.show.air_by_date:
+                episode_string += str(episode.airdate).replace('-', ' ')
+            elif episode.show.sports:
+                episode_string += str(episode.airdate).replace('-', ' ')
+                episode_string += ('|', ' ')[len(self.proper_strings) > 1]
+                episode_string += episode.airdate.strftime('%b')
+            elif episode.show.anime:
+                episode_string += '%02d' % int(episode.scene_absolute_number)
+            else:
+                episode_string += sickbeard.config.naming_ep_type[2] % {
+                    'seasonnumber': episode.scene_season,
+                    'episodenumber': episode.scene_episode,
+                }
+
+            if add_string:
+                episode_string += ' ' + add_string
+
+            search_string['Episode'].append(episode_string.encode('utf-8').strip())
+
+        return [search_string]
 
     def _get_result(self, episodes):
         return TorrentSearchResult(episodes)
 
     def _get_season_search_strings(self, episode):
-        # TODO
-        pass
+        search_string = {
+            'Season': []
+        }
+
+        for show_name in set(allPossibleShowNames(self.show)):
+            episode_string = show_name + ' '
+
+            if episode.show.air_by_date or episode.show.sports:
+                episode_string += str(episode.airdate).split('-')[0]
+            elif episode.show.anime:
+                episode_string += '%d' % int(episode.scene_absolute_number)
+            else:
+                episode_string += 'S%02d' % int(episode.scene_season)
+
+            search_string['Season'].append(episode_string.encode('utf-8').strip())
+
+        return [search_string]
 
     def _get_size(self, item):
         if isinstance(item, dict):
@@ -72,6 +154,53 @@ class TorrentProvider(GenericProvider):
 
         return try_int(size, -1)
 
+    def _get_storage_dir(self):
+        return sickbeard.TORRENT_DIR
+
     def _get_title_and_url(self, item):
-        # TODO
-        pass
+        if isinstance(item, (dict, FeedParserDict)):
+            download_url = item.get('url', '')
+            title = item.get('title', '')
+
+            if not download_url:
+                download_url = item.get('link', '')
+        elif isinstance(item, (list, tuple)) and len(item) > 1:
+            download_url = item[1]
+            title = item[0]
+        else:
+            download_url = ''
+            title = ''
+
+        if title.endswith('DIAMOND'):
+            logger.log(u'Skipping DIAMOND release for mass fake releases.')
+            download_url = title = u'FAKERELEASE'
+
+        if download_url:
+            download_url = download_url.replace('&amp;', '&')
+
+        if title:
+            title = self._clean_title(title)
+
+        return title, download_url
+
+    def _verify_download(self, file_name=None):
+        try:
+            parser = createParser(file_name)
+
+            if parser:
+                # pylint: disable=W0212
+                # Access to a protected member of a client class
+                mime_type = parser._getMimeType()
+
+                try:
+                    parser.stream._input.close()
+                except Exception:
+                    pass
+
+                if mime_type == 'application/x-bittorrent':
+                    return True
+        except Exception as e:
+            logger.log(u'Failed to validate torrent file: %s' % ex(e), logger.DEBUG)
+
+        logger.log(u'Result is not a valid torrent file', logger.DEBUG)
+        return False

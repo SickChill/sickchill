@@ -19,17 +19,16 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
-from sickbeard.providers import generic
 from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class BTDIGGProvider(generic.TorrentProvider):
+class BTDIGGProvider(TorrentProvider):
 
     def __init__(self):
-        generic.TorrentProvider.__init__(self, "BTDigg")
+        TorrentProvider.__init__(self, "BTDigg")
 
         self.public = True
         self.ratio = 0
@@ -46,7 +45,7 @@ class BTDIGGProvider(generic.TorrentProvider):
 
         self.cache = BTDiggCache(self)
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -65,7 +64,7 @@ class BTDIGGProvider(generic.TorrentProvider):
                 searchURL = self.urls['api'] + '?' + urlencode(search_params)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
-                jdata = self.getURL(searchURL, json=True)
+                jdata = self.get_url(searchURL, json=True)
                 if not jdata:
                     logger.log(u"No data returned to be parsed!!!")
                     return []
@@ -101,8 +100,9 @@ class BTDIGGProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
+
 
 class BTDiggCache(tvcache.TVCache):
     def __init__(self, provider_obj):
@@ -116,6 +116,6 @@ class BTDiggCache(tvcache.TVCache):
 
         # Use this hacky way for RSS search since most results will use this codecs
         search_params = {'RSS': ['x264', 'x264.HDTV', '720.HDTV.x264']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider._do_search(search_params)}
 
 provider = BTDIGGProvider()

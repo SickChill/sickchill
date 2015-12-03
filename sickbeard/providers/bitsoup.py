@@ -21,12 +21,13 @@ import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.TorrentProvider import TorrentProvider
 
-class BitSoupProvider(generic.TorrentProvider):
+
+class BitSoupProvider(TorrentProvider):
     def __init__(self):
-        generic.TorrentProvider.__init__(self, "BitSoup")
+        TorrentProvider.__init__(self, "BitSoup")
 
         self.urls = {
             'base_url': 'https://www.bitsoup.me',
@@ -37,7 +38,6 @@ class BitSoupProvider(generic.TorrentProvider):
             }
 
         self.url = self.urls['base_url']
-
 
         self.username = None
         self.password = None
@@ -51,13 +51,13 @@ class BitSoupProvider(generic.TorrentProvider):
             "c42": 1, "c45": 1, "c49": 1, "c7": 1
         }
 
-    def _checkAuth(self):
+    def _check_auth(self):
         if not self.username or not self.password:
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
 
         return True
 
-    def _doLogin(self):
+    def _do_login(self):
 
         login_params = {
             'username': self.username,
@@ -65,7 +65,7 @@ class BitSoupProvider(generic.TorrentProvider):
             'ssl': 'yes'
             }
 
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -76,12 +76,12 @@ class BitSoupProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self._do_login():
             return results
 
         for mode in search_strings.keys():
@@ -93,7 +93,7 @@ class BitSoupProvider(generic.TorrentProvider):
 
                 self.search_params['search'] = search_string
 
-                data = self.getURL(self.urls['search'], params=self.search_params)
+                data = self.get_url(self.urls['search'], params=self.search_params)
                 if not data:
                     continue
 
@@ -147,7 +147,7 @@ class BitSoupProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -161,7 +161,7 @@ class BitSoupCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_strings)}
+        return {'entries': self.provider._do_search(search_strings)}
 
 
 provider = BitSoupProvider()

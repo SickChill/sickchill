@@ -26,15 +26,15 @@ import urllib
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.TorrentProvider import TorrentProvider
 
-class LibertaliaProvider(generic.TorrentProvider):
+
+class LibertaliaProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "Libertalia")
-
+        TorrentProvider.__init__(self, "Libertalia")
 
         self.cj = cookielib.CookieJar()
 
@@ -51,7 +51,7 @@ class LibertaliaProvider(generic.TorrentProvider):
 
         self.cache = LibertaliaCache(self)
 
-    def _doLogin(self):
+    def _do_login(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
@@ -59,7 +59,7 @@ class LibertaliaProvider(generic.TorrentProvider):
         login_params = {'username': self.username,
                         'password': self.password}
 
-        response = self.getURL(self.url + '/login.php', post_data=login_params, timeout=30)
+        response = self.get_url(self.url + '/login.php', post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -72,14 +72,13 @@ class LibertaliaProvider(generic.TorrentProvider):
 
         return True
 
-
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         # check for auth
-        if not self._doLogin():
+        if not self._do_login():
             return results
 
         for mode in search_params.keys():
@@ -91,7 +90,7 @@ class LibertaliaProvider(generic.TorrentProvider):
 
                 searchURL = self.urlsearch % (urllib.quote(search_string), self.categories)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-                data = self.getURL(searchURL)
+                data = self.get_url(searchURL)
                 if not data:
                     continue
 
@@ -137,7 +136,7 @@ class LibertaliaProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -150,6 +149,6 @@ class LibertaliaCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_strings)}
+        return {'entries': self.provider._do_search(search_strings)}
 
 provider = LibertaliaProvider()

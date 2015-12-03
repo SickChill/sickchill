@@ -20,15 +20,14 @@ import re
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class SpeedCDProvider(generic.TorrentProvider):
+class SpeedCDProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "Speedcd")
-
+        TorrentProvider.__init__(self, "Speedcd")
 
         self.username = None
         self.password = None
@@ -51,12 +50,12 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         self.cache = SpeedCDCache(self)
 
-    def _doLogin(self):
+    def _do_login(self):
 
         login_params = {'username': self.username,
                         'password': self.password}
 
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -67,12 +66,12 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self._do_login():
             return results
 
         for mode in search_params.keys():
@@ -87,7 +86,7 @@ class SpeedCDProvider(generic.TorrentProvider):
                 post_data = dict({'/browse.php?': None, 'cata': 'yes', 'jxt': 4, 'jxw': 'b', 'search': search_string},
                                  **self.categories[mode])
 
-                parsedJSON = self.getURL(self.urls['search'], post_data=post_data, json=True)
+                parsedJSON = self.get_url(self.urls['search'], post_data=post_data, json=True)
                 if not parsedJSON:
                     continue
 
@@ -130,7 +129,7 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -144,6 +143,6 @@ class SpeedCDCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider._do_search(search_params)}
 
 provider = SpeedCDProvider()

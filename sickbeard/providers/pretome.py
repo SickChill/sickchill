@@ -22,16 +22,15 @@ import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class PretomeProvider(generic.TorrentProvider):
+class PretomeProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "Pretome")
-
+        TorrentProvider.__init__(self, "Pretome")
 
         self.username = None
         self.password = None
@@ -54,20 +53,20 @@ class PretomeProvider(generic.TorrentProvider):
 
         self.cache = PretomeCache(self)
 
-    def _checkAuth(self):
+    def _check_auth(self):
 
         if not self.username or not self.password or not self.pin:
             logger.log(u"Invalid username or password or pin. Check your settings", logger.WARNING)
 
         return True
 
-    def _doLogin(self):
+    def _do_login(self):
 
         login_params = {'username': self.username,
                         'password': self.password,
                         'login_pin': self.pin}
 
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -78,12 +77,12 @@ class PretomeProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self._do_login():
             return results
 
         for mode in search_params.keys():
@@ -96,7 +95,7 @@ class PretomeProvider(generic.TorrentProvider):
                 searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
-                data = self.getURL(searchURL)
+                data = self.get_url(searchURL)
                 if not data:
                     continue
 
@@ -167,7 +166,7 @@ class PretomeProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
     def _convertSize(self, sizeString):
@@ -195,7 +194,7 @@ class PretomeCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider._do_search(search_params)}
 
 
 provider = PretomeProvider()

@@ -16,20 +16,20 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-from sickbeard.providers import generic
-
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.providers.NZBProvider import NZBProvider
 
 
-class WombleProvider(generic.NZBProvider):
+class WombleProvider(NZBProvider):
     def __init__(self):
-        generic.NZBProvider.__init__(self, "Womble's Index")
+        NZBProvider.__init__(self, "Womble's Index")
         self.public = True
         self.cache = WombleCache(self)
         self.urls = {'base_url': 'http://newshost.co.za/'}
         self.url = self.urls['base_url']
-        self.supportsBacklog = False
+        self.supports_backlog = False
+
 
 class WombleCache(tvcache.TVCache):
     def __init__(self, provider_obj):

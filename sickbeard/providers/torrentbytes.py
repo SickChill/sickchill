@@ -22,16 +22,15 @@ import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class TorrentBytesProvider(generic.TorrentProvider):
+class TorrentBytesProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "TorrentBytes")
-
+        TorrentProvider.__init__(self, "TorrentBytes")
 
         self.username = None
         self.password = None
@@ -54,13 +53,13 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
         self.cache = TorrentBytesCache(self)
 
-    def _doLogin(self):
+    def _do_login(self):
 
         login_params = {'username': self.username,
                         'password': self.password,
                         'login': 'Log in!'}
 
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -71,12 +70,12 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self._do_login():
             return results
 
         for mode in search_params.keys():
@@ -89,7 +88,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
                 searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
-                data = self.getURL(searchURL)
+                data = self.get_url(searchURL)
                 if not data:
                     continue
 
@@ -129,15 +128,15 @@ class TorrentBytesProvider(generic.TorrentProvider):
                                     title = link.contents[0]
                                 download_url = self.urls['download'] % (torrent_id, link.contents[0])
                                 seeders = int(cells[8].find('span').contents[0])
-                                leechers = int(cells[9].find('span').contents[0])       
-                                                         
+                                leechers = int(cells[9].find('span').contents[0])
+
                                 # Need size for failed downloads handling
                                 if size is None:
                                     if re.match(r'[0-9]+,?\.?[0-9]*[KkMmGg]+[Bb]+', cells[6].text):
                                         size = self._convertSize(cells[6].text)
                                         if not size:
                                             size = -1
-                               
+
                             except (AttributeError, TypeError):
                                 continue
 
@@ -166,9 +165,9 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
-    
+
     def _convertSize(self, sizeString):
         size = sizeString[:-2]
         modifier = sizeString[-2:]
@@ -194,7 +193,7 @@ class TorrentBytesCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider._do_search(search_params)}
 
 
 provider = TorrentBytesProvider()

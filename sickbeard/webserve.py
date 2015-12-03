@@ -62,6 +62,7 @@ from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
+from sickrage.providers.GenericProvider import GenericProvider
 from sickrage.show.ComingEpisodes import ComingEpisodes
 from sickrage.show.History import History as HistoryTool
 from sickrage.show.Show import Show
@@ -4257,14 +4258,14 @@ class ConfigProviders(Config):
         if not name:
             return json.dumps({'error': 'No Provider Name specified'})
 
-        providerDict = dict(zip([x.getID() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
+        providerDict = dict(zip([x.get_id() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
 
         tempProvider = newznab.NewznabProvider(name, '')
 
-        if tempProvider.getID() in providerDict:
-            return json.dumps({'error': 'Provider Name already exists as ' + providerDict[tempProvider.getID()].name})
+        if tempProvider.get_id() in providerDict:
+            return json.dumps({'error': 'Provider Name already exists as ' + providerDict[tempProvider.get_id()].name})
         else:
-            return json.dumps({'success': tempProvider.getID()})
+            return json.dumps({'success': tempProvider.get_id()})
 
     @staticmethod
     def saveNewznabProvider(name, url, key=''):
@@ -4286,12 +4287,12 @@ class ConfigProviders(Config):
             else:
                 providerDict[name].needs_auth = True
 
-            return providerDict[name].getID() + '|' + providerDict[name].configStr()
+            return providerDict[name].get_id() + '|' + providerDict[name].configStr()
 
         else:
             newProvider = newznab.NewznabProvider(name, url, key=key)
             sickbeard.newznabProviderList.append(newProvider)
-            return newProvider.getID() + '|' + newProvider.configStr()
+            return newProvider.get_id() + '|' + newProvider.configStr()
 
     @staticmethod
     def getNewznabCategories(name, url, key):
@@ -4314,7 +4315,7 @@ class ConfigProviders(Config):
             return json.dumps({'success': False, 'error': error})
 
         # Get list with Newznabproviders
-        # providerDict = dict(zip([x.getID() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
+        # providerDict = dict(zip([x.get_id() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
 
         # Get newznabprovider obj with provided name
         tempProvider = newznab.NewznabProvider(name, url, key)
@@ -4326,7 +4327,7 @@ class ConfigProviders(Config):
     @staticmethod
     def deleteNewznabProvider(nnid):
 
-        providerDict = dict(zip([x.getID() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
+        providerDict = dict(zip([x.get_id() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
 
         if nnid not in providerDict or providerDict[nnid].default:
             return '0'
@@ -4346,16 +4347,16 @@ class ConfigProviders(Config):
             return json.dumps({'error': 'Invalid name specified'})
 
         providerDict = dict(
-            zip([x.getID() for x in sickbeard.torrentRssProviderList], sickbeard.torrentRssProviderList))
+            zip([x.get_id() for x in sickbeard.torrentRssProviderList], sickbeard.torrentRssProviderList))
 
         tempProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG)
 
-        if tempProvider.getID() in providerDict:
-            return json.dumps({'error': 'Exists as ' + providerDict[tempProvider.getID()].name})
+        if tempProvider.get_id() in providerDict:
+            return json.dumps({'error': 'Exists as ' + providerDict[tempProvider.get_id()].name})
         else:
             (succ, errMsg) = tempProvider.validateRSS()
             if succ:
-                return json.dumps({'success': tempProvider.getID()})
+                return json.dumps({'success': tempProvider.get_id()})
             else:
                 return json.dumps({'error': errMsg})
 
@@ -4373,18 +4374,18 @@ class ConfigProviders(Config):
             providerDict[name].cookies = cookies
             providerDict[name].titleTAG = titleTAG
 
-            return providerDict[name].getID() + '|' + providerDict[name].configStr()
+            return providerDict[name].get_id() + '|' + providerDict[name].configStr()
 
         else:
             newProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG)
             sickbeard.torrentRssProviderList.append(newProvider)
-            return newProvider.getID() + '|' + newProvider.configStr()
+            return newProvider.get_id() + '|' + newProvider.configStr()
 
     @staticmethod
     def deleteTorrentRssProvider(id):
 
         providerDict = dict(
-            zip([x.getID() for x in sickbeard.torrentRssProviderList], sickbeard.torrentRssProviderList))
+            zip([x.get_id() for x in sickbeard.torrentRssProviderList], sickbeard.torrentRssProviderList))
 
         if id not in providerDict:
             return '0'
@@ -4404,7 +4405,7 @@ class ConfigProviders(Config):
         provider_list = []
 
         newznabProviderDict = dict(
-            zip([x.getID() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
+            zip([x.get_id() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
 
         finishedNames = []
 
@@ -4420,7 +4421,7 @@ class ConfigProviders(Config):
 
                 newProvider = newznab.NewznabProvider(cur_name, cur_url, key=cur_key)
 
-                cur_id = newProvider.getID()
+                cur_id = newProvider.get_id()
 
                 # if it already exists then update it
                 if cur_id in newznabProviderDict:
@@ -4463,11 +4464,11 @@ class ConfigProviders(Config):
 
         # delete anything that is missing
         for curProvider in sickbeard.newznabProviderList:
-            if curProvider.getID() not in finishedNames:
+            if curProvider.get_id() not in finishedNames:
                 sickbeard.newznabProviderList.remove(curProvider)
 
         torrentRssProviderDict = dict(
-            zip([x.getID() for x in sickbeard.torrentRssProviderList], sickbeard.torrentRssProviderList))
+            zip([x.get_id() for x in sickbeard.torrentRssProviderList], sickbeard.torrentRssProviderList))
         finishedNames = []
 
         if torrentrss_string:
@@ -4481,7 +4482,7 @@ class ConfigProviders(Config):
 
                 newProvider = rsstorrent.TorrentRssProvider(curName, curURL, curCookies, curTitleTAG)
 
-                curID = newProvider.getID()
+                curID = newProvider.get_id()
 
                 # if it already exists then update it
                 if curID in torrentRssProviderDict:
@@ -4496,7 +4497,7 @@ class ConfigProviders(Config):
 
         # delete anything that is missing
         for curProvider in sickbeard.torrentRssProviderList:
-            if curProvider.getID() not in finishedNames:
+            if curProvider.get_id() not in finishedNames:
                 sickbeard.torrentRssProviderList.remove(curProvider)
 
         disabled_list = []
@@ -4506,7 +4507,7 @@ class ConfigProviders(Config):
             curEnabled = try_int(curEnabled)
 
             curProvObj = [x for x in sickbeard.providers.sortedProviderList() if
-                          x.getID() == curProvider and hasattr(x, 'enabled')]
+                          x.get_id() == curProvider and hasattr(x, 'enabled')]
             if curProvObj:
                 curProvObj[0].enabled = bool(curEnabled)
 
@@ -4524,194 +4525,194 @@ class ConfigProviders(Config):
 
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
-                                   curProvider.providerType == sickbeard.GenericProvider.TORRENT]:
+                                   curProvider.provider_type == GenericProvider.TORRENT]:
 
             if hasattr(curTorrentProvider, 'custom_url'):
                 try:
-                    curTorrentProvider.custom_url = str(kwargs[curTorrentProvider.getID() + '_custom_url']).strip()
+                    curTorrentProvider.custom_url = str(kwargs[curTorrentProvider.get_id() + '_custom_url']).strip()
                 except Exception:
                     curTorrentProvider.custom_url = None
 
             if hasattr(curTorrentProvider, 'minseed'):
                 try:
-                    curTorrentProvider.minseed = int(str(kwargs[curTorrentProvider.getID() + '_minseed']).strip())
+                    curTorrentProvider.minseed = int(str(kwargs[curTorrentProvider.get_id() + '_minseed']).strip())
                 except Exception:
                     curTorrentProvider.minseed = 0
 
             if hasattr(curTorrentProvider, 'minleech'):
                 try:
-                    curTorrentProvider.minleech = int(str(kwargs[curTorrentProvider.getID() + '_minleech']).strip())
+                    curTorrentProvider.minleech = int(str(kwargs[curTorrentProvider.get_id() + '_minleech']).strip())
                 except Exception:
                     curTorrentProvider.minleech = 0
 
             if hasattr(curTorrentProvider, 'ratio'):
                 try:
-                    curTorrentProvider.ratio = str(kwargs[curTorrentProvider.getID() + '_ratio']).strip()
+                    curTorrentProvider.ratio = str(kwargs[curTorrentProvider.get_id() + '_ratio']).strip()
                 except Exception:
                     curTorrentProvider.ratio = None
 
             if hasattr(curTorrentProvider, 'digest'):
                 try:
-                    curTorrentProvider.digest = str(kwargs[curTorrentProvider.getID() + '_digest']).strip()
+                    curTorrentProvider.digest = str(kwargs[curTorrentProvider.get_id() + '_digest']).strip()
                 except Exception:
                     curTorrentProvider.digest = None
 
             if hasattr(curTorrentProvider, 'hash'):
                 try:
-                    curTorrentProvider.hash = str(kwargs[curTorrentProvider.getID() + '_hash']).strip()
+                    curTorrentProvider.hash = str(kwargs[curTorrentProvider.get_id() + '_hash']).strip()
                 except Exception:
                     curTorrentProvider.hash = None
 
             if hasattr(curTorrentProvider, 'api_key'):
                 try:
-                    curTorrentProvider.api_key = str(kwargs[curTorrentProvider.getID() + '_api_key']).strip()
+                    curTorrentProvider.api_key = str(kwargs[curTorrentProvider.get_id() + '_api_key']).strip()
                 except Exception:
                     curTorrentProvider.api_key = None
 
             if hasattr(curTorrentProvider, 'username'):
                 try:
-                    curTorrentProvider.username = str(kwargs[curTorrentProvider.getID() + '_username']).strip()
+                    curTorrentProvider.username = str(kwargs[curTorrentProvider.get_id() + '_username']).strip()
                 except Exception:
                     curTorrentProvider.username = None
 
             if hasattr(curTorrentProvider, 'password'):
                 try:
-                    curTorrentProvider.password = str(kwargs[curTorrentProvider.getID() + '_password']).strip()
+                    curTorrentProvider.password = str(kwargs[curTorrentProvider.get_id() + '_password']).strip()
                 except Exception:
                     curTorrentProvider.password = None
 
             if hasattr(curTorrentProvider, 'passkey'):
                 try:
-                    curTorrentProvider.passkey = str(kwargs[curTorrentProvider.getID() + '_passkey']).strip()
+                    curTorrentProvider.passkey = str(kwargs[curTorrentProvider.get_id() + '_passkey']).strip()
                 except Exception:
                     curTorrentProvider.passkey = None
 
             if hasattr(curTorrentProvider, 'pin'):
                 try:
-                    curTorrentProvider.pin = str(kwargs[curTorrentProvider.getID() + '_pin']).strip()
+                    curTorrentProvider.pin = str(kwargs[curTorrentProvider.get_id() + '_pin']).strip()
                 except Exception:
                     curTorrentProvider.pin = None
 
             if hasattr(curTorrentProvider, 'confirmed'):
                 try:
                     curTorrentProvider.confirmed = config.checkbox_to_value(
-                        kwargs[curTorrentProvider.getID() + '_confirmed'])
+                        kwargs[curTorrentProvider.get_id() + '_confirmed'])
                 except Exception:
                     curTorrentProvider.confirmed = 0
 
             if hasattr(curTorrentProvider, 'ranked'):
                 try:
                     curTorrentProvider.ranked = config.checkbox_to_value(
-                        kwargs[curTorrentProvider.getID() + '_ranked'])
+                        kwargs[curTorrentProvider.get_id() + '_ranked'])
                 except Exception:
                     curTorrentProvider.ranked = 0
 
             if hasattr(curTorrentProvider, 'engrelease'):
                 try:
                     curTorrentProvider.engrelease = config.checkbox_to_value(
-                        kwargs[curTorrentProvider.getID() + '_engrelease'])
+                        kwargs[curTorrentProvider.get_id() + '_engrelease'])
                 except Exception:
                     curTorrentProvider.engrelease = 0
 
             if hasattr(curTorrentProvider, 'onlyspasearch'):
                 try:
                     curTorrentProvider.onlyspasearch = config.checkbox_to_value(
-                        kwargs[curTorrentProvider.getID() + '_onlyspasearch'])
+                        kwargs[curTorrentProvider.get_id() + '_onlyspasearch'])
                 except Exception:
                     curTorrentProvider.onlyspasearch = 0
 
             if hasattr(curTorrentProvider, 'sorting'):
                 try:
-                    curTorrentProvider.sorting = str(kwargs[curTorrentProvider.getID() + '_sorting']).strip()
+                    curTorrentProvider.sorting = str(kwargs[curTorrentProvider.get_id() + '_sorting']).strip()
                 except Exception:
                     curTorrentProvider.sorting = 'seeders'
 
             if hasattr(curTorrentProvider, 'freeleech'):
                 try:
                     curTorrentProvider.freeleech = config.checkbox_to_value(
-                        kwargs[curTorrentProvider.getID() + '_freeleech'])
+                        kwargs[curTorrentProvider.get_id() + '_freeleech'])
                 except Exception:
                     curTorrentProvider.freeleech = 0
 
             if hasattr(curTorrentProvider, 'search_mode'):
                 try:
-                    curTorrentProvider.search_mode = str(kwargs[curTorrentProvider.getID() + '_search_mode']).strip()
+                    curTorrentProvider.search_mode = str(kwargs[curTorrentProvider.get_id() + '_search_mode']).strip()
                 except Exception:
                     curTorrentProvider.search_mode = 'eponly'
 
             if hasattr(curTorrentProvider, 'search_fallback'):
                 try:
                     curTorrentProvider.search_fallback = config.checkbox_to_value(
-                        kwargs[curTorrentProvider.getID() + '_search_fallback'])
+                        kwargs[curTorrentProvider.get_id() + '_search_fallback'])
                 except Exception:
                     curTorrentProvider.search_fallback = 0  # these exceptions are catching unselected checkboxes
 
             if hasattr(curTorrentProvider, 'enable_daily'):
                 try:
                     curTorrentProvider.enable_daily = config.checkbox_to_value(
-                        kwargs[curTorrentProvider.getID() + '_enable_daily'])
+                        kwargs[curTorrentProvider.get_id() + '_enable_daily'])
                 except Exception:
                     curTorrentProvider.enable_daily = 0  # these exceptions are actually catching unselected checkboxes
 
             if hasattr(curTorrentProvider, 'enable_backlog'):
                 try:
                     curTorrentProvider.enable_backlog = config.checkbox_to_value(
-                        kwargs[curTorrentProvider.getID() + '_enable_backlog'])
+                        kwargs[curTorrentProvider.get_id() + '_enable_backlog'])
                 except Exception:
                     curTorrentProvider.enable_backlog = 0  # these exceptions are actually catching unselected checkboxes
 
             if hasattr(curTorrentProvider, 'cat'):
                 try:
-                    curTorrentProvider.cat = int(str(kwargs[curTorrentProvider.getID() + '_cat']).strip())
+                    curTorrentProvider.cat = int(str(kwargs[curTorrentProvider.get_id() + '_cat']).strip())
                 except Exception:
                     curTorrentProvider.cat = 0
 
             if hasattr(curTorrentProvider, 'subtitle'):
                 try:
                     curTorrentProvider.subtitle = config.checkbox_to_value(
-                        kwargs[curTorrentProvider.getID() + '_subtitle'])
+                        kwargs[curTorrentProvider.get_id() + '_subtitle'])
                 except Exception:
                     curTorrentProvider.subtitle = 0
 
         for curNzbProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
-                               curProvider.providerType == sickbeard.GenericProvider.NZB]:
+                               curProvider.provider_type == GenericProvider.NZB]:
 
             if hasattr(curNzbProvider, 'api_key'):
                 try:
-                    curNzbProvider.api_key = str(kwargs[curNzbProvider.getID() + '_api_key']).strip()
+                    curNzbProvider.api_key = str(kwargs[curNzbProvider.get_id() + '_api_key']).strip()
                 except Exception:
                     curNzbProvider.api_key = None
 
             if hasattr(curNzbProvider, 'username'):
                 try:
-                    curNzbProvider.username = str(kwargs[curNzbProvider.getID() + '_username']).strip()
+                    curNzbProvider.username = str(kwargs[curNzbProvider.get_id() + '_username']).strip()
                 except Exception:
                     curNzbProvider.username = None
 
             if hasattr(curNzbProvider, 'search_mode'):
                 try:
-                    curNzbProvider.search_mode = str(kwargs[curNzbProvider.getID() + '_search_mode']).strip()
+                    curNzbProvider.search_mode = str(kwargs[curNzbProvider.get_id() + '_search_mode']).strip()
                 except Exception:
                     curNzbProvider.search_mode = 'eponly'
 
             if hasattr(curNzbProvider, 'search_fallback'):
                 try:
                     curNzbProvider.search_fallback = config.checkbox_to_value(
-                        kwargs[curNzbProvider.getID() + '_search_fallback'])
+                        kwargs[curNzbProvider.get_id() + '_search_fallback'])
                 except Exception:
                     curNzbProvider.search_fallback = 0  # these exceptions are actually catching unselected checkboxes
 
             if hasattr(curNzbProvider, 'enable_daily'):
                 try:
                     curNzbProvider.enable_daily = config.checkbox_to_value(
-                        kwargs[curNzbProvider.getID() + '_enable_daily'])
+                        kwargs[curNzbProvider.get_id() + '_enable_daily'])
                 except Exception:
                     curNzbProvider.enable_daily = 0  # these exceptions are actually catching unselected checkboxes
 
             if hasattr(curNzbProvider, 'enable_backlog'):
                 try:
                     curNzbProvider.enable_backlog = config.checkbox_to_value(
-                        kwargs[curNzbProvider.getID() + '_enable_backlog'])
+                        kwargs[curNzbProvider.get_id() + '_enable_backlog'])
                 except Exception:
                     curNzbProvider.enable_backlog = 0  # these exceptions are actually catching unselected checkboxes
 

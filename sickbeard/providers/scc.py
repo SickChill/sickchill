@@ -25,16 +25,15 @@ import sickbeard
 from sickbeard.common import cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.TorrentProvider import TorrentProvider
 
-class SCCProvider(generic.TorrentProvider):
+
+class SCCProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "SceneAccess")
-
-
+        TorrentProvider.__init__(self, "SceneAccess")
 
         self.username = None
         self.password = None
@@ -55,14 +54,13 @@ class SCCProvider(generic.TorrentProvider):
         self.categories = { 'sponly': 'c26=26&c44=44&c45=45', # Archive, non-scene HD, non-scene SD; need to include non-scene because WEB-DL packs get added to those categories
                             'eponly': 'c27=27&c17=17&c44=44&c45=45&c33=33&c34=34'} # TV HD, TV SD, non-scene HD, non-scene SD, foreign XviD, foreign x264
 
-    def _doLogin(self):
+    def _do_login(self):
 
         login_params = {'username': self.username,
                         'password': self.password,
                         'submit': 'come on in'}
 
-
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -78,11 +76,11 @@ class SCCProvider(generic.TorrentProvider):
         title = r'<title>.+? \| %s</title>' % section
         return re.search(title, text, re.IGNORECASE)
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
 
-        if not self._doLogin():
+        if not self._do_login():
             return results
 
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -97,8 +95,8 @@ class SCCProvider(generic.TorrentProvider):
                 searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories[search_mode])
 
                 try:
-                    logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-                    data = self.getURL(searchURL)
+                    logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                    data = self.get_url(searchURL)
                     time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 except Exception as e:
                     logger.log(u"Unable to fetch data. Error: %s" % repr(e), logger.WARNING)
@@ -123,7 +121,7 @@ class SCCProvider(generic.TorrentProvider):
 
                             title = link.string
                             if re.search(r'\.\.\.', title):
-                                data = self.getURL(self.url + "/" + link['href'])
+                                data = self.get_url(self.url + "/" + link['href'])
                                 if data:
                                     with BS4Parser(data) as details_html:
                                         title = re.search('(?<=").+(?<!")', details_html.title.string).group(0)
@@ -156,7 +154,7 @@ class SCCProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
     def _convertSize(self, size):
@@ -183,6 +181,6 @@ class SCCCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_strings)}
+        return {'entries': self.provider._do_search(search_strings)}
 
 provider = SCCProvider()

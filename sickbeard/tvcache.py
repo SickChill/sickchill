@@ -75,7 +75,7 @@ class CacheDBConnection(db.DBConnection):
 class TVCache(object):
     def __init__(self, provider):
         self.provider = provider
-        self.providerID = self.provider.getID()
+        self.providerID = self.provider.get_id()
         self.providerDB = None
         self.minTime = 10
 
@@ -370,7 +370,7 @@ class TVCache(object):
 
             logger.log(u"Found result " + title + " at " + url)
 
-            result = self.provider.getResult([epObj])
+            result = self.provider.get_result([epObj])
             result.show = showObj
             result.url = url
             result.name = title

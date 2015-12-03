@@ -14,24 +14,25 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+
 import urllib
 import re
 
-
-from sickbeard.providers import generic
-
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.providers.NZBProvider import NZBProvider
 
-class BinSearchProvider(generic.NZBProvider):
+
+class BinSearchProvider(NZBProvider):
     def __init__(self):
-        generic.NZBProvider.__init__(self, "BinSearch")
+        NZBProvider.__init__(self, "BinSearch")
 
         self.public = True
         self.cache = BinSearchCache(self)
         self.urls = {'base_url': 'https://www.binsearch.info/'}
         self.url = self.urls['base_url']
-        self.supportsBacklog = False
+        self.supports_backlog = False
+
 
 class BinSearchCache(tvcache.TVCache):
     def __init__(self, provider_obj):

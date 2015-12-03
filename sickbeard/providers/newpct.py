@@ -26,14 +26,14 @@ from six.moves import urllib
 from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class newpctProvider(generic.TorrentProvider):
+class newpctProvider(TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "Newpct")
+        TorrentProvider.__init__(self, "Newpct")
 
         self.onlyspasearch = None
         self.cache = newpctCache(self)
@@ -68,7 +68,7 @@ class newpctProvider(generic.TorrentProvider):
             'bus_de_': 'All'
         }
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -94,7 +94,7 @@ class newpctProvider(generic.TorrentProvider):
                 searchURL = self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params)
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
-                data = self.getURL(searchURL, timeout=30)
+                data = self.get_url(searchURL, timeout=30)
                 if not data:
                     continue
 
@@ -152,7 +152,7 @@ class newpctProvider(generic.TorrentProvider):
 
         return results
 
-    def getURL(self, url, post_data=None, params=None, timeout=30, json=False, needBytes=False):
+    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, needBytes=False):
         """
         needBytes=True when trying access to torrent info (For calling torrent client). Previously we must parse
         the URL to get torrent file
@@ -161,24 +161,24 @@ class newpctProvider(generic.TorrentProvider):
             data = helpers.getURL(url, post_data=None, params=None, headers=self.headers, timeout=timeout,
                               session=self.session, json=json, needBytes=False)
             url = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
-            
+
         return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
                               session=self.session, json=json, needBytes=needBytes)
-        
-    def downloadResult(self, result):
+
+    def download_result(self, result):
         """
         Save the result to disk.
         """
 
         # check for auth
-        if not self._doLogin():
+        if not self._do_login():
             return False
 
-        urls, filename = self._makeURL(result)
+        urls, filename = self._make_url(result)
 
         for url in urls:
             # Search results don't return torrent files directly, it returns show sheets so we must parse showSheet to access torrent.
-            data = self.getURL(url)
+            data = self.get_url(url)
             url_torrent = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
 
             if url_torrent.startswith('http'):
@@ -253,7 +253,7 @@ class newpctCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider._do_search(search_params)}
 
 
 provider = newpctProvider()
