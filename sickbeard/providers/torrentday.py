@@ -40,10 +40,12 @@ class TorrentDayProvider(generic.TorrentProvider):
 
         self.cache = TorrentDayCache(self)
 
-        self.urls = {'base_url': 'https://classic.torrentday.com',
-                     'login': 'https://classic.torrentday.com/torrents/',
-                     'search': 'https://classic.torrentday.com/V3/API/API.php',
-                     'download': 'https://classic.torrentday.com/download.php/%s/%s'}
+        self.urls = {
+            'base_url': 'https://classic.torrentday.com',
+             'login': 'https://classic.torrentday.com/torrents/',
+             'search': 'https://classic.torrentday.com/V3/API/API.php',
+             'download': 'https://classic.torrentday.com/download.php/%s/%s'
+        }
 
         self.url = self.urls['base_url']
 
@@ -61,10 +63,12 @@ class TorrentDayProvider(generic.TorrentProvider):
             requests.utils.add_dict_to_cookiejar(self.session.cookies, self.cookies)
         else:
 
-            login_params = {'username': self.username,
-                            'password': self.password,
-                            'submit.x': 0,
-                            'submit.y': 0}
+            login_params = {
+                'username': self.username,
+                'password': self.password,
+                'submit.x': 0,
+                'submit.y': 0
+            }
 
             response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
             if not response:

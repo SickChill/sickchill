@@ -79,7 +79,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: " + search_string, logger.DEBUG)
 
-                searchURL = self.urls[('search', 'rss')[mode is 'RSS']] + '?' + urlencode(self.search_params)
+                searchURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
                 if self.custom_url:
                     searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
 

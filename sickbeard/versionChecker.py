@@ -208,7 +208,7 @@ class CheckVersion(object):
         try:
             self.updater.need_update()
             cur_hash = str(self.updater.get_newest_commit_hash())
-            assert len(cur_hash) is 40, "Commit hash wrong length: %s hash: %s" % (len(cur_hash), cur_hash)
+            assert len(cur_hash) == 40, "Commit hash wrong length: %s hash: %s" % (len(cur_hash), cur_hash)
 
             check_url = "http://cdn.rawgit.com/%s/%s/%s/sickbeard/databases/mainDB.py" % (sickbeard.GIT_ORG, sickbeard.GIT_REPO, cur_hash)
             response = helpers.getURL(check_url, session=self.session)

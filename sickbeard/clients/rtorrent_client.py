@@ -38,7 +38,7 @@ class rTorrentAPI(GenericClient):
             return
 
         tp_kwargs = {}
-        if sickbeard.TORRENT_AUTH_TYPE is not 'none':
+        if sickbeard.TORRENT_AUTH_TYPE != 'none':
             tp_kwargs['authtype'] = sickbeard.TORRENT_AUTH_TYPE
 
         if not sickbeard.TORRENT_VERIFY_CERT:

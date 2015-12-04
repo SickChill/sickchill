@@ -150,7 +150,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                         if max_page_number > 15:
                             max_page_number = 15
                         # limit RSS search
-                        if max_page_number > 3 and mode is 'RSS':
+                        if max_page_number > 3 and mode == 'RSS':
                             max_page_number = 3
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)

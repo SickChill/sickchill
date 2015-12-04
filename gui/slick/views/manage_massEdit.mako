@@ -135,8 +135,8 @@
                                 <span class="component-desc">
                                     <select id="edit_archive_firstmatch" name="archive_firstmatch" class="form-control form-control-inline input-sm">
                                         <option value="keep" ${('', 'selected="selected"')[archive_firstmatch_value is None]}>&lt; Keep &gt;</option>
-                                        <option value="enable" ${('', 'selected="selected"')[archive_firstmatch_value is 1]}>Yes</option>
-                                        <option value="disable" ${('', 'selected="selected"')[archive_firstmatch_value is 0]}>No</option>
+                                        <option value="enable" ${('', 'selected="selected"')[archive_firstmatch_value == 1]}>Yes</option>
+                                        <option value="disable" ${('', 'selected="selected"')[archive_firstmatch_value == 0]}>No</option>
                                     </select><br>
                                     Archive episode after the first best match is found from your archive quality list.
                                 </span>
