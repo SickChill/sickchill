@@ -455,7 +455,7 @@ class SickRage(object):
         logger.log(u"Loading initial show list", logger.DEBUG)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_shows;")
+        sqlResults = myDB.select("SELECT indexer, indexer_id, location FROM tv_shows;")
 
         sickbeard.showList = []
         for sqlShow in sqlResults:
