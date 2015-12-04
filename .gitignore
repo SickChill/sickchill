@@ -65,3 +65,8 @@ lib/unrar2/UnRAR.exe
 .build/bower_components
 .build/node_modules
 .build/dist
+
+# Coverage #
+######################
+.coverage
+htmlcov
