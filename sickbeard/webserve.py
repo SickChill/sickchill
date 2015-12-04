@@ -2600,12 +2600,19 @@ class HomeAddShows(Home):
                         header='Existing Show', topmenu="home",
                         controller="addShows", action="addExistingShow")
 
-    def addShowByID(self, indexer_id, showName, indexer="TVDB"):
+    def addShowByID(self, indexer_id, show_name, indexer="TVDB"):
 
         if indexer != "TVDB":
             tvdb_id = helpers.getTVDBFromID(indexer_id, indexer.upper())
-            if tvdb_id != '':
-                indexer_id = tvdb_id
+            if not tvdb_id:
+                logger.log(u"Unable to to find tvdb ID to add %s" % show_name)
+                ui.notifications.error(
+                    "Unable to add %s" % show_name,
+                    "Could not add %s.  We were unable to locate the tvdb id at this time." % show_name
+                )
+                return
+
+            indexer_id = tvdb_id
 
         if Show.find(sickbeard.showList, int(indexer_id)):
             return
@@ -2616,29 +2623,31 @@ class HomeAddShows(Home):
         else:
             location = None
 
-        if location:
-            show_dir = ek(os.path.join, location, sanitize_filename(showName))
-            dir_exists = helpers.makeDir(show_dir)
-            if not dir_exists:
-                logger.log(u"Unable to create the folder " + show_dir + ", can't add the show", logger.ERROR)
-                return
-            else:
-                helpers.chmodAsParent(show_dir)
-
-            sickbeard.showQueueScheduler.action.addShow(1, int(indexer_id), show_dir,
-                                                        default_status=sickbeard.STATUS_DEFAULT,
-                                                        quality=sickbeard.QUALITY_DEFAULT,
-                                                        flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT,
-                                                        subtitles=sickbeard.SUBTITLES_DEFAULT,
-                                                        anime=sickbeard.ANIME_DEFAULT,
-                                                        scene=sickbeard.SCENE_DEFAULT,
-                                                        default_status_after=sickbeard.STATUS_DEFAULT_AFTER,
-                                                        archive=sickbeard.ARCHIVE_DEFAULT)
-
-            ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
-        else:
-            logger.log(u"There was an error creating the show, no root directory setting found", logger.ERROR)
+        if not location:
+            logger.log(u"There was an error creating the show, no root directory setting found")
             return "No root directories setup, please go back and add one."
+
+        show_dir = ek(os.path.join, location, sanitize_filename(show_name))
+        dir_exists = helpers.makeDir(show_dir)
+        if not dir_exists:
+            logger.log(u"Unable to create the folder " + show_dir + ", can't add the show")
+            return
+
+        helpers.chmodAsParent(show_dir)
+
+        sickbeard.showQueueScheduler.action.addShow(
+            1, int(indexer_id), show_dir,
+            default_status=sickbeard.STATUS_DEFAULT,
+            quality=sickbeard.QUALITY_DEFAULT,
+            flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT,
+            subtitles=sickbeard.SUBTITLES_DEFAULT,
+            anime=sickbeard.ANIME_DEFAULT,
+            scene=sickbeard.SCENE_DEFAULT,
+            default_status_after=sickbeard.STATUS_DEFAULT_AFTER,
+            archive=sickbeard.ARCHIVE_DEFAULT
+        )
+
+        ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
 
         # done adding show
         return self.redirect('/home/')
@@ -2646,7 +2655,7 @@ class HomeAddShows(Home):
     def addNewShow(self, whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
                    quality_preset=None, anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
                    fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
-                   scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None, archive=None, ):
+                   scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None, archive=None):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
         provided then it forwards back to newShow, if not it goes to /home.
