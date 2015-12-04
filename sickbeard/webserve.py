@@ -5153,6 +5153,8 @@ class ErrorLogs(WebRoot):
             'SEARCHQUEUE-DAILY-SEARCH': u'Search Queue (Daily Searcher)',
             'SEARCHQUEUE-BACKLOG': u'Search Queue (Backlog)',
             'SEARCHQUEUE-MANUAL': u'Search Queue (Manual)',
+            'SEARCHQUEUE-RETRY': u'Search Queue (Retry/Failed)',
+            'SEARCHQUEUE-RSS': u'Search Queue (RSS)',
             'FINDPROPERS': u'Find Propers',
             'POSTPROCESSER': u'Postprocesser',
             'FINDSUBTITLES': u'Find Subtitles',
