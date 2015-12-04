@@ -120,7 +120,7 @@ class BacklogSearcher:
         logger.log(u"Retrieving the last check time from the DB", logger.DEBUG)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM info")
+        sqlResults = myDB.select("SELECT last_backlog FROM info")
 
         if len(sqlResults) == 0:
             lastBacklog = 1
@@ -179,7 +179,7 @@ class BacklogSearcher:
         logger.log(u"Setting the last backlog in the DB to " + str(when), logger.DEBUG)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM info")
+        sqlResults = myDB.select("SELECT last_backlog FROM info")
 
         if len(sqlResults) == 0:
             myDB.action("INSERT INTO info (last_backlog, last_indexer) VALUES (?,?)", [str(when), 0])
