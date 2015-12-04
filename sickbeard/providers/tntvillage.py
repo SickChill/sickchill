@@ -217,7 +217,7 @@ class TNTVillageProvider(generic.TorrentProvider):
     def _is_italian(self, torrent_rows):
 
         name = str(torrent_rows.find_all('td')[1].find('b').find('span'))
-        if not name or name is 'None':
+        if not name or name == 'None':
             return False
 
         subFound = italian = False
@@ -241,7 +241,7 @@ class TNTVillageProvider(generic.TorrentProvider):
     def _is_english(self, torrent_rows):
 
         name = str(torrent_rows.find_all('td')[1].find('b').find('span'))
-        if not name or name is 'None':
+        if not name or name == 'None':
             return False
 
         english = False
@@ -283,7 +283,7 @@ class TNTVillageProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
-                if mode is 'RSS':
+                if mode == 'RSS':
                     self.page = 2
 
                 last_page = 0

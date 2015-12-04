@@ -210,9 +210,9 @@ class PostProcessor(object):
 
                 if is_subtitle and sub_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'):
                     language_extensions = tuple('.' + c for c in language_converters['opensubtitles'].codes)
-                    if file_name.lower().endswith(language_extensions) and (len(filefound.rsplit('.', 2)[1]) is 2 or 3):
+                    if file_name.lower().endswith(language_extensions) and (len(filefound.rsplit('.', 2)[1]) in [2, 3]):
                         filelist.append(filefound)
-                    elif file_name.lower().endswith('pt-br') and len(filefound.rsplit('.', 2)[1]) is 5:
+                    elif file_name.lower().endswith('pt-br') and len(filefound.rsplit('.', 2)[1]) == 5:
                         filelist.append(filefound)
                 elif new_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'): # if there's no difference in the filename add it to the filelist
                     filelist.append(filefound)

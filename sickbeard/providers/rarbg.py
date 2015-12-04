@@ -121,7 +121,7 @@ class RarbgProvider(generic.TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                if mode is 'RSS':
+                if mode == 'RSS':
                     searchURL = self.urls['listing'] + self.defaultOptions
                 elif mode == 'Season':
                     if ep_indexer == INDEXER_TVDB:
@@ -142,7 +142,7 @@ class RarbgProvider(generic.TorrentProvider):
                 if self.minseed:
                     searchURL += self.urlOptions['seeders'].format(min_seeders=int(self.minseed))
 
-                searchURL += self.urlOptions['sorting'].format(sorting=(self.sorting if self.sorting else 'seeders', 'last')[mode is 'RSS'])
+                searchURL += self.urlOptions['sorting'].format(sorting=(self.sorting if self.sorting else 'seeders', 'last')[mode == 'RSS'])
 
                 if self.ranked:
                     searchURL += self.urlOptions['ranked'].format(ranked=int(self.ranked))

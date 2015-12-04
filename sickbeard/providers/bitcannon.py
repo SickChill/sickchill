@@ -65,8 +65,8 @@ class BitCannonProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                self.search_params['q'] = search_string.encode('utf-8') if mode is not 'RSS' else ''
-                if mode is not 'RSS':
+                self.search_params['q'] = search_string.encode('utf-8') if mode != 'RSS' else ''
+                if mode != 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
                 try:
@@ -104,12 +104,12 @@ class BitCannonProvider(generic.TorrentProvider):
                                 continue
 
                             if seeders < self.minseed or leechers < self.minleech:
-                                if mode is not 'RSS':
+                                if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             item = title, download_url, size, seeders, leechers
-                            if mode is not 'RSS':
+                            if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                             items[mode].append(item)
