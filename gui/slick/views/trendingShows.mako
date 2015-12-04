@@ -1,11 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
-    import datetime
-    import re
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
-    from sickbeard import sbdatetime
     from sickbeard.helpers import anon_url
 %>
 <%block name="metas">
@@ -24,10 +19,16 @@
 % for cur_show in trending_shows:
     <% show_url = 'http://www.trakt.tv/shows/%s' % cur_show['show']['ids']['slug'] %>
 
+% if 'poster' in cur_show['show']['images'] and cur_show['show']['images']['poster']['thumb']:
+    <% poster_url = cur_show['show']['images']['poster']['thumb'] %>
+% else:
+    <% poster_url = 'http://www.trakt.tv/assets/placeholders/thumb/poster-2d5709c1b640929ca1ab60137044b152.png' %>
+% endif
+
     <div class="trakt_show" data-name="${cur_show['show']['title']}" data-rating="${cur_show['show']['rating']}" data-votes="${cur_show['show']['votes']}">
         <div class="traktContainer">
             <div class="trakt-image">
-                <a class="trakt-image" href="${anon_url(show_url)}" target="_blank"><img alt="" class="trakt-image" src="${cur_show['show']['images']['poster']['thumb']}" /></a>
+                <a class="trakt-image" href="${anon_url(show_url)}" target="_blank"><img alt="" class="trakt-image" src="${poster_url}" /></a>
             </div>
 
             <div class="show-title">

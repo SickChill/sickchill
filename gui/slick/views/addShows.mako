@@ -19,32 +19,22 @@
             <p>For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for it's episodes, and adds it to SickRage.</p>
         </div>
     </a>
-% if sickbeard.USE_TRAKT is True:
+
     <br><br>
-    <a href="${srRoot}/addShows/trendingShows/" id="btnNewShow" class="btn btn-large">
+    <a href="${srRoot}/addShows/trendingShows/?traktList=anticipated" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addtrendingshow"></div></div>
         <div class="buttontext">
-            <h3>Add Trending Show</h3>
-            <p>For shows that you haven't downloaded yet, this option lets you choose from a list of current trending shows with ratings to add, creates a directory for its episodes, and adds it to SickRage.</p>
+            <h3>Add From Trakt Lists</h3>
+            <p>For shows that you haven't downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickRage .</p>
         </div>
     </a>
 
-    <br><br>
-
-    <a href="${srRoot}/addShows/recommendedShows/" id="btnNewShow" class="btn btn-large">
-        <div class="button"><div class="icon-addrecommendedshow"></div></div>
-        <div class="buttontext">
-            <h3>Add Recommended Shows</h3>
-            <p>For shows that you haven't downloaded yet, this option recommends shows to add based on your Trakt.tv show library, creates a directory for its episodes, and adds it to SickRage.</p>
-        </div>
-    </a>
-% endif
     <br><br>
 
     <a href="${srRoot}/addShows/popularShows/" id="btnNewShow" class="btn btn-large">
-        <div class="button"><div class="icon-addtrendingshow"></div></div>
+        <div class="button"><div class="icon-addrecommendedshow"></div></div>
         <div class="buttontext">
-            <h3>View Popular Shows</h3>
+            <h3>Add From IMDB's Popular Shows</h3>
             <p>View IMDB's list of the most popular shows. This feature uses IMDB's MOVIEMeter algorithm to identify popular TV Series.</p>
         </div>
     </a>

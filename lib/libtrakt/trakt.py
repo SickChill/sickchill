@@ -7,7 +7,8 @@ from sickbeard import logger
 
 from exceptions import traktException, traktAuthException, traktServerBusy
 
-class TraktAPI():
+
+class TraktAPI:
     def __init__(self, ssl_verify=True, timeout=30):
         self.session = requests.Session()
         self.verify = certifi.where() if ssl_verify else False
@@ -27,8 +28,6 @@ class TraktAPI():
             return False
         elif count > 0:
             time.sleep(2)
-
-
 
         data = {
             'client_id': sickbeard.TRAKT_API_KEY,
@@ -66,19 +65,20 @@ class TraktAPI():
         return False
        
     def traktRequest(self, path, data=None, headers=None, url=None, method='GET', count=0):
-        if None == url:
+        if url is None:
             url = self.api_url
        
         count = count + 1
        
-        if None == headers:
+        if headers is None:
             headers = self.headers
        
-        if None == sickbeard.TRAKT_ACCESS_TOKEN:
+        if sickbeard.TRAKT_ACCESS_TOKEN == '' and count >= 2:
             logger.log(u'You must get a Trakt TOKEN. Check your Trakt settings', logger.WARNING)
             return {}
 
-        headers['Authorization'] = 'Bearer ' + sickbeard.TRAKT_ACCESS_TOKEN
+        if sickbeard.TRAKT_ACCESS_TOKEN != '':
+            headers['Authorization'] = 'Bearer ' + sickbeard.TRAKT_ACCESS_TOKEN
 
         try:
             resp = self.session.request(method, url + path, headers=headers, timeout=self.timeout,
@@ -108,7 +108,7 @@ class TraktAPI():
                 else:
                     logger.log(u'Unauthorized. Please check your Trakt settings', logger.WARNING)
             elif code in (500,501,503,504,520,521,522):
-                #http://docs.trakt.apiary.io/#introduction/status-codes
+                # http://docs.trakt.apiary.io/#introduction/status-codes
                 logger.log(u'Trakt may have some issues and it\'s unavailable. Try again later please', logger.DEBUG)
             elif code == 404:
                 logger.log(u'Trakt error (404) the resource does not exist: %s' % url + path, logger.ERROR)

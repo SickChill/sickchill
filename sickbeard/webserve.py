@@ -2455,74 +2455,64 @@ class HomeAddShows(Home):
             controller="addShows", action="newShow"
         )
 
-    def recommendedShows(self):
+    def trendingShows(self, traktList=None):
         """
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
-        t = PageTemplate(rh=self, filename="addShows_recommendedShows.mako")
-        return t.render(title="Recommended Shows", header="Recommended Shows",
-                        enable_anime_options=False,
-                        controller="addShows", action="recommendedShows")
+        if traktList is None:
+            traktList = ""
 
-    def getRecommendedShows(self):
-        t = PageTemplate(rh=self, filename="trendingShows.mako")
+        traktList = traktList.lower()
 
-        trending_shows = []
+        if traktList == "trending":
+            page_title = "Trending Shows"
+        elif traktList == "popular":
+            page_title = "Popular Shows"
+        elif traktList == "anticipated":
+            page_title = "Most Anticipated Shows"
+        elif traktList == "collected":
+            page_title = "Most Collected Shows"
+        elif traktList == "watched":
+            page_title = "Most Watched Shows"
+        elif traktList == "played":
+            page_title = "Most Played Shows"
+        elif traktList == "recommended":
+            page_title = "Recommended Shows"
+        else:
+            page_title = "Most Anticipated Shows"
 
-        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
-
-        try:
-            not_liked_show = ""
-            if sickbeard.TRAKT_BLACKLIST_NAME is not None and sickbeard.TRAKT_BLACKLIST_NAME:
-                not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
-            else:
-                logger.log(u"trending blacklist name is empty", logger.DEBUG)
-
-            shows = trakt_api.traktRequest("recommendations/shows?extended=full,images") or []
-
-            library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
-
-            for show_detail in shows:
-                show = {'show': show_detail}
-                try:
-                    if not Show.find(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
-                        if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
-                            if not_liked_show:
-                                if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
-                                    trending_shows += [show]
-                            else:
-                                trending_shows += [show]
-
-                except MultipleShowObjectsException:
-                    continue
-
-            if sickbeard.TRAKT_BLACKLIST_NAME != '':
-                blacklist = True
-            else:
-                blacklist = False
-
-        except traktException as e:
-            logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
-
-        return t.render(title="Trending Shows", header="Trending Shows", trending_shows=trending_shows, blacklist=blacklist)
-
-    def trendingShows(self):
-        """
-        Display the new show page which collects a tvdb id, folder, and extra options and
-        posts them to addNewShow
-        """
         t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
-        return t.render(title="Trending Shows", header="Trending Shows",
-                        enable_anime_options=False,
-                        controller="addShows", action="trendingShows")
+        return t.render(title=page_title, header=page_title, enable_anime_options=False,
+                        traktList=traktList, controller="addShows", action="trendingShows")
 
-    def getTrendingShows(self):
+    def getTrendingShows(self, traktList=None):
         """
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, filename="trendingShows.mako")
+        if traktList is None:
+            traktList = ""
+
+        traktList = traktList.lower()
+
+        if traktList == "trending":
+            page_url = "shows/trending"
+        elif traktList == "popular":
+            page_url = "shows/popular"
+        elif traktList == "anticipated":
+            page_url = "shows/anticipated"
+        elif traktList == "collected":
+            page_url = "shows/collected"
+        elif traktList == "watched":
+            page_url = "shows/watched"
+        elif traktList == "played":
+            page_url = "shows/played"
+        elif traktList == "recommended":
+            page_url = "recommendations/shows"
+        else:
+            page_url = "shows/anticipated"
 
         trending_shows = []
 
@@ -2530,20 +2520,37 @@ class HomeAddShows(Home):
 
         try:
             not_liked_show = ""
-            if sickbeard.TRAKT_BLACKLIST_NAME is not None and sickbeard.TRAKT_BLACKLIST_NAME:
-                not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
+            if sickbeard.TRAKT_ACCESS_TOKEN != '':
+                library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
+                if sickbeard.TRAKT_BLACKLIST_NAME is not None and sickbeard.TRAKT_BLACKLIST_NAME:
+                    not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
+                else:
+                    logger.log(u"Trakt blacklist name is empty", logger.DEBUG)
+
+            if traktList != "recommended":
+                limit_show = "?limit=" + str(50 + len(not_liked_show)) + "&"
             else:
-                logger.log(u"trending blacklist name is empty", logger.DEBUG)
+                limit_show = "?"
 
-            limit_show = 50 + len(not_liked_show)
+            shows = trakt_api.traktRequest(page_url + limit_show + "extended=full,images") or []
 
-            shows = trakt_api.traktRequest("shows/trending?limit=" + str(limit_show) + "&extended=full,images") or []
+            if sickbeard.TRAKT_ACCESS_TOKEN != '':
+                library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
 
-            library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
             for show in shows:
                 try:
+                    if 'show' not in show:
+                        show['show'] = show
+
                     if not Show.find(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
-                        if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
+                        if sickbeard.TRAKT_ACCESS_TOKEN != '':
+                            if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
+                                if not_liked_show:
+                                    if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
+                                        trending_shows += [show]
+                                else:
+                                    trending_shows += [show]
+                        else:
                             if not_liked_show:
                                 if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
                                     trending_shows += [show]
