@@ -14,15 +14,20 @@ before_install:
   - npm install -g bower
   - cd .build && npm install && bower install && cd ..
 
+install:
+    - pip install coveralls
+
 script:
   - cd .build && grunt travis && cd ..
-  - ./tests/all_tests.py
+  - coverage run --source sickbeard,sickrage,SickBeard.py tests/all_tests.py
 
 cache:
   directories:
     - $HOME/.cache/pip
     - .build/bower_components
     - .build/node_modules
+
+after_success: coveralls
 
 after_failure:
   - cat ./Logs/sickrage.log
