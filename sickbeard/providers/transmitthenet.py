@@ -108,6 +108,10 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                 try:
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                         torrent_table = html.find('table', {'id':'torrent_table'})
+                        if not torrent_table:
+                            logger.log(u"Data returned from %s does not contain any torrents" % self.name, logger.DEBUG)
+                            continue
+
                         torrent_rows = torrent_table.findAll('tr', {'class':'torrent'})
                         # Continue only if one Release is found
                         if not torrent_rows:
