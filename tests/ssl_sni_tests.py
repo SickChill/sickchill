@@ -52,7 +52,7 @@ class SniTests(unittest.TestCase):
         for provider in [provider for provider in providers.makeProviderList() if provider.name not in self.self_signed_cert_providers]:
             print 'Checking %s' % provider.name
             try:
-                requests.head(provider.url, verify=certifi.where(), timeout=5)
+                requests.head(provider.url, verify=certifi.old_where(), timeout=10)
             except requests.exceptions.Timeout:
                 pass
             except requests.exceptions.SSLError as error:
