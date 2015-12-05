@@ -3,7 +3,7 @@ language:
 
 python: 2.7.9
 
-sudo: false
+sudo: True
 
 branches:
   except:
