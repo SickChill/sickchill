@@ -2412,7 +2412,7 @@ var SICKRAGE = {
                     8: function(node) { return $(node).find("img").attr("alt"); },
                     9: function(node) { return $(node).find("img").attr("alt"); },
                 },
-                widgets: ['zebra', 'filter'],
+                widgets: ['zebra', 'filter', 'columnSelector'],
                 headers: {
                     0: { sorter: false, filter: false},
                     1: { sorter: 'showNames'},
@@ -2432,7 +2432,18 @@ var SICKRAGE = {
                     15: { sorter: false},
                     16: { sorter: false},
                     17: { sorter: false}
+                },
+                widgetOptions: {
+                    'columnSelector_mediaquery': false
                 }
+            });
+            $('#popover').popover({
+                placement: 'bottom',
+                html: true, // required if content has HTML
+                content: '<div id="popover-target"></div>'
+            }).on('shown.bs.popover', function () { // bootstrap popover event triggered when the popover opens
+                // call this function to copy the column selection code into the popover
+                $.tablesorter.columnSelector.attachTo( $('#massUpdateTable'), '#popover-target');
             });
         },
         backlogOverview: function() {
