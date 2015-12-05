@@ -89,7 +89,7 @@ class SceneTimeProvider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.select("#torrenttable table")
                         torrent_rows = torrent_table[0].select("tr") if torrent_table else []
 

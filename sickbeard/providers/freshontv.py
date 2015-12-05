@@ -127,7 +127,7 @@ class FreshOnTVProvider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(init_html, features=["html5lib", "permissive"]) as init_soup:
+                    with BS4Parser(init_html, 'html5lib') as init_soup:
 
                         # Check to see if there is more than 1 page of results
                         pager = init_soup.find('div', {'class': 'pager'})
@@ -175,7 +175,7 @@ class FreshOnTVProvider(TorrentProvider):
 
                     for data_response in data_response_list:
 
-                        with BS4Parser(data_response, features=["html5lib", "permissive"]) as html:
+                        with BS4Parser(data_response, 'html5lib') as html:
 
                             torrent_rows = html.findAll("tr", {"class": re.compile('torrent_[0-9]*')})
 

@@ -107,7 +107,7 @@ class TransmitTheNetProvider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', {'id': 'torrent_table'})
                         if not torrent_table:
                             logger.log(u"Data returned from %s does not contain any torrents" % self.name, logger.DEBUG)

@@ -116,7 +116,7 @@ class HDTorrentsProvider(TorrentProvider):
 
                 data = urllib.unquote(data[index:].encode('utf-8')).decode('utf-8').replace('\t', '')
 
-                with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                with BS4Parser(data, 'html5lib') as html:
                     if not html:
                         logger.log(u"No html data parsed from provider", logger.DEBUG)
                         continue

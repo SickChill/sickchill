@@ -94,7 +94,7 @@ class AlphaRatioProvider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', attrs={'id': 'torrent_table'})
                         torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 

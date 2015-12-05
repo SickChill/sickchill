@@ -107,7 +107,7 @@ class HoundDawgsProvider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(trimmedData, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(trimmedData, 'html5lib') as html:
                         result_table = html.find('table', {'id': 'torrent_table'})
 
                         if not result_table:

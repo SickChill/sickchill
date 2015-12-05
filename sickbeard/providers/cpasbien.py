@@ -59,7 +59,7 @@ class CpasbienProvider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         lin = erlin = 0
                         resultdiv = []
                         while erlin == 0:
