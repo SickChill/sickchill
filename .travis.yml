@@ -10,6 +10,9 @@ branches:
     - master
 
 before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y openssl libssl-dev
+  - openssl version
   - npm install -g grunt-cli
   - npm install -g bower
   - cd .build && npm install && bower install && cd ..
@@ -24,6 +27,7 @@ script:
 cache:
   directories:
     - $HOME/.cache/pip
+    - /etc/apt
     - .build/bower_components
     - .build/node_modules
 
