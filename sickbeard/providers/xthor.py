@@ -85,38 +85,46 @@ class XthorProvider(generic.TorrentProvider):
                 searchURL = self.urlsearch % (urllib.quote(search_string), self.categories)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
                 data = self.getURL(searchURL)
-
                 if not data:
                     continue
 
                 with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                     resultsTable = html.find("table", {"class" : "table2 table-bordered2"})
-                    if resultsTable:
-                        rows = resultsTable.findAll("tr")
-                        for row in rows:
-                            link = row.find("a", href=re.compile("details.php"))
-                            if link:
-                                title = link.text
-                                download_url = self.url + '/' + row.find("a", href=re.compile("download.php"))['href']
-                                # FIXME
-                                size = -1
-                                seeders = 1
-                                leechers = 0
+                    if not resultsTable:
+                        continue
 
-                                if not all([title, download_url]):
-                                    continue
+                    rows = resultsTable.findAll("tr")
+                    for row in rows:
+                        link = row.find("a", href=re.compile("details.php"))
+                        if not link:
+                            continue
 
-                                # Filter unseeded torrent
-                                # if seeders < self.minseed or leechers < self.minleech:
-                                #    if mode != 'RSS':
-                                #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                #    continue
+                        title = link.text
+                        download_item = row.find("a", href=re.compile("download.php"))
+                        if not download_item:
+                            continue
 
-                                item = title, download_url, size, seeders, leechers
-                                if mode != 'RSS':
-                                    logger.log(u"Found result: %s " % title, logger.DEBUG)
+                        download_url = self.url + '/' + download_item['href']
 
-                                items[mode].append(item)
+                        # FIXME
+                        size = -1
+                        seeders = 1
+                        leechers = 0
+
+                        if not all([title, download_url]):
+                            continue
+
+                        # Filter unseeded torrent
+                        # if seeders < self.minseed or leechers < self.minleech:
+                        #    if mode != 'RSS':
+                        #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                        #    continue
+
+                        item = title, download_url, size, seeders, leechers
+                        if mode != 'RSS':
+                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+
+                        items[mode].append(item)
 
             # For each search mode sort all the items by seeders if available if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
