@@ -127,6 +127,8 @@ def remove_non_release_groups(name):
         r'\.Renc$':          'searchre',
         r'-NZBGEEK$':        'searchre',
         r'-Siklopentan$':    'searchre',
+        r'-Chamele0n$':      'searchre',
+        r'-Obfuscated$':     'searchre',
         r'-\[SpastikusTV\]$':                 'searchre',
         r'-RP$':                             'searchre',
         r'-20-40$':                          'searchre',
