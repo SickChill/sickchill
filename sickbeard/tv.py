@@ -306,7 +306,7 @@ class TVShow(object):
             [self.indexerid])
 
         if sql_result:
-            last_airdate = datetime.date.fromordinal(sql_result[0]['airdate'])
+            last_airdate = datetime.date.fromordinal(sql_result[0][0])
             if last_airdate >= (update_date - graceperiod) and last_airdate <= (update_date + graceperiod):
                 return True
 
@@ -316,7 +316,7 @@ class TVShow(object):
             [self.indexerid])
 
         if sql_result:
-            next_airdate = datetime.date.fromordinal(sql_result[0]['airdate'])
+            next_airdate = datetime.date.fromordinal(sql_result[0][0])
             if next_airdate <= (update_date + graceperiod):
                 return True
 
