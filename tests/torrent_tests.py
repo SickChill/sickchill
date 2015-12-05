@@ -85,7 +85,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         if not html:
             return
 
-        soup = BeautifulSoup(html, features=["html5lib", "permissive"])
+        soup = BeautifulSoup(html, 'html5lib')
 
         torrent_table = soup.find('table', attrs={'class': 'data'})
         torrent_rows = torrent_table.find_all('tr') if torrent_table else []

@@ -1,13 +1,13 @@
 import re
 import os
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, element
 from datetime import date
 
 import sickbeard
 from sickbeard import helpers
 from sickrage.helper.encoding import ek
-
+from sickbeard import logger
 
 class imdbPopular(object):
     def __init__(self):
@@ -34,7 +34,7 @@ class imdbPopular(object):
         if not data:
             return None
 
-        soup = BeautifulSoup(data, 'html.parser')
+        soup = BeautifulSoup(data, 'html5lib')
         results = soup.find("table", {"class": "results"})
         rows = results.find_all("tr")
 
