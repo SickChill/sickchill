@@ -2396,6 +2396,10 @@ var SICKRAGE = {
             };
         },
         index: function() {
+            $('.resetsorting').on('click', function(){
+                $('table').trigger('filterReset');
+            });
+
             $("#massUpdateTable:has(tbody tr)").tablesorter({
                 sortList: [[1,0]],
                 textExtraction: {
