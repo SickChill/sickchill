@@ -806,10 +806,10 @@
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">Prowl API(s) listed here, separated by commas if applicable, will<br /> receive notifications for <b>all</b> shows.
+                                    <span class="component-desc">Prowl API(s) listed here, separated by commas if applicable, will<br> receive notifications for <b>all</b> shows.
                                                                  Your Prowl API key is available at:
                                                                  <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
-                                                                 https://www.prowlapp.com/api_settings.php</a><br />
+                                                                 https://www.prowlapp.com/api_settings.php</a><br>
                                                                  (This field may be blank except when testing.)</span>
                                 </label>
                             </div>
@@ -1760,7 +1760,7 @@
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">Email addresses listed here, separated by commas if applicable, will<br /> receive notifications for <b>all</b> shows.<br />
+                                    <span class="component-desc">Email addresses listed here, separated by commas if applicable, will<br> receive notifications for <b>all</b> shows.<br>
                                                                  (This field may be blank except when testing.)</span>
                                 </label>
                             </div>
