@@ -25,6 +25,7 @@ from __future__ import print_function
 
 import helper
 import media
+import providers
 import show
 import system
 import unittest
@@ -35,6 +36,7 @@ if __name__ == '__main__':
     TEST_MODULES = [
         helper,
         media,
+        providers,
         show,
         system,
     ]

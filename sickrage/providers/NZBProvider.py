@@ -32,7 +32,7 @@ class NZBProvider(GenericProvider):
         self.provider_type = GenericProvider.NZB
 
     def is_active(self):
-        return sickbeard.USE_NZBS and self.is_enabled()
+        return bool(sickbeard.USE_NZBS) and self.is_enabled()
 
     def _get_result(self, episodes):
         return NZBSearchResult(episodes)
@@ -40,7 +40,7 @@ class NZBProvider(GenericProvider):
     def _get_size(self, item):
         try:
             size = item.get('links')[1].get('length', -1)
-        except IndexError:
+        except (AttributeError, IndexError, TypeError):
             size = -1
 
         if not size:

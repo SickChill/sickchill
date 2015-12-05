@@ -25,7 +25,6 @@ from sickbeard import logger
 from sickbeard.classes import Proper, TorrentSearchResult
 from sickbeard.common import Quality
 from sickbeard.db import DBConnection
-from sickbeard.show_name_helpers import allPossibleShowNames
 from sickrage.helper.common import try_int
 from sickrage.helper.exceptions import ex
 from sickrage.providers.GenericProvider import GenericProvider
@@ -67,14 +66,7 @@ class TorrentProvider(GenericProvider):
         return results
 
     def is_active(self):
-        return sickbeard.USE_TORRENTS and self.is_enabled()
-
-    @staticmethod
-    def _clean_title(title):
-        if not title:
-            return ''
-
-        return title.replace(' ', '.')
+        return bool(sickbeard.USE_TORRENTS) and self.is_enabled()
 
     @property
     def _custom_trackers(self):
@@ -86,59 +78,8 @@ class TorrentProvider(GenericProvider):
 
         return ''
 
-    def _get_episode_search_strings(self, episode, add_string=''):
-        if not episode:
-            return []
-
-        search_string = {
-            'Episode': []
-        }
-
-        for show_name in set(allPossibleShowNames(episode.show)):
-            episode_string = show_name + ' '
-
-            if episode.show.air_by_date:
-                episode_string += str(episode.airdate).replace('-', ' ')
-            elif episode.show.sports:
-                episode_string += str(episode.airdate).replace('-', ' ')
-                episode_string += ('|', ' ')[len(self.proper_strings) > 1]
-                episode_string += episode.airdate.strftime('%b')
-            elif episode.show.anime:
-                episode_string += '%02d' % int(episode.scene_absolute_number)
-            else:
-                episode_string += sickbeard.config.naming_ep_type[2] % {
-                    'seasonnumber': episode.scene_season,
-                    'episodenumber': episode.scene_episode,
-                }
-
-            if add_string:
-                episode_string += ' ' + add_string
-
-            search_string['Episode'].append(episode_string.encode('utf-8').strip())
-
-        return [search_string]
-
     def _get_result(self, episodes):
         return TorrentSearchResult(episodes)
-
-    def _get_season_search_strings(self, episode):
-        search_string = {
-            'Season': []
-        }
-
-        for show_name in set(allPossibleShowNames(self.show)):
-            episode_string = show_name + ' '
-
-            if episode.show.air_by_date or episode.show.sports:
-                episode_string += str(episode.airdate).split('-')[0]
-            elif episode.show.anime:
-                episode_string += '%d' % int(episode.scene_absolute_number)
-            else:
-                episode_string += 'S%02d' % int(episode.scene_season)
-
-            search_string['Season'].append(episode_string.encode('utf-8').strip())
-
-        return [search_string]
 
     def _get_size(self, item):
         if isinstance(item, dict):
@@ -179,7 +120,7 @@ class TorrentProvider(GenericProvider):
             download_url = download_url.replace('&amp;', '&')
 
         if title:
-            title = self._clean_title(title)
+            title = title.replace(' ', '.')
 
         return title, download_url
 

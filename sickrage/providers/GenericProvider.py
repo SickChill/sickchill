@@ -17,6 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import sickbeard
 
 from base64 import b16encode, b32decode
 from datetime import datetime
@@ -30,6 +31,7 @@ from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, user_agent
 from sickbeard.db import DBConnection
 from sickbeard.helpers import download_file, getURL, remove_file_failed
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickbeard.show_name_helpers import allPossibleShowNames
 from sickbeard.tvcache import TVCache
 from sickrage.helper.common import replace_extension, sanitize_filename
 from sickrage.helper.encoding import ek
@@ -360,11 +362,14 @@ class GenericProvider:
         return False
 
     def is_enabled(self):
-        return self.enabled
+        return bool(self.enabled)
 
     @staticmethod
     def make_id(name):
-        return re.sub(r'[^\w\d_]', '_', name.strip().lower())
+        if not name:
+            return ''
+
+        return re.sub(r'[^\w\d_]', '_', str(name).strip().lower())
 
     def search_rss(self, episodes):
         return self.cache.findNeededEpisodes(episodes)
@@ -385,10 +390,55 @@ class GenericProvider:
         return SearchResult(episodes)
 
     def _get_episode_search_strings(self, episode, add_string=''):
-        return []
+        if not episode:
+            return []
+
+        search_string = {
+            'Episode': []
+        }
+
+        for show_name in set(allPossibleShowNames(episode.show)):
+            episode_string = show_name + ' '
+
+            if episode.show.air_by_date:
+                episode_string += str(episode.airdate).replace('-', ' ')
+            elif episode.show.sports:
+                episode_string += str(episode.airdate).replace('-', ' ')
+                episode_string += ('|', ' ')[len(self.proper_strings) > 1]
+                episode_string += episode.airdate.strftime('%b')
+            elif episode.show.anime:
+                episode_string += '%02d' % int(episode.scene_absolute_number)
+            else:
+                episode_string += sickbeard.config.naming_ep_type[2] % {
+                    'seasonnumber': episode.scene_season,
+                    'episodenumber': episode.scene_episode,
+                }
+
+            if add_string:
+                episode_string += ' ' + add_string
+
+            search_string['Episode'].append(episode_string.encode('utf-8').strip())
+
+        return [search_string]
 
     def _get_season_search_strings(self, episode):
-        return []
+        search_string = {
+            'Season': []
+        }
+
+        for show_name in set(allPossibleShowNames(self.show)):
+            episode_string = show_name + ' '
+
+            if episode.show.air_by_date or episode.show.sports:
+                episode_string += str(episode.airdate).split('-')[0]
+            elif episode.show.anime:
+                episode_string += '%d' % int(episode.scene_absolute_number)
+            else:
+                episode_string += 'S%02d' % int(episode.scene_season)
+
+            search_string['Season'].append(episode_string.encode('utf-8').strip())
+
+        return [search_string]
 
     def _get_size(self, item):
         return -1
@@ -397,18 +447,28 @@ class GenericProvider:
         return ''
 
     def _get_title_and_url(self, item):
+        if not item:
+            return '', ''
+
         title = item.get('title', '')
         url = item.get('link', '')
 
         if title:
             title = u'' + title.replace(' ', '.')
+        else:
+            title = ''
 
         if url:
             url = url.replace('&amp;', '&').replace('%26tr%3D', '&tr=')
+        else:
+            url = ''
 
         return title, url
 
     def _make_url(self, result):
+        if not result:
+            return '', ''
+
         urls = []
         filename = u''
 
