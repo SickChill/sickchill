@@ -150,7 +150,9 @@ inc_top.mako
 }
 
 #contentWrapper {
-/*	background: url("../images/bg.png") repeat 0 0 transparent; */
+/*	background: url("../images/bg.png") repeat 0 0 transparent; 
+	background: #B9B9B9;
+*/
 }
 
 [class^="icon-"],
@@ -645,7 +647,7 @@ span.show-option {
 }
 
 .show-container {
-    margin: 4px;
+    margin: 3px;
     background-color: #F3F3F3;
     border: 5px solid #F3F3F3;
     overflow: hidden;
@@ -653,7 +655,7 @@ span.show-option {
 }
 
 .show-details {
-    height: 32px;
+    height: 24px;
     overflow: hidden;
 }
 
@@ -684,8 +686,8 @@ span.show-option {
 }
 
 .show-container .ui-widget-content {
-    border-top: 1px solid #111;
-    border-bottom: 1px solid #111;
+    border-top: 1px solid #999999;
+    border-bottom: 1px solid #999999;
     border-left: 0px;
     border-right: 0px;
 }
@@ -708,7 +710,8 @@ span.show-option {
     overflow: hidden;
     white-space: nowrap;
     font-size: 11px;
-    margin: 4px 4px 0px 4px;
+    margin: 0px 4px 0px 0px;
+	font-weight: bold;
 }
 
 .show-title:after {
@@ -730,8 +733,9 @@ span.show-option {
     position: relative;
     overflow: hidden;
     white-space: nowrap;
-    font-size: 11px;
-    margin: 0px 4px 4px 4px;
+    font-size: 10px;
+    margin: 0px;
+	margin-top: -4px;
     color: #949494;
 }
 
@@ -777,14 +781,14 @@ span.show-option {
     font-size: 11px;
     text-align: left;
     display: block;
-    margin-left: 4px;
+    margin-left: 0px;
 }
 
 .show-quality {
     font-size: 11px;
     text-align: right;
     display: block;
-    margin-right: 4px;
+    margin-right: 0px;
 }
 
 #sort-by {
