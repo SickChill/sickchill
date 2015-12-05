@@ -2794,6 +2794,10 @@ var SICKRAGE = {
                     });
                 });
 
+                $('#traktlistselection').on('change', function() {
+                    window.location.href = srRoot + '/addShows/trendingShows/?traktList=' + this.value;
+                });
+
                 $('#container').imagesLoaded(function() {
                     $('#container').isotope({
                         sortBy: 'original-order',
@@ -3135,8 +3139,10 @@ var SICKRAGE = {
             );
         },
         trendingShows: function(){
+            var traktList = $('#traktList').val();
+
             $('#trendingShows').loadRemoteShows(
-                '/addShows/getTrendingShows/',
+                '/addShows/getTrendingShows/?traktList=' + traktList,
                 'Loading trending shows...',
                 'Trakt timed out, refresh page to try again'
             );

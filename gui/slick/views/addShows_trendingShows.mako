@@ -1,12 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
-    import datetime
-    import re
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
-    from sickbeard import sbdatetime
-    from sickbeard.helpers import anon_url
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
@@ -46,9 +40,26 @@
         <option value="asc" selected="selected">Asc</option>
         <option value="desc">Desc</option>
     </select>
+
+    <span style="margin-left:12px">Select Trakt List:</span>
+    <select id="traktlistselection" class="form-control form-control-inline input-sm">
+        <option value="anticipated" ${' selected="selected"' if traktList == "anticipated" else ''}>Most Anticipated</option>
+        <option value="trending" ${' selected="selected"' if traktList == "trending" else ''}>Trending</option>
+        <option value="popular" ${' selected="selected"' if traktList == "popular" else ''}>Popular</option>
+        <option value="watched" ${' selected="selected"' if traktList == "watched" else '' }>Most Watched</option>
+        <option value="played" ${' selected="selected"' if traktList == "played" else '' }>Most Played</option>
+        <option value="collected" ${' selected="selected"' if traktList == "collected" else ''}>Most Collected</option>
+% if sickbeard.TRAKT_ACCESS_TOKEN:
+        <option value="recommended"  ${' selected="selected"' if traktList == "recommended" else ''}>Recommended</option>
+% endif
+    </select>
 </div>
 
 <br>
 <div id="trendingShows"></div>
 <br>
+
+% if traktList:
+    <input type="hidden" name="traktList" id="traktList" value="${traktList}" />
+% endif
 </%block>
