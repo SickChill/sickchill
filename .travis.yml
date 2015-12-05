@@ -3,15 +3,13 @@ language:
 
 python: 2.7.9
 
-sudo: True
+sudo: false
 
 branches:
   except:
     - master
 
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y openssl libssl-dev
   - openssl version
   - npm install -g grunt-cli
   - npm install -g bower
