@@ -1,13 +1,12 @@
 import re
 import os
 import requests
-from bs4 import BeautifulSoup, element
+from bs4 import BeautifulSoup
 from datetime import date
 
 import sickbeard
 from sickbeard import helpers
 from sickrage.helper.encoding import ek
-from sickbeard import logger
 
 class imdbPopular(object):
     def __init__(self):
