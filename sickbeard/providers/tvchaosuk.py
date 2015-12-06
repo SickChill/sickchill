@@ -144,7 +144,7 @@ class TVChaosUKProvider(TorrentProvider):
                     torrent_table = html.find(id='listtorrents').find_all('tr')
                     for torrent in torrent_table:
                         try:
-                            title = torrent.find(attrs={'class':'tooltip-content'}).text.strip()
+                            title = torrent.find(attrs={'class':'tooltip-target'}).text.strip()
                             download_url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
                             seeders = int(torrent.find(title='Seeders').text.strip())
                             leechers = int(torrent.find(title='Leechers').text.strip())
