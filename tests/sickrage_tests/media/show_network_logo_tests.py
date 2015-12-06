@@ -43,7 +43,7 @@ class ShowNetworkLogoTests(GenericMediaTests):
         Test get_default_media_name
         """
 
-        self.assertEqual(ShowNetworkLogo(0, '').get_default_media_name(), 'network/nonetwork.png')
+        self.assertEqual(ShowNetworkLogo(0, '').get_default_media_name(), os.path.join('network', 'nonetwork.png'))
 
 
 if __name__ == '__main__':
