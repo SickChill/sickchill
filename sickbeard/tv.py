@@ -302,21 +302,21 @@ class TVShow(object):
         # get latest aired episode to compare against today - graceperiod and today + graceperiod
         myDB = db.DBConnection()
         sql_result = myDB.select(
-            "SELECT MAX(airdate) FROM tv_episodes WHERE showid = ? AND season > '0' AND airdate > '1' AND status > '1'",
+            "SELECT IFNULL(MAX(airdate), 0) as last_aired FROM tv_episodes WHERE showid = ? AND season > 0 AND airdate > 1 AND status > 1",
             [self.indexerid])
 
-        if sql_result:
-            last_airdate = datetime.date.fromordinal(sql_result[0][0])
+        if sql_result and sql_result[0]['last_aired'] != 0:
+            last_airdate = datetime.date.fromordinal(sql_result[0]['last_aired'])
             if last_airdate >= (update_date - graceperiod) and last_airdate <= (update_date + graceperiod):
                 return True
 
         # get next upcoming UNAIRED episode to compare against today + graceperiod
         sql_result = myDB.select(
-            "SELECT MIN(airdate) FROM tv_episodes WHERE showid = ? AND season > '0' AND airdate > '1' AND status = '1'",
+            "SELECT IFNULL(MIN(airdate), 0) as airing_next FROM tv_episodes WHERE showid = ? AND season > 0 AND airdate > 1 AND status = 1",
             [self.indexerid])
 
-        if sql_result:
-            next_airdate = datetime.date.fromordinal(sql_result[0][0])
+        if sql_result and sql_result[0]['airing_next'] != 0:
+            next_airdate = datetime.date.fromordinal(sql_result[0]['airing_next'])
             if next_airdate <= (update_date + graceperiod):
                 return True
 
