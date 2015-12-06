@@ -2396,6 +2396,10 @@ var SICKRAGE = {
             };
         },
         index: function() {
+            $('.resetsorting').on('click', function(){
+                $('table').trigger('filterReset');
+            });
+
             $("#massUpdateTable:has(tbody tr)").tablesorter({
                 sortList: [[1,0]],
                 textExtraction: {
@@ -2408,7 +2412,7 @@ var SICKRAGE = {
                     8: function(node) { return $(node).find("img").attr("alt"); },
                     9: function(node) { return $(node).find("img").attr("alt"); },
                 },
-                widgets: ['zebra', 'filter'],
+                widgets: ['zebra', 'filter', 'columnSelector'],
                 headers: {
                     0: { sorter: false, filter: false},
                     1: { sorter: 'showNames'},
@@ -2428,7 +2432,18 @@ var SICKRAGE = {
                     15: { sorter: false},
                     16: { sorter: false},
                     17: { sorter: false}
+                },
+                widgetOptions: {
+                    'columnSelector_mediaquery': false
                 }
+            });
+            $('#popover').popover({
+                placement: 'bottom',
+                html: true, // required if content has HTML
+                content: '<div id="popover-target"></div>'
+            }).on('shown.bs.popover', function () { // bootstrap popover event triggered when the popover opens
+                // call this function to copy the column selection code into the popover
+                $.tablesorter.columnSelector.attachTo( $('#massUpdateTable'), '#popover-target');
             });
         },
         backlogOverview: function() {
@@ -2794,6 +2809,10 @@ var SICKRAGE = {
                     });
                 });
 
+                $('#traktlistselection').on('change', function() {
+                    window.location.href = srRoot + '/addShows/trendingShows/?traktList=' + this.value;
+                });
+
                 $('#container').imagesLoaded(function() {
                     $('#container').isotope({
                         sortBy: 'original-order',
@@ -3135,8 +3154,10 @@ var SICKRAGE = {
             );
         },
         trendingShows: function(){
+            var traktList = $('#traktList').val();
+
             $('#trendingShows').loadRemoteShows(
-                '/addShows/getTrendingShows/',
+                '/addShows/getTrendingShows/?traktList=' + traktList,
                 'Loading trending shows...',
                 'Trakt timed out, refresh page to try again'
             );

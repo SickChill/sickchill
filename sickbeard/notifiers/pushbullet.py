@@ -65,7 +65,7 @@ class PushbulletNotifier(object):
 
     def _sendPushbullet(self, pushbullet_api=None, pushbullet_device=None, event=None, message=None):
 
-        if not (sickbeard.USE_PUSHBULLET or event is 'Test' or event is None):
+        if not (sickbeard.USE_PUSHBULLET or event == 'Test' or event is None):
             return False
 
         pushbullet_api = pushbullet_api or sickbeard.PUSHBULLET_API

@@ -46,9 +46,7 @@
                             <label for="shows">
                                 <span class="component-title">Selected Shows</span>
                                 <span class="component-desc">
-                                    % for curName in sorted(showNames):
-                                    <span style="font-size: 14px;">${curName}</span><br>
-                                    % endfor
+                                    <span style="font-size: 14px;">${', '.join(sorted(showNames))}</span><br>
                                 </span>
                             </label>
                         </div>
@@ -94,7 +92,6 @@
                                             initial_quality = int(quality_value)
                                         else:
                                             initial_quality = common.SD
-                                        endif
 
                                         anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
                                     %>
@@ -138,8 +135,8 @@
                                 <span class="component-desc">
                                     <select id="edit_archive_firstmatch" name="archive_firstmatch" class="form-control form-control-inline input-sm">
                                         <option value="keep" ${('', 'selected="selected"')[archive_firstmatch_value is None]}>&lt; Keep &gt;</option>
-                                        <option value="enable" ${('', 'selected="selected"')[archive_firstmatch_value is 1]}>Yes</option>
-                                        <option value="disable" ${('', 'selected="selected"')[archive_firstmatch_value is 0]}>No</option>
+                                        <option value="enable" ${('', 'selected="selected"')[archive_firstmatch_value == 1]}>Yes</option>
+                                        <option value="disable" ${('', 'selected="selected"')[archive_firstmatch_value == 0]}>No</option>
                                     </select><br>
                                     Archive episode after the first best match is found from your archive quality list.
                                 </span>

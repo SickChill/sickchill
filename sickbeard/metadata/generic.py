@@ -231,7 +231,7 @@ class GenericMetadata(object):
     def get_season_all_banner_path(self, show_obj):
         return ek(os.path.join, show_obj.location, self.season_all_banner_name)
 
-    # pylint: disable=W0613,R0201
+    # pylint: disable=unused-argument,no-self-use
     def _show_data(self, show_obj):
         """
         This should be overridden by the implementing class. It should
@@ -239,7 +239,7 @@ class GenericMetadata(object):
         """
         return None
 
-    # pylint: disable=W0613,R0201
+    # pylint: disable=unused-argument,no-self-use
     def _ep_data(self, ep_obj):
         """
         This should be overridden by the implementing class. It should

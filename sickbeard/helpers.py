@@ -67,7 +67,7 @@ import json
 
 shutil.copyfile = shutil_custom.copyfile_custom
 
-# pylint: disable=W0212
+# pylint: disable=protected-access
 # Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
 
@@ -127,6 +127,8 @@ def remove_non_release_groups(name):
         r'\.Renc$':          'searchre',
         r'-NZBGEEK$':        'searchre',
         r'-Siklopentan$':    'searchre',
+        r'-Chamele0n$':      'searchre',
+        r'-Obfuscated$':     'searchre',
         r'-\[SpastikusTV\]$':                 'searchre',
         r'-RP$':                             'searchre',
         r'-20-40$':                          'searchre',
@@ -248,51 +250,6 @@ def makeDir(path):
         except OSError:
             return False
     return True
-
-
-def searchDBForShow(regShowName, log=False):
-    """
-    Searches if show names are present in the DB
-
-    :param regShowName: list of show names to look for
-    :param log: Boolean, log debug results of search (defaults to False)
-    :return: Indexer ID of found show
-    """
-
-    showNames = [re.sub('[. -]', ' ', regShowName)]
-
-    yearRegex = r"([^()]+?)\s*(\()?(\d{4})(?(2)\))$"
-
-    myDB = db.DBConnection()
-    for showName in showNames:
-
-        sqlResults = myDB.select("SELECT * FROM tv_shows WHERE show_name LIKE ?",
-                                 [showName])
-
-        if len(sqlResults) == 1:
-            return int(sqlResults[0]["indexer_id"])
-        else:
-            # if we didn't get exactly one result then try again with the year stripped off if possible
-            match = re.match(yearRegex, showName)
-            if match and match.group(1):
-                if log:
-                    logger.log(u"Unable to match original name but trying to manually strip and specify show year",
-                               logger.DEBUG)
-                sqlResults = myDB.select(
-                    "SELECT * FROM tv_shows WHERE (show_name LIKE ?) AND startyear = ?",
-                    [match.group(1) + '%', match.group(3)])
-
-            if len(sqlResults) == 0:
-                if log:
-                    logger.log(u"Unable to match a record in the DB for " + showName, logger.DEBUG)
-                continue
-            elif len(sqlResults) > 1:
-                if log:
-                    logger.log(u"Multiple results for " + showName + " in the DB, unable to match show name",
-                               logger.DEBUG)
-                continue
-            else:
-                return int(sqlResults[0]["indexer_id"])
 
 
 def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
@@ -859,7 +816,7 @@ def create_https_certificates(ssl_cert, ssl_key):
 
     # Save the key and certificate to disk
     try:
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # Module has no member
         io.open(ssl_key, 'wb').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         io.open(ssl_cert, 'wb').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
@@ -1097,8 +1054,8 @@ def get_show(name, tryIndexers=False):
 
         # try indexers
         if not showObj and tryIndexers:
-            showObj = Show.find(sickbeard.showList,
-                                      searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
+            showObj = Show.find(
+                sickbeard.showList, searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
 
         # try scene exceptions
         if not showObj:
@@ -1324,6 +1281,7 @@ def mapIndexersToShow(showObj):
             logger.log(u"Found indexer mapping in cache for show: " + showObj.name, logger.DEBUG)
             mapped[int(curResult['mindexer'])] = int(curResult['mindexer_id'])
             return mapped
+            break
     else:
         sql_l = []
         for indexer in sickbeard.indexerApi().indexers:
@@ -1420,7 +1378,7 @@ def _setUpSession(session, headers):
     session = CacheControl(sess=session, cache=caches.FileCache(ek(os.path.join, cache_dir, 'sessions'), use_dir_lock=True), cache_etags=False)
 
     # request session clear residual referer
-    # pylint: disable=C0325
+    # pylint: disable=superfluous-parens
     # These extra parens are necessary!
     if 'Referer' in session.headers and 'Referer' not in (headers or {}):
         session.headers.pop('Referer')
@@ -1431,7 +1389,7 @@ def _setUpSession(session, headers):
         session.headers.update(headers)
 
     # request session ssl verify
-    session.verify = certifi.where() if sickbeard.SSL_VERIFY else False
+    session.verify = certifi.old_where() if sickbeard.SSL_VERIFY else False
 
     # request session proxies
     if 'Referer' not in session.headers and sickbeard.PROXY_SETTING:

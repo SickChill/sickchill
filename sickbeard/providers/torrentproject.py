@@ -79,7 +79,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                         logger.log(u"Torrent has less than 10 seeds getting dyn trackers: " + title, logger.DEBUG)
                         trackerUrl = self.urls['api'] + "" + t_hash + "/trackers_json"
                         jdata = self.getURL(trackerUrl, json=True)
-                        assert jdata is not "maintenance"
+                        assert jdata != "maintenance"
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
                     except (Exception, AssertionError):
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + self._custom_trackers

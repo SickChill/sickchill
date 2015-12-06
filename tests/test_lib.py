@@ -18,8 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=C0301
-# Line too long
+# pylint: disable=line-too-long
 
 """
 Create a test database for testing.
@@ -55,9 +54,7 @@ from sickbeard.tv import TVEpisode
 import shutil_custom  # pylint: disable=import-error
 import sickbeard
 
-# pylint: disable=F0401
-# Unable to import
-
+# pylint: disable=import-error
 
 shutil.copyfile = shutil_custom.copyfile_custom
 
@@ -134,8 +131,7 @@ create_test_log_folder()
 sickbeard.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
 create_test_cache_folder()
 
-# pylint: disable=E1103
-# Has no member
+# pylint: disable=no-member
 sickbeard.logger.initLogging(False, True)
 
 
@@ -164,7 +160,7 @@ def _fake_specify_ep(self, season, episode):
     :param episode: Episode to search for  ...not used
     """
     _ = self, season, episode  # throw away unused variables
-    pass
+
 
 # the real one tries to contact TVDB just stop it from getting more info on the ep
 TVEpisode.specifyEpisode = _fake_specify_ep
@@ -208,8 +204,7 @@ class TestCacheDBConnection(TestDBConnection, object):
     Test connecting to the cache database.
     """
     def __init__(self, provider_name):
-        # pylint: disable=W0233
-        # Init method from non-direct base class
+        # pylint: disable=non-parent-init-called
         db.DBConnection.__init__(self, os.path.join(TEST_DIR, TEST_CACHE_DB_NAME))
 
         # Create the table if it's not already there
@@ -218,7 +213,7 @@ class TestCacheDBConnection(TestDBConnection, object):
                 sql = "CREATE TABLE [" + provider_name + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)"
                 self.connection.execute(sql)
                 self.connection.commit()
-        # pylint: disable=W0703
+        # pylint: disable=broad-except
         # Catching too general exception
         except Exception as error:
             if str(error) != "table [" + provider_name + "] already exists":
@@ -233,7 +228,7 @@ class TestCacheDBConnection(TestDBConnection, object):
             sql = "CREATE TABLE lastUpdate (provider TEXT, time NUMERIC);"
             self.connection.execute(sql)
             self.connection.commit()
-        # pylint: disable=W0703
+        # pylint: disable=broad-except
         # Catching too general exception
         except Exception as error:
             if str(error) != "table lastUpdate already exists":
@@ -295,7 +290,7 @@ def setup_test_episode_file():
         with open(FILE_PATH, 'wb') as ep_file:
             ep_file.write("foo bar")
             ep_file.flush()
-    # pylint: disable=W0703
+    # pylint: disable=broad-except
     # Catching too general exception
     except Exception:
         print "Unable to set up test episode"

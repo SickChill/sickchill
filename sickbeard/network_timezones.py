@@ -94,7 +94,7 @@ def load_network_dict():
         d = dict(cur_network_list)
     except Exception:
         d = {}
-    # pylint: disable=W0603
+    # pylint: disable=global-statement
     global network_dict
     network_dict = d
 

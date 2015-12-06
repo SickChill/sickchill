@@ -111,7 +111,7 @@ def hasFailed(release, size, provider="%"):
 
     myDB = db.DBConnection('failed.db')
     sql_results = myDB.select(
-        "SELECT * FROM failed WHERE release=? AND size=? AND provider LIKE ?",
+        "SELECT release FROM failed WHERE release=? AND size=? AND provider LIKE ? LIMIT 1",
         [release, size, provider])
 
     return (len(sql_results) > 0)
@@ -120,7 +120,7 @@ def hasFailed(release, size, provider="%"):
 def revertEpisode(epObj):
     """Restore the episodes of a failed download to their original state"""
     myDB = db.DBConnection('failed.db')
-    sql_results = myDB.select("SELECT * FROM history WHERE showid=? AND season=?",
+    sql_results = myDB.select("SELECT episode, old_status FROM history WHERE showid=? AND season=?",
                               [epObj.show.indexerid, epObj.season])
 
     history_eps = dict([(res["episode"], res) for res in sql_results])

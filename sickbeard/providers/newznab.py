@@ -19,7 +19,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=R0902,R0913
+# pylint: disable=too-many-instance-attributes,too-many-arguments
 
 import os
 import re
@@ -36,7 +36,7 @@ from sickbeard import tvcache
 from sickbeard import db
 from sickbeard.common import Quality
 from sickbeard.providers import generic
-from sickrage.helper.encoding import ek
+from sickrage.helper.encoding import ek, ss
 from sickrage.show.Show import Show
 from sickrage.helper.common import try_int
 from sickbeard.common import USER_AGENT
@@ -214,27 +214,20 @@ class NewznabProvider(generic.NZBProvider):
             return self._checkAuth()
 
         try:
-            err_code = int(data.error.attrs['code'])
             err_desc = data.error.attrs['description']
-            if not (err_code or err_desc):
+            if not err_desc:
                 raise
         except (AssertionError, AttributeError, ValueError):
             return self._checkAuth()
 
-        if err_code == 100:
-            logger.log(u'Your API key for %s is incorrect, please check your config.' % self.name)
-        elif err_code == 101:
-            logger.log(u'Your account on %s has been suspended, contact the administrator.' % self.name)
-        elif err_code == 102:
-            logger.log(u'Your account is not allowed to use the API on %s, contact the administrator' % self.name)
-        elif err_code == 500:
-            logger.log(u'Your account for %s has reached the api limit' % self.name)
-        else:
-            logger.log(u'Unknown error: %s' % err_desc, logger.ERROR)
+        # This is all we should really need, the code is irrelevant
+        # Provider name is the thread name, and this should INFO,
+        # DEBUG hides from the user, WARNING nags the user, ERROR spams the tracker
+        logger.log(ss(err_desc))
 
         return False
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=R0913,R0914
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=too-many-arguments,too-many-locals
         """
         Searches indexer using the params in search_params, either for latest releases, or a string/id search
         Returns: list of results in dict form

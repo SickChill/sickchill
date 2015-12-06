@@ -9,11 +9,32 @@
 </%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
+
+
+<table style="width: 100%;" class="home-header">
+    <tr>
+        <td nowrap>
+            % if not header is UNDEFINED:
+                <h1 class="header" style="margin: 0;">${header}</h1>
+            % else:
+                <h1 class="title" style="margin: 0;">${title}</h1>
+            % endif
+        </td>
+        <td align="right">
+            <div>
+                <input class="btn btn-inline" type="button" value="Edit Selected" id="submitMassEdit" />
+                <input class="btn btn-inline" type="button" value="Submit" id="submitMassUpdate" />
+                <span class="show-option">
+                    <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
+                </span>
+                <span class="show-option">
+                    <button type="button" class="resetsorting btn btn-inline">Clear Filter(s)</button>
+                </span>
+            </div>
+        </td>
+    </tr>
+</table>
+
 <form name="massUpdateForm" method="post" action="massUpdate">
 
 <table id="massUpdateTable" class="tablesorter" cellspacing="1" border="0" cellpadding="0">

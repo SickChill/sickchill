@@ -16,6 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# pylint: disable=abstract-method,too-many-lines
 
 import io
 import os
@@ -86,6 +87,7 @@ from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
+from mako.runtime import UNDEFINED
 
 mako_lookup = None
 mako_cache = None
@@ -93,9 +95,9 @@ mako_path = None
 
 
 def get_lookup():
-    global mako_lookup  # pylint: disable=W0603
-    global mako_cache  # pylint: disable=W0603
-    global mako_path  # pylint: disable=W0603
+    global mako_lookup  # pylint: disable=global-statement
+    global mako_cache  # pylint: disable=global-statement
+    global mako_path  # pylint: disable=global-statement
 
     if mako_path is None:
         mako_path = ek(os.path.join, sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")
@@ -147,6 +149,7 @@ class PageTemplate(MakoTemplate):
         self.arguments['submenu'] = []
         self.arguments['controller'] = "FixME"
         self.arguments['action'] = "FixME"
+        self.arguments['show'] = UNDEFINED
 
     def render(self, *args, **kwargs):
         for key in self.arguments:
@@ -841,12 +844,12 @@ class Home(WebRoot):
 
     @staticmethod
     def twitterStep1():
-        return notifiers.twitter_notifier._get_authorization()
+        return notifiers.twitter_notifier._get_authorization()  # pylint: disable=protected-access
 
     @staticmethod
     def twitterStep2(key):
 
-        result = notifiers.twitter_notifier._get_credentials(key)
+        result = notifiers.twitter_notifier._get_credentials(key)  # pylint: disable=protected-access
         logger.log(u"result: " + str(result))
         if result:
             return "Key verification successful"
@@ -1008,7 +1011,7 @@ class Home(WebRoot):
                 else:
                     NotifyList = dict(ast.literal_eval(r['notify_list']))
 
-            data[r['show_id']] = {'id': r['show_id'],'name': r['show_name'],
+            data[r['show_id']] = {'id': r['show_id'], 'name': r['show_name'],
                                   'list': NotifyList['emails'],
                                   'prowl_notify_list': NotifyList['prowlAPIs']
                                  }
@@ -1024,19 +1027,19 @@ class Home(WebRoot):
 
         # Get current data
         for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_id = ?", [show]):
-            if (subs['notify_list'] and len(subs['notify_list']) > 0):
+            if subs['notify_list'] and len(subs['notify_list']) > 0:
                 # First, handle legacy format (emails only)
                 if not subs['notify_list'][0] == '{':
                     entries['emails'] = subs['notify_list']
                 else:
                     entries = dict(ast.literal_eval(subs['notify_list']))
 
-        if (emails is not None):
+        if emails is not None:
             entries['emails'] = emails
             if not myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
                 return 'ERROR'
 
-        if (prowlAPIs is not None):
+        if prowlAPIs is not None:
             entries['prowlAPIs'] = prowlAPIs
             if not myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
                 return 'ERROR'
@@ -1103,8 +1106,9 @@ class Home(WebRoot):
                 rootDir[subject] = helpers.getDiskSpaceUsage(subject)
 
         t = PageTemplate(rh=self, filename="status.mako")
-        return t.render(title='Status', header='Status', topmenu='system', tvdirFree=tvdirFree, rootDir=rootDir,
-                controller="home", action="status")
+        return t.render(title='Status', header='Status', topmenu='system',
+                        tvdirFree=tvdirFree, rootDir=rootDir,
+                        controller="home", action="status")
 
     def shutdown(self, pid=None):
         if not Shutdown.stop(pid):
@@ -1138,7 +1142,7 @@ class Home(WebRoot):
             return self.redirect('/home/')
 
         checkversion = CheckVersion()
-        backup = checkversion.updater and checkversion._runbackup()
+        backup = checkversion.updater and checkversion._runbackup()  # pylint: disable=protected-access
 
         if backup is True:
             if branch:
@@ -1212,7 +1216,7 @@ class Home(WebRoot):
         try:
             showLoc = (showObj.location, True)
         except ShowDirectoryNotFoundException:
-            showLoc = (showObj._location, False)
+            showLoc = (showObj._location, False)  # pylint: disable=protected-access
 
         show_message = ''
 
@@ -1494,8 +1498,8 @@ class Home(WebRoot):
 
             location = location.decode('UTF-8')
             # if we change location clear the db of episodes, change it, write to db, and rescan
-            if ek(os.path.normpath, showObj._location) != ek(os.path.normpath, location):
-                logger.log(ek(os.path.normpath, showObj._location) + " != " + ek(os.path.normpath, location), logger.DEBUG)
+            if ek(os.path.normpath, showObj._location) != ek(os.path.normpath, location):  # pylint: disable=protected-access
+                logger.log(ek(os.path.normpath, showObj._location) + " != " + ek(os.path.normpath, location), logger.DEBUG)  # pylint: disable=protected-access
                 if not ek(os.path.isdir, location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
                     errors.append("New location <tt>%s</tt> does not exist" % location)
 
@@ -1898,12 +1902,12 @@ class Home(WebRoot):
 
             # this is probably the worst possible way to deal with double eps but I've kinda painted myself into a corner here with this stupid database
             ep_result = myDB.select(
-                "SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND 5=5",
+                "SELECT location FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND 5=5",
                 [show, epInfo[0], epInfo[1]])
             if not ep_result:
                 logger.log(u"Unable to find an episode for " + curEp + ", skipping", logger.WARNING)
                 continue
-            related_eps_result = myDB.select("SELECT * FROM tv_episodes WHERE location = ? AND episode != ?",
+            related_eps_result = myDB.select("SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?",
                                              [ep_result[0]["location"], epInfo[1]])
 
             root_ep_obj = show_obj.getEpisode(int(epInfo[0]), int(epInfo[1]))
@@ -2218,7 +2222,7 @@ class HomePostProcess(Home):
         return t.render(title='Post Processing', header='Post Processing', topmenu='home', controller="home", action="postProcess")
 
     # TODO: PR to NZBtoMedia so that we can rename dir to proc_dir, and type to proc_type. Using names of builtins as var names is bad
-    # pylint: disable=W0622
+    # pylint: disable=redefined-builtin
     def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
                        is_priority=None, delete_on="0", failed="0", type="auto", *args, **kwargs):
 
@@ -2372,7 +2376,7 @@ class HomeAddShows(Home):
                 }
 
                 # see if the folder is in KODI already
-                dirResults = myDB.select("SELECT * FROM tv_shows WHERE location = ?", [cur_path])
+                dirResults = myDB.select("SELECT indexer_id FROM tv_shows WHERE location = ? LIMIT 1", [cur_path])
 
                 if dirResults:
                     cur_dir['added_already'] = True
@@ -2451,72 +2455,64 @@ class HomeAddShows(Home):
             controller="addShows", action="newShow"
         )
 
-    def recommendedShows(self):
+    def trendingShows(self, traktList=None):
         """
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
-        t = PageTemplate(rh=self, filename="addShows_recommendedShows.mako")
-        return t.render(title="Recommended Shows", header="Recommended Shows", enable_anime_options=False,
-                controller="addShows", action="recommendedShows")
+        if traktList is None:
+            traktList = ""
 
-    def getRecommendedShows(self):
-        t = PageTemplate(rh=self, filename="trendingShows.mako")
+        traktList = traktList.lower()
 
-        trending_shows = []
+        if traktList == "trending":
+            page_title = "Trending Shows"
+        elif traktList == "popular":
+            page_title = "Popular Shows"
+        elif traktList == "anticipated":
+            page_title = "Most Anticipated Shows"
+        elif traktList == "collected":
+            page_title = "Most Collected Shows"
+        elif traktList == "watched":
+            page_title = "Most Watched Shows"
+        elif traktList == "played":
+            page_title = "Most Played Shows"
+        elif traktList == "recommended":
+            page_title = "Recommended Shows"
+        else:
+            page_title = "Most Anticipated Shows"
 
-        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
-
-        try:
-            not_liked_show = ""
-            if sickbeard.TRAKT_BLACKLIST_NAME is not None and sickbeard.TRAKT_BLACKLIST_NAME:
-                not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
-            else:
-                logger.log(u"trending blacklist name is empty", logger.DEBUG)
-
-            shows = trakt_api.traktRequest("recommendations/shows?extended=full,images") or []
-
-            library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
-
-            for show_detail in shows:
-                show = {'show': show_detail}
-                try:
-                    if not Show.find(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
-                        if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
-                            if not_liked_show:
-                                if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
-                                    trending_shows += [show]
-                            else:
-                                trending_shows += [show]
-
-                except MultipleShowObjectsException:
-                    continue
-
-            if sickbeard.TRAKT_BLACKLIST_NAME != '':
-                blacklist = True
-            else:
-                blacklist = False
-
-        except traktException as e:
-            logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
-
-        return t.render(title="Trending Shows", header="Trending Shows", trending_shows=trending_shows, blacklist=blacklist)
-
-    def trendingShows(self):
-        """
-        Display the new show page which collects a tvdb id, folder, and extra options and
-        posts them to addNewShow
-        """
         t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
-        return t.render(title="Trending Shows", header="Trending Shows", enable_anime_options=False,
-                controller="addShows", action="trendingShows")
+        return t.render(title=page_title, header=page_title, enable_anime_options=False,
+                        traktList=traktList, controller="addShows", action="trendingShows")
 
-    def getTrendingShows(self):
+    def getTrendingShows(self, traktList=None):
         """
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, filename="trendingShows.mako")
+        if traktList is None:
+            traktList = ""
+
+        traktList = traktList.lower()
+
+        if traktList == "trending":
+            page_url = "shows/trending"
+        elif traktList == "popular":
+            page_url = "shows/popular"
+        elif traktList == "anticipated":
+            page_url = "shows/anticipated"
+        elif traktList == "collected":
+            page_url = "shows/collected"
+        elif traktList == "watched":
+            page_url = "shows/watched"
+        elif traktList == "played":
+            page_url = "shows/played"
+        elif traktList == "recommended":
+            page_url = "recommendations/shows"
+        else:
+            page_url = "shows/anticipated"
 
         trending_shows = []
 
@@ -2524,20 +2520,37 @@ class HomeAddShows(Home):
 
         try:
             not_liked_show = ""
-            if sickbeard.TRAKT_BLACKLIST_NAME is not None and sickbeard.TRAKT_BLACKLIST_NAME:
-                not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
+            if sickbeard.TRAKT_ACCESS_TOKEN != '':
+                library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
+                if sickbeard.TRAKT_BLACKLIST_NAME is not None and sickbeard.TRAKT_BLACKLIST_NAME:
+                    not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
+                else:
+                    logger.log(u"Trakt blacklist name is empty", logger.DEBUG)
+
+            if traktList != "recommended":
+                limit_show = "?limit=" + str(50 + len(not_liked_show)) + "&"
             else:
-                logger.log(u"trending blacklist name is empty", logger.DEBUG)
+                limit_show = "?"
 
-            limit_show = 50 + len(not_liked_show)
+            shows = trakt_api.traktRequest(page_url + limit_show + "extended=full,images") or []
 
-            shows = trakt_api.traktRequest("shows/trending?limit=" + str(limit_show) + "&extended=full,images") or []
+            if sickbeard.TRAKT_ACCESS_TOKEN != '':
+                library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
 
-            library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
             for show in shows:
                 try:
+                    if 'show' not in show:
+                        show['show'] = show
+
                     if not Show.find(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
-                        if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
+                        if sickbeard.TRAKT_ACCESS_TOKEN != '':
+                            if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
+                                if not_liked_show:
+                                    if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
+                                        trending_shows += [show]
+                                else:
+                                    trending_shows += [show]
+                        else:
                             if not_liked_show:
                                 if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
                                     trending_shows += [show]
@@ -2570,8 +2583,10 @@ class HomeAddShows(Home):
             # print traceback.format_exc()
             popular_shows = None
 
-        return t.render(title="Popular Shows", header="Popular Shows", popular_shows=popular_shows, imdb_exception=e, topmenu="home",
-                controller="addShows", action="popularShows")
+        return t.render(title="Popular Shows", header="Popular Shows",
+                        popular_shows=popular_shows, imdb_exception=e,
+                        topmenu="home",
+                        controller="addShows", action="popularShows")
 
     def addShowToBlacklist(self, indexer_id):
         # URL parameters
@@ -2588,8 +2603,9 @@ class HomeAddShows(Home):
         Prints out the page to add existing shows from a root dir
         """
         t = PageTemplate(rh=self, filename="addShows_addExistingShow.mako")
-        return t.render(enable_anime_options=False, title='Existing Show', header='Existing Show', topmenu="home",
-                controller="addShows", action="addExistingShow")
+        return t.render(enable_anime_options=False, title='Existing Show',
+                        header='Existing Show', topmenu="home",
+                        controller="addShows", action="addExistingShow")
 
     def addShowByID(self, indexer_id, show_name, indexer="TVDB"):
 
@@ -3154,7 +3170,7 @@ class Manage(Home, WebRoot):
 
         for curShow in showList:
 
-            cur_root_dir = ek(os.path.dirname, curShow._location)
+            cur_root_dir = ek(os.path.dirname, curShow._location)  # pylint: disable=protected-access
             if cur_root_dir not in root_dir_list:
                 root_dir_list.append(cur_root_dir)
 
@@ -3259,14 +3275,14 @@ class Manage(Home, WebRoot):
             if not showObj:
                 continue
 
-            cur_root_dir = ek(os.path.dirname, showObj._location)
-            cur_show_dir = ek(os.path.basename, showObj._location)
+            cur_root_dir = ek(os.path.dirname, showObj._location)  # pylint: disable=protected-access
+            cur_show_dir = ek(os.path.basename, showObj._location)  # pylint: disable=protected-access
             if cur_root_dir in dir_map and cur_root_dir != dir_map[cur_root_dir]:
                 new_show_dir = ek(os.path.join, dir_map[cur_root_dir], cur_show_dir)
                 logger.log(
-                    u"For show " + showObj.name + " changing dir from " + showObj._location + " to " + new_show_dir)
+                    u"For show " + showObj.name + " changing dir from " + showObj._location + " to " + new_show_dir)  # pylint: disable=protected-access
             else:
-                new_show_dir = showObj._location
+                new_show_dir = showObj._location  # pylint: disable=protected-access
 
             if archive_firstmatch == 'keep':
                 new_archive_firstmatch = showObj.archive_firstmatch
@@ -3514,8 +3530,10 @@ class Manage(Home, WebRoot):
 
         t = PageTemplate(rh=self, filename="manage_failedDownloads.mako")
 
-        return t.render(limit=limit, failedResults=sqlResults, title='Failed Downloads', header='Failed Downloads', topmenu='manage',
-                controller="manage", action="failedDownloads")
+        return t.render(limit=limit, failedResults=sqlResults,
+                        title='Failed Downloads', header='Failed Downloads',
+                        topmenu='manage', controller="manage",
+                        action="failedDownloads")
 
 
 @route('/manage/manageSearches(/?.*)')
@@ -3643,8 +3661,9 @@ class History(WebRoot):
             {'title': 'Trim History', 'path': 'history/trimHistory', 'icon': 'ui-icon ui-icon-trash', 'class': 'trimhistory', 'confirm': True},
         ]
 
-        return t.render(historyResults=data, compactResults=compact, limit=limit, submenu=submenu, title='History', header='History', topmenu="history",
-                controller="history", action="index")
+        return t.render(historyResults=data, compactResults=compact, limit=limit,
+                        submenu=submenu, title='History', header='History',
+                        topmenu="history", controller="history", action="index")
 
     def clearHistory(self):
         self.history.clear()
@@ -3721,7 +3740,7 @@ class ConfigGeneral(Config):
         else:
             bestQualities = []
 
-        newQuality = Quality.combineQualities(map(int, anyQualities), map(int, bestQualities))
+        newQuality = Quality.combineQualities([int(quality) for quality in anyQualities], [int(quality) for quality in bestQualities])
 
         sickbeard.STATUS_DEFAULT = int(defaultStatus)
         sickbeard.STATUS_DEFAULT_AFTER = int(defaultStatusAfter)
@@ -4029,8 +4048,9 @@ class ConfigPostProcessing(Config):
     def index(self):
         t = PageTemplate(rh=self, filename="config_postProcessing.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='Config - Post Processing', header='Post Processing', topmenu='config',
-                controller="config", action="postProcessing")
+        return t.render(submenu=self.ConfigMenu(), title='Config - Post Processing',
+                        header='Post Processing', topmenu='config',
+                        controller="config", action="postProcessing")
 
     def savePostProcessing(self, naming_pattern=None, naming_multi_ep=None,
                            kodi_data=None, kodi_12plus_data=None,
@@ -4597,7 +4617,7 @@ class ConfigProviders(Config):
                 try:
                     curTorrentProvider.onlyspasearch = config.checkbox_to_value(
                         kwargs[curTorrentProvider.getID() + '_onlyspasearch'])
-                except:
+                except Exception:
                     curTorrentProvider.onlyspasearch = 0
 
             if hasattr(curTorrentProvider, 'sorting'):
@@ -4719,8 +4739,9 @@ class ConfigNotifications(Config):
     def index(self):
         t = PageTemplate(rh=self, filename="config_notifications.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='Config - Notifications', header='Notifications', topmenu='config',
-                controller="config", action="notifications")
+        return t.render(submenu=self.ConfigMenu(), title='Config - Notifications',
+                        header='Notifications', topmenu='config',
+                        controller="config", action="notifications")
 
     def saveNotifications(self, use_kodi=None, kodi_always_on=None, kodi_notify_onsnatch=None,
                           kodi_notify_ondownload=None,
@@ -5139,6 +5160,8 @@ class ErrorLogs(WebRoot):
             'SEARCHQUEUE-DAILY-SEARCH': u'Search Queue (Daily Searcher)',
             'SEARCHQUEUE-BACKLOG': u'Search Queue (Backlog)',
             'SEARCHQUEUE-MANUAL': u'Search Queue (Manual)',
+            'SEARCHQUEUE-RETRY': u'Search Queue (Retry/Failed)',
+            'SEARCHQUEUE-RSS': u'Search Queue (RSS)',
             'FINDPROPERS': u'Find Propers',
             'POSTPROCESSER': u'Postprocesser',
             'FINDSUBTITLES': u'Find Subtitles',

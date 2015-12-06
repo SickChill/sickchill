@@ -24,6 +24,7 @@ from sickbeard.providers import generic
 from sickrage.helper.exceptions import AuthException
 from sickrage.helper.common import try_int
 
+
 class TransmitTheNetProvider(generic.TorrentProvider):
     def __init__(self):
 
@@ -97,8 +98,8 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                 if not search_string:
                     del search_params['searchtext']
 
-                searchURL = self.urls['search'] + "?" + urlencode(search_params)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                search_url = self.urls['search'] + "?" + urlencode(search_params)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 data = self.getURL(self.urls['search'], params=search_params)
                 if not data:
@@ -107,8 +108,12 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
                 try:
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
-                        torrent_table = html.find('table', {'id':'torrent_table'})
-                        torrent_rows = torrent_table.findAll('tr', {'class':'torrent'})
+                        torrent_table = html.find('table', {'id': 'torrent_table'})
+                        if not torrent_table:
+                            logger.log(u"Data returned from %s does not contain any torrents" % self.name, logger.DEBUG)
+                            continue
+
+                        torrent_rows = torrent_table.findAll('tr', {'class': 'torrent'})
                         # Continue only if one Release is found
                         if not torrent_rows:
                             logger.log(u"Data returned from %s does not contain any torrents" % self.name, logger.DEBUG)
@@ -119,7 +124,11 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                             if self.freeleech and not freeleech:
                                 continue
 
-                            download_url = self.urls['base_url'] + torrent_row.find('a', {"title": 'Download Torrent'})['href']
+                            download_item = torrent_row.find('a', {'title': 'Download Torrent'})
+                            if not download_item:
+                                continue
+
+                            download_url = self.urls['base_url'] + download_item['href']
 
                             temp_anchor = torrent_row.find('a', {"data-src": True})
                             title = temp_anchor['data-src'].rsplit('.', 1)[0]
@@ -128,7 +137,6 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                             temp_anchor = torrent_row.find('span', class_='time').parent.find_next_sibling()
                             seeders = try_int(temp_anchor.text.strip())
                             leechers = try_int(temp_anchor.find_next_sibling().text.strip())
-
 
                             if not all([title, download_url]):
                                 continue

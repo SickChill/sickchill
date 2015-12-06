@@ -234,7 +234,7 @@ class TVShow(object):
                 # if there is a location, check if it's a multi-episode (share_location > 0) and put them in relatedEps
                 if cur_result["share_location"] > 0:
                     related_eps_result = myDB.select(
-                        "SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND location = ? AND episode != ? ORDER BY episode ASC",
+                        "SELECT season, episode FROM tv_episodes WHERE showid = ? AND season = ? AND location = ? AND episode != ? ORDER BY episode ASC",
                         [self.indexerid, cur_ep.season, cur_ep.location, cur_ep.episode])
                     for cur_related_ep in related_eps_result:
                         related_ep = self.getEpisode(int(cur_related_ep["season"]), int(cur_related_ep["episode"]))
@@ -250,7 +250,7 @@ class TVShow(object):
         # if we get an anime get the real season and episode
         if self.is_anime and absolute_number and not season and not episode:
             myDB = db.DBConnection()
-            sql = "SELECT * FROM tv_episodes WHERE showid = ? AND absolute_number = ? AND season != 0"
+            sql = "SELECT season, episode FROM tv_episodes WHERE showid = ? AND absolute_number = ? AND season != 0"
             sqlResults = myDB.select(sql, [self.indexerid, absolute_number])
 
             if len(sqlResults) == 1:
@@ -302,21 +302,21 @@ class TVShow(object):
         # get latest aired episode to compare against today - graceperiod and today + graceperiod
         myDB = db.DBConnection()
         sql_result = myDB.select(
-            "SELECT * FROM tv_episodes WHERE showid = ? AND season > '0' AND airdate > '1' AND status > '1' ORDER BY airdate DESC LIMIT 1",
+            "SELECT IFNULL(MAX(airdate), 0) as last_aired FROM tv_episodes WHERE showid = ? AND season > 0 AND airdate > 1 AND status > 1",
             [self.indexerid])
 
-        if sql_result:
-            last_airdate = datetime.date.fromordinal(sql_result[0]['airdate'])
+        if sql_result and sql_result[0]['last_aired'] != 0:
+            last_airdate = datetime.date.fromordinal(sql_result[0]['last_aired'])
             if last_airdate >= (update_date - graceperiod) and last_airdate <= (update_date + graceperiod):
                 return True
 
         # get next upcoming UNAIRED episode to compare against today + graceperiod
         sql_result = myDB.select(
-            "SELECT * FROM tv_episodes WHERE showid = ? AND season > '0' AND airdate > '1' AND status = '1' ORDER BY airdate ASC LIMIT 1",
+            "SELECT IFNULL(MIN(airdate), 0) as airing_next FROM tv_episodes WHERE showid = ? AND season > 0 AND airdate > 1 AND status = 1",
             [self.indexerid])
 
-        if sql_result:
-            next_airdate = datetime.date.fromordinal(sql_result[0]['airdate'])
+        if sql_result and sql_result[0]['airing_next'] != 0:
+            next_airdate = datetime.date.fromordinal(sql_result[0]['airing_next'])
             if next_airdate <= (update_date + graceperiod):
                 return True
 
@@ -364,7 +364,7 @@ class TVShow(object):
         logger.log(str(self.indexerid) + u": Writing NFOs for all episodes", logger.DEBUG)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
+        sqlResults = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
 
         for epResult in sqlResults:
             logger.log(str(self.indexerid) + u": Retrieving/creating episode S%02dE%02d" % (epResult["season"] or 0, epResult["episode"] or 0), logger.DEBUG)
@@ -1066,7 +1066,7 @@ class TVShow(object):
         logger.log(str(self.indexerid) + u": Loading all episodes with a location from the database", logger.DEBUG)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
+        sqlResults = myDB.select("SELECT season, episode, location FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
 
         sql_l = []
         for ep in sqlResults:

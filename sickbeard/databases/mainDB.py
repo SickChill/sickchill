@@ -99,7 +99,7 @@ class MainSanityCheck(db.DBSanityCheck):
                 continue
 
             logger.log(u'Checking if there is already a show with id:%i in the show list')
-            duplicate = self.connection.select("SELECT * FROM tv_shows WHERE indexer_id = %i AND indexer = %i" % (mapping[0]['mindexer_id'], INDEXER_TVDB))
+            duplicate = self.connection.select("SELECT show_name, indexer_id, location, FROM tv_shows WHERE indexer_id = %i AND indexer = %i" % (mapping[0]['mindexer_id'], INDEXER_TVDB))
             if duplicate:
                 logger.log(u'Found %s which has the same id as %s, cannot convert automatically so I am pausing %s' %
                            (duplicate[0]['show_name'], tvrage_show['show_name'], duplicate[0]['show_name']), logger.WARNING)
@@ -278,7 +278,7 @@ class MainSanityCheck(db.DBSanityCheck):
                        (sqlResult['episode_id'], sqlResult['subtitles']), logger.DEBUG)
 
             for subcode in sqlResult['subtitles'].split(','):
-                if not len(subcode) is 3 or subcode not in subtitles.subtitle_code_filter():
+                if not len(subcode) == 3 or subcode not in subtitles.subtitle_code_filter():
                     logger.log(u"Fixing subtitle codes for episode_id: %s, invalid code: %s" %
                                (sqlResult['episode_id'], subcode), logger.DEBUG)
                     continue

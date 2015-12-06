@@ -687,7 +687,7 @@ class ConfigMigrator():
 
         # see if any of their shows used season folders
         myDB = db.DBConnection()
-        season_folder_shows = myDB.select("SELECT * FROM tv_shows WHERE flatten_folders = 0")
+        season_folder_shows = myDB.select("SELECT indexer_id FROM tv_shows WHERE flatten_folders = 0 LIMIT 1")
 
         # if any shows had season folders on then prepend season folder to the pattern
         if season_folder_shows:
