@@ -154,16 +154,16 @@ class newpctProvider(TorrentProvider):
 
     def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False):
         """
-        needBytes=True when trying access to torrent info (For calling torrent client). Previously we must parse
+        need_bytes=True when trying access to torrent info (For calling torrent client). Previously we must parse
         the URL to get torrent file
         """
         if need_bytes:
             data = helpers.getURL(url, post_data=None, params=None, headers=self.headers, timeout=timeout,
-                              session=self.session, json=json, needBytes=False)
+                              session=self.session, json=json, need_bytes=False)
             url = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
 
         return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
-                              session=self.session, json=json, needBytes=need_bytes)
+                              session=self.session, json=json, need_bytes=need_bytes)
 
     def download_result(self, result):
         """

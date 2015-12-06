@@ -352,7 +352,7 @@ class GenericProvider:
 
     def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False):
         return getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
-                      session=self.session, json=json, needBytes=need_bytes)
+                      session=self.session, json=json, need_bytes=need_bytes)
 
     def image_name(self):
         return self.get_id() + '.png'
