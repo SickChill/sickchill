@@ -133,9 +133,9 @@ class GenericMediaTests(unittest.TestCase):
         Test get_media_root
         """
 
-        sickbeard.PROG_DIR = '/home/SickRage/'
+        sickbeard.PROG_DIR = os.path.join('some', 'path', 'to', 'SickRage')
 
-        self.assertEqual(GenericMedia.get_media_root(), '/home/SickRage/gui/slick')
+        self.assertEqual(GenericMedia.get_media_root(), os.path.join('some', 'path', 'to', 'SickRage', 'gui', 'slick'))
 
 
 if __name__ == '__main__':
