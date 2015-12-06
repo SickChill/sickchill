@@ -98,7 +98,7 @@ class RarbgProvider(TorrentProvider):
 
         return False
 
-    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_params, search_mode='eponly', age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -106,9 +106,9 @@ class RarbgProvider(TorrentProvider):
         if not self._do_login():
             return results
 
-        if epObj is not None:
-            ep_indexerid = epObj.show.indexerid
-            ep_indexer = epObj.show.indexer
+        if ep_obj is not None:
+            ep_indexerid = ep_obj.show.indexerid
+            ep_indexer = ep_obj.show.indexer
         else:
             ep_indexerid = None
             ep_indexer = None

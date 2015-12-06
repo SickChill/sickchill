@@ -84,7 +84,7 @@ class OmgwtfnzbsProvider(NZBProvider):
     def _get_size(self, item):
         return try_int(item['sizebytes'], -1)
 
-    def _do_search(self, search, search_mode='eponly', epcount=0, retention=0, epObj=None):
+    def _do_search(self, search, search_mode='eponly', age=0, ep_obj=None):
 
         self._check_auth()
 
@@ -95,8 +95,8 @@ class OmgwtfnzbsProvider(NZBProvider):
                   'retention': sickbeard.USENET_RETENTION,
                   'search': search}
 
-        if retention or not params['retention']:
-            params['retention'] = retention
+        if age or not params['retention']:
+            params['retention'] = age
 
         searchURL = 'https://api.omgwtfnzbs.org/json/?' + urllib.urlencode(params)
         logger.log(u"Search string: %s" % params, logger.DEBUG)
@@ -123,7 +123,7 @@ class OmgwtfnzbsProvider(NZBProvider):
         results = []
 
         for term in search_terms:
-            for item in self._do_search(term, retention=4):
+            for item in self._do_search(term, age=4):
                 if 'usenetage' in item:
 
                     title, url = self._get_title_and_url(item)

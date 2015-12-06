@@ -50,7 +50,7 @@ class TokyoToshokanProvider(TorrentProvider):
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         return [x.replace('.', ' ') for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
-    def _do_search(self, search_string, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_string, search_mode='eponly', age=0, ep_obj=None):
         # FIXME ADD MODE
         if self.show and not self.show.is_anime:
             return []

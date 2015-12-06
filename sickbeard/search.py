@@ -132,7 +132,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
             dlResult = _downloadResult(result)
         else:
             if not result.content and not result.url.startswith('magnet'):
-                result.content = result.provider.get_url(result.url, needBytes=True)
+                result.content = result.provider.get_url(result.url, need_bytes=True)
 
             if result.content or result.url.startswith('magnet'):
                 client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()

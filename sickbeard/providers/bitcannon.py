@@ -46,7 +46,7 @@ class BitCannonProvider(TorrentProvider):
             'apiKey': ''
         }
 
-    def _do_search(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_strings, search_mode='eponly', age=0, ep_obj=None):
         # search_strings comes in one of these formats:
         #      {'Episode': ['Italian Works S05E10']}
         #      {'Season': ['Italian Works S05']}
@@ -55,7 +55,7 @@ class BitCannonProvider(TorrentProvider):
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         # select the correct category (TODO:  Add more categories?)
-        anime = (self.show and self.show.anime) or (epObj and epObj.show and epObj.show.anime) or False
+        anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False
         self.search_params['category'] = ('tv', 'anime')[anime]
 
         # Set API Key (if applicable)
