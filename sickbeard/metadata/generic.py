@@ -94,7 +94,7 @@ class GenericMetadata(object):
         return u'|'.join([str(int(x)) for x in config_list])
 
     def get_id(self):
-        return GenericMetadata.makeID(self.name)
+        return GenericMetadata.make_id(self.name)
 
     @staticmethod
     def makeID(name):

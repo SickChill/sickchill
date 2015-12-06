@@ -23,17 +23,15 @@ import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.common import try_int
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class FreshOnTVProvider(generic.TorrentProvider):
+class FreshOnTVProvider(TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "FreshOnTV")
-
-
+        TorrentProvider.__init__(self, "FreshOnTV")
 
         self._uid = None
         self._hash = None
@@ -56,14 +54,14 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
         self.cookies = None
 
-    def _checkAuth(self):
+    def _check_auth(self):
 
         if not self.username or not self.password:
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
 
         return True
 
-    def _doLogin(self):
+    def _do_login(self):
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
@@ -74,7 +72,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                             'password': self.password,
                             'login': 'submit'}
 
-            response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+            response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
             if not response:
                 logger.log(u"Unable to connect to provider", logger.WARNING)
                 return False
@@ -102,14 +100,14 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
                     return False
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         freeleech = '3' if self.freeleech else '0'
 
-        if not self._doLogin():
+        if not self._do_login():
             return results
 
         for mode in search_params.keys():
@@ -121,7 +119,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
                 searchURL = self.urls['search'] % (freeleech, search_string)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-                init_html = self.getURL(searchURL)
+                init_html = self.get_url(searchURL)
                 max_page_number = 0
 
                 if not init_html:
@@ -166,7 +164,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                         time.sleep(1)
                         page_searchURL = searchURL + '&page=' + str(i)
                         # '.log(u"Search string: " + page_searchURL, logger.DEBUG)
-                        page_html = self.getURL(page_searchURL)
+                        page_html = self.get_url(page_searchURL)
 
                         if not page_html:
                             continue
@@ -234,7 +232,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -248,6 +246,6 @@ class FreshOnTVCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider._do_search(search_params)}
 
 provider = FreshOnTVProvider()

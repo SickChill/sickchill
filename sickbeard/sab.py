@@ -74,7 +74,7 @@ def sendNZB(nzb):
     # if it's a normal result we just pass SAB the URL
     if nzb.resultType == "nzb":
         # for newzbin results send the ID to sab specifically
-        if nzb.provider.getID() == 'newzbin':
+        if nzb.provider.get_id() == 'newzbin':
             id = nzb.provider.getIDFromURL(nzb.url)
             if not id:
                 logger.log(u"Unable to send NZB to sab, can't find ID in URL " + str(nzb.url), logger.ERROR)

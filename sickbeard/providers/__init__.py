@@ -42,7 +42,7 @@ __all__ = [
 
 def sortedProviderList(randomize=False):
     initialList = sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList
-    providerDict = dict(zip([x.getID() for x in initialList], initialList))
+    providerDict = dict(zip([x.get_id() for x in initialList], initialList))
 
     newList = []
 
@@ -53,7 +53,7 @@ def sortedProviderList(randomize=False):
 
     # add all enabled providers first
     for curModule in providerDict:
-        if providerDict[curModule] not in newList and providerDict[curModule].isEnabled():
+        if providerDict[curModule] not in newList and providerDict[curModule].is_enabled():
             newList.append(providerDict[curModule])
 
     # add any modules that are missing from that list
@@ -211,7 +211,7 @@ def getProviderModule(name):
 def getProviderClass(provider_id):
     providerMatch = [x for x in
                      sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList if
-                     x.getID() == provider_id]
+                     x.get_id() == provider_id]
 
     if len(providerMatch) != 1:
         return None

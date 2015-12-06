@@ -1,0 +1,147 @@
+# This file is part of SickRage.
+#
+# URL: https://sickrage.github.io
+# Git: https://github.com/SickRage/SickRage.git
+#
+# SickRage is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# SickRage is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+
+import sickbeard
+
+from datetime import datetime
+from feedparser.util import FeedParserDict
+from hachoir_parser import createParser
+from sickbeard import logger
+from sickbeard.classes import Proper, TorrentSearchResult
+from sickbeard.common import Quality
+from sickbeard.db import DBConnection
+from sickrage.helper.common import try_int
+from sickrage.helper.exceptions import ex
+from sickrage.providers.GenericProvider import GenericProvider
+from sickrage.show.Show import Show
+
+
+class TorrentProvider(GenericProvider):
+    def __init__(self, name):
+        GenericProvider.__init__(self, name)
+
+        self.provider_type = GenericProvider.TORRENT
+
+    def find_propers(self, search_date=None):
+        results = []
+        db = DBConnection()
+        placeholder = ','.join([str(x) for x in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST])
+        sql_results = db.select(
+                'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate'
+                ' FROM tv_episodes AS e'
+                ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)'
+                ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
+                ' AND e.status IN (' + placeholder + ')'
+        )
+
+        for result in sql_results or []:
+            show = Show.find(sickbeard.showList, int(result['showid']))
+
+            if show:
+                episode = show.getEpisode(int(result['season']), int(result['episode']))
+
+                for term in self.proper_strings:
+                    search_strings = self._get_episode_search_strings(episode, add_string=term)
+
+                    for item in self._do_search(search_strings[0]):
+                        title, url = self._get_title_and_url(item)
+
+                        results.append(Proper(title, url, datetime.today(), show))
+
+        return results
+
+    def is_active(self):
+        return bool(sickbeard.USE_TORRENTS) and self.is_enabled()
+
+    @property
+    def _custom_trackers(self):
+        if sickbeard.TRACKERS_LIST:
+            if not self.public:
+                return ''
+
+            return '&tr=' + '&tr='.join(set([x.strip() for x in sickbeard.TRACKERS_LIST.split(',') if x.strip()]))
+
+        return ''
+
+    def _get_result(self, episodes):
+        return TorrentSearchResult(episodes)
+
+    def _get_size(self, item):
+        if isinstance(item, dict):
+            size = item.get('size', -1)
+        elif isinstance(item, (list, tuple)) and len(item) > 2:
+            size = item[2]
+        else:
+            size = -1
+
+        # Make sure we didn't select seeds/leechers by accident
+        if not size or size < 1024 * 1024:
+            size = -1
+
+        return try_int(size, -1)
+
+    def _get_storage_dir(self):
+        return sickbeard.TORRENT_DIR
+
+    def _get_title_and_url(self, item):
+        if isinstance(item, (dict, FeedParserDict)):
+            download_url = item.get('url', '')
+            title = item.get('title', '')
+
+            if not download_url:
+                download_url = item.get('link', '')
+        elif isinstance(item, (list, tuple)) and len(item) > 1:
+            download_url = item[1]
+            title = item[0]
+        else:
+            download_url = ''
+            title = ''
+
+        if title.endswith('DIAMOND'):
+            logger.log(u'Skipping DIAMOND release for mass fake releases.')
+            download_url = title = u'FAKERELEASE'
+
+        if download_url:
+            download_url = download_url.replace('&amp;', '&')
+
+        if title:
+            title = title.replace(' ', '.')
+
+        return title, download_url
+
+    def _verify_download(self, file_name=None):
+        try:
+            parser = createParser(file_name)
+
+            if parser:
+                # pylint: disable=W0212
+                # Access to a protected member of a client class
+                mime_type = parser._getMimeType()
+
+                try:
+                    parser.stream._input.close()
+                except Exception:
+                    pass
+
+                if mime_type == 'application/x-bittorrent':
+                    return True
+        except Exception as e:
+            logger.log(u'Failed to validate torrent file: %s' % ex(e), logger.DEBUG)
+
+        logger.log(u'Result is not a valid torrent file', logger.DEBUG)
+        return False

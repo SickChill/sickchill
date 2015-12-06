@@ -22,17 +22,16 @@ import time
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.TorrentProvider import TorrentProvider
 
-class NextGenProvider(generic.TorrentProvider):
+
+class NextGenProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "NextGen")
-
-
+        TorrentProvider.__init__(self, "NextGen")
 
         self.username = None
         self.password = None
@@ -68,12 +67,12 @@ class NextGenProvider(generic.TorrentProvider):
         else:
             return True
 
-    def _doLogin(self):
+    def _do_login(self):
 
         now = time.time()
         if self.login_opener and self.last_login_check < (now - 3600):
             try:
-                output = self.getURL(self.urls['test'])
+                output = self.get_url(self.urls['test'])
                 if self.loginSuccess(output):
                     self.last_login_check = now
                     return True
@@ -87,13 +86,13 @@ class NextGenProvider(generic.TorrentProvider):
 
         try:
             login_params = self.getLoginParams()
-            data = self.getURL(self.urls['login_page'])
+            data = self.get_url(self.urls['login_page'])
             if not data:
                 return False
 
             with BS4Parser(data) as bs:
                 csrfraw = bs.find('form', attrs={'id': 'login'})['action']
-                output = self.getURL(self.urls['base_url'] + csrfraw, post_data=login_params)
+                output = self.get_url(self.urls['base_url'] + csrfraw, post_data=login_params)
 
                 if self.loginSuccess(output):
                     self.last_login_check = now
@@ -109,12 +108,12 @@ class NextGenProvider(generic.TorrentProvider):
         logger.log(u"Failed to login: %s" % error, logger.ERROR)
         return False
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self._do_login():
             return results
 
         for mode in search_params.keys():
@@ -126,7 +125,7 @@ class NextGenProvider(generic.TorrentProvider):
 
                 searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-                data = self.getURL(searchURL)
+                data = self.get_url(searchURL)
                 if not data:
                     continue
 
@@ -203,7 +202,7 @@ class NextGenProvider(generic.TorrentProvider):
             size = size * 1024**4
         return int(size)
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -217,7 +216,7 @@ class NextGenCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider._do_search(search_params)}
 
 
 provider = NextGenProvider()

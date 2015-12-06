@@ -8,13 +8,13 @@
 
     from sickbeard import providers
     from sickbeard import sbdatetime
-    from sickbeard.providers import generic
 
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED, DOWNLOADED, SUBTITLED
     from sickbeard.common import Quality, statusStrings, Overview
 
     from sickrage.show.History import History
     from sickrage.helper.encoding import ek
+    from sickrage.providers.GenericProvider import GenericProvider
 %>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
@@ -87,9 +87,9 @@
                 % else:
                     % if hItem["provider"] > 0:
                         % if curStatus in [SNATCHED, FAILED]:
-                            <% provider = providers.getProviderClass(generic.GenericProvider.makeID(hItem["provider"])) %>
+                            <% provider = providers.getProviderClass(GenericProvider.make_id(hItem["provider"])) %>
                             % if provider is not None:
-                                <img src="${srRoot}/images/providers/${provider.imageName()}" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">${provider.name}</span>
+                                <img src="${srRoot}/images/providers/${provider.image_name()}" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">${provider.name}</span>
                             % else:
                                 <img src="${srRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" title="missing provider"/> <span style="vertical-align:middle;">Missing Provider</span>
                             % endif
@@ -142,9 +142,9 @@
                     % for action in sorted(hItem["actions"]):
                         <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
                         % if curStatus in [SNATCHED, FAILED]:
-                            <% provider = providers.getProviderClass(generic.GenericProvider.makeID(action["provider"])) %>
+                            <% provider = providers.getProviderClass(GenericProvider.make_id(action["provider"])) %>
                             % if provider is not None:
-                                <img src="${srRoot}/images/providers/${provider.imageName()}" width="16" height="16" style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${ek(os.path.basename, action["resource"])}"/>
+                                <img src="${srRoot}/images/providers/${provider.image_name()}" width="16" height="16" style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${ek(os.path.basename, action["resource"])}"/>
                             % else:
                                 <img src="${srRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="missing provider" title="missing provider"/>
                             % endif

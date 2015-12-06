@@ -21,17 +21,16 @@ import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.exceptions import AuthException
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class GFTrackerProvider(generic.TorrentProvider):
+class GFTrackerProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "GFTracker")
-
+        TorrentProvider.__init__(self, "GFTracker")
 
         self.username = None
         self.password = None
@@ -55,19 +54,19 @@ class GFTrackerProvider(generic.TorrentProvider):
 
         self.cache = GFTrackerCache(self)
 
-    def _checkAuth(self):
+    def _check_auth(self):
 
         if not self.username or not self.password:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
 
-    def _doLogin(self):
+    def _do_login(self):
 
         login_params = {'username': self.username,
                         'password': self.password}
 
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         # Save cookies from response
         self.cookies = self.headers.get('Set-Cookie')
 
@@ -81,12 +80,12 @@ class GFTrackerProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self._do_login():
             return results
 
         for mode in search_params.keys():
@@ -102,7 +101,7 @@ class GFTrackerProvider(generic.TorrentProvider):
                 # Set cookies from response
                 self.headers.update({'Cookie': self.cookies})
                 # Returns top 30 results by default, expandable in user profile
-                data = self.getURL(searchURL)
+                data = self.get_url(searchURL)
                 if not data:
                     continue
 
@@ -165,7 +164,7 @@ class GFTrackerProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
     def _convertSize(self, sizeString):
@@ -185,6 +184,7 @@ class GFTrackerProvider(generic.TorrentProvider):
             size = -1
         return int(size)
 
+
 class GFTrackerCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
@@ -195,6 +195,6 @@ class GFTrackerCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider._do_search(search_params)}
 
 provider = GFTrackerProvider()

@@ -22,19 +22,19 @@ import requests
 from bencode import bdecode
 
 import sickbeard
-from sickbeard.providers import generic
 from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import tvcache
 
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class TorrentRssProvider(generic.TorrentProvider):
+class TorrentRssProvider(TorrentProvider):
     def __init__(self, name, url, cookies='', titleTAG='title', search_mode='eponly', search_fallback=False, enable_daily=False,
                  enable_backlog=False):
-        generic.TorrentProvider.__init__(self, name)
+        TorrentProvider.__init__(self, name)
         self.cache = TorrentRssCache(self)
 
         self.urls = {'base_url': re.sub(r'\/$', '', url)}
@@ -42,7 +42,7 @@ class TorrentRssProvider(generic.TorrentProvider):
         self.url = self.urls['base_url']
 
         self.ratio = None
-        self.supportsBacklog = False
+        self.supports_backlog = False
 
         self.search_mode = search_mode
         self.search_fallback = search_fallback
@@ -64,16 +64,16 @@ class TorrentRssProvider(generic.TorrentProvider):
             self.enable_backlog
         )
 
-    def imageName(self):
-        if ek(os.path.isfile, ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers', self.getID() + '.png')):
-            return self.getID() + '.png'
+    def image_name(self):
+        if ek(os.path.isfile, ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers', self.get_id() + '.png')):
+            return self.get_id() + '.png'
         return 'torrentrss.png'
 
     def _get_title_and_url(self, item):
 
         title = item.get(self.titleTAG)
         if title:
-            title = self._clean_title_from_provider(title)
+            title = self._clean_title(title)
 
         attempt_list = [lambda: item.get('torrent_magneturi'),
 
@@ -121,7 +121,7 @@ class TorrentRssProvider(generic.TorrentProvider):
                 if self.cookies:
                     requests.utils.add_dict_to_cookiejar(self.session.cookies,
                                                          dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
-                torrent_file = self.getURL(url)
+                torrent_file = self.get_url(url)
                 try:
                     bdecode(torrent_file)
                 except Exception, e:
@@ -148,7 +148,7 @@ class TorrentRssProvider(generic.TorrentProvider):
         logger.log(u"Saved custom_torrent html dump %s " % dumpName, logger.INFO)
         return True
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 

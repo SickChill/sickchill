@@ -94,8 +94,8 @@ class SearchTest(test.SickbeardTestDBCase):
         """
 
         for provider in sickbeard.providers.sortedProviderList():
-            provider.getURL = self._fake_get_url
-            # provider.isActive = self._fake_is_active
+            provider.get_url = self._fake_get_url
+            # provider.is_active = self._fake_is_active
 
         super(SearchTest, self).__init__(something)
 

@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import webbrowser
 import datetime
 import socket
@@ -35,7 +34,6 @@ from github import Github
 
 from sickbeard import metadata
 from sickbeard import providers
-from sickbeard.providers.generic import GenericProvider
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
@@ -58,6 +56,7 @@ from sickbeard.databases import mainDB, cache_db, failed_db
 
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
+from sickrage.providers.GenericProvider import GenericProvider
 from sickrage.show.Show import Show
 from sickrage.system.Shutdown import Shutdown
 
@@ -1227,119 +1226,119 @@ def initialize(consoleLogging=True):
 
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in providers.sortedProviderList() if
-                                   curProvider.providerType == GenericProvider.TORRENT]:
-            curTorrentProvider.enabled = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                curTorrentProvider.getID(), 0))
+                                   curProvider.provider_type == GenericProvider.TORRENT]:
+            curTorrentProvider.enabled = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                                curTorrentProvider.get_id(), 0))
             if hasattr(curTorrentProvider, 'custom_url'):
-                curTorrentProvider.custom_url = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                curTorrentProvider.getID() + '_custom_url', '', censor_log=True)
+                curTorrentProvider.custom_url = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                                curTorrentProvider.get_id() + '_custom_url', '', censor_log=True)
             if hasattr(curTorrentProvider, 'api_key'):
-                curTorrentProvider.api_key = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                               curTorrentProvider.getID() + '_api_key', '', censor_log=True)
+                curTorrentProvider.api_key = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                               curTorrentProvider.get_id() + '_api_key', '', censor_log=True)
             if hasattr(curTorrentProvider, 'hash'):
-                curTorrentProvider.hash = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                            curTorrentProvider.getID() + '_hash', '', censor_log=True)
+                curTorrentProvider.hash = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                            curTorrentProvider.get_id() + '_hash', '', censor_log=True)
             if hasattr(curTorrentProvider, 'digest'):
-                curTorrentProvider.digest = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                              curTorrentProvider.getID() + '_digest', '', censor_log=True)
+                curTorrentProvider.digest = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                              curTorrentProvider.get_id() + '_digest', '', censor_log=True)
             if hasattr(curTorrentProvider, 'username'):
-                curTorrentProvider.username = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                curTorrentProvider.getID() + '_username', '', censor_log=True)
+                curTorrentProvider.username = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                                curTorrentProvider.get_id() + '_username', '', censor_log=True)
             if hasattr(curTorrentProvider, 'password'):
-                curTorrentProvider.password = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                curTorrentProvider.getID() + '_password', '', censor_log=True)
+                curTorrentProvider.password = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                                curTorrentProvider.get_id() + '_password', '', censor_log=True)
             if hasattr(curTorrentProvider, 'passkey'):
-                curTorrentProvider.passkey = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                               curTorrentProvider.getID() + '_passkey', '', censor_log=True)
+                curTorrentProvider.passkey = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                               curTorrentProvider.get_id() + '_passkey', '', censor_log=True)
             if hasattr(curTorrentProvider, 'pin'):
-                curTorrentProvider.pin = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                           curTorrentProvider.getID() + '_pin', '', censor_log=True)
+                curTorrentProvider.pin = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                           curTorrentProvider.get_id() + '_pin', '', censor_log=True)
             if hasattr(curTorrentProvider, 'confirmed'):
-                curTorrentProvider.confirmed = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                      curTorrentProvider.getID() + '_confirmed', 1))
+                curTorrentProvider.confirmed = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                                      curTorrentProvider.get_id() + '_confirmed', 1))
             if hasattr(curTorrentProvider, 'ranked'):
-                curTorrentProvider.ranked = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                   curTorrentProvider.getID() + '_ranked', 1))
+                curTorrentProvider.ranked = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                                   curTorrentProvider.get_id() + '_ranked', 1))
 
             if hasattr(curTorrentProvider, 'engrelease'):
-                curTorrentProvider.engrelease = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                       curTorrentProvider.getID() + '_engrelease', 0))
+                curTorrentProvider.engrelease = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                                       curTorrentProvider.get_id() + '_engrelease', 0))
 
             if hasattr(curTorrentProvider, 'onlyspasearch'):
-                curTorrentProvider.onlyspasearch = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                          curTorrentProvider.getID() + '_onlyspasearch', 0))
+                curTorrentProvider.onlyspasearch = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                                          curTorrentProvider.get_id() + '_onlyspasearch', 0))
 
             if hasattr(curTorrentProvider, 'sorting'):
-                curTorrentProvider.sorting = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                               curTorrentProvider.getID() + '_sorting', 'seeders')
+                curTorrentProvider.sorting = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                               curTorrentProvider.get_id() + '_sorting', 'seeders')
             if hasattr(curTorrentProvider, 'options'):
-                curTorrentProvider.options = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                               curTorrentProvider.getID() + '_options', '')
+                curTorrentProvider.options = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                               curTorrentProvider.get_id() + '_options', '')
             if hasattr(curTorrentProvider, 'ratio'):
-                curTorrentProvider.ratio = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                             curTorrentProvider.getID() + '_ratio', '')
+                curTorrentProvider.ratio = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                             curTorrentProvider.get_id() + '_ratio', '')
             if hasattr(curTorrentProvider, 'minseed'):
-                curTorrentProvider.minseed = check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                               curTorrentProvider.getID() + '_minseed', 1)
+                curTorrentProvider.minseed = check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                               curTorrentProvider.get_id() + '_minseed', 1)
             if hasattr(curTorrentProvider, 'minleech'):
-                curTorrentProvider.minleech = check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                curTorrentProvider.getID() + '_minleech', 0)
+                curTorrentProvider.minleech = check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                                curTorrentProvider.get_id() + '_minleech', 0)
             if hasattr(curTorrentProvider, 'freeleech'):
-                curTorrentProvider.freeleech = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                      curTorrentProvider.getID() + '_freeleech', 0))
+                curTorrentProvider.freeleech = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                                      curTorrentProvider.get_id() + '_freeleech', 0))
             if hasattr(curTorrentProvider, 'search_mode'):
-                curTorrentProvider.search_mode = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                   curTorrentProvider.getID() + '_search_mode',
+                curTorrentProvider.search_mode = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                                   curTorrentProvider.get_id() + '_search_mode',
                                                                    'eponly')
             if hasattr(curTorrentProvider, 'search_fallback'):
-                curTorrentProvider.search_fallback = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                            curTorrentProvider.getID() + '_search_fallback',
+                curTorrentProvider.search_fallback = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                                            curTorrentProvider.get_id() + '_search_fallback',
                                                                             0))
 
             if hasattr(curTorrentProvider, 'enable_daily'):
-                curTorrentProvider.enable_daily = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                         curTorrentProvider.getID() + '_enable_daily',
+                curTorrentProvider.enable_daily = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                                         curTorrentProvider.get_id() + '_enable_daily',
                                                                          1))
 
             if hasattr(curTorrentProvider, 'enable_backlog'):
-                curTorrentProvider.enable_backlog = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                           curTorrentProvider.getID() + '_enable_backlog',
-                                                                           curTorrentProvider.supportsBacklog))
+                curTorrentProvider.enable_backlog = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                                           curTorrentProvider.get_id() + '_enable_backlog',
+                                                                           curTorrentProvider.supports_backlog))
 
             if hasattr(curTorrentProvider, 'cat'):
-                curTorrentProvider.cat = check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                           curTorrentProvider.getID() + '_cat', 0)
+                curTorrentProvider.cat = check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                           curTorrentProvider.get_id() + '_cat', 0)
             if hasattr(curTorrentProvider, 'subtitle'):
-                curTorrentProvider.subtitle = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                     curTorrentProvider.getID() + '_subtitle', 0))
+                curTorrentProvider.subtitle = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                                                                     curTorrentProvider.get_id() + '_subtitle', 0))
 
         for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if
-                               curProvider.providerType == GenericProvider.NZB]:
+                               curProvider.provider_type == GenericProvider.NZB]:
             curNzbProvider.enabled = bool(
-                check_setting_int(CFG, curNzbProvider.getID().upper(), curNzbProvider.getID(), 0))
+                check_setting_int(CFG, curNzbProvider.get_id().upper(), curNzbProvider.get_id(), 0))
             if hasattr(curNzbProvider, 'api_key'):
-                curNzbProvider.api_key = check_setting_str(CFG, curNzbProvider.getID().upper(),
-                                                           curNzbProvider.getID() + '_api_key', '', censor_log=True)
+                curNzbProvider.api_key = check_setting_str(CFG, curNzbProvider.get_id().upper(),
+                                                           curNzbProvider.get_id() + '_api_key', '', censor_log=True)
             if hasattr(curNzbProvider, 'username'):
-                curNzbProvider.username = check_setting_str(CFG, curNzbProvider.getID().upper(),
-                                                            curNzbProvider.getID() + '_username', '', censor_log=True)
+                curNzbProvider.username = check_setting_str(CFG, curNzbProvider.get_id().upper(),
+                                                            curNzbProvider.get_id() + '_username', '', censor_log=True)
             if hasattr(curNzbProvider, 'search_mode'):
-                curNzbProvider.search_mode = check_setting_str(CFG, curNzbProvider.getID().upper(),
-                                                               curNzbProvider.getID() + '_search_mode',
+                curNzbProvider.search_mode = check_setting_str(CFG, curNzbProvider.get_id().upper(),
+                                                               curNzbProvider.get_id() + '_search_mode',
                                                                'eponly')
             if hasattr(curNzbProvider, 'search_fallback'):
-                curNzbProvider.search_fallback = bool(check_setting_int(CFG, curNzbProvider.getID().upper(),
-                                                                        curNzbProvider.getID() + '_search_fallback',
+                curNzbProvider.search_fallback = bool(check_setting_int(CFG, curNzbProvider.get_id().upper(),
+                                                                        curNzbProvider.get_id() + '_search_fallback',
                                                                         0))
             if hasattr(curNzbProvider, 'enable_daily'):
-                curNzbProvider.enable_daily = bool(check_setting_int(CFG, curNzbProvider.getID().upper(),
-                                                                     curNzbProvider.getID() + '_enable_daily',
+                curNzbProvider.enable_daily = bool(check_setting_int(CFG, curNzbProvider.get_id().upper(),
+                                                                     curNzbProvider.get_id() + '_enable_daily',
                                                                      1))
 
             if hasattr(curNzbProvider, 'enable_backlog'):
-                curNzbProvider.enable_backlog = bool(check_setting_int(CFG, curNzbProvider.getID().upper(),
-                                                                       curNzbProvider.getID() + '_enable_backlog',
-                                                                       curNzbProvider.supportsBacklog))
+                curNzbProvider.enable_backlog = bool(check_setting_int(CFG, curNzbProvider.get_id().upper(),
+                                                                       curNzbProvider.get_id() + '_enable_backlog',
+                                                                       curNzbProvider.supports_backlog))
 
         if not ek(os.path.isfile, CONFIG_FILE):
             logger.log(u"Unable to find '" + CONFIG_FILE + "', all settings will be default!", logger.DEBUG)
@@ -1791,103 +1790,103 @@ def save_config():
 
     # dynamically save provider settings
     for curTorrentProvider in [curProvider for curProvider in providers.sortedProviderList() if
-                               curProvider.providerType == GenericProvider.TORRENT]:
-        new_config[curTorrentProvider.getID().upper()] = {}
-        new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID()] = int(curTorrentProvider.enabled)
+                               curProvider.provider_type == GenericProvider.TORRENT]:
+        new_config[curTorrentProvider.get_id().upper()] = {}
+        new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id()] = int(curTorrentProvider.enabled)
         if hasattr(curTorrentProvider, 'custom_url'):
-            new_config[curTorrentProvider.getID().upper()][
-                curTorrentProvider.getID() + '_custom_url'] = curTorrentProvider.custom_url
+            new_config[curTorrentProvider.get_id().upper()][
+                curTorrentProvider.get_id() + '_custom_url'] = curTorrentProvider.custom_url
         if hasattr(curTorrentProvider, 'digest'):
-            new_config[curTorrentProvider.getID().upper()][
-                curTorrentProvider.getID() + '_digest'] = curTorrentProvider.digest
+            new_config[curTorrentProvider.get_id().upper()][
+                curTorrentProvider.get_id() + '_digest'] = curTorrentProvider.digest
         if hasattr(curTorrentProvider, 'hash'):
-            new_config[curTorrentProvider.getID().upper()][
-                curTorrentProvider.getID() + '_hash'] = curTorrentProvider.hash
+            new_config[curTorrentProvider.get_id().upper()][
+                curTorrentProvider.get_id() + '_hash'] = curTorrentProvider.hash
         if hasattr(curTorrentProvider, 'api_key'):
-            new_config[curTorrentProvider.getID().upper()][
-                curTorrentProvider.getID() + '_api_key'] = curTorrentProvider.api_key
+            new_config[curTorrentProvider.get_id().upper()][
+                curTorrentProvider.get_id() + '_api_key'] = curTorrentProvider.api_key
         if hasattr(curTorrentProvider, 'username'):
-            new_config[curTorrentProvider.getID().upper()][
-                curTorrentProvider.getID() + '_username'] = curTorrentProvider.username
+            new_config[curTorrentProvider.get_id().upper()][
+                curTorrentProvider.get_id() + '_username'] = curTorrentProvider.username
         if hasattr(curTorrentProvider, 'password'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_password'] = helpers.encrypt(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_password'] = helpers.encrypt(
                 curTorrentProvider.password, ENCRYPTION_VERSION)
         if hasattr(curTorrentProvider, 'passkey'):
-            new_config[curTorrentProvider.getID().upper()][
-                curTorrentProvider.getID() + '_passkey'] = curTorrentProvider.passkey
+            new_config[curTorrentProvider.get_id().upper()][
+                curTorrentProvider.get_id() + '_passkey'] = curTorrentProvider.passkey
         if hasattr(curTorrentProvider, 'pin'):
-            new_config[curTorrentProvider.getID().upper()][
-                curTorrentProvider.getID() + '_pin'] = curTorrentProvider.pin
+            new_config[curTorrentProvider.get_id().upper()][
+                curTorrentProvider.get_id() + '_pin'] = curTorrentProvider.pin
         if hasattr(curTorrentProvider, 'confirmed'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_confirmed'] = int(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_confirmed'] = int(
                 curTorrentProvider.confirmed)
         if hasattr(curTorrentProvider, 'ranked'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_ranked'] = int(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_ranked'] = int(
                 curTorrentProvider.ranked)
         if hasattr(curTorrentProvider, 'engrelease'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_engrelease'] = int(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_engrelease'] = int(
                 curTorrentProvider.engrelease)
         if hasattr(curTorrentProvider, 'onlyspasearch'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_onlyspasearch'] = int(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_onlyspasearch'] = int(
                 curTorrentProvider.onlyspasearch)
         if hasattr(curTorrentProvider, 'sorting'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_sorting'] = curTorrentProvider.sorting
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_sorting'] = curTorrentProvider.sorting
         if hasattr(curTorrentProvider, 'ratio'):
-            new_config[curTorrentProvider.getID().upper()][
-                curTorrentProvider.getID() + '_ratio'] = curTorrentProvider.ratio
+            new_config[curTorrentProvider.get_id().upper()][
+                curTorrentProvider.get_id() + '_ratio'] = curTorrentProvider.ratio
         if hasattr(curTorrentProvider, 'minseed'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_minseed'] = int(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_minseed'] = int(
                 curTorrentProvider.minseed)
         if hasattr(curTorrentProvider, 'minleech'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_minleech'] = int(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_minleech'] = int(
                 curTorrentProvider.minleech)
         if hasattr(curTorrentProvider, 'options'):
-            new_config[curTorrentProvider.getID().upper()][
-                curTorrentProvider.getID() + '_options'] = curTorrentProvider.options
+            new_config[curTorrentProvider.get_id().upper()][
+                curTorrentProvider.get_id() + '_options'] = curTorrentProvider.options
         if hasattr(curTorrentProvider, 'freeleech'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_freeleech'] = int(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_freeleech'] = int(
                 curTorrentProvider.freeleech)
         if hasattr(curTorrentProvider, 'search_mode'):
-            new_config[curTorrentProvider.getID().upper()][
-                curTorrentProvider.getID() + '_search_mode'] = curTorrentProvider.search_mode
+            new_config[curTorrentProvider.get_id().upper()][
+                curTorrentProvider.get_id() + '_search_mode'] = curTorrentProvider.search_mode
         if hasattr(curTorrentProvider, 'search_fallback'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_search_fallback'] = int(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_search_fallback'] = int(
                 curTorrentProvider.search_fallback)
         if hasattr(curTorrentProvider, 'enable_daily'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_enable_daily'] = int(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_enable_daily'] = int(
                 curTorrentProvider.enable_daily)
         if hasattr(curTorrentProvider, 'enable_backlog'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_enable_backlog'] = int(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_enable_backlog'] = int(
                 curTorrentProvider.enable_backlog)
         if hasattr(curTorrentProvider, 'cat'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_cat'] = int(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_cat'] = int(
                 curTorrentProvider.cat)
         if hasattr(curTorrentProvider, 'subtitle'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_subtitle'] = int(
+            new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_subtitle'] = int(
                 curTorrentProvider.subtitle)
 
     for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if
-                           curProvider.providerType == GenericProvider.NZB]:
-        new_config[curNzbProvider.getID().upper()] = {}
-        new_config[curNzbProvider.getID().upper()][curNzbProvider.getID()] = int(curNzbProvider.enabled)
+                           curProvider.provider_type == GenericProvider.NZB]:
+        new_config[curNzbProvider.get_id().upper()] = {}
+        new_config[curNzbProvider.get_id().upper()][curNzbProvider.get_id()] = int(curNzbProvider.enabled)
 
         if hasattr(curNzbProvider, 'api_key'):
-            new_config[curNzbProvider.getID().upper()][
-                curNzbProvider.getID() + '_api_key'] = curNzbProvider.api_key
+            new_config[curNzbProvider.get_id().upper()][
+                curNzbProvider.get_id() + '_api_key'] = curNzbProvider.api_key
         if hasattr(curNzbProvider, 'username'):
-            new_config[curNzbProvider.getID().upper()][
-                curNzbProvider.getID() + '_username'] = curNzbProvider.username
+            new_config[curNzbProvider.get_id().upper()][
+                curNzbProvider.get_id() + '_username'] = curNzbProvider.username
         if hasattr(curNzbProvider, 'search_mode'):
-            new_config[curNzbProvider.getID().upper()][
-                curNzbProvider.getID() + '_search_mode'] = curNzbProvider.search_mode
+            new_config[curNzbProvider.get_id().upper()][
+                curNzbProvider.get_id() + '_search_mode'] = curNzbProvider.search_mode
         if hasattr(curNzbProvider, 'search_fallback'):
-            new_config[curNzbProvider.getID().upper()][curNzbProvider.getID() + '_search_fallback'] = int(
+            new_config[curNzbProvider.get_id().upper()][curNzbProvider.get_id() + '_search_fallback'] = int(
                 curNzbProvider.search_fallback)
         if hasattr(curNzbProvider, 'enable_daily'):
-            new_config[curNzbProvider.getID().upper()][curNzbProvider.getID() + '_enable_daily'] = int(
+            new_config[curNzbProvider.get_id().upper()][curNzbProvider.get_id() + '_enable_daily'] = int(
                 curNzbProvider.enable_daily)
         if hasattr(curNzbProvider, 'enable_backlog'):
-            new_config[curNzbProvider.getID().upper()][curNzbProvider.getID() + '_enable_backlog'] = int(
+            new_config[curNzbProvider.get_id().upper()][curNzbProvider.get_id() + '_enable_backlog'] = int(
                 curNzbProvider.enable_backlog)
 
     new_config['NZBs'] = {}

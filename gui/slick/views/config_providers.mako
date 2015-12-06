@@ -1,9 +1,8 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
-    from sickbeard.providers.generic import GenericProvider
-    from sickbeard.providers import thepiratebay
     from sickbeard.helpers import anon_url
+    from sickrage.providers.GenericProvider import GenericProvider
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/configProviders.js"></script>
@@ -12,12 +11,12 @@ $(document).ready(function(){
     % if sickbeard.USE_NZBS:
         var show_nzb_providers = ${("false", "true")[bool(sickbeard.USE_NZBS)]};
         % for curNewznabProvider in sickbeard.newznabProviderList:
-        $(this).addProvider('${curNewznabProvider.getID()}', '${curNewznabProvider.name}', '${curNewznabProvider.url}', '${curNewznabProvider.key}', '${curNewznabProvider.catIDs}', ${int(curNewznabProvider.default)}, show_nzb_providers);
+        $(this).addProvider('${curNewznabProvider.get_id()}', '${curNewznabProvider.name}', '${curNewznabProvider.url}', '${curNewznabProvider.key}', '${curNewznabProvider.catIDs}', ${int(curNewznabProvider.default)}, show_nzb_providers);
         % endfor
     % endif
     % if sickbeard.USE_TORRENTS:
         % for curTorrentRssProvider in sickbeard.torrentRssProviderList:
-        $(this).addTorrentRssProvider('${curTorrentRssProvider.getID()}', '${curTorrentRssProvider.name}', '${curTorrentRssProvider.url}', '${curTorrentRssProvider.cookies}', '${curTorrentRssProvider.titleTAG}');
+        $(this).addTorrentRssProvider('${curTorrentRssProvider.get_id()}', '${curTorrentRssProvider.name}', '${curTorrentRssProvider.url}', '${curTorrentRssProvider.cookies}', '${curTorrentRssProvider.titleTAG}');
         % endfor
     % endif
 });
@@ -70,28 +69,28 @@ $('#config-components').tabs();
                         <ul id="provider_order_list">
                         % for curProvider in sickbeard.providers.sortedProviderList():
                             <%
-                                if curProvider.providerType == GenericProvider.NZB and not sickbeard.USE_NZBS:
+                                if curProvider.provider_type == GenericProvider.NZB and not sickbeard.USE_NZBS:
                                     continue
-                                elif curProvider.providerType == GenericProvider.TORRENT and not sickbeard.USE_TORRENTS:
+                                elif curProvider.provider_type == GenericProvider.TORRENT and not sickbeard.USE_TORRENTS:
                                     continue
 
-                                curName = curProvider.getID()
+                                curName = curProvider.get_id()
                                 if hasattr(curProvider, 'custom_url'):
                                     curURL = curProvider.custom_url or curProvider.url
                                 else:
                                     curURL = curProvider.url
                             %>
-                            <li class="ui-state-default ${('nzb-provider', 'torrent-provider')[bool(curProvider.providerType == "torrent")]}" id="${curName}">
-                                <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.isEnabled() is True]}/>
-                                <a href="${anon_url(curURL)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${srRoot}/images/providers/${curProvider.imageName()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
+                            <li class="ui-state-default ${('nzb-provider', 'torrent-provider')[bool(curProvider.provider_type == GenericProvider.TORRENT)]}" id="${curName}">
+                                <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.is_enabled() is True]}/>
+                                <a href="${anon_url(curURL)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${srRoot}/images/providers/${curProvider.image_name()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
                                 <span style="vertical-align:middle;">${curProvider.name}</span>
-                                ${('*', '')[bool(curProvider.supportsBacklog)]}
+                                ${('*', '')[bool(curProvider.supports_backlog)]}
                                 <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
                                 <span class="ui-icon ${('ui-icon-locked','ui-icon-unlocked')[bool(curProvider.public)]} pull-right" style="vertical-align:middle;"></span>
                             </li>
                         % endfor
                         </ul>
-                        <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.getID()+':'+str(int(x.isEnabled())) for x in sickbeard.providers.sortedProviderList()])}"/>
+                        <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.get_id()+':'+str(int(x.is_enabled())) for x in sickbeard.providers.sortedProviderList()])}"/>
                         <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                     </fieldset>
                 </div><!-- /component-group1 //-->
@@ -112,16 +111,16 @@ $('#config-components').tabs();
                                     <%
                                         provider_config_list = []
                                         for curProvider in sickbeard.providers.sortedProviderList():
-                                            if curProvider.providerType == GenericProvider.NZB and (not sickbeard.USE_NZBS or not curProvider.isEnabled()):
+                                            if curProvider.provider_type == GenericProvider.NZB and (not sickbeard.USE_NZBS or not curProvider.is_enabled()):
                                                 continue
-                                            elif curProvider.providerType == GenericProvider.TORRENT and ( not sickbeard.USE_TORRENTS or not curProvider.isEnabled()):
+                                            elif curProvider.provider_type == GenericProvider.TORRENT and ( not sickbeard.USE_TORRENTS or not curProvider.is_enabled()):
                                                 continue
                                             provider_config_list.append(curProvider)
                                     %>
                                     % if provider_config_list:
                                         <select id="editAProvider" class="form-control input-sm">
                                             % for cur_provider in provider_config_list:
-                                                <option value="${cur_provider.getID()}">${cur_provider.name}</option>
+                                                <option value="${cur_provider.get_id()}">${cur_provider.name}</option>
                                             % endfor
                                         </select>
                                     % else:
@@ -134,21 +133,21 @@ $('#config-components').tabs();
 
                     <!-- start div for editing providers //-->
                     % for curNewznabProvider in [curProvider for curProvider in sickbeard.newznabProviderList]:
-                    <div class="providerDiv" id="${curNewznabProvider.getID()}Div">
+                    <div class="providerDiv" id="${curNewznabProvider.get_id()}Div">
                         % if curNewznabProvider.default and curNewznabProvider.needs_auth:
                         <div class="field-pair">
-                            <label for="${curNewznabProvider.getID()}_url">
+                            <label for="${curNewznabProvider.get_id()}_url">
                                 <span class="component-title">URL:</span>
                                 <span class="component-desc">
-                                    <input type="text" id="${curNewznabProvider.getID()}_url" value="${curNewznabProvider.url}" class="form-control input-sm input350" disabled autocapitalize="off" />
+                                    <input type="text" id="${curNewznabProvider.get_id()}_url" value="${curNewznabProvider.url}" class="form-control input-sm input350" disabled autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
                         <div class="field-pair">
-                            <label for="${curNewznabProvider.getID()}_hash">
+                            <label for="${curNewznabProvider.get_id()}_hash">
                                 <span class="component-title">API key:</span>
                                 <span class="component-desc">
-                                    <input type="text" id="${curNewznabProvider.getID()}_hash" value="${curNewznabProvider.key}" newznab_name="${curNewznabProvider.getID()}_hash" class="newznab_key form-control input-sm input350" autocapitalize="off" />
+                                    <input type="text" id="${curNewznabProvider.get_id()}_hash" value="${curNewznabProvider.key}" newznab_name="${curNewznabProvider.get_id()}_hash" class="newznab_key form-control input-sm input350" autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -156,10 +155,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curNewznabProvider, 'enable_daily'):
                         <div class="field-pair">
-                            <label for="${curNewznabProvider.getID()}_enable_daily">
+                            <label for="${curNewznabProvider.get_id()}_enable_daily">
                                 <span class="component-title">Enable daily searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNewznabProvider.getID()}_enable_daily" id="${curNewznabProvider.getID()}_enable_daily" ${('', 'checked="checked"')[bool(curNewznabProvider.enable_daily)]}/>
+                                    <input type="checkbox" name="${curNewznabProvider.get_id()}_enable_daily" id="${curNewznabProvider.get_id()}_enable_daily" ${('', 'checked="checked"')[bool(curNewznabProvider.enable_daily)]}/>
                                     <p>enable provider to perform daily searches.</p>
                                 </span>
                             </label>
@@ -167,11 +166,11 @@ $('#config-components').tabs();
                         % endif
 
                         % if hasattr(curNewznabProvider, 'enable_backlog'):
-                        <div class="field-pair${(' hidden', '')[curNewznabProvider.supportsBacklog]}">
-                            <label for="${curNewznabProvider.getID()}_enable_backlog">
+                        <div class="field-pair${(' hidden', '')[curNewznabProvider.supports_backlog]}">
+                            <label for="${curNewznabProvider.get_id()}_enable_backlog">
                                 <span class="component-title">Enable backlog searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNewznabProvider.getID()}_enable_backlog" id="${curNewznabProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curNewznabProvider.enable_backlog and curNewznabProvider.supportsBacklog)]}/>
+                                    <input type="checkbox" name="${curNewznabProvider.get_id()}_enable_backlog" id="${curNewznabProvider.get_id()}_enable_backlog" ${('', 'checked="checked"')[bool(curNewznabProvider.enable_backlog and curNewznabProvider.supports_backlog)]}/>
                                     <p>enable provider to perform backlog searches.</p>
                                 </span>
                             </label>
@@ -180,10 +179,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curNewznabProvider, 'search_fallback'):
                         <div class="field-pair">
-                            <label for="${curNewznabProvider.getID()}_search_fallback">
+                            <label for="${curNewznabProvider.get_id()}_search_fallback">
                                 <span class="component-title">Season search fallback</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNewznabProvider.getID()}_search_fallback" id="${curNewznabProvider.getID()}_search_fallback" ${('', 'checked="checked"')[bool(curNewznabProvider.search_fallback)]}/>
+                                    <input type="checkbox" name="${curNewznabProvider.get_id()}_search_fallback" id="${curNewznabProvider.get_id()}_search_fallback" ${('', 'checked="checked"')[bool(curNewznabProvider.search_fallback)]}/>
                                     <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
@@ -201,13 +200,13 @@ $('#config-components').tabs();
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="sponly"]}/>season packs only.
+                                    <input type="radio" name="${curNewznabProvider.get_id()}_search_mode" id="${curNewznabProvider.get_id()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="sponly"]}/>season packs only.
                                 </span>
                             </label>
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="eponly"]}/>episodes only.
+                                    <input type="radio" name="${curNewznabProvider.get_id()}_search_mode" id="${curNewznabProvider.get_id()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="eponly"]}/>episodes only.
                                 </span>
                             </label>
                         </div>
@@ -216,14 +215,14 @@ $('#config-components').tabs();
                     </div>
                     % endfor
 
-                    % for curNzbProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if curProvider.providerType == GenericProvider.NZB and curProvider not in sickbeard.newznabProviderList]:
-                    <div class="providerDiv" id="${curNzbProvider.getID()}Div">
+                    % for curNzbProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if curProvider.provider_type == GenericProvider.NZB and curProvider not in sickbeard.newznabProviderList]:
+                    <div class="providerDiv" id="${curNzbProvider.get_id()}Div">
                         % if hasattr(curNzbProvider, 'username'):
                         <div class="field-pair">
-                            <label for="${curNzbProvider.getID()}_username">
+                            <label for="${curNzbProvider.get_id()}_username">
                                 <span class="component-title">Username:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curNzbProvider.getID()}_username" value="${curNzbProvider.username}" class="form-control input-sm input350" autocapitalize="off" autocomplete="no" />
+                                    <input type="text" name="${curNzbProvider.get_id()}_username" value="${curNzbProvider.username}" class="form-control input-sm input350" autocapitalize="off" autocomplete="no" />
                                 </span>
                             </label>
                         </div>
@@ -231,10 +230,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curNzbProvider, 'api_key'):
                         <div class="field-pair">
-                            <label for="${curNzbProvider.getID()}_api_key">
+                            <label for="${curNzbProvider.get_id()}_api_key">
                                 <span class="component-title">API key:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curNzbProvider.getID()}_api_key" value="${curNzbProvider.api_key}" class="form-control input-sm input350" autocapitalize="off" />
+                                    <input type="text" name="${curNzbProvider.get_id()}_api_key" value="${curNzbProvider.api_key}" class="form-control input-sm input350" autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -243,10 +242,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curNzbProvider, 'enable_daily'):
                         <div class="field-pair">
-                            <label for="${curNzbProvider.getID()}_enable_daily">
+                            <label for="${curNzbProvider.get_id()}_enable_daily">
                                 <span class="component-title">Enable daily searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNzbProvider.getID()}_enable_daily" id="${curNzbProvider.getID()}_enable_daily" ${('', 'checked="checked"')[bool(curNzbProvider.enable_daily)]}/>
+                                    <input type="checkbox" name="${curNzbProvider.get_id()}_enable_daily" id="${curNzbProvider.get_id()}_enable_daily" ${('', 'checked="checked"')[bool(curNzbProvider.enable_daily)]}/>
                                     <p>enable provider to perform daily searches.</p>
                                 </span>
                             </label>
@@ -254,11 +253,11 @@ $('#config-components').tabs();
                         % endif
 
                         % if hasattr(curNzbProvider, 'enable_backlog'):
-                        <div class="field-pair${(' hidden', '')[curNzbProvider.supportsBacklog]}">
-                            <label for="${curNzbProvider.getID()}_enable_backlog">
+                        <div class="field-pair${(' hidden', '')[curNzbProvider.supports_backlog]}">
+                            <label for="${curNzbProvider.get_id()}_enable_backlog">
                                 <span class="component-title">Enable backlog searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNzbProvider.getID()}_enable_backlog" id="${curNzbProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curNzbProvider.enable_backlog and curNzbProvider.supportsBacklog)]}/>
+                                    <input type="checkbox" name="${curNzbProvider.get_id()}_enable_backlog" id="${curNzbProvider.get_id()}_enable_backlog" ${('', 'checked="checked"')[bool(curNzbProvider.enable_backlog and curNzbProvider.supports_backlog)]}/>
                                     <p>enable provider to perform backlog searches.</p>
                                 </span>
                             </label>
@@ -267,10 +266,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curNzbProvider, 'search_fallback'):
                         <div class="field-pair">
-                            <label for="${curNzbProvider.getID()}_search_fallback">
+                            <label for="${curNzbProvider.get_id()}_search_fallback">
                                 <span class="component-title">Season search fallback</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNzbProvider.getID()}_search_fallback" id="${curNzbProvider.getID()}_search_fallback" ${('', 'checked="checked"')[bool(curNzbProvider.search_fallback)]}/>
+                                    <input type="checkbox" name="${curNzbProvider.get_id()}_search_fallback" id="${curNzbProvider.get_id()}_search_fallback" ${('', 'checked="checked"')[bool(curNzbProvider.search_fallback)]}/>
                                     <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
@@ -288,13 +287,13 @@ $('#config-components').tabs();
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="sponly"]}/>season packs only.
+                                    <input type="radio" name="${curNzbProvider.get_id()}_search_mode" id="${curNzbProvider.get_id()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="sponly"]}/>season packs only.
                                 </span>
                             </label>
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="eponly"]}/>episodes only.
+                                    <input type="radio" name="${curNzbProvider.get_id()}_search_mode" id="${curNzbProvider.get_id()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="eponly"]}/>episodes only.
                                 </span>
                             </label>
                         </div>
@@ -303,15 +302,15 @@ $('#config-components').tabs();
                     </div>
                     % endfor
 
-                    % for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if curProvider.providerType == GenericProvider.TORRENT]:
-                    <div class="providerDiv" id="${curTorrentProvider.getID()}Div">
+                    % for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if curProvider.provider_type == GenericProvider.TORRENT]:
+                    <div class="providerDiv" id="${curTorrentProvider.get_id()}Div">
 
                         % if hasattr(curTorrentProvider, 'custom_url'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_custom_url">
+                            <label for="${curTorrentProvider.get_id()}_custom_url">
                                 <span class="component-title">Custom URL:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_custom_url" id="${curTorrentProvider.getID()}_custom_url" value="${curTorrentProvider.custom_url}" class="form-control input-sm input350" autocapitalize="off" />
+                                    <input type="text" name="${curTorrentProvider.get_id()}_custom_url" id="${curTorrentProvider.get_id()}_custom_url" value="${curTorrentProvider.custom_url}" class="form-control input-sm input350" autocapitalize="off" />
                                 </span>
                             </label>
                             <label>
@@ -325,10 +324,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'api_key'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_api_key">
+                            <label for="${curTorrentProvider.get_id()}_api_key">
                                 <span class="component-title">Api key:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_api_key" id="${curTorrentProvider.getID()}_api_key" value="${curTorrentProvider.api_key}" class="form-control input-sm input350" autocapitalize="off" />
+                                    <input type="text" name="${curTorrentProvider.get_id()}_api_key" id="${curTorrentProvider.get_id()}_api_key" value="${curTorrentProvider.api_key}" class="form-control input-sm input350" autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -336,10 +335,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'digest'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_digest">
+                            <label for="${curTorrentProvider.get_id()}_digest">
                                 <span class="component-title">Digest:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_digest" id="${curTorrentProvider.getID()}_digest" value="${curTorrentProvider.digest}" class="form-control input-sm input350" autocapitalize="off" />
+                                    <input type="text" name="${curTorrentProvider.get_id()}_digest" id="${curTorrentProvider.get_id()}_digest" value="${curTorrentProvider.digest}" class="form-control input-sm input350" autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -347,10 +346,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'hash'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_hash">
+                            <label for="${curTorrentProvider.get_id()}_hash">
                                 <span class="component-title">Hash:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_hash" id="${curTorrentProvider.getID()}_hash" value="${curTorrentProvider.hash}" class="form-control input-sm input350" autocapitalize="off" />
+                                    <input type="text" name="${curTorrentProvider.get_id()}_hash" id="${curTorrentProvider.get_id()}_hash" value="${curTorrentProvider.hash}" class="form-control input-sm input350" autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -358,10 +357,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'username'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_username">
+                            <label for="${curTorrentProvider.get_id()}_username">
                                 <span class="component-title">Username:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_username" id="${curTorrentProvider.getID()}_username" value="${curTorrentProvider.username}" class="form-control input-sm input350" autocapitalize="off" autocomplete="no" />
+                                    <input type="text" name="${curTorrentProvider.get_id()}_username" id="${curTorrentProvider.get_id()}_username" value="${curTorrentProvider.username}" class="form-control input-sm input350" autocapitalize="off" autocomplete="no" />
                                 </span>
                             </label>
                         </div>
@@ -369,10 +368,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'password'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_password">
+                            <label for="${curTorrentProvider.get_id()}_password">
                                 <span class="component-title">Password:</span>
                                 <span class="component-desc">
-                                    <input type="password" name="${curTorrentProvider.getID()}_password" id="${curTorrentProvider.getID()}_password" value="${curTorrentProvider.password}" class="form-control input-sm input350" autocomplete="no" autocapitalize="off" />
+                                    <input type="password" name="${curTorrentProvider.get_id()}_password" id="${curTorrentProvider.get_id()}_password" value="${curTorrentProvider.password}" class="form-control input-sm input350" autocomplete="no" autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -380,10 +379,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'passkey'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_passkey">
+                            <label for="${curTorrentProvider.get_id()}_passkey">
                                 <span class="component-title">Passkey:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_passkey" id="${curTorrentProvider.getID()}_passkey" value="${curTorrentProvider.passkey}" class="form-control input-sm input350" autocapitalize="off" />
+                                    <input type="text" name="${curTorrentProvider.get_id()}_passkey" id="${curTorrentProvider.get_id()}_passkey" value="${curTorrentProvider.passkey}" class="form-control input-sm input350" autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -391,10 +390,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'pin'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_pin">
+                            <label for="${curTorrentProvider.get_id()}_pin">
                                 <span class="component-title">Pin:</span>
                                 <span class="component-desc">
-                                    <input type="password" name="${curTorrentProvider.getID()}_pin" id="${curTorrentProvider.getID()}_pin" value="${curTorrentProvider.pin}" class="form-control input-sm input100" autocomplete="no" autocapitalize="off" />
+                                    <input type="password" name="${curTorrentProvider.get_id()}_pin" id="${curTorrentProvider.get_id()}_pin" value="${curTorrentProvider.pin}" class="form-control input-sm input100" autocomplete="no" autocapitalize="off" />
                                 </span>
                             </label>
                         </div>
@@ -402,10 +401,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'ratio'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_ratio">
-                                <span class="component-title" id="${curTorrentProvider.getID()}_ratio_desc">Seed ratio:</span>
+                            <label for="${curTorrentProvider.get_id()}_ratio">
+                                <span class="component-title" id="${curTorrentProvider.get_id()}_ratio_desc">Seed ratio:</span>
                                 <span class="component-desc">
-                                    <input type="number" step="0.1" name="${curTorrentProvider.getID()}_ratio" id="${curTorrentProvider.getID()}_ratio" value="${curTorrentProvider.ratio}" class="form-control input-sm input75" />
+                                    <input type="number" step="0.1" name="${curTorrentProvider.get_id()}_ratio" id="${curTorrentProvider.get_id()}_ratio" value="${curTorrentProvider.ratio}" class="form-control input-sm input75" />
                                 </span>
                             </label>
                             <label>
@@ -419,10 +418,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'minseed'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_minseed">
-                                <span class="component-title" id="${curTorrentProvider.getID()}_minseed_desc">Minimum seeders:</span>
+                            <label for="${curTorrentProvider.get_id()}_minseed">
+                                <span class="component-title" id="${curTorrentProvider.get_id()}_minseed_desc">Minimum seeders:</span>
                                 <span class="component-desc">
-                                    <input type="number" name="${curTorrentProvider.getID()}_minseed" id="${curTorrentProvider.getID()}_minseed" value="${curTorrentProvider.minseed}" class="form-control input-sm input75" />
+                                    <input type="number" name="${curTorrentProvider.get_id()}_minseed" id="${curTorrentProvider.get_id()}_minseed" value="${curTorrentProvider.minseed}" class="form-control input-sm input75" />
                                 </span>
                             </label>
                         </div>
@@ -430,10 +429,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'minleech'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_minleech">
-                                <span class="component-title" id="${curTorrentProvider.getID()}_minleech_desc">Minimum leechers:</span>
+                            <label for="${curTorrentProvider.get_id()}_minleech">
+                                <span class="component-title" id="${curTorrentProvider.get_id()}_minleech_desc">Minimum leechers:</span>
                                 <span class="component-desc">
-                                    <input type="number" name="${curTorrentProvider.getID()}_minleech" id="${curTorrentProvider.getID()}_minleech" value="${curTorrentProvider.minleech}" class="form-control input-sm input75" />
+                                    <input type="number" name="${curTorrentProvider.get_id()}_minleech" id="${curTorrentProvider.get_id()}_minleech" value="${curTorrentProvider.minleech}" class="form-control input-sm input75" />
                                 </span>
                             </label>
                         </div>
@@ -441,10 +440,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'confirmed'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_confirmed">
+                            <label for="${curTorrentProvider.get_id()}_confirmed">
                                 <span class="component-title">Confirmed download</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_confirmed" id="${curTorrentProvider.getID()}_confirmed" ${('', 'checked="checked"')[bool(curTorrentProvider.confirmed)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.get_id()}_confirmed" id="${curTorrentProvider.get_id()}_confirmed" ${('', 'checked="checked"')[bool(curTorrentProvider.confirmed)]}/>
                                     <p>only download torrents from trusted or verified uploaders ?</p>
                                 </span>
                             </label>
@@ -453,10 +452,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'ranked'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_ranked">
+                            <label for="${curTorrentProvider.get_id()}_ranked">
                                 <span class="component-title">Ranked torrents</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_ranked" id="${curTorrentProvider.getID()}_ranked" ${('', 'checked="checked"')[bool(curTorrentProvider.ranked)]} />
+                                    <input type="checkbox" name="${curTorrentProvider.get_id()}_ranked" id="${curTorrentProvider.get_id()}_ranked" ${('', 'checked="checked"')[bool(curTorrentProvider.ranked)]} />
                                     <p>only download ranked torrents (internal releases)</p>
                                 </span>
                             </label>
@@ -465,10 +464,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'engrelease'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_engrelease">
+                            <label for="${curTorrentProvider.get_id()}_engrelease">
                                 <span class="component-title">English torrents</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_engrelease" id="${curTorrentProvider.getID()}_engrelease" ${('', 'checked="checked"')[bool(curTorrentProvider.engrelease)]} />
+                                    <input type="checkbox" name="${curTorrentProvider.get_id()}_engrelease" id="${curTorrentProvider.get_id()}_engrelease" ${('', 'checked="checked"')[bool(curTorrentProvider.engrelease)]} />
                                     <p>only download english torrents ,or torrents containing english subtitles</p>
                                 </span>
                             </label>
@@ -477,10 +476,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'onlyspasearch'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_onlyspasearch">
+                            <label for="${curTorrentProvider.get_id()}_onlyspasearch">
                                 <span class="component-title">For Spanish torrents</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_onlyspasearch" id="${curTorrentProvider.getID()}_onlyspasearch" ${('', 'checked="checked"')[bool(curTorrentProvider.onlyspasearch)]} />
+                                    <input type="checkbox" name="${curTorrentProvider.get_id()}_onlyspasearch" id="${curTorrentProvider.get_id()}_onlyspasearch" ${('', 'checked="checked"')[bool(curTorrentProvider.onlyspasearch)]} />
                                     <p>ONLY search on this provider if show info is defined as "Spanish" (avoid provider's use for VOS shows)</p>
                                 </span>
                             </label>
@@ -489,10 +488,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'sorting'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_sorting">
+                            <label for="${curTorrentProvider.get_id()}_sorting">
                                 <span class="component-title">Sorting results by</span>
                                 <span class="component-desc">
-                                    <select name="${curTorrentProvider.getID()}_sorting" id="${curTorrentProvider.getID()}_sorting" class="form-control input-sm">
+                                    <select name="${curTorrentProvider.get_id()}_sorting" id="${curTorrentProvider.get_id()}_sorting" class="form-control input-sm">
                                     % for curAction in ('last', 'seeders', 'leechers'):
                                     <option value="${curAction}" ${('', 'selected="selected"')[curAction == curTorrentProvider.sorting]}>${curAction}</option>
                                     % endfor
@@ -504,10 +503,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'freeleech'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_freeleech">
+                            <label for="${curTorrentProvider.get_id()}_freeleech">
                                 <span class="component-title">Freeleech</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_freeleech" id="${curTorrentProvider.getID()}_freeleech" ${('', 'checked="checked"')[bool(curTorrentProvider.freeleech)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.get_id()}_freeleech" id="${curTorrentProvider.get_id()}_freeleech" ${('', 'checked="checked"')[bool(curTorrentProvider.freeleech)]}/>
                                     <p>only download <b>[FreeLeech]</b> torrents.</p>
                                 </span>
                             </label>
@@ -516,10 +515,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'enable_daily'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_enable_daily">
+                            <label for="${curTorrentProvider.get_id()}_enable_daily">
                                 <span class="component-title">Enable daily searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_enable_daily" id="${curTorrentProvider.getID()}_enable_daily" ${('', 'checked="checked"')[bool(curTorrentProvider.enable_daily)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.get_id()}_enable_daily" id="${curTorrentProvider.get_id()}_enable_daily" ${('', 'checked="checked"')[bool(curTorrentProvider.enable_daily)]}/>
                                     <p>enable provider to perform daily searches.</p>
                                 </span>
                             </label>
@@ -527,11 +526,11 @@ $('#config-components').tabs();
                         % endif
 
                         % if hasattr(curTorrentProvider, 'enable_backlog'):
-                        <div class="field-pair${(' hidden', '')[curTorrentProvider.supportsBacklog]}">
-                            <label for="${curTorrentProvider.getID()}_enable_backlog">
+                        <div class="field-pair${(' hidden', '')[curTorrentProvider.supports_backlog]}">
+                            <label for="${curTorrentProvider.get_id()}_enable_backlog">
                                 <span class="component-title">Enable backlog searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_enable_backlog" id="${curTorrentProvider.getID()}_enable_backlog" ${('', 'checked="checked"')[bool(curTorrentProvider.enable_backlog and curTorrentProvider.supportsBacklog)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.get_id()}_enable_backlog" id="${curTorrentProvider.get_id()}_enable_backlog" ${('', 'checked="checked"')[bool(curTorrentProvider.enable_backlog and curTorrentProvider.supports_backlog)]}/>
                                     <p>enable provider to perform backlog searches.</p>
                                 </span>
                             </label>
@@ -540,10 +539,10 @@ $('#config-components').tabs();
 
                         % if hasattr(curTorrentProvider, 'search_fallback'):
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_search_fallback">
+                            <label for="${curTorrentProvider.get_id()}_search_fallback">
                                 <span class="component-title">Season search fallback</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_search_fallback" id="${curTorrentProvider.getID()}_search_fallback" ${('', 'checked="checked"')[bool(curTorrentProvider.search_fallback)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.get_id()}_search_fallback" id="${curTorrentProvider.get_id()}_search_fallback" ${('', 'checked="checked"')[bool(curTorrentProvider.search_fallback)]}/>
                                     <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
@@ -561,24 +560,24 @@ $('#config-components').tabs();
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="sponly"]}/>season packs only.
+                                    <input type="radio" name="${curTorrentProvider.get_id()}_search_mode" id="${curTorrentProvider.get_id()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="sponly"]}/>season packs only.
                                 </span>
                             </label>
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="eponly"]}/>episodes only.
+                                    <input type="radio" name="${curTorrentProvider.get_id()}_search_mode" id="${curTorrentProvider.get_id()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="eponly"]}/>episodes only.
                                 </span>
                             </label>
                         </div>
                         % endif
 
-                        % if hasattr(curTorrentProvider, 'cat') and curTorrentProvider.getID() == 'tntvillage':
+                        % if hasattr(curTorrentProvider, 'cat') and curTorrentProvider.get_id() == 'tntvillage':
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_cat">
+                            <label for="${curTorrentProvider.get_id()}_cat">
                                 <span class="component-title">Category:</span>
                                 <span class="component-desc">
-                                    <select name="${curTorrentProvider.getID()}_cat" id="${curTorrentProvider.getID()}_cat" class="form-control input-sm">
+                                    <select name="${curTorrentProvider.get_id()}_cat" id="${curTorrentProvider.get_id()}_cat" class="form-control input-sm">
                                         % for i in curTorrentProvider.category_dict.keys():
                                         <option value="${curTorrentProvider.category_dict[i]}" ${('', 'selected="selected"')[curTorrentProvider.category_dict[i] == curTorrentProvider.cat]}>${i}</option>
                                         % endfor
@@ -588,12 +587,12 @@ $('#config-components').tabs();
                         </div>
                         % endif
 
-                        % if hasattr(curTorrentProvider, 'subtitle') and curTorrentProvider.getID() == 'tntvillage':
+                        % if hasattr(curTorrentProvider, 'subtitle') and curTorrentProvider.get_id() == 'tntvillage':
                         <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_subtitle">
+                            <label for="${curTorrentProvider.get_id()}_subtitle">
                                 <span class="component-title">Subtitled</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_subtitle" id="${curTorrentProvider.getID()}_subtitle" ${('', 'checked="checked"')[bool(curTorrentProvider.subtitle)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.get_id()}_subtitle" id="${curTorrentProvider.get_id()}_subtitle" ${('', 'checked="checked"')[bool(curTorrentProvider.subtitle)]}/>
                                     <p>select torrent with Italian subtitle</p>
                                 </span>
                             </label>
