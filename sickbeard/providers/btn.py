@@ -68,7 +68,7 @@ class BTNProvider(TorrentProvider):
 
         return True
 
-    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_params, search_mode='eponly', age=0, ep_obj=None):
 
         self._check_auth()
 

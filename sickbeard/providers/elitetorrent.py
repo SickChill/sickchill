@@ -65,12 +65,12 @@ class elitetorrentProvider(TorrentProvider):
 
         }
 
-    def _do_search(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_strings, search_mode='eponly', age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        lang_info = '' if not epObj or not epObj.show else epObj.show.lang
+        lang_info = '' if not ep_obj or not ep_obj.show else ep_obj.show.lang
 
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)

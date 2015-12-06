@@ -108,7 +108,7 @@ class NextGenProvider(TorrentProvider):
         logger.log(u"Failed to login: %s" % error, logger.ERROR)
         return False
 
-    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_params, search_mode='eponly', age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}

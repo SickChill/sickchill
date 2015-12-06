@@ -53,7 +53,7 @@ class animenzb(NZBProvider):
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         return [x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
-    def _do_search(self, search_string, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_string, search_mode='eponly', age=0, ep_obj=None):
 
         logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
@@ -81,7 +81,7 @@ class animenzb(NZBProvider):
 
         return results
 
-    def find_propers(self, date=None):
+    def find_propers(self, search_date=None):
 
         results = []
 
@@ -96,7 +96,7 @@ class animenzb(NZBProvider):
             else:
                 continue
 
-            if not date or result_date > date:
+            if not search_date or result_date > search_date:
                 search_result = classes.Proper(title, url, result_date, self.show)
                 results.append(search_result)
 

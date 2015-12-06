@@ -76,7 +76,7 @@ class T411Provider(TorrentProvider):
             logger.log(u"Token not found in authentication response", logger.WARNING)
             return False
 
-    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def _do_search(self, search_params, search_mode='eponly', age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
