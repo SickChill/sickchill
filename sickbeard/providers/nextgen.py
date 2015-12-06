@@ -130,7 +130,7 @@ class NextGenProvider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data.decode('iso-8859-1'), features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data.decode('iso-8859-1'), 'html5lib') as html:
                         resultsTable = html.find('div', attrs={'id': 'torrent-table-wrapper'})
 
                         if not resultsTable:

@@ -71,7 +71,7 @@ class TokyoToshokanProvider(TorrentProvider):
 
         results = []
         try:
-            with BS4Parser(data, features=["html5lib", "permissive"]) as soup:
+            with BS4Parser(data, 'html5lib') as soup:
                 torrent_table = soup.find('table', attrs={'class': 'listing'})
                 torrent_rows = torrent_table.find_all('tr') if torrent_table else []
                 if torrent_rows:

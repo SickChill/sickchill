@@ -96,7 +96,7 @@ class KATProvider(TorrentProvider):
                         logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
                         continue
 
-                    data = BeautifulSoup(data, features=["html5lib", "permissive"])
+                    data = BeautifulSoup(data, 'html5lib')
 
                     entries = data.findAll('item')
                     for item in entries:

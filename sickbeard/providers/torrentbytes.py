@@ -93,7 +93,7 @@ class TorrentBytesProvider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         # Continue only if one Release is found
                         empty = html.find('Nothing found!')
                         if empty:

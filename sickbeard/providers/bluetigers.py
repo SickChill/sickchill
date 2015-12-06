@@ -101,7 +101,7 @@ class BLUETIGERSProvider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         result_linkz = html.findAll('a', href=re.compile("torrents-details"))
 
                         if not result_linkz:

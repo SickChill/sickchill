@@ -116,7 +116,7 @@ class MoreThanTVProvider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', attrs={'class': 'torrent_table'})
                         torrent_rows = torrent_table.findChildren('tr') if torrent_table else []
 
