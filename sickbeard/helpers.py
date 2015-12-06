@@ -120,6 +120,7 @@ def remove_non_release_groups(name):
         r'\[Seedbox\]$':     'searchre',
         r'\[PublicHD\]$':    'searchre',
         r'\[AndroidTwoU\]$': 'searchre',
+        r'\[brassetv]\]$':   'searchre',
         r'\.\[BT\]$':        'searchre',
         r' \[1044\]$':       'searchre',
         r'\.RiPSaLoT$':      'searchre',
