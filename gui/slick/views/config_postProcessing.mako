@@ -41,7 +41,7 @@
                             </label>
                             <label class="nocheck" for="process_automatically">
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><b>NOTE:</b> Do not use if you use an external PostProcessing script</span>
+                                <span class="component-desc"><b>NOTE:</b> Do not use if you use an external Post Processing script</span>
                             </label>
                         </div>
                         <div class="field-pair">
@@ -138,18 +138,18 @@
                         <div class="field-pair">
                             <input type="checkbox" name="move_associated_files" id="move_associated_files" ${('', 'checked="checked"')[bool(sickbeard.MOVE_ASSOCIATED_FILES)]}/>
                             <label for="move_associated_files">
-                                <span class="component-title">Move Associated Files</span>
-                                <span class="component-desc">Move srr/sfv/etc files with the episode when processed?</span>
+                                <span class="component-title">Delete associated files</span>
+                                <span class="component-desc">Delete srt/srr/sfv/etc files while post processing?</span>
                             </label>
                         </div>
                         <div class="field-pair">
                             <label class="nocheck">
-                                <span class="component-title">Allowed associated file extensions</span>
+                                <span class="component-title">Keep associated file extensions</span>
                                 <input type="text" name="allowed_extensions" id="allowed_extensions" value="${sickbeard.ALLOWED_EXTENSIONS}" class="form-control input-sm input350" autocapitalize="off" />
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Comma seperated list of associated file extensions SickRage should move while Post Processing. Leaving it empty means all extensions will be allowed</span>
+                                <span class="component-desc">Comma seperated list of associated file extensions SickRage should keep while post processing. Leaving it empty means all associated files will be deleted</span>
                             </label>
                         </div>
                         <div class="field-pair">

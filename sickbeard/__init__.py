@@ -282,7 +282,7 @@ NFO_RENAME = True
 TV_DOWNLOAD_DIR = None
 UNPACK = False
 SKIP_REMOVED_FILES = False
-ALLOWED_EXTENSIONS = "nfo,srr,sfv"
+ALLOWED_EXTENSIONS = "srt,nfo,srr,sfv"
 
 NZBS = False
 NZBS_UID = None
