@@ -129,7 +129,7 @@ class TorrentProvider(GenericProvider):
             parser = createParser(file_name)
 
             if parser:
-                # pylint: disable=W0212
+                # pylint: disable=protected-access
                 # Access to a protected member of a client class
                 mime_type = parser._getMimeType()
 
