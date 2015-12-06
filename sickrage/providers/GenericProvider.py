@@ -38,7 +38,7 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
 
-class GenericProvider:
+class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     NZB = 'nzb'
     TORRENT = 'torrent'
 
@@ -114,7 +114,7 @@ class GenericProvider:
 
         return [Proper(x['name'], x['url'], datetime.fromtimestamp(x['time']), self.show) for x in results]
 
-    def find_search_results(self, show, episodes, search_mode, manual_search=False, download_current_quality=False):
+    def find_search_results(self, show, episodes, search_mode, manual_search=False, download_current_quality=False):  # pylint: disable=too-many-branches,too-many-arguments,too-many-locals,too-many-statements
         self._check_auth()
         self.show = show
 
@@ -166,7 +166,7 @@ class GenericProvider:
         if len(results) == len(episodes):
             return results
 
-        if len(items_list):
+        if items_list:
             items = {}
             unknown_items = []
 
@@ -174,12 +174,14 @@ class GenericProvider:
                 quality = self.get_quality(item, anime=show.is_anime)
 
                 if quality == Quality.UNKNOWN:
-                    unknown_items += [item]
+                    unknown_items.append(item)
                 else:
+                    if quality not in items:
+                        items[quality] = []
                     items[quality].append(item)
 
-            items_list = list(chain(*[v for (k, v) in sorted(items.iteritems(), reverse=True)]))
-            items_list += unknown_items if unknown_items else []
+            items_list = list(chain(*[v for (_, v) in sorted(items.iteritems(), reverse=True)]))
+            items_list.append(unknown_items)
 
         cl = []
 
@@ -206,31 +208,31 @@ class GenericProvider:
                 if search_mode == 'sponly':
                     if len(parse_result.episode_numbers):
                         logger.log(
-                                u'This is supposed to be a season pack search but the result %s is not a valid season pack, skipping it' % title,
-                                logger.DEBUG)
+                            u'This is supposed to be a season pack search but the result %s is not a valid season pack, skipping it' % title,
+                            logger.DEBUG
+                        )
                         add_cache_entry = True
 
-                    if len(parse_result.episode_numbers) and (
-                                    parse_result.season_number not in set([ep.season for ep in episodes])
-                            or not [ep for ep in episodes if ep.scene_episode in parse_result.episode_numbers]
-                    ):
+                    if len(parse_result.episode_numbers) and \
+                       (parse_result.season_number not in set([ep.season for ep in episodes]) or
+                        not [ep for ep in episodes if ep.scene_episode in parse_result.episode_numbers]):
                         logger.log(
-                                u'The result %s doesn\'t seem to be a valid episode that we are trying to snatch, ignoring' % title,
-                                logger.DEBUG)
+                            u'The result %s doesn\'t seem to be a valid episode that we are trying to snatch, ignoring' % title,
+                            logger.DEBUG)
                         add_cache_entry = True
                 else:
                     if not len(parse_result.episode_numbers) and parse_result.season_number and not [ep for ep in
                                                                                                      episodes if
                                                                                                      ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers]:
                         logger.log(
-                                u'The result %s doesn\'t seem to be a valid season that we are trying to snatch, ignoring' % title,
-                                logger.DEBUG)
+                            u'The result %s doesn\'t seem to be a valid season that we are trying to snatch, ignoring' % title,
+                            logger.DEBUG)
                         add_cache_entry = True
                     elif len(parse_result.episode_numbers) and not [ep for ep in episodes if
                                                                     ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers]:
                         logger.log(
-                                u'The result %s doesn\'t seem to be a valid episode that we are trying to snatch, ignoring' % title,
-                                logger.DEBUG)
+                            u'The result %s doesn\'t seem to be a valid episode that we are trying to snatch, ignoring' % title,
+                            logger.DEBUG)
                         add_cache_entry = True
 
                 if not add_cache_entry:
@@ -241,8 +243,8 @@ class GenericProvider:
 
                 if not parse_result.is_air_by_date:
                     logger.log(
-                            u'This is supposed to be a date search but the result %s didn\'t parse as one, skipping it' % title,
-                            logger.DEBUG)
+                        u'This is supposed to be a date search but the result %s didn\'t parse as one, skipping it' % title,
+                        logger.DEBUG)
                     add_cache_entry = True
                 else:
                     air_date = parse_result.air_date.toordinal()
@@ -263,8 +265,8 @@ class GenericProvider:
                             same_day_special = True
                     elif len(sql_results) != 1:
                         logger.log(
-                                u'Tried to look up the date for the episode %s but the database didn\'t give proper results, skipping it' % title,
-                                logger.WARNING)
+                            u'Tried to look up the date for the episode %s but the database didn\'t give proper results, skipping it' % title,
+                            logger.WARNING)
                         add_cache_entry = True
 
                 if not add_cache_entry and not same_day_special:
@@ -339,7 +341,7 @@ class GenericProvider:
         return GenericProvider.make_id(self.name)
 
     def get_quality(self, item, anime=False):
-        (title, url) = self._get_title_and_url(item)
+        (title, _) = self._get_title_and_url(item)
         quality = Quality.sceneQuality(title, anime)
 
         return quality
@@ -350,14 +352,14 @@ class GenericProvider:
 
         return result
 
-    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False):
+    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False):  # pylint: disable=too-many-arguments,
         return getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
                       session=self.session, json=json, need_bytes=need_bytes)
 
     def image_name(self):
         return self.get_id() + '.png'
 
-    def is_active(self):
+    def is_active(self):  # pylint: disable=no-self-use
         return False
 
     def is_enabled(self):
@@ -373,19 +375,19 @@ class GenericProvider:
     def search_rss(self, episodes):
         return self.cache.findNeededEpisodes(episodes)
 
-    def seed_ratio(self):
+    def seed_ratio(self):  # pylint: disable=no-self-use
         return ''
 
-    def _check_auth(self):
+    def _check_auth(self):  # pylint: disable=no-self-use
         return True
 
-    def _do_login(self):
+    def _do_login(self):  # pylint: disable=no-self-use
         return True
 
-    def _do_search(self, search_params, search_mode='eponly', age=0, ep_obj=None):
+    def _do_search(self, search_params, search_mode='eponly', age=0, ep_obj=None):  # pylint: disable=unused-argument,no-self-use
         return []
 
-    def _get_result(self, episodes):
+    def _get_result(self, episodes):  # pylint: disable=no-self-use
         return SearchResult(episodes)
 
     def _get_episode_search_strings(self, episode, add_string=''):
@@ -439,13 +441,13 @@ class GenericProvider:
 
         return [search_string]
 
-    def _get_size(self, item):
+    def _get_size(self, item):  # pylint: disable=unused-argument,no-self-use
         return -1
 
-    def _get_storage_dir(self):
+    def _get_storage_dir(self):  # pylint: disable=no-self-use
         return ''
 
-    def _get_title_and_url(self, item):
+    def _get_title_and_url(self, item):  # pylint: disable=no-self-use
         if not item:
             return '', ''
 
@@ -498,5 +500,5 @@ class GenericProvider:
 
         return urls, filename
 
-    def _verify_download(self, file_name=None):
+    def _verify_download(self, file_name=None):  # pylint: disable=unused-argument,no-self-use
         return True
