@@ -1722,12 +1722,14 @@ def getDiskSpaceUsage(diskPath=None):
 
 
 def getTVDBFromID(indexer_id, indexer):
+
+    session = requests.Session()
     tvdb_id = ''
     if indexer == 'IMDB':
-        url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=%s" % (indexer_id)
-        data = urllib.urlopen(url)
+        url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=%s" % indexer_id
+        data = getURL(url, session=session)
         try:
-            tree = ET.parse(data)
+            tree = ET.fromstring(data)
             for show in tree.getiterator("Series"):
                 tvdb_id = show.findtext("seriesid")
 
@@ -1736,10 +1738,10 @@ def getTVDBFromID(indexer_id, indexer):
 
         return tvdb_id
     elif indexer == 'ZAP2IT':
-        url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it=%s" % (indexer_id)
-        data = urllib.urlopen(url)
+        url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it=%s" % indexer_id
+        data = getURL(url, session=session)
         try:
-            tree = ET.parse(data)
+            tree = ET.fromstring(data)
             for show in tree.getiterator("Series"):
                 tvdb_id = show.findtext("seriesid")
 
@@ -1748,9 +1750,8 @@ def getTVDBFromID(indexer_id, indexer):
 
         return tvdb_id
     elif indexer == 'TVMAZE':
-        url = "http://api.tvmaze.com/shows/%s" % (indexer_id)
-        response = urllib2.urlopen(url)
-        data = json.load(response)
+        url = "http://api.tvmaze.com/shows/%s" % indexer_id
+        data = getURL(url, session=session, json=True)
         tvdb_id = data['externals']['thetvdb']
         return tvdb_id
     else:
