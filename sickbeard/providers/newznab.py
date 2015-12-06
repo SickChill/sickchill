@@ -227,7 +227,7 @@ class NewznabProvider(NZBProvider):
 
         return False
 
-    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=R0913,R0914
+    def _do_search(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=too-many-arguments,too-many-locals
         """
         Searches indexer using the params in search_params, either for latest releases, or a string/id search
         Returns: list of results in dict form

@@ -274,7 +274,7 @@ class GenericProvider:
 
             if add_cache_entry:
                 logger.log(u'Adding item from search to cache: %s' % title, logger.DEBUG)
-                # pylint: disable=W0212
+                # pylint: disable=protected-access
                 # Access to a protected member of a client class
                 ci = self.cache._addCacheEntry(title, url, parse_result=parse_result)
 
@@ -329,7 +329,7 @@ class GenericProvider:
                 results[episode_number].append(result)
 
         if len(cl) > 0:
-            # pylint: disable=W0212
+            # pylint: disable=protected-access
             # Access to a protected member of a client class
             db = self.cache._getDB()
             db.mass_action(cl)
