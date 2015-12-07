@@ -42,6 +42,7 @@ class TVChaosUKProvider(TorrentProvider):
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.freeleech = None
 
         self.cache = TVChaosUKCache(self)
 
@@ -144,6 +145,9 @@ class TVChaosUKProvider(TorrentProvider):
                     torrent_table = html.find(id='listtorrents').find_all('tr')
                     for torrent in torrent_table:
                         try:
+                            freeleech = torrent.find('img', src="https://tvchaosuk.com/include/templates/evo-avid/images/torrent_flags/freedownload.gif")
+                            if self.freeleech and not freeleech:
+                                continue
                             title = torrent.find(attrs={'class':'tooltip-target'}).text.strip()
                             download_url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
                             seeders = int(torrent.find(title='Seeders').text.strip())
