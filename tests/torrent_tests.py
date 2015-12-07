@@ -69,7 +69,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
             # pylint: disable=protected-access
             search_strings_list = bitcannon._get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
             for search_strings in search_strings_list:
-                bitcannon._do_search(search_strings)   # {'Episode': ['Italian Works S05E10']} # pylint: disable=protected-access
+                bitcannon.search(search_strings)   # {'Episode': ['Italian Works S05E10']} # pylint: disable=protected-access
 
         return True
 

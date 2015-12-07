@@ -62,7 +62,7 @@ class KATProvider(TorrentProvider):
 
         self.cache = KATCache(self)
 
-    def _do_search(self, search_strings, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
@@ -166,6 +166,6 @@ class KATCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['tv', 'anime']}
-        return {'entries': self.provider._do_search(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = KATProvider()

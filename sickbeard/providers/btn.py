@@ -68,7 +68,7 @@ class BTNProvider(TorrentProvider):
 
         return True
 
-    def _do_search(self, search_params, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
         self._check_auth()
 
@@ -257,7 +257,7 @@ class BTNProvider(TorrentProvider):
     def _doGeneralSearch(self, search_string):
         # 'search' looks as broad is it can find. Can contain episode overview and title for example,
         # use with caution!
-        return self._do_search({'search': search_string})
+        return self.search({'search': search_string})
 
     def find_propers(self, search_date=None):
         results = []
@@ -265,7 +265,7 @@ class BTNProvider(TorrentProvider):
         search_terms = ['%.proper.%', '%.repack.%']
 
         for term in search_terms:
-            for item in self._do_search({'release': term}, age=4 * 24 * 60 * 60):
+            for item in self.search({'release': term}, age=4 * 24 * 60 * 60):
                 if item['Time']:
                     try:
                         result_date = datetime.fromtimestamp(float(item['Time']))
@@ -306,7 +306,7 @@ class BTNCache(tvcache.TVCache):
                 logger.DEBUG)
             seconds_since_last_update = 86400
 
-        return {'entries': self.provider._do_search(search_params=None, age=seconds_since_last_update)}
+        return {'entries': self.provider.search(search_params=None, age=seconds_since_last_update)}
 
 
 provider = BTNProvider()
