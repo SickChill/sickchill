@@ -404,7 +404,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.get_id()}_ratio">
                                 <span class="component-title" id="${curTorrentProvider.get_id()}_ratio_desc">Seed ratio:</span>
                                 <span class="component-desc">
-                                    <input type="number" step="0.1" name="${curTorrentProvider.get_id()}_ratio" id="${curTorrentProvider.get_id()}_ratio" value="${curTorrentProvider.ratio}" class="form-control input-sm input75" />
+                                    <input type="number" min="-1" step="0.1" name="${curTorrentProvider.get_id()}_ratio" id="${curTorrentProvider.get_id()}_ratio" value="${curTorrentProvider.ratio}" class="form-control input-sm input75" />
                                 </span>
                             </label>
                             <label>
@@ -421,7 +421,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.get_id()}_minseed">
                                 <span class="component-title" id="${curTorrentProvider.get_id()}_minseed_desc">Minimum seeders:</span>
                                 <span class="component-desc">
-                                    <input type="number" name="${curTorrentProvider.get_id()}_minseed" id="${curTorrentProvider.get_id()}_minseed" value="${curTorrentProvider.minseed}" class="form-control input-sm input75" />
+                                    <input type="number" min="0" step="1" name="${curTorrentProvider.get_id()}_minseed" id="${curTorrentProvider.get_id()}_minseed" value="${curTorrentProvider.minseed}" class="form-control input-sm input75" />
                                 </span>
                             </label>
                         </div>
@@ -432,7 +432,7 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.get_id()}_minleech">
                                 <span class="component-title" id="${curTorrentProvider.get_id()}_minleech_desc">Minimum leechers:</span>
                                 <span class="component-desc">
-                                    <input type="number" name="${curTorrentProvider.get_id()}_minleech" id="${curTorrentProvider.get_id()}_minleech" value="${curTorrentProvider.minleech}" class="form-control input-sm input75" />
+                                    <input type="number" min="0" step="1" name="${curTorrentProvider.get_id()}_minleech" id="${curTorrentProvider.get_id()}_minleech" value="${curTorrentProvider.minleech}" class="form-control input-sm input75" />
                                 </span>
                             </label>
                         </div>
