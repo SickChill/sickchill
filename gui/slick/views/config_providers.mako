@@ -456,7 +456,7 @@ $('#config-components').tabs();
                                 <span class="component-title">Ranked torrents</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="${curTorrentProvider.get_id()}_ranked" id="${curTorrentProvider.get_id()}_ranked" ${('', 'checked="checked"')[bool(curTorrentProvider.ranked)]} />
-                                    <p>only download ranked torrents (internal releases)</p>
+                                    <p>only download ranked torrents (trusted releases)</p>
                                 </span>
                             </label>
                         </div>
@@ -468,7 +468,7 @@ $('#config-components').tabs();
                                 <span class="component-title">English torrents</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="${curTorrentProvider.get_id()}_engrelease" id="${curTorrentProvider.get_id()}_engrelease" ${('', 'checked="checked"')[bool(curTorrentProvider.engrelease)]} />
-                                    <p>only download english torrents ,or torrents containing english subtitles</p>
+                                    <p>only download english torrents, or torrents containing english subtitles</p>
                                 </span>
                             </label>
                         </div>
@@ -507,7 +507,7 @@ $('#config-components').tabs();
                                 <span class="component-title">Freeleech</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="${curTorrentProvider.get_id()}_freeleech" id="${curTorrentProvider.get_id()}_freeleech" ${('', 'checked="checked"')[bool(curTorrentProvider.freeleech)]}/>
-                                    <p>only download <b>[FreeLeech]</b> torrents.</p>
+                                    <p>only download <b>"FreeLeech"</b> torrents.</p>
                                 </span>
                             </label>
                         </div>
