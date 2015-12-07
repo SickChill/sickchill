@@ -19,6 +19,7 @@
 import traceback
 import urllib
 import time
+import re
 
 from sickbeard import logger
 from sickbeard import tvcache
@@ -40,7 +41,7 @@ class DanishbitsProvider(generic.TorrentProvider):
 
         self.cache = DanishbitsCache(self)
 
-        self.urls = {'base_url': 'https://danishbits.org/torrents.php',
+        self.urls = {'base_url': 'https://danishbits.org/',
                      'search': 'https://danishbits.org/torrents.php?action=newbrowse&search=%s%s',
                      'login_page': 'https://danishbits.org/login.php'}
 
@@ -120,6 +121,9 @@ class DanishbitsProvider(generic.TorrentProvider):
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
+                if mode == 'RSS':
+                    continue
+
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
@@ -131,14 +135,8 @@ class DanishbitsProvider(generic.TorrentProvider):
 
                 try:
                     with BS4Parser(data.decode('iso-8859-1'), features=["html5lib", "permissive"]) as html:
-                        resultsTable = html.find('div', attrs={'id': 'torrent-table-wrapper'})
-
-                        if not resultsTable:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
-                            continue
-
                         # Collecting entries
-                        entries = html.find_all('div', attrs={'class': 'torrent'})
+                        entries = html.find_all('tr', attrs={'class': 'torrent'})
 
                         # Xirg STANDARD TORRENTS
                         # Continue only if one Release is found
@@ -148,15 +146,16 @@ class DanishbitsProvider(generic.TorrentProvider):
 
                         for result in entries:
 
-                            try:
-                                title = result.find('div', attrs={'class': 'croptorrenttext'}).find('b').text
-                                download_url = self.urls['base_url'] + result.find('div', attrs={'class': 'croptorrenttext'}).a['href']
-                                seeders = int(result.find('td')[6].text)
-                                leechers = int(result.find('td')[7].text)
-                                size = self._convertSize(int(result.find('td')[2].text))
-                                freeleech = result.find('div', attrs={'class': 'freeleech'}) is not None
-                            except (AttributeError, TypeError, KeyError):
-                                continue
+                            # try:
+                            title = result.find('div', attrs={'class': 'croptorrenttext'}).find('b').text
+                            download_url = self.urls['base_url'] + result.find('span', attrs={'class': 'right'}).find('a')['href']
+                            seeders = int(result.find_all('td')[6].text)
+                            leechers = int(result.find_all('td')[7].text)
+                            size = self._convertSize(result.find_all('td')[2].text)
+                            freeleech = result.find('div', attrs={'class': 'freeleech'}) is not None
+                            # except (AttributeError, TypeError, KeyError):
+                            #     logger.log(u"attrErr: {0}, tErr: {1}, kErr: {2}".format(AttributeError, TypeError, KeyError), logger.DEBUG)
+                            #    continue
 
                             if self.freeleech and not freeleech:
                                 continue
@@ -187,6 +186,10 @@ class DanishbitsProvider(generic.TorrentProvider):
         return results
 
     def _convertSize(self, size):
+        regex = re.compile('(.+?\w{2})\d+ file\w')
+        m = regex.match(size)
+        size = m.group(1)
+
         size, modifier = size[:-2], size[-2:]
         size = float(size)
         if modifier in 'KB':
