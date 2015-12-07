@@ -272,6 +272,7 @@ class ErrorViewer(object):
 
     @staticmethod
     def add(error):
+        ErrorViewer.errors = [e for e in ErrorViewer.errors if e.message != error.message]
         ErrorViewer.errors.append(error)
 
     @staticmethod
@@ -296,6 +297,7 @@ class WarningViewer(object):
 
     @staticmethod
     def add(error):
+        WarningViewer.errors = [e for e in WarningViewer.errors if e.message != error.message]
         WarningViewer.errors.append(error)
 
     @staticmethod
