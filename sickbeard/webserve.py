@@ -298,6 +298,9 @@ class LoginHandler(BaseHandler):
                 and (self.get_argument('password') == password or not password):
             api_key = sickbeard.API_KEY
 
+        if sickbeard.NOTIFY_ON_LOGIN and not helpers.is_ip_private(self.request.remote_ip):
+            notifiers.notify_login(self.request.remote_ip)
+
         if api_key:
             remember_me = int(self.get_argument('remember_me', default=0) or 0)
             self.set_secure_cookie('sickrage_user', api_key, expires_days=30 if remember_me > 0 else None)
@@ -3756,7 +3759,7 @@ class ConfigGeneral(Config):
 
         sickbeard.save_config()
 
-    def saveGeneral(self, log_dir=None, log_nr=5, log_size=1048576, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
+    def saveGeneral(self, log_dir=None, log_nr=5, log_size=1048576, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,
                     trash_remove_show=None, trash_rotate_logs=None, update_frequency=None, skip_removed_files=None,
                     indexerDefaultLang='en', ep_default_deleted_status=None, launch_browser=None, showupdate_hour=3, web_username=None,
                     api_key=None, indexer_default=None, timezone_display=None, cpu_preset='NORMAL',
@@ -3809,7 +3812,7 @@ class ConfigGeneral(Config):
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
         sickbeard.COMING_EPS_MISSED_RANGE = try_int(coming_eps_missed_range, 7)
         sickbeard.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
-
+        sickbeard.NOTIFY_ON_LOGIN = config.checkbox_to_value(notify_on_login)
         sickbeard.WEB_PORT = try_int(web_port)
         sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
         # sickbeard.WEB_LOG is set in config.change_LOG_DIR()

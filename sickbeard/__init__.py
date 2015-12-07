@@ -180,6 +180,7 @@ API_KEY = None
 API_ROOT = None
 
 ENABLE_HTTPS = False
+NOTIFY_ON_LOGIN = False
 HTTPS_CERT = None
 HTTPS_KEY = None
 
@@ -575,7 +576,7 @@ def initialize(consoleLogging=True):
     with INIT_LOCK:
 
         global BRANCH, GIT_RESET, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, GIT_NEWVER, ACTUAL_LOG_DIR, LOG_DIR, LOG_NR, LOG_SIZE, WEB_PORT, WEB_LOG, ENCRYPTION_VERSION, ENCRYPTION_SECRET, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, WEB_COOKIE_SECRET, WEB_USE_GZIP, API_KEY, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, \
-            HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, RANDOMIZE_PROVIDERS, CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, SAB_FORCED, TORRENT_METHOD, \
+            HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, RANDOMIZE_PROVIDERS, CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, SAB_FORCED, TORRENT_METHOD, NOTIFY_ON_LOGIN, \
             SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, SAB_CATEGORY_BACKLOG, SAB_CATEGORY_ANIME, SAB_CATEGORY_ANIME_BACKLOG, SAB_HOST, \
             NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_CATEGORY_BACKLOG, NZBGET_CATEGORY_ANIME, NZBGET_CATEGORY_ANIME_BACKLOG, NZBGET_PRIORITY, NZBGET_HOST, NZBGET_USE_HTTPS, backlogSearchScheduler, \
             TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH, TORRENT_LABEL, TORRENT_LABEL_ANIME, TORRENT_VERIFY_CERT, TORRENT_RPCURL, TORRENT_AUTH_TYPE, \
@@ -814,6 +815,8 @@ def initialize(consoleLogging=True):
         API_KEY = check_setting_str(CFG, 'General', 'api_key', '', censor_log=True)
 
         ENABLE_HTTPS = bool(check_setting_int(CFG, 'General', 'enable_https', 0))
+
+        NOTIFY_ON_LOGIN  = bool(check_setting_int(CFG, 'General', 'notify_on_login', 0))
 
         HTTPS_CERT = check_setting_str(CFG, 'General', 'https_cert', 'server.crt')
         HTTPS_KEY = check_setting_str(CFG, 'General', 'https_key', 'server.key')
@@ -1688,6 +1691,7 @@ def save_config():
     new_config['General']['debug'] = int(DEBUG)
     new_config['General']['default_page'] = DEFAULT_PAGE
     new_config['General']['enable_https'] = int(ENABLE_HTTPS)
+    new_config['General']['notify_on_login'] = int(NOTIFY_ON_LOGIN)
     new_config['General']['https_cert'] = HTTPS_CERT
     new_config['General']['https_key'] = HTTPS_KEY
     new_config['General']['handle_reverse_proxy'] = int(HANDLE_REVERSE_PROXY)

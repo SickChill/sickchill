@@ -42,6 +42,9 @@ class pyTivoNotifier(object):
     def notify_git_update(self, new_version):
         pass
 
+    def notify_login(self, ipaddress=""):
+        pass
+
     def update_library(self, ep_obj):
 
         # Values from config
