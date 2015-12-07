@@ -38,7 +38,7 @@ class TORRENTPROJECTProvider(TorrentProvider):
         self.minleech = None
         self.cache = TORRENTPROJECTCache(self)
 
-    def _do_search(self, search_strings, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -115,6 +115,6 @@ class TORRENTPROJECTCache(tvcache.TVCache):
     def _getRSSData(self):
 
         search_params = {'RSS': ['0day']}
-        return {'entries': self.provider._do_search(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = TORRENTPROJECTProvider()

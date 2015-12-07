@@ -248,15 +248,15 @@ class GenericProviderTests(unittest.TestCase):
         """
         self.assertTrue(GenericProvider('Test Provider')._check_auth())
 
-    def test__do_login(self):
+    def test_login(self):
         """
-        Test _do_login
+        Test login
         """
-        self.assertTrue(GenericProvider('Test Provider')._do_login())
+        self.assertTrue(GenericProvider('Test Provider').login())
 
-    def test__do_search(self):
+    def test_search(self):
         """
-        Test _do_search
+        Test search
         """
         test_cases = {
             None: [],
@@ -281,7 +281,7 @@ class GenericProviderTests(unittest.TestCase):
 
         for test in test_cases, unicode_test_cases:
             for (search_params, result) in test.iteritems():
-                self.assertEqual(GenericProvider('Test Provider')._do_search(search_params), result)
+                self.assertEqual(GenericProvider('Test Provider').search(search_params), result)
 
     def test__get_size(self):
         """

@@ -104,7 +104,7 @@ class TVChaosUKProvider(TorrentProvider):
 
         return [search_string]
 
-    def _do_login(self):
+    def login(self):
 
         login_params = {'username': self.username, 'password': self.password}
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
@@ -118,12 +118,12 @@ class TVChaosUKProvider(TorrentProvider):
 
         return True
 
-    def _do_search(self, search_strings, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._do_login():
+        if not self.login():
             return results
 
         for mode in search_strings.keys():
@@ -207,7 +207,7 @@ class TVChaosUKCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
-        return {'entries': self.provider._do_search(search_strings)}
+        return {'entries': self.provider.search(search_strings)}
 
 
 provider = TVChaosUKProvider()

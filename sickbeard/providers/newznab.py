@@ -136,7 +136,7 @@ class NewznabProvider(NZBProvider):
 
     def _get_season_search_strings(self, ep_obj):
         """
-        Makes objects to pass to _do_search for manual and backlog season pack searching
+        Makes objects to pass to search for manual and backlog season pack searching
         Returns a list containing dicts of search parameters
         """
         to_return = []
@@ -165,7 +165,7 @@ class NewznabProvider(NZBProvider):
 
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         """
-        Makes objects to pass to _do_search for manual and backlog season pack searching
+        Makes objects to pass to search for manual and backlog season pack searching
         Returns a list containing dicts of search parameters
         """
         to_return = []
@@ -227,7 +227,7 @@ class NewznabProvider(NZBProvider):
 
         return False
 
-    def _do_search(self, search_params, search_mode='eponly', age=0, ep_obj=None): # pylint: disable=too-many-arguments,too-many-locals
+    def search(self, search_params, age=0, ep_obj=None): # pylint: disable=too-many-arguments,too-many-locals
         """
         Searches indexer using the params in search_params, either for latest releases, or a string/id search
         Returns: list of results in dict form
@@ -331,7 +331,7 @@ class NewznabProvider(NZBProvider):
                 curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
                 searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
                 for searchString in searchStrings:
-                    for item in self._do_search(searchString):
+                    for item in self.search(searchString):
                         title, url = self._get_title_and_url(item)
                         if re.match(r'.*(REPACK|PROPER).*', title, re.I):
                             results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
@@ -348,4 +348,4 @@ class NewznabCache(tvcache.TVCache):
         self.minTime = 30
 
     def _getRSSData(self):
-        return {'entries': self.provider._do_search({})}
+        return {'entries': self.provider.search({})}
