@@ -145,7 +145,7 @@ class TVChaosUKProvider(TorrentProvider):
                     torrent_table = html.find(id='listtorrents').find_all('tr')
                     for torrent in torrent_table:
                         try:
-                            freeleech = torrent.find('img', src="https://tvchaosuk.com/include/templates/evo-avid/images/torrent_flags/freedownload.gif")
+                            freeleech = torrent.find('img', alt=re.compile('Free Torrent'))
                             if self.freeleech and not freeleech:
                                 continue
                             title = torrent.find(attrs={'class':'tooltip-target'}).text.strip()
