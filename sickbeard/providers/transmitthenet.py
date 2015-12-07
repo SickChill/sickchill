@@ -132,6 +132,9 @@ class TransmitTheNetProvider(TorrentProvider):
 
                             temp_anchor = torrent_row.find('a', {"data-src": True})
                             title = temp_anchor['data-src'].rsplit('.', 1)[0]
+                            if not title:
+                                title = torrent_row.find('a', onmouseout='return nd();').string
+                                title = title.replace("[", "").replace("]", "").replace("/ ", "")
                             size = try_int(temp_anchor['data-filesize'])
 
                             temp_anchor = torrent_row.find('span', class_='time').parent.find_next_sibling()
