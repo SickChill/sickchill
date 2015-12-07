@@ -150,7 +150,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                 logger.log(u'First search_string has rid', logger.DEBUG)
 
             for search_string in search_strings:
-                items_list += self.search(search_string, search_mode=search_mode, ep_obj=episode)
+                items_list += self.search(search_string, ep_obj=episode)
 
                 if first:
                     first = False
@@ -384,7 +384,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     def login(self):  # pylint: disable=no-self-use
         return True
 
-    def search(self, search_params, search_mode='eponly', age=0, ep_obj=None):  # pylint: disable=unused-argument,no-self-use
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=unused-argument,no-self-use
         return []
 
     def _get_result(self, episodes):  # pylint: disable=no-self-use

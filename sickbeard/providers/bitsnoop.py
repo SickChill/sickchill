@@ -26,7 +26,7 @@ from sickrage.helper.common import try_int
 from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class BitSnoopProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes,too-many-arguments
+class BitSnoopProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
     def __init__(self):
         TorrentProvider.__init__(self, "BitSnoop")
 
@@ -47,7 +47,7 @@ class BitSnoopProvider(TorrentProvider): # pylint: disable=too-many-instance-att
 
         self.cache = BitSnoopCache(self)
 
-    def search(self, search_strings, search_mode='eponly', age=0, ep_obj=None): # pylint: disable=too-many-branches,too-many-arguments,too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None): # pylint: disable=too-many-branches,too-many-locals
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}

@@ -33,7 +33,7 @@ class STRIKEProvider(TorrentProvider):
         self.cache = StrikeCache(self)
         self.minseed, self.minleech = 2 * [None]
 
-    def search(self, search_strings, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}

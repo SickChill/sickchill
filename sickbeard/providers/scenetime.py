@@ -66,7 +66,7 @@ class SceneTimeProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}

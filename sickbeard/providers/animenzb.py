@@ -53,7 +53,7 @@ class animenzb(NZBProvider):
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         return [x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
-    def search(self, search_string, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_string, age=0, ep_obj=None):
 
         logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
