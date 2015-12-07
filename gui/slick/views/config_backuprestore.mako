@@ -27,11 +27,11 @@
         <form name="configForm" method="post" action="backuprestore">
             <div id="config-components">
                 <ul>
-                    <li><a href="#core-component-group1">Backup</a></li>
-                    <li><a href="#core-component-group2">Restore</a></li>
+                    <li><a href="#backup">Backup</a></li>
+                    <li><a href="#restore">Restore</a></li>
                 </ul>
 
-                <div id="core-component-group1" class="component-group clearfix">
+                <div id="backup" class="component-group clearfix">
                     <div class="component-group-desc">
                         <h3>Backup</h3>
                         <p><b>Backup your main database file and config.</b></p>
@@ -54,7 +54,7 @@
 
                 </div><!-- /component-group1 //-->
 
-                <div id="core-component-group2" class="component-group clearfix">
+                <div id="restore" class="component-group clearfix">
                     <div class="component-group-desc">
                         <h3>Restore</h3>
                         <p><b>Restore your main database file and config.</b></p>

@@ -36,17 +36,17 @@ $('#config-components').tabs();
 
             <div id="config-components">
                 <ul>
-                    <li><a href="#core-component-group1">Provider Priorities</a></li>
-                    <li><a href="#core-component-group2">Provider Options</a></li>
+                    <li><a href="#provider-priorities">Provider Priorities</a></li>
+                    <li><a href="#provider-options">Provider Options</a></li>
                   % if sickbeard.USE_NZBS:
-                    <li><a href="#core-component-group3">Configure Custom Newznab Providers</a></li>
+                    <li><a href="#custom-newznab">Configure Custom Newznab Providers</a></li>
                   % endif
                   % if sickbeard.USE_TORRENTS:
-                    <li><a href="#core-component-group4">Configure Custom Torrent Providers</a></li>
+                    <li><a href="#custom-torrent">Configure Custom Torrent Providers</a></li>
                   % endif
                 </ul>
 
-                <div id="core-component-group1" class="component-group" style='min-height: 550px;'>
+                <div id="provider-priorities" class="component-group" style='min-height: 550px;'>
 
                     <div class="component-group-desc">
                         <h3>Provider Priorities</h3>
@@ -95,7 +95,7 @@ $('#config-components').tabs();
                     </fieldset>
                 </div><!-- /component-group1 //-->
 
-                <div id="core-component-group2" class="component-group">
+                <div id="provider-options" class="component-group">
 
                     <div class="component-group-desc">
                         <h3>Provider Options</h3>
@@ -611,7 +611,7 @@ $('#config-components').tabs();
                 </div><!-- /component-group2 //-->
 
                 % if sickbeard.USE_NZBS:
-                <div id="core-component-group3" class="component-group">
+                <div id="custom-newznab" class="component-group">
 
                     <div class="component-group-desc">
                         <h3>Configure Custom<br>Newznab Providers</h3>
@@ -687,7 +687,7 @@ $('#config-components').tabs();
 
                 % if sickbeard.USE_TORRENTS:
 
-                <div id="core-component-group4" class="component-group">
+                <div id="custom-torrent" class="component-group">
 
                 <div class="component-group-desc">
                     <h3>Configure Custom Torrent Providers</h3>

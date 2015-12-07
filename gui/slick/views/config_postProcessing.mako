@@ -23,11 +23,11 @@
         <form id="configForm" action="savePostProcessing" method="post">
             <div id="config-components">
                 <ul>
-                    <li><a href="#core-component-group1">Post-Processing</a></li>
-                    <li><a href="#core-component-group2">Episode Naming</a></li>
-                    <li><a href="#core-component-group3">Metadata</a></li>
+                    <li><a href="#post-processing">Post-Processing</a></li>
+                    <li><a href="#episode-naming">Episode Naming</a></li>
+                    <li><a href="#metadata">Metadata</a></li>
                 </ul>
-                <div id="core-component-group1" class="component-group">
+                <div id="post-processing" class="component-group">
                     <div class="component-group-desc">
                         <h3>Post-Processing</h3>
                         <p>Settings that dictate how SickRage should process completed downloads.</p>
@@ -251,7 +251,7 @@
                         <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                     </fieldset>
                 </div><!-- /component-group1 //-->
-                <div id="core-component-group2" class="component-group">
+                <div id="episode-naming" class="component-group">
 
                     <div class="component-group-desc">
                         <h3>Episode Naming</h3>
@@ -1090,7 +1090,7 @@
                     </fieldset>
                 </div><!-- /component-group2 //-->
 
-                <div id="core-component-group3" class="component-group">
+                <div id="metadata" class="component-group">
                     <div class="component-group-desc">
                         <h3>Metadata</h3>
                         <p>The data associated to the data. These are files associated to a TV show in the form of images and text that, when supported, will enhance the viewing experience.</p>
