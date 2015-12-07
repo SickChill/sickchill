@@ -52,6 +52,12 @@ class GrowlNotifier(object):
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._sendGrowl(title, update_text + new_version)
 
+    def notify_login(self, ipaddress=""):
+        if sickbeard.USE_GROWL:
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            self._sendGrowl(title, update_text.format(ipaddress))
+
     def _send_growl(self, options, message=None):
 
         # Send Notification

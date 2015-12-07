@@ -52,7 +52,7 @@ class FNTProvider(TorrentProvider):
             "visible": 1, "freeleech": 0, "nuke": 1, "3D": 0, "sort": "size", "order": "desc"
             }
 
-    def _do_login(self):
+    def login(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
@@ -75,13 +75,13 @@ class FNTProvider(TorrentProvider):
 
         return True
 
-    def _do_search(self, search_strings, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         # check for auth
-        if not self._do_login():
+        if not self.login():
             return results
 
         for mode in search_strings.keys():
@@ -166,7 +166,7 @@ class FNTCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
-        return {'entries': self.provider._do_search(search_strings)}
+        return {'entries': self.provider.search(search_strings)}
 
 
 provider = FNTProvider()

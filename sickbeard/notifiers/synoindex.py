@@ -41,6 +41,9 @@ class synoIndexNotifier(object):
     def notify_git_update(self, new_version):
         pass
 
+    def notify_login(self, ipaddress=""):
+        pass
+
     def moveFolder(self, old_path, new_path):
         self.moveObject(old_path, new_path)
 

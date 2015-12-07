@@ -156,6 +156,13 @@ class PLEXNotifier(object):
             if update_text and title and new_version:
                 self._notify_pmc(update_text + new_version, title)
 
+    def notify_login(self, ipaddress=""):
+        if sickbeard.USE_PLEX:
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            if update_text and title and new_version:
+                self._notify_pmc(update_text.format(ipaddress), title)
+
     def test_notify_pmc(self, host, username, password):
         return self._notify_pmc('This is a test notification from SickRage', 'Test Notification', host, username, password, force=True)
 

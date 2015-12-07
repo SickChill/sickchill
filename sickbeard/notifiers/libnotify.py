@@ -102,6 +102,12 @@ class LibnotifyNotifier(object):
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify(title, update_text + new_version)
 
+    def notify_login(self, ipaddress=""):
+        if sickbeard.USE_LIBNOTIFY:
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            self._notify(title, update_text.format(ipaddress))
+
     def test_notify(self):
         return self._notify('Test notification', "This is a test notification from SickRage", force=True)
 

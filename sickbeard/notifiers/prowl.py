@@ -86,6 +86,12 @@ class ProwlNotifier(object):
             self._send_prowl(prowl_api=None, prowl_priority=None,
                              event=title, message=update_text + new_version)
 
+    def notify_login(self, ipaddress=""):
+        if sickbeard.USE_PROWL:
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            self._send_prowl(prowl_api=None, prowl_priority=None,
+                             event=title, message=update_text.format(ipaddress))
 
     @staticmethod
     def _generate_recipients(show=None):

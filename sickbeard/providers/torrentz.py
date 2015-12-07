@@ -54,7 +54,7 @@ class TORRENTZProvider(TorrentProvider):
         match = re.findall(r'[0-9]+', description)
         return (int(match[0]) * 1024**2, int(match[1]), int(match[2]))
 
-    def _do_search(self, search_strings, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
@@ -133,6 +133,6 @@ class TORRENTZCache(tvcache.TVCache):
         self.minTime = 15
 
     def _getRSSData(self):
-        return {'entries': self.provider._do_search({'RSS': ['']})}
+        return {'entries': self.provider.search({'RSS': ['']})}
 
 provider = TORRENTZProvider()

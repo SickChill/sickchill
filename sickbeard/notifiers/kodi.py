@@ -531,6 +531,12 @@ class KODINotifier(object):
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify_kodi(update_text + new_version, title)
 
+    def notify_login(self, ipaddress=""):
+        if sickbeard.USE_KODI:
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            self._notify_kodi(update_text.format(ipaddress), title)
+
     def test_notify(self, host, username, password):
         return self._notify_kodi("Testing KODI notifications from SickRage", "Test Notification", host, username, password, force=True)
 

@@ -60,6 +60,12 @@ class TwitterNotifier(object):
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notifyTwitter(title + " - " + update_text + new_version)
 
+    def notify_login(self, ipaddress=""):
+        if sickbeard.USE_TWITTER:
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            self._notifyTwitter(title + " - " + update_text.format(ipaddress))
+
     def test_notify(self):
         return self._notifyTwitter("This is a test notification from SickRage", force=True)
 

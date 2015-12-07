@@ -52,7 +52,7 @@ class T411Provider(TorrentProvider):
         self.minleech = 0
         self.confirmed = False
 
-    def _do_login(self):
+    def login(self):
 
         if self.token is not None:
             if time.time() < (self.tokenLastUpdate + 30 * 60):
@@ -76,12 +76,12 @@ class T411Provider(TorrentProvider):
             logger.log(u"Token not found in authentication response", logger.WARNING)
             return False
 
-    def _do_search(self, search_params, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._do_login():
+        if not self.login():
             return results
 
         for mode in search_params.keys():
@@ -179,7 +179,7 @@ class T411Cache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._do_search(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 
 provider = T411Provider()

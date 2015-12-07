@@ -104,6 +104,12 @@ class Boxcar2Notifier(object):
             title = notifyStrings[NOTIFY_GIT_UPDATE]
             self._notifyBoxcar2(title, update_text + new_version)
 
+    def notify_login(self, ipaddress=""):
+        if sickbeard.USE_BOXCAR2:
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            self._notifyBoxcar2(title, update_text.format(ipaddress))
+
     def _notifyBoxcar2(self, title, message, accesstoken=None):
         """
         Sends a boxcar2 notification based on the provided info or SB config
