@@ -40,7 +40,7 @@ class ShowUpdater:
 
         self.session = requests.Session()
 
-    def run(self):
+    def run(self, force=False):  # pylint: disable=unused-parameter
 
         self.amActive = True
 
