@@ -15,12 +15,12 @@
         <form id="configForm" action="saveSearch" method="post">
             <div id="config-components">
                 <ul>
-                    <li><a href="#core-component-group1">Episode Search</a></li>
-                    <li><a href="#core-component-group2">NZB Search</a></li>
-                    <li><a href="#core-component-group3">Torrent Search</a></li>
+                    <li><a href="#episode-search">Episode Search</a></li>
+                    <li><a href="#nzb-search">NZB Search</a></li>
+                    <li><a href="#torrent-search">Torrent Search</a></li>
                 </ul>
 
-                <div id="core-component-group1" class="component-group">
+                <div id="episode-search" class="component-group">
                     <div class="component-group-desc">
                         <h3>Episode Search</h3>
                         <p>How to manage searching with <a href="${srRoot}/config/providers">providers</a>.</p>
@@ -191,7 +191,7 @@
                     </fieldset>
                 </div><!-- /component-group1 //-->
 
-                <div id="core-component-group2" class="component-group">
+                <div id="nzb-search" class="component-group">
 
                     <div class="component-group-desc">
                         <h3>NZB Search</h3>
@@ -440,7 +440,7 @@
                     </fieldset>
                 </div><!-- /component-group2 //-->
 
-                <div id="core-component-group3" class="component-group">
+                <div id="torrent-search" class="component-group">
                     <div class="component-group-desc">
                         <h3>Torrent Search</h3>
                         <p>How to handle Torrent search results.</p>
