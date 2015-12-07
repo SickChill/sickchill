@@ -226,6 +226,7 @@ class Logger(object):
             log_data = [line for line in reversed(log_data)]
 
             # parse and submit errors to issue tracker
+            previous_title = ""
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
 
                 try:
@@ -237,6 +238,9 @@ class Logger(object):
                         title_Error = title_Error[0:1000]
                 except Exception as e:
                     self.log("Unable to get error title : " + ex(e), ERROR)
+                
+                if previous_title == title_Error:
+                    continue
 
                 gist = None
                 regex = ur"^(%s)\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)$" % curError.time
@@ -310,6 +314,7 @@ class Logger(object):
                     if issue:
                         issue_id = issue.number
                         submitter_result = u'Your issue ticket #%s was submitted successfully!' % issue_id
+                        previous_title = title_Error
                     else:
                         submitter_result = u'Failed to create a new issue!'
 
