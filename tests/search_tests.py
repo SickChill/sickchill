@@ -117,7 +117,7 @@ def test_generator(cur_data, cur_name, cur_provider):
             if not cur_provider.public:
                 continue
 
-            items = cur_provider._do_search(search_strings)  # pylint: disable=protected-access
+            items = cur_provider.search(search_strings)  # pylint: disable=protected-access
             if not items:
                 print "No results from cur_provider?"
                 continue

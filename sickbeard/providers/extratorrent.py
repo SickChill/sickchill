@@ -48,7 +48,7 @@ class ExtraTorrentProvider(TorrentProvider):
         self.headers.update({'User-Agent': USER_AGENT})
         self.search_params = {'cid': 8}
 
-    def _do_search(self, search_strings, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_strings, search_mode='eponly', age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -142,7 +142,7 @@ class ExtraTorrentCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
-        return {'entries': self.provider._do_search(search_strings)}
+        return {'entries': self.provider.search(search_strings)}
 
 
 provider = ExtraTorrentProvider()

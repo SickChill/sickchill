@@ -53,7 +53,7 @@ class animenzb(NZBProvider):
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         return [x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
-    def _do_search(self, search_string, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_string, search_mode='eponly', age=0, ep_obj=None):
 
         logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
@@ -85,7 +85,7 @@ class animenzb(NZBProvider):
 
         results = []
 
-        for item in self._do_search("v2|v3|v4|v5"):
+        for item in self.search("v2|v3|v4|v5"):
 
             (title, url) = self._get_title_and_url(item)
 

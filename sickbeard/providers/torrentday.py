@@ -53,7 +53,7 @@ class TorrentDayProvider(TorrentProvider):
         self.categories = {'Season': {'c14': 1}, 'Episode': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1},
                            'RSS': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c14': 1}}
 
-    def _do_login(self):
+    def login(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
@@ -92,12 +92,12 @@ class TorrentDayProvider(TorrentProvider):
             logger.log(u"Unable to obtain cookie", logger.WARNING)
             return False
 
-    def _do_search(self, search_params, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_params, search_mode='eponly', age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._do_login():
+        if not self.login():
             return results
 
         for mode in search_params.keys():
@@ -171,6 +171,6 @@ class TorrentDayCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._do_search(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = TorrentDayProvider()

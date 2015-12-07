@@ -78,7 +78,7 @@ class RarbgProvider(TorrentProvider):
 
         self.cache = RarbgCache(self)
 
-    def _do_login(self):
+    def login(self):
         if self.token and self.tokenExpireDate and datetime.datetime.now() < self.tokenExpireDate:
             return True
 
@@ -98,12 +98,12 @@ class RarbgProvider(TorrentProvider):
 
         return False
 
-    def _do_search(self, search_params, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_params, search_mode='eponly', age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._do_login():
+        if not self.login():
             return results
 
         if ep_obj is not None:
@@ -185,7 +185,7 @@ class RarbgProvider(TorrentProvider):
                             retry = retry - 1
                             self.token = None
                             self.tokenExpireDate = None
-                            if not self._do_login():
+                            if not self.login():
                                 logger.log(u"Failed retrieving new token", logger.DEBUG)
                                 return results
                             logger.log(u"Using new token", logger.DEBUG)
@@ -254,7 +254,7 @@ class RarbgCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._do_search(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 
 provider = RarbgProvider()

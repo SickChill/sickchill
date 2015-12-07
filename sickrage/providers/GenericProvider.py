@@ -77,7 +77,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         shuffle(self.bt_cache_urls)
 
     def download_result(self, result):
-        if not self._do_login():
+        if not self.login():
             return False
 
         urls, filename = self._make_url(result)
@@ -150,7 +150,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                 logger.log(u'First search_string has rid', logger.DEBUG)
 
             for search_string in search_strings:
-                items_list += self._do_search(search_string, search_mode=search_mode, ep_obj=episode)
+                items_list += self.search(search_string, search_mode=search_mode, ep_obj=episode)
 
                 if first:
                     first = False
@@ -381,10 +381,10 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     def _check_auth(self):  # pylint: disable=no-self-use
         return True
 
-    def _do_login(self):  # pylint: disable=no-self-use
+    def login(self):  # pylint: disable=no-self-use
         return True
 
-    def _do_search(self, search_params, search_mode='eponly', age=0, ep_obj=None):  # pylint: disable=unused-argument,no-self-use
+    def search(self, search_params, search_mode='eponly', age=0, ep_obj=None):  # pylint: disable=unused-argument,no-self-use
         return []
 
     def _get_result(self, episodes):  # pylint: disable=no-self-use

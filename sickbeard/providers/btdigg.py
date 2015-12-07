@@ -45,7 +45,7 @@ class BTDIGGProvider(TorrentProvider):
 
         self.cache = BTDiggCache(self)
 
-    def _do_search(self, search_strings, search_mode='eponly', age=0, ep_obj=None):
+    def search(self, search_strings, search_mode='eponly', age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -116,6 +116,6 @@ class BTDiggCache(tvcache.TVCache):
 
         # Use this hacky way for RSS search since most results will use this codecs
         search_params = {'RSS': ['x264', 'x264.HDTV', '720.HDTV.x264']}
-        return {'entries': self.provider._do_search(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = BTDIGGProvider()
