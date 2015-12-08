@@ -65,7 +65,7 @@
                             <label>
                                 <span class="component-title">Backlog search day(s)</span>
                                 <span class="component-desc">
-                                    <input type="text" name="backlog_days" value="${sickbeard.BACKLOG_DAYS}" class="form-control input-sm input75" autocapitalize="off" />
+                                    <input type="number" min="1" step="1" name="backlog_days" value="${sickbeard.BACKLOG_DAYS}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>number of day(s) that the "Forced Backlog Search" will cover (e.g. 7 Days)</p>
                                 </span>
                             </label>
@@ -75,7 +75,7 @@
                             <label>
                                 <span class="component-title">Backlog search frequency</span>
                                 <span class="component-desc">
-                                    <input type="text" name="backlog_frequency" value="${sickbeard.BACKLOG_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
+                                    <input type="number" min="720" step="60" name="backlog_frequency" value="${sickbeard.BACKLOG_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>time in minutes between searches (min. ${sickbeard.MIN_BACKLOG_FREQUENCY})</p>
                                 </span>
                             </label>
@@ -85,7 +85,7 @@
                             <label>
                                 <span class="component-title">Daily search frequency</span>
                                 <span class="component-desc">
-                                    <input type="text" name="dailysearch_frequency" value="${sickbeard.DAILYSEARCH_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
+                                    <input type="number" min="10" step="1" name="dailysearch_frequency" value="${sickbeard.DAILYSEARCH_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>time in minutes between searches (min. ${sickbeard.MIN_DAILYSEARCH_FREQUENCY})</p>
                                     </span>
                             </label>
@@ -95,7 +95,7 @@
                             <label>
                                 <span class="component-title">Usenet retention</span>
                                 <span class="component-desc">
-                                    <input type="text" name="usenet_retention" value="${sickbeard.USENET_RETENTION}" class="form-control input-sm input75" autocapitalize="off" />
+                                    <input type="number" min="1" step="1" name="usenet_retention" value="${sickbeard.USENET_RETENTION}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>age limit in days for usenet articles to be used (e.g. 500)</p>
                                 </span>
                             </label>
