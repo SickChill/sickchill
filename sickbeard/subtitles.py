@@ -32,6 +32,7 @@ from sickbeard import logger
 from sickbeard import history
 from sickbeard import db
 from sickbeard import processTV
+from sickbeard.helpers import remove_non_release_groups
 from sickrage.helper.common import media_extensions, dateTimeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
@@ -333,6 +334,14 @@ class SubtitlesFinder(object):
         if sickbeard.TV_DOWNLOAD_DIR and ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
             for root, _, files in ek(os.walk, sickbeard.TV_DOWNLOAD_DIR, topdown=False):
                 for video_filename in sorted(files):
+                    try:
+                        # Remove non release groups from video file. Needed to match subtitles
+                        new_video_filename = helpers.remove_non_release_groups(video_filename)
+                        if new_video_filename != video_filename:
+                            os.rename(video_filename, new_video_filename)
+                            video_filename = new_video_filename
+                    except Exception as e:
+                        logger.log(u'Could not remove non release groups from video file. Error: %r' % ex(e), logger.DEBUG)
                     if video_filename.rsplit(".", 1)[1] in media_extensions:
                         try:
                             video = subliminal.scan_video(os.path.join(root, video_filename),
