@@ -55,7 +55,8 @@ class ShowUpdater:
         if result:
             last_update = int(result[0]['time'])
         else:
-            my_db.action("INSERT INTO lastUpdate (provider,`time`) VALUES (?, ?)", ['theTVDB', update_timestamp - 86400])
+            last_update = update_timestamp - 86400
+            my_db.action("INSERT INTO lastUpdate (provider,`time`) VALUES (?, ?)", ['theTVDB', last_update])
 
         # refresh network timezones
         network_timezones.update_network_dict()
