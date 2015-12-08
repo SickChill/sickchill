@@ -1852,24 +1852,18 @@ class Home(WebRoot):
         ep_obj_rename_list = []
 
         ep_obj_list = showObj.getAllEpisodes(has_location=True)
-
-        for cur_ep_obj in ep_obj_list:
-            # Only want to rename if we have a location
-            if cur_ep_obj.location:
-                if cur_ep_obj.relatedEps:
-                    # do we have one of multi-episodes in the rename list already
-                    have_already = False
-                    for cur_related_ep in cur_ep_obj.relatedEps + [cur_ep_obj]:
-                        if cur_related_ep in ep_obj_rename_list:
-                            have_already = True
-                            break
-                        if not have_already:
-                            ep_obj_rename_list.append(cur_ep_obj)
-                else:
-                    ep_obj_rename_list.append(cur_ep_obj)
+        ep_obj_list = [x for x in ep_obj_list if x.location]
+        ep_obj_rename_list = []
+        for ep_obj in ep_obj_list:
+            has_already = False
+            for check in ep_obj.relatedEps + [ep_obj]:
+                if check in ep_obj_rename_list:
+                    has_already = True
+                    break
+            if not has_already:
+                ep_obj_rename_list.append(ep_obj)
 
         if ep_obj_rename_list:
-            # present season DESC episode DESC on screen
             ep_obj_rename_list.reverse()
 
         t = PageTemplate(rh=self, filename="testRename.mako")
