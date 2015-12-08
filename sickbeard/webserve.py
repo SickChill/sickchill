@@ -2321,12 +2321,8 @@ class HomeAddShows(Home):
                 results.setdefault(indexer, []).extend(indexerResults)
 
         for i, shows in results.iteritems():
-            final_results.extend([[sickbeard.indexerApi(i).name, i, sickbeard.indexerApi(i).config["show_url"], int(show['id']),
-                                   show['seriesname'], show['firstaired']] for show in shows])
-
-#        map(final_results.extend,
-#            ([[sickbeard.indexerApi(id).name, id, sickbeard.indexerApi(id).config["show_url"], int(show['id']),
-#               show['seriesname'], show['firstaired']] for show in shows] for id, shows in results.iteritems()))
+            final_results.extend({(sickbeard.indexerApi(i).name, i, sickbeard.indexerApi(i).config["show_url"], int(show['id']),
+                                   show['seriesname'], show['firstaired']) for show in shows})
 
         lang_id = sickbeard.indexerApi().config['langabbv_to_id'][lang]
         return json.dumps({'results': final_results, 'langid': lang_id})
