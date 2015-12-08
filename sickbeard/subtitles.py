@@ -336,7 +336,7 @@ class SubtitlesFinder(object):
                 for video_filename in sorted(files):
                     try:
                         # Remove non release groups from video file. Needed to match subtitles
-                        new_video_filename = helpers.remove_non_release_groups(video_filename)
+                        new_video_filename = remove_non_release_groups(video_filename)
                         if new_video_filename != video_filename:
                             os.rename(video_filename, new_video_filename)
                             video_filename = new_video_filename
