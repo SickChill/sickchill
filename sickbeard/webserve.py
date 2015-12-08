@@ -4550,7 +4550,8 @@ class ConfigProviders(Config):
 
             if hasattr(curTorrentProvider, 'ratio'):
                 try:
-                    curTorrentProvider.ratio = str(kwargs[curTorrentProvider.get_id() + '_ratio']).strip()
+                    ratio = float(str(kwargs[curTorrentProvider.get_id() + '_ratio']).strip())
+                    curTorrentProvider.ratio = (ratio, -1)[ratio < 0]
                 except Exception:
                     curTorrentProvider.ratio = None
 
