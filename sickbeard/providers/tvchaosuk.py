@@ -142,8 +142,14 @@ class TVChaosUKProvider(TorrentProvider):
                     continue
 
                 with BS4Parser(data) as html:
-                    torrent_table = html.find(id='listtorrents').find_all('tr')
-                    for torrent in torrent_table:
+                    torrent_table = html.find(id='listtorrents')
+                    if not torrent_table:
+                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        continue
+
+                    torrent_rows = torrent_table.find_all('tr')
+
+                    for torrent in torrent_rows:
                         try:
                             freeleech = torrent.find('img', alt=re.compile('Free Torrent'))
                             if self.freeleech and not freeleech:
