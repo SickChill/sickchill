@@ -519,8 +519,10 @@
                         <a class="epSearch" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="searchEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
                     % endif
                 % endif
-                % if sickbeard.USE_SUBTITLES and show.subtitles and epResult["location"] and (len(epResult["subtitles"]) == 0 or subtitles.needs_subtitles(epResult['subtitles'])):
-                    <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
+                % if sickbeard.USE_SUBTITLES and show.subtitles and epResult["location"]:
+                    % if (sickbeard.SUBTITLES_MULTI and subtitles.needs_subtitles(epResult["subtitles"])) or (not sickbeard.SUBTITLES_MULTI and len(subtitles.wanted_languages()) > 0 and "und" not in epResult["subtitles"] and list(subtitles.wanted_languages())[0] not in epResult["subtitles"]):
+                        <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
+                    % endif
                 % endif
             </td>
         </tr>

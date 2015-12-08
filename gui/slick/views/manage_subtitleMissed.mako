@@ -22,13 +22,25 @@
         % endif
 
         <form action="${srRoot}/manage/subtitleMissed" method="get">
-            Manage episodes without <select name="whichSubs" class="form-control form-control-inline input-sm">
-            <option value="all">All</option>
-            % for sub_code in subtitles.wanted_languages():
-                <option value="${sub_code}">${subtitles.name_from_code(sub_code)}</option>
-            % endfor
+            % if sickbeard.SUBTITLES_MULTI:
+                Manage episodes without <select name="whichSubs" class="form-control form-control-inline input-sm">
+                <option value="all">All</option>
+                % for sub_code in subtitles.wanted_languages():
+                    <option value="${sub_code}">${subtitles.name_from_code(sub_code)}</option>
+                % endfor
+            % else:
+                Manage episodes without <select name="whichSubs" class="form-control form-control-inline input-sm">
+                % if not subtitles.wanted_languages():
+                    <option value="all">All</option>
+                % else:
+                    % for index, sub_code in enumerate(subtitles.wanted_languages()):
+                        % if index == 0:
+                            <option value="und">${subtitles.name_from_code(sub_code)}</option>
+                        % endif
+                    % endfor
+                % endif
             </select>
-
+            % endif
             <input class="btn" type="submit" value="Manage" />
         </form>
 
@@ -36,7 +48,15 @@
         ##Strange that this is used by js but is an input outside of any form?
         <input type="hidden" id="selectSubLang" name="selectSubLang" value="${whichSubs}" />
         <form action="${srRoot}/manage/downloadSubtitleMissed" method="post">
-            <h2>Episodes without ${subsLanguage} subtitles.</h2>
+            % if sickbeard.SUBTITLES_MULTI:
+                <h2>Episodes without ${subsLanguage} subtitles.</h2>
+            % else:
+                % for index, sub_code in enumerate(subtitles.wanted_languages()):
+                    % if index == 0:
+                        <h2>Episodes without ${subtitles.name_from_code(sub_code)} (undefined) subtitles.</h2>
+                    % endif
+                % endfor
+            % endif
             <br>
             Download missed subtitles for selected episodes <input class="btn btn-inline" type="submit" value="Go" />
             <div>

@@ -123,13 +123,13 @@ def subtitle_code_filter():
 
 
 def needs_subtitles(subtitles):
-    if isinstance(subtitles, basestring):
+    if isinstance(subtitles, basestring) and sickbeard.SUBTITLES_MULTI:
         subtitles = {subtitle.strip() for subtitle in subtitles.split(',')}
 
     if sickbeard.SUBTITLES_MULTI:
         return len(wanted_languages().difference(subtitles)) > 0
-    else:
-        return len(subtitles) == 0
+    elif 'und' not in subtitles:
+        return True
 
 
 # Hack around this for now.
