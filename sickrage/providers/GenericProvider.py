@@ -181,7 +181,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                     items[quality].append(item)
 
             items_list = list(chain(*[v for (_, v) in sorted(items.iteritems(), reverse=True)]))
-            items_list.append(unknown_items)
+            items_list += unknown_items
 
         cl = []
 
