@@ -23,17 +23,16 @@ import re
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 from sickbeard.bs4_parser import BS4Parser
 
-class DanishbitsProvider(generic.TorrentProvider):
+
+class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "Danishbits")
-
-
+        TorrentProvider.__init__(self, "Danishbits")
 
         self.username = None
         self.password = None
@@ -57,24 +56,19 @@ class DanishbitsProvider(generic.TorrentProvider):
         self.minleech = 0
         self.freeleech = True
 
-    def getLoginParams(self):
-        return {
-            'username': self.username,
-            'password': self.password,
-        }
-
-    def loginSuccess(self, output):
+    @staticmethod
+    def loginSuccess(output):
         if "<title>Login :: Danishbits.org</title>" in output:
             return False
         else:
             return True
 
-    def _doLogin(self):
+    def login(self):
 
         now = time.time()
         if self.login_opener and self.last_login_check < (now - 3600):
             try:
-                output = self.getURL(self.urls['test'])
+                output = self.get_url(self.urls['test'])
                 if self.loginSuccess(output):
                     self.last_login_check = now
                     return True
@@ -87,20 +81,21 @@ class DanishbitsProvider(generic.TorrentProvider):
             return True
 
         try:
-            login_params = self.getLoginParams()
-            data = self.getURL(self.urls['login_page'])
+            data = self.get_url(self.urls['login_page'])
             if not data:
                 return False
 
-            with BS4Parser(data) as bs:
-                output = self.getURL(self.urls['login_page'], post_data=login_params)
+            login_params = {
+                'username': self.username,
+                'password': self.password,
+            }
+            output = self.get_url(self.urls['login_page'], post_data=login_params)
+            if self.loginSuccess(output):
+                self.last_login_check = now
+                self.login_opener = self.session
+                return True
 
-                if self.loginSuccess(output):
-                    self.last_login_check = now
-                    self.login_opener = self.session
-                    return True
-
-                error = 'unknown'
+            error = 'unknown'
         except Exception:
             error = traceback.format_exc()
             self.login_opener = None
@@ -109,18 +104,17 @@ class DanishbitsProvider(generic.TorrentProvider):
         logger.log(u"Failed to login: %s" % error, logger.ERROR)
         return False
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches,too-many-locals
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_params.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
-
                 if mode == 'RSS':
                     continue
 
@@ -128,8 +122,8 @@ class DanishbitsProvider(generic.TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-                data = self.getURL(searchURL)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                data = self.get_url(searchURL)
                 if not data:
                     continue
 
@@ -175,7 +169,7 @@ class DanishbitsProvider(generic.TorrentProvider):
 
                             items[mode].append(item)
 
-                except Exception, e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
@@ -185,8 +179,9 @@ class DanishbitsProvider(generic.TorrentProvider):
 
         return results
 
-    def _convertSize(self, size):
-        regex = re.compile('(.+?\w{2})\d+ file\w')
+    @staticmethod
+    def _convertSize(size):
+        regex = re.compile(r'(.+?\w{2})\d+ file\w')
         m = regex.match(size)
         size = m.group(1)
 
@@ -216,7 +211,7 @@ class DanishbitsCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 
 provider = DanishbitsProvider()
