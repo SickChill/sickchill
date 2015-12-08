@@ -100,6 +100,10 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                             <p>Append language codes to subtitle filenames?</p>
                                         </span>
                                     </label>
+                                    <label>
+                                        <span class="component-title">&nbsp;</span>
+                                        <span class="component-desc"><b>NOTE:</b> This option is required if you use multiple subtitle languages.</span>
+                                    </label>
                                 </div>
                                 <div class="field-pair">
                                     <label class="clearfix" for="subtitles_download_in_pp">
