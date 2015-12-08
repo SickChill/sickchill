@@ -26,17 +26,16 @@ import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.exceptions import AuthException
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class MoreThanTVProvider(generic.TorrentProvider):
+class MoreThanTVProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "MoreThanTV")
-
+        TorrentProvider.__init__(self, "MoreThanTV")
 
         self._uid = None
         self._hash = None
@@ -61,14 +60,14 @@ class MoreThanTVProvider(generic.TorrentProvider):
 
         self.cache = MoreThanTVCache(self)
 
-    def _checkAuth(self):
+    def _check_auth(self):
 
         if not self.username or not self.password:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
 
-    def _doLogin(self):
+    def login(self):
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
@@ -80,7 +79,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
                             'login': 'Log in',
                             'keeplogged': '1'}
 
-            response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+            response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
             if not response:
                 logger.log(u"Unable to connect to provider", logger.WARNING)
                 return False
@@ -91,14 +90,14 @@ class MoreThanTVProvider(generic.TorrentProvider):
 
             return True
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         # freeleech = '3' if self.freeleech else '0'
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_params.keys():
@@ -112,12 +111,12 @@ class MoreThanTVProvider(generic.TorrentProvider):
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
                 # returns top 15 results by default, expandable in user profile to 100
-                data = self.getURL(searchURL)
+                data = self.get_url(searchURL)
                 if not data:
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', attrs={'class': 'torrent_table'})
                         torrent_rows = torrent_table.findChildren('tr') if torrent_table else []
 
@@ -181,7 +180,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
     def _convertSize(self, sizeString):
@@ -201,6 +200,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
             size = -1
         return int(size)
 
+
 class MoreThanTVCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
@@ -211,6 +211,6 @@ class MoreThanTVCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = MoreThanTVProvider()

@@ -186,13 +186,18 @@ class PostProcessor(object):
         if not base_name:
             return []
 
-        if subfolders: # subfolders are only checked in show folder, so names will always be exactly alike
-            filelist = recursive_glob(ek(os.path.dirname, globbable_file_path), base_name + '*') # just create the list of all files starting with the basename
-        else: # this is called when PP, so we need to do the filename check case-insensitive
+        # subfolders are only checked in show folder, so names will always be exactly alike
+        if subfolders:
+            # just create the list of all files starting with the basename
+            filelist = recursive_glob(ek(os.path.dirname, globbable_file_path), base_name + '*')
+        # this is called when PP, so we need to do the filename check case-insensitive
+        else:
             filelist = []
 
-            checklist = glob.glob(ek(os.path.join, ek(os.path.dirname, globbable_file_path), '*')) # get a list of all the files in the folder
-            for filefound in checklist: # loop through all the files in the folder, and check if they are the same name even when the cases don't match
+            # get a list of all the files in the folder
+            checklist = glob.glob(ek(os.path.join, ek(os.path.dirname, globbable_file_path), '*'))
+            # loop through all the files in the folder, and check if they are the same name even when the cases don't match
+            for filefound in checklist:
 
                 file_name = filefound.rpartition('.')[0]
                 file_extension = filefound.rpartition('.')[2]
@@ -214,26 +219,27 @@ class PostProcessor(object):
                         filelist.append(filefound)
                     elif file_name.lower().endswith('pt-br') and len(filefound.rsplit('.', 2)[1]) == 5:
                         filelist.append(filefound)
-                elif new_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'): # if there's no difference in the filename add it to the filelist
+                # if there's no difference in the filename add it to the filelist
+                elif new_file_name.lower() == base_name.lower().replace('[[]', '[').replace('[]]', ']'):
                     filelist.append(filefound)
 
         for associated_file_path in filelist:
-            # only add associated to list
+            # Exclude the video file we are post-processing
             if associated_file_path == file_path:
                 continue
 
-            # only list it if the only non-shared part is the extension or if it is a subtitle
-            if subtitles_only and not associated_file_path[len(associated_file_path) - 3:] in subtitle_extensions:
-                continue
+            # Exlude non-subtitle files with the 'only subtitles' option (not implemented yet)
+            # if subtitles_only and not associated_file_path[-3:] in subtitle_extensions:
+            #     continue
 
             # Exclude .rar files from associated list
             if re.search(r'(^.+\.(rar|r\d+)$)', associated_file_path):
                 continue
 
             # Add the extensions that the user doesn't allow to the 'extensions_to_delete' list
-            if sickbeard.MOVE_ASSOCIATED_FILES and sickbeard.ALLOWED_EXTENSIONS:
+            if sickbeard.MOVE_ASSOCIATED_FILES:
                 allowed_extensions = sickbeard.ALLOWED_EXTENSIONS.split(",")
-                if not associated_file_path[-3:] in allowed_extensions and not associated_file_path[-3:] in subtitle_extensions:
+                if not associated_file_path[-3:] in allowed_extensions:
                     if ek(os.path.isfile, associated_file_path):
                         extensions_to_delete.append(associated_file_path)
 
@@ -413,7 +419,6 @@ class PostProcessor(object):
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_copy,
                                       subtitles=subtitles)
-
 
     def _hardlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
         """
@@ -789,7 +794,7 @@ class PostProcessor(object):
                 return ep_quality
 
         # Try getting quality from the episode (snatched) status
-        if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER  + common.Quality.SNATCHED_BEST:
+        if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
             _, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
             if ep_quality != common.Quality.UNKNOWN:
                 self._log(
@@ -987,7 +992,6 @@ class PostProcessor(object):
                 return False
         else:
             self._log("Unable to determine needed filespace as the source file is locked for access")
-
 
         # delete the existing file (and company)
         for cur_ep in [ep_obj] + ep_obj.relatedEps:

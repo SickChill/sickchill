@@ -69,7 +69,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
             # pylint: disable=protected-access
             search_strings_list = bitcannon._get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
             for search_strings in search_strings_list:
-                bitcannon._doSearch(search_strings)   # {'Episode': ['Italian Works S05E10']} # pylint: disable=protected-access
+                bitcannon.search(search_strings)   # {'Episode': ['Italian Works S05E10']} # pylint: disable=protected-access
 
         return True
 
@@ -85,7 +85,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         if not html:
             return
 
-        soup = BeautifulSoup(html, features=["html5lib", "permissive"])
+        soup = BeautifulSoup(html, 'html5lib')
 
         torrent_table = soup.find('table', attrs={'class': 'data'})
         torrent_rows = torrent_table.find_all('tr') if torrent_table else []

@@ -25,13 +25,13 @@ import traceback
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
+from sickrage.providers.TorrentProvider import TorrentProvider
 
-class HDTorrentsProvider(generic.TorrentProvider):
+
+class HDTorrentsProvider(TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "HDTorrents")
-
+        TorrentProvider.__init__(self, "HDTorrents")
 
         self.username = None
         self.password = None
@@ -52,14 +52,14 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
         self.cache = HDTorrentsCache(self)
 
-    def _checkAuth(self):
+    def _check_auth(self):
 
         if not self.username or not self.password:
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
 
         return True
 
-    def _doLogin(self):
+    def login(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
@@ -68,7 +68,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                         'pwd': self.password,
                         'submit': 'Confirm'}
 
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -79,12 +79,12 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_strings.keys():
@@ -100,7 +100,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s" %  search_string, logger.DEBUG)
 
-                data = self.getURL(searchURL)
+                data = self.get_url(searchURL)
                 if not data or 'please try later' in data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
@@ -116,7 +116,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
                 data = urllib.unquote(data[index:].encode('utf-8')).decode('utf-8').replace('\t', '')
 
-                with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                with BS4Parser(data, 'html5lib') as html:
                     if not html:
                         logger.log(u"No html data parsed from provider", logger.DEBUG)
                         continue
@@ -196,7 +196,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
     def _convertSize(self, size):
@@ -212,6 +212,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
             size = size * 1024**4
         return int(size)
 
+
 class HDTorrentsCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
@@ -222,6 +223,6 @@ class HDTorrentsCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_strings)}
+        return {'entries': self.provider.search(search_strings)}
 
 provider = HDTorrentsProvider()

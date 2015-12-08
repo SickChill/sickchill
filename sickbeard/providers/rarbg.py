@@ -25,19 +25,19 @@ import time
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.common import USER_AGENT
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
 class GetOutOfLoop(Exception):
     pass
 
 
-class RarbgProvider(generic.TorrentProvider):
+class RarbgProvider(TorrentProvider):
 
     def __init__(self):
-        generic.TorrentProvider.__init__(self, "Rarbg")
+        TorrentProvider.__init__(self, "Rarbg")
 
         self.public = True
         self.ratio = None
@@ -78,12 +78,11 @@ class RarbgProvider(generic.TorrentProvider):
 
         self.cache = RarbgCache(self)
 
-    def _doLogin(self):
+    def login(self):
         if self.token and self.tokenExpireDate and datetime.datetime.now() < self.tokenExpireDate:
             return True
 
-
-        response = self.getURL(self.urls['token'], timeout=30, json=True)
+        response = self.get_url(self.urls['token'], timeout=30, json=True)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -99,17 +98,17 @@ class RarbgProvider(generic.TorrentProvider):
 
         return False
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
-        if epObj is not None:
-            ep_indexerid = epObj.show.indexerid
-            ep_indexer = epObj.show.indexer
+        if ep_obj is not None:
+            ep_indexerid = ep_obj.show.indexerid
+            ep_indexer = ep_obj.show.indexer
         else:
             ep_indexerid = None
             ep_indexer = None
@@ -157,7 +156,7 @@ class RarbgProvider(generic.TorrentProvider):
                             time_out = time_out + 1
                             time.sleep(1)
 
-                        data = self.getURL(searchURL + self.urlOptions['token'].format(token=self.token))
+                        data = self.get_url(searchURL + self.urlOptions['token'].format(token=self.token))
 
                         self.next_request = datetime.datetime.now() + datetime.timedelta(seconds=10)
 
@@ -186,7 +185,7 @@ class RarbgProvider(generic.TorrentProvider):
                             retry = retry - 1
                             self.token = None
                             self.tokenExpireDate = None
-                            if not self._doLogin():
+                            if not self.login():
                                 logger.log(u"Failed retrieving new token", logger.DEBUG)
                                 return results
                             logger.log(u"Using new token", logger.DEBUG)
@@ -241,7 +240,7 @@ class RarbgProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -255,7 +254,7 @@ class RarbgCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 
 provider = RarbgProvider()

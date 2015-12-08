@@ -24,10 +24,10 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
 
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickrage.helper.exceptions import AuthException
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 category_excluded = {'Sport': 22,
                      'Teatro': 23,
@@ -56,10 +56,9 @@ category_excluded = {'Sport': 22,
                      'Mobile': 37}
 
 
-class TNTVillageProvider(generic.TorrentProvider):
+class TNTVillageProvider(TorrentProvider):
     def __init__(self):
-        generic.TorrentProvider.__init__(self, "TNTVillage")
-
+        TorrentProvider.__init__(self, "TNTVillage")
 
         self._uid = None
         self._hash = None
@@ -112,21 +111,21 @@ class TNTVillageProvider(generic.TorrentProvider):
 
         self.cache = TNTVillageCache(self)
 
-    def _checkAuth(self):
+    def _check_auth(self):
 
         if not self.username or not self.password:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
 
-    def _doLogin(self):
+    def login(self):
 
         login_params = {'UserName': self.username,
                         'PassWord': self.password,
                         'CookieDate': 0,
                         'submit': 'Connettiti al Forum'}
 
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -269,14 +268,14 @@ class TNTVillageProvider(generic.TorrentProvider):
         if int(episodes[0]['count']) == len(parse_result.episode_numbers):
             return True
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         self.categories = "cat=" + str(self.cat)
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_params.keys():
@@ -308,13 +307,13 @@ class TNTVillageProvider(generic.TorrentProvider):
                         logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                     logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                    data = self.getURL(searchURL)
+                    data = self.get_url(searchURL)
                     if not data:
                         logger.log(u"No data returned from provider", logger.DEBUG)
                         continue
 
                     try:
-                        with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                        with BS4Parser(data, 'html5lib') as html:
                             torrent_table = html.find('table', attrs={'class': 'copyright'})
                             torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
@@ -398,7 +397,7 @@ class TNTVillageProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -412,7 +411,7 @@ class TNTVillageCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': []}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 
 provider = TNTVillageProvider()

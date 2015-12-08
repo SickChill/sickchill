@@ -19,28 +19,28 @@
 
 import urllib
 
-from sickbeard.providers import generic
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.helpers import mapIndexersToShow
 from sickrage.helper.exceptions import AuthException
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class TitansOfTVProvider(generic.TorrentProvider):
+class TitansOfTVProvider(TorrentProvider):
     def __init__(self):
-        generic.TorrentProvider.__init__(self, 'TitansOfTV')
+        TorrentProvider.__init__(self, 'TitansOfTV')
 
-        self.supportsAbsoluteNumbering = True
+        self.supports_absolute_numbering = True
         self.api_key = None
         self.ratio = None
         self.cache = TitansOfTVCache(self)
         self.url = 'http://titansof.tv/api/torrents'
         self.download_url = 'http://titansof.tv/api/torrents/%s/download?apikey=%s'
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
-    def _checkAuth(self):
+    def _check_auth(self):
         if not self.api_key:
             raise AuthException('Your authentication credentials for ' + self.name + ' are missing, check your config.')
 
@@ -54,9 +54,9 @@ class TitansOfTVProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):
         # FIXME ADD MODE
-        self._checkAuth()
+        self._check_auth()
         results = []
         params = {}
         self.headers.update({'X-Authorization': self.api_key})
@@ -68,7 +68,7 @@ class TitansOfTVProvider(generic.TorrentProvider):
         logger.log(u"Search string: %s " % search_params, logger.DEBUG)
         logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
 
-        parsedJSON = self.getURL(searchURL, json=True)  # do search
+        parsedJSON = self.get_url(searchURL, json=True)  # do search
 
         if not parsedJSON:
             logger.log(u"No data returned from provider", logger.DEBUG)
@@ -151,7 +151,7 @@ class TitansOfTVCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'limit': 100}
-        return self.provider._doSearch(search_params)
+        return self.provider.search(search_params)
 
 
 provider = TitansOfTVProvider()

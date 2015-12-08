@@ -23,10 +23,10 @@ from base64 import standard_b64encode
 import xmlrpclib
 
 import sickbeard
-from sickbeard.providers.generic import GenericProvider
 from sickbeard import logger
 from sickbeard.common import Quality
 from sickrage.helper.common import try_int
+from sickrage.providers.GenericProvider import GenericProvider
 
 
 def sendNZB(nzb, proper=False):
@@ -115,7 +115,7 @@ def sendNZB(nzb, proper=False):
             else:
                 if nzb.resultType == "nzb":
                     genProvider = GenericProvider("")
-                    data = genProvider.getURL(nzb.url)
+                    data = genProvider.get_url(nzb.url)
                     if data is None:
                         return False
                     nzbcontent64 = standard_b64encode(data)

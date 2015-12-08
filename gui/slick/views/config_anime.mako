@@ -14,11 +14,11 @@
             <div id="config-components">
 
                 <ul>
-                    <li><a href="#core-component-group1">AnimeDB Settings</a></li>
-                    <li><a href="#core-component-group2">Look &amp; Feel</a></li>
+                    <li><a href="#animedb-settings">AnimeDB Settings</a></li>
+                    <li><a href="#anime-look-feel">Look &amp; Feel</a></li>
                 </ul>
 
-                <div id="core-component-group1" class="tab-pane active component-group">
+                <div id="animedb-settings" class="tab-pane active component-group">
                     <div class="component-group-desc">
                         <img class="notifier-icon" src="${srRoot}/images/anidb24.png" alt="AniDB" title="AniDB" width="24" height="24" />
                         <h3><a href="${anon_url('http://anidb.info')}" onclick="window.open(this.href, '_blank'); return false;">AniDB</a></h3>
@@ -69,7 +69,7 @@
 
                 </div><!-- /component-group //-->
 
-                <div id="core-component-group2" class="tab-pane component-group">
+                <div id="anime-look-feel" class="tab-pane component-group">
 
                     <div class="component-group-desc">
                         <h3>Look and Feel</h3>

@@ -21,16 +21,16 @@ import re
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class NyaaProvider(generic.TorrentProvider):
+class NyaaProvider(TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "NyaaTorrents")
+        TorrentProvider.__init__(self, "NyaaTorrents")
 
         self.public = True
-        self.supportsAbsoluteNumbering = True
+        self.supports_absolute_numbering = True
         self.anime_only = True
         self.ratio = None
 
@@ -44,7 +44,7 @@ class NyaaProvider(generic.TorrentProvider):
         self.minleech = 0
         self.confirmed = False
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
         if self.show and not self.show.is_anime:
             return []
 
@@ -119,7 +119,7 @@ class NyaaProvider(generic.TorrentProvider):
             size = size * 1024**4
         return int(size)
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -132,6 +132,6 @@ class NyaaCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = NyaaProvider()

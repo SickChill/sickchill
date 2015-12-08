@@ -40,7 +40,7 @@ class SniTests(unittest.TestCase):
     """
     Test SNI
     """
-    self_signed_cert_providers = ["Womble's Index", "Libertalia", "HoundDawgs"]
+    self_signed_cert_providers = ["Womble's Index", "Libertalia"]
 
     def test_sni_urls(self):
         """

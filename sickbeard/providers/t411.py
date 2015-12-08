@@ -23,13 +23,12 @@ from requests.auth import AuthBase
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class T411Provider(generic.TorrentProvider):
+class T411Provider(TorrentProvider):
     def __init__(self):
-        generic.TorrentProvider.__init__(self, "T411")
-
+        TorrentProvider.__init__(self, "T411")
 
         self.username = None
         self.password = None
@@ -53,7 +52,7 @@ class T411Provider(generic.TorrentProvider):
         self.minleech = 0
         self.confirmed = False
 
-    def _doLogin(self):
+    def login(self):
 
         if self.token is not None:
             if time.time() < (self.tokenLastUpdate + 30 * 60):
@@ -62,7 +61,7 @@ class T411Provider(generic.TorrentProvider):
         login_params = {'username': self.username,
                         'password': self.password}
 
-        response = self.getURL(self.urls['login_page'], post_data=login_params, timeout=30, json=True)
+        response = self.get_url(self.urls['login_page'], post_data=login_params, timeout=30, json=True)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -77,12 +76,12 @@ class T411Provider(generic.TorrentProvider):
             logger.log(u"Token not found in authentication response", logger.WARNING)
             return False
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_params.keys():
@@ -95,7 +94,7 @@ class T411Provider(generic.TorrentProvider):
                 searchURLS = ([self.urls['search'] % (search_string, u) for u in self.subcategories], [self.urls['rss']])[mode == 'RSS']
                 for searchURL in searchURLS:
                     logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-                    data = self.getURL(searchURL, json=True)
+                    data = self.get_url(searchURL, json=True)
                     if not data:
                         continue
 
@@ -157,7 +156,7 @@ class T411Provider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -180,7 +179,7 @@ class T411Cache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 
 provider = T411Provider()

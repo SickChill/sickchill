@@ -57,6 +57,14 @@ class PushalotNotifier(object):
                                event=title, 
                                message=update_text + new_version)
 
+    def notify_login(self, ipaddress=""):
+        if sickbeard.USE_PUSHALOT:
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            self._sendPushalot(pushalot_authorizationtoken=None,
+                               event=title, 
+                               message=update_text.format(ipaddress))
+
     def _sendPushalot(self, pushalot_authorizationtoken=None, event=None, message=None, force=False):
 
         if not sickbeard.USE_PUSHALOT and not force:

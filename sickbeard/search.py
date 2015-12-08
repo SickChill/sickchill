@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import os
 import re
 import threading
@@ -37,10 +36,10 @@ from sickbeard import notifiers
 from sickbeard import nzbSplitter
 from sickbeard import ui
 from sickbeard import failed_history
-from sickbeard.providers.generic import GenericProvider
 from sickbeard import common
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import AuthException, ex
+from sickrage.providers.GenericProvider import GenericProvider
 
 
 def _downloadResult(result):
@@ -58,7 +57,7 @@ def _downloadResult(result):
 
     # nzbs with an URL can just be downloaded from the provider
     if result.resultType == "nzb":
-        newResult = resProvider.downloadResult(result)
+        newResult = resProvider.download_result(result)
     # if it's an nzb data result
     elif result.resultType == "nzbdata":
 
@@ -80,12 +79,13 @@ def _downloadResult(result):
             logger.log(u"Error trying to save NZB to black hole: " + ex(e), logger.ERROR)
             newResult = False
     elif result.resultType == "torrent":
-        newResult = resProvider.downloadResult(result)
+        newResult = resProvider.download_result(result)
     else:
         logger.log(u"Invalid provider type - this is a coding error, report it please", logger.ERROR)
         newResult = False
 
     return newResult
+
 
 def snatchEpisode(result, endStatus=SNATCHED):
     """
@@ -132,7 +132,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
             dlResult = _downloadResult(result)
         else:
             if not result.content and not result.url.startswith('magnet'):
-                result.content = result.provider.getURL(result.url, needBytes=True)
+                result.content = result.provider.get_url(result.url, need_bytes=True)
 
             if result.content or result.url.startswith('magnet'):
                 client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
@@ -377,7 +377,7 @@ def searchForNeededEpisodes():
         if not curShow.paused:
             episodes.extend(wantedEpisodes(curShow, fromDate))
 
-    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.isActive() and x.enable_daily]
+    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active() and x.enable_daily]
     for curProvider in providers:
         threads += [threading.Thread(target=curProvider.cache.updateCache, name=origThreadName + " :: [" + curProvider.name + "]")]
 
@@ -393,7 +393,7 @@ def searchForNeededEpisodes():
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
         curFoundResults = {}
         try:
-            curFoundResults = curProvider.searchRSS(episodes)
+            curFoundResults = curProvider.search_rss(episodes)
         except AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
             continue
@@ -454,7 +454,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.isActive() and x.enable_backlog]
+    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active() and x.enable_backlog]
     for curProvider in providers:
         threads += [threading.Thread(target=curProvider.cache.updateCache,
                                      name=origThreadName + " :: [" + curProvider.name + "]")]
@@ -492,7 +492,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                 logger.log(u"Performing season pack search for " + show.name)
 
             try:
-                searchResults = curProvider.findSearchResults(show, episodes, search_mode, manualSearch, downCurQuality)
+                searchResults = curProvider.find_search_results(show, episodes, search_mode, manualSearch, downCurQuality)
             except AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
                 break
@@ -546,7 +546,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
             # get the quality of the season nzb
             seasonQual = bestSeasonResult.quality
             logger.log(
-                u"The quality of the season " + bestSeasonResult.provider.providerType + " is " + Quality.qualityStrings[
+                u"The quality of the season " + bestSeasonResult.provider.provider_type + " is " + Quality.qualityStrings[
                     seasonQual], logger.DEBUG)
 
             myDB = db.DBConnection()
@@ -569,7 +569,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
             # if we need every ep in the season and there's nothing better then just download this and be done with it (unless single episodes are preferred)
             if allWanted and bestSeasonResult.quality == highest_quality_overall:
                 logger.log(
-                    u"Every ep in this season is needed, downloading the whole " + bestSeasonResult.provider.providerType + " " + bestSeasonResult.name)
+                    u"Every ep in this season is needed, downloading the whole " + bestSeasonResult.provider.provider_type + " " + bestSeasonResult.name)
                 epObjs = []
                 for curEpNum in allEps:
                     for season in set([x.season for x in episodes]):
@@ -585,7 +585,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
             else:
 
-                if bestSeasonResult.provider.providerType == GenericProvider.NZB:
+                if bestSeasonResult.provider.provider_type == GenericProvider.NZB:
                     logger.log(u"Breaking apart the NZB and adding the individual ones to our results", logger.DEBUG)
 
                     # if not, break it apart and add them as the lowest priority results

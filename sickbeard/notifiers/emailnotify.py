@@ -170,6 +170,9 @@ class EmailNotifier(object):
     def notify_git_update(self, new_version="??"):
         pass
 
+    def notify_login(self, ipaddress=""):
+        pass
+
     def _generate_recipients(self, show):
         addrs = []
         myDB = db.DBConnection()

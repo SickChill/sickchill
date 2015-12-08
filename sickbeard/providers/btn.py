@@ -28,18 +28,17 @@ from sickbeard import logger
 from sickbeard import classes
 from sickbeard import tvcache
 from sickbeard import scene_exceptions
-from sickbeard.providers import generic
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.common import cpu_presets
 from sickrage.helper.exceptions import AuthException, ex
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class BTNProvider(generic.TorrentProvider):
+class BTNProvider(TorrentProvider):
     def __init__(self):
-        generic.TorrentProvider.__init__(self, "BTN")
+        TorrentProvider.__init__(self, "BTN")
 
-
-        self.supportsAbsoluteNumbering = True
+        self.supports_absolute_numbering = True
 
         self.api_key = None
         self.ratio = None
@@ -51,7 +50,7 @@ class BTNProvider(generic.TorrentProvider):
 
         self.url = self.urls['website']
 
-    def _checkAuth(self):
+    def _check_auth(self):
         if not self.api_key:
             logger.log(u"Invalid api key. Check your settings", logger.WARNING)
 
@@ -60,7 +59,7 @@ class BTNProvider(generic.TorrentProvider):
     def _checkAuthFromData(self, parsedJSON):
 
         if parsedJSON is None:
-            return self._checkAuth()
+            return self._check_auth()
 
         if 'api-error' in parsedJSON:
             logger.log(u"Incorrect authentication credentials: % s" % parsedJSON['api-error'], logger.DEBUG)
@@ -69,9 +68,9 @@ class BTNProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
-        self._checkAuth()
+        self._check_auth()
 
         results = []
         params = {}
@@ -258,15 +257,15 @@ class BTNProvider(generic.TorrentProvider):
     def _doGeneralSearch(self, search_string):
         # 'search' looks as broad is it can find. Can contain episode overview and title for example,
         # use with caution!
-        return self._doSearch({'search': search_string})
+        return self.search({'search': search_string})
 
-    def findPropers(self, search_date=None):
+    def find_propers(self, search_date=None):
         results = []
 
         search_terms = ['%.proper.%', '%.repack.%']
 
         for term in search_terms:
-            for item in self._doSearch({'release': term}, age=4 * 24 * 60 * 60):
+            for item in self.search({'release': term}, age=4 * 24 * 60 * 60):
                 if item['Time']:
                     try:
                         result_date = datetime.fromtimestamp(float(item['Time']))
@@ -280,7 +279,7 @@ class BTNProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -307,7 +306,7 @@ class BTNCache(tvcache.TVCache):
                 logger.DEBUG)
             seconds_since_last_update = 86400
 
-        return {'entries': self.provider._doSearch(search_params=None, age=seconds_since_last_update)}
+        return {'entries': self.provider.search(search_params=None, age=seconds_since_last_update)}
 
 
 provider = BTNProvider()

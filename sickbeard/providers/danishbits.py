@@ -19,34 +19,34 @@
 import traceback
 import urllib
 import time
+import re
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 from sickbeard.bs4_parser import BS4Parser
 
-class NextGenProvider(generic.TorrentProvider):
+
+class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "NextGen")
-
-
+        TorrentProvider.__init__(self, "Danishbits")
 
         self.username = None
         self.password = None
         self.ratio = None
 
-        self.cache = NextGenCache(self)
+        self.cache = DanishbitsCache(self)
 
-        self.urls = {'base_url': 'https://nxtgn.biz/',
-                     'search': 'https://nxtgn.biz/browse.php?search=%s&cat=0&incldead=0&modes=%s',
-                     'login_page': 'https://nxtgn.biz/login.php'}
+        self.urls = {'base_url': 'https://danishbits.org/',
+                     'search': 'https://danishbits.org/torrents.php?action=newbrowse&search=%s%s',
+                     'login_page': 'https://danishbits.org/login.php'}
 
         self.url = self.urls['base_url']
 
-        self.categories = '&c7=1&c24=1&c17=1&c22=1&c42=1&c46=1&c26=1&c28=1&c43=1&c4=1&c31=1&c45=1&c33=1'
+        self.categories = '&group=3'
 
         self.last_login_check = None
 
@@ -56,24 +56,19 @@ class NextGenProvider(generic.TorrentProvider):
         self.minleech = 0
         self.freeleech = True
 
-    def getLoginParams(self):
-        return {
-            'username': self.username,
-            'password': self.password,
-        }
-
-    def loginSuccess(self, output):
-        if "<title>NextGen - Login</title>" in output:
+    @staticmethod
+    def loginSuccess(output):
+        if "<title>Login :: Danishbits.org</title>" in output:
             return False
         else:
             return True
 
-    def _doLogin(self):
+    def login(self):
 
         now = time.time()
         if self.login_opener and self.last_login_check < (now - 3600):
             try:
-                output = self.getURL(self.urls['test'])
+                output = self.get_url(self.urls['test'])
                 if self.loginSuccess(output):
                     self.last_login_check = now
                     return True
@@ -86,21 +81,21 @@ class NextGenProvider(generic.TorrentProvider):
             return True
 
         try:
-            login_params = self.getLoginParams()
-            data = self.getURL(self.urls['login_page'])
+            data = self.get_url(self.urls['login_page'])
             if not data:
                 return False
 
-            with BS4Parser(data) as bs:
-                csrfraw = bs.find('form', attrs={'id': 'login'})['action']
-                output = self.getURL(self.urls['base_url'] + csrfraw, post_data=login_params)
+            login_params = {
+                'username': self.username,
+                'password': self.password,
+            }
+            output = self.get_url(self.urls['login_page'], post_data=login_params)
+            if self.loginSuccess(output):
+                self.last_login_check = now
+                self.login_opener = self.session
+                return True
 
-                if self.loginSuccess(output):
-                    self.last_login_check = now
-                    self.login_opener = self.session
-                    return True
-
-                error = 'unknown'
+            error = 'unknown'
         except Exception:
             error = traceback.format_exc()
             self.login_opener = None
@@ -109,40 +104,33 @@ class NextGenProvider(generic.TorrentProvider):
         logger.log(u"Failed to login: %s" % error, logger.ERROR)
         return False
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches,too-many-locals
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_params.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
+                if mode == 'RSS':
+                    continue
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-                data = self.getURL(searchURL)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                data = self.get_url(searchURL)
                 if not data:
                     continue
 
                 try:
                     with BS4Parser(data.decode('iso-8859-1'), features=["html5lib", "permissive"]) as html:
-                        resultsTable = html.find('div', attrs={'id': 'torrent-table-wrapper'})
-
-                        if not resultsTable:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
-                            continue
-
                         # Collecting entries
-                        entries_std = html.find_all('div', attrs={'id': 'torrent-std'})
-                        entries_sticky = html.find_all('div', attrs={'id': 'torrent-sticky'})
-
-                        entries = entries_std + entries_sticky
+                        entries = html.find_all('tr', attrs={'class': 'torrent'})
 
                         # Xirg STANDARD TORRENTS
                         # Continue only if one Release is found
@@ -152,15 +140,16 @@ class NextGenProvider(generic.TorrentProvider):
 
                         for result in entries:
 
-                            try:
-                                title = result.find('div', attrs={'id': 'torrent-udgivelse2-users'}).a['title']
-                                download_url = self.urls['base_url'] + result.find('div', attrs={'id': 'torrent-download'}).a['href']
-                                seeders = int(result.find('div', attrs={'id' : 'torrent-seeders'}).text)
-                                leechers = int(result.find('div', attrs={'id' : 'torrent-leechers'}).text)
-                                size = self._convertSize(result.find('div', attrs={'id' : 'torrent-size'}).text)
-                                freeleech = result.find('div', attrs={'id': 'browse-mode-F2L'}) is not None
-                            except (AttributeError, TypeError, KeyError):
-                                continue
+                            # try:
+                            title = result.find('div', attrs={'class': 'croptorrenttext'}).find('b').text
+                            download_url = self.urls['base_url'] + result.find('span', attrs={'class': 'right'}).find('a')['href']
+                            seeders = int(result.find_all('td')[6].text)
+                            leechers = int(result.find_all('td')[7].text)
+                            size = self._convertSize(result.find_all('td')[2].text)
+                            freeleech = result.find('div', attrs={'class': 'freeleech'}) is not None
+                            # except (AttributeError, TypeError, KeyError):
+                            #     logger.log(u"attrErr: {0}, tErr: {1}, kErr: {2}".format(AttributeError, TypeError, KeyError), logger.DEBUG)
+                            #    continue
 
                             if self.freeleech and not freeleech:
                                 continue
@@ -180,7 +169,7 @@ class NextGenProvider(generic.TorrentProvider):
 
                             items[mode].append(item)
 
-                except Exception, e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
@@ -190,7 +179,12 @@ class NextGenProvider(generic.TorrentProvider):
 
         return results
 
-    def _convertSize(self, size):
+    @staticmethod
+    def _convertSize(size):
+        regex = re.compile(r'(.+?\w{2})\d+ file\w')
+        m = regex.match(size)
+        size = m.group(1)
+
         size, modifier = size[:-2], size[-2:]
         size = float(size)
         if modifier in 'KB':
@@ -207,17 +201,17 @@ class NextGenProvider(generic.TorrentProvider):
         return self.ratio
 
 
-class NextGenCache(tvcache.TVCache):
+class DanishbitsCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
         tvcache.TVCache.__init__(self, provider_obj)
 
-        # Only poll NextGen every 10 minutes max
+        # Only poll Danishbits every 10 minutes max
         self.minTime = 10
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 
-provider = NextGenProvider()
+provider = DanishbitsProvider()

@@ -35,14 +35,14 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
 from sickbeard.common import Quality
-from sickbeard.providers import generic
 from sickrage.helper.encoding import ek, ss
 from sickrage.show.Show import Show
 from sickrage.helper.common import try_int
 from sickbeard.common import USER_AGENT
+from sickrage.providers.NZBProvider import NZBProvider
 
 
-class NewznabProvider(generic.NZBProvider):
+class NewznabProvider(NZBProvider):
     """
     Generic provider for built in and custom providers who expose a newznab
     compatible api.
@@ -51,7 +51,7 @@ class NewznabProvider(generic.NZBProvider):
     def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly',
                  search_fallback=False, enable_daily=True, enable_backlog=False):
 
-        generic.NZBProvider.__init__(self, name)
+        NZBProvider.__init__(self, name)
 
         self.headers.update({'User-Agent': USER_AGENT})
 
@@ -84,15 +84,15 @@ class NewznabProvider(generic.NZBProvider):
             int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(
                 int(self.enable_daily)) + '|' + str(int(self.enable_backlog))
 
-    def imageName(self):
+    def image_name(self):
         """
         Checks if we have an image for this provider already.
         Returns found image or the default newznab image
         """
         if ek(os.path.isfile,
               ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
-                 self.getID() + '.png')):
-            return self.getID() + '.png'
+                 self.get_id() + '.png')):
+            return self.get_id() + '.png'
         return 'newznab.png'
 
     def get_newznab_categories(self):
@@ -104,7 +104,7 @@ class NewznabProvider(generic.NZBProvider):
         """
         return_categories = []
 
-        if not self._checkAuth():
+        if not self._check_auth():
             return False, return_categories, "Provider requires auth and your key is not set"
 
         params = {"t": "caps"}
@@ -112,13 +112,13 @@ class NewznabProvider(generic.NZBProvider):
             params['apikey'] = self.key
 
         url = ek(os.path.join, self.url, 'api?') +  urllib.urlencode(params)
-        data = self.getURL(url)
+        data = self.get_url(url)
         if not data:
             error_string = u"Error getting xml for [%s]" % url
             logger.log(error_string, logger.WARNING)
             return False, return_categories, error_string
 
-        data = BeautifulSoup(data, features=["html5lib", "permissive"])
+        data = BeautifulSoup(data, 'html5lib')
         if not self._checkAuthFromData(data):
             data.decompose()
             error_string = u"Error parsing xml for [%s]" % (self.name)
@@ -136,7 +136,7 @@ class NewznabProvider(generic.NZBProvider):
 
     def _get_season_search_strings(self, ep_obj):
         """
-        Makes objects to pass to _doSearch for manual and backlog season pack searching
+        Makes objects to pass to search for manual and backlog season pack searching
         Returns a list containing dicts of search parameters
         """
         to_return = []
@@ -165,7 +165,7 @@ class NewznabProvider(generic.NZBProvider):
 
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         """
-        Makes objects to pass to _doSearch for manual and backlog season pack searching
+        Makes objects to pass to search for manual and backlog season pack searching
         Returns a list containing dicts of search parameters
         """
         to_return = []
@@ -194,7 +194,7 @@ class NewznabProvider(generic.NZBProvider):
 
         return to_return
 
-    def _checkAuth(self):
+    def _check_auth(self):
         """
         Checks that user has set their api key if it is needed
         Returns: True/False
@@ -208,17 +208,17 @@ class NewznabProvider(generic.NZBProvider):
     def _checkAuthFromData(self, data):
         """
         Checks that the returned data is valid
-        Returns: _checkAuth if valid otherwise False if there is an error
+        Returns: _check_auth if valid otherwise False if there is an error
         """
         if data.findAll('categories') + data.findAll('item'):
-            return self._checkAuth()
+            return self._check_auth()
 
         try:
             err_desc = data.error.attrs['description']
             if not err_desc:
                 raise
         except (AssertionError, AttributeError, ValueError):
-            return self._checkAuth()
+            return self._check_auth()
 
         # This is all we should really need, the code is irrelevant
         # Provider name is the thread name, and this should INFO,
@@ -227,13 +227,13 @@ class NewznabProvider(generic.NZBProvider):
 
         return False
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=too-many-arguments,too-many-locals
+    def search(self, search_params, age=0, ep_obj=None): # pylint: disable=too-many-arguments,too-many-locals
         """
         Searches indexer using the params in search_params, either for latest releases, or a string/id search
         Returns: list of results in dict form
         """
         results = []
-        if not self._checkAuth():
+        if not self._check_auth():
             return results
 
         params = {
@@ -254,11 +254,11 @@ class NewznabProvider(generic.NZBProvider):
 
         search_url = ek(os.path.join, self.url, 'api?') + urllib.urlencode(params)
         logger.log(u"Search url: %s" % search_url, logger.DEBUG)
-        data = self.getURL(search_url)
+        data = self.get_url(search_url)
         if not data:
             return results
 
-        data = BeautifulSoup(data, features=["html5lib", "permissive"])
+        data = BeautifulSoup(data, 'html5lib')
 
         try:
             torznab = 'xmlns:torznab' in data.rss.attrs.keys()
@@ -306,7 +306,7 @@ class NewznabProvider(generic.NZBProvider):
         """
         return try_int(item.get('size', -1), -1)
 
-    def findPropers(self, search_date=datetime.datetime.today()):
+    def find_propers(self, search_date=datetime.datetime.today()):
         """
         Searches providers for PROPER or REPACK releases
         Returns a list of objects of type classes.Proper
@@ -331,7 +331,7 @@ class NewznabProvider(generic.NZBProvider):
                 curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
                 searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
                 for searchString in searchStrings:
-                    for item in self._doSearch(searchString):
+                    for item in self.search(searchString):
                         title, url = self._get_title_and_url(item)
                         if re.match(r'.*(REPACK|PROPER).*', title, re.I):
                             results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
@@ -348,4 +348,4 @@ class NewznabCache(tvcache.TVCache):
         self.minTime = 30
 
     def _getRSSData(self):
-        return {'entries': self.provider._doSearch({})}
+        return {'entries': self.provider.search({})}

@@ -24,13 +24,13 @@ from xml.parsers.expat import ExpatError
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
-from sickbeard.providers import generic
 from sickrage.helper.common import try_int
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class ExtraTorrentProvider(generic.TorrentProvider):
+class ExtraTorrentProvider(TorrentProvider):
     def __init__(self):
-        generic.TorrentProvider.__init__(self, "ExtraTorrent")
+        TorrentProvider.__init__(self, "ExtraTorrent")
 
         self.urls = {
             'index': 'http://extratorrent.cc',
@@ -48,7 +48,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
         self.headers.update({'User-Agent': USER_AGENT})
         self.search_params = {'cid': 8}
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -62,7 +62,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
                 try:
                     self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string})
-                    data = self.getURL(self.urls['rss'], params=self.search_params)
+                    data = self.get_url(self.urls['rss'], params=self.search_params)
                     if not data:
                         logger.log(u"No data returned from provider", logger.DEBUG)
                         continue
@@ -119,7 +119,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
         return results
 
     def _magnet_from_details(self, link):
-        details = self.getURL(link)
+        details = self.get_url(link)
         if not details:
             return ''
 
@@ -129,7 +129,7 @@ class ExtraTorrentProvider(generic.TorrentProvider):
 
         return match.group(1)
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -142,7 +142,7 @@ class ExtraTorrentCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_strings)}
+        return {'entries': self.provider.search(search_strings)}
 
 
 provider = ExtraTorrentProvider()

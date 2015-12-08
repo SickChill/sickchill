@@ -102,6 +102,12 @@ class FreeMobileNotifier(object):
             title = notifyStrings[NOTIFY_GIT_UPDATE]
             self._notifyFreeMobile(title, update_text + new_version)
 
+    def notify_login(self, ipaddress=""):
+        if sickbeard.USE_FREEMOBILE:
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            self._notifyFreeMobile(title, update_text.format(ipaddress))
+
     def _notifyFreeMobile(self, title, message, cust_id=None, apiKey=None, force=False):
         """
         Sends a SMS notification

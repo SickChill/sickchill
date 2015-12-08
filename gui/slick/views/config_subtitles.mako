@@ -34,12 +34,12 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
 
             <div id="config-components">
                 <ul>
-                    <li><a href="#core-component-group1">Subtitles Search</a></li>
-                    <li><a href="#core-component-group2">Subtitles Plugin</a></li>
-                    <li><a href="#core-component-group3">Plugin Settings</a></li>
+                    <li><a href="#subtitles-search">Subtitles Search</a></li>
+                    <li><a href="#subtitles-plugin">Subtitles Plugin</a></li>
+                    <li><a href="#plugin-settings">Plugin Settings</a></li>
                 </ul>
 
-                <div id="core-component-group1" class="component-group">
+                <div id="subtitles-search" class="component-group">
 
                     <div class="component-group-desc">
                         <h3>Subtitles Search</h3>
@@ -156,7 +156,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                     </fieldset>
                 </div><!-- /component-group1 //-->
 
-                <div id="core-component-group2" class="component-group">
+                <div id="subtitles-plugin" class="component-group">
 
                     <div class="component-group-desc">
                         <h3>Subtitle Plugins</h3>
@@ -183,7 +183,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                         <br><input type="submit" class="btn config_submitter" value="Save Changes" /><br>
                     </fieldset>
                 </div><!-- /component-group2 //-->
-                <div id="core-component-group3" class="component-group">
+                <div id="plugin-settings" class="component-group">
                     <div class="component-group-desc">
                         <h3>Subtitle Settings</h3>
                         <p>Set user and password for each provider</p>

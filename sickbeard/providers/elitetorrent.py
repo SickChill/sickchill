@@ -24,14 +24,14 @@ from six.moves import urllib
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class elitetorrentProvider(generic.TorrentProvider):
+class elitetorrentProvider(TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "EliteTorrent")
+        TorrentProvider.__init__(self, "EliteTorrent")
 
         self.onlyspasearch = None
         self.minseed = None
@@ -48,7 +48,7 @@ class elitetorrentProvider(generic.TorrentProvider):
         """
         Search query:
         http://www.elitetorrent.net/torrents.php?cat=4&modo=listado&orden=fecha&pag=1&buscar=fringe
-        
+
         cat = 4 => Shows
         modo = listado => display results mode
         orden = fecha => order
@@ -64,17 +64,17 @@ class elitetorrentProvider(generic.TorrentProvider):
             'buscar': ''
 
         }
-        
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        lang_info = '' if not epObj or not epObj.show else epObj.show.lang
-        
+        lang_info = '' if not ep_obj or not ep_obj.show else ep_obj.show.lang
+
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
-            
+
             # Only search if user conditions are true
             if self.onlyspasearch and lang_info != 'es' and mode != 'RSS':
                 logger.log(u"Show info is not spanish, skipping provider search", logger.DEBUG)
@@ -83,20 +83,20 @@ class elitetorrentProvider(generic.TorrentProvider):
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
-                
+
                 search_string = re.sub(r'S0*(\d*)E(\d*)', r'\1x\2', search_string)
                 self.search_params['buscar'] = search_string.strip() if mode != 'RSS' else ''
-                
+
                 searchURL = self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params)
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                
-                data = self.getURL(searchURL, timeout=30)
-                
+
+                data = self.get_url(searchURL, timeout=30)
+
                 if not data:
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', class_='fichas-listado')
 
                         if torrent_table is None:
@@ -111,13 +111,13 @@ class elitetorrentProvider(generic.TorrentProvider):
                         for row in torrent_rows[1:]:
                             try:
                                 seeders_raw = row.find('td', class_='semillas').text
-                                leechers_raw = row.find('td', class_='clientes').text 
+                                leechers_raw = row.find('td', class_='clientes').text
 
                                 download_url = self.urls['base_url'] + row.findAll('a')[0].get('href', '')
                                 title = self._processTitle(row.findAll('a')[1].text)
                                 seeders = seeders_raw if seeders_raw.isnumeric() else 0
                                 leechers = leechers_raw if leechers_raw.isnumeric() else 0
-                                                                
+
                                 # FIXME: Provider does not provide size
                                 size = 0
 
@@ -149,24 +149,24 @@ class elitetorrentProvider(generic.TorrentProvider):
 
         return results
 
-   
+
     @staticmethod
     def _processTitle(title):
 
         # Quality, if no literal is defined it's HDTV
         if 'calidad' not in title:
             title += ' HDTV x264'
-            
-        title = title.replace('(calidad baja)', 'HDTV x264')            
+
+        title = title.replace('(calidad baja)', 'HDTV x264')
         title = title.replace('(Buena calidad)', '720p HDTV x264')
         title = title.replace('(Alta calidad)', '720p HDTV x264')
         title = title.replace('(calidad regular)', 'DVDrip x264')
         title = title.replace('(calidad media)', 'DVDrip x264')
-                    
+
         #Language, all results from this provider have spanish audio, we append it to title (avoid to download undesired torrents)
         title += ' SPANISH AUDIO'
         title += '-ELITETORRENT'
-        
+
         return title.strip()
 
 
@@ -179,7 +179,7 @@ class elitetorrentCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 
 provider = elitetorrentProvider()

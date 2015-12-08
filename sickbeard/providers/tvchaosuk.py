@@ -21,14 +21,14 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import show_name_helpers
 from sickbeard.helpers import sanitizeSceneName
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.exceptions import AuthException
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class TVChaosUKProvider(generic.TorrentProvider):
+class TVChaosUKProvider(TorrentProvider):
     def __init__(self):
-        generic.TorrentProvider.__init__(self, 'TvChaosUK')
+        TorrentProvider.__init__(self, 'TvChaosUK')
 
         self.urls = {'base_url': 'https://tvchaosuk.com/',
                      'login': 'https://tvchaosuk.com/takelogin.php',
@@ -37,12 +37,12 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
         self.url = self.urls['base_url']
 
-
         self.username = None
         self.password = None
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.freeleech = None
 
         self.cache = TVChaosUKCache(self)
 
@@ -54,7 +54,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
             'include_dead_torrents': 'no',
         }
 
-    def _checkAuth(self):
+    def _check_auth(self):
         if self.username and self.password:
             return True
 
@@ -104,10 +104,10 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
         return [search_string]
 
-    def _doLogin(self):
+    def login(self):
 
         login_params = {'username': self.username, 'password': self.password}
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -118,12 +118,12 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_strings.keys():
@@ -134,7 +134,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 self.search_params['keywords'] = search_string.strip()
-                data = self.getURL(self.urls['search'], params=self.search_params)
+                data = self.get_url(self.urls['search'], params=self.search_params)
                 # url_searched = self.urls['search'] + '?' + urlencode(self.search_params)
 
                 if not data:
@@ -142,10 +142,19 @@ class TVChaosUKProvider(generic.TorrentProvider):
                     continue
 
                 with BS4Parser(data) as html:
-                    torrent_table = html.find(id='listtorrents').find_all('tr')
-                    for torrent in torrent_table:
+                    torrent_table = html.find(id='listtorrents')
+                    if not torrent_table:
+                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        continue
+
+                    torrent_rows = torrent_table.find_all('tr')
+
+                    for torrent in torrent_rows:
                         try:
-                            title = torrent.find(attrs={'class':'tooltip-content'}).text.strip()
+                            freeleech = torrent.find('img', alt=re.compile('Free Torrent'))
+                            if self.freeleech and not freeleech:
+                                continue
+                            title = torrent.find(attrs={'class':'tooltip-target'}).text.strip()
                             download_url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
                             seeders = int(torrent.find(title='Seeders').text.strip())
                             leechers = int(torrent.find(title='Leechers').text.strip())
@@ -190,7 +199,7 @@ class TVChaosUKProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -204,7 +213,7 @@ class TVChaosUKCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_strings)}
+        return {'entries': self.provider.search(search_strings)}
 
 
 provider = TVChaosUKProvider()

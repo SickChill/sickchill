@@ -19,12 +19,13 @@
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
+from sickrage.providers.TorrentProvider import TorrentProvider
 
-class STRIKEProvider(generic.TorrentProvider):
+
+class STRIKEProvider(TorrentProvider):
 
     def __init__(self):
-        generic.TorrentProvider.__init__(self, "Strike")
+        TorrentProvider.__init__(self, "Strike")
 
         self.public = True
         self.url = 'https://getstrike.net/'
@@ -32,7 +33,7 @@ class STRIKEProvider(generic.TorrentProvider):
         self.cache = StrikeCache(self)
         self.minseed, self.minleech = 2 * [None]
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -46,7 +47,7 @@ class STRIKEProvider(generic.TorrentProvider):
 
                 searchURL = self.url + "api/v2/torrents/search/?category=TV&phrase=" + search_string
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-                jdata = self.getURL(searchURL, json=True)
+                jdata = self.get_url(searchURL, json=True)
                 if not jdata:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     return []
@@ -82,8 +83,7 @@ class STRIKEProvider(generic.TorrentProvider):
 
         return results
 
-
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -91,14 +91,14 @@ class StrikeCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
         tvcache.TVCache.__init__(self, provider_obj)
-        
+
         # Cache results for 10 min
         self.minTime = 10
 
     def _getRSSData(self):
-        
-        # Use this hacky way for RSS search since most results will use this codec       
+
+        # Use this hacky way for RSS search since most results will use this codec
         search_params = {'RSS': ['x264']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = STRIKEProvider()

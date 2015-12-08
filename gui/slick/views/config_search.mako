@@ -15,12 +15,12 @@
         <form id="configForm" action="saveSearch" method="post">
             <div id="config-components">
                 <ul>
-                    <li><a href="#core-component-group1">Episode Search</a></li>
-                    <li><a href="#core-component-group2">NZB Search</a></li>
-                    <li><a href="#core-component-group3">Torrent Search</a></li>
+                    <li><a href="#episode-search">Episode Search</a></li>
+                    <li><a href="#nzb-search">NZB Search</a></li>
+                    <li><a href="#torrent-search">Torrent Search</a></li>
                 </ul>
 
-                <div id="core-component-group1" class="component-group">
+                <div id="episode-search" class="component-group">
                     <div class="component-group-desc">
                         <h3>Episode Search</h3>
                         <p>How to manage searching with <a href="${srRoot}/config/providers">providers</a>.</p>
@@ -65,7 +65,7 @@
                             <label>
                                 <span class="component-title">Backlog search day(s)</span>
                                 <span class="component-desc">
-                                    <input type="text" name="backlog_days" value="${sickbeard.BACKLOG_DAYS}" class="form-control input-sm input75" autocapitalize="off" />
+                                    <input type="number" min="1" step="1" name="backlog_days" value="${sickbeard.BACKLOG_DAYS}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>number of day(s) that the "Forced Backlog Search" will cover (e.g. 7 Days)</p>
                                 </span>
                             </label>
@@ -75,7 +75,7 @@
                             <label>
                                 <span class="component-title">Backlog search frequency</span>
                                 <span class="component-desc">
-                                    <input type="text" name="backlog_frequency" value="${sickbeard.BACKLOG_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
+                                    <input type="number" min="720" step="60" name="backlog_frequency" value="${sickbeard.BACKLOG_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>time in minutes between searches (min. ${sickbeard.MIN_BACKLOG_FREQUENCY})</p>
                                 </span>
                             </label>
@@ -85,7 +85,7 @@
                             <label>
                                 <span class="component-title">Daily search frequency</span>
                                 <span class="component-desc">
-                                    <input type="text" name="dailysearch_frequency" value="${sickbeard.DAILYSEARCH_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
+                                    <input type="number" min="10" step="1" name="dailysearch_frequency" value="${sickbeard.DAILYSEARCH_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>time in minutes between searches (min. ${sickbeard.MIN_DAILYSEARCH_FREQUENCY})</p>
                                     </span>
                             </label>
@@ -95,7 +95,7 @@
                             <label>
                                 <span class="component-title">Usenet retention</span>
                                 <span class="component-desc">
-                                    <input type="text" name="usenet_retention" value="${sickbeard.USENET_RETENTION}" class="form-control input-sm input75" autocapitalize="off" />
+                                    <input type="number" min="1" step="1" name="usenet_retention" value="${sickbeard.USENET_RETENTION}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>age limit in days for usenet articles to be used (e.g. 500)</p>
                                 </span>
                             </label>
@@ -191,7 +191,7 @@
                     </fieldset>
                 </div><!-- /component-group1 //-->
 
-                <div id="core-component-group2" class="component-group">
+                <div id="nzb-search" class="component-group">
 
                     <div class="component-group-desc">
                         <h3>NZB Search</h3>
@@ -440,7 +440,7 @@
                     </fieldset>
                 </div><!-- /component-group2 //-->
 
-                <div id="core-component-group3" class="component-group">
+                <div id="torrent-search" class="component-group">
                     <div class="component-group-desc">
                         <h3>Torrent Search</h3>
                         <p>How to handle Torrent search results.</p>

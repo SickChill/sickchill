@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import re
 import time
 import traceback
@@ -27,15 +26,15 @@ from xml.parsers.expat import ExpatError
 import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.common import cpu_presets
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class TORRENTZProvider(generic.TorrentProvider):
+class TORRENTZProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "Torrentz")
+        TorrentProvider.__init__(self, "Torrentz")
         self.public = True
         self.confirmed = True
         self.ratio = None
@@ -47,7 +46,7 @@ class TORRENTZProvider(generic.TorrentProvider):
                      'base': 'https://torrentz.eu/'}
         self.url = self.urls['base']
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
     @staticmethod
@@ -55,7 +54,7 @@ class TORRENTZProvider(generic.TorrentProvider):
         match = re.findall(r'[0-9]+', description)
         return (int(match[0]) * 1024**2, int(match[1]), int(match[2]))
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
@@ -66,7 +65,7 @@ class TORRENTZProvider(generic.TorrentProvider):
                     search_url += '?q=' + urllib.parse.quote_plus(search_string)
 
                 logger.log(search_url)
-                data = self.getURL(search_url)
+                data = self.get_url(search_url)
                 if not data:
                     logger.log(u'Seems to be down right now!')
                     continue
@@ -123,6 +122,7 @@ class TORRENTZProvider(generic.TorrentProvider):
 
         return results
 
+
 class TORRENTZCache(tvcache.TVCache):
 
     def __init__(self, provider_obj):
@@ -133,6 +133,6 @@ class TORRENTZCache(tvcache.TVCache):
         self.minTime = 15
 
     def _getRSSData(self):
-        return {'entries': self.provider._doSearch({'RSS': ['']})}
+        return {'entries': self.provider.search({'RSS': ['']})}
 
 provider = TORRENTZProvider()

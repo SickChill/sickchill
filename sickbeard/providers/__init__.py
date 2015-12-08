@@ -24,25 +24,25 @@ from random import shuffle
 import sickbeard
 from sickbeard import logger
 from sickbeard.providers import btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, torrentz, \
-    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, nextgen, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, \
-    freshontv, titansoftv, libertalia, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
-    scenetime, btdigg, strike, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, bitsnoop
+    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, \
+    freshontv, titansoftv, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
+    scenetime, btdigg, strike, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, bitsnoop, danishbits
 
 __all__ = [
     'womble', 'btn', 'thepiratebay', 'kat', 'torrentleech', 'scc', 'hdtorrents',
-    'torrentday', 'hdbits', 'hounddawgs', 'iptorrents', 'omgwtfnzbs', 'nextgen',
+    'torrentday', 'hdbits', 'hounddawgs', 'iptorrents', 'omgwtfnzbs',
     'speedcd', 'nyaatorrents', 'animenzb', 'torrentbytes', 'freshontv', 'titansoftv',
-    'libertalia', 'morethantv', 'bitsoup', 't411', 'tokyotoshokan', 'alpharatio',
+    'morethantv', 'bitsoup', 't411', 'tokyotoshokan', 'alpharatio',
     'shazbat', 'rarbg', 'tntvillage', 'binsearch', 'bluetigers', 'cpasbien',
     'fnt', 'xthor', 'scenetime', 'btdigg', 'strike', 'transmitthenet', 'tvchaosuk',
     'torrentproject', 'extratorrent', 'bitcannon', 'torrentz', 'pretome', 'gftracker',
-    'hdspace', 'newpct', 'elitetorrent', 'bitsnoop'
+    'hdspace', 'newpct', 'elitetorrent', 'bitsnoop', 'danishbits'
 ]
 
 
 def sortedProviderList(randomize=False):
     initialList = sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList
-    providerDict = dict(zip([x.getID() for x in initialList], initialList))
+    providerDict = dict(zip([x.get_id() for x in initialList], initialList))
 
     newList = []
 
@@ -53,7 +53,7 @@ def sortedProviderList(randomize=False):
 
     # add all enabled providers first
     for curModule in providerDict:
-        if providerDict[curModule] not in newList and providerDict[curModule].isEnabled():
+        if providerDict[curModule] not in newList and providerDict[curModule].is_enabled():
             newList.append(providerDict[curModule])
 
     # add any modules that are missing from that list
@@ -211,7 +211,7 @@ def getProviderModule(name):
 def getProviderClass(provider_id):
     providerMatch = [x for x in
                      sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList if
-                     x.getID() == provider_id]
+                     x.get_id() == provider_id]
 
     if len(providerMatch) != 1:
         return None

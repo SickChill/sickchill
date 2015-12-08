@@ -151,6 +151,12 @@ class PushoverNotifier(object):
             title = notifyStrings[NOTIFY_GIT_UPDATE]
             self._notifyPushover(title, update_text + new_version)
 
+    def notify_login(self, ipaddress=""):
+        if sickbeard.USE_PUSHOVER:
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            self._notifyPushover(title, update_text.format(ipaddress))
+
     def _notifyPushover(self, title, message, sound=None, userKey=None, apiKey=None, force=False):
         """
         Sends a pushover notification based on the provided info or SR config

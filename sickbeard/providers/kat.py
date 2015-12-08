@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import posixpath  # Must use posixpath
 import traceback
 from urllib import urlencode
@@ -27,14 +26,14 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
-from sickbeard.providers import generic
 from sickrage.helper.common import try_int
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class KATProvider(generic.TorrentProvider):
+class KATProvider(TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "KickAssTorrents")
+        TorrentProvider.__init__(self, "KickAssTorrents")
 
         self.public = True
 
@@ -63,12 +62,12 @@ class KATProvider(generic.TorrentProvider):
 
         self.cache = KATCache(self)
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         # select the correct category
-        anime = (self.show and self.show.anime) or (epObj and epObj.show and epObj.show.anime) or False
+        anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False
         self.search_params['category'] = ('tv', 'anime')[anime]
 
         for mode in search_strings.keys():
@@ -88,7 +87,7 @@ class KATProvider(generic.TorrentProvider):
                         searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
 
                     logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                    data = self.getURL(searchURL)
+                    data = self.get_url(searchURL)
                     if not data:
                         logger.log(u'URL did not return data, maybe try a custom url, or a different one', logger.DEBUG)
                         continue
@@ -97,7 +96,7 @@ class KATProvider(generic.TorrentProvider):
                         logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
                         continue
 
-                    data = BeautifulSoup(data, features=["html5lib", "permissive"])
+                    data = BeautifulSoup(data, 'html5lib')
 
                     entries = data.findAll('item')
                     for item in entries:
@@ -153,7 +152,7 @@ class KATProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -167,6 +166,6 @@ class KATCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['tv', 'anime']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = KATProvider()

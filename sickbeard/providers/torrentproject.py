@@ -20,14 +20,14 @@ from urllib import quote_plus
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.common import USER_AGENT
 from sickrage.helper.common import try_int
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class TORRENTPROJECTProvider(generic.TorrentProvider):
+class TORRENTPROJECTProvider(TorrentProvider):
     def __init__(self):
-        generic.TorrentProvider.__init__(self, "TorrentProject")
+        TorrentProvider.__init__(self, "TorrentProject")
 
         self.public = True
         self.ratio = 0
@@ -38,7 +38,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
         self.minleech = None
         self.cache = TORRENTPROJECTCache(self)
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -53,7 +53,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                 searchURL = self.urls['api'] + "?s=%s&out=json&filter=2101&num=150" % quote_plus(search_string.encode('utf-8'))
 
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-                torrents = self.getURL(searchURL, json=True)
+                torrents = self.get_url(searchURL, json=True)
                 if not (torrents and "total_found" in torrents and int(torrents["total_found"]) > 0):
                     logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                     continue
@@ -78,7 +78,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
                         assert mode != 'RSS'
                         logger.log(u"Torrent has less than 10 seeds getting dyn trackers: " + title, logger.DEBUG)
                         trackerUrl = self.urls['api'] + "" + t_hash + "/trackers_json"
-                        jdata = self.getURL(trackerUrl, json=True)
+                        jdata = self.get_url(trackerUrl, json=True)
                         assert jdata != "maintenance"
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
                     except (Exception, AssertionError):
@@ -101,7 +101,7 @@ class TORRENTPROJECTProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -115,6 +115,6 @@ class TORRENTPROJECTCache(tvcache.TVCache):
     def _getRSSData(self):
 
         search_params = {'RSS': ['0day']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = TORRENTPROJECTProvider()

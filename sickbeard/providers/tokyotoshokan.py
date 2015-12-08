@@ -21,18 +21,18 @@ import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard import show_name_helpers
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class TokyoToshokanProvider(generic.TorrentProvider):
+class TokyoToshokanProvider(TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "TokyoToshokan")
+        TorrentProvider.__init__(self, "TokyoToshokan")
 
         self.public = True
-        self.supportsAbsoluteNumbering = True
+        self.supports_absolute_numbering = True
         self.anime_only = True
         self.ratio = None
 
@@ -41,7 +41,7 @@ class TokyoToshokanProvider(generic.TorrentProvider):
         self.urls = {'base_url': 'http://tokyotosho.info/'}
         self.url = self.urls['base_url']
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
     def _get_season_search_strings(self, ep_obj):
@@ -50,7 +50,7 @@ class TokyoToshokanProvider(generic.TorrentProvider):
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         return [x.replace('.', ' ') for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
-    def _doSearch(self, search_string, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_string, age=0, ep_obj=None):
         # FIXME ADD MODE
         if self.show and not self.show.is_anime:
             return []
@@ -64,14 +64,14 @@ class TokyoToshokanProvider(generic.TorrentProvider):
 
         searchURL = self.url + 'search.php?' + urllib.urlencode(params)
         logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-        data = self.getURL(searchURL)
+        data = self.get_url(searchURL)
 
         if not data:
             return []
 
         results = []
         try:
-            with BS4Parser(data, features=["html5lib", "permissive"]) as soup:
+            with BS4Parser(data, 'html5lib') as soup:
                 torrent_table = soup.find('table', attrs={'class': 'listing'})
                 torrent_rows = torrent_table.find_all('tr') if torrent_table else []
                 if torrent_rows:

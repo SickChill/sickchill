@@ -22,16 +22,15 @@ import urllib
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class TorrentLeechProvider(generic.TorrentProvider):
+class TorrentLeechProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "TorrentLeech")
-
+        TorrentProvider.__init__(self, "TorrentLeech")
 
         self.username = None
         self.password = None
@@ -54,14 +53,14 @@ class TorrentLeechProvider(generic.TorrentProvider):
 
         self.cache = TorrentLeechCache(self)
 
-    def _doLogin(self):
+    def login(self):
 
         login_params = {'username': self.username,
                         'password': self.password,
                         'remember_me': 'on',
                         'login': 'submit'}
 
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -72,12 +71,12 @@ class TorrentLeechProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_params.keys():
@@ -90,13 +89,13 @@ class TorrentLeechProvider(generic.TorrentProvider):
                     searchURL = self.urls['search'] % (urllib.quote_plus(search_string.encode('utf-8')), self.categories)
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                data = self.getURL(searchURL)
+                data = self.get_url(searchURL)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
                 if not data:
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', attrs={'id': 'torrenttable'})
                         torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
@@ -144,7 +143,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -158,7 +157,7 @@ class TorrentLeechCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 
 provider = TorrentLeechProvider()

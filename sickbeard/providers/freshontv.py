@@ -23,17 +23,15 @@ import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.common import try_int
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class FreshOnTVProvider(generic.TorrentProvider):
+class FreshOnTVProvider(TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "FreshOnTV")
-
-
+        TorrentProvider.__init__(self, "FreshOnTV")
 
         self._uid = None
         self._hash = None
@@ -56,14 +54,14 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
         self.cookies = None
 
-    def _checkAuth(self):
+    def _check_auth(self):
 
         if not self.username or not self.password:
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
 
         return True
 
-    def _doLogin(self):
+    def login(self):
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
@@ -74,7 +72,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                             'password': self.password,
                             'login': 'submit'}
 
-            response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+            response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
             if not response:
                 logger.log(u"Unable to connect to provider", logger.WARNING)
                 return False
@@ -102,14 +100,14 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
                     return False
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         freeleech = '3' if self.freeleech else '0'
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_params.keys():
@@ -121,7 +119,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
                 searchURL = self.urls['search'] % (freeleech, search_string)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-                init_html = self.getURL(searchURL)
+                init_html = self.get_url(searchURL)
                 max_page_number = 0
 
                 if not init_html:
@@ -129,7 +127,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(init_html, features=["html5lib", "permissive"]) as init_soup:
+                    with BS4Parser(init_html, 'html5lib') as init_soup:
 
                         # Check to see if there is more than 1 page of results
                         pager = init_soup.find('div', {'class': 'pager'})
@@ -166,7 +164,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                         time.sleep(1)
                         page_searchURL = searchURL + '&page=' + str(i)
                         # '.log(u"Search string: " + page_searchURL, logger.DEBUG)
-                        page_html = self.getURL(page_searchURL)
+                        page_html = self.get_url(page_searchURL)
 
                         if not page_html:
                             continue
@@ -177,7 +175,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
                     for data_response in data_response_list:
 
-                        with BS4Parser(data_response, features=["html5lib", "permissive"]) as html:
+                        with BS4Parser(data_response, 'html5lib') as html:
 
                             torrent_rows = html.findAll("tr", {"class": re.compile('torrent_[0-9]*')})
 
@@ -234,7 +232,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -248,6 +246,6 @@ class FreshOnTVCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = FreshOnTVProvider()

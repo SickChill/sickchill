@@ -21,15 +21,15 @@ import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class CpasbienProvider(generic.TorrentProvider):
+class CpasbienProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "Cpasbien")
+        TorrentProvider.__init__(self, "Cpasbien")
 
         self.public = True
         self.ratio = None
@@ -39,7 +39,7 @@ class CpasbienProvider(generic.TorrentProvider):
 
         self.cache = CpasbienCache(self)
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -53,13 +53,13 @@ class CpasbienProvider(generic.TorrentProvider):
 
                 searchURL = self.url + '/recherche/'+search_string.replace('.', '-') + '.html'
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-                data = self.getURL(searchURL)
+                data = self.get_url(searchURL)
 
                 if not data:
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         lin = erlin = 0
                         resultdiv = []
                         while erlin == 0:
@@ -115,8 +115,9 @@ class CpasbienProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
+
 
 class CpasbienCache(tvcache.TVCache):
     def __init__(self, provider_obj):

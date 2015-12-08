@@ -19,15 +19,14 @@ import re
 import requests
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
+from sickrage.providers.TorrentProvider import TorrentProvider
 
-class TorrentDayProvider(generic.TorrentProvider):
+
+class TorrentDayProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "TorrentDay")
-
-
+        TorrentProvider.__init__(self, "TorrentDay")
 
         self._uid = None
         self._hash = None
@@ -54,7 +53,7 @@ class TorrentDayProvider(generic.TorrentProvider):
         self.categories = {'Season': {'c14': 1}, 'Episode': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1},
                            'RSS': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c14': 1}}
 
-    def _doLogin(self):
+    def login(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
@@ -70,7 +69,7 @@ class TorrentDayProvider(generic.TorrentProvider):
                 'submit.y': 0
             }
 
-            response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+            response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
             if not response:
                 logger.log(u"Unable to connect to provider", logger.WARNING)
                 return False
@@ -93,12 +92,12 @@ class TorrentDayProvider(generic.TorrentProvider):
             logger.log(u"Unable to obtain cookie", logger.WARNING)
             return False
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_params.keys():
@@ -116,7 +115,7 @@ class TorrentDayProvider(generic.TorrentProvider):
                 if self.freeleech:
                     post_data.update({'free': 'on'})
 
-                parsedJSON = self.getURL(self.urls['search'], post_data=post_data, json=True)
+                parsedJSON = self.get_url(self.urls['search'], post_data=post_data, json=True)
                 if not parsedJSON:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
@@ -158,7 +157,7 @@ class TorrentDayProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -172,6 +171,6 @@ class TorrentDayCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = TorrentDayProvider()

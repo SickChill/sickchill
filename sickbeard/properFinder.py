@@ -79,14 +79,14 @@ class ProperFinder:
 
         # for each provider get a list of the
         origThreadName = threading.currentThread().name
-        providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.isActive()]
+        providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active()]
         for curProvider in providers:
             threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
             logger.log(u"Searching for any new PROPER releases from " + curProvider.name)
 
             try:
-                curPropers = curProvider.findPropers(search_date)
+                curPropers = curProvider.find_propers(search_date)
             except AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.DEBUG)
                 continue
@@ -98,7 +98,7 @@ class ProperFinder:
             # if they haven't been added by a different provider than add the proper to the list
             for x in curPropers:
                 if not re.search(r'(^|[\. _-])(proper|repack)([\. _-]|$)', x.name, re.I):
-                    logger.log(u'findPropers returned a non-proper, we have caught and skipped it.', logger.DEBUG)
+                    logger.log(u'find_propers returned a non-proper, we have caught and skipped it.', logger.DEBUG)
                     continue
 
                 name = self._genericName(x.name)
@@ -249,7 +249,7 @@ class ProperFinder:
                 epObj = curProper.show.getEpisode(curProper.season, curProper.episode)
 
                 # make the result object
-                result = curProper.provider.getResult([epObj])
+                result = curProper.provider.get_result([epObj])
                 result.show = curProper.show
                 result.url = curProper.url
                 result.name = curProper.name

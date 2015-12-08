@@ -22,17 +22,16 @@ import requests
 import re
 
 from requests.auth import AuthBase
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
 
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class BLUETIGERSProvider(generic.TorrentProvider):
+class BLUETIGERSProvider(TorrentProvider):
     def __init__(self):
-        generic.TorrentProvider.__init__(self, "BLUETIGERS")
-
+        TorrentProvider.__init__(self, "BLUETIGERS")
 
         self.username = None
         self.password = None
@@ -54,7 +53,7 @@ class BLUETIGERSProvider(generic.TorrentProvider):
 
         self.url = self.urls['base_url']
 
-    def _doLogin(self):
+    def login(self):
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
@@ -64,10 +63,10 @@ class BLUETIGERSProvider(generic.TorrentProvider):
             'take_login' : '1'
             }
 
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
 
         if not response:
-            check_login = self.getURL(self.urls['base_url'], timeout=30)
+            check_login = self.get_url(self.urls['base_url'], timeout=30)
             if re.search('account-logout.php', check_login):
                 return True
             else:
@@ -80,12 +79,12 @@ class BLUETIGERSProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_strings.keys():
@@ -97,12 +96,12 @@ class BLUETIGERSProvider(generic.TorrentProvider):
 
                 self.search_params['search'] = search_string
 
-                data = self.getURL(self.urls['search'], params=self.search_params)
+                data = self.get_url(self.urls['search'], params=self.search_params)
                 if not data:
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         result_linkz = html.findAll('a', href=re.compile("torrents-details"))
 
                         if not result_linkz:
@@ -144,7 +143,7 @@ class BLUETIGERSProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -167,7 +166,7 @@ class BLUETIGERSCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_strings)}
+        return {'entries': self.provider.search(search_strings)}
 
 
 provider = BLUETIGERSProvider()

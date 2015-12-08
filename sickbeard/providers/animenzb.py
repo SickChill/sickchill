@@ -28,18 +28,18 @@ from sickbeard import show_name_helpers
 from sickbeard import logger
 
 from sickbeard import tvcache
-from sickbeard.providers import generic
+from sickrage.providers.NZBProvider import NZBProvider
 
 
-class animenzb(generic.NZBProvider):
+class animenzb(NZBProvider):
 
     def __init__(self):
 
-        generic.NZBProvider.__init__(self, "AnimeNZB")
+        NZBProvider.__init__(self, "AnimeNZB")
 
-        self.supportsBacklog = False
+        self.supports_backlog = False
         self.public = True
-        self.supportsAbsoluteNumbering = True
+        self.supports_absolute_numbering = True
         self.anime_only = True
 
         self.urls = {'base_url': 'http://animenzb.com//'}
@@ -53,7 +53,7 @@ class animenzb(generic.NZBProvider):
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         return [x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
-    def _doSearch(self, search_string, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_string, age=0, ep_obj=None):
 
         logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
@@ -81,11 +81,11 @@ class animenzb(generic.NZBProvider):
 
         return results
 
-    def findPropers(self, date=None):
+    def find_propers(self, search_date=None):
 
         results = []
 
-        for item in self._doSearch("v2|v3|v4|v5"):
+        for item in self.search("v2|v3|v4|v5"):
 
             (title, url) = self._get_title_and_url(item)
 
@@ -96,7 +96,7 @@ class animenzb(generic.NZBProvider):
             else:
                 continue
 
-            if not date or result_date > date:
+            if not search_date or result_date > search_date:
                 search_result = classes.Proper(title, url, result_date, self.show)
                 results.append(search_result)
 

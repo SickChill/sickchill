@@ -23,16 +23,15 @@ import urllib
 import requests
 
 from sickbeard import logger
-from sickbeard.providers import generic
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class XthorProvider(generic.TorrentProvider):
+class XthorProvider(TorrentProvider):
 
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "Xthor")
-
+        TorrentProvider.__init__(self, "Xthor")
 
         self.cj = cookielib.CookieJar()
 
@@ -44,7 +43,7 @@ class XthorProvider(generic.TorrentProvider):
         self.password = None
         self.ratio = None
 
-    def _doLogin(self):
+    def login(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
@@ -53,7 +52,7 @@ class XthorProvider(generic.TorrentProvider):
                         'password': self.password,
                         'submitme': 'X'}
 
-        response = self.getURL(self.url + '/takelogin.php', post_data=login_params, timeout=30)
+        response = self.get_url(self.url + '/takelogin.php', post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -66,13 +65,13 @@ class XthorProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_params, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         # check for auth
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_params.keys():
@@ -84,11 +83,12 @@ class XthorProvider(generic.TorrentProvider):
 
                 searchURL = self.urlsearch % (urllib.quote(search_string), self.categories)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-                data = self.getURL(searchURL)
+                data = self.get_url(searchURL)
+
                 if not data:
                     continue
 
-                with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                with BS4Parser(data, 'html5lib') as html:
                     resultsTable = html.find("table", {"class" : "table2 table-bordered2"})
                     if not resultsTable:
                         continue
@@ -133,7 +133,7 @@ class XthorProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 provider = XthorProvider()

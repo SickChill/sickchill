@@ -120,6 +120,7 @@ def remove_non_release_groups(name):
         r'\[Seedbox\]$':     'searchre',
         r'\[PublicHD\]$':    'searchre',
         r'\[AndroidTwoU\]$': 'searchre',
+        r'\[brassetv]\]$':   'searchre',
         r'\.\[BT\]$':        'searchre',
         r' \[1044\]$':       'searchre',
         r'\.RiPSaLoT$':      'searchre',
@@ -1408,7 +1409,7 @@ def _setUpSession(session, headers):
     return session
 
 
-def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=None, json=False, needBytes=False):
+def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=None, json=False, need_bytes=False):
     """
     Returns a byte-string retrieved from the url provider.
     """
@@ -1461,7 +1462,7 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
         logger.log(traceback.format_exc(), logger.WARNING)
         return None
 
-    return (resp.text, resp.content)[needBytes] if not json else resp.json()
+    return (resp.text, resp.content)[need_bytes] if not json else resp.json()
 
 
 def download_file(url, filename, session=None, headers=None):
@@ -1722,12 +1723,14 @@ def getDiskSpaceUsage(diskPath=None):
 
 
 def getTVDBFromID(indexer_id, indexer):
+
+    session = requests.Session()
     tvdb_id = ''
     if indexer == 'IMDB':
-        url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=%s" % (indexer_id)
-        data = urllib.urlopen(url)
+        url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=%s" % indexer_id
+        data = getURL(url, session=session)
         try:
-            tree = ET.parse(data)
+            tree = ET.fromstring(data)
             for show in tree.getiterator("Series"):
                 tvdb_id = show.findtext("seriesid")
 
@@ -1736,10 +1739,10 @@ def getTVDBFromID(indexer_id, indexer):
 
         return tvdb_id
     elif indexer == 'ZAP2IT':
-        url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it=%s" % (indexer_id)
-        data = urllib.urlopen(url)
+        url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it=%s" % indexer_id
+        data = getURL(url, session=session)
         try:
-            tree = ET.parse(data)
+            tree = ET.fromstring(data)
             for show in tree.getiterator("Series"):
                 tvdb_id = show.findtext("seriesid")
 
@@ -1748,10 +1751,16 @@ def getTVDBFromID(indexer_id, indexer):
 
         return tvdb_id
     elif indexer == 'TVMAZE':
-        url = "http://api.tvmaze.com/shows/%s" % (indexer_id)
-        response = urllib2.urlopen(url)
-        data = json.load(response)
+        url = "http://api.tvmaze.com/shows/%s" % indexer_id
+        data = getURL(url, session=session, json=True)
         tvdb_id = data['externals']['thetvdb']
         return tvdb_id
     else:
         return tvdb_id
+
+def is_ip_private(ip):
+    priv_lo = re.compile("^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
+    priv_24 = re.compile("^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
+    priv_20 = re.compile("^192\.168\.\d{1,3}.\d{1,3}$")
+    priv_16 = re.compile("^172.(1[6-9]|2[0-9]|3[0-1]).[0-9]{1,3}.[0-9]{1,3}$")
+    return priv_lo.match(ip) or priv_24.match(ip) or priv_20.match(ip) or priv_16.match(ip)

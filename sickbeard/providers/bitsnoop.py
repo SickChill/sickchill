@@ -22,13 +22,13 @@ from bs4 import BeautifulSoup
 import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickrage.helper.common import try_int
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=too-many-instance-attributes,too-many-arguments
+class BitSnoopProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
     def __init__(self):
-        generic.TorrentProvider.__init__(self, "BitSnoop")
+        TorrentProvider.__init__(self, "BitSnoop")
 
         self.urls = {
             'index': 'http://bitsnoop.com',
@@ -47,7 +47,7 @@ class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=too-many-inst
 
         self.cache = BitSnoopCache(self)
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None): # pylint: disable=too-many-branches,too-many-arguments,too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None): # pylint: disable=too-many-branches,too-many-locals
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -61,7 +61,7 @@ class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=too-many-inst
 
                 try:
                     url = (self.urls['rss'], self.urls['search'] + search_string + '/s/d/1/?fmt=rss')[mode != 'RSS']
-                    data = self.getURL(url)
+                    data = self.get_url(url)
                     if not data:
                         logger.log(u"No data returned from provider", logger.DEBUG)
                         continue
@@ -70,7 +70,7 @@ class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=too-many-inst
                         logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
                         continue
 
-                    data = BeautifulSoup(data, features=["html5lib", "permissive"])
+                    data = BeautifulSoup(data, 'html5lib')
 
                     entries = entries = data.findAll('item')
 
@@ -123,8 +123,7 @@ class BitSnoopProvider(generic.TorrentProvider): # pylint: disable=too-many-inst
 
         return results
 
-
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -137,7 +136,7 @@ class BitSnoopCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_strings = {'RSS': ['rss']}
-        return {'entries': self.provider._doSearch(search_strings)}
+        return {'entries': self.provider.search(search_strings)}
 
 
 provider = BitSnoopProvider()

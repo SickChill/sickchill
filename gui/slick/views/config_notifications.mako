@@ -1530,7 +1530,7 @@
                             <div class="field-pair">
                                 <label for="trakt_timeout">
                                     <span class="component-title">API Timeout</span>
-                                    <input type="text" name="trakt_timeout" id="trakt_timeout" value="${sickbeard.TRAKT_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
+                                    <input type="number" min="10" step="1" name="trakt_timeout" id="trakt_timeout" value="${sickbeard.TRAKT_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
                                 </label>
                                 <p>
                                     <span class="component-desc">
@@ -1707,7 +1707,7 @@
                             <div class="field-pair">
                                 <label for="email_port">
                                     <span class="component-title">SMTP port</span>
-                                    <input type="text" name="email_port" id="email_port" value="${sickbeard.EMAIL_PORT}" class="form-control input-sm input75" autocapitalize="off" />
+                                    <input type="number" min"1" step="1" name="email_port" id="email_port" value="${sickbeard.EMAIL_PORT}" class="form-control input-sm input75" autocapitalize="off" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>

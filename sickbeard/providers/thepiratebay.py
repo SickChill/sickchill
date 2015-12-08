@@ -16,20 +16,19 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import re
 import posixpath # Must use posixpath
 from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
 from sickbeard.common import USER_AGENT
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class ThePirateBayProvider(generic.TorrentProvider):
+class ThePirateBayProvider(TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "ThePirateBay")
+        TorrentProvider.__init__(self, "ThePirateBay")
 
         self.public = True
 
@@ -65,7 +64,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         self.re_title_url = r'/torrent/(?P<id>\d+)/(?P<title>.*?)".+?(?P<url>magnet.*?)".+?Size (?P<size>[\d\.]*&nbsp;[TGKMiB]{2,3}).+?(?P<seeders>\d+)</td>.+?(?P<leechers>\d+)</td>'
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -84,7 +83,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                     searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
 
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                data = self.getURL(searchURL)
+                data = self.get_url(searchURL)
                 if not data:
                     logger.log(u'URL did not return data, maybe try a custom url, or a different one', logger.DEBUG)
                     continue
@@ -139,7 +138,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
             size = size * 1024**4
         return size
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -153,6 +152,6 @@ class ThePirateBayCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = ThePirateBayProvider()

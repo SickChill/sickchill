@@ -20,15 +20,15 @@ from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickbeard.providers import generic
 from sickrage.helper.exceptions import AuthException
 from sickrage.helper.common import try_int
+from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class TransmitTheNetProvider(generic.TorrentProvider):
+class TransmitTheNetProvider(TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "TransmitTheNet")
+        TorrentProvider.__init__(self, "TransmitTheNet")
 
         self.urls = {
             'base_url': 'https://transmithe.net/',
@@ -47,14 +47,14 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
         self.cache = TransmitTheNetCache(self)
 
-    def _checkAuth(self):
+    def _check_auth(self):
 
         if not self.username or not self.password:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
 
-    def _doLogin(self):
+    def login(self):
 
         login_params = {
             'username': self.username,
@@ -63,7 +63,7 @@ class TransmitTheNetProvider(generic.TorrentProvider):
             'login': 'Login'
         }
 
-        response = self.getURL(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -74,12 +74,12 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        if not self._doLogin():
+        if not self.login():
             return results
 
         for mode in search_strings.keys():
@@ -101,13 +101,13 @@ class TransmitTheNetProvider(generic.TorrentProvider):
                 search_url = self.urls['search'] + "?" + urlencode(search_params)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                data = self.getURL(self.urls['search'], params=search_params)
+                data = self.get_url(self.urls['search'], params=search_params)
                 if not data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', {'id': 'torrent_table'})
                         if not torrent_table:
                             logger.log(u"Data returned from %s does not contain any torrents" % self.name, logger.DEBUG)
@@ -132,6 +132,9 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
                             temp_anchor = torrent_row.find('a', {"data-src": True})
                             title = temp_anchor['data-src'].rsplit('.', 1)[0]
+                            if not title:
+                                title = torrent_row.find('a', onmouseout='return nd();').string
+                                title = title.replace("[", "").replace("]", "").replace("/ ", "")
                             size = try_int(temp_anchor['data-filesize'])
 
                             temp_anchor = torrent_row.find('span', class_='time').parent.find_next_sibling()
@@ -163,7 +166,7 @@ class TransmitTheNetProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 
@@ -176,7 +179,7 @@ class TransmitTheNetCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
-        return {'entries': self.provider._doSearch(search_strings)}
+        return {'entries': self.provider.search(search_strings)}
 
 
 provider = TransmitTheNetProvider()

@@ -43,6 +43,9 @@ class TraktNotifier(object):
     def notify_git_update(self, new_version):
         pass
 
+    def notify_login(self, ipaddress=""):
+        pass
+
     def update_library(self, ep_obj):
         """
         Sends a request to trakt indicating that the given episode is part of our library.

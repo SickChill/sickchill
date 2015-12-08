@@ -22,12 +22,13 @@ from urllib import urlencode
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.providers import generic
+from sickrage.providers.TorrentProvider import TorrentProvider
 
-class BitCannonProvider(generic.TorrentProvider):
+
+class BitCannonProvider(TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "BitCannon")
+        TorrentProvider.__init__(self, "BitCannon")
 
         self.public = True
 
@@ -45,7 +46,7 @@ class BitCannonProvider(generic.TorrentProvider):
             'apiKey': ''
         }
 
-    def _doSearch(self, search_strings, search_mode='eponly', epcount=0, age=0, epObj=None):
+    def search(self, search_strings, age=0, ep_obj=None):
         # search_strings comes in one of these formats:
         #      {'Episode': ['Italian Works S05E10']}
         #      {'Season': ['Italian Works S05']}
@@ -54,7 +55,7 @@ class BitCannonProvider(generic.TorrentProvider):
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         # select the correct category (TODO:  Add more categories?)
-        anime = (self.show and self.show.anime) or (epObj and epObj.show and epObj.show.anime) or False
+        anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False
         self.search_params['category'] = ('tv', 'anime')[anime]
 
         # Set API Key (if applicable)
@@ -77,7 +78,7 @@ class BitCannonProvider(generic.TorrentProvider):
                         url = self.custom_url
                     search_url = url + "api/search?" + urlencode(self.search_params)
                     logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-                    parsed_json = self.getURL(search_url, json=True)
+                    parsed_json = self.get_url(search_url, json=True)
 
                     if not parsed_json:
                         logger.log(u"No data returned from provider", logger.DEBUG)
@@ -123,7 +124,7 @@ class BitCannonProvider(generic.TorrentProvider):
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
     @staticmethod
@@ -145,6 +146,6 @@ class BitCannonCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['tv', 'anime']}
-        return {'entries': self.provider._doSearch(search_params)}
+        return {'entries': self.provider.search(search_params)}
 
 provider = BitCannonProvider()
