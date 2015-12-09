@@ -154,8 +154,8 @@ def download_subtitles(subtitles_info):
     existing_subtitles = subtitles_info['subtitles']
 
     if not needs_subtitles(existing_subtitles):
-        logger.log(u'Episode already has all needed subtitles, skipping  episode %dx%d of show %s'
-                   % (subtitles_info['season'], subtitles_info['episode'], subtitles_info['show_name']), logger.DEBUG)
+        logger.log(u'Episode already has all needed subtitles, skipping %s S%02dE%02d'
+                   % (subtitles_info['show_name'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
         return (existing_subtitles, None)
 
     # Check if we really need subtitles
@@ -438,13 +438,13 @@ class SubtitlesFinder(object):
         for ep_to_sub in sql_results:
 
             if not ek(os.path.isfile, ep_to_sub['location']):
-                logger.log(u'Episode file does not exist, cannot download subtitles for episode %dx%d of show %s'
-                           % (ep_to_sub['season'], ep_to_sub['episode'], ep_to_sub['show_name']), logger.DEBUG)
+                logger.log(u'Episode file does not exist, cannot download subtitles for %s S%02dE%02d'
+                           % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                 continue
 
             if not needs_subtitles(ep_to_sub['subtitles']):
-                logger.log(u'Episode already has all needed subtitles, skipping  episode %dx%d of show %s'
-                           % (ep_to_sub['season'], ep_to_sub['episode'], ep_to_sub['show_name']), logger.DEBUG)
+                logger.log(u'Episode already has all needed subtitles, skipping %s S%02dE%02d'
+                           % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                 continue
 
             # http://bugs.python.org/issue7980#msg221094
@@ -457,18 +457,19 @@ class SubtitlesFinder(object):
                      now - datetime.datetime.strptime(ep_to_sub['lastsearch'], dateTimeFormat) >
                      datetime.timedelta(hours=rules['new'][ep_to_sub['searchcount']]))):
 
-                logger.log(u'Downloading subtitles for episode %dx%d of show %s'
-                           % (ep_to_sub['season'], ep_to_sub['episode'], ep_to_sub['show_name']), logger.DEBUG)
+                logger.log(u'Downloading subtitles for %s S%02dE%02d'
+                           % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
 
                 show_object = Show.find(sickbeard.showList, int(ep_to_sub['showid']))
                 if not show_object:
-                    logger.log(u'Show not found', logger.DEBUG)
+                    logger.log(u'Show with ID %s not found in the database' % ep_to_sub['showid'], logger.DEBUG)
                     self.amActive = False
                     return
 
                 episode_object = show_object.getEpisode(int(ep_to_sub["season"]), int(ep_to_sub["episode"]))
                 if isinstance(episode_object, str):
-                    logger.log(u'Episode not found', logger.DEBUG)
+                    logger.log(u'%s S%02dE%02d not found in the database'
+                               % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                     self.amActive = False
                     return
 
@@ -477,15 +478,16 @@ class SubtitlesFinder(object):
                 try:
                     episode_object.download_subtitles()
                 except Exception as error:
-                    logger.log(u'Unable to find subtitles', logger.DEBUG)
+                    logger.log(u'Unable to find subtitles for %s S%02dE%02d'
+                               % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                     logger.log(str(error), logger.DEBUG)
                     self.amActive = False
                     return
 
                 new_subtitles = frozenset(episode_object.subtitles).difference(existing_subtitles)
                 if new_subtitles:
-                    logger.log(u'Downloaded subtitles for S%02dE%02d in %s'
-                               % (ep_to_sub["season"], ep_to_sub["episode"], ', '.join(new_subtitles)))
+                    logger.log(u'Downloaded %s subtitles for %s S%02dE%02d'
+                               % (', '.join(new_subtitles), ep_to_sub['show_name'], ep_to_sub["season"], ep_to_sub["episode"]))
 
         self.amActive = False
 
