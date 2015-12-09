@@ -21,6 +21,7 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import try_int
 from sickrage.providers.TorrentProvider import TorrentProvider
 
 
@@ -35,6 +36,8 @@ class HoundDawgsProvider(TorrentProvider):
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.freeleech = None
+        self.ranked = None
 
         self.cache = HoundDawgsCache(self)
 
@@ -123,29 +126,24 @@ class HoundDawgsProvider(TorrentProvider):
                             torrent = result.find_all('td')
                             if len(torrent) <= 1:
                                 break
-
+								
                             allAs = (torrent[1]).find_all('a')
-
+							
                             try:
-                                # link = self.urls['base_url'] + allAs[2].attrs['href']
-                                # url = result.find('td', attrs={'class': 'quickdownload'}).find('a')
+                                notinternal = result.find('img', src='/static//common/user_upload.png')
+                                if self.ranked and notinternal:
+                                    logger.log(u"Found a user uploaded release, Ignoring it..", logger.DEBUG)
+                                    continue 
+                                freeleech = result.find('img', src='/static//common/browse/freeleech.png')
+                                if self.freeleech and not freeleech:
+                                    continue                                
                                 title = allAs[2].string
-                                # Trimming title so accepted by scene check(Feature has been rewuestet i forum)
-                                title = title.replace("custom.", "")
-                                title = title.replace("CUSTOM.", "")
-                                title = title.replace("Custom.", "")
-                                title = title.replace("dk", "")
-                                title = title.replace("DK", "")
-                                title = title.replace("Dk", "")
-                                title = title.replace("subs.", "")
-                                title = title.replace("SUBS.", "")
-                                title = title.replace("Subs.", "")
-
                                 download_url = self.urls['base_url']+allAs[0].attrs['href']
-                                # FIXME
-                                size = -1
-                                seeders = 1
-                                leechers = 0
+                                torrent_size = (result.find("td", class_="nobr").find_next_sibling("td").string).replace("i", "")
+                                if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
+                                    size = self._convertSize(torrent_size.rstrip())
+                                seeders = try_int((result.findAll('td')[6]).text)
+                                leechers = try_int((result.findAll('td')[7]).text)
 
                             except (AttributeError, TypeError):
                                 continue
@@ -154,10 +152,10 @@ class HoundDawgsProvider(TorrentProvider):
                                 continue
 
                             # Filter unseeded torrent
-                            # if seeders < self.minseed or leechers < self.minleech:
-                            #    if mode != 'RSS':
-                            #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                            #    continue
+                            if seeders < self.minseed or leechers < self.minleech:
+                               if mode != 'RSS':
+                                   logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                               continue
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
