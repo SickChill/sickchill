@@ -154,7 +154,7 @@ class TVChaosUKProvider(TorrentProvider):
                             freeleech = torrent.find('img', alt=re.compile('Free Torrent'))
                             if self.freeleech and not freeleech:
                                 continue
-                            title = torrent.find(attrs={'class':'tooltip-target'}).text.strip()
+                            title = (torrent.find(attrs={'class':'tooltip-target'}).text.strip()).replace("mp4", "x264")
                             download_url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
                             seeders = int(torrent.find(title='Seeders').text.strip())
                             leechers = int(torrent.find(title='Leechers').text.strip())
