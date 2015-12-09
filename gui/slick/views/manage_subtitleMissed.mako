@@ -67,8 +67,8 @@
             <table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
             % for cur_indexer_id in sorted_show_ids:
                 <tr id="${cur_indexer_id}">
-                    <th><input type="checkbox" class="allCheck" id="allCheck-${cur_indexer_id}" name="${cur_indexer_id}-all"checked="checked" /></th>
-                    <th colspan="3" style="width: 100%; text-align: left;"><a class="whitelink" href="${srRoot}/home/displayShow?show=${cur_indexer_id}">${show_names[cur_indexer_id]}</a> (${ep_counts[cur_indexer_id]}) <input type="button" class="pull-right get_more_eps btn" id="${cur_indexer_id}" value="Expand" /></th>
+                    <th style="width: 1%;"><input type="checkbox" class="allCheck" id="allCheck-${cur_indexer_id}" name="${cur_indexer_id}-all"checked="checked" /></th>
+                    <th colspan="3" style="text-align: left;"><a class="whitelink" href="${srRoot}/home/displayShow?show=${cur_indexer_id}">${show_names[cur_indexer_id]}</a> (${ep_counts[cur_indexer_id]}) <input type="button" class="pull-right get_more_eps btn" id="${cur_indexer_id}" value="Expand" /></th>
                 </tr>
             % endfor
             </table>
