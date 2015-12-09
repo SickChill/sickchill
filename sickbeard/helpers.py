@@ -168,25 +168,29 @@ def isMediaFile(filename):
     """
 
     # ignore samples
-    if re.search(r'(^|[\W_])(?<!shomin.)(sample\d*)[\W_]', filename, re.I):
-        return False
+    try:
+        if re.search(r'(^|[\W_])(?<!shomin.)(sample\d*)[\W_]', filename, re.I):
+            return False
 
-    # ignore RARBG release intro
-    if re.search(r'^RARBG\.\w+\.(mp4|avi|txt)$', filename, re.I):
-        return False
+        # ignore RARBG release intro
+        if re.search(r'^RARBG\.\w+\.(mp4|avi|txt)$', filename, re.I):
+            return False
 
-    # ignore MAC OS's retarded "resource fork" files
-    if filename.startswith('._'):
-        return False
+        # ignore MAC OS's retarded "resource fork" files
+        if filename.startswith('._'):
+            return False
 
-    sepFile = filename.rpartition(".")
+        sepFile = filename.rpartition(".")
 
-    if re.search('extras?$', sepFile[0], re.I):
-        return False
+        if re.search('extras?$', sepFile[0], re.I):
+            return False
 
-    if sepFile[2].lower() in media_extensions:
-        return True
-    else:
+        if sepFile[2].lower() in media_extensions:
+            return True
+        else:
+            return False
+    except TypeError as error:  # Not a string
+        logger.log('Invalid filename. Filename must be a string. %s' % error, logger.DEBUG)  # pylint: disable=no-member
         return False
 
 
@@ -1282,7 +1286,6 @@ def mapIndexersToShow(showObj):
             logger.log(u"Found indexer mapping in cache for show: " + showObj.name, logger.DEBUG)
             mapped[int(curResult['mindexer'])] = int(curResult['mindexer_id'])
             return mapped
-            break
     else:
         sql_l = []
         for indexer in sickbeard.indexerApi().indexers:
@@ -1757,6 +1760,7 @@ def getTVDBFromID(indexer_id, indexer):
         return tvdb_id
     else:
         return tvdb_id
+
 
 def is_ip_private(ip):
     priv_lo = re.compile("^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
