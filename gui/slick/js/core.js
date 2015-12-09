@@ -159,6 +159,15 @@ var SICKRAGE = {
                 $.get($(this).attr('href'));
                 return false;
             });
+
+            $(document.body).on('click', '.bulkCheck', function(){
+                var bulkCheck = this;
+                var whichBulkCheck = $(bulkCheck).attr('id');
+
+                $('.'+whichBulkCheck+':visible').each(function(){
+                    $(this).prop('checked', $(bulkCheck).prop('checked'));
+                });
+            });
         }
     },
     config: {
@@ -2389,7 +2398,7 @@ var SICKRAGE = {
                     }
                     row += '</td>';
                 } else {
-                	row += '<td style="width: 8%;">None</td>';
+                    row += '<td style="width: 8%;">None</td>';
                 }
                 row += '<td>' + name + '</td>';
                 row += '</tr>';
@@ -2478,15 +2487,6 @@ var SICKRAGE = {
                 if (removeArr.length === 0) { return false; }
 
                 window.location.href = srRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|');
-            });
-
-            $('.bulkCheck').on('click', function(){
-                var bulkCheck = this;
-                var whichBulkCheck = $(bulkCheck).attr('id');
-
-                $('.'+whichBulkCheck+':visible').each(function(){
-                    this.checked = bulkCheck.checked;
-                });
             });
 
             if($('.removeCheck').length){
