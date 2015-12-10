@@ -28,7 +28,7 @@ from sickbeard.name_parser.parser import NameParser, InvalidNameException, Inval
 from sickbeard import common
 from sickbeard import failedProcessor
 from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file, subtitle_extensions
-from sickrage.helper.encoding import ek
+from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
 from unrar2 import RarFile
@@ -44,7 +44,7 @@ import shutil_custom
 shutil.copyfile = shutil_custom.copyfile_custom
 
 
-class ProcessResult(object):
+class ProcessResult(object):  # pylint: disable=too-few-public-methods
     def __init__(self):
         self.result = True
         self.output = ''
@@ -139,7 +139,7 @@ def logHelper(logMessage, logLevel=logger.INFO):
     return logMessage + u"\n"
 
 
-def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, proc_type="auto"):
+def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, proc_type="auto"):  # pylint: disable=too-many-arguments,too-many-branches,too-many-statements,too-many-locals
     """
     Scans through the files in dirName and processes whatever media files it finds
 
@@ -300,7 +300,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     return result.output
 
 
-def validateDir(path, dirName, nzbNameOriginal, failed, result):
+def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disable=too-many-locals,too-many-branches,too-many-return-statements
     """
     Check if directory is valid for processing
 
@@ -311,6 +311,8 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
     :param result: Previous results
     :return: True if dir is valid for processing, False if not
     """
+
+    dirName = ss(dirName)
 
     IGNORED_FOLDERS = ['.AppleDouble', '.@__thumb', '@eaDir']
     folder_name = ek(os.path.basename, dirName)
@@ -392,7 +394,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
     result.output += logHelper(dirName + " : No processable items found in folder", logger.DEBUG)
     return False
 
-def unRAR(path, rarFiles, force, result):
+def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,too-many-statements
     """
     Extracts RAR files
 
@@ -473,7 +475,7 @@ def unRAR(path, rarFiles, force, result):
     return unpacked_files
 
 
-def already_postprocessed(dirName, videofile, force, result):
+def already_postprocessed(dirName, videofile, force, result):  # pylint: disable=unused-argument
     """
     Check if we already post processed a file
 
@@ -517,7 +519,7 @@ def already_postprocessed(dirName, videofile, force, result):
     return False
 
 
-def process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result):
+def process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result):  # pylint: disable=too-many-arguments
     """
     Postprocess mediafiles
 
@@ -585,8 +587,7 @@ def get_path_dir_files(dirName, nzbName, proc_type):
             break
     else:
         path, dirs = ek(os.path.split, dirName)  # Script Post Processing
-        if not nzbName is None and not nzbName.endswith('.nzb') and ek(os.path.isfile,
-                ek(os.path.join, dirName, nzbName)):  # For single torrent file without Dir
+        if not nzbName is None and not nzbName.endswith('.nzb') and ek(os.path.isfile, ek(os.path.join, dirName, nzbName)):  # For single torrent file without Dir
             dirs = []
             files = [ek(os.path.join, dirName, nzbName)]
         else:
