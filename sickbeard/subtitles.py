@@ -194,12 +194,14 @@ def download_subtitles(subtitles_info):
                           subtitles_info['episode']), logger.DEBUG)
             return (existing_subtitles, None)
 
+        user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
+
         for sub in subtitles_list:
                     matches = sub.get_matches(video, hearing_impaired=False)
                     score = subliminal.subtitle.compute_score(matches, video)
-                    logger.log(u"[%s] Subtitle score for %s is: %s (min=132)" % (sub.provider_name, sub.id, score), logger.DEBUG)
+                    logger.log(u"[%s] Subtitle score for %s is: %s (min=%s)" % (sub.provider_name, sub.id, score, user_score), logger.DEBUG)
 
-        found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages, min_score=132,
+        found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages, min_score=user_score,
                                                        hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED,
                                                        only_one=not sickbeard.SUBTITLES_MULTI)
 
@@ -354,14 +356,15 @@ class SubtitlesFinder(object):
                                 continue
 
                             hearing_impaired = sickbeard.SUBTITLES_HEARING_IMPAIRED
+                            user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
                             found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
-                                                                           hearing_impaired=hearing_impaired, min_score=132,
+                                                                           hearing_impaired=hearing_impaired, min_score=user_score,
                                                                            only_one=not sickbeard.SUBTITLES_MULTI)
 
                             for sub in subtitles_list:
                                         matches = sub.get_matches(video, hearing_impaired=False)
                                         score = subliminal.subtitle.compute_score(matches, video)
-                                        logger.log(u"[%s] Subtitle score for %s is: %s (min=132)" % (sub.provider_name, sub.id, score), logger.DEBUG)
+                                        logger.log(u"[%s] Subtitle score for %s is: %s (min=%s)" % (sub.provider_name, sub.id, score, user_score), logger.DEBUG)
 
                             downloaded_languages = set()
                             for subtitle in found_subtitles:
