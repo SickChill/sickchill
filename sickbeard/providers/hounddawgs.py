@@ -25,7 +25,7 @@ from sickrage.helper.common import try_int
 from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class HoundDawgsProvider(TorrentProvider):
+class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
@@ -39,11 +39,12 @@ class HoundDawgsProvider(TorrentProvider):
         self.freeleech = None
         self.ranked = None
 
-        self.cache = HoundDawgsCache(self)
 
-        self.urls = {'base_url': 'https://hounddawgs.org/',
-                     'search': 'https://hounddawgs.org/torrents.php',
-                     'login': 'https://hounddawgs.org/login.php'}
+        self.urls = {
+            'base_url': 'https://hounddawgs.org/',
+            'search': 'https://hounddawgs.org/torrents.php',
+            'login': 'https://hounddawgs.org/login.php'
+        }
 
         self.url = self.urls['base_url']
 
@@ -63,12 +64,16 @@ class HoundDawgsProvider(TorrentProvider):
             "searchtags": ''
         }
 
+        self.cache = HoundDawgsCache(self)
+
     def login(self):
 
-        login_params = {'username': self.username,
-                        'password': self.password,
-                        'keeplogged': 'on',
-                        'login': 'Login'}
+        login_params = {
+            'username': self.username,
+            'password': self.password,
+            'keeplogged': 'on',
+            'login': 'Login'
+        }
 
         self.get_url(self.urls['base_url'], timeout=30)
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
@@ -84,7 +89,7 @@ class HoundDawgsProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -126,22 +131,22 @@ class HoundDawgsProvider(TorrentProvider):
                             torrent = result.find_all('td')
                             if len(torrent) <= 1:
                                 break
-								
+
                             allAs = (torrent[1]).find_all('a')
-							
+
                             try:
                                 notinternal = result.find('img', src='/static//common/user_upload.png')
                                 if self.ranked and notinternal:
                                     logger.log(u"Found a user uploaded release, Ignoring it..", logger.DEBUG)
-                                    continue 
+                                    continue
                                 freeleech = result.find('img', src='/static//common/browse/freeleech.png')
                                 if self.freeleech and not freeleech:
-                                    continue                                
+                                    continue
                                 title = allAs[2].string
                                 download_url = self.urls['base_url']+allAs[0].attrs['href']
-                                torrent_size = (result.find("td", class_="nobr").find_next_sibling("td").string).replace("i", "")
-                                if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
-                                    size = self._convertSize(torrent_size.rstrip())
+                                torrent_size = result.find("td", class_="nobr").find_next_sibling("td").string
+                                if torrent_size:
+                                    size = self._convertSize(torrent_size)
                                 seeders = try_int((result.findAll('td')[6]).text)
                                 leechers = try_int((result.findAll('td')[7]).text)
 
@@ -153,9 +158,9 @@ class HoundDawgsProvider(TorrentProvider):
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
-                               if mode != 'RSS':
-                                   logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                               continue
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                continue
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
@@ -163,7 +168,7 @@ class HoundDawgsProvider(TorrentProvider):
 
                             items[mode].append(item)
 
-                except Exception, e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
@@ -172,6 +177,21 @@ class HoundDawgsProvider(TorrentProvider):
             results += items[mode]
 
         return results
+
+
+    @staticmethod
+    def _convertSize(size):
+        size = re.sub(r'[i, ]+', '', size)
+        matches = re.match(r'([\d.]+)([TGMK])', size.strip().upper())
+        if not matches:
+            return -1
+
+        size = matches.group(1)
+        modifier = matches.group(2)
+
+        mod = {'K': 1, 'M': 2, 'G': 3, 'T': 4}
+        return float(size) * 1024**mod[modifier]
+
 
     def seed_ratio(self):
         return self.ratio
