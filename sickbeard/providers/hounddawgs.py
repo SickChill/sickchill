@@ -190,7 +190,7 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         modifier = matches.group(2)
 
         mod = {'K': 1, 'M': 2, 'G': 3, 'T': 4}
-        return float(size) * 1024**mod[modifier]
+        return int(float(size) * 1024**mod[modifier])
 
 
     def seed_ratio(self):
