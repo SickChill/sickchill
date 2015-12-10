@@ -20,11 +20,11 @@ $.tablesorter.addParser({
     format: function(s) {
         var replacements = {
             'custom': 11,
-            'BLURAY': 10, // Custom: Only bluray
+            'bluray': 10, // Custom: Only bluray
             'hd1080p': 9,
             '1080p': 8, // Custom: Only 1080p
-            'HDTV': 7, // Custom: 1080p and 720p (only HDTV)
-            'WEB-DL': 6, // Custom: 1080p and 720p (only WEB-DL)
+            'hdtv': 7, // Custom: 1080p and 720p (only HDTV)
+            'web-dl': 6, // Custom: 1080p and 720p (only WEB-DL)
             'hd720p': 5,
             '720p': 4, // Custom: Only 720p
             'hd': 3,
@@ -32,7 +32,7 @@ $.tablesorter.addParser({
             'any': 1,
             'best': 0
         };
-        return replacements[s];
+        return replacements[s.toLowerCase()];
     },
     type: 'numeric'
 });
