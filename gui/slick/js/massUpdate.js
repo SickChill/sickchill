@@ -65,15 +65,6 @@ $(document).ready(function(){
         }
     });
 
-    $('.bulkCheck').on('click', function(){
-        var bulkCheck = this;
-        var whichBulkCheck = $(bulkCheck).attr('id');
-
-        $('.'+whichBulkCheck).each(function(){
-            if(!this.disabled) { this.checked = !this.checked; }
-        });
-    });
-
     ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck'].forEach(function(name) {
         var lastCheck = null;
 

@@ -32,6 +32,7 @@ from sickbeard import logger
 from sickbeard import history
 from sickbeard import db
 from sickbeard import processTV
+from sickbeard.helpers import remove_non_release_groups
 from sickrage.helper.common import media_extensions, dateTimeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
@@ -123,13 +124,13 @@ def subtitle_code_filter():
 
 
 def needs_subtitles(subtitles):
-    if isinstance(subtitles, basestring):
+    if isinstance(subtitles, basestring) and sickbeard.SUBTITLES_MULTI:
         subtitles = {subtitle.strip() for subtitle in subtitles.split(',')}
 
     if sickbeard.SUBTITLES_MULTI:
         return len(wanted_languages().difference(subtitles)) > 0
-    else:
-        return len(subtitles) == 0
+    elif 'und' not in subtitles:
+        return True
 
 
 # Hack around this for now.
@@ -153,8 +154,8 @@ def download_subtitles(subtitles_info):
     existing_subtitles = subtitles_info['subtitles']
 
     if not needs_subtitles(existing_subtitles):
-        logger.log(u'Episode already has all needed subtitles, skipping  episode %dx%d of show %s'
-                   % (subtitles_info['season'], subtitles_info['episode'], subtitles_info['show_name']), logger.DEBUG)
+        logger.log(u'Episode already has all needed subtitles, skipping %s S%02dE%02d'
+                   % (subtitles_info['show_name'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
         return (existing_subtitles, None)
 
     # Check if we really need subtitles
@@ -333,6 +334,14 @@ class SubtitlesFinder(object):
         if sickbeard.TV_DOWNLOAD_DIR and ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
             for root, _, files in ek(os.walk, sickbeard.TV_DOWNLOAD_DIR, topdown=False):
                 for video_filename in sorted(files):
+                    try:
+                        # Remove non release groups from video file. Needed to match subtitles
+                        new_video_filename = remove_non_release_groups(video_filename)
+                        if new_video_filename != video_filename:
+                            os.rename(video_filename, new_video_filename)
+                            video_filename = new_video_filename
+                    except Exception as e:
+                        logger.log(u'Could not remove non release groups from video file. Error: %r' % ex(e), logger.DEBUG)
                     if video_filename.rsplit(".", 1)[1] in media_extensions:
                         try:
                             video = subliminal.scan_video(os.path.join(root, video_filename),
@@ -429,13 +438,13 @@ class SubtitlesFinder(object):
         for ep_to_sub in sql_results:
 
             if not ek(os.path.isfile, ep_to_sub['location']):
-                logger.log(u'Episode file does not exist, cannot download subtitles for episode %dx%d of show %s'
-                           % (ep_to_sub['season'], ep_to_sub['episode'], ep_to_sub['show_name']), logger.DEBUG)
+                logger.log(u'Episode file does not exist, cannot download subtitles for %s S%02dE%02d'
+                           % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                 continue
 
             if not needs_subtitles(ep_to_sub['subtitles']):
-                logger.log(u'Episode already has all needed subtitles, skipping  episode %dx%d of show %s'
-                           % (ep_to_sub['season'], ep_to_sub['episode'], ep_to_sub['show_name']), logger.DEBUG)
+                logger.log(u'Episode already has all needed subtitles, skipping %s S%02dE%02d'
+                           % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                 continue
 
             # http://bugs.python.org/issue7980#msg221094
@@ -448,18 +457,19 @@ class SubtitlesFinder(object):
                      now - datetime.datetime.strptime(ep_to_sub['lastsearch'], dateTimeFormat) >
                      datetime.timedelta(hours=rules['new'][ep_to_sub['searchcount']]))):
 
-                logger.log(u'Downloading subtitles for episode %dx%d of show %s'
-                           % (ep_to_sub['season'], ep_to_sub['episode'], ep_to_sub['show_name']), logger.DEBUG)
+                logger.log(u'Downloading subtitles for %s S%02dE%02d'
+                           % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
 
                 show_object = Show.find(sickbeard.showList, int(ep_to_sub['showid']))
                 if not show_object:
-                    logger.log(u'Show not found', logger.DEBUG)
+                    logger.log(u'Show with ID %s not found in the database' % ep_to_sub['showid'], logger.DEBUG)
                     self.amActive = False
                     return
 
                 episode_object = show_object.getEpisode(int(ep_to_sub["season"]), int(ep_to_sub["episode"]))
                 if isinstance(episode_object, str):
-                    logger.log(u'Episode not found', logger.DEBUG)
+                    logger.log(u'%s S%02dE%02d not found in the database'
+                               % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                     self.amActive = False
                     return
 
@@ -468,15 +478,16 @@ class SubtitlesFinder(object):
                 try:
                     episode_object.download_subtitles()
                 except Exception as error:
-                    logger.log(u'Unable to find subtitles', logger.DEBUG)
+                    logger.log(u'Unable to find subtitles for %s S%02dE%02d'
+                               % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                     logger.log(str(error), logger.DEBUG)
                     self.amActive = False
                     return
 
                 new_subtitles = frozenset(episode_object.subtitles).difference(existing_subtitles)
                 if new_subtitles:
-                    logger.log(u'Downloaded subtitles for S%02dE%02d in %s'
-                               % (ep_to_sub["season"], ep_to_sub["episode"], ', '.join(new_subtitles)))
+                    logger.log(u'Downloaded %s subtitles for %s S%02dE%02d'
+                               % (', '.join(new_subtitles), ep_to_sub['show_name'], ep_to_sub["season"], ep_to_sub["episode"]))
 
         self.amActive = False
 
