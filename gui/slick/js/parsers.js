@@ -18,7 +18,21 @@ $.tablesorter.addParser({
         return false;
     },
     format: function(s) {
-        return s.replace('hd1080p', 5).replace('hd720p', 4).replace('hd', 3).replace('sd', 2).replace('any', 1).replace('best', 0).replace('custom', 7);
+        var replacements = {
+            'custom': 11,
+            'BLURAY': 10, // Custom: Only bluray
+            'hd1080p': 9,
+            '1080p': 8, // Custom: Only 1080p
+            'HDTV': 7, // Custom: 1080p and 720p (only HDTV)
+            'WEB-DL': 6, // Custom: 1080p and 720p (only WEB-DL)
+            'hd720p': 5,
+            '720p': 4, // Custom: Only 720p
+            'hd': 3,
+            'sd': 2,
+            'any': 1,
+            'best': 0
+        };
+        return replacements[s];
     },
     type: 'numeric'
 });
