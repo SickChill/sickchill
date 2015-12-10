@@ -87,21 +87,19 @@ def sorted_service_list():
     for current_service in sickbeard.SUBTITLES_SERVICES_LIST:
         if current_service in subliminal.provider_manager.names():
             new_list.append({'name': current_service,
-                             'url': PROVIDER_URLS[current_service] if current_service in PROVIDER_URLS else
-                                    lmgtfy % current_service,
+                             'url': PROVIDER_URLS[current_service] if current_service in
+                                    PROVIDER_URLS else lmgtfy % current_service,
                              'image': current_service + '.png',
-                             'enabled': sickbeard.SUBTITLES_SERVICES_ENABLED[current_index] == 1
-                            })
+                             'enabled': sickbeard.SUBTITLES_SERVICES_ENABLED[current_index] == 1})
         current_index += 1
 
     for current_service in subliminal.provider_manager.names():
         if current_service not in [service['name'] for service in new_list]:
             new_list.append({'name': current_service,
-                             'url': PROVIDER_URLS[current_service] if current_service in PROVIDER_URLS else
-                                    lmgtfy % current_service,
+                             'url': PROVIDER_URLS[current_service] if current_service in
+                                    PROVIDER_URLS else lmgtfy % current_service,
                              'image': current_service + '.png',
-                             'enabled': False,
-                            })
+                             'enabled': False})
 
     return new_list
 
@@ -150,7 +148,7 @@ def code_from_code(code):
     return from_code(code).opensubtitles
 
 
-def download_subtitles(subtitles_info):
+def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals
     existing_subtitles = subtitles_info['subtitles']
 
     if not needs_subtitles(existing_subtitles):
@@ -168,6 +166,7 @@ def download_subtitles(subtitles_info):
 
     subtitles_path = get_subtitles_path(subtitles_info['location']).encode(sickbeard.SYS_ENCODING)
     video_path = subtitles_info['location'].encode(sickbeard.SYS_ENCODING)
+    user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
 
     video = get_video(video_path, subtitles_path=subtitles_path)
     if not video:
@@ -194,16 +193,15 @@ def download_subtitles(subtitles_info):
                           subtitles_info['episode']), logger.DEBUG)
             return (existing_subtitles, None)
 
-        user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
-
         for sub in subtitles_list:
-                    matches = sub.get_matches(video, hearing_impaired=False)
-                    score = subliminal.subtitle.compute_score(matches, video)
-                    logger.log(u"[%s] Subtitle score for %s is: %s (min=%s)" % (sub.provider_name, sub.id, score, user_score), logger.DEBUG)
+            matches = sub.get_matches(video, hearing_impaired=False)
+            score = subliminal.subtitle.compute_score(matches, video)
+            logger.log(u"[%s] Subtitle score for %s is: %s (min=%s)"
+                       % (sub.provider_name, sub.id, score, user_score), logger.DEBUG)
 
-        found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages, min_score=user_score,
+        found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
                                                        hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED,
-                                                       only_one=not sickbeard.SUBTITLES_MULTI)
+                                                       min_score=user_score, only_one=not sickbeard.SUBTITLES_MULTI)
 
         subliminal.save_subtitles(video, found_subtitles, directory=subtitles_path,
                                   single=not sickbeard.SUBTITLES_MULTI)
@@ -232,8 +230,8 @@ def download_subtitles(subtitles_info):
 
     if sickbeard.SUBTITLES_HISTORY:
         for subtitle in found_subtitles:
-            logger.log(u'history.logSubtitle %s, %s' %
-                       (subtitle.provider_name, subtitle.language.opensubtitles), logger.DEBUG)
+            logger.log(u'history.logSubtitle %s, %s'
+                       % (subtitle.provider_name, subtitle.language.opensubtitles), logger.DEBUG)
 
             history.logSubtitle(subtitles_info['show_indexerid'], subtitles_info['season'],
                                 subtitles_info['episode'], subtitles_info['status'], subtitle)
@@ -313,7 +311,7 @@ class SubtitlesFinder(object):
         self.amActive = False
 
     @staticmethod
-    def subtitles_download_in_pp():  # pylint: disable=too-many-locals
+    def subtitles_download_in_pp():  # pylint: disable=too-many-locals, too-many-branches
         logger.log(u'Checking for needed subtitles in Post-Process folder', logger.INFO)
 
         providers = enabled_service_list()
@@ -342,8 +340,9 @@ class SubtitlesFinder(object):
                         if new_video_filename != video_filename:
                             os.rename(video_filename, new_video_filename)
                             video_filename = new_video_filename
-                    except Exception as e:
-                        logger.log(u'Could not remove non release groups from video file. Error: %r' % ex(e), logger.DEBUG)
+                    except Exception as error:
+                        logger.log(u'Could not remove non release groups from video file. Error: %r'
+                                   % ex(error), logger.DEBUG)
                     if video_filename.rsplit(".", 1)[1] in media_extensions:
                         try:
                             video = subliminal.scan_video(os.path.join(root, video_filename),
@@ -358,13 +357,15 @@ class SubtitlesFinder(object):
                             hearing_impaired = sickbeard.SUBTITLES_HEARING_IMPAIRED
                             user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
                             found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
-                                                                           hearing_impaired=hearing_impaired, min_score=user_score,
+                                                                           hearing_impaired=hearing_impaired,
+                                                                           min_score=user_score,
                                                                            only_one=not sickbeard.SUBTITLES_MULTI)
 
                             for sub in subtitles_list:
-                                        matches = sub.get_matches(video, hearing_impaired=False)
-                                        score = subliminal.subtitle.compute_score(matches, video)
-                                        logger.log(u"[%s] Subtitle score for %s is: %s (min=%s)" % (sub.provider_name, sub.id, score, user_score), logger.DEBUG)
+                                matches = sub.get_matches(video, hearing_impaired=False)
+                                score = subliminal.subtitle.compute_score(matches, video)
+                                logger.log(u"[%s] Subtitle score for %s is: %s (min=%s)"
+                                           % (sub.provider_name, sub.id, score, user_score), logger.DEBUG)
 
                             downloaded_languages = set()
                             for subtitle in found_subtitles:
@@ -490,7 +491,8 @@ class SubtitlesFinder(object):
                 new_subtitles = frozenset(episode_object.subtitles).difference(existing_subtitles)
                 if new_subtitles:
                     logger.log(u'Downloaded %s subtitles for %s S%02dE%02d'
-                               % (', '.join(new_subtitles), ep_to_sub['show_name'], ep_to_sub["season"], ep_to_sub["episode"]))
+                               % (', '.join(new_subtitles), ep_to_sub['show_name'],
+                                  ep_to_sub["season"], ep_to_sub["episode"]))
 
         self.amActive = False
 
