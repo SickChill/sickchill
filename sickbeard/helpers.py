@@ -1285,7 +1285,7 @@ def mapIndexersToShow(showObj):
         if len(nlist) >= 4:
             logger.log(u"Found indexer mapping in cache for show: " + showObj.name, logger.DEBUG)
             mapped[int(curResult['mindexer'])] = int(curResult['mindexer_id'])
-            return mapped
+            break
     else:
         sql_l = []
         for indexer in sickbeard.indexerApi().indexers:
