@@ -115,8 +115,8 @@ class BitSoupProvider(TorrentProvider):
 
                             try:
                                 title = link.getText()
-                                seeders = int(cells[10].getText())
-                                leechers = int(cells[11].getText())
+                                seeders = int(cells[10].getText().replace(',', ''))
+                                leechers = int(cells[11].getText().replace(',', ''))
                                 # FIXME
                                 size = -1
                             except (AttributeError, TypeError):
@@ -129,6 +129,9 @@ class BitSoupProvider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                continue
+
+                            if seeders >= 32768 or leechers >= 32768:
                                 continue
 
                             item = title, download_url, size, seeders, leechers
