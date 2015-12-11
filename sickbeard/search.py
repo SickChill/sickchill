@@ -367,7 +367,6 @@ def searchForNeededEpisodes():
     didSearch = False
 
     origThreadName = threading.currentThread().name
-    threads = []
 
     show_list = sickbeard.showList
     fromDate = datetime.date.fromordinal(1)
@@ -375,19 +374,15 @@ def searchForNeededEpisodes():
 
     for curShow in show_list:
         if not curShow.paused:
+            sickbeard.name_cache.buildNameCache(curShow)
             episodes.extend(wantedEpisodes(curShow, fromDate))
 
     providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active() and x.enable_daily]
     for curProvider in providers:
-        threads += [threading.Thread(target=curProvider.cache.updateCache, name=origThreadName + " :: [" + curProvider.name + "]")]
+        threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
+        curProvider.cache.updateCache()
 
-    # start the thread we just created
-    for t in threads:
-        t.start()
-
-    # wait for all threads to finish
-    for t in threads:
-        t.join()
+    threading.currentThread().name = origThreadName
 
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
@@ -447,7 +442,6 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
     finalResults = []
 
     didSearch = False
-    threads = []
 
     # build name cache for show
     sickbeard.name_cache.buildNameCache(show)
@@ -456,18 +450,12 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
     providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active() and x.enable_backlog]
     for curProvider in providers:
-        threads += [threading.Thread(target=curProvider.cache.updateCache,
-                                     name=origThreadName + " :: [" + curProvider.name + "]")]
+        threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
+        curProvider.cache.updateCache()
 
-    # start the thread we just created
-    for t in threads:
-        t.start()
+    threading.currentThread().name = origThreadName
 
-    # wait for all threads to finish
-    for t in threads:
-        t.join()
-
-    for providerNum, curProvider in enumerate(providers):
+    for curProvider in providers:
         if curProvider.anime_only and not show.is_anime:
             logger.log(u"" + str(show.name) + " is not an anime, skiping", logger.DEBUG)
             continue
