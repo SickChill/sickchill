@@ -69,11 +69,7 @@ class HDBitsProvider(TorrentProvider):
         return episode_search_string
 
     def _get_title_and_url(self, item):
-
-        title = item['name']
-        if title:
-            title = self._clean_title(title)
-
+        title = item.get('name', '').replace(' ', '.')
         url = self.urls['download'] + urllib.urlencode({'id': item['id'], 'passkey': self.passkey})
 
         return title, url
