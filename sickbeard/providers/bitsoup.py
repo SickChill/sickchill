@@ -131,6 +131,9 @@ class BitSoupProvider(TorrentProvider):
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
+                            if seeders >= 32768 or leechers >= 32768:
+                                continue
+
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
