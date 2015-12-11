@@ -467,26 +467,22 @@ class SubtitlesFinder(object):
                 show_object = Show.find(sickbeard.showList, int(ep_to_sub['showid']))
                 if not show_object:
                     logger.log(u'Show with ID %s not found in the database' % ep_to_sub['showid'], logger.DEBUG)
-                    self.amActive = False
-                    return
+                    continue
 
                 episode_object = show_object.getEpisode(int(ep_to_sub["season"]), int(ep_to_sub["episode"]))
                 if isinstance(episode_object, str):
                     logger.log(u'%s S%02dE%02d not found in the database'
                                % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
-                    self.amActive = False
-                    return
+                    continue
 
                 existing_subtitles = episode_object.subtitles
 
                 try:
                     episode_object.download_subtitles()
-                except Exception as error:
-                    logger.log(u'Unable to find subtitles for %s S%02dE%02d'
-                               % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
-                    logger.log(str(error), logger.DEBUG)
-                    self.amActive = False
-                    return
+                except Exception as e:
+                    logger.log(u'Unable to find subtitles for %s S%02dE%02d. Error: %r'
+                               % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode'], ex(e)), logger.ERROR)
+                    continue
 
                 new_subtitles = frozenset(episode_object.subtitles).difference(existing_subtitles)
                 if new_subtitles:
