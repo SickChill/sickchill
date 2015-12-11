@@ -5,7 +5,7 @@ $(document).ready(function() {
 
     var isAliveUrl = srRoot + '/home/is_alive/';
 
-    var checkIsAlive = setInterval(isAlive, 1000);
+    var checkIsAlive = setInterval(isAlive, 100);
 
     function isAlive() {  // jshint ignore:line
         // Setup error detection

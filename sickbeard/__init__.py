@@ -1149,7 +1149,7 @@ def initialize(consoleLogging=True):
                                       if x]
         SUBTITLES_DEFAULT = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_default', 0))
         SUBTITLES_HISTORY = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_history', 0))
-        SUBTITLES_PERFECT_MATCH = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_perfect_match', 1)) 
+        SUBTITLES_PERFECT_MATCH = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_perfect_match', 1))
         EMBEDDED_SUBTITLES_ALL = bool(check_setting_int(CFG, 'Subtitles', 'embedded_subtitles_all', 0))
         SUBTITLES_HEARING_IMPAIRED = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_hearing_impaired', 0))
         SUBTITLES_FINDER_FREQUENCY = check_setting_int(CFG, 'Subtitles', 'subtitles_finder_frequency', 1)
@@ -1537,7 +1537,6 @@ def halt():
             logger.log(u"Aborting all threads")
 
             threads = [
-                events,
                 dailySearchScheduler,
                 backlogSearchScheduler,
                 showUpdateScheduler,
@@ -1547,7 +1546,8 @@ def halt():
                 autoPostProcesserScheduler,
                 traktCheckerScheduler,
                 properFinderScheduler,
-                subtitlesFinderScheduler
+                subtitlesFinderScheduler,
+                events
             ]
 
             # set them all to stop at the same time
