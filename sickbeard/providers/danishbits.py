@@ -58,7 +58,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     @staticmethod
     def loginSuccess(output):
-        if "<title>Login :: Danishbits.org</title>" in output:
+        if not output or "<title>Login :: Danishbits.org</title>" in output:
             return False
         else:
             return True
