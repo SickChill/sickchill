@@ -110,7 +110,7 @@ def enabled_service_list():
 
 def wanted_languages(sql_like=None):
     wanted = frozenset(sickbeard.SUBTITLES_LANGUAGES).intersection(subtitle_code_filter())
-    return (wanted, '%' + ','.join(wanted) + '%')[bool(sql_like)]
+    return (wanted, '%' + ','.join(sorted(wanted)) + '%')[bool(sql_like)]
 
 
 def get_needed_languages(subtitles):
@@ -427,17 +427,21 @@ class SubtitlesFinder(object):
         """
         rules = {'old': [0, 24], 'new': [0, 4, 8, 4, 16, 24, 24]}
 
+        if sickbeard.SUBTITLES_MULTI:
+            query_languages = wanted_languages(True)
+        else:
+            query_languages = '%und%'
+
         today = datetime.date.today().toordinal()
         database = db.DBConnection()
-
         sql_results = database.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.subtitles, ' +
+            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.subtitles, '
             'e.subtitles_searchcount AS searchcount, e.subtitles_lastsearch AS lastsearch, e.location, '
-            '(? - e.airdate) AS airdate_daydiff ' +
-            'FROM tv_episodes AS e INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id) ' +
-            'WHERE s.subtitles = 1 AND e.subtitles NOT LIKE (?) ' +
-            'AND (e.subtitles_searchcount <= 2 OR (e.subtitles_searchcount <= 7 AND airdate_daydiff <= 7)) ' +
-            'AND e.location != ""', [today, wanted_languages(True)])
+            '(? - e.airdate) AS airdate_daydiff '
+            'FROM tv_episodes AS e INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id) '
+            'WHERE s.subtitles = 1 AND e.subtitles NOT LIKE ? '
+            'AND (e.subtitles_searchcount <= 2 OR (e.subtitles_searchcount <= 7 AND airdate_daydiff <= 7)) '
+            'AND e.location != ""', [today, query_languages])
 
         if len(sql_results) == 0:
             logger.log(u'No subtitles to download', logger.INFO)
@@ -445,7 +449,6 @@ class SubtitlesFinder(object):
             return
 
         now = datetime.datetime.now()
-
         for ep_to_sub in sql_results:
 
             if not ek(os.path.isfile, ep_to_sub['location']):
@@ -453,10 +456,8 @@ class SubtitlesFinder(object):
                            % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                 continue
 
-            if not needs_subtitles(ep_to_sub['subtitles']):
-                logger.log(u'Episode already has all needed subtitles, skipping %s S%02dE%02d'
-                           % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
-                continue
+            logger.log(u"%s S%02dE%02d doesn't have all needed subtitles"
+                       % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
 
             try:
                 try:
@@ -469,8 +470,8 @@ class SubtitlesFinder(object):
                         (ep_to_sub['airdate_daydiff'] <= 7 and ep_to_sub['searchcount'] < 7 and
                          now - lastsearched > datetime.timedelta(hours=rules['new'][ep_to_sub['searchcount']]))):
 
-                    logger.log(u'Downloading subtitles for %s S%02dE%02d'
-                               % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
+                    logger.log(u'Started subtitles search for %s S%02dE%02d'
+                               % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.INFO)
 
                     show_object = Show.find(sickbeard.showList, int(ep_to_sub['showid']))
                     if not show_object:
@@ -489,7 +490,8 @@ class SubtitlesFinder(object):
                         episode_object.download_subtitles()
                     except Exception as error:
                         logger.log(u'Unable to find subtitles for %s S%02dE%02d. Error: %r'
-                                   % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode'], ex(error)), logger.ERROR)
+                                   % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode'],
+                                      ex(error)), logger.ERROR)
                         continue
 
                     new_subtitles = frozenset(episode_object.subtitles).difference(existing_subtitles)
@@ -499,7 +501,8 @@ class SubtitlesFinder(object):
                                       ep_to_sub["season"], ep_to_sub["episode"]))
             except Exception as error:
                 logger.log(u'Error while searching subtitles for %s S%02dE%02d. Error: %r'
-                           % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode'], ex(error)), logger.ERROR)
+                           % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode'],
+                              ex(error)), logger.ERROR)
                 continue
 
         self.amActive = False
