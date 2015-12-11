@@ -1534,82 +1534,30 @@ def halt():
 
             logger.log(u"Aborting all threads")
 
-            events.stop.set()
-            logger.log(u"Waiting for the EVENTS thread to exit")
-            try:
-                events.join(10)
-            except Exception:
-                pass
+            threads = [
+                events,
+                dailySearchScheduler,
+                backlogSearchScheduler,
+                showUpdateScheduler,
+                versionCheckScheduler,
+                showQueueScheduler,
+                searchQueueScheduler,
+                autoPostProcesserScheduler,
+                traktCheckerScheduler,
+                properFinderScheduler,
+                subtitlesFinderScheduler
+            ]
 
-            dailySearchScheduler.stop.set()
-            logger.log(u"Waiting for the DAILYSEARCH thread to exit")
-            try:
-                dailySearchScheduler.join(10)
-            except Exception:
-                pass
+            # set them all to stop at the same time
+            for t in threads:
+                t.stop.set()
 
-            backlogSearchScheduler.stop.set()
-            logger.log(u"Waiting for the BACKLOG thread to exit")
-            try:
-                backlogSearchScheduler.join(10)
-            except Exception:
-                pass
-
-            showUpdateScheduler.stop.set()
-            logger.log(u"Waiting for the SHOWUPDATER thread to exit")
-            try:
-                showUpdateScheduler.join(10)
-            except Exception:
-                pass
-
-            versionCheckScheduler.stop.set()
-            logger.log(u"Waiting for the VERSIONCHECKER thread to exit")
-            try:
-                versionCheckScheduler.join(10)
-            except Exception:
-                pass
-
-            showQueueScheduler.stop.set()
-            logger.log(u"Waiting for the SHOWQUEUE thread to exit")
-            try:
-                showQueueScheduler.join(10)
-            except Exception:
-                pass
-
-            searchQueueScheduler.stop.set()
-            logger.log(u"Waiting for the SEARCHQUEUE thread to exit")
-            try:
-                searchQueueScheduler.join(10)
-            except Exception:
-                pass
-
-            autoPostProcesserScheduler.stop.set()
-            logger.log(u"Waiting for the POSTPROCESSER thread to exit")
-            try:
-                autoPostProcesserScheduler.join(10)
-            except Exception:
-                pass
-
-            traktCheckerScheduler.stop.set()
-            logger.log(u"Waiting for the TRAKTCHECKER thread to exit")
-            try:
-                traktCheckerScheduler.join(10)
-            except Exception:
-                pass
-
-            properFinderScheduler.stop.set()
-            logger.log(u"Waiting for the PROPERFINDER thread to exit")
-            try:
-                properFinderScheduler.join(10)
-            except Exception:
-                pass
-
-            subtitlesFinderScheduler.stop.set()
-            logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
-            try:
-                subtitlesFinderScheduler.join(10)
-            except Exception:
-                pass
+            for t in threads:
+                logger.log(u"Waiting for the %s thread to exit" % t.name)
+                try:
+                    t.join(10)
+                except Exception:
+                    pass
 
             if ADBA_CONNECTION:
                 ADBA_CONNECTION.logout()
@@ -1624,6 +1572,7 @@ def halt():
 
 
 def sig_handler(signum=None, frame=None):
+    _ = frame
     if not isinstance(signum, type(None)):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
         Shutdown.stop(PID)
@@ -1638,16 +1587,6 @@ def saveAll():
     # save config
     logger.log(u"Saving config file to disk")
     save_config()
-
-
-def restart(soft=True):
-    if soft:
-        halt()
-        saveAll()
-        logger.log(u"Re-initializing all data")
-        initialize()
-    else:
-        events.put(events.SystemEvent.RESTART)
 
 
 def save_config():
