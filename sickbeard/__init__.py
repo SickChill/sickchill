@@ -1537,7 +1537,6 @@ def halt():
             logger.log(u"Aborting all threads")
 
             threads = [
-                events,
                 dailySearchScheduler,
                 backlogSearchScheduler,
                 showUpdateScheduler,
@@ -1547,7 +1546,8 @@ def halt():
                 autoPostProcesserScheduler,
                 traktCheckerScheduler,
                 properFinderScheduler,
-                subtitlesFinderScheduler
+                subtitlesFinderScheduler,
+                events
             ]
 
             # set them all to stop at the same time
