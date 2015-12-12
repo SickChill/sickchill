@@ -1732,6 +1732,8 @@ def getTVDBFromID(indexer_id, indexer):
     if indexer == 'IMDB':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=%s" % indexer_id
         data = getURL(url, session=session)
+        if data is None:
+            return tvdb_id
         try:
             tree = ET.fromstring(data)
             for show in tree.getiterator("Series"):
@@ -1739,11 +1741,13 @@ def getTVDBFromID(indexer_id, indexer):
 
         except SyntaxError:
             pass
-
+        
         return tvdb_id
     elif indexer == 'ZAP2IT':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it=%s" % indexer_id
         data = getURL(url, session=session)
+        if data is None:
+            return tvdb_id
         try:
             tree = ET.fromstring(data)
             for show in tree.getiterator("Series"):
@@ -1756,6 +1760,8 @@ def getTVDBFromID(indexer_id, indexer):
     elif indexer == 'TVMAZE':
         url = "http://api.tvmaze.com/shows/%s" % indexer_id
         data = getURL(url, session=session, json=True)
+        if data is None:
+            return tvdb_id        
         tvdb_id = data['externals']['thetvdb']
         return tvdb_id
     else:
