@@ -71,9 +71,7 @@ class TorrentRssProvider(TorrentProvider):
 
     def _get_title_and_url(self, item):
 
-        title = item.get(self.titleTAG)
-        if title:
-            title = self._clean_title(title)
+        title = item.get(self.titleTAG, '').replace(' ', '.')
 
         attempt_list = [lambda: item.get('torrent_magneturi'),
 

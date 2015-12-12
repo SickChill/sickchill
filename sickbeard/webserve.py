@@ -4091,9 +4091,12 @@ class ConfigPostProcessing(Config):
         sickbeard.FILE_TIMESTAMP_TIMEZONE = file_timestamp_timezone
         sickbeard.MOVE_ASSOCIATED_FILES = config.checkbox_to_value(move_associated_files)
         sickbeard.SYNC_FILES = sync_files
-        sickbeard.ALLOWED_EXTENSIONS = allowed_extensions
         sickbeard.POSTPONE_IF_SYNC_FILES = config.checkbox_to_value(postpone_if_sync_files)
         sickbeard.POSTPONE_IF_NO_SUBS = config.checkbox_to_value(postpone_if_no_subs)
+        # If 'postpone if no subs' is enabled, we must have SRT in allowed extensions list
+        if sickbeard.POSTPONE_IF_NO_SUBS:
+            allowed_extensions += ',srt'
+        sickbeard.ALLOWED_EXTENSIONS = ','.join({x.strip() for x in allowed_extensions.split(',') if x.strip()})
         sickbeard.NAMING_CUSTOM_ABD = config.checkbox_to_value(naming_custom_abd)
         sickbeard.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)
         sickbeard.NAMING_CUSTOM_ANIME = config.checkbox_to_value(naming_custom_anime)
@@ -4966,7 +4969,7 @@ class ConfigSubtitles(Config):
                         header='Subtitles', topmenu='config',
                         controller="config", action="subtitles")
 
-    def saveSubtitles(self, use_subtitles=None, subtitles_plugins=None, subtitles_languages=None, subtitles_dir=None,
+    def saveSubtitles(self, use_subtitles=None, subtitles_plugins=None, subtitles_languages=None, subtitles_dir=None, subtitles_perfect_match=None,
                       service_order=None, subtitles_history=None, subtitles_finder_frequency=None, subtitles_download_in_pp=None,
                       subtitles_multi=None, embedded_subtitles_all=None, subtitles_extra_scripts=None, subtitles_hearing_impaired=None,
                       addic7ed_user=None, addic7ed_pass=None, legendastv_user=None, legendastv_pass=None, opensubtitles_user=None, opensubtitles_pass=None):
@@ -4978,6 +4981,7 @@ class ConfigSubtitles(Config):
 
         sickbeard.SUBTITLES_LANGUAGES = [code.strip() for code in subtitles_languages.split(',') if code.strip() in subtitles.subtitle_code_filter()] if subtitles_languages else []
         sickbeard.SUBTITLES_DIR = subtitles_dir
+        sickbeard.SUBTITLES_PERFECT_MATCH = config.checkbox_to_value(subtitles_perfect_match)
         sickbeard.SUBTITLES_HISTORY = config.checkbox_to_value(subtitles_history)
         sickbeard.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)
         sickbeard.SUBTITLES_HEARING_IMPAIRED = config.checkbox_to_value(subtitles_hearing_impaired)

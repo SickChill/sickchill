@@ -84,6 +84,16 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                     </label>
                                 </div>
                                 <div class="field-pair">
+                                    <label for="subtitles_perfect_match" class="clearfix">
+                                        <span class="component-title">Perfect matches</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" class="enabler" ${('', ' checked="checked"')[bool(sickbeard.SUBTITLES_PERFECT_MATCH)]} id="subtitles_perfect_match" name="subtitles_perfect_match">
+                                            <p>Only download subtitles that match: release group, video codec, audio codec and resolution</p>
+                                            <p>If disabled you may get out of sync subtitles</p>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="field-pair">
                                     <label class="clearfix" for="subtitles_history">
                                         <span class="component-title">Subtitles History</span>
                                         <span class="component-desc">

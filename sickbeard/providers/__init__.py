@@ -23,10 +23,10 @@ from random import shuffle
 
 import sickbeard
 from sickbeard import logger
-from sickbeard.providers import btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, torrentz, \
+from sickbeard.providers import btn, newznab, rsstorrent, womble, thepiratebay, torrentleech, kat, iptorrents, torrentz, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, \
     freshontv, titansoftv, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
-    scenetime, btdigg, strike, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, bitsnoop, danishbits
+    scenetime, btdigg, strike, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, bitsnoop, danishbits, hd4free
 
 __all__ = [
     'womble', 'btn', 'thepiratebay', 'kat', 'torrentleech', 'scc', 'hdtorrents',
@@ -36,7 +36,7 @@ __all__ = [
     'shazbat', 'rarbg', 'tntvillage', 'binsearch', 'bluetigers', 'cpasbien',
     'fnt', 'xthor', 'scenetime', 'btdigg', 'strike', 'transmitthenet', 'tvchaosuk',
     'torrentproject', 'extratorrent', 'bitcannon', 'torrentz', 'pretome', 'gftracker',
-    'hdspace', 'newpct', 'elitetorrent', 'bitsnoop', 'danishbits'
+    'hdspace', 'newpct', 'elitetorrent', 'bitsnoop', 'danishbits', 'hd4free'
 ]
 
 
@@ -73,7 +73,7 @@ def makeProviderList():
 
 def getNewznabProviderList(data):
     defaultList = [makeNewznabProvider(x) for x in getDefaultNewznabProviders().split('!!!')]
-    providerList = filter(lambda x: x, [makeNewznabProvider(x) for x in data.split('!!!')])
+    providerList = [x for x in [makeNewznabProvider(x) for x in data.split('!!!')] if x]
 
     seen_values = set()
     providerListDeduped = []
@@ -103,7 +103,7 @@ def getNewznabProviderList(data):
             providerDict[curDefault.name].enable_daily = curDefault.enable_daily
             providerDict[curDefault.name].enable_backlog = curDefault.enable_backlog
 
-    return filter(lambda x: x, providerList)
+    return [x for x in providerList if x]
 
 
 def makeNewznabProvider(configString):
@@ -129,7 +129,7 @@ def makeNewznabProvider(configString):
         logger.log(u"Skipping Newznab provider string: '" + configString + "', incorrect format", logger.ERROR)
         return None
 
-    newznab = sys.modules['sickbeard.providers.newznab']
+    # newznab = sys.modules['sickbeard.providers.newznab']
 
     newProvider = newznab.NewznabProvider(name, url, key=key, catIDs=catIDs, search_mode=search_mode,
                                           search_fallback=search_fallback, enable_daily=enable_daily,
@@ -140,7 +140,7 @@ def makeNewznabProvider(configString):
 
 
 def getTorrentRssProviderList(data):
-    providerList = filter(lambda x: x, [makeTorrentRssProvider(x) for x in data.split('!!!')])
+    providerList = [x for x in [makeTorrentRssProvider(x) for x in data.split('!!!')] if x]
 
     seen_values = set()
     providerListDeduped = []
@@ -150,7 +150,7 @@ def getTorrentRssProviderList(data):
             providerListDeduped.append(d)
             seen_values.add(value)
 
-    return filter(lambda x: x, providerList)
+    return [x for x in providerList if x]
 
 
 def makeTorrentRssProvider(configString):
@@ -179,12 +179,12 @@ def makeTorrentRssProvider(configString):
                    logger.ERROR)
         return None
 
-    try:
-        torrentRss = sys.modules['sickbeard.providers.rsstorrent']
-    except Exception:
-        return
+    # try:
+    #     torrentRss = sys.modules['sickbeard.providers.rsstorrent']
+    # except Exception:
+    #     return
 
-    newProvider = torrentRss.TorrentRssProvider(name, url, cookies, titleTAG, search_mode, search_fallback, enable_daily,
+    newProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG, search_mode, search_fallback, enable_daily,
                                                 enable_backlog)
     newProvider.enabled = enabled == '1'
 

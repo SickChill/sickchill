@@ -519,6 +519,7 @@ SUBTITLES_DIR = ''
 SUBTITLES_SERVICES_LIST = []
 SUBTITLES_SERVICES_ENABLED = []
 SUBTITLES_HISTORY = False
+SUBTITLES_PERFECT_MATCH = False
 EMBEDDED_SUBTITLES_ALL = False
 SUBTITLES_HEARING_IMPAIRED = False
 SUBTITLES_FINDER_FREQUENCY = 1
@@ -612,7 +613,7 @@ def initialize(consoleLogging=True):
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
-            USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_DOWNLOAD_IN_PP, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, subtitlesFinderScheduler, \
+            USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_DOWNLOAD_IN_PP, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH, subtitlesFinderScheduler, \
             SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, OPENSUBTITLES_USER, OPENSUBTITLES_PASS, \
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, \
@@ -1148,6 +1149,7 @@ def initialize(consoleLogging=True):
                                       if x]
         SUBTITLES_DEFAULT = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_default', 0))
         SUBTITLES_HISTORY = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_history', 0))
+        SUBTITLES_PERFECT_MATCH = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_perfect_match', 1))
         EMBEDDED_SUBTITLES_ALL = bool(check_setting_int(CFG, 'Subtitles', 'embedded_subtitles_all', 0))
         SUBTITLES_HEARING_IMPAIRED = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_hearing_impaired', 0))
         SUBTITLES_FINDER_FREQUENCY = check_setting_int(CFG, 'Subtitles', 'subtitles_finder_frequency', 1)
@@ -1534,82 +1536,30 @@ def halt():
 
             logger.log(u"Aborting all threads")
 
-            events.stop.set()
-            logger.log(u"Waiting for the EVENTS thread to exit")
-            try:
-                events.join(10)
-            except Exception:
-                pass
+            threads = [
+                dailySearchScheduler,
+                backlogSearchScheduler,
+                showUpdateScheduler,
+                versionCheckScheduler,
+                showQueueScheduler,
+                searchQueueScheduler,
+                autoPostProcesserScheduler,
+                traktCheckerScheduler,
+                properFinderScheduler,
+                subtitlesFinderScheduler,
+                events
+            ]
 
-            dailySearchScheduler.stop.set()
-            logger.log(u"Waiting for the DAILYSEARCH thread to exit")
-            try:
-                dailySearchScheduler.join(10)
-            except Exception:
-                pass
+            # set them all to stop at the same time
+            for t in threads:
+                t.stop.set()
 
-            backlogSearchScheduler.stop.set()
-            logger.log(u"Waiting for the BACKLOG thread to exit")
-            try:
-                backlogSearchScheduler.join(10)
-            except Exception:
-                pass
-
-            showUpdateScheduler.stop.set()
-            logger.log(u"Waiting for the SHOWUPDATER thread to exit")
-            try:
-                showUpdateScheduler.join(10)
-            except Exception:
-                pass
-
-            versionCheckScheduler.stop.set()
-            logger.log(u"Waiting for the VERSIONCHECKER thread to exit")
-            try:
-                versionCheckScheduler.join(10)
-            except Exception:
-                pass
-
-            showQueueScheduler.stop.set()
-            logger.log(u"Waiting for the SHOWQUEUE thread to exit")
-            try:
-                showQueueScheduler.join(10)
-            except Exception:
-                pass
-
-            searchQueueScheduler.stop.set()
-            logger.log(u"Waiting for the SEARCHQUEUE thread to exit")
-            try:
-                searchQueueScheduler.join(10)
-            except Exception:
-                pass
-
-            autoPostProcesserScheduler.stop.set()
-            logger.log(u"Waiting for the POSTPROCESSER thread to exit")
-            try:
-                autoPostProcesserScheduler.join(10)
-            except Exception:
-                pass
-
-            traktCheckerScheduler.stop.set()
-            logger.log(u"Waiting for the TRAKTCHECKER thread to exit")
-            try:
-                traktCheckerScheduler.join(10)
-            except Exception:
-                pass
-
-            properFinderScheduler.stop.set()
-            logger.log(u"Waiting for the PROPERFINDER thread to exit")
-            try:
-                properFinderScheduler.join(10)
-            except Exception:
-                pass
-
-            subtitlesFinderScheduler.stop.set()
-            logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
-            try:
-                subtitlesFinderScheduler.join(10)
-            except Exception:
-                pass
+            for t in threads:
+                logger.log(u"Waiting for the %s thread to exit" % t.name)
+                try:
+                    t.join(10)
+                except Exception:
+                    pass
 
             if ADBA_CONNECTION:
                 ADBA_CONNECTION.logout()
@@ -1624,6 +1574,7 @@ def halt():
 
 
 def sig_handler(signum=None, frame=None):
+    _ = frame
     if not isinstance(signum, type(None)):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
         Shutdown.stop(PID)
@@ -1638,16 +1589,6 @@ def saveAll():
     # save config
     logger.log(u"Saving config file to disk")
     save_config()
-
-
-def restart(soft=True):
-    if soft:
-        halt()
-        saveAll()
-        logger.log(u"Re-initializing all data")
-        initialize()
-    else:
-        events.put(events.SystemEvent.RESTART)
 
 
 def save_config():
@@ -2148,6 +2089,7 @@ def save_config():
     new_config['Subtitles']['subtitles_dir'] = SUBTITLES_DIR
     new_config['Subtitles']['subtitles_default'] = int(SUBTITLES_DEFAULT)
     new_config['Subtitles']['subtitles_history'] = int(SUBTITLES_HISTORY)
+    new_config['Subtitles']['subtitles_perfect_match'] = int(SUBTITLES_PERFECT_MATCH)
     new_config['Subtitles']['embedded_subtitles_all'] = int(EMBEDDED_SUBTITLES_ALL)
     new_config['Subtitles']['subtitles_hearing_impaired'] = int(SUBTITLES_HEARING_IMPAIRED)
     new_config['Subtitles']['subtitles_finder_frequency'] = int(SUBTITLES_FINDER_FREQUENCY)

@@ -126,9 +126,12 @@
                 <img src="${srRoot}/images/blank.png" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
         % endfor
     % endif
-    % if 'year' in show.imdb_info:
-                <span>(${show.imdb_info['year']}) - ${show.imdb_info['runtimes']} minutes - </span>
+    <span>
+    % if 'year' in show.imdb_info and show.imdb_info['year']:
+                (${show.imdb_info['year']}) -
     % endif
+                ${show.imdb_info['runtimes']} minutes</span>
+
                 <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${srRoot}/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
 % endif
                 <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" height="16" width="16" src="${srRoot}/images/${sickbeard.indexerApi(show.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/></a>
@@ -139,14 +142,13 @@
 
             <div id="tags">
                 <ul class="tags">
-                    % if not show.imdbid and show.genre:
+                    % if ('genres' not in show.imdb_info or not show.imdb_info['genres']) and show.genre:
                         % for genre in show.genre[1:-1].split('|'):
                             <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="View other popular ${genre} shows on trakt.tv."><li>${genre}</li></a>
                         % endfor
-                    % endif
-                    % if 'year' in show.imdb_info:
+                    % elif 'genres' in show.imdb_info and show.imdb_info['genres']:
                         % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|'):
-                            <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', imdbgenre.lower())}" target="_blank" title="View other popular ${imdbgenre} shows on trakt.tv."><li>${imdbgenre}</li></a>
+                            <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="View other popular ${imdbgenre} shows on IMDB."><li>${imdbgenre}</li></a>
                         % endfor
                     % endif
                 </ul>
@@ -519,10 +521,8 @@
                         <a class="epSearch" id="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexerid)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="searchEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
                     % endif
                 % endif
-                % if sickbeard.USE_SUBTITLES and show.subtitles and epResult["location"]:
-                    % if (sickbeard.SUBTITLES_MULTI and subtitles.needs_subtitles(epResult["subtitles"])) or (not sickbeard.SUBTITLES_MULTI and len(subtitles.wanted_languages()) > 0 and "und" not in epResult["subtitles"] and list(subtitles.wanted_languages())[0] not in epResult["subtitles"]):
-                        <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
-                    % endif
+                % if sickbeard.USE_SUBTITLES and show.subtitles and epResult["location"] and subtitles.needs_subtitles(epResult['subtitles']):
+                    <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="${srRoot}/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
                 % endif
             </td>
         </tr>
