@@ -16,7 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-import re
 
 from urllib import urlencode
 from sickbeard import logger
@@ -24,7 +23,7 @@ from sickbeard import tvcache
 from sickrage.providers.TorrentProvider import TorrentProvider
 
 
-class HD4FREEProvider(TorrentProvider):
+class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
         TorrentProvider.__init__(self, "HD4Free")
@@ -37,40 +36,50 @@ class HD4FREEProvider(TorrentProvider):
         self.username = None
         self.api_key = None
         self.freeleech = None
-		
 
-			
     def _check_auth(self):
         if self.username and self.api_key:
             return True
 
-        raise AuthException('Your authentication credentials for ' + self.name + ' are missing, check your config.')
+        logger.log('Your authentication credentials for %s are missing, check your config.' % self.name)
+        return False
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
+
         search_params = {
             'tv': 'true',
             'username': self.username,
-            'apikey': self.api_key}
+            'apikey': self.api_key
+        }
+
         for mode in search_strings.keys():  # Mode = RSS, Season, Episode
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     search_params['search'] = search_string.encode('utf-8')
-                self.search_params['fl'] = 'true' if self.freeleech else 'false'
+
+                search_params['fl'] = 'true' if self.freeleech else 'false'
+
                 if mode != 'RSS':
                     logger.log(u"Search string: " + search_string.strip(), logger.DEBUG)
 
                 searchURL = self.url + "/searchapi.php?" + urlencode(search_params)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 jdata = self.get_url(searchURL, json=True)
                 if not jdata:
                     logger.log(u"No data returned from provider", logger.DEBUG)
-                    return []
-					
-                results = []
+                    continue
+
+                try:
+                    if jdata['0']['total_results'] == 0:
+                        logger.log(u"Provider has no results for this search", logger.DEBUG)
+                        continue
+                except (ValueError, KeyError):
+                    pass
+
                 for i in jdata:
                     seeders = jdata[i]["seeders"]
                     leechers = jdata[i]["leechers"]
