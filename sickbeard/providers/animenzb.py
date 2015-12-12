@@ -42,7 +42,7 @@ class animenzb(NZBProvider):
         self.supports_absolute_numbering = True
         self.anime_only = True
 
-        self.urls = {'base_url': 'http://animenzb.com//'}
+        self.urls = {'base_url': 'http://animenzb.com/'}
         self.url = self.urls['base_url']
 
         self.cache = animenzbCache(self)
