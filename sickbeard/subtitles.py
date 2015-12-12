@@ -122,13 +122,16 @@ def subtitle_code_filter():
 
 
 def needs_subtitles(subtitles):
-    if isinstance(subtitles, basestring) and sickbeard.SUBTITLES_MULTI:
-        subtitles = {subtitle.strip() for subtitle in subtitles.split(',')}
+    if not wanted_languages():
+        return False
+
+    if isinstance(subtitles, basestring):
+        subtitles = {subtitle.strip() for subtitle in subtitles.split(',') if subtitle.strip()}
 
     if sickbeard.SUBTITLES_MULTI:
-        return len(wanted_languages().difference(subtitles)) > 0
-    elif 'und' not in subtitles:
-        return True
+        return wanted_languages().difference(subtitles)
+
+    return 'und' not in subtitles
 
 
 # Hack around this for now.
@@ -453,6 +456,11 @@ class SubtitlesFinder(object):
 
             if not ek(os.path.isfile, ep_to_sub['location']):
                 logger.log(u'Episode file does not exist, cannot download subtitles for %s S%02dE%02d'
+                           % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
+                continue
+
+            if not needs_subtitles(ep_to_sub['subtitles']):
+                logger.log(u'Episode already has all needed subtitles, skipping %s S%02dE%02d'
                            % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                 continue
 
