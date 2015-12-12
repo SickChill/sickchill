@@ -136,7 +136,7 @@ class TwitterNotifier(object):
 
         try:
             api.PostUpdate(message.encode('utf8')[:139])
-        except Exception, e:
+        except Exception as e:
             logger.log(u"Error Sending Tweet: " + ex(e), logger.ERROR)
             return False
 
@@ -156,7 +156,7 @@ class TwitterNotifier(object):
 
         try:
             api.PostDirectMessage(dmdest, message.encode('utf8')[:139])
-        except Exception, e:
+        except Exception as e:
             logger.log(u"Error Sending Tweet (DM): " + ex(e), logger.ERROR)
             return False
 

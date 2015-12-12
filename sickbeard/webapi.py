@@ -134,7 +134,7 @@ class ApiHandler(RequestHandler):
 
         try:
             out_dict = _call_dispatcher(args, kwargs)
-        except Exception, e:  # real internal error oohhh nooo :(
+        except Exception as e:  # real internal error oohhh nooo :(
             logger.log(u"API :: " + ex(e), logger.ERROR)
             error_data = {
                 "error_msg": ex(e),
@@ -165,7 +165,7 @@ class ApiHandler(RequestHandler):
             callback = self.get_query_argument('callback', None) or self.get_query_argument('jsonp', None)
             if callback:
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
-        except Exception, e:  # if we fail to generate the output fake an error
+        except Exception as e:  # if we fail to generate the output fake an error
             logger.log(u"API :: " + traceback.format_exc(), logger.DEBUG)
             out = '{"result": "%s", "message": "error while composing output: %s"}' % \
                   (result_type_map[RESULT_ERROR], ex(e))

@@ -151,7 +151,7 @@ class DBConnection(object):
 
                     # finished
                     break
-                except sqlite3.OperationalError, e:
+                except sqlite3.OperationalError as e:
                     sqlResult = []
                     if self.connection:
                         self.connection.rollback()
@@ -162,7 +162,7 @@ class DBConnection(object):
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
-                except sqlite3.DatabaseError, e:
+                except sqlite3.DatabaseError as e:
                     sqlResult = []
                     if self.connection:
                         self.connection.rollback()
@@ -202,7 +202,7 @@ class DBConnection(object):
 
                     # get out of the connection attempt loop since we were successful
                     break
-                except sqlite3.OperationalError, e:
+                except sqlite3.OperationalError as e:
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
@@ -210,7 +210,7 @@ class DBConnection(object):
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
-                except sqlite3.DatabaseError, e:
+                except sqlite3.DatabaseError as e:
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
 
@@ -389,7 +389,7 @@ def _processUpgrade(connection, upgradeClass):
         logger.log(u"Database upgrade required: " + prettyName(upgradeClass.__name__), logger.DEBUG)
         try:
             instance.execute()
-        except sqlite3.DatabaseError, e:
+        except sqlite3.DatabaseError as e:
             # attemping to restore previous DB backup and perform upgrade
             try:
                 instance.execute()

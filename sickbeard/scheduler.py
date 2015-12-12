@@ -110,6 +110,6 @@ class Scheduler(threading.Thread):
                 time.sleep(1)
             # exiting thread
             self.stop.clear()
-        except Exception, e:
+        except Exception as e:
             logger.log(u"Exception generated in thread " + self.name + ": " + ex(e), logger.ERROR)
             logger.log(repr(traceback.format_exc()), logger.DEBUG)

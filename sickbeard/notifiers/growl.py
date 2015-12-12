@@ -148,7 +148,7 @@ class GrowlNotifier(object):
                         return self._send_growl(opts, message)
                     else:
                         return False
-            except Exception, e:
+            except Exception as e:
                 logger.log(u"GROWL: Unable to send growl to " + opts['host'] + ":" + str(opts['port']) + " - " + ex(e), logger.WARNING)
                 return False
 
@@ -191,7 +191,7 @@ class GrowlNotifier(object):
 
         try:
             return self._send(opts['host'], opts['port'], register.encode(), opts['debug'])
-        except Exception, e:
+        except Exception as e:
             logger.log(u"GROWL: Unable to send growl to " + opts['host'] + ":" + str(opts['port']) + " - " + ex(e), logger.WARNING)
             return False
 
