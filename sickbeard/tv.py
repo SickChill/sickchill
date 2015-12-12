@@ -419,7 +419,7 @@ class TVShow(object):
             logger.log(str(self.indexerid) + u": Creating episode from " + mediaFile, logger.DEBUG)
             try:
                 curEpisode = self.makeEpFromFile(ek(os.path.join, self._location, mediaFile))
-            except (ShowNotFoundException, EpisodeNotFoundException), e:
+            except (ShowNotFoundException, EpisodeNotFoundException) as e:
                 logger.log(u"Episode " + mediaFile + " returned an exception: " + ex(e), logger.ERROR)
                 continue
             except EpisodeDeletedException:
@@ -1012,7 +1012,7 @@ class TVShow(object):
                 else:
                     ek(os.remove, cache_file)
 
-            except OSError, e:
+            except OSError as e:
                 logger.log(u'Unable to %s %s: %s / %s' % (action, cache_file, repr(e), str(e)), logger.WARNING)
 
         # remove entire show folder
@@ -1040,7 +1040,7 @@ class TVShow(object):
 
             except ShowDirectoryNotFoundException:
                 logger.log(u"Show folder does not exist, no need to %s %s" % (action, self._location), logger.WARNING)
-            except OSError, e:
+            except OSError as e:
                 logger.log(u'Unable to %s %s: %s / %s' % (action, self._location, repr(e), str(e)), logger.WARNING)
 
         if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
@@ -1621,7 +1621,7 @@ class TVEpisode(object):
             else:
                 myEp = cachedSeason[episode]
 
-        except (sickbeard.indexer_error, IOError), e:
+        except (sickbeard.indexer_error, IOError) as e:
             logger.log(u"" + sickbeard.indexerApi(self.indexer).name + " threw up an error: " + ex(e), logger.DEBUG)
             # if the episode is already valid just log it, if not throw it up
             if self.name:
@@ -1758,11 +1758,11 @@ class TVEpisode(object):
             if ek(os.path.isfile, nfoFile):
                 try:
                     showXML = etree.ElementTree(file=nfoFile)
-                except (SyntaxError, ValueError), e:
+                except (SyntaxError, ValueError) as e:
                     logger.log(u"Error loading the NFO, backing up the NFO and skipping for now: " + ex(e), logger.ERROR)
                     try:
                         ek(os.rename, nfoFile, nfoFile + ".old")
-                    except Exception, e:
+                    except Exception as e:
                         logger.log(
                             u"Failed to rename your episode's NFO file - you need to delete it or fix it: " + ex(e), logger.ERROR)
                     raise NoNFOException("Error in NFO format")
@@ -2093,7 +2093,7 @@ class TVEpisode(object):
             try:
                 np = NameParser(name, showObj=show, naming_pattern=True)
                 parse_result = np.parse(name)
-            except (InvalidNameException, InvalidShowException), e:
+            except (InvalidNameException, InvalidShowException) as e:
                 logger.log(u"Unable to get parse release_group: " + ex(e), logger.DEBUG)
                 return ''
 

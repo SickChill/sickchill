@@ -390,7 +390,7 @@ class PostProcessor(object):
             try:
                 helpers.moveFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
-            except (IOError, OSError), e:
+            except (IOError, OSError) as e:
                 self._log("Unable to move file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
                 raise
 
@@ -413,7 +413,7 @@ class PostProcessor(object):
             try:
                 helpers.copyFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
-            except (IOError, OSError), e:
+            except (IOError, OSError) as e:
                 logger.log(u"Unable to copy file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
                 raise
 
@@ -436,7 +436,7 @@ class PostProcessor(object):
             try:
                 helpers.hardlinkFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
-            except (IOError, OSError), e:
+            except (IOError, OSError) as e:
                 self._log("Unable to link file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
                 raise
 
@@ -458,7 +458,7 @@ class PostProcessor(object):
             try:
                 helpers.moveAndSymlinkFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
-            except (IOError, OSError), e:
+            except (IOError, OSError) as e:
                 self._log("Unable to link file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
                 raise
 
@@ -611,7 +611,7 @@ class PostProcessor(object):
             self._log(u"Adding the file to the anidb mylist", logger.DEBUG)
             try:
                 self.anidbEpisode.add_to_mylist(status=1)  # status = 1 sets the status of the file to "internal HDD"
-            except Exception, e:
+            except Exception as e:
                 self._log(u"exception msg: " + str(e))
 
     def _find_info(self):
@@ -649,7 +649,7 @@ class PostProcessor(object):
 
             try:
                 (cur_show, cur_season, cur_episodes, cur_quality, cur_version) = cur_attempt()
-            except (InvalidNameException, InvalidShowException), e:
+            except (InvalidNameException, InvalidShowException) as e:
                 logger.log(u"Unable to parse, skipping: " + ex(e), logger.DEBUG)
                 continue
 
@@ -739,7 +739,7 @@ class PostProcessor(object):
                 curEp = show.getEpisode(season, cur_episode)
                 if not curEp:
                     raise EpisodeNotFoundException()
-            except EpisodeNotFoundException, e:
+            except EpisodeNotFoundException as e:
                 self._log(u"Unable to create episode: " + ex(e), logger.DEBUG)
                 raise EpisodePostProcessingFailedException()
 
@@ -838,10 +838,10 @@ class PostProcessor(object):
                 out, _ = p.communicate()  # @UnusedVariable
                 self._log(u"Script result: " + str(out), logger.DEBUG)
 
-            except OSError, e:
+            except OSError as e:
                 self._log(u"Unable to run extra_script: " + ex(e))
 
-            except Exception, e:
+            except Exception as e:
                 self._log(u"Unable to run extra_script: " + ex(e))
 
     def _is_priority(self, ep_obj, new_ep_quality):

@@ -80,14 +80,14 @@ def delete_folder(folder, check_empty=True):
         try:
             logger.log(u"Deleting folder (if it's empty): " + folder)
             ek(os.rmdir, folder)
-        except (OSError, IOError), e:
+        except (OSError, IOError) as e:
             logger.log(u"Warning: unable to delete folder: " + folder + ": " + ex(e), logger.WARNING)
             return False
     else:
         try:
             logger.log(u"Deleting folder: " + folder)
             shutil.rmtree(folder)
-        except (OSError, IOError), e:
+        except (OSError, IOError) as e:
             logger.log(u"Warning: unable to delete folder: " + folder + ": " + ex(e), logger.WARNING)
             return False
 
@@ -126,11 +126,11 @@ def delete_files(processPath, notwantedFiles, result, force=False):
             result.output += logHelper(u"Changing ReadOnly Flag for file " + cur_file, logger.DEBUG)
             try:
                 ek(os.chmod, cur_file_path, stat.S_IWRITE)
-            except OSError, e:
+            except OSError as e:
                 result.output += logHelper(u"Cannot change permissions of " + cur_file_path + ': ' + ex(e), logger.DEBUG)
         try:
             ek(os.remove, cur_file_path)
-        except OSError, e:
+        except OSError as e:
             result.output += logHelper(u"Unable to delete file " + cur_file + ': ' + str(e.strerror), logger.DEBUG)
 
 
@@ -464,7 +464,7 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
                 result.result = False
                 result.missedfiles.append(archive + " : Unpacking Failed with an Invalid Rar Archive Error")
                 continue
-            except Exception, e:
+            except Exception as e:
                 result.output += logHelper(u"Failed Unrar archive " + archive + ': ' + ex(e), logger.ERROR)
                 result.result = False
                 result.missedfiles.append(archive + " : Unpacking failed for an unknown reason")
@@ -553,7 +553,7 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
 
             result.result = processor.process()
             process_fail_message = ""
-        except EpisodePostProcessingFailedException, e:
+        except EpisodePostProcessingFailedException as e:
             result.result = False
             process_fail_message = ex(e)
 
@@ -607,7 +607,7 @@ def process_failed(dirName, nzbName, result):
             processor = failedProcessor.FailedProcessor(dirName, nzbName)
             result.result = processor.process()
             process_fail_message = ""
-        except FailedPostProcessingFailedException, e:
+        except FailedPostProcessingFailedException as e:
             result.result = False
             process_fail_message = ex(e)
 

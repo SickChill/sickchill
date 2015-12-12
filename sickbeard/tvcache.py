@@ -59,7 +59,7 @@ class CacheDBConnection(db.DBConnection):
             if not self.hasColumn(providerName, 'version'):
                 self.addColumn(providerName, 'version', "NUMERIC", "-1")
 
-        except Exception, e:
+        except Exception as e:
             if str(e) != "table [" + providerName + "] already exists":
                 raise
 
@@ -67,7 +67,7 @@ class CacheDBConnection(db.DBConnection):
         try:
             if not self.hasTable('lastUpdate'):
                 self.action("CREATE TABLE lastUpdate (provider TEXT, time NUMERIC)")
-        except Exception, e:
+        except Exception as e:
             if str(e) != "table lastUpdate already exists":
                 raise
 
@@ -127,9 +127,9 @@ class TVCache(object):
                     myDB = self._getDB()
                     myDB.mass_action(cl)
 
-        except AuthException, e:
+        except AuthException as e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-        except Exception, e:
+        except Exception as e:
             logger.log(u"Error while searching " + self.provider.name + ", skipping: " + repr(e), logger.DEBUG)
 
     def getRSSFeed(self, url):
