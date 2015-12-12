@@ -57,7 +57,7 @@ class FreeMobileNotifier(object):
         # send the request to Free Mobile
         try:
             urllib2.urlopen(req)
-        except IOError, e:
+        except IOError as e:
             if hasattr(e, 'code'):
                 if e.code == 400:
                     message = "Missing parameter(s)."
@@ -75,7 +75,7 @@ class FreeMobileNotifier(object):
                     message = "Server error. Please retry in few moment."
                     logger.log(message, logger.ERROR)
                     return False, message
-        except Exception, e:
+        except Exception as e:
                 message = u"Error while sending SMS: {0}".format(e)
                 logger.log(message, logger.ERROR)
                 return False, message

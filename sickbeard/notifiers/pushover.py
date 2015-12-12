@@ -94,7 +94,7 @@ class PushoverNotifier(object):
             conn.request("POST", "/1/messages.json",
                          urllib.urlencode(args), {"Content-type": "application/x-www-form-urlencoded"})
 
-        except urllib2.HTTPError, e:
+        except urllib2.HTTPError as e:
             # if we get an error back that doesn't have an error code then who knows what's really happening
             if not hasattr(e, 'code'):
                 logger.log(u"Pushover notification failed." + ex(e), logger.ERROR)

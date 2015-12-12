@@ -530,7 +530,7 @@ def xem_refresh(indexer_id, indexer, force=False):
                 myDB = db.DBConnection()
                 myDB.mass_action(cl)
 
-        except Exception, e:
+        except Exception as e:
             logger.log(
                 u"Exception while refreshing XEM data for show " + str(indexer_id) + " on " + sickbeard.indexerApi(
                     indexer).name + ": " + ex(e), logger.WARNING)

@@ -75,7 +75,7 @@ def _downloadResult(result):
 
             helpers.chmodAsParent(fileName)
 
-        except EnvironmentError, e:
+        except EnvironmentError as e:
             logger.log(u"Error trying to save NZB to black hole: " + ex(e), logger.ERROR)
             newResult = False
     elif result.resultType == "torrent":
@@ -389,10 +389,10 @@ def searchForNeededEpisodes():
         curFoundResults = {}
         try:
             curFoundResults = curProvider.search_rss(episodes)
-        except AuthException, e:
+        except AuthException as e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
             continue
-        except Exception, e:
+        except Exception as e:
             logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
             continue
@@ -481,10 +481,10 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
             try:
                 searchResults = curProvider.find_search_results(show, episodes, search_mode, manualSearch, downCurQuality)
-            except AuthException, e:
+            except AuthException as e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
                 break
-            except Exception, e:
+            except Exception as e:
                 logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
                 break

@@ -63,7 +63,7 @@ class EMBYNotifier(object):
             logger.log(u'EMBY: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
             return True
 
-        except (urllib2.URLError, IOError), e:
+        except (urllib2.URLError, IOError) as e:
             logger.log(u'EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
             return False
 
@@ -116,7 +116,7 @@ class EMBYNotifier(object):
                 logger.log(u'EMBY: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
                 return True
 
-            except (urllib2.URLError, IOError), e:
+            except (urllib2.URLError, IOError) as e:
                 logger.log(u'EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
                 return False
 

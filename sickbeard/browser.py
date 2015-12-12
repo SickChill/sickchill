@@ -106,7 +106,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
 
     try:
         fileList = getFileList(path, includeFiles)
-    except OSError, e:
+    except OSError as e:
         logger.log(u"Unable to open " + path + ": " + repr(e) + " / " + str(e), logger.WARNING)
         fileList = getFileList(parentPath, includeFiles)
 

@@ -144,7 +144,7 @@ class IPTorrentsProvider(TorrentProvider):
 
                             items[mode].append(item)
 
-                except Exception, e:
+                except Exception as e:
                     logger.log(u"Failed parsing provider. Error: %r" % ex(e), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available

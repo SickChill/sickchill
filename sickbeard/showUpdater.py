@@ -116,7 +116,7 @@ class ShowUpdater:
                             u"Not updating episodes for show " + cur_show.name + " because it's last/next episode is not within the grace period.",
                             logger.DEBUG)
                         # pi_list.append(sickbeard.showQueueScheduler.action.refreshShow(cur_show, True))
-            except (CantUpdateShowException, CantRefreshShowException), e:
+            except (CantUpdateShowException, CantRefreshShowException) as e:
                 logger.log(u"Automatic update failed: " + ex(e), logger.ERROR)
 
         ui.ProgressIndicators.setIndicator('dailyUpdate', ui.QueueProgressIndicator("Daily Update", pi_list))

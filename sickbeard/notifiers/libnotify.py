@@ -47,13 +47,13 @@ def diagnose():
     else:
         try:
             bus = dbus.SessionBus()
-        except dbus.DBusException, e:
+        except dbus.DBusException as e:
             return (u"<p>Error: unable to connect to D-Bus session bus: <code>%s</code>."
                     u"<p>Are you running SickRage in a desktop session?") % (cgi.escape(e),)
         try:
             bus.get_object('org.freedesktop.Notifications',
                            '/org/freedesktop/Notifications')
-        except dbus.DBusException, e:
+        except dbus.DBusException as e:
             return (u"<p>Error: there doesn't seem to be a notification daemon available: <code>%s</code> "
                     u"<p>Try installing notification-daemon or notify-osd.") % (cgi.escape(e),)
     return u"<p>Error: Unable to send notification."
