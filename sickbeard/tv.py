@@ -1435,8 +1435,8 @@ class TVEpisode(object):
                          % (self.season or 0,  self.episode or 0, self.show.name), logger.DEBUG)
             return
 
-        logger.log(u"%s: Downloading subtitles for %s S%02dE%02d"
-                   % (self.show.indexerid, self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
+        logger.log(u"Checking subtitle candidates for %s S%02dE%02d"
+                   % (self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
 
         subtitles_info = {'location': self.location, 'subtitles': self.subtitles, 'season': self.season,
                           'episode': self.episode, 'name': self.name, 'show_name': self.show.name,
