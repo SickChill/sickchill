@@ -2473,6 +2473,10 @@ class HomeAddShows(Home):
             page_title = "Most Played Shows"
         elif traktList == "recommended":
             page_title = "Recommended Shows"
+        elif traktList == "newshow":
+            page_title = "New Shows"
+        elif traktList == "newseason":
+            page_title = "Season Premieres"
         else:
             page_title = "Most Anticipated Shows"
 
@@ -2505,6 +2509,10 @@ class HomeAddShows(Home):
             page_url = "shows/played"
         elif traktList == "recommended":
             page_url = "recommendations/shows"
+        elif traktList == "newshow":
+            page_url = 'calendars/all/shows/new/%s/30' % datetime.date.today().strftime("%Y-%m-%d")
+        elif traktList == "newseason":
+            page_url = 'calendars/all/shows/premieres/%s/30' % datetime.date.today().strftime("%Y-%m-%d")
         else:
             page_url = "shows/anticipated"
 
@@ -2521,8 +2529,8 @@ class HomeAddShows(Home):
                 else:
                     logger.log(u"Trakt blacklist name is empty", logger.DEBUG)
 
-            if traktList != "recommended":
-                limit_show = "?limit=" + str(50 + len(not_liked_show)) + "&"
+            if traktList not in ["recommended", "newshow", "newseason"]:
+                limit_show = "?limit=" + str(100 + len(not_liked_show)) + "&"
             else:
                 limit_show = "?"
 
