@@ -357,6 +357,7 @@ class SubtitlesFinder(object):
                                            % ek(os.path.join, root, video_filename), logger.DEBUG)
                                 continue
 
+                            logger.log(u'Found subtitle(s) canditate(s) for %s' % video_filename, logger.INFO)
                             hearing_impaired = sickbeard.SUBTITLES_HEARING_IMPAIRED
                             user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
                             found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
@@ -414,7 +415,7 @@ class SubtitlesFinder(object):
         if sickbeard.SUBTITLES_DOWNLOAD_IN_PP:
             self.subtitles_download_in_pp()
 
-        logger.log(u'Checking for subtitles', logger.INFO)
+        logger.log(u'Checking for missed subtitles', logger.INFO)
 
         # get episodes on which we want subtitles
         # criteria is:
