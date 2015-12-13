@@ -119,7 +119,7 @@ class TorrentRssProvider(TorrentProvider):
                 if self.cookies:
                     requests.utils.add_dict_to_cookiejar(self.session.cookies,
                                                          dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
-                torrent_file = self.get_url(url)
+                torrent_file = self.get_url(url, need_bytes=True)
                 try:
                     bdecode(torrent_file)
                 except Exception as e:
