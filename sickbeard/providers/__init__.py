@@ -139,58 +139,6 @@ def makeNewznabProvider(configString):
     return newProvider
 
 
-def getTorrentRssProviderList(data):
-    providerList = [x for x in [makeTorrentRssProvider(x) for x in data.split('!!!')] if x]
-
-    seen_values = set()
-    providerListDeduped = []
-    for d in providerList:
-        value = d.name
-        if value not in seen_values:
-            providerListDeduped.append(d)
-            seen_values.add(value)
-
-    return [x for x in providerList if x]
-
-
-def makeTorrentRssProvider(configString):
-    if not configString:
-        return None
-
-    cookies = None
-    titleTAG = 'title'
-    search_mode = 'eponly'
-    search_fallback = 0
-    enable_daily = 0
-    enable_backlog = 0
-
-    try:
-        values = configString.split('|')
-        if len(values) == 9:
-            name, url, cookies, titleTAG, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
-        elif len(values) == 8:
-            name, url, cookies, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
-        else:
-            name = values[0]
-            url = values[1]
-            enabled = values[4]
-    except ValueError:
-        logger.log(u"Skipping RSS Torrent provider string: '" + configString + "', incorrect format",
-                   logger.ERROR)
-        return None
-
-    # try:
-    #     torrentRss = sys.modules['sickbeard.providers.rsstorrent']
-    # except Exception:
-    #     return
-
-    newProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG, search_mode, search_fallback, enable_daily,
-                                                enable_backlog)
-    newProvider.enabled = enabled == '1'
-
-    return newProvider
-
-
 def getDefaultNewznabProviders():
     # name|url|key|catIDs|enabled|search_mode|search_fallback|enable_daily|enable_backlog
     return 'NZB.Cat|https://nzb.cat/||5030,5040,5010|0|eponly|1|1|1!!!' + \

@@ -47,17 +47,18 @@ from sickbeard import logger
 from sickbeard import naming
 from sickbeard import dailysearcher
 from sickbeard.indexers import indexer_api
-from sickbeard.indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, indexer_error, \
-    indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, indexerExcepts
+from sickbeard.indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, \
+    indexer_error, indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, \
+    indexerExcepts
 from sickbeard.common import SD
 from sickbeard.common import SKIPPED
 from sickbeard.common import WANTED
+from sickbeard.providers.rsstorrent import TorrentRssProvider
 from sickbeard.databases import mainDB, cache_db, failed_db
 
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.providers.GenericProvider import GenericProvider
-from sickrage.show.Show import Show
 from sickrage.system.Shutdown import Shutdown
 
 from configobj import ConfigObj
@@ -1227,7 +1228,7 @@ def initialize(consoleLogging=True):
         newznabProviderList = providers.getNewznabProviderList(NEWZNAB_DATA)
 
         TORRENTRSS_DATA = check_setting_str(CFG, 'TorrentRss', 'torrentrss_data', '')
-        torrentRssProviderList = providers.getTorrentRssProviderList(TORRENTRSS_DATA)
+        torrentRssProviderList = TorrentRssProvider.get_providers_list(TORRENTRSS_DATA)
 
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in providers.sortedProviderList() if
