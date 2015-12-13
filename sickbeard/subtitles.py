@@ -32,8 +32,8 @@ from sickbeard import logger
 from sickbeard import history
 from sickbeard import db
 from sickbeard import processTV
-from sickbeard.helpers import remove_non_release_groups
-from sickrage.helper.common import media_extensions, dateTimeFormat
+from sickbeard.helpers import remove_non_release_groups, isMediaFile
+from sickrage.helper.common import dateTimeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
@@ -223,8 +223,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals
         sickbeard.helpers.chmodAsParent(subtitle_path)
         sickbeard.helpers.fixSetGroupID(subtitle_path)
 
-    if (not sickbeard.EMBEDDED_SUBTITLES_ALL and sickbeard.SUBTITLES_EXTRA_SCRIPTS and
-            video_path.rsplit(".", 1)[1] in media_extensions):
+    if sickbeard.SUBTITLES_EXTRA_SCRIPTS and isMediaFile(video_path) and not sickbeard.EMBEDDED_SUBTITLES_ALL:
         run_subs_extra_scripts(subtitles_info, found_subtitles, video, single=not sickbeard.SUBTITLES_MULTI)
 
     current_subtitles = [subtitle.language.opensubtitles for subtitle in found_subtitles]
@@ -346,7 +345,7 @@ class SubtitlesFinder(object):
                     except Exception as error:
                         logger.log(u'Could not remove non release groups from video file. Error: %r'
                                    % ex(error), logger.DEBUG)
-                    if video_filename.rsplit(".", 1)[1] in media_extensions:
+                    if isMediaFile(video_filename):
                         try:
                             video = subliminal.scan_video(os.path.join(root, video_filename),
                                                           subtitles=False, embedded_subtitles=False)
