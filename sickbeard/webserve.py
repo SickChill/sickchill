@@ -2969,7 +2969,7 @@ class Manage(Home, WebRoot):
     def showSubtitleMissed(indexer_id, whichSubs):
         myDB = db.DBConnection()
         cur_show_results = myDB.select(
-            "SELECT season, episode, name, subtitles FROM tv_episodes WHERE showid = ? AND season != 0 AND status LIKE '%4'",
+            "SELECT season, episode, name, subtitles FROM tv_episodes WHERE showid = ? AND season != 0 AND (status LIKE '%4' OR status LIKE '%6') and location != ''",
             [int(indexer_id)])
 
         result = {}
@@ -3008,8 +3008,8 @@ class Manage(Home, WebRoot):
         status_results = myDB.select(
             "SELECT show_name, tv_shows.indexer_id as indexer_id, tv_episodes.subtitles subtitles " +
             "FROM tv_episodes, tv_shows " +
-            "WHERE tv_shows.subtitles = 1 AND tv_episodes.status LIKE '%4' AND tv_episodes.season != 0 " +
-            "AND tv_episodes.showid = tv_shows.indexer_id ORDER BY show_name")
+            "WHERE tv_shows.subtitles = 1 AND (tv_episodes.status LIKE '%4' OR tv_episodes.status LIKE '%6') AND tv_episodes.season != 0 " +
+            "AND tv_episodes.location != '' AND tv_episodes.showid = tv_shows.indexer_id ORDER BY show_name")
 
         ep_counts = {}
         show_names = {}
@@ -3056,7 +3056,7 @@ class Manage(Home, WebRoot):
             if 'all' in to_download[cur_indexer_id]:
                 myDB = db.DBConnection()
                 all_eps_results = myDB.select(
-                    "SELECT season, episode FROM tv_episodes WHERE status LIKE '%4' AND season != 0 AND showid = ?",
+                    "SELECT season, episode FROM tv_episodes WHERE (status LIKE '%4' OR status LIKE '%6') AND season != 0 AND showid = ? AND location != ''",
                     [cur_indexer_id])
                 to_download[cur_indexer_id] = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
 

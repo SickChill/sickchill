@@ -32,8 +32,8 @@ from sickbeard import logger
 from sickbeard import history
 from sickbeard import db
 from sickbeard import processTV
-from sickbeard.helpers import remove_non_release_groups
-from sickrage.helper.common import media_extensions, dateTimeFormat
+from sickbeard.helpers import remove_non_release_groups, isMediaFile
+from sickrage.helper.common import dateTimeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
@@ -223,8 +223,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals
         sickbeard.helpers.chmodAsParent(subtitle_path)
         sickbeard.helpers.fixSetGroupID(subtitle_path)
 
-    if (not sickbeard.EMBEDDED_SUBTITLES_ALL and sickbeard.SUBTITLES_EXTRA_SCRIPTS and
-            video_path.rsplit(".", 1)[1] in media_extensions):
+    if sickbeard.SUBTITLES_EXTRA_SCRIPTS and isMediaFile(video_path) and not sickbeard.EMBEDDED_SUBTITLES_ALL:
         run_subs_extra_scripts(subtitles_info, found_subtitles, video, single=not sickbeard.SUBTITLES_MULTI)
 
     current_subtitles = [subtitle.language.opensubtitles for subtitle in found_subtitles]
@@ -346,7 +345,7 @@ class SubtitlesFinder(object):
                     except Exception as error:
                         logger.log(u'Could not remove non release groups from video file. Error: %r'
                                    % ex(error), logger.DEBUG)
-                    if video_filename.rsplit(".", 1)[1] in media_extensions:
+                    if isMediaFile(video_filename):
                         try:
                             video = subliminal.scan_video(os.path.join(root, video_filename),
                                                           subtitles=False, embedded_subtitles=False)
@@ -357,6 +356,7 @@ class SubtitlesFinder(object):
                                            % ek(os.path.join, root, video_filename), logger.DEBUG)
                                 continue
 
+                            logger.log(u'Found subtitle(s) canditate(s) for %s' % video_filename, logger.INFO)
                             hearing_impaired = sickbeard.SUBTITLES_HEARING_IMPAIRED
                             user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
                             found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
@@ -414,7 +414,7 @@ class SubtitlesFinder(object):
         if sickbeard.SUBTITLES_DOWNLOAD_IN_PP:
             self.subtitles_download_in_pp()
 
-        logger.log(u'Checking for subtitles', logger.INFO)
+        logger.log(u'Checking for missed subtitles', logger.INFO)
 
         # get episodes on which we want subtitles
         # criteria is:
@@ -464,9 +464,6 @@ class SubtitlesFinder(object):
                            % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                 continue
 
-            logger.log(u"%s S%02dE%02d doesn't have all needed subtitles"
-                       % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
-
             try:
                 try:
                     lastsearched = datetime.datetime.strptime(ep_to_sub['lastsearch'], dateTimeFormat)
@@ -478,7 +475,7 @@ class SubtitlesFinder(object):
                         (ep_to_sub['airdate_daydiff'] <= 7 and ep_to_sub['searchcount'] < 7 and
                          now - lastsearched > datetime.timedelta(hours=rules['new'][ep_to_sub['searchcount']]))):
 
-                    logger.log(u'Started subtitles search for %s S%02dE%02d'
+                    logger.log(u'Started missed subtitles search for %s S%02dE%02d'
                                % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.INFO)
 
                     show_object = Show.find(sickbeard.showList, int(ep_to_sub['showid']))
@@ -507,6 +504,10 @@ class SubtitlesFinder(object):
                         logger.log(u'Downloaded %s subtitles for %s S%02dE%02d'
                                    % (', '.join(new_subtitles), ep_to_sub['show_name'],
                                       ep_to_sub["season"], ep_to_sub["episode"]))
+                else:
+                    logger.log(u"Subtitle search limit reached for %s S%02dE%02d"
+                       % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.INFO)
+
             except Exception as error:
                 logger.log(u'Error while searching subtitles for %s S%02dE%02d. Error: %r'
                            % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode'],
