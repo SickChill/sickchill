@@ -250,8 +250,8 @@ def retrieve_exceptions():
     if queries:
         myDB.mass_action(queries)
         logger.log(u"Updated scene exceptions", logger.DEBUG)
-    else:
-        logger.log(u"No scene exceptions update needed", logger.DEBUG)
+    # else:
+    #     logger.log(u"No scene exceptions update needed", logger.DEBUG)
 
     # cleanup
     exception_dict.clear()
