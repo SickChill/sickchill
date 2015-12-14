@@ -48,10 +48,9 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_subtitles_codes()
         self.fix_show_nfo_lang()
         self.convert_tvrage_to_tvdb()
-        self.convert_archived_to_compund()
+        self.convert_archived_to_compound()
 
-    # todo: fix spelling to compound
-    def convert_archived_to_compund(self):
+    def convert_archived_to_compound(self):
         logger.log(u'Checking for archived episodes not qualified', logger.DEBUG)
 
         query = "SELECT episode_id, showid, status, location, season, episode " + \

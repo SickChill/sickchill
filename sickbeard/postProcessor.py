@@ -1040,10 +1040,7 @@ class PostProcessor(object):
                 else:
                     cur_ep.release_name = ""
 
-                if ep_obj.status in common.Quality.SNATCHED_BEST:
-                    cur_ep.status = common.Quality.compositeStatus(common.ARCHIVED, new_ep_quality)
-                else:
-                    cur_ep.status = common.Quality.compositeStatus(common.DOWNLOADED, new_ep_quality)
+                cur_ep.status = common.Quality.compositeStatus(common.DOWNLOADED, new_ep_quality)
 
                 cur_ep.subtitles = u''
 
