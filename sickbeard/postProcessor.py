@@ -509,8 +509,9 @@ class PostProcessor(object):
 
             self.in_history = True
             self.version = version
-            to_return = (str(show), season, [], quality, version)
-            self._log("Found result in history: " + str(to_return), logger.DEBUG)
+            to_return = (show, season, [], quality, version)
+
+            self._log("Found result in history for %s - Season: %s - Quality: %s - Version: %s" % (show.name, season, common.Quality.qualityStrings[quality], version), logger.DEBUG)
 
             return to_return
 
