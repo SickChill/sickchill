@@ -464,9 +464,6 @@ class SubtitlesFinder(object):
                            % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                 continue
 
-            logger.log(u"%s S%02dE%02d doesn't have all needed subtitles"
-                       % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
-
             try:
                 try:
                     lastsearched = datetime.datetime.strptime(ep_to_sub['lastsearch'], dateTimeFormat)
@@ -478,7 +475,7 @@ class SubtitlesFinder(object):
                         (ep_to_sub['airdate_daydiff'] <= 7 and ep_to_sub['searchcount'] < 7 and
                          now - lastsearched > datetime.timedelta(hours=rules['new'][ep_to_sub['searchcount']]))):
 
-                    logger.log(u'Started subtitles search for %s S%02dE%02d'
+                    logger.log(u'Started missed subtitles search for %s S%02dE%02d'
                                % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.INFO)
 
                     show_object = Show.find(sickbeard.showList, int(ep_to_sub['showid']))
@@ -507,6 +504,10 @@ class SubtitlesFinder(object):
                         logger.log(u'Downloaded %s subtitles for %s S%02dE%02d'
                                    % (', '.join(new_subtitles), ep_to_sub['show_name'],
                                       ep_to_sub["season"], ep_to_sub["episode"]))
+                else:
+                    logger.log(u"Subtitle search limit reached for %s S%02dE%02d"
+                       % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.INFO)
+
             except Exception as error:
                 logger.log(u'Error while searching subtitles for %s S%02dE%02d. Error: %r'
                            % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode'],
