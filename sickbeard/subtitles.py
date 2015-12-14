@@ -399,7 +399,7 @@ class SubtitlesFinder(object):
                 logger.log(u"Starting post-process with default settings now that we found subtitles")
                 processTV.processDir(sickbeard.TV_DOWNLOAD_DIR)
 
-    def run(self, force=False):  # pylint: disable=unused-argument,too-many-statements,too-many-branches
+    def run(self, force=False):  # pylint: disable=too-many-statements,too-many-branches
 
         if not sickbeard.USE_SUBTITLES:
             return
@@ -443,7 +443,6 @@ class SubtitlesFinder(object):
             '(? - e.airdate) AS airdate_daydiff '
             'FROM tv_episodes AS e INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id) '
             'WHERE s.subtitles = 1 AND e.subtitles NOT LIKE ? '
-            'AND (e.subtitles_searchcount <= 2 OR (e.subtitles_searchcount <= 7 AND airdate_daydiff <= 7)) '
             'AND e.location != ""', [today, query_languages])
 
         if len(sql_results) == 0:
@@ -470,7 +469,7 @@ class SubtitlesFinder(object):
                 except ValueError:
                     lastsearched = datetime.datetime.min
 
-                if ((ep_to_sub['airdate_daydiff'] > 7 and ep_to_sub['searchcount'] < 2 and
+                if force or ((ep_to_sub['airdate_daydiff'] > 7 and ep_to_sub['searchcount'] < 2 and
                      now - lastsearched > datetime.timedelta(hours=rules['old'][ep_to_sub['searchcount']])) or
                         (ep_to_sub['airdate_daydiff'] <= 7 and ep_to_sub['searchcount'] < 7 and
                          now - lastsearched > datetime.timedelta(hours=rules['new'][ep_to_sub['searchcount']]))):
