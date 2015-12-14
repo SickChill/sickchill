@@ -2644,7 +2644,6 @@ class HomeAddShows(Home):
             anime=sickbeard.ANIME_DEFAULT,
             scene=sickbeard.SCENE_DEFAULT,
             default_status_after=sickbeard.STATUS_DEFAULT_AFTER,
-            archive=sickbeard.ARCHIVE_DEFAULT
         )
 
         ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
@@ -2828,15 +2827,16 @@ class HomeAddShows(Home):
 
             if indexer is not None and indexer_id is not None:
                 # add the show
-                sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir,
-                                                            default_status=sickbeard.STATUS_DEFAULT,
-                                                            quality=sickbeard.QUALITY_DEFAULT,
-                                                            flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT,
-                                                            subtitles=sickbeard.SUBTITLES_DEFAULT,
-                                                            anime=sickbeard.ANIME_DEFAULT,
-                                                            scene=sickbeard.SCENE_DEFAULT,
-                                                            default_status_after=sickbeard.STATUS_DEFAULT_AFTER,
-                                                            archive=sickbeard.ARCHIVE_DEFAULT)
+                sickbeard.showQueueScheduler.action.addShow(
+                    indexer, indexer_id, show_dir,
+                    default_status=sickbeard.STATUS_DEFAULT,
+                    quality=sickbeard.QUALITY_DEFAULT,
+                    flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT,
+                    subtitles=sickbeard.SUBTITLES_DEFAULT,
+                    anime=sickbeard.ANIME_DEFAULT,
+                    scene=sickbeard.SCENE_DEFAULT,
+                    default_status_after=sickbeard.STATUS_DEFAULT_AFTER
+                )
                 num_added += 1
 
         if num_added:
@@ -3703,7 +3703,7 @@ class ConfigGeneral(Config):
 
     @staticmethod
     def saveAddShowDefaults(defaultStatus, anyQualities, bestQualities, defaultFlattenFolders, subtitles=False,
-                            anime=False, scene=False, defaultStatusAfter=WANTED, archive=False):
+                            anime=False, scene=False, defaultStatusAfter=WANTED):
 
         if anyQualities:
             anyQualities = anyQualities.split(',')
@@ -3725,9 +3725,8 @@ class ConfigGeneral(Config):
         sickbeard.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
 
         sickbeard.ANIME_DEFAULT = config.checkbox_to_value(anime)
-        sickbeard.SCENE_DEFAULT = config.checkbox_to_value(scene)
-        sickbeard.ARCHIVE_DEFAULT = config.checkbox_to_value(archive)
 
+        sickbeard.SCENE_DEFAULT = config.checkbox_to_value(scene)
         sickbeard.save_config()
 
     def saveGeneral(self, log_dir=None, log_nr=5, log_size=1048576, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,

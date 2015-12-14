@@ -45,7 +45,6 @@
             <th class="col-legend">Scene</th>
             <th class="col-legend">Anime</th>
             <th class="col-legend">Season folders</th>
-            <th class="col-legend">Archive first match</th>
             <th class="col-legend">Paused</th>
             <th class="col-legend">Subtitle</th>
             <th class="col-legend">Default Ep Status</th>
