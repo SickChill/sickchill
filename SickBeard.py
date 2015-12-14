@@ -318,7 +318,7 @@ class SickRage(object):
             self.webhost = sickbeard.WEB_HOST
         else:
             if sickbeard.WEB_IPV6:
-                self.webhost = '::'
+                self.webhost = ''
             else:
                 self.webhost = '0.0.0.0'
 
