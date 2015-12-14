@@ -29,6 +29,8 @@ from sickbeard.common import NOTIFY_SNATCH
 from sickbeard.common import NOTIFY_DOWNLOAD
 from sickbeard.common import NOTIFY_GIT_UPDATE
 from sickbeard.common import NOTIFY_GIT_UPDATE_TEXT
+from sickbeard.common import NOTIFY_LOGIN
+from sickbeard.common import NOTIFY_LOGIN_TEXT
 from sickbeard.common import NOTIFY_SUBTITLE_DOWNLOAD
 
 
