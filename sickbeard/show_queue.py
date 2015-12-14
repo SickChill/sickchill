@@ -357,7 +357,6 @@ class QueueItemAdd(ShowQueueItem):
             self.show.flatten_folders = self.flatten_folders if self.flatten_folders is not None else sickbeard.FLATTEN_FOLDERS_DEFAULT
             self.show.anime = self.anime if self.anime is not None else sickbeard.ANIME_DEFAULT
             self.show.scene = self.scene if self.scene is not None else sickbeard.SCENE_DEFAULT
-            self.show.archive_firstmatch = self.archive if self.archive is not None else sickbeard.ARCHIVE_DEFAULT
             self.show.paused = self.paused if self.paused is not None else False
 
             # set up default new/missing episode status

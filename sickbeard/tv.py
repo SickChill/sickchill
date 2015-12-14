@@ -96,7 +96,6 @@ class TVShow(object):
         self._air_by_date = 0
         self._subtitles = int(sickbeard.SUBTITLES_DEFAULT)
         self._dvdorder = 0
-        self._archive_firstmatch = 0
         self._lang = lang
         self._last_update_indexer = 1
         self._sports = 0
@@ -138,7 +137,6 @@ class TVShow(object):
     air_by_date = property(lambda self: self._air_by_date, dirty_setter("_air_by_date"))
     subtitles = property(lambda self: self._subtitles, dirty_setter("_subtitles"))
     dvdorder = property(lambda self: self._dvdorder, dirty_setter("_dvdorder"))
-    archive_firstmatch = property(lambda self: self._archive_firstmatch, dirty_setter("_archive_firstmatch"))
     lang = property(lambda self: self._lang, dirty_setter("_lang"))
     last_update_indexer = property(lambda self: self._last_update_indexer, dirty_setter("_last_update_indexer"))
     sports = property(lambda self: self._sports, dirty_setter("_sports"))
@@ -802,7 +800,6 @@ class TVShow(object):
             self.scene = int(sqlResults[0]["scene"] or 0)
             self.subtitles = int(sqlResults[0]["subtitles"] or 0)
             self.dvdorder = int(sqlResults[0]["dvdorder"] or 0)
-            self.archive_firstmatch = int(sqlResults[0]["archive_firstmatch"] or 0)
             self.quality = int(sqlResults[0]["quality"] or UNKNOWN)
             self.flatten_folders = int(sqlResults[0]["flatten_folders"] or 0)
             self.paused = int(sqlResults[0]["paused"] or 0)
@@ -1169,7 +1166,6 @@ class TVShow(object):
                         "sports": self.sports,
                         "subtitles": self.subtitles,
                         "dvdorder": self.dvdorder,
-                        "archive_firstmatch": self.archive_firstmatch,
                         "startyear": self.startyear,
                         "lang": self.lang,
                         "imdb_id": self.imdbid,
@@ -1234,13 +1230,13 @@ class TVShow(object):
         logger.log(u"Checking if found episode %s S%02dE%02d is wanted at quality %s" % (self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.DEBUG)
 
         # if the quality isn't one we want under any circumstances then just say no
-        anyQualities, bestQualities = Quality.splitQuality(self.quality)
+        allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)
         logger.log(u"Any,Best = [ %s ] [ %s ] Found = [ %s ]" %
-                   (self.qualitiesToString(anyQualities),
-                    self.qualitiesToString(bestQualities),
+                   (self.qualitiesToString(allowed_qualities),
+                    self.qualitiesToString(preferred_qualities),
                     self.qualitiesToString([quality])), logger.DEBUG)
 
-        if quality not in anyQualities + bestQualities or quality is UNKNOWN:
+        if quality not in allowed_qualities + preferred_qualities or quality is UNKNOWN:
             logger.log(u"Don't want this quality, ignoring found episode", logger.DEBUG)
             return False
 
@@ -1275,8 +1271,8 @@ class TVShow(object):
                     logger.DEBUG)
                 return True
 
-        # if we are re-downloading then we only want it if it's in our bestQualities list and better than what we have, or we only have one bestQuality and we do not have that quality yet
-        if epStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER and quality in bestQualities and (quality > curQuality or curQuality not in bestQualities):
+        # if we are re-downloading then we only want it if it's in our preferred_qualities list and better than what we have, or we only have one bestQuality and we do not have that quality yet
+        if epStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER and quality in preferred_qualities and (quality > curQuality or curQuality not in preferred_qualities):
             logger.log(u"Episode already exists but the found episode quality is wanted more, getting found episode",
                        logger.DEBUG)
             return True
@@ -1310,20 +1306,18 @@ class TVShow(object):
         elif epStatus in Quality.SNATCHED_BEST:
             return Overview.SNATCHED_BEST
         elif epStatus in Quality.DOWNLOADED:
-            anyQualities, bestQualities = Quality.splitQuality(self.quality)  # @UnusedVariable
-            epStatus, curQuality = Quality.splitCompositeStatus(epStatus)
+            allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)  # @UnusedVariable
+            epStatus, cur_quality = Quality.splitCompositeStatus(epStatus)
 
-            if curQuality not in anyQualities + bestQualities:
-                if curQuality != Quality.UNKNOWN and (
-                    (anyQualities and curQuality > max(anyQualities)) or
-                    (bestQualities and curQuality > max(bestQualities))
+            if cur_quality not in allowed_qualities + preferred_qualities:
+                if cur_quality != Quality.UNKNOWN and (
+                    (allowed_qualities and cur_quality > max(allowed_qualities)) or
+                    (preferred_qualities and cur_quality > max(preferred_qualities))
                 ):
                     return Overview.GOOD
                 else:
                     return Overview.QUAL
-            elif self.archive_firstmatch:
-                return Overview.GOOD
-            elif bestQualities and curQuality not in bestQualities:
+            elif preferred_qualities and cur_quality not in preferred_qualities:
                 return Overview.QUAL
             else:
                 return Overview.GOOD

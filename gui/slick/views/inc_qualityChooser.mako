@@ -9,13 +9,11 @@ if not show is UNDEFINED:
 else:
     __quality = int(sickbeard.QUALITY_DEFAULT)
 
-qualities = Quality.splitQuality(__quality)
-anyQualities = qualities[0]
-bestQualities = qualities[1]
+anyQualities, bestQualities = Quality.splitQuality(__quality)
+overall_quality = Quality.combineQualities(anyQualities, bestQualities)
+selected = None
 %>
 
-<% overall_quality = Quality.combineQualities(anyQualities, bestQualities) %>
-<% selected = None %>
 <select id="qualityPreset" name="quality_preset" class="form-control form-control-inline input-sm">
     <option value="0">Custom</option>
     % for curPreset in sorted(qualityPresets):
