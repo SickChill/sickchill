@@ -585,7 +585,7 @@ class TVShow(object):
                         continue
 
                 with ep.lock:
-                    logger.log(u"%s: Loading info from %s for episode S%02dE%02d" % (self.indexerid, sickbeard.indexerApi(self.indexer).name, season or 0, episode or 0), logger.DEBUG)
+                    # logger.log(u"%s: Loading info from %s for episode S%02dE%02d" % (self.indexerid, sickbeard.indexerApi(self.indexer).name, season or 0, episode or 0), logger.DEBUG)
                     ep.loadFromIndexer(season, episode, tvapi=t)
 
                     sql_l.append(ep.get_sql())
@@ -1512,7 +1512,7 @@ class TVEpisode(object):
                         raise EpisodeNotFoundException("Couldn't find episode S%02dE%02d" % (season or 0, episode or 0))
 
     def loadFromDB(self, season, episode):
-        logger.log(u"%s: Loading episode details for %s S%02dE%02d from DB" % (self.show.indexerid, self.show.name, season or 0, episode or 0), logger.DEBUG)
+        # logger.log(u"%s: Loading episode details for %s S%02dE%02d from DB" % (self.show.indexerid, self.show.name, season or 0, episode or 0), logger.DEBUG)
 
         myDB = db.DBConnection()
         sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
@@ -1595,8 +1595,8 @@ class TVEpisode(object):
         if episode is None:
             episode = self.episode
 
-        logger.log(u"%s: Loading episode details for %s S%02dE%02d from %s" %
-                   (self.show.indexerid, self.show.name, season or 0, episode or 0, sickbeard.indexerApi(self.show.indexer).name), logger.DEBUG)
+        # logger.log(u"%s: Loading episode details for %s S%02dE%02d from %s" %
+        #            (self.show.indexerid, self.show.name, season or 0, episode or 0, sickbeard.indexerApi(self.show.indexer).name), logger.DEBUG)
 
         indexer_lang = self.show.lang
 
