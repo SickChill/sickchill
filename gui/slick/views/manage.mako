@@ -45,7 +45,6 @@
             <th class="col-legend">Scene</th>
             <th class="col-legend">Anime</th>
             <th class="col-legend">Season folders</th>
-            <th class="col-legend">Archive first match</th>
             <th class="col-legend">Paused</th>
             <th class="col-legend">Subtitle</th>
             <th class="col-legend">Default Ep Status</th>
@@ -125,7 +124,6 @@
             <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_scene) == 1]} width="16" height="16" /></td>
             <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_anime) == 1]} width="16" height="16" /></td>
             <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[not int(curShow.flatten_folders) == 1]} width="16" height="16" /></td>
-            <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.archive_firstmatch) == 1]} width="16" height="16" /></td>
             <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.paused) == 1]} width="16" height="16" /></td>
             <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.subtitles) == 1]} width="16" height="16" /></td>
             <td align="center">${statusStrings[curShow.default_ep_status]}</td>

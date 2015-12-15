@@ -221,7 +221,6 @@
                     <tr><td class="showLegend">Anime: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_anime)]}" alt="${("N", "Y")[bool(show.is_anime)]}" width="16" height="16" /></td></tr>
                     <tr><td class="showLegend">DVD Order: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.dvdorder)]}" alt="${("N", "Y")[bool(show.dvdorder)]}" width="16" height="16" /></td></tr>
                     <tr><td class="showLegend">Scene Numbering: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.scene)]}" alt="${("N", "Y")[bool(show.scene)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Archive First Match: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.archive_firstmatch)]}" alt="${("N", "Y")[bool(show.archive_firstmatch)]}" width="16" height="16" /></td></tr>
                 </table>
             </div>
         </div>

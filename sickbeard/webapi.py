@@ -1902,7 +1902,9 @@ class CMD_Show(ApiCall):
             show_dict["rls_ignore_words"] = []
 
         show_dict["scene"] = (0, 1)[show_obj.scene]
-        show_dict["archive_firstmatch"] = (0, 1)[show_obj.archive_firstmatch]
+        # show_dict["archive_firstmatch"] = (0, 1)[show_obj.archive_firstmatch]
+        # This might need to be here for 3rd part apps?
+        show_dict["archive_firstmatch"] = 1
 
         show_dict["indexerid"] = show_obj.indexerid
         show_dict["tvdbid"] = helpers.mapIndexersToShow(show_obj)[1]
@@ -2010,9 +2012,10 @@ class CMD_ShowAddExisting(ApiCall):
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
 
         sickbeard.showQueueScheduler.action.addShow(
-            int(indexer), int(self.indexerid), self.location, default_status=sickbeard.STATUS_DEFAULT,
-            quality=new_quality, flatten_folders=int(self.flatten_folders), subtitles=self.subtitles,
-            default_status_after=sickbeard.STATUS_DEFAULT_AFTER, archive=self.archive_firstmatch
+            int(indexer), int(self.indexerid), self.location,
+            default_status=sickbeard.STATUS_DEFAULT, quality=new_quality,
+            flatten_folders=int(self.flatten_folders), subtitles=self.subtitles,
+            default_status_after=sickbeard.STATUS_DEFAULT_AFTER
         )
 
         return _responds(RESULT_SUCCESS, {"name": indexer_name}, indexer_name + " has been queued to be added")
@@ -2036,9 +2039,6 @@ class CMD_ShowAddNew(ApiCall):
             "anime": {"desc": "True to mark the show as an anime, False otherwise"},
             "scene": {"desc": "True if episodes search should be made by scene numbering, False otherwise"},
             "future_status": {"desc": "The status of future episodes"},
-            "archive_firstmatch": {
-                "desc": "True if episodes should be archived when first match is downloaded, False otherwise"
-            },
         }
     }
 
@@ -2068,8 +2068,6 @@ class CMD_ShowAddNew(ApiCall):
                                              "bool", [])
         self.future_status, args = self.check_params(args, kwargs, "future_status", None, False, "string",
                                                      ["wanted", "skipped", "ignored"])
-        self.archive_firstmatch, args = self.check_params(args, kwargs, "archive_firstmatch",
-                                                          bool(sickbeard.ARCHIVE_DEFAULT), False, "bool", [])
 
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
@@ -2183,9 +2181,10 @@ class CMD_ShowAddNew(ApiCall):
                 helpers.chmodAsParent(show_path)
 
         sickbeard.showQueueScheduler.action.addShow(
-            int(indexer), int(self.indexerid), show_path, default_status=new_status, quality=new_quality,
-            flatten_folders=int(self.flatten_folders), lang=self.lang, subtitles=self.subtitles, anime=self.anime,
-            scene=self.scene, default_status_after=default_ep_status_after, archive=self.archive_firstmatch
+            int(indexer), int(self.indexerid), show_path, default_status=new_status,
+            quality=new_quality, flatten_folders=int(self.flatten_folders),
+            lang=self.lang, subtitles=self.subtitles, anime=self.anime,
+            scene=self.scene, default_status_after=default_ep_status_after
         )
 
         return _responds(RESULT_SUCCESS, {"name": indexer_name}, indexer_name + " has been queued to be added")
