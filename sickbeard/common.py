@@ -144,6 +144,7 @@ class Quality(object):
     UNKNOWN = 1 << 15  # 32768
 
     qualityStrings = NumDict({
+        None: "N/A",
         NONE: "N/A",
         UNKNOWN: "Unknown",
         SDTV: "SDTV",
@@ -158,6 +159,7 @@ class Quality(object):
     })
 
     sceneQualityStrings = NumDict({
+        None: "N/A",
         NONE: "N/A",
         UNKNOWN: "Unknown",
         SDTV: "HDTV",
@@ -178,6 +180,7 @@ class Quality(object):
     })
 
     cssClassStrings = NumDict({
+        None: "N/A",
         NONE: "N/A",
         UNKNOWN: "Unknown",
         SDTV: "SDTV",
@@ -402,10 +405,12 @@ class Quality(object):
 
     @staticmethod
     def compositeStatus(status, quality):
+        quality = 0 if quality is None else quality
         return status + 100 * quality
 
     @staticmethod
     def qualityDownloaded(status):
+        quality = 0 if quality is None else quality
         return (status - DOWNLOADED) / 100
 
     @staticmethod
@@ -419,9 +424,10 @@ class Quality(object):
         if status == UNKNOWN:
             return UNKNOWN, Quality.UNKNOWN
 
-        for q in sorted(Quality.qualityStrings.keys(), reverse=True):
-            if status > q * 100:
-                return status - q * 100, q
+        for q in sorted(Quality.qualityStrings, reverse=True):
+            if q is not None:
+                if status > q * 100:
+                    return status - q * 100, q
 
         return status, Quality.NONE
 
