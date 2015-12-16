@@ -378,7 +378,10 @@ class GitUpdateManager(UpdateManager):
         return self._run_git(self._git_path, "describe --abbrev=0 " + self._cur_commit_hash)[0]
 
     def get_newest_version(self):
-        return self._run_git(self._git_path, "describe --abbrev=0 " + self._newest_commit_hash)[0]
+        if self._newest_commit_hash:
+            return self._run_git(self._git_path, "describe --abbrev=0 " + self._newest_commit_hash)[0]
+        else:
+            return self._run_git(self._git_path, "describe --abbrev=0 " + self._cur_commit_hash)[0]
 
     def get_num_commits_behind(self):
         return self._num_commits_behind
