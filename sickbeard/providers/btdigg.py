@@ -49,7 +49,7 @@ class BTDIGGProvider(TorrentProvider):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
-        search_params = {'p': 1}
+        search_params = {'p': 0}
 
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
@@ -59,7 +59,7 @@ class BTDIGGProvider(TorrentProvider):
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
                 search_params['q'] = search_string.encode('utf-8')
-                search_params['order'] = '1' if mode != 'RSS' else '2'
+                search_params['order'] = '0' if mode != 'RSS' else '2'
 
                 searchURL = self.urls['api'] + '?' + urlencode(search_params)
                 logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
@@ -70,28 +70,32 @@ class BTDIGGProvider(TorrentProvider):
                     return []
 
                 for torrent in jdata:
-                    if not torrent['ff']:
-                        title = torrent['name']
-                        download_url = torrent['magnet'] + self._custom_trackers
-                        size = torrent['size']
-                        # FIXME
-                        seeders = 1
-                        leechers = 0
+                    title = torrent['name']
+                    download_url = torrent['magnet'] + self._custom_trackers
+                    size = torrent['size']
+                    fakeness = torrent['ff']
+                    files = torrent['files']
+                    if fakeness != 0.0 or files == 0:
+                        logger.log(u"Found fake result {0} ignoring it becouse it has a level of fakeness of {1} and {2} files".format(title, fakeness, files), logger.DEBUG)
+                        continue			
+                    # FIXME
+                    seeders = 1
+                    leechers = 0
 
-                        if not all([title, download_url]):
-                            continue
+                    if not all([title, download_url]):
+                        continue
 
-                        # Filter unseeded torrent (Unsupported)
-                        # if seeders < self.minseed or leechers < self.minleech:
-                        #    if mode != 'RSS':
-                        #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                        #    continue
+                    # Filter unseeded torrent (Unsupported)
+                    # if seeders < self.minseed or leechers < self.minleech:
+                    #    if mode != 'RSS':
+                    #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                    #    continue
 
-                        item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
-                            logger.log(u"Found result: %s" % title, logger.DEBUG)
+                    item = title, download_url, size, seeders, leechers
+                    if mode != 'RSS':
+                        logger.log(u"Found result: %s" % title, logger.DEBUG)
 
-                        items[mode].append(item)
+                    items[mode].append(item)
 
             # For each search mode sort all the items by seeders if available (Unsupported)
             # items[mode].sort(key=lambda tup: tup[3], reverse=True)
