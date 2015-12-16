@@ -516,7 +516,7 @@ class SubtitlesFinder(object):
                               ex(error)), logger.ERROR)
                 continue
 
-        logger.log(u'Finised checking for missed subtitles', logger.INFO)
+        logger.log(u'Finished checking for missed subtitles', logger.INFO)
         self.amActive = False
 
 
