@@ -283,6 +283,11 @@ class TestLanguage(TestCase, _Py26FixTestCase):
         self.assertTrue(hasattr(Language('fra'), 'alpha2'))
         self.assertFalse(hasattr(Language('bej'), 'alpha2'))
 
+    def test_country_hasattr(self):
+        self.assertTrue(hasattr(Country('US'), 'name'))
+        self.assertTrue(hasattr(Country('FR'), 'alpha2'))
+        self.assertFalse(hasattr(Country('BE'), 'none'))
+
     def test_country(self):
         self.assertEqual(Language('por', 'BR').country, Country('BR'))
         self.assertEqual(Language('eng', Country('US')).country, Country('US'))
