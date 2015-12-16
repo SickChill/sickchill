@@ -39,7 +39,7 @@ class BTDIGGProvider(TorrentProvider):
 
         self.url = self.urls['url']
 
-        # Unsupported
+        # # Unsupported
         # self.minseed = 1
         # self.minleech = 0
 
@@ -51,53 +51,68 @@ class BTDIGGProvider(TorrentProvider):
         items = {'Season': [], 'Episode': [], 'RSS': []}
         search_params = {'p': 0}
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
-            for search_string in search_strings[mode]:
+            for cur_string in search_strings[mode]:
 
-                if mode != 'RSS':
-                    logger.log(u"Search string: %s" % search_string, logger.DEBUG)
+                search_params['q'] = cur_string.encode('utf-8')
 
-                search_params['q'] = search_string.encode('utf-8')
-                search_params['order'] = '0' if mode != 'RSS' else '2'
+                if mode.upper() != 'RSS':
+                    logger.log(u"Search string: %s" % cur_string, logger.DEBUG)
+                    search_params['order'] = '0'
+                else:
+                    search_params['order'] = '2'
 
-                searchURL = self.urls['api'] + '?' + urlencode(search_params)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                search_url = self.urls['api'] + '?' + urlencode(search_params)
+                logger.log(u"Search URL: %s" %  search_url, logger.DEBUG)
 
-                jdata = self.get_url(searchURL, json=True)
+                jdata = self.get_url(search_url, json=True)
                 if not jdata:
-                    logger.log(u"No data returned to be parsed!!!")
-                    return []
+                    logger.log(u"No data returned to be parsed!!!", logger.DEBUG)
+
+                    # continue if we want to keep trying the provider
+                    continue
+
+                    # # return if provider returns no data when api limit reached
+                    # return results
+
 
                 for torrent in jdata:
-                    title = torrent['name']
+                    if not torrent['name']:
+                        logger.log(u"Ignoring result since it has no name", logger.DEBUG)
+                        continue
+
+                    if torrent['ff']:
+                        logger.log(u"Ignoring result for %s since it's a fake (level = %s)" % (torrent['name'], torrent['ff']), logger.DEBUG)
+                        continue
+
+                    if not torrent['files']:
+                        logger.log(u"Ignoring result for %s without files" % torrent['name'], logger.DEBUG)
+                        continue
+
                     download_url = torrent['magnet'] + self._custom_trackers
-                    size = torrent['size']
-                    fakeness = torrent['ff']
-                    files = torrent['files']
-                    if fakeness != 0.0 or files == 0:
-                        logger.log(u"Found fake result {0} ignoring it becouse it has a level of fakeness of {1} and {2} files".format(title, fakeness, files), logger.DEBUG)
-                        continue			
+
+                    if not download_url:
+                        logger.log(u"Ignoring result for %s without a url" % torrent['name'], logger.DEBUG)
+                        continue
+
                     # FIXME
                     seeders = 1
                     leechers = 0
 
-                    if not all([title, download_url]):
-                        continue
-
-                    # Filter unseeded torrent (Unsupported)
+                    # # Filter unseeded torrent (Unsupported)
                     # if seeders < self.minseed or leechers < self.minleech:
                     #    if mode != 'RSS':
                     #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                     #    continue
 
-                    item = title, download_url, size, seeders, leechers
-                    if mode != 'RSS':
-                        logger.log(u"Found result: %s" % title, logger.DEBUG)
+                    if mode.upper() != 'RSS':
+                        logger.log(u"Found result: %s" % torrent['name'], logger.DEBUG)
 
+                    item = torrent['name'], download_url, torrent['size'], seeders, leechers
                     items[mode].append(item)
 
-            # For each search mode sort all the items by seeders if available (Unsupported)
+            # # For each search mode sort all the items by seeders if available (Unsupported)
             # items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
