@@ -114,6 +114,8 @@ def wanted_languages(sql_like=None):
 
 
 def get_needed_languages(subtitles):
+    if not sickbeard.SUBTITLES_MULTI and sorted(wanted_languages())[0] in subtitles:
+        subtitles.remove(sorted(wanted_languages())[0])
     return {from_code(language) for language in wanted_languages().difference(subtitles)}
 
 
@@ -403,7 +405,7 @@ class SubtitlesFinder(object):
                 logger.log(u"Starting post-process with default settings now that we found subtitles")
                 processTV.processDir(sickbeard.TV_DOWNLOAD_DIR)
 
-    def run(self, force=False):  # pylint: disable=too-many-statements,too-many-branches
+    def run(self, force=False):  # pylint: disable=too-many-statements, too-many-branches
 
         if not sickbeard.USE_SUBTITLES:
             return
@@ -417,7 +419,7 @@ class SubtitlesFinder(object):
 
         def dhm(td):
             days = td.days
-            hours = td.seconds // 60**2
+            hours = td.seconds // 60 ** 2
             minutes = (td.seconds // 60) % 60
             ret = (u'', '%s days, ' % days)[days > 0] + \
                 (u'', '%s hours, ' % hours)[hours > 0] + \
@@ -428,7 +430,7 @@ class SubtitlesFinder(object):
                 ret = ret.replace('hours', 'hour')
             if minutes == 1:
                 ret = ret.replace('minutes', 'minute')
-            return ret.strip(', ')
+            return ret.rstrip(', ')
 
         if sickbeard.SUBTITLES_DOWNLOAD_IN_PP:
             self.subtitles_download_in_pp()
@@ -473,7 +475,7 @@ class SubtitlesFinder(object):
                 if not force:
                     now = datetime.datetime.now()
                     days = int(ep_to_sub['age'])
-                    delay_time = datetime.timedelta(hours=8 if days < 10 else 7*24 if days < 30 else 30*24)
+                    delay_time = datetime.timedelta(hours=8 if days < 10 else 7 * 24 if days < 30 else 30 * 24)
 
                     # Search every hour for the first 24 hours since aired, then every 8 hours until 10 days passes
                     # After 10 days, search every 7 days, after 30 days search once a month
