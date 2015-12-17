@@ -174,16 +174,9 @@ class TVChaosUKProvider(TorrentProvider):
                             if not title.startswith(show_name_first_word):
                                 title = re.match(r'(.*)(' + show_name_first_word + '.*)', title).group(2)
 
-                            # Chop off tracker/channel prefix or we cant parse the result!
-                            if mode != 'RSS':
-                                show_name_first_word = re.search(r'^[^ .]+', self.search_params['keywords']).group()
-                                if not title.startswith(show_name_first_word):
-                                    title = re.match(r'(.*)(' + show_name_first_word + '.*)', title).group(2)
-
                             # Change title from Series to Season, or we can't parse
-                            if mode != 'RSS':
-                                if 'Series' in self.search_params['keywords']:
-                                    title = re.sub(r'(?i)series', 'Season', title)
+                            if 'Series' not in self.search_params['keywords']:
+                                title = re.sub(r'(?i)series', 'Season', title)
 
                             torrent_size = cells[4].getText().strip()
                             size = -1
