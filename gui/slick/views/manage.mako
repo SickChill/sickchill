@@ -22,8 +22,8 @@
         </td>
         <td align="right">
             <div>
-                <input class="btn btn-inline" type="button" value="Edit Selected" id="submitMassEdit" />
-                <input class="btn btn-inline" type="button" value="Submit" id="submitMassUpdate" />
+                <input class="btn btn-inline submitMassEdit" type="button" value="Edit Selected" />
+                <input class="btn btn-inline submitMassUpdate" type="button" value="Submit" />
                 <span class="show-option">
                     <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
                 </span>
@@ -45,7 +45,6 @@
             <th class="col-legend">Scene</th>
             <th class="col-legend">Anime</th>
             <th class="col-legend">Season folders</th>
-            <th class="col-legend">Archive first match</th>
             <th class="col-legend">Paused</th>
             <th class="col-legend">Subtitle</th>
             <th class="col-legend">Default Ep Status</th>
@@ -64,8 +63,8 @@
 
     <tfoot>
         <tr>
-            <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left" type="button" value="Edit Selected" id="submitMassEdit" /></td>
-            <td rowspan="1" colspan="${(15, 16)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right" type="button" value="Submit" id="submitMassUpdate" /></td>
+            <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left submitMassEdit" type="button" value="Edit Selected" /></td>
+            <td rowspan="1" colspan="${(15, 16)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="Submit" /></td>
         </tr>
     </tfoot>
 
@@ -125,7 +124,6 @@
             <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_scene) == 1]} width="16" height="16" /></td>
             <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_anime) == 1]} width="16" height="16" /></td>
             <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[not int(curShow.flatten_folders) == 1]} width="16" height="16" /></td>
-            <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.archive_firstmatch) == 1]} width="16" height="16" /></td>
             <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.paused) == 1]} width="16" height="16" /></td>
             <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.subtitles) == 1]} width="16" height="16" /></td>
             <td align="center">${statusStrings[curShow.default_ep_status]}</td>

@@ -304,21 +304,21 @@ def isFinalResult(result):
 
 def isFirstBestMatch(result):
     """
-    Checks if the given result is a best quality match and if we want to archive the episode on first match.
+    Checks if the given result is a best quality match and if we want to stop searching providers here.
     """
 
-    logger.log(u"Checking if we should archive our first best quality match for for episode " + result.name,
+    logger.log(u"Checking if we should stop searching for a better quality for for episode " + result.name,
                logger.DEBUG)
 
     show_obj = result.episodes[0].show
 
     any_qualities, best_qualities = Quality.splitQuality(show_obj.quality)
 
-    # if there is a redownload that's a match to one of our best qualities and we want to archive the episode then we are done
-    if best_qualities and show_obj.archive_firstmatch and result.quality in best_qualities:
-        return True
+    if best_qualities:
+        return result.quality in best_qualities
+    else:
+        return result.quality in any_qualities
 
-    return False
 
 def wantedEpisodes(show, fromDate):
     """
@@ -327,32 +327,38 @@ def wantedEpisodes(show, fromDate):
     :param fromDate: Search from a certain date
     :return: list of wanted episodes
     """
+    wanted = []
+    if show.paused:
+        logger.log(u"Not checking for episodes of %s because the show is paused" % show.name, logger.DEBUG)
+        return wanted
 
-    anyQualities, bestQualities = common.Quality.splitQuality(show.quality) # @UnusedVariable
-    allQualities = list(set(anyQualities + bestQualities))
+    allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality) # @UnusedVariable
+    all_qualities = list(set(allowed_qualities + preferred_qualities))
 
     logger.log(u"Seeing if we need anything from " + show.name, logger.DEBUG)
-    myDB = db.DBConnection()
+    con = db.DBConnection()
 
-    sqlResults = myDB.select("SELECT status, season, episode FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?",
-                             [show.indexerid, fromDate.toordinal()])
+    sql_results = con.select(
+        "SELECT status, season, episode FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?",
+        [show.indexerid, fromDate.toordinal()]
+    )
 
     # check through the list of statuses to see if we want any
-    wanted = []
-    for result in sqlResults:
-        curCompositeStatus = int(result["status"] or -1)
-        curStatus, curQuality = common.Quality.splitCompositeStatus(curCompositeStatus)
+    for result in sql_results:
+        cur_status, cur_quality = common.Quality.splitCompositeStatus(int(result["status"] or -1))
+        if cur_status not in {common.WANTED, common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER}:
+            continue
 
-        if bestQualities:
-            highestBestQuality = max(allQualities)
-        else:
-            highestBestQuality = 0
+        if cur_status != common.WANTED:
+            if preferred_qualities:
+                if cur_quality in preferred_qualities:
+                    continue
+            elif cur_quality in allowed_qualities:
+                continue
 
-        # if we need a better one then say yes
-        if (curStatus in (common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER) and curQuality < highestBestQuality) or curStatus == common.WANTED:
-            epObj = show.getEpisode(int(result["season"]), int(result["episode"]))
-            epObj.wantedQuality = [i for i in allQualities if (i > curQuality and i != common.Quality.UNKNOWN)]
-            wanted.append(epObj)
+        epObj = show.getEpisode(int(result["season"]), int(result["episode"]))
+        epObj.wantedQuality = [i for i in all_qualities if i > cur_quality and i != common.Quality.UNKNOWN]
+        wanted.append(epObj)
 
     return wanted
 

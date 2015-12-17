@@ -28,11 +28,7 @@ from sickbeard import logger
 from sickbeard import helpers
 from sickbeard import search_queue
 from sickbeard import db
-from sickbeard.common import ARCHIVED
-from sickbeard.common import SKIPPED
-from sickbeard.common import UNKNOWN
-from sickbeard.common import WANTED
-from sickbeard.common import Quality
+from sickbeard.common import SKIPPED, UNKNOWN, WANTED, Quality
 from sickrage.helper.common import sanitize_filename
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
@@ -221,7 +217,7 @@ class TraktChecker(object):
             logger.log(u"COLLECTION::ADD::START - Look for Episodes to Add to Trakt Collection", logger.DEBUG)
 
             myDB = db.DBConnection()
-            sql_selection = 'select tv_shows.indexer, tv_shows.startyear, showid, show_name, season, episode from tv_episodes,tv_shows where tv_shows.indexer_id = tv_episodes.showid and tv_episodes.status in (' + ','.join([str(x) for x in Quality.DOWNLOADED + [ARCHIVED]]) + ')'
+            sql_selection = 'select tv_shows.indexer, tv_shows.startyear, showid, show_name, season, episode from tv_episodes,tv_shows where tv_shows.indexer_id = tv_episodes.showid and tv_episodes.status in (' + ','.join([str(x) for x in Quality.DOWNLOADED + Quality.ARCHIVED]) + ')'
             episodes = myDB.select(sql_selection)
 
             if episodes is not None:
@@ -469,8 +465,7 @@ class TraktChecker(object):
                                                             quality=int(sickbeard.QUALITY_DEFAULT),
                                                             flatten_folders=int(sickbeard.FLATTEN_FOLDERS_DEFAULT),
                                                             paused=sickbeard.TRAKT_START_PAUSED,
-                                                            default_status_after=status,
-                                                            archive=sickbeard.ARCHIVE_DEFAULT)
+                                                            default_status_after=status)
             else:
                 logger.log(u"There was an error creating the show, no root directory setting found", logger.WARNING)
                 return

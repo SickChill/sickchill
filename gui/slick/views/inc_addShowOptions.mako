@@ -72,19 +72,7 @@
             </label>
         </div>
 
-        <div class="field-pair alt">
-            <label for="archive" class="clearfix">
-                <span class="component-title">Archive first match</span>
-                <span class="component-desc">
-                    <input type="checkbox" name="archive" id="archive" ${('', 'checked="checked"')[bool(sickbeard.ARCHIVE_DEFAULT)]} />
-                    <p>Archive episodes after downloading first match?</p>
-                </span>
-            </label>
-        </div>
-
-        <% qualities = Quality.splitQuality(sickbeard.QUALITY_DEFAULT) %>
-        <% anyQualities = qualities[0] %>
-        <% bestQualities = qualities[1] %>
+        <% anyQualities, bestQualities = Quality.splitQuality(sickbeard.QUALITY_DEFAULT) %>
         <%include file="/inc_qualityChooser.mako"/>
 
         <br>

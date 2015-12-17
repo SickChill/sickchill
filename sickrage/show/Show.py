@@ -45,10 +45,11 @@ class Show:
         if error is not None:
             return error, show
 
-        try:
-            sickbeard.showQueueScheduler.action.removeShow(show, bool(remove_files))
-        except CantRemoveShowException as exception:
-            return ex(exception), show
+        if show:
+            try:
+                sickbeard.showQueueScheduler.action.removeShow(show, bool(remove_files))
+            except CantRemoveShowException as exception:
+                return ex(exception), show
 
         return None, show
 

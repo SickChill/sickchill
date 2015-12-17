@@ -59,21 +59,8 @@
                             <label for="qualityPreset">
                                 <span class="component-title">Preferred Quality</span>
                                 <span class="component-desc">
-                                    <%
-                                        qualities = common.Quality.splitQuality(int(show.quality))
-                                        anyQualities = qualities[0]
-                                        bestQualities = qualities[1]
-                                    %>
+                                    <% anyQualities, bestQualities = common.Quality.splitQuality(int(show.quality)) %>
                                     <%include file="/inc_qualityChooser.mako"/>
-                                </span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label for="">
-                                <span class="component-title">Archive on first match</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" id="archive_firstmatch" name="archive_firstmatch" ${('', 'checked="checked"')[show.archive_firstmatch == 1]} /> archive episode after the first best match is found from your archive quality list
                                 </span>
                             </label>
                         </div>

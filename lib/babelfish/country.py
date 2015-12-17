@@ -82,7 +82,10 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
         self.alpha2 = state
 
     def __getattr__(self, name):
-        return country_converters[name].convert(self.alpha2)
+        try:
+            return country_converters[name].convert(self.alpha2)
+        except KeyError:
+            raise AttributeError(name)
 
     def __hash__(self):
         return hash(self.alpha2)
