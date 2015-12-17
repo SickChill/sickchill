@@ -208,7 +208,11 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals
 
         subliminal.save_subtitles(video, found_subtitles, directory=subtitles_path,
                                   single=not sickbeard.SUBTITLES_MULTI)
-
+    except IOError as error:
+        if 'No space left on device' in ex(error):
+            logger.log(u'Not enough space on the drive to save subtitles', logger.WARNING)
+        else:
+            logger.log(traceback.format_exc(), logger.WARNING)
     except Exception:
         logger.log(u"Error occurred when downloading subtitles for: %s" % video_path)
         logger.log(traceback.format_exc(), logger.ERROR)
@@ -424,7 +428,7 @@ class SubtitlesFinder(object):
                 ret = ret.replace('hours', 'hour')
             if minutes == 1:
                 ret = ret.replace('minutes', 'minute')
-            return ret
+            return ret.strip(', ')
 
         if sickbeard.SUBTITLES_DOWNLOAD_IN_PP:
             self.subtitles_download_in_pp()
