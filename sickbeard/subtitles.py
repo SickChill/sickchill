@@ -59,9 +59,7 @@ ENTRY_POINTS = {
     ]
 }
 
-# pylint: disable=protected-access
-# Access to a protected member of a client class
-DISTRIBUTION._ep_map = pkg_resources.EntryPoint.parse_map(ENTRY_POINTS, DISTRIBUTION)
+DISTRIBUTION._ep_map = pkg_resources.EntryPoint.parse_map(ENTRY_POINTS, DISTRIBUTION)  # pylint: disable=protected-access
 pkg_resources.working_set.add(DISTRIBUTION)
 
 provider_manager.ENTRY_POINT_CACHE.pop('subliminal.providers')
@@ -87,8 +85,7 @@ def sorted_service_list():
     for current_service in sickbeard.SUBTITLES_SERVICES_LIST:
         if current_service in subliminal.provider_manager.names():
             new_list.append({'name': current_service,
-                             'url': PROVIDER_URLS[current_service] if current_service in
-                                    PROVIDER_URLS else lmgtfy % current_service,
+                             'url': PROVIDER_URLS[current_service] if current_service in PROVIDER_URLS else lmgtfy % current_service,
                              'image': current_service + '.png',
                              'enabled': sickbeard.SUBTITLES_SERVICES_ENABLED[current_index] == 1})
         current_index += 1
@@ -96,11 +93,9 @@ def sorted_service_list():
     for current_service in subliminal.provider_manager.names():
         if current_service not in [service['name'] for service in new_list]:
             new_list.append({'name': current_service,
-                             'url': PROVIDER_URLS[current_service] if current_service in
-                                    PROVIDER_URLS else lmgtfy % current_service,
+                             'url': PROVIDER_URLS[current_service] if current_service in PROVIDER_URLS else lmgtfy % current_service,
                              'image': current_service + '.png',
                              'enabled': False})
-
     return new_list
 
 
@@ -114,6 +109,8 @@ def wanted_languages(sql_like=None):
 
 
 def get_needed_languages(subtitles):
+    if not sickbeard.SUBTITLES_MULTI:
+        return set() if 'und' in subtitles else {from_code(language) for language in wanted_languages()}
     return {from_code(language) for language in wanted_languages().difference(subtitles)}
 
 
@@ -137,10 +134,10 @@ def needs_subtitles(subtitles):
 # Hack around this for now.
 def from_code(language):
     language = language.strip()
-    if language not in language_converters['opensubtitles'].codes:
-        return Language('und')
+    if language and language in language_converters['opensubtitles'].codes:
+        return Language.fromopensubtitles(language)  # pylint: disable=no-member
 
-    return Language.fromopensubtitles(language)  # pylint: disable=no-member
+    return Language('und')
 
 
 def name_from_code(code):
@@ -151,7 +148,7 @@ def code_from_code(code):
     return from_code(code).opensubtitles
 
 
-def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals
+def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-many-branches
     existing_subtitles = subtitles_info['subtitles']
 
     if not needs_subtitles(existing_subtitles):
@@ -224,23 +221,27 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals
                                                               subtitle.language)
         if subtitles_path is not None:
             subtitle_path = ek(os.path.join, subtitles_path, ek(os.path.split, subtitle_path)[1])
+
         sickbeard.helpers.chmodAsParent(subtitle_path)
         sickbeard.helpers.fixSetGroupID(subtitle_path)
 
-    if sickbeard.SUBTITLES_EXTRA_SCRIPTS and isMediaFile(video_path) and not sickbeard.EMBEDDED_SUBTITLES_ALL:
-        run_subs_extra_scripts(subtitles_info, found_subtitles, video, single=not sickbeard.SUBTITLES_MULTI)
-
-    current_subtitles = [subtitle.language.opensubtitles for subtitle in found_subtitles]
-    new_subtitles = frozenset(current_subtitles).difference(existing_subtitles)
-    current_subtitles += existing_subtitles
-
-    if sickbeard.SUBTITLES_HISTORY:
-        for subtitle in found_subtitles:
-            logger.log(u'history.logSubtitle %s, %s'
-                       % (subtitle.provider_name, subtitle.language.opensubtitles), logger.DEBUG)
+        if sickbeard.SUBTITLES_HISTORY:
+            logger.log(u'history.logSubtitle %s, %s' %
+                       (subtitle.provider_name, subtitle.language.opensubtitles), logger.DEBUG)
 
             history.logSubtitle(subtitles_info['show_indexerid'], subtitles_info['season'],
                                 subtitles_info['episode'], subtitles_info['status'], subtitle)
+
+        if sickbeard.SUBTITLES_EXTRA_SCRIPTS and isMediaFile(video_path) and not sickbeard.EMBEDDED_SUBTITLES_ALL:
+            run_subs_extra_scripts(subtitles_info, subtitle, video, single=not sickbeard.SUBTITLES_MULTI)
+
+    new_subtitles = sorted({subtitle.language.opensubtitles for subtitle in found_subtitles})
+    current_subtitles = sorted({x for x in new_subtitles + existing_subtitles})
+    if not sickbeard.SUBTITLES_MULTI and len(found_subtitles) == 1:
+        new_code = found_subtitles[0].language.opensubtitles
+        if new_code not in existing_subtitles:
+            current_subtitles.remove(new_code)
+        current_subtitles.append('und')
 
     return (current_subtitles, new_subtitles)
 
@@ -403,7 +404,7 @@ class SubtitlesFinder(object):
                 logger.log(u"Starting post-process with default settings now that we found subtitles")
                 processTV.processDir(sickbeard.TV_DOWNLOAD_DIR)
 
-    def run(self, force=False):  # pylint: disable=too-many-statements,too-many-branches
+    def run(self, force=False):  # pylint: disable=too-many-branches, too-many-statements
 
         if not sickbeard.USE_SUBTITLES:
             return
@@ -417,7 +418,7 @@ class SubtitlesFinder(object):
 
         def dhm(td):
             days = td.days
-            hours = td.seconds // 60**2
+            hours = td.seconds // 60 ** 2
             minutes = (td.seconds // 60) % 60
             ret = (u'', '%s days, ' % days)[days > 0] + \
                 (u'', '%s hours, ' % hours)[hours > 0] + \
@@ -428,7 +429,7 @@ class SubtitlesFinder(object):
                 ret = ret.replace('hours', 'hour')
             if minutes == 1:
                 ret = ret.replace('minutes', 'minute')
-            return ret.strip(', ')
+            return ret.rstrip(', ')
 
         if sickbeard.SUBTITLES_DOWNLOAD_IN_PP:
             self.subtitles_download_in_pp()
@@ -473,7 +474,7 @@ class SubtitlesFinder(object):
                 if not force:
                     now = datetime.datetime.now()
                     days = int(ep_to_sub['age'])
-                    delay_time = datetime.timedelta(hours=8 if days < 10 else 7*24 if days < 30 else 30*24)
+                    delay_time = datetime.timedelta(hours=8 if days < 10 else 7 * 24 if days < 30 else 30 * 24)
 
                     # Search every hour for the first 24 hours since aired, then every 8 hours until 10 days passes
                     # After 10 days, search every 7 days, after 30 days search once a month
@@ -498,17 +499,14 @@ class SubtitlesFinder(object):
                                % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                     continue
 
-                existing_subtitles = episode_object.subtitles
-
                 try:
-                    episode_object.download_subtitles()
+                    new_subtitles = episode_object.download_subtitles()
                 except Exception as error:
                     logger.log(u'Unable to find subtitles for %s S%02dE%02d. Error: %r'
                                % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode'],
                                   ex(error)), logger.ERROR)
                     continue
 
-                new_subtitles = frozenset(episode_object.subtitles).difference(existing_subtitles)
                 if new_subtitles:
                     logger.log(u'Downloaded %s subtitles for %s S%02dE%02d'
                                % (', '.join(new_subtitles), ep_to_sub['show_name'],
@@ -524,28 +522,27 @@ class SubtitlesFinder(object):
         self.amActive = False
 
 
-def run_subs_extra_scripts(episode_object, found_subtitles, video, single=False):
+def run_subs_extra_scripts(episode_object, subtitle, video, single=False):
 
     for script_name in sickbeard.SUBTITLES_EXTRA_SCRIPTS:
         script_cmd = [piece for piece in re.split("( |\\\".*?\\\"|'.*?')", script_name) if piece.strip()]
         script_cmd[0] = ek(os.path.abspath, script_cmd[0])
         logger.log(u"Absolute path to script: " + script_cmd[0], logger.DEBUG)
 
-        for subtitle in found_subtitles:
-            subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, None if single else subtitle.language)
+        subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, None if single else subtitle.language)
 
-            inner_cmd = script_cmd + [video.name, subtitle_path, subtitle.language.opensubtitles,
-                                      episode_object['show_name'], str(episode_object['season']),
-                                      str(episode_object['episode']), episode_object['name'],
-                                      str(episode_object['show_indexerid'])]
+        inner_cmd = script_cmd + [video.name, subtitle_path, subtitle.language.opensubtitles,
+                                  episode_object['show_name'], str(episode_object['season']),
+                                  str(episode_object['episode']), episode_object['name'],
+                                  str(episode_object['show_indexerid'])]
 
-            # use subprocess to run the command and capture output
-            logger.log(u"Executing command: %s" % inner_cmd)
-            try:
-                process = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                           stderr=subprocess.STDOUT, cwd=sickbeard.PROG_DIR)
-                out, _ = process.communicate()  # @UnusedVariable
-                logger.log(u"Script result: %s" % out, logger.DEBUG)
+        # use subprocess to run the command and capture output
+        logger.log(u"Executing command: %s" % inner_cmd)
+        try:
+            process = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                       stderr=subprocess.STDOUT, cwd=sickbeard.PROG_DIR)
+            out, _ = process.communicate()  # @UnusedVariable
+            logger.log(u"Script result: %s" % out, logger.DEBUG)
 
-            except Exception as error:
-                logger.log(u"Unable to run subs_extra_script: " + ex(error))
+        except Exception as error:
+            logger.log(u"Unable to run subs_extra_script: " + ex(error))
