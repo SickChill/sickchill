@@ -96,7 +96,6 @@ def sorted_service_list():
                              'url': PROVIDER_URLS[current_service] if current_service in PROVIDER_URLS else lmgtfy % current_service,
                              'image': current_service + '.png',
                              'enabled': False})
-
     return new_list
 
 
@@ -238,6 +237,12 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
 
     new_subtitles = sorted({subtitle.language.opensubtitles for subtitle in found_subtitles})
     current_subtitles = sorted({x for x in new_subtitles + existing_subtitles})
+    if not sickbeard.SUBTITLES_MULTI and len(found_subtitles) == 1:
+        new_code = found_subtitles[0].language.opensubtitles
+        if new_code not in existing_subtitles:
+            current_subtitles.remove(new_code)
+        current_subtitles.append('und')
+
     return (current_subtitles, new_subtitles)
 
 
@@ -494,17 +499,14 @@ class SubtitlesFinder(object):
                                % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)
                     continue
 
-                existing_subtitles = episode_object.subtitles
-
                 try:
-                    episode_object.download_subtitles()
+                    new_subtitles = episode_object.download_subtitles()
                 except Exception as error:
                     logger.log(u'Unable to find subtitles for %s S%02dE%02d. Error: %r'
                                % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode'],
                                   ex(error)), logger.ERROR)
                     continue
 
-                new_subtitles = frozenset(episode_object.subtitles).difference(existing_subtitles)
                 if new_subtitles:
                     logger.log(u'Downloaded %s subtitles for %s S%02dE%02d'
                                % (', '.join(new_subtitles), ep_to_sub['show_name'],

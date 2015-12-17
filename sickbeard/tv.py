@@ -1453,6 +1453,8 @@ class TVEpisode(object):
             logger.log(u"%s: No subtitles downloaded for %s S%02dE%02d" %
                        (self.show.indexerid, self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
 
+        return new_subtitles
+
     def checkForMetaFiles(self):
 
         oldhasnfo = self.hasnfo

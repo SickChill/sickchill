@@ -962,18 +962,13 @@ class CMD_SubtitleSearch(ApiCall):
         if isinstance(ep_obj, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
-        # try do download subtitles for that episode
-        previous_subtitles = ep_obj.subtitles
-
         try:
-            subtitles = ep_obj.download_subtitles()
+            new_subtitles = ep_obj.download_subtitles()
         except Exception:
             return _responds(RESULT_FAILURE, msg='Unable to find subtitles')
 
-        # return the correct json value
-        new_subtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
         if new_subtitles:
-            new_languages = [subtitles.name_from_code(code) for code in new_subtitles]
+            new_languages = [sickbeard.subtitles.name_from_code(code) for code in new_subtitles]
             status = 'New subtitles downloaded: %s' % ', '.join(new_languages)
             response = _responds(RESULT_SUCCESS, msg='New subtitles found')
         else:

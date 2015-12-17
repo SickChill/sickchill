@@ -2026,22 +2026,19 @@ class Home(WebRoot):
         if isinstance(ep_obj, str):
             return json.dumps({'result': 'failure'})
 
-        # try do download subtitles for that episode
-        previous_subtitles = ep_obj.subtitles
         try:
-            ep_obj.download_subtitles()
+            new_subtitles = ep_obj.download_subtitles()  # pylint: disable=no-member
         except Exception:
             return json.dumps({'result': 'failure'})
 
-        # return the correct json value
-        new_subtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
         if new_subtitles:
             new_languages = [subtitles.name_from_code(code) for code in new_subtitles]
             status = 'New subtitles downloaded: %s' % ', '.join(new_languages)
         else:
             status = 'No subtitles downloaded'
-        ui.notifications.message(ep_obj.show.name, status)
-        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})
+
+        ui.notifications.message(ep_obj.show.name, status)  # pylint: disable=no-member
+        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})  # pylint: disable=no-member
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None,
                           sceneEpisode=None, sceneAbsolute=None):
