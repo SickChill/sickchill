@@ -87,7 +87,7 @@ class CpasbienProvider(TorrentProvider):
                                 title = (torrent.findAll(attrs = {'class' : ["titre"]})[0].text).replace("HDTV", "HDTV x264-CPasBien")
                                 detail_url = torrent.find("a")['href']
                                 tmp = detail_url.split('/')[-1].replace('.html','.torrent')
-                                download_url = ('http://www.cpasbien.io/telechargement/%s' % tmp)
+                                download_url = (self.url + '/telechargement/%s' % tmp)
                                 torrent_size = (str(torrent.findAll(attrs = {'class' : ["poid"]})[0].text).rstrip('&nbsp;')).rstrip()
                                 size = -1
                                 if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Oo]", torrent_size):
