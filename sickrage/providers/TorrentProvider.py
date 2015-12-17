@@ -70,13 +70,10 @@ class TorrentProvider(GenericProvider):
 
     @property
     def _custom_trackers(self):
-        if sickbeard.TRACKERS_LIST:
-            if not self.public:
-                return ''
+        if not (sickbeard.TRACKERS_LIST and self.public):
+            return ''
 
-            return '&tr=' + '&tr='.join(set([x.strip() for x in sickbeard.TRACKERS_LIST.split(',') if x.strip()]))
-
-        return ''
+        return '&tr=' + '&tr='.join({x.strip() for x in sickbeard.TRACKERS_LIST.split(',') if x.strip()})
 
     def _get_result(self, episodes):
         return TorrentSearchResult(episodes)
