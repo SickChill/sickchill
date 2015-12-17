@@ -151,6 +151,7 @@ class TVChaosUKProvider(TorrentProvider):
 
                     for torrent in torrent_rows:
                         try:
+                            cells = torrent.find_all('td')
                             freeleech = torrent.find('img', alt=re.compile('Free Torrent'))
                             if self.freeleech and not freeleech:
                                 continue
@@ -180,8 +181,10 @@ class TVChaosUKProvider(TorrentProvider):
                             # Strip year from the end or we can't parse it!
                             title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
 
-                            # FIXME
+                            torrent_size = cells[4].getText().strip()
                             size = -1
+                            if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
+                                size = self._convertSize(torrent_size.rstrip())
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
@@ -201,6 +204,24 @@ class TVChaosUKProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
+
+
+    def _convertSize(self, sizeString):
+        size = sizeString[:-2].strip()
+        modifier = sizeString[-2:].upper()
+        try:
+            size = float(size)
+            if modifier in 'KB':
+                size = size * 1024
+            elif modifier in 'MB':
+                size = size * 1024**2
+            elif modifier in 'GB':
+                size = size * 1024**3
+            elif modifier in 'TB':
+                size = size * 1024**4
+        except Exception:
+            size = -1
+        return int(size)
 
 
 class TVChaosUKCache(tvcache.TVCache):

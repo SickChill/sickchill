@@ -30,7 +30,6 @@
         "topImageHtml": true,
         "generateBlackWhiteList": true,
         "_": true,
-        "bootbox": true,
         "PNotify": true,
         "anonURL": true,
         "window": true
