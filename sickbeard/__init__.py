@@ -55,6 +55,7 @@ from sickbeard.common import SKIPPED
 from sickbeard.common import WANTED
 from sickbeard.providers.rsstorrent import TorrentRssProvider
 from sickbeard.databases import mainDB, cache_db, failed_db
+from sickbeard.providers.newznab import NewznabProvider
 
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
@@ -1223,7 +1224,7 @@ def initialize(consoleLogging=True):
         providerList = providers.makeProviderList()
 
         NEWZNAB_DATA = check_setting_str(CFG, 'Newznab', 'newznab_data', '')
-        newznabProviderList = providers.getNewznabProviderList(NEWZNAB_DATA)
+        newznabProviderList = NewznabProvider.get_providers_list(NEWZNAB_DATA)
 
         TORRENTRSS_DATA = check_setting_str(CFG, 'TorrentRss', 'torrentrss_data', '')
         torrentRssProviderList = TorrentRssProvider.get_providers_list(TORRENTRSS_DATA)
