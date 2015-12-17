@@ -155,7 +155,6 @@ class TVChaosUKProvider(TorrentProvider):
                             if self.freeleech and not freeleech:
                                 continue
                             title = (torrent.find('div', style='text-align:left; margin-top: 5px').text.strip()).replace("mp4", "x264")
-                            print(title)
                             download_url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
                             seeders = int(torrent.find(title='Seeders').text.strip())
                             leechers = int(torrent.find(title='Leechers').text.strip())
@@ -185,7 +184,6 @@ class TVChaosUKProvider(TorrentProvider):
                             size = -1
                             if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
                                 size = self._convertSize(torrent_size.rstrip())
-                            print(size)
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
