@@ -175,11 +175,8 @@ class TVChaosUKProvider(TorrentProvider):
                                 title = re.match(r'(.*)(' + show_name_first_word + '.*)', title).group(2)
 
                             # Change title from Series to Season, or we can't parse
-                            if 'Series' in self.search_params['keywords']:
+                            if 'Series' not in self.search_params['keywords']:
                                 title = re.sub(r'(?i)series', 'Season', title)
-
-                            # Strip year from the end or we can't parse it!
-                            title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
 
                             torrent_size = cells[4].getText().strip()
                             size = -1
