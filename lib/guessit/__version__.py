@@ -17,4 +17,4 @@
 # You should have received a copy of the Lesser GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-__version__ = '0.11.1.dev0'
+__version__ = '1.0.2'

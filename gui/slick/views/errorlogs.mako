@@ -2,7 +2,6 @@
 <%!
     import sickbeard
     from sickbeard import classes
-    from sickbeard.logger import reverseNames
 %>
 <%block name="css">
 <style>
@@ -23,11 +22,12 @@ pre {
         title = 'ERROR logs'
 %>
 <h1 class="header">${title}</h1>
-<div class="align-left"><pre>
+<div class="align-left">
+<pre>
 % if errors:
-    % for curError in sorted(errors, key=lambda error: error.time, reverse=True)[:500]:
+% for curError in sorted(errors, key=lambda error: error.time, reverse=True)[:500]:
 ${curError.time} ${curError.message}
-    % endfor
+% endfor
 % else:
 There are no events to display.
 % endif

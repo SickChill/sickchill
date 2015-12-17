@@ -20,7 +20,7 @@
 % endif
 
 <%
-    showQualSnatched = lambda x: Quality.splitQuality(x.quality)[1] and not x.archive_firstmatch
+    showQualSnatched = lambda x: Quality.splitQuality(x.quality)[1]
 
     totalWanted = totalQual = totalQualSnatched = 0
     backLogShows = sorted([x for x in sickbeard.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + showCounts[x.indexerid][Overview.SNATCHED]], key=lambda x: x.name)

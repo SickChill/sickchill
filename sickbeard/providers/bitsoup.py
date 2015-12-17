@@ -117,8 +117,10 @@ class BitSoupProvider(TorrentProvider):
                                 title = link.getText()
                                 seeders = int(cells[10].getText().replace(',', ''))
                                 leechers = int(cells[11].getText().replace(',', ''))
-                                # FIXME
+                                torrent_size = cells[8].getText()
                                 size = -1
+                                if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
+                                    size = self._convertSize(torrent_size.rstrip())
                             except (AttributeError, TypeError):
                                 continue
 
@@ -152,6 +154,24 @@ class BitSoupProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
+
+
+    def _convertSize(self, sizeString):
+        size = sizeString[:-2].strip()
+        modifier = sizeString[-2:].upper()
+        try:
+            size = float(size)
+            if modifier in 'KB':
+                size = size * 1024
+            elif modifier in 'MB':
+                size = size * 1024**2
+            elif modifier in 'GB':
+                size = size * 1024**3
+            elif modifier in 'TB':
+                size = size * 1024**4
+        except Exception:
+            size = -1
+        return int(size)
 
 
 class BitSoupCache(tvcache.TVCache):

@@ -137,7 +137,7 @@ class Logger(object):
         if self.fileLogging:
             rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=sickbeard.LOG_SIZE, backupCount=sickbeard.LOG_NR, encoding='utf-8')
             rfh.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)-8s %(message)s', dateTimeFormat, encoding='utf-8'))
-            rfh.setLevel(INFO if not self.debugLogging else DEBUG)
+            rfh.setLevel(INFO if not self.debugLogging else DB)
 
             for logger in self.loggers:
                 logger.addHandler(rfh)
@@ -148,6 +148,9 @@ class Logger(object):
 
     def log(self, msg, level=INFO, *args, **kwargs):
         meThread = threading.currentThread().getName()
+        if sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6 and level in [ERROR, WARNING]:
+            msg += ' [%s]' % sickbeard.CUR_COMMIT_HASH[:7]
+
         message = meThread + u" :: " + msg
 
         # Change the SSL error to a warning with a link to information about how to fix it.
@@ -231,7 +234,7 @@ class Logger(object):
                 try:
                     title_Error = ss(str(curError.title))
                     if not len(title_Error) or title_Error == 'None':
-                        title_Error = re.match(r"^[A-Z0-9\-\[\] :]+::\s*(.*)$", ss(curError.message)).group(1)
+                        title_Error = re.match(r"^[A-Z0-9\-\[\] :]+::\s*(.*)(?: \[[\w]{7}\])$", ss(curError.message)).group(1)
 
                     if len(title_Error) > 1000:
                         title_Error = title_Error[0:1000]
@@ -239,7 +242,7 @@ class Logger(object):
                     self.log("Unable to get error title : " + ex(e), ERROR)
 
                 gist = None
-                regex = ur"^(%s)\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)$" % curError.time
+                regex = ur"^(%s)\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)(?: \[[\w]{7}\])$" % curError.time
                 for i, x in enumerate(log_data):
                     match = re.match(regex, x)
                     if match:
