@@ -64,6 +64,21 @@ class TorrentRssProvider(TorrentProvider):
             self.enable_backlog
         )
 
+    @staticmethod
+    def get_providers_list(data):
+        providers_list = [x for x in [TorrentRssProvider._make_provider(x) for x in data.split('!!!')] if x]
+        seen_values = set()
+        providers_set = []
+
+        for provider in providers_list:
+            value = provider.name
+
+            if value not in seen_values:
+                providers_set.append(provider)
+                seen_values.add(value)
+
+        return [x for x in providers_set if x]
+
     def image_name(self):
         if ek(os.path.isfile, ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers', self.get_id() + '.png')):
             return self.get_id() + '.png'
@@ -90,6 +105,41 @@ class TorrentRssProvider(TorrentProvider):
                 break
 
         return title, url
+
+    @staticmethod
+    def _make_provider(config):
+        if not config:
+            return None
+
+        cookies = None
+        enable_backlog = 0
+        enable_daily = 0
+        search_fallback = 0
+        search_mode = 'eponly'
+        title_tag = 'title'
+
+        try:
+            values = config.split('|')
+
+            if len(values) == 9:
+                name, url, cookies, title_tag, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
+            elif len(values) == 8:
+                name, url, cookies, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
+            else:
+                enabled = values[4]
+                name = values[0]
+                url = values[1]
+        except ValueError:
+            logger.log(u'Skipping RSS Torrent provider string: \'%s\', incorrect format' % config, logger.ERROR)
+            return None
+
+        new_provider = TorrentRssProvider(
+                name, url, cookies=cookies, titleTAG=title_tag, search_mode=search_mode,
+                search_fallback=search_fallback, enable_daily=enable_daily, enable_backlog=enable_backlog
+        )
+        new_provider.enabled = enabled == '1'
+
+        return new_provider
 
     def validateRSS(self):
 
