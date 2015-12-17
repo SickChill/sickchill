@@ -53,12 +53,11 @@ class BTDIGGProvider(TorrentProvider):
 
         for mode in search_strings:
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
-            for cur_string in search_strings[mode]:
+            for search_string in search_strings[mode]:
+                search_params['q'] = search_string.encode('utf-8')
 
-                search_params['q'] = cur_string.encode('utf-8')
-
-                if mode.upper() != 'RSS':
-                    logger.log(u"Search string: %s" % cur_string, logger.DEBUG)
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s" % search_string, logger.DEBUG)
                     search_params['order'] = '0'
                 else:
                     search_params['order'] = '2'
@@ -69,13 +68,7 @@ class BTDIGGProvider(TorrentProvider):
                 jdata = self.get_url(search_url, json=True)
                 if not jdata:
                     logger.log(u"No data returned to be parsed!!!", logger.DEBUG)
-
-                    # continue if we want to keep trying the provider
                     continue
-
-                    # # return if provider returns no data when api limit reached
-                    # return results
-
 
                 for torrent in jdata:
                     if not torrent['name']:
@@ -106,7 +99,7 @@ class BTDIGGProvider(TorrentProvider):
                     #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                     #    continue
 
-                    if mode.upper() != 'RSS':
+                    if mode != 'RSS':
                         logger.log(u"Found result: %s" % torrent['name'], logger.DEBUG)
 
                     item = torrent['name'], download_url, torrent['size'], seeders, leechers
@@ -128,7 +121,7 @@ class BTDiggCache(tvcache.TVCache):
 
         tvcache.TVCache.__init__(self, provider_obj)
 
-        # Cache results for a 30min ,since BTDigg takes some time to crawl
+        # Cache results for a 30min, since BTDigg takes some time to crawl
         self.minTime = 30
 
     def _getRSSData(self):
