@@ -22,8 +22,8 @@
         </td>
         <td align="right">
             <div>
-                <input class="btn btn-inline" type="button" value="Edit Selected" id="submitMassEdit" />
-                <input class="btn btn-inline" type="button" value="Submit" id="submitMassUpdate" />
+                <input class="btn btn-inline submitMassEdit" type="button" value="Edit Selected" />
+                <input class="btn btn-inline submitMassUpdate" type="button" value="Submit" />
                 <span class="show-option">
                     <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
                 </span>
@@ -63,8 +63,8 @@
 
     <tfoot>
         <tr>
-            <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left" type="button" value="Edit Selected" id="submitMassEdit" /></td>
-            <td rowspan="1" colspan="${(15, 16)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right" type="button" value="Submit" id="submitMassUpdate" /></td>
+            <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left submitMassEdit" type="button" value="Edit Selected" /></td>
+            <td rowspan="1" colspan="${(15, 16)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="Submit" /></td>
         </tr>
     </tfoot>
 

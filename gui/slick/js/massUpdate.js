@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $('#submitMassEdit').on('click', function(){
+    $('.submitMassEdit').on('click', function(){
         var editArr = [];
 
         $('.editCheck').each(function() {
@@ -11,7 +11,7 @@ $(document).ready(function(){
         window.location.href = 'massEdit?toEdit='+editArr.join('|');
     });
 
-    $('#submitMassUpdate').on('click', function(){
+    $('.submitMassUpdate').on('click', function(){
         var updateArr = [];
         var refreshArr = [];
         var renameArr = [];
