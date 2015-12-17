@@ -97,7 +97,9 @@ class QualityStringTests(unittest.TestCase):
                       "Test.Show.S01E02.720p.HDDVD.x264-GROUP", ],
         'full_hd_bluray': ["Test.Show.S01E02.1080p.BluRay.x264-GROUP",
                            "Test.Show.S01E02.1080p.HDDVD.x264-GROUP", ],
-        'unknown': ["Test.Show.S01E02-SiCKBEARD", ],
+        'unknown': ["Test.Show.S01E02-SiCKBEARD",
+                    "Test.Show.S01E01-20.1080i.[Mux.-.1080i.-.H264.-.Ac3.].HDTVMux.GROUP",
+                    ],
     }
 
     def test_sd_tv(self):
