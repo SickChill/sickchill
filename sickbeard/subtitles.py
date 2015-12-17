@@ -236,7 +236,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
             run_subs_extra_scripts(subtitles_info, subtitle, video, single=not sickbeard.SUBTITLES_MULTI)
 
     new_subtitles = sorted({subtitle.language.opensubtitles for subtitle in found_subtitles})
-    current_subtitles = sorted({x for x in new_subtitles + existing_subtitles})
+    current_subtitles = sorted({subtitle for subtitle in new_subtitles + existing_subtitles})
     if not sickbeard.SUBTITLES_MULTI and len(found_subtitles) == 1:
         new_code = found_subtitles[0].language.opensubtitles
         if new_code not in existing_subtitles:
