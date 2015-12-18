@@ -489,7 +489,6 @@ class BasicFailedTests(test.SickbeardTestDBCase):
             self.assertEqual(test_result.which_regex, [section], '%s : %s != %s' % (cur_test, test_result.which_regex, [section]))
             self.assertEqual(str(test_result), str(result), '%s : %s != %s' % (cur_test, str(test_result), str(result)))
 
-    @unittest.expectedFailure
     def test_no_s_names(self):
         """
         Test no season names
@@ -497,7 +496,6 @@ class BasicFailedTests(test.SickbeardTestDBCase):
         name_parser = parser.NameParser(False)
         self._test_names(name_parser, 'no_season')
 
-    @unittest.expectedFailure
     def test_no_s_file_names(self):
         """
         Test no season file names
