@@ -92,6 +92,7 @@ class Logger(object):
             logging.getLogger('sickrage'),
             logging.getLogger('tornado.general'),
             logging.getLogger('tornado.application'),
+            # logging.getLogger('subliminal'),
             # logging.getLogger('tornado.access'),
         ]
 
