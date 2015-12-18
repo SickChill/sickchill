@@ -146,7 +146,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             seeders = int(result.find_all('td')[6].text)
                             leechers = int(result.find_all('td')[7].text)
                             size = self._convertSize(result.find_all('td')[2].text)
-                            freeleech = result.find('div', attrs={'class': 'freeleech'}) is not None
+                            freeleech = result.find('span', class_='freeleech')
                             # except (AttributeError, TypeError, KeyError):
                             #     logger.log(u"attrErr: {0}, tErr: {1}, kErr: {2}".format(AttributeError, TypeError, KeyError), logger.DEBUG)
                             #    continue
