@@ -58,13 +58,13 @@ normal_regexes = [
      # Show.Name.S01.E02.E03
      r'''
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
-     (\()?s(?P<season_num>\d+)[. _-]*            # S01 and optional separator
-     e(?P<ep_num>\d+)(\))?                       # E02 and separator
+     \(?s(?P<season_num>\d+)[. _-]*              # S01 and optional separator
+     e(?P<ep_num>\d+)\)?                         # E02 and separator
      (([. _-]*e|-)                               # linking e/- char
      (?P<extra_ep_num>(?!(1080|720|480)[pi])\d+)(\))?)*   # additional E03/etc
-     [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
+     ([. _-]+((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?)?$              # Group
      '''),
 
     ('newpct',
@@ -193,7 +193,7 @@ normal_regexes = [
      ^((?P<series_name>.+?)(?:[. _-]{2,}|[. _]))?    # Show_Name and separator
      (?P<ep_num>\d{1,3})                             # 02
      (?:-(?P<extra_ep_num>\d{1,3}))*                 # -03-04-05 etc
-     \s?of?\s?\d{1,3}?                               # of joiner (with or without spaces) and series total ep
+     (\s*(?:of)?\s*\d{1,3})?                         # of joiner (with or without spaces) and series total ep
      [. _-]+((?P<extra_info>.+?)                     # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                            # Make sure this is really the release group
      -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$  # Group
