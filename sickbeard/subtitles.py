@@ -32,6 +32,7 @@ from sickbeard import logger
 from sickbeard import history
 from sickbeard import db
 from sickbeard import processTV
+from sickbeard.common import Quality
 from sickbeard.helpers import remove_non_release_groups, isMediaFile
 from sickrage.helper.common import dateTimeFormat
 from sickrage.helper.encoding import ek
@@ -148,7 +149,7 @@ def code_from_code(code):
     return from_code(code).opensubtitles
 
 
-def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-many-branches
+def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     existing_subtitles = subtitles_info['subtitles']
 
     if not needs_subtitles(existing_subtitles):
@@ -445,8 +446,10 @@ class SubtitlesFinder(object):
             FROM tv_episodes AS e INNER JOIN tv_shows AS s
             ON (e.showid = s.indexer_id)
             WHERE s.subtitles = 1 AND e.subtitles NOT LIKE ?
-            AND e.location != '' ORDER BY age ASC
-            """, [datetime.datetime.now().toordinal(), wanted_languages(True)]
+            AND e.location != '' AND e.status IN (?) ORDER BY age ASC
+            """,
+            [datetime.datetime.now().toordinal(), wanted_languages(True),
+             ','.join({str(status) for status in Quality.DOWNLOADED + Quality.ARCHIVED})]
         )
 
         if not sql_results:
