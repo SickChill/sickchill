@@ -9,6 +9,7 @@ import sickbeard
 from sickbeard import logger
 from bencode import bencode, bdecode
 import requests
+import cookielib
 from bencode.BTL import BTFailure
 from sickrage.helper.common import http_code_description
 
@@ -28,8 +29,9 @@ class GenericClient(object):
         self.last_time = time.time()
         self.session = requests.Session()
         self.session.auth = (self.username, self.password)
+        self.session.cookies = cookielib.CookieJar()
 
-    def _request(self, method='get', params=None, data=None, files=None):
+    def _request(self, method='get', params=None, data=None, files=None, cookies=None):
 
         if time.time() > self.last_time + 1800 or not self.auth:
             self.last_time = time.time()
@@ -41,9 +43,10 @@ class GenericClient(object):
 
         if not self.auth:
             logger.log(self.name + u': Authentication Failed', logger.WARNING)
+        
             return False
         try:
-            self.response = self.session.__getattribute__(method)(self.url, params=params, data=data, files=files,
+            self.response = self.session.__getattribute__(method)(self.url, params=params, data=data, files=files, cookies=cookies,
                                                                   timeout=120, verify=False)
         except requests.exceptions.ConnectionError as e:
             logger.log(self.name + u': Unable to connect ' + str(e), logger.ERROR)
