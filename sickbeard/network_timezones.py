@@ -29,7 +29,7 @@ from sickbeard import logger
 from sickrage.helper.common import try_int
 
 # regex to parse time (12/24 hour format)
-time_regex = re.compile(r'(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})) ?(?P<meridiem>[PA]\.? ?M)?\b', flags=re.IGNORECASE)
+time_regex = re.compile(r'(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b', re.I)
 
 network_dict = None
 sb_timezone = tz.tzwinlocal() if tz.tzwinlocal else tz.tzlocal()
@@ -154,14 +154,10 @@ def parse_date_time(d, t, network):
             hr = 0
             m = 0
 
-    result = datetime.datetime.fromordinal(try_int(d) or 1)
+    result = datetime.datetime.fromordinal(max(try_int(d), 1))
 
     return result.replace(hour=hr, minute=m, tzinfo=network_tz)
 
 
-def test_timeformat(t):
-    mo = time_regex.search(t)
-    if mo is None or len(mo.groups()) < 2:
-        return False
-    else:
-        return True
+def test_timeformat(time_string):
+    return time_regex.search(time_string) is not None
