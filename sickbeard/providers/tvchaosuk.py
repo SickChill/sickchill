@@ -210,16 +210,16 @@ class TVChaosUKProvider(TorrentProvider):
         try:
             size = float(size)
             if modifier in 'KB':
-                size = size * 1024
+                size *= 1024 ** 1
             elif modifier in 'MB':
-                size = size * 1024**2
+                size *= 1024 ** 2
             elif modifier in 'GB':
-                size = size * 1024**3
+                size *= 1024 ** 3
             elif modifier in 'TB':
-                size = size * 1024**4
+                size *= 1024 ** 4
         except Exception:
             size = -1
-        return int(size)
+        return long(size)
 
 
 class TVChaosUKCache(tvcache.TVCache):

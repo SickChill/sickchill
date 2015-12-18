@@ -129,13 +129,13 @@ class ThePirateBayProvider(TorrentProvider):
         size, modifier = size.split('&nbsp;')
         size = float(size)
         if modifier in 'KiB':
-            size = size * 1024
+            size *= 1024 ** 1
         elif modifier in 'MiB':
-            size = size * 1024**2
+            size *= 1024 ** 2
         elif modifier in 'GiB':
-            size = size * 1024**3
+            size *= 1024 ** 3
         elif modifier in 'TiB':
-            size = size * 1024**4
+            size *= 1024 ** 4
         return size
 
     def seed_ratio(self):

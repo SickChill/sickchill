@@ -169,14 +169,14 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         size, base = size.split()
         size = float(size)
         if base in 'KB':
-            size = size * 1024
+            size *= 1024 ** 1
         elif base in 'MB':
-            size = size * 1024**2
+            size *= 1024 ** 2
         elif base in 'GB':
-            size = size * 1024**3
+            size *= 1024 ** 3
         elif base in 'TB':
-            size = size * 1024**4
-        return int(size)
+            size *= 1024 ** 4
+        return long(size)
 
 
 class SCCCache(tvcache.TVCache):

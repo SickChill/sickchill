@@ -167,7 +167,7 @@ def pretty_file_size(size):
     for unit in ['B', 'KB', 'MB', 'GB', 'TB', 'PB']:
         if remaining_size < 1024.:
             return '%3.2f %s' % (remaining_size, unit)
-        remaining_size //= 1024.
+        remaining_size /= 1024.
     return size
 
 

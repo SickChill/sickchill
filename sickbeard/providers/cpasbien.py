@@ -132,16 +132,16 @@ class CpasbienProvider(TorrentProvider):
         try:
             size = float(size)
             if modifier in 'KO':
-                size = size * 1024
+                size *= 1024 ** 1
             elif modifier in 'MO':
-                size = size * 1024 ** 2
+                size *= 1024 ** 2
             elif modifier in 'GO':
-                size = size * 1024 ** 3
+                size *= 1024 ** 3
             elif modifier in 'TO':
-                size = size * 1024 ** 4
+                size *= 1024 ** 4
         except Exception:
             size = -1
-        return int(size)
+        return long(size)
 
 
 class CpasbienCache(tvcache.TVCache):
