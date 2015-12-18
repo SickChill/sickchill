@@ -136,7 +136,7 @@ class ThePirateBayProvider(TorrentProvider):
             size *= 1024 ** 3
         elif modifier in 'TiB':
             size *= 1024 ** 4
-        return size
+        return long(size)
 
     def seed_ratio(self):
         return self.ratio
