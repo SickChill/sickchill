@@ -159,12 +159,12 @@ class CommonTests(unittest.TestCase):
         Test pretty file size
         """
         test_cases = {
-            None: '',
-            '': '',
+            None: '0.00 B',
+            '': '0.00 B',
             '1024': '1.00 KB',
-            '1024.5': '',
-            -42.5: '-42.50 B',
-            -42: '-42.00 B',
+            '1024.5': '1.00 KB',
+            -42.5: '0.00 B',
+            -42: '0.00 B',
             0: '0.00 B',
             25: '25.00 B',
             25.5: '25.50 B',
@@ -182,9 +182,9 @@ class CommonTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': '',
+            u'': '0.00 B',
             u'1024': '1.00 KB',
-            u'1024.5': '',
+            u'1024.5': '1.00 KB',
         }
 
         for tests in test_cases, unicode_test_cases:
