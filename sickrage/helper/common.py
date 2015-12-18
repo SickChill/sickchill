@@ -162,7 +162,11 @@ def pretty_file_size(size):
     :param size: The size to convert
     :return: The converted size
     """
-    size = float(max(try_int(size), 0))
+    try:
+        size = max(float(size), 0.)
+    except (ValueError, TypeError):
+        size = 0.
+
     remaining_size = size
     for unit in ['B', 'KB', 'MB', 'GB', 'TB', 'PB']:
         if remaining_size < 1024.:
