@@ -12,7 +12,7 @@
                     var subtitles = data.subtitles.split(',');
                     subtitlesTd.empty();
                     $.each(subtitles,function(index, language){
-                        if (language !== "" && language !== "und") {
+                        if (language !== "") {
                             if (index !== subtitles.length - 1) {
                                 subtitlesTd.append($("<img/>").attr({"src": srRoot+"/images/subtitles/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
                             } else {

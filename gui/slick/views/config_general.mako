@@ -130,8 +130,8 @@
                             <label for="log_size">
                                 <span class="component-title">Size of Log files saved</span>
                                 <span class="component-desc">
-                                    <input type="number" min="1048576" step="1048576" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
-                                    <p>maximum size of a log file saved (default: 1048576 (1MB)) (REQUIRES RESTART)</p>
+                                    <input type="number" min="0.5" step="0.1" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
+                                    <p>maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)</p>
                                 </span>
                             </label>
                         </div>
@@ -156,7 +156,7 @@
                                 <span class="component-title">Timeout show indexer at</span>
                                 <span class="component-desc">
                                     <input type="number" min="10" step="1" name="indexer_timeout" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
-                                    <p>seconds of inactivity when finding new shows (default:10)</p>
+                                    <p>seconds of inactivity when finding new shows (default:20)</p>
                                 </span>
                             </label>
                         </div>
@@ -209,7 +209,7 @@
                                 <span class="component-title">Check the server every*</span>
                                 <span class="component-desc">
                                     <input type="number" min="1" step="1" name="update_frequency" id="update_frequency" value="${sickbeard.UPDATE_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
-                                    <p>hours for software updates (default:12)</p>
+                                    <p>hours for software updates (default:1)</p>
                                 </span>
                             </label>
                         </div>
