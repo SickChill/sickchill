@@ -141,21 +141,20 @@ class TVChaosUKProvider(TorrentProvider):
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
-                with BS4Parser(data) as html:
+                with BS4Parser(data, 'html5lib') as html:
                     torrent_table = html.find(id='listtorrents')
                     if not torrent_table:
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
                     torrent_rows = torrent_table.find_all('tr')
-
                     for torrent in torrent_rows:
                         try:
                             cells = torrent.find_all('td')
                             freeleech = torrent.find('img', alt=re.compile('Free Torrent'))
                             if self.freeleech and not freeleech:
                                 continue
-                            title = (torrent.find(attrs={'class':'tooltip-target'}).text.strip()).replace("mp4", "x264")
+                            title = (torrent.find('div', style='text-align:left; margin-top: 5px').text.strip()).replace("mp4", "x264")
                             download_url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
                             seeders = int(torrent.find(title='Seeders').text.strip())
                             leechers = int(torrent.find(title='Leechers').text.strip())
@@ -170,19 +169,21 @@ class TVChaosUKProvider(TorrentProvider):
                                 continue
 
                             # Chop off tracker/channel prefix or we cant parse the result!
-                            show_name_first_word = re.search(r'^[^ .]+', self.search_params['keywords']).group()
-                            if not title.startswith(show_name_first_word):
-                                title = re.match(r'(.*)(' + show_name_first_word + '.*)', title).group(2)
+                            show_name_first_word = re.search(r'^[^ .]+', self.search_params['keywords'])
+                            if show_name_first_word and not title.startswith(show_name_first_word.group()) and show_name_first_word in title:
+                                title = re.match(r'.*(' + show_name_first_word + '.*)', title).group(1)
+
 
                             # Change title from Series to Season, or we can't parse
                             if 'Series' not in self.search_params['keywords']:
                                 title = re.sub(r'(?i)series', 'Season', title)
 
+                            # Strip year from the end or we can't parse it!
+                            title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
                             torrent_size = cells[4].getText().strip()
                             size = -1
                             if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
                                 size = self._convertSize(torrent_size.rstrip())
-
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
