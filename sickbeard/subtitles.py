@@ -437,6 +437,8 @@ class SubtitlesFinder(object):
 
         logger.log(u'Checking for missed subtitles', logger.INFO)
 
+        statuses = list({status for status in Quality.DOWNLOADED + Quality.ARCHIVED})
+
         database = db.DBConnection()
         sql_results = database.select(
             "SELECT s.show_name, e.showid, e.season, e.episode, "
@@ -445,9 +447,9 @@ class SubtitlesFinder(object):
             "FROM tv_episodes AS e INNER JOIN tv_shows AS s "
             "ON (e.showid = s.indexer_id) "
             "WHERE s.subtitles = 1 AND e.subtitles NOT LIKE ? "
-            "AND e.location != '' AND e.status IN (?) ORDER BY age ASC",
-            [datetime.datetime.now().toordinal(), wanted_languages(True),
-             ','.join({str(status) for status in Quality.DOWNLOADED + Quality.ARCHIVED})]
+            "AND e.location != '' AND e.status IN (%s) ORDER BY age ASC" %
+            ','.join(['?'] * len(statuses)),
+            [datetime.datetime.now().toordinal(), wanted_languages(True)] + statuses
         )
 
         if not sql_results:
