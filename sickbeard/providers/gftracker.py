@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Seamus Wassman
 # URL: http://code.google.com/p/sickbeard/
 #

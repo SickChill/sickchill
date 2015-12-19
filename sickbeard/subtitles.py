@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: medariox <dariox@gmx.com>,
 # based on Antoine Bertin's <diaoulael@gmail.com> work
 # and originally written by Nyaran <nyayukko@gmail.com>

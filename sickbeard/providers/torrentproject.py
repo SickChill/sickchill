@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: duramato <matigonkas@outlook.com>
 # URL: https://github.com/SickRage/sickrage
 #

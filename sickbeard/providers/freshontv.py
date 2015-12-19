@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #

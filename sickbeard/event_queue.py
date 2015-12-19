@@ -1,3 +1,4 @@
+# coding=utf-8
 import threading
 import traceback
 from Queue import Queue, Empty

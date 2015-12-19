@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: The SickRage Dev Team
 # URL: https://sickrage.github.io
 # Repository: https://github.com/SickRage/SickRage.git
