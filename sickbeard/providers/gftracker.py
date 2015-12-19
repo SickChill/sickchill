@@ -125,7 +125,7 @@ class GFTrackerProvider(TorrentProvider):
                             torrent_size = cells[7].get_text().split("/", 1)[0]
 
                             try:
-                                if title.has_key('title'):
+                                if 'title' in title:
                                     title = title['title']
                                 else:
                                     title = cells[1].find("a")['title']

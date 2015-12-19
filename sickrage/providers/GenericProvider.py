@@ -210,9 +210,9 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                         )
                         add_cache_entry = True
 
-                    if len(parse_result.episode_numbers) and \
-                       (parse_result.season_number not in set([ep.season for ep in episodes]) or
-                        not [ep for ep in episodes if ep.scene_episode in parse_result.episode_numbers]):
+                    if len(parse_result.episode_numbers) and (
+                            parse_result.season_number not in set([ep.season for ep in episodes]) or
+                            not [ep for ep in episodes if ep.scene_episode in parse_result.episode_numbers]):
                         logger.log(
                             u'The result %s doesn\'t seem to be a valid episode that we are trying to snatch, ignoring' % title,
                             logger.DEBUG)

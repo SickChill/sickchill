@@ -1207,7 +1207,7 @@ class TVShow(object):
     def qualitiesToString(self, qualities=[]):
         result = u''
         for quality in qualities:
-            if Quality.qualityStrings.has_key(quality):
+            if quality in Quality.qualityStrings:
                 result += Quality.qualityStrings[quality] + u', '
             else:
                 logger.log(u"Bad quality value: " + str(quality))

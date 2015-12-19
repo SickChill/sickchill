@@ -138,7 +138,7 @@ class MoreThanTVProvider(TorrentProvider):
                             torrent_id_long = link['href'].replace('torrents.php?action=download&id=', '')
 
                             try:
-                                if link.has_key('title'):
+                                if 'title' in link:
                                     title = cells[1].find('a', {'title': 'View torrent'}).contents[0].strip()
                                 else:
                                     title = link.contents[0]
