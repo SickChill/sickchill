@@ -25,7 +25,7 @@ server.key
 #  Compiled source   #
 ######################
 *.py[co]
-us.json
+ua.json
 
 #  IDE specific      #
 ######################
