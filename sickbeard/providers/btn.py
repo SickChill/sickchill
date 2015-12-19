@@ -190,7 +190,7 @@ class BTNProvider(TorrentProvider):
                 # unescaped / is valid in JSON, but it can be escaped
                 url = url.replace("\\/", "/")
 
-        return (title, url)
+        return title, url
 
     def _get_season_search_strings(self, ep_obj):
         search_params = []

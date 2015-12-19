@@ -115,7 +115,7 @@ def hasFailed(release, size, provider="%"):
         "SELECT release FROM failed WHERE release=? AND size=? AND provider LIKE ? LIMIT 1",
         [release, size, provider])
 
-    return (len(sql_results) > 0)
+    return len(sql_results) > 0
 
 
 def revertEpisode(epObj):
@@ -243,8 +243,8 @@ def findRelease(epObj):
 
         # Found a previously failed release
         logger.log(u"Failed release found for season (%s): (%s)" % (epObj.season, result["release"]), logger.DEBUG)
-        return (release, provider)
+        return release, provider
 
     # Release was not found
     logger.log(u"No releases found for season (%s) of (%s)" % (epObj.season, epObj.show.indexerid), logger.DEBUG)
-    return (release, provider)
+    return release, provider

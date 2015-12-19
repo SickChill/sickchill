@@ -157,7 +157,7 @@ class NewznabProvider(NZBProvider):
         data = BeautifulSoup(data, 'html5lib')
         if not self._checkAuthFromData(data) and data.caps and data.caps.categories:
             data.decompose()
-            error_string = u"Error parsing xml for [%s]" % (self.name)
+            error_string = u"Error parsing xml for [%s]" % self.name
             logger.log(error_string, logger.DEBUG)
             return False, return_categories, error_string
 

@@ -83,7 +83,7 @@ class CpasbienProvider(TorrentProvider):
 
                         for torrent in resultdiv:
                             try:
-                                title = (torrent.findAll(attrs={'class': ["titre"]})[0].text).replace("HDTV", "HDTV x264-CPasBien")
+                                title = torrent.findAll(attrs={'class': ["titre"]})[0].text.replace("HDTV", "HDTV x264-CPasBien")
                                 detail_url = torrent.find("a")['href']
                                 tmp = detail_url.split('/')[-1].replace('.html', '.torrent')
                                 download_url = (self.url + '/telechargement/%s' % tmp)

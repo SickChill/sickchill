@@ -80,7 +80,7 @@ class OmgwtfnzbsProvider(NZBProvider):
         return [x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
     def _get_title_and_url(self, item):
-        return (item['release'], item['getnzb'])
+        return item['release'], item['getnzb']
 
     def _get_size(self, item):
         return try_int(item['sizebytes'], -1)
@@ -162,7 +162,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
         if url:
             url = url.replace('&amp;', '&')
 
-        return (title, url)
+        return title, url
 
     def _getRSSData(self):
         params = {'user': provider.username,
