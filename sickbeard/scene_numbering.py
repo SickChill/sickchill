@@ -500,7 +500,7 @@ def xem_refresh(indexer_id, indexer, force=False):
             url = "http://thexem.de/map/all?id=%s&origin=%s&destination=scene" % (indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'])
 
             parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, json=True)
-            if not parsedJSON or not 'result' in parsedJSON or not 'success' in parsedJSON['result']:
+            if not parsedJSON or 'result' not in parsedJSON or 'success' not in parsedJSON['result']:
                 logger.log(u'No XEM data for show "%s on %s"' % (indexer_id, sickbeard.indexerApi(indexer).name,), logger.INFO)
                 return
 

@@ -103,7 +103,7 @@ class ProperFinder:
                     continue
 
                 name = self._genericName(x.name)
-                if not name in propers:
+                if name not in propers:
                     logger.log(u"Found new proper: " + x.name, logger.DEBUG)
                     x.provider = curProvider
                     propers[name] = x

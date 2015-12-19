@@ -266,10 +266,10 @@ class TVShow(object):
                     logger.DEBUG)
                 return None
 
-        if not season in self.episodes:
+        if season not in self.episodes:
             self.episodes[season] = {}
 
-        if not episode in self.episodes[season] or self.episodes[season][episode] is None:
+        if episode not in self.episodes[season] or self.episodes[season][episode] is None:
             if noCreate:
                 return None
 
@@ -437,7 +437,7 @@ class TVShow(object):
             except (InvalidNameException, InvalidShowException):
                 pass
 
-            if not ' ' in ep_file_name and parse_result and parse_result.release_group:
+            if ' ' not in ep_file_name and parse_result and parse_result.release_group:
                 logger.log(
                     u"Name " + ep_file_name + u" gave release group of " + parse_result.release_group + ", seems valid",
                     logger.DEBUG)
@@ -505,7 +505,7 @@ class TVShow(object):
                                (curShowid, error.message, sickbeard.indexerApi(self.indexer).name, curShowName), logger.DEBUG)
                     deleteEp = True
 
-            if not curSeason in scannedEps:
+            if curSeason not in scannedEps:
                 logger.log(u"%s: Not curSeason in scannedEps" % curShowid, logger.DEBUG)
                 scannedEps[curSeason] = {}
 
