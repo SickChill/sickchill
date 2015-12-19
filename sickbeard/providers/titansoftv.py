@@ -66,7 +66,7 @@ class TitansOfTVProvider(TorrentProvider):
 
         searchURL = self.url + '?' + urllib.urlencode(params)
         logger.log(u"Search string: %s " % search_params, logger.DEBUG)
-        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+        logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
         parsedJSON = self.get_url(searchURL, json=True)  # do search
 

@@ -125,7 +125,6 @@ class CpasbienProvider(TorrentProvider):
     def seed_ratio(self):
         return self.ratio
 
-
     def _convertSize(self, sizeString):
         size = sizeString[:-2].strip()
         modifier = sizeString[-2:].upper()

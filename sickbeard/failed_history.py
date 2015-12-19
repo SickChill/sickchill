@@ -221,7 +221,6 @@ def findRelease(epObj):
     release = None
     provider = None
 
-
     # Clear old snatches for this release if any exist
     myDB = db.DBConnection('failed.db')
     myDB.action("DELETE FROM history WHERE showid=" + str(epObj.show.indexerid) + " AND season=" + str(

@@ -35,7 +35,7 @@ class qbittorrentAPI(GenericClient):
     
     @property
     def api(self):
-        self.url = self.host+'version/api'
+        self.url = self.host + 'version/api'
         try:
             version = int(self.session.get(self.url, verify=sickbeard.TORRENT_VERIFY_CERT).content)
         except:
@@ -45,14 +45,14 @@ class qbittorrentAPI(GenericClient):
     def _get_auth(self):
         
         if self.api > 1:            
-            self.url = self.host+'login'
+            self.url = self.host + 'login'
             data = {'username': self.username, 'password': self.password}
             try:
                 self.response = self.session.post(self.url, data=data)
             except Exception:
                 return None
 
-        else :
+        else:
             try:
                 self.response = self.session.get(self.host, verify=sickbeard.TORRENT_VERIFY_CERT)
                 self.auth = self.response.content
@@ -66,13 +66,13 @@ class qbittorrentAPI(GenericClient):
 
     def _add_torrent_uri(self, result):
 
-        self.url = self.host+'command/download'
+        self.url = self.host + 'command/download'
         data = {'urls': result.url}
         return self._request(method='post', data=data, cookies=self.session.cookies)
 
     def _add_torrent_file(self, result):
 
-        self.url = self.host+'command/upload'
+        self.url = self.host + 'command/upload'
         files = {'torrents': (result.name + '.torrent', result.content)}
         return self._request(method='post', files=files, cookies=self.session.cookies)
     
@@ -83,25 +83,25 @@ class qbittorrentAPI(GenericClient):
             label = sickbeard.TORRENT_LABEL_ANIME
 
         if self.api > 6:
-            self.url = self.host+'command/setLabel'
+            self.url = self.host + 'command/setLabel'
             data = {'hashes': result.hash, 'label': label}
             return self._request(method='post', data=data, cookies=self.session.cookies)
         return None
 
     def _set_torrent_priority(self, result):
 
-        self.url = self.host+'command/decreasePrio '
+        self.url = self.host + 'command/decreasePrio '
         if result.priority == 1:
-            self.url = self.host+'command/increasePrio'
+            self.url = self.host + 'command/increasePrio'
 
         data = {'hashes': result.hash}
         return self._request(method='post', data=data, cookies=self.session.cookies)
 
     def _set_torrent_pause(self, result):
 
-        self.url = self.host+'command/resume'
+        self.url = self.host + 'command/resume'
         if sickbeard.TORRENT_PAUSED:
-            self.url = self.host+'command/pause'
+            self.url = self.host + 'command/pause'
 
         data = {'hash': result.hash}
         return self._request(method='post', data=data, cookies=self.session.cookies)

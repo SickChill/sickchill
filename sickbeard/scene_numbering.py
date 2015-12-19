@@ -515,7 +515,8 @@ def xem_refresh(indexer_id, indexer, force=False):
                          indexer_id,
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
-                        ]])
+                         ]
+                    ])
                 if 'scene_2' in entry:  # for doubles
                     cl.append([
                         "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
@@ -525,7 +526,8 @@ def xem_refresh(indexer_id, indexer, force=False):
                          indexer_id,
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
-                        ]])
+                         ]
+                    ])
 
             if len(cl) > 0:
                 myDB = db.DBConnection()
@@ -624,7 +626,8 @@ def fix_xem_numbering(indexer_id, indexer):
                  indexer_id,
                  season,
                  episode
-                ]])
+                 ]
+            ])
             update_absolute_number = False
 
         if update_scene_season:
@@ -634,7 +637,8 @@ def fix_xem_numbering(indexer_id, indexer):
                  indexer_id,
                  season,
                  episode
-                ]])
+                 ]
+            ])
             update_scene_season = False
 
         if update_scene_episode:
@@ -644,7 +648,8 @@ def fix_xem_numbering(indexer_id, indexer):
                  indexer_id,
                  season,
                  episode
-                ]])
+                 ]
+            ])
             update_scene_episode = False
 
         if update_scene_absolute_number:
@@ -654,7 +659,8 @@ def fix_xem_numbering(indexer_id, indexer):
                  indexer_id,
                  season,
                  episode
-                ]])
+                 ]
+            ])
             update_scene_absolute_number = False
 
     if len(cl) > 0:

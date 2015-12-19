@@ -39,10 +39,11 @@ class FNTProvider(TorrentProvider):
 
         self.cache = FNTCache(self)
 
-        self.urls = {'base_url': 'https://fnt.nu',
-                     'search': 'https://www.fnt.nu/torrents/recherche/',
-                     'login': 'https://fnt.nu/account-login.php',
-                    }
+        self.urls = {
+            'base_url': 'https://fnt.nu',
+            'search': 'https://www.fnt.nu/torrents/recherche/',
+            'login': 'https://fnt.nu/account-login.php',
+        }
 
         self.url = self.urls['base_url']
         self.search_params = {
@@ -50,17 +51,18 @@ class FNTProvider(TorrentProvider):
             "c137": 1, "c138": 1, "c146": 1, "c122": 1, "c110": 1, "c109": 1, "c135": 1, "c148": 1,
             "c153": 1, "c149": 1, "c150": 1, "c154": 1, "c155": 1, "c156": 1, "c114": 1,
             "visible": 1, "freeleech": 0, "nuke": 1, "3D": 0, "sort": "size", "order": "desc"
-            }
+        }
 
     def login(self):
 
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        login_params = {'username': self.username,
-                        'password': self.password,
-                        'submit' : 'Se loguer'
-                       }
+        login_params = {
+            'username': self.username,
+            'password': self.password,
+            'submit': 'Se loguer'
+        }
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
@@ -106,7 +108,7 @@ class FNTProvider(TorrentProvider):
                             continue
 
                         if result_table:
-                            rows = result_table.findAll("tr", {"class" : "ligntorrent"})
+                            rows = result_table.findAll("tr", {"class": "ligntorrent"})
 
                             for row in rows:
                                 link = row.findAll('td')[1].find("a", href=re.compile("fiche_film"))

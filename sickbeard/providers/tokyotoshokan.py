@@ -64,7 +64,7 @@ class TokyoToshokanProvider(TorrentProvider):
         }
 
         searchURL = self.url + 'search.php?' + urllib.urlencode(params)
-        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+        logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
         data = self.get_url(searchURL)
 
         if not data:

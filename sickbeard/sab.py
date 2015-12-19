@@ -18,13 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import urllib, httplib
+import urllib
+import httplib
 
 import sickbeard
 import datetime
 
 import MultipartPostHandler
-import urllib2, cookielib
+import urllib2
+import cookielib
 
 try:
     import json

@@ -159,7 +159,7 @@ class newpctProvider(TorrentProvider):
         """
         if need_bytes:
             data = helpers.getURL(url, post_data=None, params=None, headers=self.headers, timeout=timeout,
-                              session=self.session, json=json, need_bytes=False)
+                                  session=self.session, json=json, need_bytes=False)
             url = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
 
         return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
@@ -213,7 +213,6 @@ class newpctProvider(TorrentProvider):
             size *= 1024 ** 4
         return long(size)
 
-
     @staticmethod
     def _processTitle(title):
         # Remove "Mas informacion sobre " literal from title
@@ -232,7 +231,7 @@ class newpctProvider(TorrentProvider):
         title = re.sub('\[BRrip[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
         title = re.sub('\[BDrip[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
 
-        #Language
+        # Language
         title = re.sub('\[Spanish[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
         title = re.sub('\[Castellano[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
         title = re.sub(ur'\[Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)

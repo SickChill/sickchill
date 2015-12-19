@@ -53,11 +53,11 @@ class Boxcar2Notifier(object):
         curUrl = API_URL
 
         data = urllib.urlencode({
-                'user_credentials': accesstoken,
-                'notification[title]': "SickRage : " + title + ' : ' + msg,
-                'notification[long_message]': msg,
-                'notification[sound]': "notifier-2"
-            })
+            'user_credentials': accesstoken,
+            'notification[title]': "SickRage : " + title + ' : ' + msg,
+            'notification[long_message]': msg,
+            'notification[sound]': "notifier-2"
+        })
 
         # send the request to boxcar2
         try:

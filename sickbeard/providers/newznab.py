@@ -65,7 +65,6 @@ class NewznabProvider(NZBProvider):
         self.enable_daily = enable_daily
         self.enable_backlog = enable_backlog
 
-
         # 0 in the key spot indicates that no key is needed
         self.needs_auth = self.key != '0'
         self.public = not self.needs_auth
@@ -147,7 +146,7 @@ class NewznabProvider(NZBProvider):
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
-        url = ek(os.path.join, self.url, 'api?') +  urllib.urlencode(params)
+        url = ek(os.path.join, self.url, 'api?') + urllib.urlencode(params)
         data = self.get_url(url)
         if not data:
             error_string = u"Error getting xml for [%s]" % url
@@ -284,12 +283,12 @@ class NewznabProvider(NZBProvider):
         try:
             values = config.split('|')
 
-            if len(values)==9:
+            if len(values) == 9:
                 name, url, key, category_ids, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
             else:
                 category_ids = values[3]
                 enabled = values[4]
-                key=values[2]
+                key = values[2]
                 name = values[0]
                 url = values[1]
         except ValueError:
@@ -304,7 +303,7 @@ class NewznabProvider(NZBProvider):
 
         return new_provider
 
-    def search(self, search_params, age=0, ep_obj=None): # pylint: disable=too-many-arguments,too-many-locals
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-arguments,too-many-locals
         """
         Searches indexer using the params in search_params, either for latest releases, or a string/id search
         Returns: list of results in dict form

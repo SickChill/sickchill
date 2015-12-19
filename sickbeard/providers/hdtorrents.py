@@ -97,9 +97,9 @@ class HDTorrentsProvider(TorrentProvider):
                 else:
                     searchURL = self.urls['rss'] % self.categories
 
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s" %  search_string, logger.DEBUG)
+                    logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
                 data = self.get_url(searchURL)
                 if not data or 'please try later' in data:

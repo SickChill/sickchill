@@ -82,14 +82,14 @@ class XthorProvider(TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urlsearch % (urllib.quote(search_string), self.categories)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 data = self.get_url(searchURL)
 
                 if not data:
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    resultsTable = html.find("table", {"class" : "table2 table-bordered2"})
+                    resultsTable = html.find("table", {"class": "table2 table-bordered2"})
                     if not resultsTable:
                         continue
 

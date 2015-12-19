@@ -110,6 +110,7 @@ class GenericQueue(object):
 
         self.amActive = False
 
+
 class QueueItem(threading.Thread):
     def __init__(self, name, action_id=0):
         super(QueueItem, self).__init__()

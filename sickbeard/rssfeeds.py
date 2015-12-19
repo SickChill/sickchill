@@ -7,6 +7,7 @@ from feedparser.util import FeedParserDict
 from sickbeard import logger
 from sickrage.helper.exceptions import ex
 
+
 def getFeed(url, request_headers=None, handlers=None):
     parsed = list(urlparse.urlparse(url))
     parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one

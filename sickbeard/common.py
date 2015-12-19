@@ -75,8 +75,8 @@ notifyStrings = NumDict({
     NOTIFY_SUBTITLE_DOWNLOAD: "Subtitle Download Finished",
     NOTIFY_GIT_UPDATE: "SickRage Updated",
     NOTIFY_GIT_UPDATE_TEXT: "SickRage Updated To Commit#: ",
-    NOTIFY_LOGIN : "SickRage new login",
-    NOTIFY_LOGIN_TEXT : "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
+    NOTIFY_LOGIN: "SickRage new login",
+    NOTIFY_LOGIN_TEXT: "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
 })
 
 # Episode statuses
@@ -202,7 +202,7 @@ class Quality(object):
         to_return = {}
         for quality in Quality.qualityStrings:
             to_return[Quality.compositeStatus(status, quality)] = Quality.statusPrefixes[status] + " (" + \
-                                                           Quality.qualityStrings[quality] + ")"
+                                                                  Quality.qualityStrings[quality] + ")"
         return to_return
 
     @staticmethod

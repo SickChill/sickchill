@@ -42,9 +42,9 @@ class TorrentDayProvider(TorrentProvider):
 
         self.urls = {
             'base_url': 'https://classic.torrentday.com',
-             'login': 'https://classic.torrentday.com/torrents/',
-             'search': 'https://classic.torrentday.com/V3/API/API.php',
-             'download': 'https://classic.torrentday.com/download.php/%s/%s'
+            'login': 'https://classic.torrentday.com/torrents/',
+            'search': 'https://classic.torrentday.com/V3/API/API.php',
+            'download': 'https://classic.torrentday.com/download.php/%s/%s'
         }
 
         self.url = self.urls['base_url']
@@ -130,7 +130,7 @@ class TorrentDayProvider(TorrentProvider):
                 for torrent in torrents:
 
                     title = re.sub(r"\[.*\=.*\].*\[/.*\]", "", torrent['name'])
-                    download_url = self.urls['download'] % ( torrent['id'], torrent['fname'])
+                    download_url = self.urls['download'] % (torrent['id'], torrent['fname'])
                     seeders = int(torrent['seed'])
                     leechers = int(torrent['leech'])
                     # FIXME

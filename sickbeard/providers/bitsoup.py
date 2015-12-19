@@ -36,7 +36,7 @@ class BitSoupProvider(TorrentProvider):
             'detail': 'https://www.bitsoup.me/details.php?id=%s',
             'search': 'https://www.bitsoup.me/browse.php',
             'download': 'https://bitsoup.me/%s',
-            }
+        }
 
         self.url = self.urls['base_url']
 
@@ -64,7 +64,7 @@ class BitSoupProvider(TorrentProvider):
             'username': self.username,
             'password': self.password,
             'ssl': 'yes'
-            }
+        }
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
@@ -155,7 +155,6 @@ class BitSoupProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
-
 
     def _convertSize(self, sizeString):
         size = sizeString[:-2].strip()

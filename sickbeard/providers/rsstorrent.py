@@ -135,8 +135,8 @@ class TorrentRssProvider(TorrentProvider):
             return None
 
         new_provider = TorrentRssProvider(
-                name, url, cookies=cookies, titleTAG=title_tag, search_mode=search_mode,
-                search_fallback=search_fallback, enable_daily=enable_daily, enable_backlog=enable_backlog
+            name, url, cookies=cookies, titleTAG=title_tag, search_mode=search_mode,
+            search_fallback=search_fallback, enable_daily=enable_daily, enable_backlog=enable_backlog
         )
         new_provider.enabled = enabled == '1'
 
