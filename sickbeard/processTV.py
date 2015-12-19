@@ -278,7 +278,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                     delete_files(processPath, notwantedFiles, result)
 
                     if (not sickbeard.NO_DELETE or proc_type == "manual") and process_method == "move" and \
-                        ek(os.path.normpath, processPath) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR):
+                            ek(os.path.normpath, processPath) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR):
                         if delete_folder(processPath, check_empty=True):
                             result.output += logHelper(u"Deleted folder: " + processPath, logger.DEBUG)
             else:
@@ -287,7 +287,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 result.missedfiles.append(processPath + " : Syncfiles found")
 
     if result.aggresult:
-        result.output += logHelper(u"Processing completed")
+        result.output += logHelper(u"Successfully processed")
         if result.missedfiles:
             result.output += logHelper(u"I did encounter some unprocessable items: ")
             for missedfile in result.missedfiles:
@@ -348,7 +348,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
 
     for sqlShow in sqlResults:
         if dirName.lower().startswith(ek(os.path.realpath, sqlShow["location"]).lower() + os.sep) or \
-            dirName.lower() == ek(os.path.realpath, sqlShow["location"]).lower():
+                dirName.lower() == ek(os.path.realpath, sqlShow["location"]).lower():
 
             result.output += logHelper(
                 u"Cannot process an episode that's already been moved to its show dir, skipping " + dirName,
@@ -393,6 +393,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
 
     result.output += logHelper(dirName + " : No processable items found in folder", logger.DEBUG)
     return False
+
 
 def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,too-many-statements
     """
@@ -587,7 +588,7 @@ def get_path_dir_files(dirName, nzbName, proc_type):
             break
     else:
         path, dirs = ek(os.path.split, dirName)  # Script Post Processing
-        if not nzbName is None and not nzbName.endswith('.nzb') and ek(os.path.isfile, ek(os.path.join, dirName, nzbName)):  # For single torrent file without Dir
+        if nzbName is not None and not nzbName.endswith('.nzb') and ek(os.path.isfile, ek(os.path.join, dirName, nzbName)):  # For single torrent file without Dir
             dirs = []
             files = [ek(os.path.join, dirName, nzbName)]
         else:
