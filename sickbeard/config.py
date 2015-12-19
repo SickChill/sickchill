@@ -498,7 +498,7 @@ def clean_url(url):
         scheme, netloc, path, query, fragment = urlparse.urlsplit(url, 'http')
 
         if not path:
-            path = path + '/'
+            path += '/'
 
         cleaned_url = urlparse.urlunsplit((scheme, netloc, path, query, fragment))
 
