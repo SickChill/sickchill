@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Mr_Orange
 #
 # This file is part of SickRage.

@@ -1,3 +1,4 @@
+# coding=utf-8
 import re
 import urlparse
 from feedparser.api import parse

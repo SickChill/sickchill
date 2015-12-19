@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: seedboy
 # URL: https://github.com/seedboy
 #

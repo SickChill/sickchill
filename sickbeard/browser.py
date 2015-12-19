@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io/
 # Git: https://github.com/SickRage/SickRage.git

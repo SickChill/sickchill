@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Mr_Orange
 # URL: https://github.com/mr-orange/Sick-Beard
 #

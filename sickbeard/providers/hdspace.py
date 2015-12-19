@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Idan Gutman
 # Modified by jkaberg, https://github.com/jkaberg for SceneAccess
 # Modified by 7ca for HDSpace

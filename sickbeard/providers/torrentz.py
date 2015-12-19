@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
 # URL: https://github.com/SickRage/SickRage
 #

@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Jordon Smith <smith@jordon.me.uk>
 # URL: http://code.google.com/p/sickbeard/
 #

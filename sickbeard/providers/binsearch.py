@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: moparisthebest <admin@moparisthebest.com>
 #
 # This file is part of Sick Beard.
