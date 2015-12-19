@@ -449,7 +449,7 @@ class GitUpdateManager(UpdateManager):
         if not git_path:
             logger.log(u"No git specified, can't use git commands", logger.WARNING)
             exit_status = 1
-            return (output, err, exit_status)
+            return output, err, exit_status
 
         cmd = git_path + ' ' + args
 
@@ -487,7 +487,7 @@ class GitUpdateManager(UpdateManager):
             logger.log(cmd + u" returned : " + str(output) + u", treat as error for now", logger.ERROR)
             exit_status = 1
 
-        return (output, err, exit_status)
+        return output, err, exit_status
 
     def _find_installed_version(self):
         """

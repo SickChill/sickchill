@@ -110,13 +110,13 @@ class Notification(object):
         self._seen.append(remote_ip)
         return self
 
-class ProgressIndicator():
+class ProgressIndicator:
 
     def __init__(self, percentComplete=0, currentStatus={'title': ''}):
         self.percentComplete = percentComplete
         self.currentStatus = currentStatus
 
-class ProgressIndicators():
+class ProgressIndicators:
     _pi = {'massUpdate': [],
            'massAdd': [],
            'dailyUpdate': []
@@ -139,7 +139,7 @@ class ProgressIndicators():
     def setIndicator(name, indicator):
         ProgressIndicators._pi[name].append(indicator)
 
-class QueueProgressIndicator():
+class QueueProgressIndicator:
     """
     A class used by the UI to show the progress of the queue or a part of it.
     """
@@ -172,7 +172,7 @@ class QueueProgressIndicator():
         else:
             return int(float(numFinished)/float(numTotal)*100)
 
-class LoadingTVShow():
+class LoadingTVShow:
     def __init__(self, dir):
         self.dir = dir
         self.show = None

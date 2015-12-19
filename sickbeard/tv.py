@@ -869,7 +869,7 @@ class TVShow(object):
                 self.name = myEp['seriesname'].strip()
             except AttributeError:
                 raise sickbeard.indexer_attributenotfound(
-                    "Found %s, but attribute 'seriesname' was empty." % (self.indexerid))
+                    "Found %s, but attribute 'seriesname' was empty." % self.indexerid)
 
             self.classification = getattr(myEp, 'classification', 'Scripted')
             self.genre = getattr(myEp, 'genre', '')

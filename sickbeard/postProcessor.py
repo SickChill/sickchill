@@ -717,9 +717,9 @@ class PostProcessor(object):
                     season = 1
 
             if show and season and episodes:
-                return (show, season, episodes, quality, version)
+                return show, season, episodes, quality, version
 
-        return (show, season, episodes, quality, version)
+        return show, season, episodes, quality, version
 
     def _get_ep_obj(self, show, season, episodes):
         """

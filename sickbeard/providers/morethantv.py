@@ -142,7 +142,7 @@ class MoreThanTVProvider(TorrentProvider):
                                     title = cells[1].find('a', {'title': 'View torrent'}).contents[0].strip()
                                 else:
                                     title = link.contents[0]
-                                download_url = self.urls['download'] % (torrent_id_long)
+                                download_url = self.urls['download'] % torrent_id_long
 
                                 seeders = cells[6].contents[0]
 

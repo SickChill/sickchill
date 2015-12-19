@@ -148,24 +148,24 @@ class TorrentRssProvider(TorrentProvider):
             if self.cookies:
                 cookie_validator = re.compile(r"^(\w+=\w+)(;\w+=\w+)*$")
                 if not cookie_validator.match(self.cookies):
-                    return (False, 'Cookie is not correctly formatted: ' + self.cookies)
+                    return False, 'Cookie is not correctly formatted: ' + self.cookies
 
             # pylint: disable=protected-access
             # Access to a protected member of a client class
             data = self.cache._getRSSData()['entries']
             if not data:
-                return (False, 'No items found in the RSS feed ' + self.url)
+                return False, 'No items found in the RSS feed ' + self.url
 
             (title, url) = self._get_title_and_url(data[0])
 
             if not title:
-                return (False, 'Unable to get title from first item')
+                return False, 'Unable to get title from first item'
 
             if not url:
-                return (False, 'Unable to get torrent url from first item')
+                return False, 'Unable to get torrent url from first item'
 
             if url.startswith('magnet:') and re.search(r'urn:btih:([\w]{32,40})', url):
-                return (True, 'RSS feed Parsed correctly')
+                return True, 'RSS feed Parsed correctly'
             else:
                 if self.cookies:
                     requests.utils.add_dict_to_cookiejar(self.session.cookies,
@@ -175,12 +175,12 @@ class TorrentRssProvider(TorrentProvider):
                     bdecode(torrent_file)
                 except Exception as e:
                     self.dumpHTML(torrent_file)
-                    return (False, 'Torrent link is not a valid torrent file: ' + ex(e))
+                    return False, 'Torrent link is not a valid torrent file: ' + ex(e)
 
-            return (True, 'RSS feed Parsed correctly')
+            return True, 'RSS feed Parsed correctly'
 
         except Exception as e:
-            return (False, 'Error when trying to load RSS: ' + ex(e))
+            return False, 'Error when trying to load RSS: ' + ex(e)
 
     @staticmethod
     def dumpHTML(data):

@@ -156,7 +156,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
     if not needs_subtitles(existing_subtitles):
         logger.log(u'Episode already has all needed subtitles, skipping %s S%02dE%02d'
                    % (subtitles_info['show_name'], subtitles_info['season'], subtitles_info['episode']), logger.DEBUG)
-        return (existing_subtitles, None)
+        return existing_subtitles, None
 
     # Check if we really need subtitles
     languages = get_needed_languages(existing_subtitles)
@@ -164,7 +164,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
         logger.log(u'No subtitles needed for %s S%02dE%02d'
                    % (subtitles_info['show_name'], subtitles_info['season'],
                       subtitles_info['episode']), logger.DEBUG)
-        return (existing_subtitles, None)
+        return existing_subtitles, None
 
     subtitles_path = get_subtitles_path(subtitles_info['location']).encode(sickbeard.SYS_ENCODING)
     video_path = subtitles_info['location'].encode(sickbeard.SYS_ENCODING)
@@ -175,7 +175,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
         logger.log(u'Exception caught in subliminal.scan_video for %s S%02dE%02d'
                    % (subtitles_info['show_name'], subtitles_info['season'],
                       subtitles_info['episode']), logger.DEBUG)
-        return (existing_subtitles, None)
+        return existing_subtitles, None
 
     providers = enabled_service_list()
     provider_configs = {'addic7ed': {'username': sickbeard.ADDIC7ED_USER,
@@ -193,7 +193,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
             logger.log(u'No subtitles found for %s S%02dE%02d on any provider'
                        % (subtitles_info['show_name'], subtitles_info['season'],
                           subtitles_info['episode']), logger.DEBUG)
-            return (existing_subtitles, None)
+            return existing_subtitles, None
 
         for sub in subtitles_list:
             matches = sub.get_matches(video, hearing_impaired=False)
@@ -215,7 +215,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
     except Exception:
         logger.log(u"Error occurred when downloading subtitles for: %s" % video_path)
         logger.log(traceback.format_exc(), logger.ERROR)
-        return (existing_subtitles, None)
+        return existing_subtitles, None
 
     for subtitle in found_subtitles:
         subtitle_path = subliminal.subtitle.get_subtitle_path(video.name,
@@ -245,22 +245,22 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
             current_subtitles.remove(new_code)
         current_subtitles.append('und')
 
-    return (current_subtitles, new_subtitles)
+    return current_subtitles, new_subtitles
 
 
 def refresh_subtitles(episode_info, existing_subtitles):
     video = get_video(episode_info['location'].encode(sickbeard.SYS_ENCODING))
     if not video:
         logger.log(u"Exception caught in subliminal.scan_video, subtitles couldn't be refreshed", logger.DEBUG)
-        return (existing_subtitles, None)
+        return existing_subtitles, None
     current_subtitles = get_subtitles(video)
     if existing_subtitles == current_subtitles:
         logger.log(u'No changed subtitles for %s S%02dE%02d'
                    % (episode_info['show_name'], episode_info['season'],
                       episode_info['episode']), logger.DEBUG)
-        return (existing_subtitles, None)
+        return existing_subtitles, None
     else:
-        return (current_subtitles, True)
+        return current_subtitles, True
 
 
 def get_video(video_path, subtitles_path=None):

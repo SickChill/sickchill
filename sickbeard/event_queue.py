@@ -32,7 +32,7 @@ class Events(threading.Thread):
         Actually runs the thread to process events
         """
         try:
-            while (not self.stop.is_set()):
+            while not self.stop.is_set():
                 try:
                     # get event type
                     type = self.queue.get(True, 1)
