@@ -511,7 +511,8 @@ class PostProcessor(object):
             self.version = version
             to_return = (show, season, [], quality, version)
 
-            self._log("Found result in history for %s - Season: %s - Quality: %s - Version: %s" % (show.name, season, common.Quality.qualityStrings[quality], version), logger.DEBUG)
+            qual_str = common.Quality.qualityStrings[quality] if quality is not None else quality
+            self._log("Found result in history for %s - Season: %s - Quality: %s - Version: %s" % (show.name, season, qual_str, version), logger.DEBUG)
 
             return to_return
 
