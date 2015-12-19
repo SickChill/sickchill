@@ -126,6 +126,7 @@ def remove_non_release_groups(name):
         r'\.RiPSaLoT$': 'searchre',
         r'\.GiuseppeTnT$': 'searchre',
         r'\.Renc$': 'searchre',
+        r'\.gz$': 'searchre',
         r'-NZBGEEK$': 'searchre',
         r'-Siklopentan$': 'searchre',
         r'-Chamele0n$': 'searchre',
@@ -1741,7 +1742,7 @@ def getTVDBFromID(indexer_id, indexer):
 
         except SyntaxError:
             pass
-        
+
         return tvdb_id
     elif indexer == 'ZAP2IT':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it=%s" % indexer_id
@@ -1761,7 +1762,7 @@ def getTVDBFromID(indexer_id, indexer):
         url = "http://api.tvmaze.com/shows/%s" % indexer_id
         data = getURL(url, session=session, json=True)
         if data is None:
-            return tvdb_id        
+            return tvdb_id
         tvdb_id = data['externals']['thetvdb']
         return tvdb_id
     else:
