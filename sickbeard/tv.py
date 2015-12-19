@@ -306,7 +306,7 @@ class TVShow(object):
 
         if sql_result and sql_result[0]['last_aired'] != 0:
             last_airdate = datetime.date.fromordinal(sql_result[0]['last_aired'])
-            if last_airdate >= (update_date - graceperiod) and last_airdate <= (update_date + graceperiod):
+            if (update_date - graceperiod) <= last_airdate <= (update_date + graceperiod):
                 return True
 
         # get next upcoming UNAIRED episode to compare against today + graceperiod

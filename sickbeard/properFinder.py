@@ -189,7 +189,7 @@ class ProperFinder:
                 oldVersion = int(sqlResults[0]["version"])
                 oldRelease_group = (sqlResults[0]["release_group"])
 
-                if oldVersion > -1 and oldVersion < bestResult.version:
+                if -1 < oldVersion < bestResult.version:
                     logger.log(u"Found new anime v" + str(bestResult.version) + " to replace existing v" + str(oldVersion))
                 else:
                     continue
