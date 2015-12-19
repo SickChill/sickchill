@@ -49,8 +49,7 @@ class ShowQueue(generic_queue.GenericQueue):
         return show.indexerid in [x.show.indexerid if x.show else 0 for x in self.queue if x.action_id in actions]
 
     def _isBeingSomethinged(self, show, actions):
-        return self.currentItem is not None and show == self.currentItem.show and \
-               self.currentItem.action_id in actions
+        return self.currentItem is not None and show == self.currentItem.show and self.currentItem.action_id in actions
 
     def isInUpdateQueue(self, show):
         return self._isInQueue(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
@@ -168,6 +167,7 @@ class ShowQueue(generic_queue.GenericQueue):
         self.add_item(queueItemObj)
 
         return queueItemObj
+
 
 class ShowQueueActions(object):
 
@@ -294,7 +294,7 @@ class QueueItemAdd(ShowQueueItem):
             if getattr(s, 'seriesname', None) is None:
                 logger.log(u"Show in " + self.showDir + " has no name on " + str(
                     sickbeard.indexerApi(self.indexer).name) + ", probably the wrong language used to search with.",
-                           logger.ERROR)
+                    logger.ERROR)
                 ui.notifications.error("Unable to add show",
                                        "Show in " + self.showDir + " has no name on " + str(sickbeard.indexerApi(
                                            self.indexer).name) + ", probably the wrong language. Delete .nfo and add manually in the correct language.")
@@ -510,6 +510,7 @@ class QueueItemRefresh(ShowQueueItem):
 
         self.finish()
 
+
 class QueueItemRename(ShowQueueItem):
     def __init__(self, show=None):
         ShowQueueItem.__init__(self, ShowQueueActions.RENAME, show)
@@ -550,6 +551,7 @@ class QueueItemRename(ShowQueueItem):
 
         self.finish()
 
+
 class QueueItemSubtitle(ShowQueueItem):
     def __init__(self, show=None):
         ShowQueueItem.__init__(self, ShowQueueActions.SUBTITLE, show)
@@ -561,6 +563,7 @@ class QueueItemSubtitle(ShowQueueItem):
 
         self.show.download_subtitles()
         self.finish()
+
 
 class QueueItemUpdate(ShowQueueItem):
     def __init__(self, show=None):

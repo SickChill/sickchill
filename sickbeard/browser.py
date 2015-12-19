@@ -63,7 +63,8 @@ def getFileList(path, includeFiles):
             'name': filename,
             'path': fullFilename
         }
-        if not isDir: entry['isFile'] = True
+        if not isDir:
+            entry['isFile'] = True
         fileList.append(entry)
 
     return fileList

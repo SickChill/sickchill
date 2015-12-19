@@ -55,9 +55,9 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         self.url = self.urls['base_url']
 
         self.categories = {
-            'Season': 'c26=26&c44=44&c45=45', # Archive, non-scene HD, non-scene SD; need to include non-scene because WEB-DL packs get added to those categories
-            'Episode': 'c17=17&c27=27&c33=33&c34=34&c44=44&c45=45', # TV HD, TV SD, non-scene HD, non-scene SD, foreign XviD, foreign x264
-            'RSS': 'c17=17&c26=26&c27=27&c33=33&c34=34&c44=44&c45=45' # Season + Episode
+            'Season': 'c26=26&c44=44&c45=45',  # Archive, non-scene HD, non-scene SD; need to include non-scene because WEB-DL packs get added to those categories
+            'Episode': 'c17=17&c27=27&c33=33&c34=34&c44=44&c45=45',  # TV HD, TV SD, non-scene HD, non-scene SD, foreign XviD, foreign x264
+            'RSS': 'c17=17&c26=26&c27=27&c33=33&c34=34&c44=44&c45=45'  # Season + Episode
         }
 
     def login(self):

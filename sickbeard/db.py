@@ -298,7 +298,7 @@ class DBConnection(object):
             # Just revert to the old code for now, until we can fix unicode
             return unicode(x, 'utf-8')
         except:
-            return unicode(x, sickbeard.SYS_ENCODING,errors="ignore")
+            return unicode(x, sickbeard.SYS_ENCODING, errors="ignore")
 
     def _dict_factory(self, cursor, row):
         d = {}
@@ -338,8 +338,10 @@ class DBConnection(object):
         self.action("ALTER TABLE [%s] ADD %s %s" % (table, column, type))
         self.action("UPDATE [%s] SET %s = ?" % (table, column), (default,))
 
+
 def sanityCheckDatabase(connection, sanity_check):
     sanity_check(connection).check()
+
 
 class DBSanityCheck(object):
     def __init__(self, connection):

@@ -570,6 +570,7 @@ __INITIALIZED__ = False
 
 NEWZNAB_DATA = None
 
+
 def get_backlog_cycle_time():
     cycletime = DAILYSEARCH_FREQUENCY * 2 + 7
     return max([cycletime, 720])
@@ -763,7 +764,6 @@ def initialize(consoleLogging=True):
                     except Exception as e:
                         logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
-
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
 
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
@@ -821,7 +821,7 @@ def initialize(consoleLogging=True):
 
         ENABLE_HTTPS = bool(check_setting_int(CFG, 'General', 'enable_https', 0))
 
-        NOTIFY_ON_LOGIN  = bool(check_setting_int(CFG, 'General', 'notify_on_login', 0))
+        NOTIFY_ON_LOGIN = bool(check_setting_int(CFG, 'General', 'notify_on_login', 0))
 
         HTTPS_CERT = check_setting_str(CFG, 'General', 'https_cert', 'server.crt')
         HTTPS_KEY = check_setting_str(CFG, 'General', 'https_key', 'server.key')
@@ -1239,7 +1239,8 @@ def initialize(consoleLogging=True):
                                                                 curTorrentProvider.get_id(), 0))
             if hasattr(curTorrentProvider, 'custom_url'):
                 curTorrentProvider.custom_url = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
-                                                                curTorrentProvider.get_id() + '_custom_url', '', censor_log=True)
+                                                                  curTorrentProvider.get_id() + '_custom_url',
+                                                                  '', censor_log=True)
             if hasattr(curTorrentProvider, 'api_key'):
                 curTorrentProvider.api_key = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
                                                                curTorrentProvider.get_id() + '_api_key', '', censor_log=True)

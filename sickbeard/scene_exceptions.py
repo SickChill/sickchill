@@ -39,6 +39,7 @@ exceptionsSeasonCache = {}
 
 exceptionLock = threading.Lock()
 
+
 def shouldRefresh(exList):
     """
     Check if we should refresh cache for items in exList
@@ -56,6 +57,7 @@ def shouldRefresh(exList):
     else:
         return True
 
+
 def setLastRefresh(exList):
     """
     Update last cache update time for shows in list
@@ -66,6 +68,7 @@ def setLastRefresh(exList):
     myDB.upsert("scene_exceptions_refresh",
                 {'last_refreshed': int(time.mktime(datetime.datetime.today().timetuple()))},
                 {'list': exList})
+
 
 def get_scene_exceptions(indexer_id, season=-1):
     """
@@ -259,6 +262,7 @@ def retrieve_exceptions():
     anidb_exception_dict.clear()
     xem_exception_dict.clear()
 
+
 def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
     """
     Given a indexer_id, and a list of all show scene exceptions, update the db.
@@ -276,6 +280,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
     for cur_exception in scene_exceptions:
         myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
                     [indexer_id, cur_exception, season])
+
 
 def _anidb_exceptions_fetcher():
     if shouldRefresh('anidb'):
@@ -295,6 +300,7 @@ def _anidb_exceptions_fetcher():
 
 
 xem_session = requests.Session()
+
 
 def _xem_exceptions_fetcher():
     if shouldRefresh('xem'):

@@ -39,10 +39,11 @@ class GFTrackerProvider(TorrentProvider):
         self.minseed = None
         self.minleech = None
 
-        self.urls = {'base_url': 'https://www.thegft.org',
-                     'login': 'https://www.thegft.org/loginsite.php',
-                     'search': 'https://www.thegft.org/browse.php?view=%s%s',
-                     'download': 'https://www.thegft.org/%s',
+        self.urls = {
+            'base_url': 'https://www.thegft.org',
+            'login': 'https://www.thegft.org/loginsite.php',
+            'search': 'https://www.thegft.org/browse.php?view=%s%s',
+            'download': 'https://www.thegft.org/%s',
         }
 
         self.url = self.urls['base_url']
@@ -97,7 +98,7 @@ class GFTrackerProvider(TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (self.categories, search_string)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
                 # Set cookies from response
                 self.headers.update({'Cookie': self.cookies})

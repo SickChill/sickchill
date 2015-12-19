@@ -73,11 +73,11 @@ class CensoredFormatter(logging.Formatter, object):
         msg = super(CensoredFormatter, self).format(record)
 
         if not isinstance(msg, unicode):
-            msg = msg.decode(self.encoding, 'replace') # Convert to unicode
+            msg = msg.decode(self.encoding, 'replace')  # Convert to unicode
 
         for _, v in censoredItems.iteritems():
             if not isinstance(v, unicode):
-                v = v.decode(self.encoding, 'replace') # Convert to unicode
+                v = v.decode(self.encoding, 'replace')  # Convert to unicode
             msg = msg.replace(v, len(v) * u'*')
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
@@ -137,7 +137,7 @@ class Logger(object):
 
         # rotating log file handler
         if self.fileLogging:
-            rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=int(sickbeard.LOG_SIZE*1048576), backupCount=sickbeard.LOG_NR, encoding='utf-8')
+            rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=int(sickbeard.LOG_SIZE * 1048576), backupCount=sickbeard.LOG_NR, encoding='utf-8')
             rfh.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)-8s %(message)s', dateTimeFormat, encoding='utf-8'))
             rfh.setLevel(INFO if not self.debugLogging else DB)
 
@@ -182,7 +182,7 @@ class Logger(object):
         else:
             sys.exit(1)
 
-    def submit_errors(self): # Too many local variables, too many branches, pylint: disable=too-many-branches,too-many-locals
+    def submit_errors(self):  # Too many local variables, too many branches, pylint: disable=too-many-branches,too-many-locals
 
         submitter_result = u''
         issue_id = None
@@ -202,7 +202,7 @@ class Logger(object):
 
         if commits_behind is None or commits_behind > 0:
             submitter_result = u'Please update SickRage, unable to submit issue ticket to GitHub with an outdated version!'
-            return  submitter_result, issue_id
+            return submitter_result, issue_id
 
         if self.submitter_running:
             submitter_result = u'Issue submitter is running, please wait for it to complete'
@@ -250,7 +250,7 @@ class Logger(object):
                     if match:
                         level = match.group(2)
                         if reverseNames[level] == ERROR:
-                            paste_data = u"".join(log_data[i:i+50])
+                            paste_data = u"".join(log_data[i:i + 50])
                             if paste_data:
                                 gist = gh.get_user().create_gist(True, {"sickrage.log": InputFileContent(paste_data)})
                             break
@@ -330,6 +330,7 @@ class Logger(object):
             self.submitter_running = False
 
         return submitter_result, issue_id
+
 
 # pylint: disable=too-few-public-methods
 class Wrapper(object):

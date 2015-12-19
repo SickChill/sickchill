@@ -84,7 +84,7 @@ class KATProvider(TorrentProvider):
                 try:
                     searchURL = self.urls['search'] % url_fmt_string + '?' + urlencode(self.search_params)
                     if self.custom_url:
-                        searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
+                        searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/'))  # Must use posixpath
 
                     logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                     data = self.get_url(searchURL)

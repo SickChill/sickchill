@@ -49,7 +49,7 @@ class TVChaosUKProvider(TorrentProvider):
 
         self.search_params = {
             'do': 'search',
-            'keywords':  '',
+            'keywords': '',
             'search_type': 't_name',
             'category': 0,
             'include_dead_torrents': 'no',
@@ -174,7 +174,6 @@ class TVChaosUKProvider(TorrentProvider):
                             if show_name_first_word and not title.startswith(show_name_first_word.group()) and show_name_first_word in title:
                                 title = re.match(r'.*(' + show_name_first_word + '.*)', title).group(1)
 
-
                             # Change title from Series to Season, or we can't parse
                             if 'Series' not in self.search_params['keywords']:
                                 title = re.sub(r'(?i)series', 'Season', title)
@@ -203,7 +202,6 @@ class TVChaosUKProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
-
 
     def _convertSize(self, sizeString):
         size = sizeString[:-2].strip()

@@ -109,7 +109,7 @@ class MoreThanTVProvider(TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (search_string.replace('(', '').replace(')', ''))
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
                 # returns top 15 results by default, expandable in user profile to 100
                 data = self.get_url(searchURL)
@@ -154,7 +154,6 @@ class MoreThanTVProvider(TorrentProvider):
 
                             except (AttributeError, TypeError):
                                 continue
-
 
                             if not all([title, download_url]):
                                 continue

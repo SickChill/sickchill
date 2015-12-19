@@ -90,6 +90,7 @@ date_presets = (
 
 time_presets = ('%I:%M:%S %p', '%H:%M:%S')
 
+
 # helper class
 class static_or_instance(object):
     def __init__(self, func):

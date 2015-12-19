@@ -18,7 +18,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import posixpath # Must use posixpath
+import posixpath  # Must use posixpath
 from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
@@ -81,7 +81,7 @@ class ThePirateBayProvider(TorrentProvider):
 
                 searchURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
                 if self.custom_url:
-                    searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
+                    searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/'))  # Must use posixpath
 
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 data = self.get_url(searchURL)

@@ -68,7 +68,7 @@ class NyaaProvider(TorrentProvider):
                     params["term"] = search_string.encode('utf-8')
 
                 searchURL = self.url + '?' + urllib.urlencode(params)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
                 summary_regex = ur"(\d+) seeder\(s\), (\d+) leecher\(s\), \d+ download\(s\) - (\d+.?\d* [KMGT]iB)(.*)"
                 s = re.compile(summary_regex, re.DOTALL)

@@ -93,7 +93,7 @@ class T411Provider(TorrentProvider):
 
                 searchURLS = ([self.urls['search'] % (search_string, u) for u in self.subcategories], [self.urls['rss']])[mode == 'RSS']
                 for searchURL in searchURLS:
-                    logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                    logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                     data = self.get_url(searchURL, json=True)
                     if not data:
                         continue

@@ -68,7 +68,7 @@ class OmgwtfnzbsProvider(NZBProvider):
                     return True
 
                 else:
-                    logger.log(u"Unknown error: %s"  % description_text, logger.DEBUG)
+                    logger.log(u"Unknown error: %s" % description_text, logger.DEBUG)
                     return False
 
             return True
@@ -101,7 +101,7 @@ class OmgwtfnzbsProvider(NZBProvider):
 
         searchURL = 'https://api.omgwtfnzbs.org/json/?' + urllib.urlencode(params)
         logger.log(u"Search string: %s" % params, logger.DEBUG)
-        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+        logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
         parsedJSON = self.get_url(searchURL, json=True)
         if not parsedJSON:

@@ -57,18 +57,20 @@ class RarbgProvider(TorrentProvider):
 
         self.url = self.urls['listing']
 
-        self.urlOptions = {'categories': '&category={categories}',
-                           'seeders': '&min_seeders={min_seeders}',
-                           'leechers': '&min_leechers={min_leechers}',
-                           'sorting' : '&sort={sorting}',
-                           'limit': '&limit={limit}',
-                           'format': '&format={format}',
-                           'ranked': '&ranked={ranked}',
-                           'token': '&token={token}'}
+        self.urlOptions = {
+            'categories': '&category={categories}',
+            'seeders': '&min_seeders={min_seeders}',
+            'leechers': '&min_leechers={min_leechers}',
+            'sorting': '&sort={sorting}',
+            'limit': '&limit={limit}',
+            'format': '&format={format}',
+            'ranked': '&ranked={ranked}',
+            'token': '&token={token}'
+        }
 
         self.defaultOptions = self.urlOptions['categories'].format(categories='tv') + \
-                                self.urlOptions['limit'].format(limit='100') + \
-                                self.urlOptions['format'].format(format='json_extended')
+                              self.urlOptions['limit'].format(limit='100') + \
+                              self.urlOptions['format'].format(format='json_extended')
 
         self.proper_strings = ['{{PROPER|REPACK}}']
 

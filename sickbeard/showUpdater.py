@@ -34,6 +34,7 @@ from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowE
 from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
 
+
 class ShowUpdater:
     def __init__(self):
         self.lock = threading.Lock()
