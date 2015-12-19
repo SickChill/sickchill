@@ -206,7 +206,7 @@ class TVShow(object):
         sql_selection = "SELECT season, episode, "
 
         # subselection to detect multi-episodes early, share_location > 0
-        sql_selection = sql_selection + " (SELECT COUNT (*) FROM tv_episodes WHERE showid = tve.showid AND season = tve.season AND location != '' AND location = tve.location AND episode != tve.episode) AS share_location "
+        sql_selection += " (SELECT COUNT (*) FROM tv_episodes WHERE showid = tve.showid AND season = tve.season AND location != '' AND location = tve.location AND episode != tve.episode) AS share_location "
 
         sql_selection = sql_selection + " FROM tv_episodes tve WHERE showid = " + str(self.indexerid)
 
@@ -214,10 +214,10 @@ class TVShow(object):
             sql_selection = sql_selection + " AND season = " + str(season)
 
         if has_location:
-            sql_selection = sql_selection + " AND location != '' "
+            sql_selection += " AND location != '' "
 
         # need ORDER episode ASC to rename multi-episodes in order S01E01-02
-        sql_selection = sql_selection + " ORDER BY season ASC, episode ASC"
+        sql_selection += " ORDER BY season ASC, episode ASC"
 
         myDB = db.DBConnection()
         results = myDB.select(sql_selection)
