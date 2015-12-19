@@ -25,18 +25,21 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.providers import btn, newznab, rsstorrent, womble, thepiratebay, torrentleech, kat, iptorrents, torrentz, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, \
-    freshontv, titansoftv, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
+    freshontv, titansoftv, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, tntvillage, binsearch, torrentproject, extratorrent, \
     scenetime, btdigg, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, bitsnoop, danishbits, hd4free
+from sickrage.providers import AlphaRatio
 
 __all__ = [
     'womble', 'btn', 'thepiratebay', 'kat', 'torrentleech', 'scc', 'hdtorrents',
     'torrentday', 'hdbits', 'hounddawgs', 'iptorrents', 'omgwtfnzbs',
     'speedcd', 'nyaatorrents', 'animenzb', 'torrentbytes', 'freshontv', 'titansoftv',
-    'morethantv', 'bitsoup', 't411', 'tokyotoshokan', 'alpharatio',
+    'morethantv', 'bitsoup', 't411', 'tokyotoshokan',
     'shazbat', 'rarbg', 'tntvillage', 'binsearch', 'bluetigers', 'cpasbien',
     'fnt', 'xthor', 'scenetime', 'btdigg', 'transmitthenet', 'tvchaosuk',
     'torrentproject', 'extratorrent', 'bitcannon', 'torrentz', 'pretome', 'gftracker',
     'hdspace', 'newpct', 'elitetorrent', 'bitsnoop', 'danishbits', 'hd4free'
+] + [
+    'AlphaRatio'
 ]
 
 
@@ -72,12 +75,13 @@ def makeProviderList():
 
 
 def getProviderModule(name):
-    name = name.lower()
-    prefix = "sickbeard.providers."
-    if name in __all__ and prefix + name in sys.modules:
-        return sys.modules[prefix + name]
-    else:
-        raise Exception("Can't find " + prefix + name + " in " + "Providers")
+    prefixes = ['sickbeard.providers.', 'sickrage.providers.']
+
+    for prefix in prefixes:
+        if name in __all__ and prefix + name in sys.modules:
+            return sys.modules[prefix + name]
+
+    raise Exception(u'Can\'t find %s in %s' % (name, prefixes))
 
 
 def getProviderClass(provider_id):
