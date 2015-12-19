@@ -84,7 +84,7 @@ def get_scene_exceptions(indexer_id, season=-1):
         if exceptions:
             exceptionsList = list(set([cur_exception["show_name"] for cur_exception in exceptions]))
 
-            if not indexer_id in exceptionsCache:
+            if indexer_id not in exceptionsCache:
                 exceptionsCache[indexer_id] = {}
             exceptionsCache[indexer_id][season] = exceptionsList
     else:
@@ -130,7 +130,7 @@ def get_scene_seasons(indexer_id):
         if sqlResults:
             exceptionsSeasonList = list(set([int(x["season"]) for x in sqlResults]))
 
-            if not indexer_id in exceptionsSeasonCache:
+            if indexer_id not in exceptionsSeasonCache:
                 exceptionsSeasonCache[indexer_id] = {}
 
             exceptionsSeasonCache[indexer_id] = exceptionsSeasonList
@@ -241,7 +241,7 @@ def retrieve_exceptions():
     for cur_indexer_id in exception_dict:
         sql_ex = myDB.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ?;", [cur_indexer_id])
         existing_exceptions = [x["show_name"] for x in sql_ex]
-        if not cur_indexer_id in exception_dict:
+        if cur_indexer_id not in exception_dict:
             continue
 
         for cur_exception_dict in exception_dict[cur_indexer_id]:
