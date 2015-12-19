@@ -3,13 +3,13 @@ import json
 import logging
 import os
 import re
+import io
 
 from babelfish import Language, language_converters
 from datetime import datetime
 from guessit import guess_file_info
-from rarfile import RarFile, is_rarfile
+import rarfile
 from requests import Session
-from tempfile import NamedTemporaryFile
 from zipfile import ZipFile, is_zipfile
 
 from . import ParserBeautifulSoup, Provider
@@ -65,7 +65,7 @@ class LegendasTvProvider(Provider):
     languages = {Language.fromlegendastv(l) for l in language_converters['legendastv'].codes}
     video_types = (Episode, Movie)
     server_url = 'http://legendas.tv'
-    word_split_re = re.compile('(\w+)', re.IGNORECASE)
+    word_split_re = re.compile(r'(\w+)', re.IGNORECASE)
 
     def __init__(self, username=None, password=None):
         if username is not None and password is None or username is None and password is not None:
@@ -160,7 +160,7 @@ class LegendasTvProvider(Provider):
             return expected_name == actual_name
 
         words = self.word_split_re.findall(expected_name)
-        name_regex_re = re.compile('(.*' + '\W+'.join(words) + '.*)', re.IGNORECASE)
+        name_regex_re = re.compile('(.*' + r'\W+'.join(words) + '.*)', re.IGNORECASE)
 
         return name_regex_re.match(actual_name)
 
@@ -252,10 +252,10 @@ class LegendasTvProvider(Provider):
         }
 
         # Regex to extract the season number. e.g.: 3\u00aa Temporada, 1a Temporada, 2nd Season
-        season_re = re.compile('.*? - (\d{1,2}).*?((emporada)|(Season))', re.IGNORECASE)
+        season_re = re.compile(r'.*? - (\d{1,2}).*?(?:(temporada|season|series))', re.IGNORECASE)
 
         # Regex to extract the IMDB id. e.g.: tt02342
-        imdb_re = re.compile('t{0,2}(\d+)')
+        imdb_re = re.compile(r't{0,2}(\d+)')
 
         candidates = []
         for result in results:
@@ -300,16 +300,16 @@ class LegendasTvProvider(Provider):
         language_code = language.legendastv
 
         # Regex to extract rating information (number of downloads and rate). e.g.: 12345 downloads, nota 10
-        rating_info_re = re.compile('(\d*) downloads, nota (\d{0,2})')
+        rating_info_re = re.compile(r'(\d*) downloads, nota (\d{0,2})')
 
         # Regex to extract the last update timestamp. e.g.: 25/12/2014 - 19:25
-        timestamp_info_re = re.compile('(\d{1,2}/\d{1,2}/\d{2,4} \- \d{1,2}:\d{1,2})')
+        timestamp_info_re = re.compile(r'(\d{1,2}/\d{1,2}/\d{2,4} - \d{1,2}:\d{1,2})')
 
         # Regex to identify the 'pack' suffix that candidates might have. e.g.: (p)Breaking.Bad.S05.HDTV.x264
-        pack_name_re = re.compile('^\(p\)')
+        pack_name_re = re.compile(r'^\(p\)')
 
         # Regex to extract the subtitle_id from the 'href'. e.g.: /download/560014472eb4d/foo/bar
-        subtitle_href_re = re.compile('/download/(\w+)/.+')
+        subtitle_href_re = re.compile(r'/download/(\w+)/.+')
 
         subtitles = []
         # loop over matched movies/shows
@@ -432,14 +432,11 @@ class LegendasTvProvider(Provider):
     def _uncompress(self, subtitle_id, timestamp, function, *args, **kwargs):
         content = self.download_content(subtitle_id, timestamp)
 
-        # Download content might be a rar file (most common) or a zip.
-        # Unfortunately, rarfile module only works with files (no in-memory streams)
-        tmp = NamedTemporaryFile()
+        tmp = io.BytesIO(content)
         try:
-            tmp.write(content)
-            tmp.flush()
-
-            cf = RarFile(tmp.name) if is_rarfile(tmp.name) else (ZipFile(tmp.name) if is_zipfile(tmp.name) else None)
+            rarfile.PATH_SEP = '/'
+            rarfile.NEED_COMMENTS = 0
+            cf = rarfile.RarFile(io.BytesIO(content)) if rarfile.is_rarfile(tmp) else (ZipFile(tmp.name) if is_zipfile(tmp.name) else None)
 
             return function(cf, *args, **kwargs) if cf else None
         finally:
