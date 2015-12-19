@@ -155,8 +155,7 @@ class FreshOnTVProvider(TorrentProvider):
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
                     continue
 
-                data_response_list = []
-                data_response_list.append(init_html)
+                data_response_list = [init_html]
 
                 # Freshon starts counting pages from zero, even though it displays numbers from 1
                 if max_page_number > 1:

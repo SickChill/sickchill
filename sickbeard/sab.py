@@ -245,12 +245,13 @@ def testAuthentication(host=None, username=None, password=None, apikey=None):
     """
 
     # build up the URL parameters
-    params = {}
-    params['mode'] = 'queue'
-    params['output'] = 'json'
-    params['ma_username'] = username
-    params['ma_password'] = password
-    params['apikey'] = apikey
+    params = {
+        'mode': 'queue',
+        'output': 'json',
+        'ma_username': username,
+        'ma_password': password,
+        'apikey': apikey
+    }
     url = host + "api?" + urllib.urlencode(params)
 
     # send the test request
