@@ -27,7 +27,7 @@ from random import shuffle
 from requests import Session
 from sickbeard import logger
 from sickbeard.classes import Proper, SearchResult
-from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, user_agents
+from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, UA_POOL
 from sickbeard.db import DBConnection
 from sickbeard.helpers import download_file, getURL, remove_file_failed
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
@@ -43,8 +43,6 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     TORRENT = 'torrent'
 
     def __init__(self, name):
-        shuffle(user_agents)
-
         self.name = name
 
         self.anime_only = False
@@ -59,9 +57,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         self.enable_backlog = False
         self.enable_daily = False
         self.enabled = False
-        self.headers = {
-            'User-Agent': user_agents[0]
-        }
+        self.headers = {'User-Agent': UA_POOL.random}
         self.proper_strings = ['PROPER|REPACK|REAL']
         self.provider_type = None
         self.public = False
