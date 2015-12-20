@@ -28,7 +28,7 @@ from sickrage.helper.exceptions import MultipleShowObjectsException
 from sickrage.show.Show import Show
 
 
-class GenericMedia:
+class GenericMedia(object):
     def __init__(self, indexer_id, media_format='normal'):
         """
         :param indexer_id: The indexer id of the show

@@ -26,7 +26,7 @@ from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowE
 from sickrage.helper.exceptions import MultipleShowObjectsException
 
 
-class Show:
+class Show(object):
     def __init__(self):
         pass
 

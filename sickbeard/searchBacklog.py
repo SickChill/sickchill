@@ -42,7 +42,7 @@ class BacklogSearchScheduler(scheduler.Scheduler):
             return datetime.date.fromordinal(self.action._lastBacklog + self.action.cycleTime)
 
 
-class BacklogSearcher:
+class BacklogSearcher(object):
     def __init__(self):
 
         self._lastBacklog = self._get_lastBacklog()

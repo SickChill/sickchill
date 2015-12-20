@@ -6,7 +6,7 @@ from sickbeard import logger
 from sickrage.helper.exceptions import ex
 
 
-class Event:
+class Event(object):
     def __init__(self, type):
         self._type = type
 

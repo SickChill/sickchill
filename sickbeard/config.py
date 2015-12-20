@@ -607,7 +607,7 @@ def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_
     return my_val
 
 
-class ConfigMigrator:
+class ConfigMigrator(object):
     def __init__(self, config_obj):
         """
         Initializes a config migrator that can take the config from the version indicated in the config

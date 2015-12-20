@@ -26,7 +26,7 @@ from sickbeard import processTV
 from sickrage.helper.encoding import ek
 
 
-class PostProcesser:
+class PostProcesser(object):
     def __init__(self):
         self.lock = threading.Lock()
         self.amActive = False
