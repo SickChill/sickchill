@@ -64,25 +64,25 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         # one of the DB columns.  Therefore, to test properly, we must create some shows that
         # store emails in the old method (legacy method) and then other shows that will use
         # the new method.
-        for show_counter in range(100, 100+num_legacy_shows):
+        for show_counter in range(100, 100 + num_legacy_shows):
             show = TVShow(1, show_counter)
-            show.name = "Show "+str(show_counter)
+            show.name = "Show " + str(show_counter)
             show.episodes = []
             for episode_counter in range(0, num_episodes_per_show):
                 episode = TVEpisode(show, test.SEASON, episode_counter)
-                episode.name = "Episode "+str(episode_counter+1)
+                episode.name = "Episode " + str(episode_counter + 1)
                 episode.quality = "SDTV"
                 show.episodes.append(episode)
             show.saveToDB()
             cls.legacy_shows.append(show)
 
-        for show_counter in range(200, 200+num_shows):
+        for show_counter in range(200, 200 + num_shows):
             show = TVShow(1, show_counter)
-            show.name = "Show "+str(show_counter)
+            show.name = "Show " + str(show_counter)
             show.episodes = []
             for episode_counter in range(0, num_episodes_per_show):
                 episode = TVEpisode(show, test.SEASON, episode_counter)
-                episode.name = "Episode "+str(episode_counter+1)
+                episode.name = "Episode " + str(episode_counter + 1)
                 episode.quality = "SDTV"
                 show.episodes.append(episode)
             show.saveToDB()
@@ -122,15 +122,15 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
             Home.saveShowNotifyList(show=showid, emails=test_emails)
 
         # Now, iterate through all shows using the email list generation routines that are used in the notifier proper
-        shows = self.legacy_shows+self.shows
+        shows = self.legacy_shows + self.shows
         for show in shows:
             for episode in show.episodes:
-                ep_name = ss(episode._format_pattern('%SN - %Sx%0E - %EN - ')+episode.quality)  # pylint: disable=protected-access
+                ep_name = ss(episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality)  # pylint: disable=protected-access
                 show_name = email_notifier._parseEp(ep_name)  # pylint: disable=protected-access
                 recipients = email_notifier._generate_recipients(show_name)  # pylint: disable=protected-access
-                self._debug_spew("- Email Notifications for "+show.name+" (episode: "+episode.name+") will be sent to:")
+                self._debug_spew("- Email Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")
                 for email in recipients:
-                    self._debug_spew("-- "+email.strip())
+                    self._debug_spew("-- " + email.strip())
                 self._debug_spew("\n\r")
 
         return True
@@ -215,12 +215,12 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         # Now, iterate through all shows using the Prowl API generation routines that are used in the notifier proper
         for show in self.shows:
             for episode in show.episodes:
-                ep_name = ss(episode._format_pattern('%SN - %Sx%0E - %EN - ')+episode.quality)  # pylint: disable=protected-access
+                ep_name = ss(episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality)  # pylint: disable=protected-access
                 show_name = prowl_notifier._parse_episode(ep_name)  # pylint: disable=protected-access
                 recipients = prowl_notifier._generate_recipients(show_name)  # pylint: disable=protected-access
-                self._debug_spew("- Prowl Notifications for "+show.name+" (episode: "+episode.name+") will be sent to:")
+                self._debug_spew("- Prowl Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")
                 for api in recipients:
-                    self._debug_spew("-- "+api.strip())
+                    self._debug_spew("-- " + api.strip())
                 self._debug_spew("\n\r")
 
         return True
