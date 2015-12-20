@@ -316,10 +316,7 @@ def isFirstBestMatch(result):
 
     any_qualities, best_qualities = Quality.splitQuality(show_obj.quality)
 
-    if best_qualities:
-        return result.quality in best_qualities
-    else:
-        False
+    return result.quality in best_qualities if best_qualities else False
 
 
 def wantedEpisodes(show, fromDate):
