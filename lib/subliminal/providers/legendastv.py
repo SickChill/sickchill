@@ -98,8 +98,11 @@ class LegendasTvProvider(Provider):
         # logout
         if self.logged_in:
             logger.info('Logging out')
-            r = self.session.get('%s/users/logout' % self.server_url, timeout=TIMEOUT)
-            r.raise_for_status()
+            try:
+                r = self.session.get('%s/users/logout' % self.server_url, timeout=TIMEOUT)
+                r.raise_for_status()
+            except Exception as e:
+                logger.error('Error logging out. Error: %r' % e)
             logger.debug('Logged out')
             self.logged_in = False
 
@@ -178,8 +181,11 @@ class LegendasTvProvider(Provider):
 
         keyword = params.get('title') if params.get('type') == 'movie' else params.get('series')
         logger.info('Searching titles using the keyword %s', keyword)
-        r = self.session.get('%s/legenda/sugestao/%s' % (self.server_url, keyword), timeout=TIMEOUT)
-        r.raise_for_status()
+        try:
+            r = self.session.get('%s/legenda/sugestao/%s' % (self.server_url, keyword), timeout=TIMEOUT)
+            r.raise_for_status()
+        except Exception as e:
+            logger.error('Could not search for %s. Error: %r' % (keyword, e))
 
         # get the shows/movies out of the suggestions.
         # json sample:
@@ -320,8 +326,11 @@ class LegendasTvProvider(Provider):
             # loop over paginated results
             while page_url:
                 # query the server
-                r = self.session.get(page_url, timeout=TIMEOUT)
-                r.raise_for_status()
+                try:
+                    r = self.session.get(page_url, timeout=TIMEOUT)
+                    r.raise_for_status()
+                except Exception as e:
+                    logger.error('Could not access URL: %s. Error: %r' % (page_url, e))
 
                 soup = ParserBeautifulSoup(r.content, ['lxml', 'html.parser'])
                 div_tags = soup.find_all('div', {'class': 'f_left'})
@@ -455,8 +464,11 @@ class LegendasTvProvider(Provider):
         :rtype : ``bytes``
         """
         logger.debug('Downloading subtitle_id %s. Last update on %s' % (subtitle_id, timestamp))
-        r = self.session.get('%s/downloadarquivo/%s' % (self.server_url, subtitle_id), timeout=TIMEOUT)
-        r.raise_for_status()
+        try:
+            r = self.session.get('%s/downloadarquivo/%s' % (self.server_url, subtitle_id), timeout=TIMEOUT)
+            r.raise_for_status()
+        except Exception as e:
+            logger.error('Error downloading subtitle_id %s. Error: %r' % (subtitle_id, e))
 
         return r.content
 
