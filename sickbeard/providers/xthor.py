@@ -63,8 +63,6 @@ class XthorProvider(TorrentProvider):
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
-        return True
-
     def search(self, search_params, age=0, ep_obj=None):
 
         results = []
