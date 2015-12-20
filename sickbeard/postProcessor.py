@@ -349,7 +349,10 @@ class PostProcessor(object):
                     cur_lang = cur_lang.lower()
                     if cur_lang == 'pt-br':
                         cur_lang = 'pt-BR'
-                    cur_extension = cur_lang + ek(os.path.splitext, cur_extension)[1]
+                    if new_base_name:
+                        cur_extension = cur_lang + ek(os.path.splitext, cur_extension)[1]
+                    else:
+                        cur_extension = cur_extension.rpartition('.')[2]
 
             # replace .nfo with .nfo-orig to avoid conflicts
             if cur_extension == 'nfo' and sickbeard.NFO_RENAME is True:
