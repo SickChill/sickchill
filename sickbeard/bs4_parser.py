@@ -21,7 +21,7 @@
 from bs4 import BeautifulSoup
 
 
-class BS4Parser:
+class BS4Parser(object):
     def __init__(self, *args, **kwargs):
         self.soup = BeautifulSoup(*args, **kwargs)
 

@@ -37,7 +37,7 @@ from sickrage.show.History import History
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 
-class ProperFinder:
+class ProperFinder(object):
     def __init__(self):
         self.amActive = False
 

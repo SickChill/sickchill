@@ -35,7 +35,7 @@ from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
 
 
-class ShowUpdater:
+class ShowUpdater(object):
     def __init__(self):
         self.lock = threading.Lock()
         self.amActive = False

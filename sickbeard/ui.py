@@ -111,14 +111,14 @@ class Notification(object):
         return self
 
 
-class ProgressIndicator:
+class ProgressIndicator(object):
 
     def __init__(self, percentComplete=0, currentStatus={'title': ''}):
         self.percentComplete = percentComplete
         self.currentStatus = currentStatus
 
 
-class ProgressIndicators:
+class ProgressIndicators(object):
     _pi = {'massUpdate': [],
            'massAdd': [],
            'dailyUpdate': []
@@ -142,7 +142,7 @@ class ProgressIndicators:
         ProgressIndicators._pi[name].append(indicator)
 
 
-class QueueProgressIndicator:
+class QueueProgressIndicator(object):
     """
     A class used by the UI to show the progress of the queue or a part of it.
     """
@@ -176,7 +176,7 @@ class QueueProgressIndicator:
             return int(float(numFinished) / float(numTotal) * 100)
 
 
-class LoadingTVShow:
+class LoadingTVShow(object):
     def __init__(self, dir):
         self.dir = dir
         self.show = None

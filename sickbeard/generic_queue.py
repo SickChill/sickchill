@@ -24,7 +24,7 @@ import threading
 from sickbeard import logger
 
 
-class QueuePriorities:
+class QueuePriorities(object):
     LOW = 10
     NORMAL = 20
     HIGH = 30

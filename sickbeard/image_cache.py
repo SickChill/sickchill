@@ -33,7 +33,7 @@ from hachoir_core.log import log
 log.use_print = False
 
 
-class ImageCache:
+class ImageCache(object):
     def __init__(self):
         pass
 
