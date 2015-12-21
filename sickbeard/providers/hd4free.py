@@ -41,7 +41,7 @@ class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         if self.username and self.api_key:
             return True
 
-        logger.log('Your authentication credentials for %s are missing, check your config.' % self.name)
+        logger.log('Your authentication credentials for %s are missing, check your config.' % self.name, logger.WARNING)
         return False
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
@@ -49,6 +49,9 @@ class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
+        if not self._check_auth:
+            return results
+            
         search_params = {
             'tv': 'true',
             'username': self.username,
