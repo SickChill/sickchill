@@ -26,14 +26,13 @@ from sickbeard import processTV
 from sickrage.helper.encoding import ek
 
 
-class PostProcesser(object):
+class PostProcessor(object):
     def __init__(self):
         self.lock = threading.Lock()
         self.amActive = False
 
     def run(self, force=False):
         """
-        TODO: Rename class to PostProcessor (classname contains a typo)
         Runs the postprocessor
         :param force: Forces postprocessing run (reserved for future use)
         :return: Returns when done without a return state/code
