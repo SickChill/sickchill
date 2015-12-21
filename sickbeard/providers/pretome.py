@@ -123,7 +123,7 @@ class PretomeProvider(TorrentProvider):
                             torrent_id = link['href'].replace('details.php?id=', '')
 
                             try:
-                                if 'title' in link:
+                                if link.get('title', ''):
                                     title = link['title']
                                 else:
                                     title = link.contents[0]

@@ -123,7 +123,7 @@ class TorrentBytesProvider(TorrentProvider):
                                 continue
 
                             try:
-                                if 'title' in link:
+                                if link.get('title', ''):
                                     title = cells[1].find('a', {'class': 'index'})['title']
                                 else:
                                     title = link.contents[0]
