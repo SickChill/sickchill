@@ -164,8 +164,8 @@ class NewznabProvider(NZBProvider):
             for category in data.caps.categories.findAll('category'):
                 if hasattr(category, 'attrs') and 'TV' in category.attrs['name']:
                     return_categories.append({'id': category.attrs['id'], 'name': category.attrs['name']})
-                for subcat in category.findAll('subcat'):
-                    return_categories.append({'id': subcat.attrs['id'], 'name': subcat.attrs['name']})
+                    for subcat in category.findAll('subcat'):
+                        return_categories.append({'id': subcat.attrs['id'], 'name': subcat.attrs['name']})
 
         data.decompose()
         return True, return_categories, ""
