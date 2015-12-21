@@ -31,7 +31,7 @@ from sickbeard import scene_exceptions
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.common import cpu_presets
 from sickrage.helper.exceptions import AuthException, ex
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BTNProvider(TorrentProvider):

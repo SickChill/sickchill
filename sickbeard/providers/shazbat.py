@@ -20,7 +20,7 @@
 from sickbeard import logger
 from sickbeard import tvcache
 from sickrage.helper.exceptions import AuthException
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class ShazbatProvider(TorrentProvider):

@@ -34,7 +34,7 @@ import sickbeard
 
 from generic_provider_tests import GenericProviderTests
 from sickrage.providers.GenericProvider import GenericProvider
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TorrentProviderTests(GenericProviderTests):

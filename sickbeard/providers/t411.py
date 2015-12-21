@@ -23,7 +23,7 @@ from requests.auth import AuthBase
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class T411Provider(TorrentProvider):

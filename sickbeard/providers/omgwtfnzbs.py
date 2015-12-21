@@ -26,7 +26,7 @@ from sickbeard import classes
 from sickbeard import logger
 from sickbeard import show_name_helpers
 from sickrage.helper.common import try_int
-from sickrage.providers.NZBProvider import NZBProvider
+from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
 class OmgwtfnzbsProvider(NZBProvider):

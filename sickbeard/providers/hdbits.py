@@ -20,7 +20,7 @@ import urllib
 from sickbeard import classes
 from sickbeard import logger, tvcache
 from sickrage.helper.exceptions import AuthException
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 try:
     import json

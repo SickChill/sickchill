@@ -27,7 +27,7 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class GetOutOfLoop(Exception):

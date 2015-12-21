@@ -23,7 +23,7 @@ from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class ThePirateBayProvider(TorrentProvider):
