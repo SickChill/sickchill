@@ -34,7 +34,7 @@ import sickbeard
 
 from generic_provider_tests import GenericProviderTests
 from sickrage.providers.GenericProvider import GenericProvider
-from sickrage.providers.NZBProvider import NZBProvider
+from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
 class NZBProviderTests(GenericProviderTests):
