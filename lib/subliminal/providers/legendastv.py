@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 import logging
 import os
 import re
@@ -82,8 +81,12 @@ class LegendasTvProvider(Provider):
         if self.username is not None and self.password is not None:
             logger.info('Logging in')
             data = {'_method': 'POST', 'data[User][username]': self.username, 'data[User][password]': self.password}
-            r = self.session.post('%s/login' % self.server_url, data, allow_redirects=False, timeout=TIMEOUT)
-            r.raise_for_status()
+            try:
+                r = self.session.post('%s/login' % self.server_url, data, allow_redirects=False, timeout=TIMEOUT)
+                r.raise_for_status()
+            except Exception as e:
+                logger.error('Could not login. Error: %r' % e)
+                return
 
             soup = ParserBeautifulSoup(r.content, ['lxml', 'html.parser'])
             auth_error = soup.find('div', {'class': 'alert-error'}, text=re.compile(u'.*Usuário ou senha inválidos.*'))
@@ -179,13 +182,17 @@ class LegendasTvProvider(Provider):
         :rtype: : ``list`` of ``dict``
         """
 
+        candidates = []
+
         keyword = params.get('title') if params.get('type') == 'movie' else params.get('series')
         logger.info('Searching titles using the keyword %s', keyword)
         try:
             r = self.session.get('%s/legenda/sugestao/%s' % (self.server_url, keyword), timeout=TIMEOUT)
             r.raise_for_status()
+            results = r.json()
         except Exception as e:
             logger.error('Could not search for %s. Error: %r' % (keyword, e))
+            return candidates
 
         # get the shows/movies out of the suggestions.
         # json sample:
@@ -236,8 +243,6 @@ class LegendasTvProvider(Provider):
         #  imdb_id: Sometimes it appears as a number and sometimes as a string prefixed with tt
         #  temporada: Sometimes is ``null`` and season information should be extracted from dsc_nome_br
 
-        results = json.loads(r.text)
-
         # type, title, series, season, year follow guessit properties names
         mapping = dict(
             id='id_filme',
@@ -263,7 +268,6 @@ class LegendasTvProvider(Provider):
         # Regex to extract the IMDB id. e.g.: tt02342
         imdb_re = re.compile(r't{0,2}(\d+)')
 
-        candidates = []
         for result in results:
             entry = result['_source']
             item = {k: entry.get(v) for k, v in mapping.items()}
@@ -331,6 +335,7 @@ class LegendasTvProvider(Provider):
                     r.raise_for_status()
                 except Exception as e:
                     logger.error('Could not access URL: %s. Error: %r' % (page_url, e))
+                    return subtitles
 
                 soup = ParserBeautifulSoup(r.content, ['lxml', 'html.parser'])
                 div_tags = soup.find_all('div', {'class': 'f_left'})
@@ -467,10 +472,10 @@ class LegendasTvProvider(Provider):
         try:
             r = self.session.get('%s/downloadarquivo/%s' % (self.server_url, subtitle_id), timeout=TIMEOUT)
             r.raise_for_status()
+            return r.content
         except Exception as e:
             logger.error('Error downloading subtitle_id %s. Error: %r' % (subtitle_id, e))
-
-        return r.content
+            return
 
     def download_subtitle(self, subtitle):
         subtitle.content = self.extract_subtitle(subtitle.subtitle_id, subtitle.name, subtitle.timestamp)
