@@ -153,14 +153,11 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
     result = ProcessResult()
 
-    result.output += logHelper(u"Processing folder " + dirName, logger.DEBUG)
-
-    result.output += logHelper(u"TV_DOWNLOAD_DIR: " + sickbeard.TV_DOWNLOAD_DIR, logger.DEBUG)
-    postpone = False
     # if they passed us a real dir then assume it's the one we want
     if ek(os.path.isdir, dirName):
         dirName = ek(os.path.realpath, dirName)
-
+        result.output += logHelper(u"Processing folder %s" % dirName, logger.DEBUG)
+    
     # if the client and SickRage are not on the same machine translate the Dir in a network dir
     elif sickbeard.TV_DOWNLOAD_DIR and ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR) \
             and ek(os.path.normpath, dirName) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR):
@@ -180,8 +177,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     SyncFiles = [x for x in files if is_sync_file(x)]
 
     # Don't post process if files are still being synced and option is activated
-    if SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES:
-        postpone = True
+    postpone = SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES
 
     nzbNameOriginal = nzbName
 
