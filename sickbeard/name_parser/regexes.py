@@ -236,6 +236,27 @@ anime_regexes = [
      (?:[ ._]?\[(?P<crc>\w+)\])?
      .*?
      '''),
+     
+     ('anime_Kaerizaki-Fansub',
+     # [Kaerizaki-Fansub]_One_Piece_679_[VOSTFR][HD_1280x720].mp4
+     # [Kaerizaki-Fansub]_One_Piece_681_[VOSTFR][HD_1280x720]_V2.mp4
+     # [Kaerizaki-Fansub] High School DxD New 04 VOSTFR HD (1280x720) V2.mp4
+     # [Kaerizaki-Fansub] One Piece 603 VOSTFR PS VITA (960x544) V2.mp4
+     # [Kaerizaki-Fansub] One Piece 638 (HD 1280x720).mp4
+     # [Kaerizaki-Fansub] One Piece 721 720p.mp4
+     r'''
+     ^\[(?P<release_group>Kaerizaki-Fansub)\][ ._-]*                         # Release Group and separator
+     (?P<series_name>.+?)[ ._-]+                                             # Show_Name and separator
+     (?P<ep_ab_num>(?!\[VOSTFR\]|VOSTFR)\d{1,3})                             # Episode number
+     (-(?P<extra_ab_ep_num>(?!\[VOSTFR\]|VOSTFR)\d{1,3}))?                   # Extra episode number
+     [ ._](\[VOSTFR\]|VOSTFR)?
+     (\[|[ ._])?(?P<extra_info>(
+                         \(?(([SH]D|PS\sVITA)[ ._])?\(?\d{3,4}x\d{3,4}\)?|
+                         \d{3,4}[pP])?)
+                         (\]|\))?                                            # Extra info
+     ([ ._][vV](?P<version>[0-9]))?                                          # Version
+     .*?                                                                     # Separator and EOL
+     '''),
 
     ('anime_ISLAND',
      # [ISLAND]One_Piece_679_[VOSTFR]_[V1]_[8bit]_[720p]_[EB7838FC].mp4
@@ -250,22 +271,6 @@ anime_regexes = [
      \[(?P<extra_info>(\d{3,4}[xp]?\d{0,4})?[\.\w\s-]*)\][ ._-]+              # Extra info
      (\[(?P<crc>\w{8})\])?                                                    # CRC
      .*?
-     '''),
-
-    ('anime_Kaerizaki-Fansub',
-     # [Kaerizaki-Fansub]_One_Piece_679_[VOSTFR][HD_1280x720].mp4
-     # [Kaerizaki-Fansub]_One_Piece_681_[VOSTFR][HD_1280x720]_V2.mp4
-     # [Kaerizaki-Fansub] High School DxD New 04 VOSTFR HD (1280x720) V2.mp4
-     # [Kaerizaki-Fansub] One Piece 603 VOSTFR PS VITA (960x544) V2.mp4
-     r'''
-     ^\[(?P<release_group>Kaerizaki-Fansub?)\][ ._-]*                         # Release Group and separator
-     (?P<series_name>.+?)[ ._-]+                                              # Show_Name and separator
-     (?P<ep_ab_num>((?!\[VOSTFR|VOSTFR))\d{1,3})                              # Episode number
-     (-(?P<extra_ab_ep_num>((?!\[VOSTFR|VOSTFR))\d{1,3}))?                    # Extra episode number
-     ([ ._](\[VOSTFR\]|VOSTFR))?
-     (\[|[ ._])?(?P<extra_info>([SH]D_\d{3,4}x\d{3,4}|((SD|HD|PS\sVITA)[ ._]\(\d{3,4}x\d{3,4}\))))(\])?         # Extra info
-     ([ ._][vV](?P<version>[0-9]))?                                           # Version
-     .*?                                                                      # Separator and EOL
      '''),
 
     ('anime_standard',
