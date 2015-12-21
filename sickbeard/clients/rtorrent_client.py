@@ -22,6 +22,7 @@ import traceback
 import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
+from sickrage.helper.timeout import exit_after
 from rtorrent import RTorrent
 
 
@@ -52,6 +53,7 @@ class rTorrentAPI(GenericClient):
 
         return self.auth
 
+    @exit_after(60)
     def _add_torrent_uri(self, result):
 
         if not self.auth:
