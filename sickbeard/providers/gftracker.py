@@ -18,6 +18,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import requests
 import traceback
 
 from sickbeard import logger
@@ -48,11 +49,9 @@ class GFTrackerProvider(TorrentProvider):
 
         self.url = self.urls['base_url']
 
-        self.cookies = None
-
         self.categories = "0&c26=1&c37=1&c19=1&c47=1&c17=1&c4=1&search="
 
-        self.proper_strings = ['PROPER', 'REPACK']
+        self.proper_strings = ['PROPER', 'REPACK', 'REAL']
 
         self.cache = GFTrackerCache(self)
 
@@ -64,13 +63,15 @@ class GFTrackerProvider(TorrentProvider):
         return True
 
     def login(self):
+        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
+            return True
 
         login_params = {'username': self.username,
                         'password': self.password}
 
+        # Initialize session with get to have cookies
+        initialize = self.get_url(self.url, timeout=30)  # pylint: disable=unused-variable
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
-        # Save cookies from response
-        self.cookies = self.headers.get('Set-Cookie')
 
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
@@ -100,8 +101,6 @@ class GFTrackerProvider(TorrentProvider):
                 searchURL = self.urls['search'] % (self.categories, search_string)
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
-                # Set cookies from response
-                self.headers.update({'Cookie': self.cookies})
                 # Returns top 30 results by default, expandable in user profile
                 data = self.get_url(searchURL)
                 if not data:
@@ -120,7 +119,7 @@ class GFTrackerProvider(TorrentProvider):
                         for result in torrent_rows[1:]:
                             try:
                                 cells = result.findChildren("td")
-                                title = cells[1].find("a").find_next("a").get('title', '') or cells[1].find("a").get('title')
+                                title = cells[1].find("a").find_next("a").get('title') or cells[1].find("a").get('title')
                                 download_url = self.urls['download'] % cells[3].find("a").get('href')
                                 shares = cells[8].get_text().split("/", 1)
                                 seeders = int(shares[0])
@@ -150,7 +149,7 @@ class GFTrackerProvider(TorrentProvider):
 
                             items[mode].append(item)
 
-                except Exception as e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
