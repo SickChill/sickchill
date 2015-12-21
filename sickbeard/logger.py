@@ -85,7 +85,7 @@ class CensoredFormatter(logging.Formatter, object):
         return msg
 
 
-class Logger(object):
+class Logger(object):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
         self.logger = logging.getLogger('sickrage')
 
@@ -100,15 +100,17 @@ class Logger(object):
         self.consoleLogging = False
         self.fileLogging = False
         self.debugLogging = False
+        self.databaseLogging = False
         self.logFile = None
 
         self.submitter_running = False
 
-    def initLogging(self, consoleLogging=False, fileLogging=False, debugLogging=False):
+    def initLogging(self, consoleLogging=False, fileLogging=False, debugLogging=False, databaseLogging=False):
         self.logFile = self.logFile or ek(os.path.join, sickbeard.LOG_DIR, 'sickrage.log')
         self.debugLogging = debugLogging
         self.consoleLogging = consoleLogging
         self.fileLogging = fileLogging
+        self.databaseLogging = databaseLogging
 
         # add a new logging level DB
         logging.addLevelName(DB, 'DB')
@@ -122,15 +124,17 @@ class Logger(object):
                 logger.root = self.logger
                 logger.parent = self.logger
 
+        loglevel = DB if self.databaseLogging else DEBUG if self.debugLogging else INFO
+
         # set minimum logging level allowed for loggers
         for logger in self.loggers:
-            logger.setLevel(DB)
+            logger.setLevel(loglevel)
 
         # console log handler
         if self.consoleLogging:
             console = logging.StreamHandler()
             console.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S', encoding='utf-8'))
-            console.setLevel(INFO if not self.debugLogging else DEBUG)
+            console.setLevel(loglevel)
 
             for logger in self.loggers:
                 logger.addHandler(console)
@@ -139,7 +143,7 @@ class Logger(object):
         if self.fileLogging:
             rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=int(sickbeard.LOG_SIZE * 1048576), backupCount=sickbeard.LOG_NR, encoding='utf-8')
             rfh.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)-8s %(message)s', dateTimeFormat, encoding='utf-8'))
-            rfh.setLevel(INFO if not self.debugLogging else DB)
+            rfh.setLevel(loglevel)
 
             for logger in self.loggers:
                 logger.addHandler(rfh)
