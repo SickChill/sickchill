@@ -37,7 +37,7 @@ from sickbeard import metadata
 from sickbeard import providers
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
-from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
+from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, auto_postprocessor, \
     subtitles, traktChecker, numdict
 from sickbeard import db
 from sickbeard import helpers
@@ -1439,7 +1439,7 @@ def initialize(consoleLogging=True):
                                                     run_delay=update_interval)
 
         # processors
-        autoPostProcesserScheduler = scheduler.Scheduler(autoPostProcesser.PostProcesser(),
+        autoPostProcesserScheduler = scheduler.Scheduler(auto_postprocessor.PostProcessor(),
                                                          cycleTime=datetime.timedelta(
                                                              minutes=AUTOPOSTPROCESSER_FREQUENCY),
                                                          threadName="POSTPROCESSER",
