@@ -34,25 +34,26 @@ class PostProcessor(object):
     def run(self, force=False):
         """
         Runs the postprocessor
-        :param force: Forces postprocessing run (reserved for future use)
+
+        :param force: Forces postprocessing run
         :return: Returns when done without a return state/code
         """
         self.amActive = True
 
         if not ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
-            logger.log(u"Automatic post-processing attempted but dir " + sickbeard.TV_DOWNLOAD_DIR + " doesn't exist",
-                       logger.ERROR)
+            logger.log(u"Automatic post-processing attempted but directory doesn't exist: %s" %
+                       sickbeard.TV_DOWNLOAD_DIR, logger.ERROR)
             self.amActive = False
             return
 
-        if not ek(os.path.isabs, sickbeard.TV_DOWNLOAD_DIR):
-            logger.log(
-                u"Automatic post-processing attempted but dir " + sickbeard.TV_DOWNLOAD_DIR + " is relative (and probably not what you really want to process)",
-                logger.ERROR)
+        if not (force or ek(os.path.isabs, sickbeard.TV_DOWNLOAD_DIR)):
+            logger.log(u"Automatic post-processing attempted but directory is relatve "
+                       u"(and probably not what you really want to process): %s" %
+                       sickbeard.TV_DOWNLOAD_DIR, logger.ERROR)
             self.amActive = False
             return
 
-        processTV.processDir(sickbeard.TV_DOWNLOAD_DIR)
+        processTV.processDir(sickbeard.TV_DOWNLOAD_DIR, force=force)
 
         self.amActive = False
 
