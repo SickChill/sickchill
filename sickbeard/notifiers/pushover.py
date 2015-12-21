@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Marvin Pinto <me@marvinp.ca>
 # Author: Dennis Lutter <lad1337@gmail.com>
 # Author: Aaron Bieber <deftly@gmail.com>
@@ -67,25 +68,27 @@ class PushoverNotifier(object):
         # send the request to pushover
         try:
             if sickbeard.PUSHOVER_SOUND != "default":
-                args = {"token": apiKey,
-                        "user": userKey,
-                        "title": title.encode('utf-8'),
-                        "message": msg.encode('utf-8'),
-                        "timestamp": int(time.time()),
-                        "retry": 60,
-                        "expire": 3600,
-                        "sound": sound,
-                       }
+                args = {
+                    "token": apiKey,
+                    "user": userKey,
+                    "title": title.encode('utf-8'),
+                    "message": msg.encode('utf-8'),
+                    "timestamp": int(time.time()),
+                    "retry": 60,
+                    "expire": 3600,
+                    "sound": sound,
+                }
             else:
                 # sound is default, so don't send it
-                args = {"token": apiKey,
-                        "user": userKey,
-                        "title": title.encode('utf-8'),
-                        "message": msg.encode('utf-8'),
-                        "timestamp": int(time.time()),
-                        "retry": 60,
-                        "expire": 3600,
-                       }
+                args = {
+                    "token": apiKey,
+                    "user": userKey,
+                    "title": title.encode('utf-8'),
+                    "message": msg.encode('utf-8'),
+                    "timestamp": int(time.time()),
+                    "retry": 60,
+                    "expire": 3600,
+                }
 
             if sickbeard.PUSHOVER_DEVICE:
                 args["device"] = sickbeard.PUSHOVER_DEVICE
@@ -135,7 +138,6 @@ class PushoverNotifier(object):
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
         if sickbeard.PUSHOVER_NOTIFY_ONSNATCH:
             self._notifyPushover(title, ep_name)
-
 
     def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
         if sickbeard.PUSHOVER_NOTIFY_ONDOWNLOAD:

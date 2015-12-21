@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Seamus Wassman
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -38,10 +39,11 @@ class GFTrackerProvider(TorrentProvider):
         self.minseed = None
         self.minleech = None
 
-        self.urls = {'base_url': 'https://www.thegft.org',
-                     'login': 'https://www.thegft.org/loginsite.php',
-                     'search': 'https://www.thegft.org/browse.php?view=%s%s',
-                     'download': 'https://www.thegft.org/%s',
+        self.urls = {
+            'base_url': 'https://www.thegft.org',
+            'login': 'https://www.thegft.org/loginsite.php',
+            'search': 'https://www.thegft.org/browse.php?view=%s%s',
+            'download': 'https://www.thegft.org/%s',
         }
 
         self.url = self.urls['base_url']
@@ -96,7 +98,7 @@ class GFTrackerProvider(TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (self.categories, search_string)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
                 # Set cookies from response
                 self.headers.update({'Cookie': self.cookies})
@@ -116,25 +118,19 @@ class GFTrackerProvider(TorrentProvider):
                             continue
 
                         for result in torrent_rows[1:]:
-                            cells = result.findChildren("td")
-                            title = cells[1].find("a").find_next("a")
-                            link = cells[3].find("a")
-                            shares = cells[8].get_text().split("/", 1)
-                            torrent_size = cells[7].get_text().split("/", 1)[0]
-
                             try:
-                                if title.has_key('title'):
-                                    title = title['title']
-                                else:
-                                    title = cells[1].find("a")['title']
-
-                                download_url = self.urls['download'] % (link['href'])
+                                cells = result.findChildren("td")
+                                title = cells[1].find("a").find_next("a").get('title', '') or cells[1].find("a").get('title')
+                                download_url = self.urls['download'] % cells[3].find("a").get('href')
+                                shares = cells[8].get_text().split("/", 1)
                                 seeders = int(shares[0])
                                 leechers = int(shares[1])
 
-                                size = -1
+                                torrent_size = cells[7].get_text().split("/", 1)[0]
                                 if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
-                                    size = self._convertSize(torrent_size.rstrip())
+                                    size = self._convertSize(torrent_size.strip())
+                                else:
+                                    size = -1
 
                             except (AttributeError, TypeError):
                                 continue
@@ -173,16 +169,16 @@ class GFTrackerProvider(TorrentProvider):
         try:
             size = float(size)
             if modifier in 'KB':
-                size = size * 1024
+                size *= 1024 ** 1
             elif modifier in 'MB':
-                size = size * 1024**2
+                size *= 1024 ** 2
             elif modifier in 'GB':
-                size = size * 1024**3
+                size *= 1024 ** 3
             elif modifier in 'TB':
-                size = size * 1024**4
+                size *= 1024 ** 4
         except Exception:
             size = -1
-        return int(size)
+        return long(size)
 
 
 class GFTrackerCache(tvcache.TVCache):

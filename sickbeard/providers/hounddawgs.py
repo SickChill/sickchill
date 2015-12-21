@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -38,7 +39,6 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minleech = None
         self.freeleech = None
         self.ranked = None
-
 
         self.urls = {
             'base_url': 'https://hounddawgs.org/',
@@ -143,7 +143,7 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 if self.freeleech and not freeleech:
                                     continue
                                 title = allAs[2].string
-                                download_url = self.urls['base_url']+allAs[0].attrs['href']
+                                download_url = self.urls['base_url'] + allAs[0].attrs['href']
                                 torrent_size = result.find("td", class_="nobr").find_next_sibling("td").string
                                 if torrent_size:
                                     size = self._convertSize(torrent_size)
@@ -178,7 +178,6 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         return results
 
-
     @staticmethod
     def _convertSize(size):
         size = re.sub(r'[i, ]+', '', size)
@@ -190,8 +189,7 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         modifier = matches.group(2)
 
         mod = {'K': 1, 'M': 2, 'G': 3, 'T': 4}
-        return int(float(size) * 1024**mod[modifier])
-
+        return long(float(size) * 1024 ** mod[modifier])
 
     def seed_ratio(self):
         return self.ratio

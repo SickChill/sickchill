@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -28,12 +29,11 @@ from sickbeard import logger
 from sickrage.helper.common import try_int
 
 # regex to parse time (12/24 hour format)
-time_regex = re.compile(r'(\d{1,2})(([:.](\d{2,2}))? ?([PA][. ]? ?M)|[:.](\d{2,2}))\b', flags=re.IGNORECASE)
-am_regex = re.compile(r'(A[. ]? ?M)', flags=re.IGNORECASE)
-pm_regex = re.compile(r'(P[. ]? ?M)', flags=re.IGNORECASE)
+time_regex = re.compile(r'(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b', re.I)
 
 network_dict = None
 sb_timezone = tz.tzwinlocal() if tz.tzwinlocal else tz.tzlocal()
+
 
 # update the network timezone table
 def update_network_dict():
@@ -62,7 +62,7 @@ def update_network_dict():
 
     queries = []
     for network, timezone in d.iteritems():
-        existing = network_list.has_key(network)
+        existing = network in network_list
         if not existing:
             queries.append(['INSERT OR IGNORE INTO network_timezones VALUES (?,?);', [network, timezone]])
         elif network_list[network] is not timezone:
@@ -105,18 +105,17 @@ def get_network_timezone(network, _network_dict):
     Get a timezone of a network from a given network dict
 
     :param network: network to look up (needle)
-    :param network_dict: dict to look up in (haystack)
+    :param _network_dict: dict to look up in (haystack)
     :return:
     """
-    if network is None:
-        return sb_timezone
 
-    try:
-        n_t = tz.gettz(_network_dict[network])
-    except Exception:
-        return sb_timezone
+    # Get the name of the networks timezone from _network_dict
+    network_tz_name = _network_dict[network] if network in _network_dict else None
 
-    return n_t if n_t is not None else sb_timezone
+    if network_tz_name is None:
+        logger.log(u'Network was not found in the network time zones: %s' % network, logger.ERROR)
+
+    return tz.gettz(network_tz_name) if network_tz_name else sb_timezone
 
 
 # parse date and time string into local time
@@ -133,47 +132,32 @@ def parse_date_time(d, t, network):
     if not network_dict:
         load_network_dict()
 
-    mo = time_regex.search(t)
-    if mo is not None and len(mo.groups()) >= 5:
-        if mo.group(5) is not None:
-            try:
-                hr = try_int(mo.group(1))
-                m = try_int(mo.group(4))
-                ap = mo.group(5)
-                # convert am/pm to 24 hour clock
-                if ap is not None:
-                    if pm_regex.search(ap) is not None and hr != 12:
-                        hr += 12
-                    elif am_regex.search(ap) is not None and hr == 12:
-                        hr -= 12
-            except Exception:
-                hr = 0
-                m = 0
-        else:
-            try:
-                hr = try_int(mo.group(1))
-                m = try_int(mo.group(6))
-            except Exception:
-                hr = 0
-                m = 0
-    else:
-        hr = 0
-        m = 0
-    if hr < 0 or hr > 23 or m < 0 or m > 59:
-        hr = 0
-        m = 0
+    parsed_time = time_regex.search(t)
+    network_tz = get_network_timezone(network, network_dict)
 
-    te = datetime.datetime.fromordinal(try_int(d) or 1)
-    try:
-        foreign_timezone = get_network_timezone(network, network_dict)
-        return datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=foreign_timezone)
-    except Exception:
-        return datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=sb_timezone)
+    hr = 0
+    m = 0
+
+    if parsed_time:
+        hr = try_int(parsed_time.group('hour'))
+        m = try_int(parsed_time.group('minute'))
+
+        ap = parsed_time.group('meridiem')
+        ap = ap.lower() if ap else ''
+
+        if ap == 'a' and hr == 12:
+            hr -= 12
+        elif ap == 'p' and hr != 12:
+            hr += 12
+
+        if not (0 <= hr <= 23 and 0 <= m <= 59):
+            hr = 0
+            m = 0
+
+    result = datetime.datetime.fromordinal(max(try_int(d), 1))
+
+    return result.replace(hour=hr, minute=m, tzinfo=network_tz)
 
 
-def test_timeformat(t):
-    mo = time_regex.search(t)
-    if mo is None or len(mo.groups()) < 2:
-        return False
-    else:
-        return True
+def test_timeformat(time_string):
+    return time_regex.search(time_string) is not None

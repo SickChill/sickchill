@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: The SickRage Dev Team
 # URL: https://sickrage.github.io
 # Repository: https://github.com/SickRage/SickRage.git
@@ -19,7 +20,8 @@
 
 from bs4 import BeautifulSoup
 
-class BS4Parser:
+
+class BS4Parser(object):
     def __init__(self, *args, **kwargs):
         self.soup = BeautifulSoup(*args, **kwargs)
 

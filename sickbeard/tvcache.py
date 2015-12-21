@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -200,7 +201,6 @@ class TVCache(object):
 
         return datetime.datetime.fromtimestamp(lastTime)
 
-
     def setLastUpdate(self, toDate=None):
         if not toDate:
             toDate = datetime.datetime.today()
@@ -288,7 +288,6 @@ class TVCache(object):
                 "INSERT OR IGNORE INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality, release_group, version) VALUES (?,?,?,?,?,?,?,?,?)",
                 [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality, release_group, version]]
 
-
     def searchCache(self, episode, manualSearch=False, downCurQuality=False):
         neededEps = self.findNeededEpisodes(episode, manualSearch, downCurQuality)
         return neededEps[episode] if episode in neededEps else []
@@ -302,7 +301,6 @@ class TVCache(object):
 
         propers_results = myDB.select(sql)
         return [x for x in propers_results if x['indexerid']]
-
 
     def findNeededEpisodes(self, episode, manualSearch=False, downCurQuality=False):
         neededEps = {}

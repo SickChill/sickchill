@@ -39,6 +39,7 @@ import ast
 from sickbeard import logger, common, db
 from sickrage.helper.encoding import ss
 
+
 class ProwlNotifier(object):
     def test_notify(self, prowl_api, prowl_priority):
         return self._send_prowl(prowl_api, prowl_priority, event="Test", message="Testing Prowl settings from SickRage", force=True)
@@ -53,7 +54,7 @@ class ProwlNotifier(object):
             else:
                 for api in recipients:
                     self._send_prowl(prowl_api=api, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_SNATCH],
-                                     message=ep_name+" :: "+time.strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET))
+                                     message=ep_name + " :: " + time.strftime(sickbeard.DATE_PRESET + " " + sickbeard.TIME_PRESET))
 
     def notify_download(self, ep_name):
         ep_name = ss(ep_name)
@@ -65,7 +66,7 @@ class ProwlNotifier(object):
             else:
                 for api in recipients:
                     self._send_prowl(prowl_api=api, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_DOWNLOAD],
-                                     message=ep_name+" :: "+time.strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET))
+                                     message=ep_name + " :: " + time.strftime(sickbeard.DATE_PRESET + " " + sickbeard.TIME_PRESET))
 
     def notify_subtitle_download(self, ep_name, lang):
         ep_name = ss(ep_name)
@@ -77,7 +78,7 @@ class ProwlNotifier(object):
             else:
                 for api in recipients:
                     self._send_prowl(prowl_api=api, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
-                                     message=ep_name+" ["+lang+"] :: "+time.strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET))
+                                     message=ep_name + " [" + lang + "] :: " + time.strftime(sickbeard.DATE_PRESET + " " + sickbeard.TIME_PRESET))
 
     def notify_git_update(self, new_version="??"):
         if sickbeard.USE_PROWL:

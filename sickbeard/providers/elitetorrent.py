@@ -149,7 +149,6 @@ class elitetorrentProvider(TorrentProvider):
 
         return results
 
-
     @staticmethod
     def _processTitle(title):
 
@@ -163,7 +162,7 @@ class elitetorrentProvider(TorrentProvider):
         title = title.replace('(calidad regular)', 'DVDrip x264')
         title = title.replace('(calidad media)', 'DVDrip x264')
 
-        #Language, all results from this provider have spanish audio, we append it to title (avoid to download undesired torrents)
+        # Language, all results from this provider have spanish audio, we append it to title (avoid to download undesired torrents)
         title += ' SPANISH AUDIO'
         title += '-ELITETORRENT'
 

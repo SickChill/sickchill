@@ -1,3 +1,4 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -48,7 +49,7 @@ class TVChaosUKProvider(TorrentProvider):
 
         self.search_params = {
             'do': 'search',
-            'keywords':  '',
+            'keywords': '',
             'search_type': 't_name',
             'category': 0,
             'include_dead_torrents': 'no',
@@ -173,7 +174,6 @@ class TVChaosUKProvider(TorrentProvider):
                             if show_name_first_word and not title.startswith(show_name_first_word.group()) and show_name_first_word in title:
                                 title = re.match(r'.*(' + show_name_first_word + '.*)', title).group(1)
 
-
                             # Change title from Series to Season, or we can't parse
                             if 'Series' not in self.search_params['keywords']:
                                 title = re.sub(r'(?i)series', 'Season', title)
@@ -203,23 +203,22 @@ class TVChaosUKProvider(TorrentProvider):
     def seed_ratio(self):
         return self.ratio
 
-
     def _convertSize(self, sizeString):
         size = sizeString[:-2].strip()
         modifier = sizeString[-2:].upper()
         try:
             size = float(size)
             if modifier in 'KB':
-                size = size * 1024
+                size *= 1024 ** 1
             elif modifier in 'MB':
-                size = size * 1024**2
+                size *= 1024 ** 2
             elif modifier in 'GB':
-                size = size * 1024**3
+                size *= 1024 ** 3
             elif modifier in 'TB':
-                size = size * 1024**4
+                size *= 1024 ** 4
         except Exception:
             size = -1
-        return int(size)
+        return long(size)
 
 
 class TVChaosUKCache(tvcache.TVCache):

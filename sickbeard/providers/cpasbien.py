@@ -83,7 +83,7 @@ class CpasbienProvider(TorrentProvider):
 
                         for torrent in resultdiv:
                             try:
-                                title = (torrent.findAll(attrs={'class': ["titre"]})[0].text).replace("HDTV", "HDTV x264-CPasBien")
+                                title = torrent.findAll(attrs={'class': ["titre"]})[0].text.replace("HDTV", "HDTV x264-CPasBien")
                                 detail_url = torrent.find("a")['href']
                                 tmp = detail_url.split('/')[-1].replace('.html', '.torrent')
                                 download_url = (self.url + '/telechargement/%s' % tmp)
@@ -125,23 +125,22 @@ class CpasbienProvider(TorrentProvider):
     def seed_ratio(self):
         return self.ratio
 
-
     def _convertSize(self, sizeString):
         size = sizeString[:-2].strip()
         modifier = sizeString[-2:].upper()
         try:
             size = float(size)
             if modifier in 'KO':
-                size = size * 1024
+                size *= 1024 ** 1
             elif modifier in 'MO':
-                size = size * 1024 ** 2
+                size *= 1024 ** 2
             elif modifier in 'GO':
-                size = size * 1024 ** 3
+                size *= 1024 ** 3
             elif modifier in 'TO':
-                size = size * 1024 ** 4
+                size *= 1024 ** 4
         except Exception:
             size = -1
-        return int(size)
+        return long(size)
 
 
 class CpasbienCache(tvcache.TVCache):

@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: duramato <matigonkas@outlook.com>
 # Author: miigotu
 # URL: https://github.com/SickRage/sickrage
@@ -35,7 +36,7 @@ class ExtraTorrentProvider(TorrentProvider):
         self.urls = {
             'index': 'http://extratorrent.cc',
             'rss': 'http://extratorrent.cc/rss.xml',
-            }
+        }
 
         self.url = self.urls['index']
 
@@ -87,7 +88,7 @@ class ExtraTorrentProvider(TorrentProvider):
 
                     for item in entries:
                         title = item['title'].decode('utf-8')
-                       # info_hash = item['info_hash']
+                        # info_hash = item['info_hash']
                         size = int(item['size'])
                         seeders = try_int(item['seeders'], 0)
                         leechers = try_int(item['leechers'], 0)

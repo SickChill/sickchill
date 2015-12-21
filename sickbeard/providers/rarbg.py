@@ -57,18 +57,20 @@ class RarbgProvider(TorrentProvider):
 
         self.url = self.urls['listing']
 
-        self.urlOptions = {'categories': '&category={categories}',
-                           'seeders': '&min_seeders={min_seeders}',
-                           'leechers': '&min_leechers={min_leechers}',
-                           'sorting' : '&sort={sorting}',
-                           'limit': '&limit={limit}',
-                           'format': '&format={format}',
-                           'ranked': '&ranked={ranked}',
-                           'token': '&token={token}'}
+        self.urlOptions = {
+            'categories': '&category={categories}',
+            'seeders': '&min_seeders={min_seeders}',
+            'leechers': '&min_leechers={min_leechers}',
+            'sorting': '&sort={sorting}',
+            'limit': '&limit={limit}',
+            'format': '&format={format}',
+            'ranked': '&ranked={ranked}',
+            'token': '&token={token}'
+        }
 
         self.defaultOptions = self.urlOptions['categories'].format(categories='tv') + \
-                                self.urlOptions['limit'].format(limit='100') + \
-                                self.urlOptions['format'].format(format='json_extended')
+                              self.urlOptions['limit'].format(limit='100') + \
+                              self.urlOptions['format'].format(format='json_extended')
 
         self.proper_strings = ['{{PROPER|REPACK}}']
 
@@ -153,7 +155,7 @@ class RarbgProvider(TorrentProvider):
                     while retry > 0:
                         time_out = 0
                         while (datetime.datetime.now() < self.next_request) and time_out <= 15:
-                            time_out = time_out + 1
+                            time_out += 1
                             time.sleep(1)
 
                         data = self.get_url(searchURL + self.urlOptions['token'].format(token=self.token))
@@ -174,7 +176,7 @@ class RarbgProvider(TorrentProvider):
                             return results
                         if re.search('Too many requests per minute. Please try again later!', data):
                             logger.log(u"Too many requests per minute", logger.WARNING)
-                            retry = retry - 1
+                            retry -= 1
                             time.sleep(10)
                             continue
                         if re.search('Cant find search_tvdb in database. Are you sure this imdb exists?', data):
@@ -182,7 +184,7 @@ class RarbgProvider(TorrentProvider):
                             raise GetOutOfLoop
                         if re.search('Invalid token. Use get_token for a new one!', data):
                             logger.log(u"Invalid token, retrieving new token", logger.DEBUG)
-                            retry = retry - 1
+                            retry -= 1
                             self.token = None
                             self.tokenExpireDate = None
                             if not self.login():

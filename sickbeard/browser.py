@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io/
 # Git: https://github.com/SickRage/SickRage.git
@@ -62,7 +63,8 @@ def getFileList(path, includeFiles):
             'name': filename,
             'path': fullFilename
         }
-        if not isDir: entry['isFile'] = True
+        if not isDir:
+            entry['isFile'] = True
         fileList.append(entry)
 
     return fileList

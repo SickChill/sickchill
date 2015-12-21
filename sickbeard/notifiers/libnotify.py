@@ -25,6 +25,7 @@ import sickbeard
 from sickbeard import logger, common
 from sickrage.helper.encoding import ek
 
+
 def diagnose():
     """
     Check the environment for reasons libnotify isn't working.  Return a

@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: moparisthebest <admin@moparisthebest.com>
 #
 # This file is part of Sick Beard.
@@ -79,7 +80,7 @@ class BinSearchCache(tvcache.TVCache):
         if url:
             url = url.replace('&amp;', '&')
 
-        return (title, url)
+        return title, url
 
     def updateCache(self):
         # check if we should update

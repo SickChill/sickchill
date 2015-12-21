@@ -108,44 +108,45 @@ def remove_non_release_groups(name):
     # select release_name from tv_episodes WHERE LENGTH(release_name);
     # [eSc], [SSG], [GWC] are valid release groups for non-anime
     removeWordsList = {
-        r'\[rartv\]$':       'searchre',
-        r'\[rarbg\]$':       'searchre',
-        r'\[eztv\]$':        'searchre',
-        r'\[ettv\]$':        'searchre',
-        r'\[cttv\]$':        'searchre',
-        r'\[vtv\]$':         'searchre',
-        r'\[EtHD\]$':        'searchre',
-        r'\[GloDLS\]$':      'searchre',
-        r'\[silv4\]$':       'searchre',
-        r'\[Seedbox\]$':     'searchre',
-        r'\[PublicHD\]$':    'searchre',
+        r'\[rartv\]$': 'searchre',
+        r'\[rarbg\]$': 'searchre',
+        r'\[eztv\]$': 'searchre',
+        r'\[ettv\]$': 'searchre',
+        r'\[cttv\]$': 'searchre',
+        r'\[vtv\]$': 'searchre',
+        r'\[EtHD\]$': 'searchre',
+        r'\[GloDLS\]$': 'searchre',
+        r'\[silv4\]$': 'searchre',
+        r'\[Seedbox\]$': 'searchre',
+        r'\[PublicHD\]$': 'searchre',
         r'\[AndroidTwoU\]$': 'searchre',
-        r'\[brassetv]\]$':   'searchre',
-        r'\.\[BT\]$':        'searchre',
-        r' \[1044\]$':       'searchre',
-        r'\.RiPSaLoT$':      'searchre',
-        r'\.GiuseppeTnT$':   'searchre',
-        r'\.Renc$':          'searchre',
-        r'-NZBGEEK$':        'searchre',
-        r'-Siklopentan$':    'searchre',
-        r'-Chamele0n$':      'searchre',
-        r'-Obfuscated$':     'searchre',
-        r'-\[SpastikusTV\]$':                 'searchre',
-        r'-RP$':                             'searchre',
-        r'-20-40$':                          'searchre',
-        r'\.\[www\.usabit\.com\]$':          'searchre',
-        r'^\[www\.Cpasbien\.pe\] ':          'searchre',
-        r'^\[www\.Cpasbien\.com\] ':         'searchre',
-        r'^\[ www\.Cpasbien\.pw \] ':        'searchre',
-        r'^\.www\.Cpasbien\.pw':            'searchre',
-        r'^\[www\.newpct1\.com\]':            'searchre',
-        r'^\[ www\.Cpasbien\.com \] ':       'searchre',
-        r'- \{ www\.SceneTime\.com \}$':     'searchre',
-        r'^\{ www\.SceneTime\.com \} - ':    'searchre',
-        r'^\]\.\[www\.tensiontorrent.com\] - ':      'searchre',
-        r'^\]\.\[ www\.tensiontorrent.com \] - ':    'searchre',
-        r'- \[ www\.torrentday\.com \]$':            'searchre',
-        r'^\[ www\.TorrentDay\.com \] - ':           'searchre',
+        r'\[brassetv]\]$': 'searchre',
+        r'\.\[BT\]$': 'searchre',
+        r' \[1044\]$': 'searchre',
+        r'\.RiPSaLoT$': 'searchre',
+        r'\.GiuseppeTnT$': 'searchre',
+        r'\.Renc$': 'searchre',
+        r'\.gz$': 'searchre',
+        r'-NZBGEEK$': 'searchre',
+        r'-Siklopentan$': 'searchre',
+        r'-Chamele0n$': 'searchre',
+        r'-Obfuscated$': 'searchre',
+        r'-\[SpastikusTV\]$': 'searchre',
+        r'-RP$': 'searchre',
+        r'-20-40$': 'searchre',
+        r'\.\[www\.usabit\.com\]$': 'searchre',
+        r'^\[www\.Cpasbien\.pe\] ': 'searchre',
+        r'^\[www\.Cpasbien\.com\] ': 'searchre',
+        r'^\[ www\.Cpasbien\.pw \] ': 'searchre',
+        r'^\.www\.Cpasbien\.pw': 'searchre',
+        r'^\[www\.newpct1\.com\]': 'searchre',
+        r'^\[ www\.Cpasbien\.com \] ': 'searchre',
+        r'- \{ www\.SceneTime\.com \}$': 'searchre',
+        r'^\{ www\.SceneTime\.com \} - ': 'searchre',
+        r'^\]\.\[www\.tensiontorrent.com\] - ': 'searchre',
+        r'^\]\.\[ www\.tensiontorrent.com \] - ': 'searchre',
+        r'- \[ www\.torrentday\.com \]$': 'searchre',
+        r'^\[ www\.TorrentDay\.com \] - ': 'searchre',
         r'\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
     }
 
@@ -1741,7 +1742,7 @@ def getTVDBFromID(indexer_id, indexer):
 
         except SyntaxError:
             pass
-        
+
         return tvdb_id
     elif indexer == 'ZAP2IT':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it=%s" % indexer_id
@@ -1761,7 +1762,7 @@ def getTVDBFromID(indexer_id, indexer):
         url = "http://api.tvmaze.com/shows/%s" % indexer_id
         data = getURL(url, session=session, json=True)
         if data is None:
-            return tvdb_id        
+            return tvdb_id
         tvdb_id = data['externals']['thetvdb']
         return tvdb_id
     else:

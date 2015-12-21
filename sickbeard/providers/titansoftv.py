@@ -66,7 +66,7 @@ class TitansOfTVProvider(TorrentProvider):
 
         searchURL = self.url + '?' + urllib.urlencode(params)
         logger.log(u"Search string: %s " % search_params, logger.DEBUG)
-        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+        logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
         parsedJSON = self.get_url(searchURL, json=True)  # do search
 
@@ -109,9 +109,10 @@ class TitansOfTVProvider(TorrentProvider):
         return results
 
     def _get_season_search_strings(self, ep_obj):
-        search_params = {'limit': 100}
-
-        search_params['season'] = 'Season %02d' % ep_obj.scene_season
+        search_params = {
+            'limit': 100,
+            'season': 'Season %02d' % ep_obj.scene_season
+        }
 
         if ep_obj.show.indexer == 1:
             search_params['series_id'] = ep_obj.show.indexerid
@@ -127,10 +128,12 @@ class TitansOfTVProvider(TorrentProvider):
         if not ep_obj:
             return [{}]
 
-        search_params = {'limit': 100}
+        search_params = {
+            'limit': 100,
+            'episode': 'S%02dE%02d' % (ep_obj.scene_season, ep_obj.scene_episode)
+        }
 
         # Do a general name search for the episode, formatted like SXXEYY
-        search_params['episode'] = 'S%02dE%02d' % (ep_obj.scene_season, ep_obj.scene_episode)
 
         if ep_obj.show.indexer == 1:
             search_params['series_id'] = ep_obj.show.indexerid

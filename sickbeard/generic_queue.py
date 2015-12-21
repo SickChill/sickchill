@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -23,7 +24,7 @@ import threading
 from sickbeard import logger
 
 
-class QueuePriorities:
+class QueuePriorities(object):
     LOW = 10
     NORMAL = 20
     HIGH = 30
@@ -108,6 +109,7 @@ class GenericQueue(object):
                     self.currentItem.start()
 
         self.amActive = False
+
 
 class QueueItem(threading.Thread):
     def __init__(self, name, action_id=0):

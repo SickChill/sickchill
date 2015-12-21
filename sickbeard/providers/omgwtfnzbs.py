@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Jordon Smith <smith@jordon.me.uk>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -67,7 +68,7 @@ class OmgwtfnzbsProvider(NZBProvider):
                     return True
 
                 else:
-                    logger.log(u"Unknown error: %s"  % description_text, logger.DEBUG)
+                    logger.log(u"Unknown error: %s" % description_text, logger.DEBUG)
                     return False
 
             return True
@@ -79,7 +80,7 @@ class OmgwtfnzbsProvider(NZBProvider):
         return [x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
     def _get_title_and_url(self, item):
-        return (item['release'], item['getnzb'])
+        return item['release'], item['getnzb']
 
     def _get_size(self, item):
         return try_int(item['sizebytes'], -1)
@@ -100,7 +101,7 @@ class OmgwtfnzbsProvider(NZBProvider):
 
         searchURL = 'https://api.omgwtfnzbs.org/json/?' + urllib.urlencode(params)
         logger.log(u"Search string: %s" % params, logger.DEBUG)
-        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+        logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
         parsedJSON = self.get_url(searchURL, json=True)
         if not parsedJSON:
@@ -161,7 +162,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
         if url:
             url = url.replace('&amp;', '&')
 
-        return (title, url)
+        return title, url
 
     def _getRSSData(self):
         params = {'user': provider.username,

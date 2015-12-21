@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -118,7 +119,7 @@ class FreshOnTVProvider(TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (freeleech, search_string)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 init_html = self.get_url(searchURL)
                 max_page_number = 0
 
@@ -154,8 +155,7 @@ class FreshOnTVProvider(TorrentProvider):
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
                     continue
 
-                data_response_list = []
-                data_response_list.append(init_html)
+                data_response_list = [init_html]
 
                 # Freshon starts counting pages from zero, even though it displays numbers from 1
                 if max_page_number > 1:

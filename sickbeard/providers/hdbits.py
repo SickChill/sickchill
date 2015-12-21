@@ -1,3 +1,4 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -79,7 +80,7 @@ class HDBitsProvider(TorrentProvider):
         # FIXME
         results = []
 
-        logger.log(u"Search string: %s" %  search_params, logger.DEBUG)
+        logger.log(u"Search string: %s" % search_params, logger.DEBUG)
 
         self._check_auth()
 

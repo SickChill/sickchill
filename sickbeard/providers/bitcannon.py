@@ -136,6 +136,7 @@ class BitCannonProvider(TorrentProvider):
 
         return True
 
+
 class BitCannonCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 

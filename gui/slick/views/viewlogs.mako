@@ -26,6 +26,7 @@ pre {
         levels.sort(lambda x, y: cmp(reverseNames[x], reverseNames[y]))
         if not sickbeard.DEBUG:
             levels.remove('DEBUG')
+        if not sickbeard.DBDEBUG:
             levels.remove('DB')
     %>
     % for level in levels:

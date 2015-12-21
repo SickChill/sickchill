@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Mr_Orange <mr_orange@hotmail.it>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -17,7 +18,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import posixpath # Must use posixpath
+import posixpath  # Must use posixpath
 from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
@@ -80,7 +81,7 @@ class ThePirateBayProvider(TorrentProvider):
 
                 searchURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
                 if self.custom_url:
-                    searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
+                    searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/'))  # Must use posixpath
 
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 data = self.get_url(searchURL)
@@ -129,14 +130,14 @@ class ThePirateBayProvider(TorrentProvider):
         size, modifier = size.split('&nbsp;')
         size = float(size)
         if modifier in 'KiB':
-            size = size * 1024
+            size *= 1024 ** 1
         elif modifier in 'MiB':
-            size = size * 1024**2
+            size *= 1024 ** 2
         elif modifier in 'GiB':
-            size = size * 1024**3
+            size *= 1024 ** 3
         elif modifier in 'TiB':
-            size = size * 1024**4
-        return size
+            size *= 1024 ** 4
+        return long(size)
 
     def seed_ratio(self):
         return self.ratio

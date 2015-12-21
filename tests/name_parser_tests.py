@@ -545,7 +545,7 @@ class BasicFailedTests(test.SickbeardTestDBCase):
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        SUITE = unittest.TestLoader().loadTestsFromName('name_parser_tests.BasicTests.test_'+sys.argv[1])
+        SUITE = unittest.TestLoader().loadTestsFromName('name_parser_tests.BasicTests.test_' + sys.argv[1])
         unittest.TextTestRunner(verbosity=2).run(SUITE)
     else:
         SUITE = unittest.TestLoader().loadTestsFromTestCase(BasicTests)

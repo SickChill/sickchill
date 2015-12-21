@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -29,7 +30,7 @@ from sickrage.show.Show import Show
 from sickrage.helper.exceptions import MultipleShowObjectsException
 
 
-class DailySearcher():
+class DailySearcher(object):
     def __init__(self):
         self.lock = threading.Lock()
         self.amActive = False

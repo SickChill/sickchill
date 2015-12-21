@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: duramato <matigonkas@outlook.com>
 # URL: https://github.com/SickRage/sickrage
 #
@@ -31,7 +32,7 @@ class TORRENTPROJECTProvider(TorrentProvider):
 
         self.public = True
         self.ratio = 0
-        self.urls = {'api': u'https://torrentproject.se/',}
+        self.urls = {'api': u'https://torrentproject.se/', }
         self.url = self.urls['api']
         self.headers.update({'User-Agent': USER_AGENT})
         self.minseed = None
@@ -49,10 +50,9 @@ class TORRENTPROJECTProvider(TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-
                 searchURL = self.urls['api'] + "?s=%s&out=json&filter=2101&num=150" % quote_plus(search_string.encode('utf-8'))
 
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 torrents = self.get_url(searchURL, json=True)
                 if not (torrents and "total_found" in torrents and int(torrents["total_found"]) > 0):
                     logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)

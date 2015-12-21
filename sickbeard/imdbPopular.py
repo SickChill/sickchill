@@ -1,3 +1,4 @@
+# coding=utf-8
 import re
 import os
 import requests
@@ -7,6 +8,7 @@ from datetime import date
 import sickbeard
 from sickbeard import helpers
 from sickrage.helper.encoding import ek
+
 
 class imdbPopular(object):
     def __init__(self):
@@ -53,7 +55,7 @@ class imdbPopular(object):
             if td:
                 show['name'] = td.find("a").contents[0]
                 show['imdb_url'] = "http://www.imdb.com" + td.find("a")["href"]
-                show['imdb_tt'] =  show['imdb_url'][-10:][0:9]
+                show['imdb_tt'] = show['imdb_url'][-10:][0:9]
                 show['year'] = td.find("span", {"class": "year_type"}).contents[0].split(" ")[0][1:]
 
                 rating_all = td.find("div", {"class": "user_rating"})

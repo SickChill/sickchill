@@ -32,13 +32,11 @@ class NMA_Notifier(object):
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._sendNMA(nma_api=None, nma_priority=None, event=title, message=update_text + new_version)
 
-
     def notify_login(self, ipaddress=""):
         if sickbeard.USE_NMA:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._sendNMA(nma_api=None, nma_priority=None, event=title, message=update_text.format(ipaddress))
-
 
     def _sendNMA(self, nma_api=None, nma_priority=None, event=None, message=None, force=False):
 

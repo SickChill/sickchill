@@ -1,3 +1,4 @@
+# coding=utf-8
 import re
 import urlparse
 from feedparser.api import parse
@@ -5,6 +6,7 @@ from feedparser.util import FeedParserDict
 
 from sickbeard import logger
 from sickrage.helper.exceptions import ex
+
 
 def getFeed(url, request_headers=None, handlers=None):
     parsed = list(urlparse.urlparse(url))

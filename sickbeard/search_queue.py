@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -37,6 +38,7 @@ MANUAL_SEARCH = 40
 
 MANUAL_SEARCH_HISTORY = []
 MANUAL_SEARCH_HISTORY_SIZE = 100
+
 
 class SearchQueue(generic_queue.GenericQueue):
     def __init__(self):
@@ -109,7 +111,6 @@ class SearchQueue(generic_queue.GenericQueue):
                 length['failed'] += 1
         return length
 
-
     def add_item(self, item):
         if isinstance(item, DailySearchQueueItem):
             # daily searches
@@ -122,6 +123,7 @@ class SearchQueue(generic_queue.GenericQueue):
             generic_queue.GenericQueue.add_item(self, item)
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
+
 
 class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self):
@@ -193,7 +195,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 
-        ### Keep a list with the 100 last executed searches
+        # ## Keep a list with the 100 last executed searches
         fifo(MANUAL_SEARCH_HISTORY, self, MANUAL_SEARCH_HISTORY_SIZE)
 
         if self.success is None:
@@ -283,7 +285,7 @@ class FailedQueueItem(generic_queue.QueueItem):
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 
-        ### Keep a list with the 100 last executed searches
+        # ## Keep a list with the 100 last executed searches
         fifo(MANUAL_SEARCH_HISTORY, self, MANUAL_SEARCH_HISTORY_SIZE)
 
         if self.success is None:
@@ -291,7 +293,8 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         self.finish()
 
-def fifo(myList, item, maxSize = 100):
+
+def fifo(myList, item, maxSize=100):
     if len(myList) >= maxSize:
         myList.pop(0)
     myList.append(item)

@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -72,11 +73,11 @@ class CensoredFormatter(logging.Formatter, object):
         msg = super(CensoredFormatter, self).format(record)
 
         if not isinstance(msg, unicode):
-            msg = msg.decode(self.encoding, 'replace') # Convert to unicode
+            msg = msg.decode(self.encoding, 'replace')  # Convert to unicode
 
         for _, v in censoredItems.iteritems():
             if not isinstance(v, unicode):
-                v = v.decode(self.encoding, 'replace') # Convert to unicode
+                v = v.decode(self.encoding, 'replace')  # Convert to unicode
             msg = msg.replace(v, len(v) * u'*')
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
@@ -84,7 +85,7 @@ class CensoredFormatter(logging.Formatter, object):
         return msg
 
 
-class Logger(object):
+class Logger(object):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
         self.logger = logging.getLogger('sickrage')
 
@@ -92,21 +93,24 @@ class Logger(object):
             logging.getLogger('sickrage'),
             logging.getLogger('tornado.general'),
             logging.getLogger('tornado.application'),
+            # logging.getLogger('subliminal'),
             # logging.getLogger('tornado.access'),
         ]
 
         self.consoleLogging = False
         self.fileLogging = False
         self.debugLogging = False
+        self.databaseLogging = False
         self.logFile = None
 
         self.submitter_running = False
 
-    def initLogging(self, consoleLogging=False, fileLogging=False, debugLogging=False):
+    def initLogging(self, consoleLogging=False, fileLogging=False, debugLogging=False, databaseLogging=False):
         self.logFile = self.logFile or ek(os.path.join, sickbeard.LOG_DIR, 'sickrage.log')
         self.debugLogging = debugLogging
         self.consoleLogging = consoleLogging
         self.fileLogging = fileLogging
+        self.databaseLogging = databaseLogging
 
         # add a new logging level DB
         logging.addLevelName(DB, 'DB')
@@ -120,24 +124,26 @@ class Logger(object):
                 logger.root = self.logger
                 logger.parent = self.logger
 
+        loglevel = DB if self.databaseLogging else DEBUG if self.debugLogging else INFO
+
         # set minimum logging level allowed for loggers
         for logger in self.loggers:
-            logger.setLevel(DB)
+            logger.setLevel(loglevel)
 
         # console log handler
         if self.consoleLogging:
             console = logging.StreamHandler()
             console.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S', encoding='utf-8'))
-            console.setLevel(INFO if not self.debugLogging else DEBUG)
+            console.setLevel(loglevel)
 
             for logger in self.loggers:
                 logger.addHandler(console)
 
         # rotating log file handler
         if self.fileLogging:
-            rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=int(sickbeard.LOG_SIZE*1048576), backupCount=sickbeard.LOG_NR, encoding='utf-8')
+            rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=int(sickbeard.LOG_SIZE * 1048576), backupCount=sickbeard.LOG_NR, encoding='utf-8')
             rfh.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)-8s %(message)s', dateTimeFormat, encoding='utf-8'))
-            rfh.setLevel(INFO if not self.debugLogging else DB)
+            rfh.setLevel(loglevel)
 
             for logger in self.loggers:
                 logger.addHandler(rfh)
@@ -180,7 +186,7 @@ class Logger(object):
         else:
             sys.exit(1)
 
-    def submit_errors(self): # Too many local variables, too many branches, pylint: disable=too-many-branches,too-many-locals
+    def submit_errors(self):  # Too many local variables, too many branches, pylint: disable=too-many-branches,too-many-locals
 
         submitter_result = u''
         issue_id = None
@@ -200,7 +206,7 @@ class Logger(object):
 
         if commits_behind is None or commits_behind > 0:
             submitter_result = u'Please update SickRage, unable to submit issue ticket to GitHub with an outdated version!'
-            return  submitter_result, issue_id
+            return submitter_result, issue_id
 
         if self.submitter_running:
             submitter_result = u'Issue submitter is running, please wait for it to complete'
@@ -248,7 +254,7 @@ class Logger(object):
                     if match:
                         level = match.group(2)
                         if reverseNames[level] == ERROR:
-                            paste_data = u"".join(log_data[i:i+50])
+                            paste_data = u"".join(log_data[i:i + 50])
                             if paste_data:
                                 gist = gh.get_user().create_gist(True, {"sickrage.log": InputFileContent(paste_data)})
                             break
@@ -328,6 +334,7 @@ class Logger(object):
             self.submitter_running = False
 
         return submitter_result, issue_id
+
 
 # pylint: disable=too-few-public-methods
 class Wrapper(object):

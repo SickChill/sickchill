@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -41,7 +42,7 @@ class BacklogSearchScheduler(scheduler.Scheduler):
             return datetime.date.fromordinal(self.action._lastBacklog + self.action.cycleTime)
 
 
-class BacklogSearcher:
+class BacklogSearcher(object):
     def __init__(self):
 
         self._lastBacklog = self._get_lastBacklog()
@@ -184,7 +185,6 @@ class BacklogSearcher:
             myDB.action("INSERT INTO info (last_backlog, last_indexer) VALUES (?,?)", [str(when), 0])
         else:
             myDB.action("UPDATE info SET last_backlog=" + str(when))
-
 
     def run(self, force=False):
         try:

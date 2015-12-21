@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: seedboy
 # URL: https://github.com/seedboy
 #
@@ -94,7 +95,7 @@ class IPTorrentsProvider(TorrentProvider):
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
                 searchURL = self.urls['search'] % (self.categories, freeleech, search_string)
                 searchURL += ';o=seeders' if mode != 'RSS' else ''
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
                 data = self.get_url(searchURL)
                 if not data:
@@ -125,7 +126,7 @@ class IPTorrentsProvider(TorrentProvider):
                                 download_url = self.urls['base_url'] + result.find_all('td')[3].find('a')['href']
                                 size = self._convertSize(result.find_all('td')[5].text)
                                 seeders = int(result.find('td', attrs={'class': 'ac t_seeders'}).text)
-                                leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).text)
+                                leechers = int(result.find('td', attrs={'class': 'ac t_leechers'}).text)
                             except (AttributeError, TypeError, KeyError):
                                 continue
 
@@ -162,14 +163,14 @@ class IPTorrentsProvider(TorrentProvider):
         size, modifier = size.split(' ')
         size = float(size)
         if modifier in 'KB':
-            size = size * 1024
+            size *= 1024 ** 1
         elif modifier in 'MB':
-            size = size * 1024**2
+            size *= 1024 ** 2
         elif modifier in 'GB':
-            size = size * 1024**3
+            size *= 1024 ** 3
         elif modifier in 'TB':
-            size = size * 1024**4
-        return int(size)
+            size *= 1024 ** 4
+        return long(size)
 
 
 class IPTorrentsCache(tvcache.TVCache):
