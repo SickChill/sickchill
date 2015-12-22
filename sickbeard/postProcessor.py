@@ -1158,7 +1158,11 @@ class PostProcessor(object):
                     cur_ep.airdateModifyStamp()
 
         # generate nfo/tbn
-        ep_obj.createMetaFiles()
+        try:
+            ep_obj.createMetaFiles()
+        except Exception:
+            logger.log(u"Could not create/update meta files. Continuing with postProcessing...")
+            
 
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group, new_ep_version)
