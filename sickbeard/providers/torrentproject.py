@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+import posixpath # Must use posixpath
 from urllib import quote_plus
-
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
@@ -34,6 +34,7 @@ class TORRENTPROJECTProvider(TorrentProvider):
         self.ratio = 0
         self.urls = {'api': u'https://torrentproject.se/', }
         self.url = self.urls['api']
+        self.custom_url = None
         self.headers.update({'User-Agent': USER_AGENT})
         self.minseed = None
         self.minleech = None
@@ -51,6 +52,8 @@ class TORRENTPROJECTProvider(TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['api'] + "?s=%s&out=json&filter=2101&num=150" % quote_plus(search_string.encode('utf-8'))
+                if self.custom_url:
+                    searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
 
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 torrents = self.get_url(searchURL, json=True)
