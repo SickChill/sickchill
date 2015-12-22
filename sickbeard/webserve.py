@@ -1586,6 +1586,9 @@ class Home(WebRoot):
 
             time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
+        # Remove show from 'RECENT SHOWS' in 'Shows' menu
+        sickbeard.SHOWS_RECENT = [x for x in sickbeard.SHOWS_RECENT if x['indexerid'] != show.indexerid]
+
         # Don't redirect to the default page, so the user can confirm that the show was deleted
         return self.redirect('/home/')
 
