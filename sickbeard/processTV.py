@@ -159,7 +159,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     if ek(os.path.isdir, dirName):
         dirName = ek(os.path.realpath, dirName)
         result.output += logHelper(u"Processing folder %s" % dirName, logger.DEBUG)
-    
+
     # if the client and SickRage are not on the same machine translate the directory into a network directory
     elif all([sickbeard.TV_DOWNLOAD_DIR,
               ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR),
@@ -341,8 +341,8 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
     sqlResults = myDB.select("SELECT location FROM tv_shows")
 
     for sqlShow in sqlResults:
-        if dirName.lower().startswith(ek(os.path.realpath, sqlShow[u"location"]).lower() + os.sep) or \
-                dirName.lower() == ek(os.path.realpath, sqlShow[u"location"]).lower():
+        if dirName.lower().startswith(ek(os.path.realpath, sqlShow["location"]).lower() + os.sep) or \
+                dirName.lower() == ek(os.path.realpath, sqlShow["location"]).lower():
 
             result.output += logHelper(
                 u"Cannot process an episode that's already been moved to its show dir, skipping " + dirName,
