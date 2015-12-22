@@ -81,6 +81,8 @@ class TORRENTPROJECTProvider(TorrentProvider):
                         assert mode != 'RSS'
                         logger.log(u"Torrent has less than 10 seeds getting dyn trackers: " + title, logger.DEBUG)
                         trackerUrl = self.urls['api'] + "" + t_hash + "/trackers_json"
+                        if self.custom_url:
+                            searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
                         jdata = self.get_url(trackerUrl, json=True)
                         assert jdata != "maintenance"
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
