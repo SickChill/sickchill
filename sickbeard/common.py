@@ -228,6 +228,8 @@ class Quality(object):
         any_qualities = []
         best_qualities = []
         for cur_qual in Quality.qualityStrings:
+            if cur_qual is None:
+                cur_qual = Quality.NONE
             if cur_qual & quality:
                 any_qualities.append(cur_qual)
             if cur_qual << 16 & quality:
