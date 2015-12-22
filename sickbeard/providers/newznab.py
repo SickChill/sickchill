@@ -160,13 +160,14 @@ class NewznabProvider(NZBProvider):
             logger.log(error_string, logger.DEBUG)
             return False, return_categories, error_string
 
-        for category in data.caps.categories.findAll('category'):
-            if hasattr(category, 'attrs') and 'TV' in category.attrs['name']:
-                return_categories.append({'id': category.attrs['id'], 'name': category.attrs['name']})
-                for subcat in category.findAll('subcat'):
-                    return_categories.append({'id': subcat.attrs['id'], 'name': subcat.attrs['name']})
-
-        data.decompose()
+        if data.caps.categories.findAll('category'): 
+            for category in data.caps.categories.findAll('category'):
+                if hasattr(category, 'attrs') and 'TV' in category.attrs['name']:
+                    return_categories.append({'id': category.attrs['id'], 'name': category.attrs['name']})
+                    for subcat in category.findAll('subcat'):
+                        return_categories.append({'id': subcat.attrs['id'], 'name': subcat.attrs['name']})
+    
+            data.decompose()
         return True, return_categories, ""
 
     @staticmethod
