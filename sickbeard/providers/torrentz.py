@@ -42,6 +42,7 @@ class TORRENTZProvider(TorrentProvider):
         self.minseed = None
         self.minleech = None
         self.cache = TORRENTZCache(self)
+        self.headers.update({'User-Agent': USER_AGENT})
         self.urls = {'verified': 'https://torrentz.eu/feed_verified',
                      'feed': 'https://torrentz.eu/feed',
                      'base': 'https://torrentz.eu/'}
