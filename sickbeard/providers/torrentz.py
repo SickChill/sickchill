@@ -28,6 +28,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import cpu_presets
+from sickbeard.common import USER_AGENT
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
