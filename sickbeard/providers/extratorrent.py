@@ -25,7 +25,7 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
 from sickrage.helper.common import try_int
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class ExtraTorrentProvider(TorrentProvider):
@@ -35,7 +35,7 @@ class ExtraTorrentProvider(TorrentProvider):
         self.urls = {
             'index': 'http://extratorrent.cc',
             'rss': 'http://extratorrent.cc/rss.xml',
-            }
+        }
 
         self.url = self.urls['index']
 
@@ -92,7 +92,7 @@ class ExtraTorrentProvider(TorrentProvider):
 
                     for item in entries:
                         title = item['title'].decode('utf-8')
-                       # info_hash = item['info_hash']
+                        # info_hash = item['info_hash']
                         size = int(item['size'])
                         seeders = try_int(item['seeders'], 0)
                         leechers = try_int(item['leechers'], 0)
