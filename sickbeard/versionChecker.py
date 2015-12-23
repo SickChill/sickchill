@@ -754,9 +754,14 @@ class SourceUpdateManager(UpdateManager):
 
         # try to get newest commit hash and commits behind directly by comparing branch and current commit
         if self._cur_commit_hash:
-            branch_compared = sickbeard.gh.compare(base=self.branch, head=self._cur_commit_hash)
-            self._newest_commit_hash = branch_compared.base_commit.sha
-            self._num_commits_behind = branch_compared.behind_by
+            try:
+                branch_compared = sickbeard.gh.compare(base=self.branch, head=self._cur_commit_hash)
+                self._newest_commit_hash = branch_compared.base_commit.sha
+                self._num_commits_behind = branch_compared.behind_by
+            except Exception:  # UnknownObjectException
+                self._newest_commit_hash = ""
+                self._num_commits_behind = 0
+                self._cur_commit_hash = ""
 
         # fall back and iterate over last 100 (items per page in gh_api) commits
         if not self._newest_commit_hash:
