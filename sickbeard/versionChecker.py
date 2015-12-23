@@ -302,7 +302,7 @@ class CheckVersion(object):
         if not news:
             return ''
 
-        dates = re.finditer(r'^####(\d{4}-\d{2}-\d{2})####$', news, re.M)
+        dates = re.finditer(r'^####\s*(\d{4}-\d{2}-\d{2})\s*####$', news, re.M)
         if not list(dates):
             return news or ''
 
