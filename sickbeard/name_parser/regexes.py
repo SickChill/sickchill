@@ -185,6 +185,16 @@ normal_regexes = [
      '''
      ),
 
+    ('bare',
+     # Show.Name.102.Source.Quality.Etc-Group
+     r'''
+     ^(?P<series_name>.+?)[. _-]+                # Show_Name and separator
+     (?P<season_num>\d{1,2})                     # 1
+     (?P<ep_num>\d{2})                           # 02 and separator
+     ([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+) # Source_Quality_Etc-
+     (-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$                # Group
+     '''),
+
     ('no_season',
      # Show Name - 01 - Ep Name
      # 01 - Ep Name
@@ -199,16 +209,6 @@ normal_regexes = [
      -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$  # Group
      '''
      ),
-
-    ('bare',
-     # Show.Name.102.Source.Quality.Etc-Group
-     r'''
-     ^(?P<series_name>.+?)[. _-]+                # Show_Name and separator
-     (?P<season_num>\d{1,2})                     # 1
-     (?P<ep_num>\d{2})                           # 02 and separator
-     ([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+) # Source_Quality_Etc-
-     (-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$                # Group
-     '''),
 ]
 
 anime_regexes = [
@@ -236,7 +236,7 @@ anime_regexes = [
      (?:[ ._]?\[(?P<crc>\w+)\])?
      .*?
      '''),
-     
+
      ('anime_Kaerizaki-Fansub',
      # [Kaerizaki-Fansub]_One_Piece_679_[VOSTFR][HD_1280x720].mp4
      # [Kaerizaki-Fansub]_One_Piece_681_[VOSTFR][HD_1280x720]_V2.mp4
