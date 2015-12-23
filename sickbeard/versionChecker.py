@@ -300,10 +300,6 @@ class CheckVersion(object):
         if not news:
             return ''
 
-        dates = re.finditer(r'^####\s*(\d{4}-\d{2}-\d{2})\s*####$', news, re.M)
-        if not list(dates):
-            return news or ''
-
         try:
             last_read = datetime.datetime.strptime(sickbeard.NEWS_LAST_READ, '%Y-%m-%d')
         except Exception:
@@ -311,7 +307,7 @@ class CheckVersion(object):
 
         sickbeard.NEWS_UNREAD = 0
         gotLatest = False
-        for match in dates:
+        for match in re.finditer(r'^####\s*(\d{4}-\d{2}-\d{2})\s*####', news, re.M):
             if not gotLatest:
                 gotLatest = True
                 sickbeard.NEWS_LATEST = match.group(1)
