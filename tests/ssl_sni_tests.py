@@ -66,6 +66,7 @@ def test_generator(_provider):
 
     return _connectivity_test
 
+
 class SniTests(unittest.TestCase):
     pass
 

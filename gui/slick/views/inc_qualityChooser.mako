@@ -9,13 +9,11 @@ if not show is UNDEFINED:
 else:
     __quality = int(sickbeard.QUALITY_DEFAULT)
 
-qualities = Quality.splitQuality(__quality)
-anyQualities = qualities[0]
-bestQualities = qualities[1]
+anyQualities, bestQualities = Quality.splitQuality(__quality)
+overall_quality = Quality.combineQualities(anyQualities, bestQualities)
+selected = None
 %>
 
-<% overall_quality = Quality.combineQualities(anyQualities, bestQualities) %>
-<% selected = None %>
 <select id="qualityPreset" name="quality_preset" class="form-control form-control-inline input-sm">
     <option value="0">Custom</option>
     % for curPreset in sorted(qualityPresets):
@@ -25,7 +23,7 @@ bestQualities = qualities[1]
 
 <div id="customQualityWrapper">
     <div id="customQuality" style="padding-left: 0px;">
-        <p><b><u>Preferred</u></b> quality's will replace those in <b><u>allowed</u></b>, even if they are lower.</p>
+        <p><b><u>Preferred</u></b> qualities will replace those in <b><u>allowed</u></b>, even if they are lower.</p>
 
         <div style="padding-right: 40px; text-align: left; float: left;">
             <h5>Allowed</h5>

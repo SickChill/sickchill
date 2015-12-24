@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -22,7 +23,7 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BitSoupProvider(TorrentProvider):
@@ -35,7 +36,7 @@ class BitSoupProvider(TorrentProvider):
             'detail': 'https://www.bitsoup.me/details.php?id=%s',
             'search': 'https://www.bitsoup.me/browse.php',
             'download': 'https://bitsoup.me/%s',
-            }
+        }
 
         self.url = self.urls['base_url']
 
@@ -63,7 +64,7 @@ class BitSoupProvider(TorrentProvider):
             'username': self.username,
             'password': self.password,
             'ssl': 'yes'
-            }
+        }
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
@@ -117,8 +118,10 @@ class BitSoupProvider(TorrentProvider):
                                 title = link.getText()
                                 seeders = int(cells[10].getText().replace(',', ''))
                                 leechers = int(cells[11].getText().replace(',', ''))
-                                # FIXME
+                                torrent_size = cells[8].getText()
                                 size = -1
+                                if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
+                                    size = self._convertSize(torrent_size.rstrip())
                             except (AttributeError, TypeError):
                                 continue
 
@@ -152,6 +155,23 @@ class BitSoupProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
+
+    def _convertSize(self, sizeString):
+        size = sizeString[:-2].strip()
+        modifier = sizeString[-2:].upper()
+        try:
+            size = float(size)
+            if modifier in 'KB':
+                size *= 1024 ** 1
+            elif modifier in 'MB':
+                size *= 1024 ** 2
+            elif modifier in 'GB':
+                size *= 1024 ** 3
+            elif modifier in 'TB':
+                size *= 1024 ** 4
+        except Exception:
+            size = -1
+        return long(size)
 
 
 class BitSoupCache(tvcache.TVCache):

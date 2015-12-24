@@ -282,7 +282,7 @@ class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
 
         if self.get_current_user():
-            self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+            self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
         else:
             t = PageTemplate(rh=self, filename="login.mako")
             self.finish(t.render(title="Login", header="Login", topmenu="login"))
@@ -308,7 +308,7 @@ class LoginHandler(BaseHandler):
         else:
             logger.log(u'User attempted a failed login to the SickRage web interface from IP: ' + self.request.remote_ip, logger.WARNING)
 
-        self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+        self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
 
 class LogoutHandler(BaseHandler):
@@ -344,7 +344,7 @@ class WebRoot(WebHandler):
         super(WebRoot, self).__init__(*args, **kwargs)
 
     def index(self):
-        return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+        return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
     def robots_txt(self):
         """ Keep web crawlers out """
@@ -1007,7 +1007,7 @@ class Home(WebRoot):
         data = {}
         size = 0
         for r in rows:
-            NotifyList = {'emails':'', 'prowlAPIs':''}
+            NotifyList = {'emails': '', 'prowlAPIs': ''}
             if r['notify_list'] and len(r['notify_list']) > 0:
                 # First, handle legacy format (emails only)
                 if not r['notify_list'][0] == '{':
@@ -1015,10 +1015,12 @@ class Home(WebRoot):
                 else:
                     NotifyList = dict(ast.literal_eval(r['notify_list']))
 
-            data[r['show_id']] = {'id': r['show_id'], 'name': r['show_name'],
-                                  'list': NotifyList['emails'],
-                                  'prowl_notify_list': NotifyList['prowlAPIs']
-                                 }
+            data[r['show_id']] = {
+                'id': r['show_id'],
+                'name': r['show_name'],
+                'list': NotifyList['emails'],
+                'prowl_notify_list': NotifyList['prowlAPIs']
+            }
             size += 1
         data['_size'] = size
         return json.dumps(data)
@@ -1026,7 +1028,7 @@ class Home(WebRoot):
     @staticmethod
     def saveShowNotifyList(show=None, emails=None, prowlAPIs=None):
 
-        entries = {'emails':'', 'prowlAPIs':''}
+        entries = {'emails': '', 'prowlAPIs': ''}
         myDB = db.DBConnection()
 
         # Get current data
@@ -1162,7 +1164,7 @@ class Home(WebRoot):
                 return self._genericMessage("Update Failed",
                                             "Update wasn't successful, not restarting. Check your log for more information.")
         else:
-            return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+            return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
     def branchCheckout(self, branch):
         if sickbeard.BRANCH != branch:
@@ -1171,7 +1173,7 @@ class Home(WebRoot):
             return self.update(sickbeard.PID, branch)
         else:
             ui.notifications.message('Already on branch: ', branch)
-            return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+            return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
     @staticmethod
     def getDBcompare():
@@ -1355,11 +1357,12 @@ class Home(WebRoot):
             out.append("S" + str(season) + ": " + ", ".join(names))
         return "<br>".join(out)
 
-    def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], exceptions_list=[],
-                 flatten_folders=None, paused=None, directCall=False, air_by_date=None, sports=None, dvdorder=None,
-                 indexerLang=None, subtitles=None, archive_firstmatch=None, rls_ignore_words=None,
-                 rls_require_words=None, anime=None, blacklist=None, whitelist=None,
-                 scene=None, defaultEpStatus=None, quality_preset=None):
+    def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[],
+                 exceptions_list=[], flatten_folders=None, paused=None, directCall=False,
+                 air_by_date=None, sports=None, dvdorder=None, indexerLang=None,
+                 subtitles=None, rls_ignore_words=None, rls_require_words=None,
+                 anime=None, blacklist=None, whitelist=None, scene=None,
+                 defaultEpStatus=None, quality_preset=None):
 
         anidb_failed = False
         if show is None:
@@ -1413,7 +1416,6 @@ class Home(WebRoot):
 
         flatten_folders = not config.checkbox_to_value(flatten_folders)  # UI inverts this value
         dvdorder = config.checkbox_to_value(dvdorder)
-        archive_firstmatch = config.checkbox_to_value(archive_firstmatch)
         paused = config.checkbox_to_value(paused)
         air_by_date = config.checkbox_to_value(air_by_date)
         scene = config.checkbox_to_value(scene)
@@ -1476,7 +1478,6 @@ class Home(WebRoot):
         with showObj.lock:
             newQuality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
             showObj.quality = newQuality
-            showObj.archive_firstmatch = archive_firstmatch
 
             # reversed for now
             if bool(showObj.flatten_folders) != bool(flatten_folders):
@@ -1584,6 +1585,9 @@ class Home(WebRoot):
             )
 
             time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+
+        # Remove show from 'RECENT SHOWS' in 'Shows' menu
+        sickbeard.SHOWS_RECENT = [x for x in sickbeard.SHOWS_RECENT if x['indexerid'] != show.indexerid]
 
         # Don't redirect to the default page, so the user can confirm that the show was deleted
         return self.redirect('/home/')
@@ -1940,7 +1944,7 @@ class Home(WebRoot):
         else:
             return json.dumps({'result': 'failure'})
 
-    ### Returns the current ep_queue_item status for the current viewed show.
+    # ## Returns the current ep_queue_item status for the current viewed show.
     # Possible status: Downloaded, Snatched, etc...
     # Returns {'show': 279530, 'episodes' : ['episode' : 6, 'season' : 1, 'searchstatus' : 'queued', 'status' : 'running', 'quality': '4013']
     def getManualSearchStatus(self, show=None):
@@ -2002,7 +2006,7 @@ class Home(WebRoot):
                 if not [x for x in episodes if x['episodeindexid'] == searchThread.segment.indexerid]:
                     episodes += getEpisodes(searchThread, searchstatus)
             else:
-                ### These are only Failed Downloads/Retry SearchThreadItems.. lets loop through the segement/episodes
+                # ## These are only Failed Downloads/Retry SearchThreadItems.. lets loop through the segement/episodes
                 if not [i for i, j in zip(searchThread.segment, episodes) if i.indexerid == j['episodeindexid']]:
                     episodes += getEpisodes(searchThread, searchstatus)
 
@@ -2027,22 +2031,19 @@ class Home(WebRoot):
         if isinstance(ep_obj, str):
             return json.dumps({'result': 'failure'})
 
-        # try do download subtitles for that episode
-        previous_subtitles = ep_obj.subtitles
         try:
-            ep_obj.download_subtitles()
+            new_subtitles = ep_obj.download_subtitles()  # pylint: disable=no-member
         except Exception:
             return json.dumps({'result': 'failure'})
 
-        # return the correct json value
-        new_subtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
         if new_subtitles:
             new_languages = [subtitles.name_from_code(code) for code in new_subtitles]
             status = 'New subtitles downloaded: %s' % ', '.join(new_languages)
         else:
             status = 'No subtitles downloaded'
-        ui.notifications.message(ep_obj.show.name, status)
-        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})
+
+        ui.notifications.message(ep_obj.show.name, status)  # pylint: disable=no-member
+        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})  # pylint: disable=no-member
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None,
                           sceneEpisode=None, sceneAbsolute=None):
@@ -2473,6 +2474,10 @@ class HomeAddShows(Home):
             page_title = "Most Played Shows"
         elif traktList == "recommended":
             page_title = "Recommended Shows"
+        elif traktList == "newshow":
+            page_title = "New Shows"
+        elif traktList == "newseason":
+            page_title = "Season Premieres"
         else:
             page_title = "Most Anticipated Shows"
 
@@ -2505,6 +2510,10 @@ class HomeAddShows(Home):
             page_url = "shows/played"
         elif traktList == "recommended":
             page_url = "recommendations/shows"
+        elif traktList == "newshow":
+            page_url = 'calendars/all/shows/new/%s/30' % datetime.date.today().strftime("%Y-%m-%d")
+        elif traktList == "newseason":
+            page_url = 'calendars/all/shows/premieres/%s/30' % datetime.date.today().strftime("%Y-%m-%d")
         else:
             page_url = "shows/anticipated"
 
@@ -2521,8 +2530,8 @@ class HomeAddShows(Home):
                 else:
                     logger.log(u"Trakt blacklist name is empty", logger.DEBUG)
 
-            if traktList != "recommended":
-                limit_show = "?limit=" + str(50 + len(not_liked_show)) + "&"
+            if traktList not in ["recommended", "newshow", "newseason"]:
+                limit_show = "?limit=" + str(100 + len(not_liked_show)) + "&"
             else:
                 limit_show = "?"
 
@@ -2645,7 +2654,6 @@ class HomeAddShows(Home):
             anime=sickbeard.ANIME_DEFAULT,
             scene=sickbeard.SCENE_DEFAULT,
             default_status_after=sickbeard.STATUS_DEFAULT_AFTER,
-            archive=sickbeard.ARCHIVE_DEFAULT
         )
 
         ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
@@ -2656,7 +2664,7 @@ class HomeAddShows(Home):
     def addNewShow(self, whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
                    quality_preset=None, anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
                    fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
-                   scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None, archive=None):
+                   scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
         provided then it forwards back to newShow, if not it goes to /home.
@@ -2744,7 +2752,6 @@ class HomeAddShows(Home):
         anime = config.checkbox_to_value(anime)
         flatten_folders = config.checkbox_to_value(flatten_folders)
         subtitles = config.checkbox_to_value(subtitles)
-        archive = config.checkbox_to_value(archive)
 
         if whitelist:
             whitelist = short_group_names(whitelist)
@@ -2764,7 +2771,7 @@ class HomeAddShows(Home):
         # add the show
         sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir, int(defaultStatus), newQuality,
                                                     flatten_folders, indexerLang, subtitles, anime,
-                                                    scene, None, blacklist, whitelist, int(defaultStatusAfter), archive)
+                                                    scene, None, blacklist, whitelist, int(defaultStatusAfter))
         ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
 
         return finishAddShow()
@@ -2829,15 +2836,16 @@ class HomeAddShows(Home):
 
             if indexer is not None and indexer_id is not None:
                 # add the show
-                sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir,
-                                                            default_status=sickbeard.STATUS_DEFAULT,
-                                                            quality=sickbeard.QUALITY_DEFAULT,
-                                                            flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT,
-                                                            subtitles=sickbeard.SUBTITLES_DEFAULT,
-                                                            anime=sickbeard.ANIME_DEFAULT,
-                                                            scene=sickbeard.SCENE_DEFAULT,
-                                                            default_status_after=sickbeard.STATUS_DEFAULT_AFTER,
-                                                            archive=sickbeard.ARCHIVE_DEFAULT)
+                sickbeard.showQueueScheduler.action.addShow(
+                    indexer, indexer_id, show_dir,
+                    default_status=sickbeard.STATUS_DEFAULT,
+                    quality=sickbeard.QUALITY_DEFAULT,
+                    flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT,
+                    subtitles=sickbeard.SUBTITLES_DEFAULT,
+                    anime=sickbeard.ANIME_DEFAULT,
+                    scene=sickbeard.SCENE_DEFAULT,
+                    default_status_after=sickbeard.STATUS_DEFAULT_AFTER
+                )
                 num_added += 1
 
         if num_added:
@@ -3130,9 +3138,6 @@ class Manage(Home, WebRoot):
                 showList.append(showObj)
                 showNames.append(showObj.name)
 
-        archive_firstmatch_all_same = True
-        last_archive_firstmatch = None
-
         flatten_folders_all_same = True
         last_flatten_folders = None
 
@@ -3167,13 +3172,6 @@ class Manage(Home, WebRoot):
             cur_root_dir = ek(os.path.dirname, curShow._location)  # pylint: disable=protected-access
             if cur_root_dir not in root_dir_list:
                 root_dir_list.append(cur_root_dir)
-
-            if archive_firstmatch_all_same:
-                # if we had a value already and this value is different then they're not all the same
-                if last_archive_firstmatch not in (None, curShow.archive_firstmatch):
-                    archive_firstmatch_all_same = False
-                else:
-                    last_archive_firstmatch = curShow.archive_firstmatch
 
             # if we know they're not all the same then no point even bothering
             if paused_all_same:
@@ -3232,7 +3230,6 @@ class Manage(Home, WebRoot):
                 else:
                     last_air_by_date = curShow.air_by_date
 
-        archive_firstmatch_value = last_archive_firstmatch if archive_firstmatch_all_same else None
         default_ep_status_value = last_default_ep_status if default_ep_status_all_same else None
         paused_value = last_paused if paused_all_same else None
         anime_value = last_anime if anime_all_same else None
@@ -3244,12 +3241,12 @@ class Manage(Home, WebRoot):
         air_by_date_value = last_air_by_date if air_by_date_all_same else None
         root_dir_list = root_dir_list
 
-        return t.render(showList=toEdit, showNames=showNames, archive_firstmatch_value=archive_firstmatch_value, default_ep_status_value=default_ep_status_value,
+        return t.render(showList=toEdit, showNames=showNames, default_ep_status_value=default_ep_status_value,
                         paused_value=paused_value, anime_value=anime_value, flatten_folders_value=flatten_folders_value,
                         quality_value=quality_value, subtitles_value=subtitles_value, scene_value=scene_value, sports_value=sports_value,
                         air_by_date_value=air_by_date_value, root_dir_list=root_dir_list, title='Mass Edit', header='Mass Edit', topmenu='manage')
 
-    def massEditSubmit(self, archive_firstmatch=None, paused=None, default_ep_status=None,
+    def massEditSubmit(self, paused=None, default_ep_status=None,
                        anime=None, sports=None, scene=None, flatten_folders=None, quality_preset=None,
                        subtitles=None, air_by_date=None, anyQualities=[], bestQualities=[], toEdit=None, *args,
                        **kwargs):
@@ -3277,12 +3274,6 @@ class Manage(Home, WebRoot):
                     u"For show " + showObj.name + " changing dir from " + showObj._location + " to " + new_show_dir)  # pylint: disable=protected-access
             else:
                 new_show_dir = showObj._location  # pylint: disable=protected-access
-
-            if archive_firstmatch == 'keep':
-                new_archive_firstmatch = showObj.archive_firstmatch
-            else:
-                new_archive_firstmatch = True if archive_firstmatch == 'enable' else False
-            new_archive_firstmatch = 'on' if new_archive_firstmatch else 'off'
 
             if paused == 'keep':
                 new_paused = showObj.paused
@@ -3342,7 +3333,6 @@ class Manage(Home, WebRoot):
             curErrors += self.editShow(curShow, new_show_dir, anyQualities,
                                        bestQualities, exceptions_list,
                                        defaultEpStatus=new_default_ep_status,
-                                       archive_firstmatch=new_archive_firstmatch,
                                        flatten_folders=new_flatten_folders,
                                        paused=new_paused, sports=new_sports,
                                        subtitles=new_subtitles, anime=new_anime,
@@ -3722,7 +3712,7 @@ class ConfigGeneral(Config):
 
     @staticmethod
     def saveAddShowDefaults(defaultStatus, anyQualities, bestQualities, defaultFlattenFolders, subtitles=False,
-                            anime=False, scene=False, defaultStatusAfter=WANTED, archive=False):
+                            anime=False, scene=False, defaultStatusAfter=WANTED):
 
         if anyQualities:
             anyQualities = anyQualities.split(',')
@@ -3744,12 +3734,11 @@ class ConfigGeneral(Config):
         sickbeard.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
 
         sickbeard.ANIME_DEFAULT = config.checkbox_to_value(anime)
-        sickbeard.SCENE_DEFAULT = config.checkbox_to_value(scene)
-        sickbeard.ARCHIVE_DEFAULT = config.checkbox_to_value(archive)
 
+        sickbeard.SCENE_DEFAULT = config.checkbox_to_value(scene)
         sickbeard.save_config()
 
-    def saveGeneral(self, log_dir=None, log_nr=5, log_size=1048576, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,
+    def saveGeneral(self, log_dir=None, log_nr=5, log_size=1, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,
                     trash_remove_show=None, trash_rotate_logs=None, update_frequency=None, skip_removed_files=None,
                     indexerDefaultLang='en', ep_default_deleted_status=None, launch_browser=None, showupdate_hour=3, web_username=None,
                     api_key=None, indexer_default=None, timezone_display=None, cpu_preset='NORMAL',

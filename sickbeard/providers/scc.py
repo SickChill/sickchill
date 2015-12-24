@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Idan Gutman
 # Modified by jkaberg, https://github.com/jkaberg for SceneAccess
 # URL: http://code.google.com/p/sickbeard/
@@ -26,7 +27,7 @@ from sickbeard.common import cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -54,9 +55,9 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         self.url = self.urls['base_url']
 
         self.categories = {
-            'Season': 'c26=26&c44=44&c45=45', # Archive, non-scene HD, non-scene SD; need to include non-scene because WEB-DL packs get added to those categories
-            'Episode': 'c17=17&c27=27&c33=33&c34=34&c44=44&c45=45', # TV HD, TV SD, non-scene HD, non-scene SD, foreign XviD, foreign x264
-            'RSS': 'c17=17&c26=26&c27=27&c33=33&c34=34&c44=44&c45=45' # Season + Episode
+            'Season': 'c26=26&c44=44&c45=45',  # Archive, non-scene HD, non-scene SD; need to include non-scene because WEB-DL packs get added to those categories
+            'Episode': 'c17=17&c27=27&c33=33&c34=34&c44=44&c45=45',  # TV HD, TV SD, non-scene HD, non-scene SD, foreign XviD, foreign x264
+            'RSS': 'c17=17&c26=26&c27=27&c33=33&c34=34&c44=44&c45=45'  # Season + Episode
         }
 
     def login(self):
@@ -169,14 +170,14 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         size, base = size.split()
         size = float(size)
         if base in 'KB':
-            size = size * 1024
+            size *= 1024 ** 1
         elif base in 'MB':
-            size = size * 1024**2
+            size *= 1024 ** 2
         elif base in 'GB':
-            size = size * 1024**3
+            size *= 1024 ** 3
         elif base in 'TB':
-            size = size * 1024**4
-        return int(size)
+            size *= 1024 ** 4
+        return long(size)
 
 
 class SCCCache(tvcache.TVCache):

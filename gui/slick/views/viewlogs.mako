@@ -21,26 +21,30 @@ pre {
 % endif
 
 <div class="h2footer pull-right">Minimum logging level to display: <select name="minLevel" id="minLevel" class="form-control form-control-inline input-sm">
-<% levels = reverseNames.keys() %>
-<% levels.sort(lambda x,y: cmp(reverseNames[x], reverseNames[y])) %>
-% for level in levels:
-    % if not sickbeard.DEBUG and (level == 'DEBUG' or level == 'DB'):
-       <% continue %>
-    % endif
-<option value="${reverseNames[level]}" ${('', 'selected="selected"')[minLevel == reverseNames[level]]}>${level.title()}</option>
-% endfor
-</select>
+    <%
+        levels = reverseNames.keys()
+        levels.sort(lambda x, y: cmp(reverseNames[x], reverseNames[y]))
+        if not sickbeard.DEBUG:
+            levels.remove('DEBUG')
+        if not sickbeard.DBDEBUG:
+            levels.remove('DB')
+    %>
+    % for level in levels:
+        <option value="${reverseNames[level]}" ${('', 'selected="selected"')[minLevel == reverseNames[level]]}>${level.title()}</option>
+    % endfor
+    </select>
 
-Filter log by: <select name="logFilter" id="logFilter" class="form-control form-control-inline input-sm">
-% for logNameFilter in sorted(logNameFilters):
-    <option value="${logNameFilter}" ${('', 'selected="selected"')[logFilter == logNameFilter]}>${logNameFilters[logNameFilter]}</option>
-% endfor
-</select>
-Search log by:
-<input type="text" name="logSearch" placeholder="clear to reset" id="logSearch" value="${('', logSearch)[bool(logSearch)]}" class="form-control form-control-inline input-sm" autocapitalize="off" />
+    Filter log by: <select name="logFilter" id="logFilter" class="form-control form-control-inline input-sm">
+    % for logNameFilter in sorted(logNameFilters):
+        <option value="${logNameFilter}" ${('', 'selected="selected"')[logFilter == logNameFilter]}>${logNameFilters[logNameFilter]}</option>
+    % endfor
+    </select>
+    Search log by:
+    <input type="text" name="logSearch" placeholder="clear to reset" id="logSearch" value="${('', logSearch)[bool(logSearch)]}" class="form-control form-control-inline input-sm" autocapitalize="off" />
 </div>
 <br>
-<div class="align-left"><pre>
+<div class="align-left">
+<pre>
 ${logLines}
 </pre>
 </div>

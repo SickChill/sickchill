@@ -22,7 +22,7 @@ from urllib import urlencode
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BitCannonProvider(TorrentProvider):
@@ -135,6 +135,7 @@ class BitCannonProvider(TorrentProvider):
                 return False
 
         return True
+
 
 class BitCannonCache(tvcache.TVCache):
     def __init__(self, provider_obj):

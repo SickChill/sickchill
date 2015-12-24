@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Mr_Orange
 # URL: https://github.com/mr-orange/Sick-Beard
 #
@@ -20,7 +21,7 @@ import re
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class SpeedCDProvider(TorrentProvider):

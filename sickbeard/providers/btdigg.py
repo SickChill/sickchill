@@ -22,7 +22,7 @@
 from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BTDIGGProvider(TorrentProvider):
@@ -39,7 +39,7 @@ class BTDIGGProvider(TorrentProvider):
 
         self.url = self.urls['url']
 
-        # Unsupported
+        # # Unsupported
         # self.minseed = 1
         # self.minleech = 0
 
@@ -49,51 +49,63 @@ class BTDIGGProvider(TorrentProvider):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
-        search_params = {'p': 1}
+        search_params = {'p': 0}
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
+                search_params['q'] = search_string.encode('utf-8')
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
+                    search_params['order'] = '0'
+                else:
+                    search_params['order'] = '2'
 
-                search_params['q'] = search_string.encode('utf-8')
-                search_params['order'] = '1' if mode != 'RSS' else '2'
+                search_url = self.urls['api'] + '?' + urlencode(search_params)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                searchURL = self.urls['api'] + '?' + urlencode(search_params)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
-
-                jdata = self.get_url(searchURL, json=True)
+                jdata = self.get_url(search_url, json=True)
                 if not jdata:
-                    logger.log(u"No data returned to be parsed!!!")
-                    return []
+                    logger.log(u"No data returned to be parsed!!!", logger.DEBUG)
+                    continue
 
                 for torrent in jdata:
-                    if not torrent['ff']:
-                        title = torrent['name']
-                        download_url = torrent['magnet'] + self._custom_trackers
-                        size = torrent['size']
-                        # FIXME
-                        seeders = 1
-                        leechers = 0
+                    if not torrent['name']:
+                        logger.log(u"Ignoring result since it has no name", logger.DEBUG)
+                        continue
 
-                        if not all([title, download_url]):
-                            continue
+                    if torrent['ff']:
+                        logger.log(u"Ignoring result for %s since it's a fake (level = %s)" % (torrent['name'], torrent['ff']), logger.DEBUG)
+                        continue
 
-                        # Filter unseeded torrent (Unsupported)
-                        # if seeders < self.minseed or leechers < self.minleech:
-                        #    if mode != 'RSS':
-                        #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                        #    continue
+                    if not torrent['files']:
+                        logger.log(u"Ignoring result for %s without files" % torrent['name'], logger.DEBUG)
+                        continue
 
-                        item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
-                            logger.log(u"Found result: %s" % title, logger.DEBUG)
+                    download_url = torrent['magnet'] + self._custom_trackers
 
-                        items[mode].append(item)
+                    if not download_url:
+                        logger.log(u"Ignoring result for %s without a url" % torrent['name'], logger.DEBUG)
+                        continue
 
-            # For each search mode sort all the items by seeders if available (Unsupported)
+                    # FIXME
+                    seeders = 1
+                    leechers = 0
+
+                    # # Filter unseeded torrent (Unsupported)
+                    # if seeders < self.minseed or leechers < self.minleech:
+                    #    if mode != 'RSS':
+                    #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                    #    continue
+
+                    if mode != 'RSS':
+                        logger.log(u"Found result: %s" % torrent['name'], logger.DEBUG)
+
+                    item = torrent['name'], download_url, torrent['size'], seeders, leechers
+                    items[mode].append(item)
+
+            # # For each search mode sort all the items by seeders if available (Unsupported)
             # items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
@@ -109,7 +121,7 @@ class BTDiggCache(tvcache.TVCache):
 
         tvcache.TVCache.__init__(self, provider_obj)
 
-        # Cache results for a 30min ,since BTDigg takes some time to crawl
+        # Cache results for a 30min, since BTDigg takes some time to crawl
         self.minTime = 30
 
     def _getRSSData(self):

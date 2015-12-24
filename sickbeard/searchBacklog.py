@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -41,7 +42,7 @@ class BacklogSearchScheduler(scheduler.Scheduler):
             return datetime.date.fromordinal(self.action._lastBacklog + self.action.cycleTime)
 
 
-class BacklogSearcher:
+class BacklogSearcher(object):
     def __init__(self):
 
         self._lastBacklog = self._get_lastBacklog()
@@ -135,42 +136,41 @@ class BacklogSearcher:
         return self._lastBacklog
 
     def _get_segments(self, show, fromDate):
+        wanted = {}
         if show.paused:
-            logger.log(u"Skipping backlog for {show_name} because the show is paused".format(show_name=show.name), logger.DEBUG)
-            return {}
+            logger.log(u"Skipping backlog for %s because the show is paused" % show.name, logger.DEBUG)
+            return wanted
 
-        anyQualities, bestQualities = common.Quality.splitQuality(show.quality)  # @UnusedVariable
+        allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality)
 
-        logger.log(u"Seeing if we need anything from {show_name}".format(show_name=show.name), logger.DEBUG)
+        logger.log(u"Seeing if we need anything from %s" % show.name, logger.DEBUG)
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT status, season, episode FROM tv_episodes WHERE airdate > ? AND showid = ?",
-                [fromDate.toordinal(), show.indexerid])
+        con = db.DBConnection()
+        sql_results = con.select(
+            "SELECT status, season, episode FROM tv_episodes WHERE airdate > ? AND showid = ?",
+            [fromDate.toordinal(), show.indexerid]
+        )
 
         # check through the list of statuses to see if we want any
-        wanted = {}
-        for result in sqlResults:
-            curCompositeStatus = int(result["status"] or -1)
-            curStatus, curQuality = common.Quality.splitCompositeStatus(curCompositeStatus)
+        for result in sql_results:
+            cur_status, cur_quality = common.Quality.splitCompositeStatus(int(result["status"] or -1))
 
-            if bestQualities:
-                highestBestQuality = max(bestQualities)
-                lowestBestQuality = min(bestQualities)
+            if cur_status not in {common.WANTED, common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER}:
+                continue
+
+            if cur_status != common.WANTED:
+                if preferred_qualities:
+                    if cur_quality in preferred_qualities:
+                        continue
+                elif cur_quality in allowed_qualities:
+                    continue
+
+            ep_obj = show.getEpisode(int(result["season"]), int(result["episode"]))
+
+            if ep_obj.season not in wanted:
+                wanted[ep_obj.season] = [ep_obj]
             else:
-                highestBestQuality = 0
-                lowestBestQuality=0
-
-
-            # if we need a better one then say yes
-            if (curStatus in (common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER) and curQuality < highestBestQuality) or curStatus == common.WANTED:
-                epObj = show.getEpisode(int(result["season"]), int(result["episode"]))
-
-                # only fetch if not archive on first match, or if show is lowest than the lower expected quality
-                if(epObj.show.archive_firstmatch == 0 or curQuality < lowestBestQuality):
-                    if epObj.season not in wanted:
-                        wanted[epObj.season] = [epObj]
-                    else:
-                        wanted[epObj.season].append(epObj)
+                wanted[ep_obj.season].append(ep_obj)
 
         return wanted
 
@@ -185,7 +185,6 @@ class BacklogSearcher:
             myDB.action("INSERT INTO info (last_backlog, last_indexer) VALUES (?,?)", [str(when), 0])
         else:
             myDB.action("UPDATE info SET last_backlog=" + str(when))
-
 
     def run(self, force=False):
         try:

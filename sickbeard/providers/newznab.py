@@ -39,7 +39,7 @@ from sickrage.helper.encoding import ek, ss
 from sickrage.show.Show import Show
 from sickrage.helper.common import try_int
 from sickbeard.common import USER_AGENT
-from sickrage.providers.NZBProvider import NZBProvider
+from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
 class NewznabProvider(NZBProvider):
@@ -65,7 +65,6 @@ class NewznabProvider(NZBProvider):
         self.enable_daily = enable_daily
         self.enable_backlog = enable_backlog
 
-
         # 0 in the key spot indicates that no key is needed
         self.needs_auth = self.key != '0'
         self.public = not self.needs_auth
@@ -83,6 +82,42 @@ class NewznabProvider(NZBProvider):
         return self.name + '|' + self.url + '|' + self.key + '|' + self.catIDs + '|' + str(
             int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(
                 int(self.enable_daily)) + '|' + str(int(self.enable_backlog))
+
+    @staticmethod
+    def get_providers_list(data):
+        default_list = [NewznabProvider._make_provider(x) for x in NewznabProvider._get_default_providers().split('!!!')]
+        providers_list = [x for x in [NewznabProvider._make_provider(x) for x in data.split('!!!')] if x]
+        seen_values = set()
+        providers_set = []
+
+        for provider in providers_list:
+            value = provider.name
+
+            if value not in seen_values:
+                providers_set.append(provider)
+                seen_values.add(value)
+
+        providers_list = providers_set
+        providers_dict = dict(zip([x.name for x in providers_list], providers_list))
+
+        for default in default_list:
+            if not default:
+                continue
+
+            if default.name not in providers_dict:
+                default.default = True
+                providers_list.append(default)
+            else:
+                providers_dict[default.name].default = True
+                providers_dict[default.name].name = default.name
+                providers_dict[default.name].url = default.url
+                providers_dict[default.name].needs_auth = default.needs_auth
+                providers_dict[default.name].search_mode = default.search_mode
+                providers_dict[default.name].search_fallback = default.search_fallback
+                providers_dict[default.name].enable_daily = default.enable_daily
+                providers_dict[default.name].enable_backlog = default.enable_backlog
+
+        return [x for x in providers_list if x]
 
     def image_name(self):
         """
@@ -111,7 +146,7 @@ class NewznabProvider(NZBProvider):
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
-        url = ek(os.path.join, self.url, 'api?') +  urllib.urlencode(params)
+        url = ek(os.path.join, self.url, 'api?') + urllib.urlencode(params)
         data = self.get_url(url)
         if not data:
             error_string = u"Error getting xml for [%s]" % url
@@ -121,7 +156,7 @@ class NewznabProvider(NZBProvider):
         data = BeautifulSoup(data, 'html5lib')
         if not self._checkAuthFromData(data) and data.caps and data.caps.categories:
             data.decompose()
-            error_string = u"Error parsing xml for [%s]" % (self.name)
+            error_string = u"Error parsing xml for [%s]" % self.name
             logger.log(error_string, logger.DEBUG)
             return False, return_categories, error_string
 
@@ -133,6 +168,14 @@ class NewznabProvider(NZBProvider):
 
         data.decompose()
         return True, return_categories, ""
+
+    @staticmethod
+    def _get_default_providers():
+        # name|url|key|catIDs|enabled|search_mode|search_fallback|enable_daily|enable_backlog
+        return 'NZB.Cat|https://nzb.cat/||5030,5040,5010|0|eponly|1|1|1!!!' + \
+               'NZBGeek|https://api.nzbgeek.info/||5030,5040|0|eponly|0|0|0!!!' + \
+               'NZBs.org|https://nzbs.org/||5030,5040|0|eponly|0|0|0!!!' + \
+               'Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0|0|0'
 
     def _get_season_search_strings(self, ep_obj):
         """
@@ -227,7 +270,40 @@ class NewznabProvider(NZBProvider):
 
         return False
 
-    def search(self, search_params, age=0, ep_obj=None): # pylint: disable=too-many-arguments,too-many-locals
+    @staticmethod
+    def _make_provider(config):
+        if not config:
+            return None
+
+        enable_backlog = 0
+        enable_daily = 0
+        search_fallback = 0
+        search_mode = 'eponly'
+
+        try:
+            values = config.split('|')
+
+            if len(values) == 9:
+                name, url, key, category_ids, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
+            else:
+                category_ids = values[3]
+                enabled = values[4]
+                key = values[2]
+                name = values[0]
+                url = values[1]
+        except ValueError:
+            logger.log(u'Skipping Newznab provider string: \'%s\', incorrect format' % config, logger.ERROR)
+            return None
+
+        new_provider = NewznabProvider(
+            name, url, key=key, catIDs=category_ids, search_mode=search_mode, search_fallback=search_fallback,
+            enable_daily=enable_daily, enable_backlog=enable_backlog
+        )
+        new_provider.enabled = enabled == '1'
+
+        return new_provider
+
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-arguments,too-many-locals
         """
         Searches indexer using the params in search_params, either for latest releases, or a string/id search
         Returns: list of results in dict form

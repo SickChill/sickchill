@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: seedboy
 # URL: https://github.com/seedboy
 #
@@ -23,7 +24,7 @@ import re
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 from sickbeard.bs4_parser import BS4Parser
 
@@ -146,7 +147,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             seeders = int(result.find_all('td')[6].text)
                             leechers = int(result.find_all('td')[7].text)
                             size = self._convertSize(result.find_all('td')[2].text)
-                            freeleech = result.find('div', attrs={'class': 'freeleech'}) is not None
+                            freeleech = result.find('span', class_='freeleech')
                             # except (AttributeError, TypeError, KeyError):
                             #     logger.log(u"attrErr: {0}, tErr: {1}, kErr: {2}".format(AttributeError, TypeError, KeyError), logger.DEBUG)
                             #    continue
@@ -186,16 +187,18 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         size = m.group(1)
 
         size, modifier = size[:-2], size[-2:]
+        size = size.replace(',', '')  # strip commas from comma separated values
+
         size = float(size)
         if modifier in 'KB':
-            size = size * 1024
+            size *= 1024 ** 1
         elif modifier in 'MB':
-            size = size * 1024**2
+            size *= 1024 ** 2
         elif modifier in 'GB':
-            size = size * 1024**3
+            size *= 1024 ** 3
         elif modifier in 'TB':
-            size = size * 1024**4
-        return int(size)
+            size *= 1024 ** 4
+        return long(size)
 
     def seedRatio(self):
         return self.ratio

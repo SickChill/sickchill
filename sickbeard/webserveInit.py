@@ -1,3 +1,4 @@
+# coding=utf-8
 import os
 import threading
 import sickbeard
@@ -12,6 +13,7 @@ from tornado.web import Application, StaticFileHandler, RedirectHandler
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.routes import route
+
 
 class SRWebServer(threading.Thread):
     def __init__(self, options={}, io_loop=None):
@@ -55,7 +57,7 @@ class SRWebServer(threading.Thread):
         if self.enable_https:
             # If either the HTTPS certificate or key do not exist, make some self-signed ones.
             if not (self.https_cert and ek(os.path.exists, self.https_cert)) or not (
-                        self.https_key and ek(os.path.exists, self.https_key)):
+                    self.https_key and ek(os.path.exists, self.https_key)):
                 if not create_https_certificates(self.https_cert, self.https_key):
                     logger.log(u"Unable to create CERT/KEY files, disabling HTTPS")
                     sickbeard.ENABLE_HTTPS = False
@@ -67,13 +69,14 @@ class SRWebServer(threading.Thread):
                 self.enable_https = False
 
         # Load the app
-        self.app = Application([],
-                                 debug=True,
-                                 autoreload=False,
-                                 gzip=sickbeard.WEB_USE_GZIP,
-                                 xheaders=sickbeard.HANDLE_REVERSE_PROXY,
-                                 cookie_secret=sickbeard.WEB_COOKIE_SECRET,
-                                 login_url='%s/login/' % self.options['web_root'],
+        self.app = Application(
+            [],
+            debug=True,
+            autoreload=False,
+            gzip=sickbeard.WEB_USE_GZIP,
+            xheaders=sickbeard.HANDLE_REVERSE_PROXY,
+            cookie_secret=sickbeard.WEB_COOKIE_SECRET,
+            login_url='%s/login/' % self.options['web_root'],
         )
 
         # Main Handlers

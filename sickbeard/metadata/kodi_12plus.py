@@ -341,7 +341,6 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 rating = etree.SubElement(episode, "rating")
                 rating.text = myEp['rating']
 
-
             if getattr(myEp, 'writer', None) and isinstance(myEp['writer'], basestring):
                 for writer in self._split_info(myEp['writer']):
                     cur_writer = etree.SubElement(episode, "credits")

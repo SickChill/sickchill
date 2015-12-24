@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Seamus Wassman
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -28,7 +29,7 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.exceptions import AuthException
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class MoreThanTVProvider(TorrentProvider):
@@ -108,7 +109,7 @@ class MoreThanTVProvider(TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (search_string.replace('(', '').replace(')', ''))
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
                 # returns top 15 results by default, expandable in user profile to 100
                 data = self.get_url(searchURL)
@@ -137,11 +138,11 @@ class MoreThanTVProvider(TorrentProvider):
                             torrent_id_long = link['href'].replace('torrents.php?action=download&id=', '')
 
                             try:
-                                if link.has_key('title'):
+                                if link.get('title', ''):
                                     title = cells[1].find('a', {'title': 'View torrent'}).contents[0].strip()
                                 else:
                                     title = link.contents[0]
-                                download_url = self.urls['download'] % (torrent_id_long)
+                                download_url = self.urls['download'] % torrent_id_long
 
                                 seeders = cells[6].contents[0]
 
@@ -153,7 +154,6 @@ class MoreThanTVProvider(TorrentProvider):
 
                             except (AttributeError, TypeError):
                                 continue
-
 
                             if not all([title, download_url]):
                                 continue
@@ -189,16 +189,16 @@ class MoreThanTVProvider(TorrentProvider):
         try:
             size = float(size)
             if modifier in 'KB':
-                size = size * 1024
+                size *= 1024 ** 1
             elif modifier in 'MB':
-                size = size * 1024**2
+                size *= 1024 ** 2
             elif modifier in 'GB':
-                size = size * 1024**3
+                size *= 1024 ** 3
             elif modifier in 'TB':
-                size = size * 1024**4
+                size *= 1024 ** 4
         except Exception:
             size = -1
-        return int(size)
+        return long(size)
 
 
 class MoreThanTVCache(tvcache.TVCache):

@@ -1,3 +1,4 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
 # URL: https://sickrage.github.io
@@ -21,7 +22,7 @@ import sickbeard
 from sickbeard.event_queue import Events
 
 
-class Restart:
+class Restart(object):
     def __init__(self):
         pass
 

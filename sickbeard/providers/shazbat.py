@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -19,7 +20,7 @@
 from sickbeard import logger
 from sickbeard import tvcache
 from sickrage.helper.exceptions import AuthException
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class ShazbatProvider(TorrentProvider):
@@ -36,7 +37,7 @@ class ShazbatProvider(TorrentProvider):
         self.cache = ShazbatCache(self)
 
         self.urls = {'base_url': u'http://www.shazbat.tv/',
-                     'website': u'http://www.shazbat.tv/login',}
+                     'website': u'http://www.shazbat.tv/login', }
         self.url = self.urls['website']
 
     def _check_auth(self):

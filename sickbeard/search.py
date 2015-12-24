@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -125,7 +126,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
             logger.log(u"Unknown NZB action specified in config: " + sickbeard.NZB_METHOD, logger.ERROR)
             dlResult = False
 
-    # TORRENTs can be sent to clients or saved to disk
+    # Torrents can be sent to clients or saved to disk
     elif result.resultType == "torrent":
         # torrents are saved to disk when blackhole mode
         if sickbeard.TORRENT_METHOD == "blackhole":
@@ -209,7 +210,6 @@ def pickBestResult(results, show):
         if show and cur_result.show is not show:
             continue
 
-
         # build the black And white list
         if show.is_anime:
             if not show.release_groups.is_valid(cur_result):
@@ -271,18 +271,17 @@ def isFinalResult(result):
     """
     Checks if the given result is good enough quality that we can stop searching for other ones.
 
-    If the result is the highest quality in both the any/best quality lists then this function
-    returns True, if not then it's False
+    :param result: quality to check
+    :return: True if the result is the highest quality in both the any/best quality lists else False
     """
 
     logger.log(u"Checking if we should keep searching after we've found " + result.name, logger.DEBUG)
 
     show_obj = result.episodes[0].show
 
-
     any_qualities, best_qualities = Quality.splitQuality(show_obj.quality)
 
-    # if there is a redownload that's higher than this then we definitely need to keep looking
+    # if there is a re-download that's higher than this then we definitely need to keep looking
     if best_qualities and result.quality < max(best_qualities):
         return False
 
@@ -290,7 +289,7 @@ def isFinalResult(result):
     elif show_obj.is_anime and show_obj.release_groups.is_valid(result):
         return False
 
-    # if there's no redownload that's higher (above) and this is the highest initial download then we're good
+    # if there's no re-download that's higher (above) and this is the highest initial download then we're good
     elif any_qualities and result.quality in any_qualities:
         return True
 
@@ -304,21 +303,21 @@ def isFinalResult(result):
 
 def isFirstBestMatch(result):
     """
-    Checks if the given result is a best quality match and if we want to archive the episode on first match.
+    Checks if the given result is a best quality match and if we want to stop searching providers here.
+
+    :param result: to check
+    :return: True if the result is the best quality match else False
     """
 
-    logger.log(u"Checking if we should archive our first best quality match for for episode " + result.name,
+    logger.log(u"Checking if we should stop searching for a better quality for for episode " + result.name,
                logger.DEBUG)
 
     show_obj = result.episodes[0].show
 
     any_qualities, best_qualities = Quality.splitQuality(show_obj.quality)
 
-    # if there is a redownload that's a match to one of our best qualities and we want to archive the episode then we are done
-    if best_qualities and show_obj.archive_firstmatch and result.quality in best_qualities:
-        return True
+    return result.quality in best_qualities if best_qualities else False
 
-    return False
 
 def wantedEpisodes(show, fromDate):
     """
@@ -327,34 +326,41 @@ def wantedEpisodes(show, fromDate):
     :param fromDate: Search from a certain date
     :return: list of wanted episodes
     """
+    wanted = []
+    if show.paused:
+        logger.log(u"Not checking for episodes of %s because the show is paused" % show.name, logger.DEBUG)
+        return wanted
 
-    anyQualities, bestQualities = common.Quality.splitQuality(show.quality) # @UnusedVariable
-    allQualities = list(set(anyQualities + bestQualities))
+    allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality)
+    all_qualities = list(set(allowed_qualities + preferred_qualities))
 
     logger.log(u"Seeing if we need anything from " + show.name, logger.DEBUG)
-    myDB = db.DBConnection()
+    con = db.DBConnection()
 
-    sqlResults = myDB.select("SELECT status, season, episode FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?",
-                             [show.indexerid, fromDate.toordinal()])
+    sql_results = con.select(
+        "SELECT status, season, episode FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?",
+        [show.indexerid, fromDate.toordinal()]
+    )
 
     # check through the list of statuses to see if we want any
-    wanted = []
-    for result in sqlResults:
-        curCompositeStatus = int(result["status"] or -1)
-        curStatus, curQuality = common.Quality.splitCompositeStatus(curCompositeStatus)
+    for result in sql_results:
+        cur_status, cur_quality = common.Quality.splitCompositeStatus(int(result["status"] or -1))
+        if cur_status not in {common.WANTED, common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER}:
+            continue
 
-        if bestQualities:
-            highestBestQuality = max(allQualities)
-        else:
-            highestBestQuality = 0
+        if cur_status != common.WANTED:
+            if preferred_qualities:
+                if cur_quality in preferred_qualities:
+                    continue
+            elif cur_quality in allowed_qualities:
+                continue
 
-        # if we need a better one then say yes
-        if (curStatus in (common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER) and curQuality < highestBestQuality) or curStatus == common.WANTED:
-            epObj = show.getEpisode(int(result["season"]), int(result["episode"]))
-            epObj.wantedQuality = [i for i in allQualities if (i > curQuality and i != common.Quality.UNKNOWN)]
-            wanted.append(epObj)
+        epObj = show.getEpisode(int(result["season"]), int(result["episode"]))
+        epObj.wantedQuality = [i for i in all_qualities if i > cur_quality and i != common.Quality.UNKNOWN]
+        wanted.append(epObj)
 
     return wanted
+
 
 def searchForNeededEpisodes():
     """
@@ -435,7 +441,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
     :param show: Show we are looking for
     :param episodes: Episodes we hope to find
     :param manualSearch: Boolean, is this a manual search?
-    :param downCurQuality: Boolean, should we redownload currently avaialble quality file
+    :param downCurQuality: Boolean, should we re-download currently available quality file
     :return: results for search
     """
     foundResults = {}
@@ -457,7 +463,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
     for curProvider in providers:
         if curProvider.anime_only and not show.is_anime:
-            logger.log(u"" + str(show.name) + " is not an anime, skiping", logger.DEBUG)
+            logger.log(u"" + str(show.name) + " is not an anime, skipping", logger.DEBUG)
             continue
 
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"

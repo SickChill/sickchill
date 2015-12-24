@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -47,11 +48,11 @@ def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=Tr
     :return: (int, int) a tuple with (season, episode)
     """
     if indexer_id is None or season is None or episode is None:
-        return (season, episode)
+        return season, episode
 
     showObj = Show.find(sickbeard.showList, int(indexer_id))
     if showObj and not showObj.is_scene:
-        return (season, episode)
+        return season, episode
 
     result = find_scene_numbering(int(indexer_id), int(indexer), season, episode)
     if result:
@@ -61,7 +62,7 @@ def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=Tr
             xem_result = find_xem_numbering(int(indexer_id), int(indexer), season, episode)
             if xem_result:
                 return xem_result
-        return (season, episode)
+        return season, episode
 
 
 def find_scene_numbering(indexer_id, indexer, season, episode):
@@ -69,7 +70,7 @@ def find_scene_numbering(indexer_id, indexer, season, episode):
     Same as get_scene_numbering(), but returns None if scene numbering is not set
     """
     if indexer_id is None or season is None or episode is None:
-        return (season, episode)
+        return season, episode
 
     indexer_id = int(indexer_id)
     indexer = int(indexer)
@@ -80,7 +81,7 @@ def find_scene_numbering(indexer_id, indexer, season, episode):
         [indexer, indexer_id, season, episode])
 
     if rows:
-        return (int(rows[0]["scene_season"]), int(rows[0]["scene_episode"]))
+        return int(rows[0]["scene_season"]), int(rows[0]["scene_episode"])
 
 
 def get_scene_absolute_numbering(indexer_id, indexer, absolute_number, fallback_to_xem=True):
@@ -141,7 +142,7 @@ def get_indexer_numbering(indexer_id, indexer, sceneSeason, sceneEpisode, fallba
     (this works like the reverse of get_scene_numbering)
     """
     if indexer_id is None or sceneSeason is None or sceneEpisode is None:
-        return (sceneSeason, sceneEpisode)
+        return sceneSeason, sceneEpisode
 
     indexer_id = int(indexer_id)
     indexer = int(indexer)
@@ -152,11 +153,11 @@ def get_indexer_numbering(indexer_id, indexer, sceneSeason, sceneEpisode, fallba
         [indexer, indexer_id, sceneSeason, sceneEpisode])
 
     if rows:
-        return (int(rows[0]["season"]), int(rows[0]["episode"]))
+        return int(rows[0]["season"]), int(rows[0]["episode"])
     else:
         if fallback_to_xem:
             return get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode)
-        return (sceneSeason, sceneEpisode)
+        return sceneSeason, sceneEpisode
 
 
 def get_indexer_absolute_numbering(indexer_id, indexer, sceneAbsoluteNumber, fallback_to_xem=True, scene_season=None):
@@ -234,7 +235,7 @@ def find_xem_numbering(indexer_id, indexer, season, episode):
     :return: (int, int) a tuple of scene_season, scene_episode, or None if there is no special mapping.
     """
     if indexer_id is None or season is None or episode is None:
-        return (season, episode)
+        return season, episode
 
     indexer_id = int(indexer_id)
     indexer = int(indexer)
@@ -247,7 +248,7 @@ def find_xem_numbering(indexer_id, indexer, season, episode):
         [indexer, indexer_id, season, episode])
 
     if rows:
-        return (int(rows[0]["scene_season"]), int(rows[0]["scene_episode"]))
+        return int(rows[0]["scene_season"]), int(rows[0]["scene_episode"])
 
 
 def find_xem_absolute_numbering(indexer_id, indexer, absolute_number):
@@ -286,7 +287,7 @@ def get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode
     :return: (int, int) a tuple of (season, episode)
     """
     if indexer_id is None or sceneSeason is None or sceneEpisode is None:
-        return (sceneSeason, sceneEpisode)
+        return sceneSeason, sceneEpisode
 
     indexer_id = int(indexer_id)
     indexer = int(indexer)
@@ -299,9 +300,9 @@ def get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode
         [indexer, indexer_id, sceneSeason, sceneEpisode])
 
     if rows:
-        return (int(rows[0]["season"]), int(rows[0]["episode"]))
+        return int(rows[0]["season"]), int(rows[0]["episode"])
 
-    return (sceneSeason, sceneEpisode)
+    return sceneSeason, sceneEpisode
 
 
 def get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNumber, scene_season=None):
@@ -499,7 +500,7 @@ def xem_refresh(indexer_id, indexer, force=False):
             url = "http://thexem.de/map/all?id=%s&origin=%s&destination=scene" % (indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'])
 
             parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, json=True)
-            if not parsedJSON or not 'result' in parsedJSON or not 'success' in parsedJSON['result']:
+            if not parsedJSON or 'result' not in parsedJSON or 'success' not in parsedJSON['result']:
                 logger.log(u'No XEM data for show "%s on %s"' % (indexer_id, sickbeard.indexerApi(indexer).name,), logger.INFO)
                 return
 
@@ -514,7 +515,8 @@ def xem_refresh(indexer_id, indexer, force=False):
                          indexer_id,
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
-                        ]])
+                         ]
+                    ])
                 if 'scene_2' in entry:  # for doubles
                     cl.append([
                         "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
@@ -524,7 +526,8 @@ def xem_refresh(indexer_id, indexer, force=False):
                          indexer_id,
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
-                        ]])
+                         ]
+                    ])
 
             if len(cl) > 0:
                 myDB = db.DBConnection()
@@ -623,7 +626,8 @@ def fix_xem_numbering(indexer_id, indexer):
                  indexer_id,
                  season,
                  episode
-                ]])
+                 ]
+            ])
             update_absolute_number = False
 
         if update_scene_season:
@@ -633,7 +637,8 @@ def fix_xem_numbering(indexer_id, indexer):
                  indexer_id,
                  season,
                  episode
-                ]])
+                 ]
+            ])
             update_scene_season = False
 
         if update_scene_episode:
@@ -643,7 +648,8 @@ def fix_xem_numbering(indexer_id, indexer):
                  indexer_id,
                  season,
                  episode
-                ]])
+                 ]
+            ])
             update_scene_episode = False
 
         if update_scene_absolute_number:
@@ -653,7 +659,8 @@ def fix_xem_numbering(indexer_id, indexer):
                  indexer_id,
                  season,
                  episode
-                ]])
+                 ]
+            ])
             update_scene_absolute_number = False
 
     if len(cl) > 0:

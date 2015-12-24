@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Mr_Orange <mr_orange@hotmail.it>
 #
 # This file is part of SickRage.
@@ -19,7 +20,7 @@ import re
 import requests
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TorrentDayProvider(TorrentProvider):
@@ -41,9 +42,9 @@ class TorrentDayProvider(TorrentProvider):
 
         self.urls = {
             'base_url': 'https://classic.torrentday.com',
-             'login': 'https://classic.torrentday.com/torrents/',
-             'search': 'https://classic.torrentday.com/V3/API/API.php',
-             'download': 'https://classic.torrentday.com/download.php/%s/%s'
+            'login': 'https://classic.torrentday.com/torrents/',
+            'search': 'https://classic.torrentday.com/V3/API/API.php',
+            'download': 'https://classic.torrentday.com/download.php/%s/%s'
         }
 
         self.url = self.urls['base_url']
@@ -129,7 +130,7 @@ class TorrentDayProvider(TorrentProvider):
                 for torrent in torrents:
 
                     title = re.sub(r"\[.*\=.*\].*\[/.*\]", "", torrent['name'])
-                    download_url = self.urls['download'] % ( torrent['id'], torrent['fname'])
+                    download_url = self.urls['download'] % (torrent['id'], torrent['fname'])
                     seeders = int(torrent['seed'])
                     leechers = int(torrent['leech'])
                     # FIXME

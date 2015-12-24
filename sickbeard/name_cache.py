@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -23,6 +24,7 @@ from sickbeard import logger
 
 nameCache = {}
 nameCacheLock = threading.Lock()
+
 
 def addNameToCache(name, indexer_id=0):
     """
@@ -50,6 +52,7 @@ def retrieveNameFromCache(name):
     name = sickbeard.helpers.full_sanitizeSceneName(name)
     if name in nameCache:
         return int(nameCache[name])
+
 
 def clearCache(indexerid=0):
     """
@@ -93,4 +96,4 @@ def buildNameCache(show=None):
                     continue
 
                 nameCache[name] = int(show.indexerid)
-        logger.log(u"Internal name cache for " + show.name + " set to: [ " + u', '.join([key for key, value in nameCache.iteritems() if value == show.indexerid]) +" ]", logger.DEBUG)
+        logger.log(u"Internal name cache for " + show.name + " set to: [ " + u', '.join([key for key, value in nameCache.iteritems() if value == show.indexerid]) + " ]", logger.DEBUG)

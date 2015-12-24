@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: jkaberg <joel.kaberg@gmail.com>, based on fuzemans work (https://github.com/RuudBurger/CouchPotatoServer/blob/develop/couchpotato/core/downloaders/rtorrent/main.py)
 # URL: http://code.google.com/p/sickbeard/
 #

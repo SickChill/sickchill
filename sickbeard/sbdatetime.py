@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -88,6 +89,7 @@ date_presets = (
 )
 
 time_presets = ('%I:%M:%S %p', '%H:%M:%S')
+
 
 # helper class
 class static_or_instance(object):

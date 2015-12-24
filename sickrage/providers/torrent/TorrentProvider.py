@@ -1,3 +1,4 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
 # URL: https://sickrage.github.io
@@ -42,11 +43,11 @@ class TorrentProvider(GenericProvider):
         db = DBConnection()
         placeholder = ','.join([str(x) for x in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST])
         sql_results = db.select(
-                'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate'
-                ' FROM tv_episodes AS e'
-                ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)'
-                ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-                ' AND e.status IN (' + placeholder + ')'
+            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate'
+            ' FROM tv_episodes AS e'
+            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)'
+            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
+            ' AND e.status IN (' + placeholder + ')'
         )
 
         for result in sql_results or []:
@@ -70,13 +71,10 @@ class TorrentProvider(GenericProvider):
 
     @property
     def _custom_trackers(self):
-        if sickbeard.TRACKERS_LIST:
-            if not self.public:
-                return ''
+        if not (sickbeard.TRACKERS_LIST and self.public):
+            return ''
 
-            return '&tr=' + '&tr='.join(set([x.strip() for x in sickbeard.TRACKERS_LIST.split(',') if x.strip()]))
-
-        return ''
+        return '&tr=' + '&tr='.join({x.strip() for x in sickbeard.TRACKERS_LIST.split(',') if x.strip()})
 
     def _get_result(self, episodes):
         return TorrentSearchResult(episodes)

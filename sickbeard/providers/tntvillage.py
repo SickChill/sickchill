@@ -27,7 +27,7 @@ from sickbeard import db
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickrage.helper.exceptions import AuthException
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 category_excluded = {'Sport': 22,
                      'Teatro': 23,

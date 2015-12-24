@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Idan Gutman
 # Modified by jkaberg, https://github.com/jkaberg for SceneAccess
 # URL: http://code.google.com/p/sickbeard/
@@ -25,7 +26,7 @@ import traceback
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class HDTorrentsProvider(TorrentProvider):
@@ -96,9 +97,9 @@ class HDTorrentsProvider(TorrentProvider):
                 else:
                     searchURL = self.urls['rss'] % self.categories
 
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s" %  search_string, logger.DEBUG)
+                    logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
                 data = self.get_url(searchURL)
                 if not data or 'please try later' in data:
@@ -203,14 +204,14 @@ class HDTorrentsProvider(TorrentProvider):
         size, modifier = size.split(' ')
         size = float(size)
         if modifier in 'KB':
-            size = size * 1024
+            size *= 1024 ** 1
         elif modifier in 'MB':
-            size = size * 1024**2
+            size *= 1024 ** 2
         elif modifier in 'GB':
-            size = size * 1024**3
+            size *= 1024 ** 3
         elif modifier in 'TB':
-            size = size * 1024**4
-        return int(size)
+            size *= 1024 ** 4
+        return long(size)
 
 
 class HDTorrentsCache(tvcache.TVCache):

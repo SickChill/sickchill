@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -180,7 +181,7 @@ class PostProcessor(object):
             base_name = globbable_file_path.rpartition('.')[0]
 
         if not base_name_only:
-            base_name = base_name + '.'
+            base_name += '.'
 
         # don't strip it all and use cwd by accident
         if not base_name:
@@ -348,7 +349,10 @@ class PostProcessor(object):
                     cur_lang = cur_lang.lower()
                     if cur_lang == 'pt-br':
                         cur_lang = 'pt-BR'
-                    cur_extension = cur_lang + ek(os.path.splitext, cur_extension)[1]
+                    if new_base_name:
+                        cur_extension = cur_lang + ek(os.path.splitext, cur_extension)[1]
+                    else:
+                        cur_extension = cur_extension.rpartition('.')[2]
 
             # replace .nfo with .nfo-orig to avoid conflicts
             if cur_extension == 'nfo' and sickbeard.NFO_RENAME is True:
@@ -511,7 +515,8 @@ class PostProcessor(object):
             self.version = version
             to_return = (show, season, [], quality, version)
 
-            self._log("Found result in history for %s - Season: %s - Quality: %s - Version: %s" % (show.name, season, common.Quality.qualityStrings[quality], version), logger.DEBUG)
+            qual_str = common.Quality.qualityStrings[quality] if quality is not None else quality
+            self._log("Found result in history for %s - Season: %s - Quality: %s - Version: %s" % (show.name, season, qual_str, version), logger.DEBUG)
 
             return to_return
 
@@ -532,8 +537,8 @@ class PostProcessor(object):
 
         # if the result is complete then remember that for later
         # if the result is complete then set release name
-        if parse_result.series_name and ((parse_result.season_number is not None and parse_result.episode_numbers)
-                                         or parse_result.air_date) and parse_result.release_group:
+        if parse_result.series_name and ((parse_result.season_number is not None and parse_result.episode_numbers) or
+                                         parse_result.air_date) and parse_result.release_group:
 
             if not self.release_name:
                 self.release_name = helpers.remove_non_release_groups(remove_extension(ek(os.path.basename, parse_result.original_name)))
@@ -715,9 +720,9 @@ class PostProcessor(object):
                     season = 1
 
             if show and season and episodes:
-                return (show, season, episodes, quality, version)
+                return show, season, episodes, quality, version
 
-        return (show, season, episodes, quality, version)
+        return show, season, episodes, quality, version
 
     def _get_ep_obj(self, show, season, episodes):
         """
@@ -961,7 +966,7 @@ class PostProcessor(object):
                 self._log(u"File exists and new file is same size, marking it unsafe to replace")
                 return False
 
-            if new_ep_quality <= old_ep_quality and old_ep_quality != common.Quality.UNKNOWN and existing_file_status != PostProcessor.DOESNT_EXIST:
+            if new_ep_quality <= old_ep_quality != common.Quality.UNKNOWN and existing_file_status != PostProcessor.DOESNT_EXIST:
                 if self.is_proper and new_ep_quality == old_ep_quality:
                     self._log(u"New file is a proper/repack, marking it safe to replace")
                 else:
@@ -1040,10 +1045,7 @@ class PostProcessor(object):
                 else:
                     cur_ep.release_name = ""
 
-                if ep_obj.status in common.Quality.SNATCHED_BEST:
-                    cur_ep.status = common.Quality.compositeStatus(common.ARCHIVED, new_ep_quality)
-                else:
-                    cur_ep.status = common.Quality.compositeStatus(common.DOWNLOADED, new_ep_quality)
+                cur_ep.status = common.Quality.compositeStatus(common.DOWNLOADED, new_ep_quality)
 
                 cur_ep.subtitles = u''
 
@@ -1156,7 +1158,11 @@ class PostProcessor(object):
                     cur_ep.airdateModifyStamp()
 
         # generate nfo/tbn
-        ep_obj.createMetaFiles()
+        try:
+            ep_obj.createMetaFiles()
+        except Exception:
+            logger.log(u"Could not create/update meta files. Continuing with postProcessing...")
+            
 
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group, new_ep_version)

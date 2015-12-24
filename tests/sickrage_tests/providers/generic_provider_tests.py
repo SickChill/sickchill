@@ -316,14 +316,14 @@ class GenericProviderTests(unittest.TestCase):
         ]
 
         self.assertEqual(
-                len(items_list), len(results_list),
-                'Number of parameters (%d) and results (%d) does not match' % (len(items_list), len(results_list))
+            len(items_list), len(results_list),
+            'Number of parameters (%d) and results (%d) does not match' % (len(items_list), len(results_list))
         )
 
         self.assertEqual(
-                len(unicode_items_list), len(unicode_results_list),
-                'Number of parameters (%d) and results (%d) does not match' % (
-                    len(unicode_items_list), len(unicode_results_list))
+            len(unicode_items_list), len(unicode_results_list),
+            'Number of parameters (%d) and results (%d) does not match' % (
+                len(unicode_items_list), len(unicode_results_list))
         )
 
         for (index, item) in enumerate(items_list):

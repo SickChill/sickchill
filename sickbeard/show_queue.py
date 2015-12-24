@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -48,8 +49,7 @@ class ShowQueue(generic_queue.GenericQueue):
         return show.indexerid in [x.show.indexerid if x.show else 0 for x in self.queue if x.action_id in actions]
 
     def _isBeingSomethinged(self, show, actions):
-        return self.currentItem is not None and show == self.currentItem.show and \
-               self.currentItem.action_id in actions
+        return self.currentItem is not None and show == self.currentItem.show and self.currentItem.action_id in actions
 
     def isInUpdateQueue(self, show):
         return self._isInQueue(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
@@ -142,13 +142,13 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def addShow(self, indexer, indexer_id, showDir, default_status=None, quality=None, flatten_folders=None,
-                lang=None, subtitles=None, anime=None, scene=None, paused=None, blacklist=None, whitelist=None, default_status_after=None, archive=None):
+                lang=None, subtitles=None, anime=None, scene=None, paused=None, blacklist=None, whitelist=None, default_status_after=None):
 
         if lang is None:
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
         queueItemObj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang,
-                                    subtitles, anime, scene, paused, blacklist, whitelist, default_status_after, archive)
+                                    subtitles, anime, scene, paused, blacklist, whitelist, default_status_after)
 
         self.add_item(queueItemObj)
 
@@ -160,13 +160,14 @@ class ShowQueue(generic_queue.GenericQueue):
 
         # remove other queued actions for this show.
         for x in self.queue:
-            if show.indexerid == x.show.indexerid and x != self.currentItem:
+            if x and x != self.currentItem and show.indexerid == x.show.indexerid:
                 self.queue.remove(x)
 
         queueItemObj = QueueItemRemove(show=show, full=full)
         self.add_item(queueItemObj)
 
         return queueItemObj
+
 
 class ShowQueueActions(object):
 
@@ -225,7 +226,7 @@ class ShowQueueItem(generic_queue.QueueItem):
 
 class QueueItemAdd(ShowQueueItem):
     def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles, anime,
-                 scene, paused, blacklist, whitelist, default_status_after, archive):
+                 scene, paused, blacklist, whitelist, default_status_after):
 
         self.indexer = indexer
         self.indexer_id = indexer_id
@@ -241,7 +242,6 @@ class QueueItemAdd(ShowQueueItem):
         self.blacklist = blacklist
         self.whitelist = whitelist
         self.default_status_after = default_status_after
-        self.archive = archive
 
         self.show = None
 
@@ -294,7 +294,7 @@ class QueueItemAdd(ShowQueueItem):
             if getattr(s, 'seriesname', None) is None:
                 logger.log(u"Show in " + self.showDir + " has no name on " + str(
                     sickbeard.indexerApi(self.indexer).name) + ", probably the wrong language used to search with.",
-                           logger.ERROR)
+                    logger.ERROR)
                 ui.notifications.error("Unable to add show",
                                        "Show in " + self.showDir + " has no name on " + str(sickbeard.indexerApi(
                                            self.indexer).name) + ", probably the wrong language. Delete .nfo and add manually in the correct language.")
@@ -357,7 +357,6 @@ class QueueItemAdd(ShowQueueItem):
             self.show.flatten_folders = self.flatten_folders if self.flatten_folders is not None else sickbeard.FLATTEN_FOLDERS_DEFAULT
             self.show.anime = self.anime if self.anime is not None else sickbeard.ANIME_DEFAULT
             self.show.scene = self.scene if self.scene is not None else sickbeard.SCENE_DEFAULT
-            self.show.archive_firstmatch = self.archive if self.archive is not None else sickbeard.ARCHIVE_DEFAULT
             self.show.paused = self.paused if self.paused is not None else False
 
             # set up default new/missing episode status
@@ -511,6 +510,7 @@ class QueueItemRefresh(ShowQueueItem):
 
         self.finish()
 
+
 class QueueItemRename(ShowQueueItem):
     def __init__(self, show=None):
         ShowQueueItem.__init__(self, ShowQueueActions.RENAME, show)
@@ -551,6 +551,7 @@ class QueueItemRename(ShowQueueItem):
 
         self.finish()
 
+
 class QueueItemSubtitle(ShowQueueItem):
     def __init__(self, show=None):
         ShowQueueItem.__init__(self, ShowQueueActions.SUBTITLE, show)
@@ -562,6 +563,7 @@ class QueueItemSubtitle(ShowQueueItem):
 
         self.show.download_subtitles()
         self.finish()
+
 
 class QueueItemUpdate(ShowQueueItem):
     def __init__(self, show=None):

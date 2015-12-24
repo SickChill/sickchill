@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -36,7 +37,7 @@ from sickrage.show.History import History
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 
-class ProperFinder:
+class ProperFinder(object):
     def __init__(self):
         self.amActive = False
 
@@ -102,7 +103,7 @@ class ProperFinder:
                     continue
 
                 name = self._genericName(x.name)
-                if not name in propers:
+                if name not in propers:
                     logger.log(u"Found new proper: " + x.name, logger.DEBUG)
                     x.provider = curProvider
                     propers[name] = x
@@ -188,7 +189,7 @@ class ProperFinder:
                 oldVersion = int(sqlResults[0]["version"])
                 oldRelease_group = (sqlResults[0]["release_group"])
 
-                if oldVersion > -1 and oldVersion < bestResult.version:
+                if -1 < oldVersion < bestResult.version:
                     logger.log(u"Found new anime v" + str(bestResult.version) + " to replace existing v" + str(oldVersion))
                 else:
                     continue

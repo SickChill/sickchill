@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -132,15 +133,17 @@ class CheckVersion(object):
 
         return True
 
-
     # TODO: Merge with backup in helpers
     @staticmethod
     def _backup(backupDir=None):
         if not backupDir:
             return False
-        source = [ek(os.path.join, sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE]
-        source.append(ek(os.path.join, sickbeard.DATA_DIR, 'failed.db'))
-        source.append(ek(os.path.join, sickbeard.DATA_DIR, 'cache.db'))
+        source = [
+            ek(os.path.join, sickbeard.DATA_DIR, 'sickbeard.db'),
+            sickbeard.CONFIG_FILE,
+            ek(os.path.join, sickbeard.DATA_DIR, 'failed.db'),
+            ek(os.path.join, sickbeard.DATA_DIR, 'cache.db')
+        ]
         target = ek(os.path.join, backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
         for (path, dirs, files) in ek(os.walk, sickbeard.CACHE_DIR, topdown=True):
@@ -279,7 +282,6 @@ class CheckVersion(object):
         self.updater.set_newest_text()
         return True
 
-
     def check_for_new_news(self, force=False):
         """
         Checks GitHub for the latest news.
@@ -351,6 +353,7 @@ class UpdateManager(object):
     def get_update_url():
         return sickbeard.WEB_ROOT + "/home/update/?pid=" + str(sickbeard.PID)
 
+
 class GitUpdateManager(UpdateManager):
     def __init__(self):
         self._git_path = self._find_working_git()
@@ -374,7 +377,10 @@ class GitUpdateManager(UpdateManager):
         return self._run_git(self._git_path, "describe --abbrev=0 " + self._cur_commit_hash)[0]
 
     def get_newest_version(self):
-        return self._run_git(self._git_path, "describe --abbrev=0 " + self._newest_commit_hash)[0]
+        if self._newest_commit_hash:
+            return self._run_git(self._git_path, "describe --abbrev=0 " + self._newest_commit_hash)[0]
+        else:
+            return self._run_git(self._git_path, "describe --abbrev=0 " + self._cur_commit_hash)[0]
 
     def get_num_commits_behind(self):
         return self._num_commits_behind
@@ -402,7 +408,6 @@ class GitUpdateManager(UpdateManager):
             logger.log(u"Not using: " + main_git, logger.DEBUG)
 
         # trying alternatives
-
 
         alternative_git = []
 
@@ -441,7 +446,7 @@ class GitUpdateManager(UpdateManager):
         if not git_path:
             logger.log(u"No git specified, can't use git commands", logger.WARNING)
             exit_status = 1
-            return (output, err, exit_status)
+            return output, err, exit_status
 
         cmd = git_path + ' ' + args
 
@@ -454,7 +459,6 @@ class GitUpdateManager(UpdateManager):
 
             if output:
                 output = output.strip()
-
 
         except OSError:
             logger.log(u"Command " + cmd + " didn't work")
@@ -479,7 +483,7 @@ class GitUpdateManager(UpdateManager):
             logger.log(cmd + u" returned : " + str(output) + u", treat as error for now", logger.ERROR)
             exit_status = 1
 
-        return (output, err, exit_status)
+        return output, err, exit_status
 
     def _find_installed_version(self):
         """
@@ -684,6 +688,7 @@ class GitUpdateManager(UpdateManager):
         if sickbeard.GIT_USERNAME:
             self._run_git(self._git_path, 'config remote.%s.pushurl %s' % (sickbeard.GIT_REMOTE, sickbeard.GIT_REMOTE_URL.replace(sickbeard.GIT_ORG, sickbeard.GIT_USERNAME, 1)))
 
+
 class SourceUpdateManager(UpdateManager):
     def __init__(self):
         self.github_org = self.get_github_org()
@@ -774,8 +779,8 @@ class SourceUpdateManager(UpdateManager):
                 # when _cur_commit_hash doesn't match anything _num_commits_behind == 100
                 self._num_commits_behind += 1
 
-        logger.log(u"cur_commit = " + str(self._cur_commit_hash) + u", newest_commit = " + str(self._newest_commit_hash)
-                   + u", num_commits_behind = " + str(self._num_commits_behind), logger.DEBUG)
+        logger.log(u"cur_commit = " + str(self._cur_commit_hash) + u", newest_commit = " + str(self._newest_commit_hash) +
+                   u", num_commits_behind = " + str(self._num_commits_behind), logger.DEBUG)
 
     def set_newest_text(self):
 

@@ -1,3 +1,4 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -23,7 +24,7 @@ from sickbeard import show_name_helpers
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.exceptions import AuthException
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TVChaosUKProvider(TorrentProvider):
@@ -48,7 +49,7 @@ class TVChaosUKProvider(TorrentProvider):
 
         self.search_params = {
             'do': 'search',
-            'keywords':  '',
+            'keywords': '',
             'search_type': 't_name',
             'category': 0,
             'include_dead_torrents': 'no',
@@ -141,20 +142,20 @@ class TVChaosUKProvider(TorrentProvider):
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
-                with BS4Parser(data) as html:
+                with BS4Parser(data, 'html5lib') as html:
                     torrent_table = html.find(id='listtorrents')
                     if not torrent_table:
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
                     torrent_rows = torrent_table.find_all('tr')
-
                     for torrent in torrent_rows:
                         try:
+                            cells = torrent.find_all('td')
                             freeleech = torrent.find('img', alt=re.compile('Free Torrent'))
                             if self.freeleech and not freeleech:
                                 continue
-                            title = (torrent.find(attrs={'class':'tooltip-target'}).text.strip()).replace("mp4", "x264")
+                            title = (torrent.find('div', style='text-align:left; margin-top: 5px').text.strip()).replace("mp4", "x264")
                             download_url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
                             seeders = int(torrent.find(title='Seeders').text.strip())
                             leechers = int(torrent.find(title='Leechers').text.strip())
@@ -169,20 +170,20 @@ class TVChaosUKProvider(TorrentProvider):
                                 continue
 
                             # Chop off tracker/channel prefix or we cant parse the result!
-                            show_name_first_word = re.search(r'^[^ .]+', self.search_params['keywords']).group()
-                            if not title.startswith(show_name_first_word):
-                                title = re.match(r'(.*)(' + show_name_first_word + '.*)', title).group(2)
+                            show_name_first_word = re.search(r'^[^ .]+', self.search_params['keywords'])
+                            if show_name_first_word and not title.startswith(show_name_first_word.group()) and show_name_first_word in title:
+                                title = re.match(r'.*(' + show_name_first_word + '.*)', title).group(1)
 
                             # Change title from Series to Season, or we can't parse
-                            if 'Series' in self.search_params['keywords']:
+                            if 'Series' not in self.search_params['keywords']:
                                 title = re.sub(r'(?i)series', 'Season', title)
 
                             # Strip year from the end or we can't parse it!
                             title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
-
-                            # FIXME
+                            torrent_size = cells[4].getText().strip()
                             size = -1
-
+                            if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
+                                size = self._convertSize(torrent_size.rstrip())
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
@@ -201,6 +202,23 @@ class TVChaosUKProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
+
+    def _convertSize(self, sizeString):
+        size = sizeString[:-2].strip()
+        modifier = sizeString[-2:].upper()
+        try:
+            size = float(size)
+            if modifier in 'KB':
+                size *= 1024 ** 1
+            elif modifier in 'MB':
+                size *= 1024 ** 2
+            elif modifier in 'GB':
+                size *= 1024 ** 3
+            elif modifier in 'TB':
+                size *= 1024 ** 4
+        except Exception:
+            size = -1
+        return long(size)
 
 
 class TVChaosUKCache(tvcache.TVCache):

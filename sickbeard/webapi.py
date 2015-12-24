@@ -305,10 +305,10 @@ class ApiCall(ApiHandler):
                 for paramName in paramDict:
                     if paramName not in self._help[paramType]:
                         self._help[paramType][paramName] = {}
-                    if paramDict[paramName]["allowed_values"]:
-                        self._help[paramType][paramName]["allowed_values"] = paramDict[paramName]["allowed_values"]
+                    if paramDict[paramName]["allowedValues"]:
+                        self._help[paramType][paramName]["allowedValues"] = paramDict[paramName]["allowedValues"]
                     else:
-                        self._help[paramType][paramName]["allowed_values"] = "see desc"
+                        self._help[paramType][paramName]["allowedValues"] = "see desc"
                     self._help[paramType][paramName]["defaultValue"] = paramDict[paramName]["defaultValue"]
                     self._help[paramType][paramName]["type"] = paramDict[paramName]["type"]
 
@@ -362,7 +362,7 @@ class ApiCall(ApiHandler):
                 self._requiredParams.append(key)
             except AttributeError:
                 self._missing = []
-                self._requiredParams = {key: {"allowed_values": allowed_values,
+                self._requiredParams = {key: {"allowedValues": allowed_values,
                                               "defaultValue": org_default,
                                               "type": arg_type}}
 
@@ -370,11 +370,11 @@ class ApiCall(ApiHandler):
                 self._missing.append(key)
         else:
             try:
-                self._optionalParams[key] = {"allowed_values": allowed_values,
+                self._optionalParams[key] = {"allowedValues": allowed_values,
                                              "defaultValue": org_default,
                                              "type": arg_type}
             except AttributeError:
-                self._optionalParams = {key: {"allowed_values": allowed_values,
+                self._optionalParams = {key: {"allowedValues": allowed_values,
                                               "defaultValue": org_default,
                                               "type": arg_type}}
 
@@ -962,18 +962,13 @@ class CMD_SubtitleSearch(ApiCall):
         if isinstance(ep_obj, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
-        # try do download subtitles for that episode
-        previous_subtitles = ep_obj.subtitles
-
         try:
-            subtitles = ep_obj.download_subtitles()
+            new_subtitles = ep_obj.download_subtitles()
         except Exception:
             return _responds(RESULT_FAILURE, msg='Unable to find subtitles')
 
-        # return the correct json value
-        new_subtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
         if new_subtitles:
-            new_languages = [subtitles.name_from_code(code) for code in new_subtitles]
+            new_languages = [sickbeard.subtitles.name_from_code(code) for code in new_subtitles]
             status = 'New subtitles downloaded: %s' % ', '.join(new_languages)
             response = _responds(RESULT_SUCCESS, msg='New subtitles found')
         else:
@@ -1902,7 +1897,9 @@ class CMD_Show(ApiCall):
             show_dict["rls_ignore_words"] = []
 
         show_dict["scene"] = (0, 1)[show_obj.scene]
-        show_dict["archive_firstmatch"] = (0, 1)[show_obj.archive_firstmatch]
+        # show_dict["archive_firstmatch"] = (0, 1)[show_obj.archive_firstmatch]
+        # This might need to be here for 3rd part apps?
+        show_dict["archive_firstmatch"] = 1
 
         show_dict["indexerid"] = show_obj.indexerid
         show_dict["tvdbid"] = helpers.mapIndexersToShow(show_obj)[1]
@@ -2010,9 +2007,10 @@ class CMD_ShowAddExisting(ApiCall):
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
 
         sickbeard.showQueueScheduler.action.addShow(
-            int(indexer), int(self.indexerid), self.location, default_status=sickbeard.STATUS_DEFAULT,
-            quality=new_quality, flatten_folders=int(self.flatten_folders), subtitles=self.subtitles,
-            default_status_after=sickbeard.STATUS_DEFAULT_AFTER, archive=self.archive_firstmatch
+            int(indexer), int(self.indexerid), self.location,
+            default_status=sickbeard.STATUS_DEFAULT, quality=new_quality,
+            flatten_folders=int(self.flatten_folders), subtitles=self.subtitles,
+            default_status_after=sickbeard.STATUS_DEFAULT_AFTER
         )
 
         return _responds(RESULT_SUCCESS, {"name": indexer_name}, indexer_name + " has been queued to be added")
@@ -2036,9 +2034,6 @@ class CMD_ShowAddNew(ApiCall):
             "anime": {"desc": "True to mark the show as an anime, False otherwise"},
             "scene": {"desc": "True if episodes search should be made by scene numbering, False otherwise"},
             "future_status": {"desc": "The status of future episodes"},
-            "archive_firstmatch": {
-                "desc": "True if episodes should be archived when first match is downloaded, False otherwise"
-            },
         }
     }
 
@@ -2068,8 +2063,6 @@ class CMD_ShowAddNew(ApiCall):
                                              "bool", [])
         self.future_status, args = self.check_params(args, kwargs, "future_status", None, False, "string",
                                                      ["wanted", "skipped", "ignored"])
-        self.archive_firstmatch, args = self.check_params(args, kwargs, "archive_firstmatch",
-                                                          bool(sickbeard.ARCHIVE_DEFAULT), False, "bool", [])
 
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
@@ -2183,9 +2176,10 @@ class CMD_ShowAddNew(ApiCall):
                 helpers.chmodAsParent(show_path)
 
         sickbeard.showQueueScheduler.action.addShow(
-            int(indexer), int(self.indexerid), show_path, default_status=new_status, quality=new_quality,
-            flatten_folders=int(self.flatten_folders), lang=self.lang, subtitles=self.subtitles, anime=self.anime,
-            scene=self.scene, default_status_after=default_ep_status_after, archive=self.archive_firstmatch
+            int(indexer), int(self.indexerid), show_path, default_status=new_status,
+            quality=new_quality, flatten_folders=int(self.flatten_folders),
+            lang=self.lang, subtitles=self.subtitles, anime=self.anime,
+            scene=self.scene, default_status_after=default_ep_status_after
         )
 
         return _responds(RESULT_SUCCESS, {"name": indexer_name}, indexer_name + " has been queued to be added")

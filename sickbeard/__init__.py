@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -36,7 +37,7 @@ from sickbeard import metadata
 from sickbeard import providers
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
-from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
+from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, auto_postprocessor, \
     subtitles, traktChecker, numdict
 from sickbeard import db
 from sickbeard import helpers
@@ -47,17 +48,19 @@ from sickbeard import logger
 from sickbeard import naming
 from sickbeard import dailysearcher
 from sickbeard.indexers import indexer_api
-from sickbeard.indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, indexer_error, \
-    indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, indexerExcepts
+from sickbeard.indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, \
+    indexer_error, indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, \
+    indexerExcepts
 from sickbeard.common import SD
 from sickbeard.common import SKIPPED
 from sickbeard.common import WANTED
+from sickbeard.providers.rsstorrent import TorrentRssProvider
 from sickbeard.databases import mainDB, cache_db, failed_db
+from sickbeard.providers.newznab import NewznabProvider
 
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.providers.GenericProvider import GenericProvider
-from sickrage.show.Show import Show
 from sickrage.system.Shutdown import Shutdown
 
 from configobj import ConfigObj
@@ -149,7 +152,7 @@ started = False
 ACTUAL_LOG_DIR = None
 LOG_DIR = None
 LOG_NR = 5
-LOG_SIZE = 1048576
+LOG_SIZE = 1
 
 SOCKET_TIMEOUT = None
 
@@ -195,6 +198,7 @@ TRASH_REMOVE_SHOW = False
 TRASH_ROTATE_LOGS = False
 SORT_ARTICLE = False
 DEBUG = False
+DBDEBUG = False
 DISPLAY_ALL_SEASONS = True
 DEFAULT_PAGE = 'home'
 
@@ -217,7 +221,6 @@ INDEXER_DEFAULT = None
 INDEXER_TIMEOUT = None
 SCENE_DEFAULT = False
 ANIME_DEFAULT = False
-ARCHIVE_DEFAULT = False
 PROVIDER_ORDER = []
 
 NAMING_MULTI_EP = False
@@ -568,6 +571,7 @@ __INITIALIZED__ = False
 
 NEWZNAB_DATA = None
 
+
 def get_backlog_cycle_time():
     cycletime = DAILYSEARCH_FREQUENCY * 2 + 7
     return max([cycletime, 720])
@@ -615,10 +619,10 @@ def initialize(consoleLogging=True):
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
             USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_DOWNLOAD_IN_PP, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH, subtitlesFinderScheduler, \
             SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, OPENSUBTITLES_USER, OPENSUBTITLES_PASS, \
-            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, \
+            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, SCENE_DEFAULT, ARCHIVE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
+            ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             GIT_AUTOISSUES, DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT
 
         if __INITIALIZED__:
@@ -661,6 +665,7 @@ def initialize(consoleLogging=True):
 
         # debugging
         DEBUG = bool(check_setting_int(CFG, 'General', 'debug', 0))
+        DBDEBUG = bool(check_setting_int(CFG, 'General', 'dbdebug', 0))
 
         DEFAULT_PAGE = check_setting_str(CFG, 'General', 'default_page', 'home')
         if DEFAULT_PAGE not in ('home', 'schedule', 'history', 'news', 'IRC'):
@@ -669,14 +674,16 @@ def initialize(consoleLogging=True):
         ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
         LOG_DIR = ek(os.path.normpath, ek(os.path.join, DATA_DIR, ACTUAL_LOG_DIR))
         LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5)  # Default to 5 backup file (sickrage.log.x)
-        LOG_SIZE = check_setting_int(CFG, 'General', 'log_size', 1048576)  # Default to max 1MB per logfile
+        LOG_SIZE = check_setting_int(CFG, 'General', 'log_size', 1)  # Default to max 1MB per logfile
+        if LOG_SIZE > 100:
+            LOG_SIZE = 1
         fileLogging = True
         if not helpers.makeDir(LOG_DIR):
             sys.stderr.write("!!! No log folder, logging to screen only!\n")
             fileLogging = False
 
         # init logging
-        logger.initLogging(consoleLogging=consoleLogging, fileLogging=fileLogging, debugLogging=DEBUG)
+        logger.initLogging(consoleLogging=consoleLogging, fileLogging=fileLogging, debugLogging=DEBUG, databaseLogging=DBDEBUG)
 
         # github api
         try:
@@ -759,7 +766,6 @@ def initialize(consoleLogging=True):
                     except Exception as e:
                         logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
-
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
 
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
@@ -817,7 +823,7 @@ def initialize(consoleLogging=True):
 
         ENABLE_HTTPS = bool(check_setting_int(CFG, 'General', 'enable_https', 0))
 
-        NOTIFY_ON_LOGIN  = bool(check_setting_int(CFG, 'General', 'notify_on_login', 0))
+        NOTIFY_ON_LOGIN = bool(check_setting_int(CFG, 'General', 'notify_on_login', 0))
 
         HTTPS_CERT = check_setting_str(CFG, 'General', 'https_cert', 'server.crt')
         HTTPS_KEY = check_setting_str(CFG, 'General', 'https_key', 'server.key')
@@ -839,7 +845,6 @@ def initialize(consoleLogging=True):
         INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20)
         ANIME_DEFAULT = bool(check_setting_int(CFG, 'General', 'anime_default', 0))
         SCENE_DEFAULT = bool(check_setting_int(CFG, 'General', 'scene_default', 0))
-        ARCHIVE_DEFAULT = bool(check_setting_int(CFG, 'General', 'archive_default', 0))
 
         PROVIDER_ORDER = check_setting_str(CFG, 'General', 'provider_order', '').split()
 
@@ -1224,10 +1229,10 @@ def initialize(consoleLogging=True):
         providerList = providers.makeProviderList()
 
         NEWZNAB_DATA = check_setting_str(CFG, 'Newznab', 'newznab_data', '')
-        newznabProviderList = providers.getNewznabProviderList(NEWZNAB_DATA)
+        newznabProviderList = NewznabProvider.get_providers_list(NEWZNAB_DATA)
 
         TORRENTRSS_DATA = check_setting_str(CFG, 'TorrentRss', 'torrentrss_data', '')
-        torrentRssProviderList = providers.getTorrentRssProviderList(TORRENTRSS_DATA)
+        torrentRssProviderList = TorrentRssProvider.get_providers_list(TORRENTRSS_DATA)
 
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in providers.sortedProviderList() if
@@ -1236,7 +1241,8 @@ def initialize(consoleLogging=True):
                                                                 curTorrentProvider.get_id(), 0))
             if hasattr(curTorrentProvider, 'custom_url'):
                 curTorrentProvider.custom_url = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
-                                                                curTorrentProvider.get_id() + '_custom_url', '', censor_log=True)
+                                                                  curTorrentProvider.get_id() + '_custom_url',
+                                                                  '', censor_log=True)
             if hasattr(curTorrentProvider, 'api_key'):
                 curTorrentProvider.api_key = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
                                                                curTorrentProvider.get_id() + '_api_key', '', censor_log=True)
@@ -1433,7 +1439,7 @@ def initialize(consoleLogging=True):
                                                     run_delay=update_interval)
 
         # processors
-        autoPostProcesserScheduler = scheduler.Scheduler(autoPostProcesser.PostProcesser(),
+        autoPostProcesserScheduler = scheduler.Scheduler(auto_postprocessor.PostProcessor(),
                                                          cycleTime=datetime.timedelta(
                                                              minutes=AUTOPOSTPROCESSER_FREQUENCY),
                                                          threadName="POSTPROCESSER",
@@ -1630,6 +1636,7 @@ def save_config():
     new_config['General']['anon_redirect'] = ANON_REDIRECT
     new_config['General']['api_key'] = API_KEY
     new_config['General']['debug'] = int(DEBUG)
+    new_config['General']['dbdebug'] = int(DBDEBUG)
     new_config['General']['default_page'] = DEFAULT_PAGE
     new_config['General']['enable_https'] = int(ENABLE_HTTPS)
     new_config['General']['notify_on_login'] = int(NOTIFY_ON_LOGIN)
@@ -1660,7 +1667,6 @@ def save_config():
     new_config['General']['indexer_timeout'] = int(INDEXER_TIMEOUT)
     new_config['General']['anime_default'] = int(ANIME_DEFAULT)
     new_config['General']['scene_default'] = int(SCENE_DEFAULT)
-    new_config['General']['archive_default'] = int(ARCHIVE_DEFAULT)
     new_config['General']['provider_order'] = ' '.join(PROVIDER_ORDER)
     new_config['General']['version_notify'] = int(VERSION_NOTIFY)
     new_config['General']['auto_update'] = int(AUTO_UPDATE)

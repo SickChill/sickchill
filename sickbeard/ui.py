@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -21,6 +22,7 @@ import sickbeard
 
 MESSAGE = 'notice'
 ERROR = 'error'
+
 
 class Notifications(object):
     """
@@ -101,7 +103,6 @@ class Notification(object):
         """
         return datetime.datetime.now() - self._when > self._timeout
 
-
     def see(self, remote_ip='127.0.0.1'):
         """
         Returns this notification object and marks it as seen by the client ip
@@ -109,13 +110,15 @@ class Notification(object):
         self._seen.append(remote_ip)
         return self
 
-class ProgressIndicator():
+
+class ProgressIndicator(object):
 
     def __init__(self, percentComplete=0, currentStatus={'title': ''}):
         self.percentComplete = percentComplete
         self.currentStatus = currentStatus
 
-class ProgressIndicators():
+
+class ProgressIndicators(object):
     _pi = {'massUpdate': [],
            'massAdd': [],
            'dailyUpdate': []
@@ -138,7 +141,8 @@ class ProgressIndicators():
     def setIndicator(name, indicator):
         ProgressIndicators._pi[name].append(indicator)
 
-class QueueProgressIndicator():
+
+class QueueProgressIndicator(object):
     """
     A class used by the UI to show the progress of the queue or a part of it.
     """
@@ -156,7 +160,7 @@ class QueueProgressIndicator():
         return len([x for x in self.queueItemList if x.isInQueue()])
 
     def nextName(self):
-        for curItem in [sickbeard.showQueueScheduler.action.currentItem]+sickbeard.showQueueScheduler.action.queue:  # @UndefinedVariable
+        for curItem in [sickbeard.showQueueScheduler.action.currentItem] + sickbeard.showQueueScheduler.action.queue:  # @UndefinedVariable
             if curItem in self.queueItemList:
                 return curItem.name
 
@@ -169,9 +173,10 @@ class QueueProgressIndicator():
         if numTotal == 0:
             return 0
         else:
-            return int(float(numFinished)/float(numTotal)*100)
+            return int(float(numFinished) / float(numTotal) * 100)
 
-class LoadingTVShow():
+
+class LoadingTVShow(object):
     def __init__(self, dir):
         self.dir = dir
         self.show = None

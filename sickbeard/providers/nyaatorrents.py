@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Mr_Orange
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -21,7 +22,7 @@ import re
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class NyaaProvider(TorrentProvider):
@@ -67,7 +68,7 @@ class NyaaProvider(TorrentProvider):
                     params["term"] = search_string.encode('utf-8')
 
                 searchURL = self.url + '?' + urllib.urlencode(params)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
                 summary_regex = ur"(\d+) seeder\(s\), (\d+) leecher\(s\), \d+ download\(s\) - (\d+.?\d* [KMGT]iB)(.*)"
                 s = re.compile(summary_regex, re.DOTALL)
@@ -110,14 +111,14 @@ class NyaaProvider(TorrentProvider):
         size, modifier = size.split(' ')
         size = float(size)
         if modifier in 'KiB':
-            size = size * 1024
+            size *= 1024 ** 1
         elif modifier in 'MiB':
-            size = size * 1024**2
+            size *= 1024 ** 2
         elif modifier in 'GiB':
-            size = size * 1024**3
+            size *= 1024 ** 3
         elif modifier in 'TiB':
-            size = size * 1024**4
-        return int(size)
+            size *= 1024 ** 4
+        return long(size)
 
     def seed_ratio(self):
         return self.ratio
