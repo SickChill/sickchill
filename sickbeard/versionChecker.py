@@ -302,10 +302,6 @@ class CheckVersion(object):
         if not news:
             return ''
 
-        dates = re.finditer(r'^####(\d{4}-\d{2}-\d{2})####$', news, re.M)
-        if not list(dates):
-            return news or ''
-
         try:
             last_read = datetime.datetime.strptime(sickbeard.NEWS_LAST_READ, '%Y-%m-%d')
         except Exception:
@@ -313,7 +309,7 @@ class CheckVersion(object):
 
         sickbeard.NEWS_UNREAD = 0
         gotLatest = False
-        for match in dates:
+        for match in re.finditer(r'^####\s*(\d{4}-\d{2}-\d{2})\s*####', news, re.M):
             if not gotLatest:
                 gotLatest = True
                 sickbeard.NEWS_LATEST = match.group(1)
@@ -759,9 +755,14 @@ class SourceUpdateManager(UpdateManager):
 
         # try to get newest commit hash and commits behind directly by comparing branch and current commit
         if self._cur_commit_hash:
-            branch_compared = sickbeard.gh.compare(base=self.branch, head=self._cur_commit_hash)
-            self._newest_commit_hash = branch_compared.base_commit.sha
-            self._num_commits_behind = branch_compared.behind_by
+            try:
+                branch_compared = sickbeard.gh.compare(base=self.branch, head=self._cur_commit_hash)
+                self._newest_commit_hash = branch_compared.base_commit.sha
+                self._num_commits_behind = branch_compared.behind_by
+            except Exception:  # UnknownObjectException
+                self._newest_commit_hash = ""
+                self._num_commits_behind = 0
+                self._cur_commit_hash = ""
 
         # fall back and iterate over last 100 (items per page in gh_api) commits
         if not self._newest_commit_hash:

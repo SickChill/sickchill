@@ -28,6 +28,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import cpu_presets
+from sickbeard.common import USER_AGENT
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -42,6 +43,7 @@ class TORRENTZProvider(TorrentProvider):
         self.minseed = None
         self.minleech = None
         self.cache = TORRENTZCache(self)
+        self.headers.update({'User-Agent': USER_AGENT})
         self.urls = {'verified': 'https://torrentz.eu/feed_verified',
                      'feed': 'https://torrentz.eu/feed',
                      'base': 'https://torrentz.eu/'}

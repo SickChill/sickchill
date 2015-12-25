@@ -44,6 +44,7 @@ class ExtraTorrentProvider(TorrentProvider):
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.custom_url = None
 
         self.cache = ExtraTorrentCache(self)
         self.headers.update({'User-Agent': USER_AGENT})
@@ -63,7 +64,11 @@ class ExtraTorrentProvider(TorrentProvider):
 
                 try:
                     self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string})
-                    data = self.get_url(self.urls['rss'], params=self.search_params)
+                    if self.custom_url:
+                        url = self.custom_url + '/rss.xml'
+                        data = self.get_url(url, params=self.search_params)
+                    else:
+                        data = self.get_url(self.urls['rss'], params=self.search_params)
                     if not data:
                         logger.log(u"No data returned from provider", logger.DEBUG)
                         continue
