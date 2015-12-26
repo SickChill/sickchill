@@ -47,22 +47,25 @@ def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=Tr
     :param fallback_to_xem: bool If set (the default), check xem for matches if there is no local scene numbering
     :return: (int, int) a tuple with (season, episode)
     """
-    if indexer_id is None or season is None or episode is None:
-        return season, episode
+    logger.log("get_scene_numbering(indexer_id: %s, indexer: %s, season: %s, episode: %s, fallback_to_xem: %s" %
+        (indexer_id, indexer, season, episode, fallback_to_xem), logger.DEBUG)
 
-    showObj = Show.find(sickbeard.showList, int(indexer_id))
-    if showObj and not showObj.is_scene:
+    if indexer_id is None or season is None or episode is None:
         return season, episode
 
     result = find_scene_numbering(int(indexer_id), int(indexer), season, episode)
     if result:
         return result
     else:
-        if fallback_to_xem:
-            xem_result = find_xem_numbering(int(indexer_id), int(indexer), season, episode)
-            if xem_result:
-                return xem_result
-        return season, episode
+        showObj = Show.find(sickbeard.showList, int(indexer_id))
+        if showObj and not showObj.is_scene:
+            return season, episode
+        else:
+            if fallback_to_xem:
+                xem_result = find_xem_numbering(int(indexer_id), int(indexer), season, episode)
+                if xem_result:
+                    return xem_result
+            return season, episode
 
 
 def find_scene_numbering(indexer_id, indexer, season, episode):
@@ -198,11 +201,15 @@ def set_scene_numbering(indexer_id, indexer, season=None, episode=None, absolute
     if indexer_id is None:
         return
 
+    logger.log("set_scene_numbering(indexer_id: %s, indexer: %s, season: %s, episode: %s, absolute_number: %s, sceneSeason: %s, sceneEpisode: %s, sceneAbsolute: %s" %
+        (str(indexer_id), str(indexer), str(season), str(episode), str(absolute_number), str(sceneSeason), str(sceneEpisode), str(sceneAbsolute)),
+        logger.DEBUG)
+
     indexer_id = int(indexer_id)
     indexer = int(indexer)
 
     myDB = db.DBConnection()
-    if season and episode:
+    if season is not None and episode is not None:
         myDB.action(
             "INSERT OR IGNORE INTO scene_numbering (indexer, indexer_id, season, episode) VALUES (?,?,?,?)",
             [indexer, indexer_id, season, episode])
@@ -210,7 +217,7 @@ def set_scene_numbering(indexer_id, indexer, season=None, episode=None, absolute
         myDB.action(
             "UPDATE scene_numbering SET scene_season = ?, scene_episode = ? WHERE indexer = ? and indexer_id = ? and season = ? and episode = ?",
             [sceneSeason, sceneEpisode, indexer, indexer_id, season, episode])
-    elif absolute_number:
+    elif absolute_number is not None:
         myDB.action(
             "INSERT OR IGNORE INTO scene_numbering (indexer, indexer_id, absolute_number) VALUES (?,?,?)",
             [indexer, indexer_id, absolute_number])

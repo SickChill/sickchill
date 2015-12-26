@@ -1234,7 +1234,15 @@ class TVShow(object):
             logger.log(u"Don't want this quality, ignoring found episode", logger.DEBUG)
             return False
 
+        # First, check to see if there is a custom scene numbering for this episode.  If so, then we need to get the season/episodes it 
+        # is replacing.
         myDB = db.DBConnection()
+        sqlResults = myDB.select("SELECT season, episode FROM scene_numbering WHERE indexer_id = ? and scene_season = ? and scene_episode = ?",
+            [self.indexerid, season, episode])
+        if sqlResults and len(sqlResults):
+            season = int(sqlResults[0]["season"])
+            episode = int(sqlResults[0]["episode"])
+
         sqlResults = myDB.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
                                  [self.indexerid, season, episode])
 
