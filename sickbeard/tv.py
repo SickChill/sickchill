@@ -1204,20 +1204,8 @@ class TVShow(object):
         toReturn += "anime: " + str(self.is_anime) + "\n"
         return toReturn
 
-    def qualitiesToString(self, qualities=[]):
-        result = u''
-        for quality in qualities:
-            if quality in Quality.qualityStrings:
-                result += Quality.qualityStrings[quality] + u', '
-            else:
-                logger.log(u"Bad quality value: " + str(quality))
-
-        result = re.sub(', $', '', result)
-
-        if not len(result):
-            result = u'None'
-
-        return result
+    def qualitiesToString(self, qualities=None):
+        return ', '.join([Quality.qualityStrings[quality] for quality in qualities or [] if quality and quality in Quality.qualityStrings]) or 'None'
 
     def wantEpisode(self, season, episode, quality, manualSearch=False, downCurQuality=False):
 
