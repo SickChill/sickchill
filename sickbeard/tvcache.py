@@ -356,8 +356,7 @@ class TVCache(object):
 
             # if the show says we want that episode then add it to the list
             if not showObj.wantEpisode(curSeason, curEp, curQuality, manualSearch, downCurQuality):
-                logger.log(u"Skipping " + curResult["name"] + " because we don't want an episode that's " +
-                           Quality.qualityStrings[curQuality], logger.INFO)
+                logger.log(u"Skipping " + curResult["name"], logger.DEBUG)
                 continue
 
             epObj = showObj.getEpisode(curSeason, curEp)

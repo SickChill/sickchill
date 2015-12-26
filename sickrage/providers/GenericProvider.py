@@ -290,8 +290,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                     break
 
             if not episode_wanted:
-                logger.log(u'Ignoring result %s because we don\'t want an episode that is %s' % (
-                    title, Quality.qualityStrings[quality]), logger.INFO)
+                logger.log(u'Ignoring result %s.' % (title), logger.DEBUG)
                 continue
 
             logger.log(u'Found result %s at %s' % (title, url), logger.DEBUG)
