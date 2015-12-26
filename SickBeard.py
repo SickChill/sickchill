@@ -301,6 +301,14 @@ class SickRage(object):
         # Build from the DB to start with
         self.loadShowsFromDB()
 
+        if self.consoleLogging:
+            print "Starting up SickRage " + sickbeard.BRANCH + " from " + sickbeard.CONFIG_FILE
+
+        # Clean up after update
+        if sickbeard.GIT_NEWVER:
+            shutil.rmtree(ek(os.path.join, sickbeard.CACHE_DIR, 'mako'))
+            sickbeard.GIT_NEWVER = False
+
         if self.forcedPort:
             logger.log(u"Forcing web server to port " + str(self.forcedPort))
             self.startPort = self.forcedPort
@@ -340,19 +348,6 @@ class SickRage(object):
         # start web server
         self.webserver = SRWebServer(self.web_options)
         self.webserver.start()
-
-        if self.consoleLogging:
-            print "Starting up SickRage " + sickbeard.BRANCH + " from " + sickbeard.CONFIG_FILE
-
-        # Clean up after update
-        if sickbeard.GIT_NEWVER:
-            toclean = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
-            for root, dirs, files in ek(os.walk, toclean, topdown=False):
-                for name in files:
-                    ek(os.remove, ek(os.path.join, root, name))
-                for name in dirs:
-                    ek(os.rmdir, ek(os.path.join, root, name))
-            sickbeard.GIT_NEWVER = False
 
         # Fire up all our threads
         sickbeard.start()
@@ -502,6 +497,12 @@ class SickRage(object):
                     self.webserver.join(10)
                 except Exception:
                     pass
+
+            try:
+                logger.log(u"Halt: Trying to remove the cache/mako directory")
+                shutil.rmtree(ek(os.path.join, sickbeard.CACHE_DIR, 'mako'))
+            except Exception:
+                logger.log(u"Halt: Unable to remove the cache/mako directory!", logger.WARNING)
 
             # if run as daemon delete the pidfile
             if self.runAsDaemon and self.CREATEPID:
