@@ -18,7 +18,6 @@
 
 import traceback
 from bs4 import BeautifulSoup
-import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
@@ -73,7 +72,10 @@ class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance
 
                     data = BeautifulSoup(data, 'html5lib')
 
-                    entries = entries = data.findAll('item')
+                    entries = data.findAll('item')
+                    if not entries:
+                        logger.log(u'Returned xml contained no results', logger.INFO)
+                        continue
 
                     for item in entries:
                         try:
@@ -84,7 +86,7 @@ class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance
                                 continue
                             #seeders and leechers are presented diferently when doing a search and when looking for newly added
                             if mode == 'RSS':
-						        # <![CDATA[
+                                # <![CDATA[
                                 # Category: <a href="http://www.limetorrents.cc/browse-torrents/TV-shows/">TV shows</a><br /> Seeds: 1<br />Leechers: 0<br />Size: 7.71 GB<br /><br /><a href="http://www.limetorrents.cc/Owen-Hart-of-Gold-Djon91-torrent-7180661.html">More @ limetorrents.cc</a><br />
                                 # ]]>
                                 description = item.find('description')
@@ -93,7 +95,7 @@ class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance
                                 seeders = smtg.lstrip('Seeds: ')
                                 leechers = smtg2.lstrip('Leechers: ')
                             else:
-							    #<description>Seeds: 6982 , Leechers 734</description>
+                                #<description>Seeds: 6982 , Leechers 734</description>
                                 description = item.find('description').text
                                 seeders = description.split("Seeds: ")[-1].split()[0]
                                 leechers = description.split("Leechers ")[-1].split()[0]
