@@ -1576,7 +1576,7 @@ def halt():
                     pass
 
             __INITIALIZED__ = False
-            started = False
+        started = False
 
 
 def sig_handler(signum=None, frame=None):
