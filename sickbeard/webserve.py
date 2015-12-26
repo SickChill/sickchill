@@ -1265,16 +1265,17 @@ class Home(WebRoot):
                         showObj) and showObj.subtitles:
                     submenu.append({'title': 'Download Subtitles', 'path': 'home/subtitleShow?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-comment'})
 
-        epCounts = {}
+        epCounts = {
+            Overview.SKIPPED: 0,
+            Overview.WANTED: 0,
+            Overview.QUAL: 0,
+            Overview.GOOD: 0,
+            Overview.UNAIRED: 0,
+            Overview.SNATCHED: 0,
+            Overview.SNATCHED_PROPER: 0,
+            Overview.SNATCHED_BEST: 0
+        }
         epCats = {}
-        epCounts[Overview.SKIPPED] = 0
-        epCounts[Overview.WANTED] = 0
-        epCounts[Overview.QUAL] = 0
-        epCounts[Overview.GOOD] = 0
-        epCounts[Overview.UNAIRED] = 0
-        epCounts[Overview.SNATCHED] = 0
-        epCounts[Overview.SNATCHED_PROPER] = 0
-        epCounts[Overview.SNATCHED_BEST] = 0
 
         for curResult in sqlResults:
             curEpCat = showObj.getOverview(int(curResult["status"] or -1))
@@ -3094,16 +3095,17 @@ class Manage(Home, WebRoot):
         myDB = db.DBConnection()
         for curShow in sickbeard.showList:
 
-            epCounts = {}
+            epCounts = {
+                Overview.SKIPPED: 0,
+                Overview.WANTED: 0,
+                Overview.QUAL: 0,
+                Overview.GOOD: 0,
+                Overview.UNAIRED: 0,
+                Overview.SNATCHED: 0,
+                Overview.SNATCHED_PROPER: 0,
+                Overview.SNATCHED_BEST: 0
+            }
             epCats = {}
-            epCounts[Overview.SKIPPED] = 0
-            epCounts[Overview.WANTED] = 0
-            epCounts[Overview.QUAL] = 0
-            epCounts[Overview.GOOD] = 0
-            epCounts[Overview.UNAIRED] = 0
-            epCounts[Overview.SNATCHED] = 0
-            epCounts[Overview.SNATCHED_PROPER] = 0
-            epCounts[Overview.SNATCHED_BEST] = 0
 
             sqlResults = myDB.select(
                 "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
@@ -3119,8 +3121,11 @@ class Manage(Home, WebRoot):
             showCats[curShow.indexerid] = epCats
             showSQLResults[curShow.indexerid] = sqlResults
 
-        return t.render(showCounts=showCounts, showCats=showCats, showSQLResults=showSQLResults,
-                        title='Backlog Overview', header='Backlog Overview', topmenu='manage')
+        return t.render(
+            showCounts=showCounts, showCats=showCats,
+            showSQLResults=showSQLResults, controller='manage',
+            action='backlogOverview', title='Backlog Overview',
+            header='Backlog Overview', topmenu='manage')
 
     def massEdit(self, toEdit=None):
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")
