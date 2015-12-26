@@ -210,7 +210,7 @@ class MainSanityCheck(db.DBSanityCheck):
         curDate = datetime.date.today()
 
         sqlResults = self.connection.select(
-            "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?) AND season > 0",
+            "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?)",
             [curDate.toordinal(), common.SKIPPED, common.WANTED])
 
         for cur_unaired in sqlResults:
