@@ -104,6 +104,17 @@ class SickRage(object):
         self.consoleLogging = True
 
     @staticmethod
+    def clear_cache():
+        try:
+            cache_folder = ek(os.path.join, sickbeard.CACHE_DIR, 'mako') 
+            if os.path.isdir(cache_folder):
+                shutil.rmtree(cache_folder)
+            return True
+        except Exception:
+            pass
+        return False
+
+    @staticmethod
     def help_message():
         """
         print help message for commandline options
@@ -305,12 +316,11 @@ class SickRage(object):
             print "Starting up SickRage " + sickbeard.BRANCH + " from " + sickbeard.CONFIG_FILE
 
         # Clean up after update
-        if sickbeard.GIT_NEWVER:
-            shutil.rmtree(ek(os.path.join, sickbeard.CACHE_DIR, 'mako'))
-            sickbeard.GIT_NEWVER = False
+        if not self.clear_cache():
+            print u"Unable to remove the cache/mako directory!"
 
         if self.forcedPort:
-            logger.log(u"Forcing web server to port " + str(self.forcedPort))
+            print u"Forcing web server to port %s" % self.forcedPort
             self.startPort = self.forcedPort
         else:
             self.startPort = sickbeard.WEB_PORT
@@ -498,10 +508,8 @@ class SickRage(object):
                 except Exception:
                     pass
 
-            try:
-                logger.log(u"Halt: Trying to remove the cache/mako directory")
-                shutil.rmtree(ek(os.path.join, sickbeard.CACHE_DIR, 'mako'))
-            except Exception:
+            # Clean cache
+            if not self.clear_cache():
                 logger.log(u"Halt: Unable to remove the cache/mako directory!", logger.WARNING)
 
             # if run as daemon delete the pidfile
