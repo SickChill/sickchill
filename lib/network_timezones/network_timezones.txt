@@ -179,6 +179,7 @@ aurora (AU):Australia/Sydney
 Australian Christian Channel:Australia/Sydney
 aux (CA):Canada/Eastern
 AVRO:Europe/Amsterdam
+AVROTROS:Europe/Amsterdam
 AWE (US):US/Eastern
 AXN (HK):Asia/Hong_Kong
 AXN (JP):Asia/Tokyo
