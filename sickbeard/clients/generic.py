@@ -174,8 +174,9 @@ class GenericClient(object):
         logger.log(u'Calling ' + self.name + ' Client', logger.DEBUG)
 
         if not self.auth:
-            logger.log(self.name + u': Authentication Failed', logger.ERROR)
-            return r_code
+            if not self._get_auth():
+                logger.log(self.name + u': Authentication Failed', logger.ERROR)
+                return r_code
 
         try:
             # Sets per provider seed ratio
