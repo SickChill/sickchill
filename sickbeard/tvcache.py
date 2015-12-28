@@ -165,7 +165,7 @@ class TVCache(object):
             title = self._translateTitle(title)
             url = self._translateLinkURL(url)
 
-            logger.log(u"Attempting to add item to cache: " + title, logger.DEBUG)
+            #logger.log(u"Attempting to add item to cache: " + title, logger.DEBUG)
             return self._addCacheEntry(title, url)
 
         else:
@@ -356,7 +356,7 @@ class TVCache(object):
 
             # if the show says we want that episode then add it to the list
             if not showObj.wantEpisode(curSeason, curEp, curQuality, manualSearch, downCurQuality):
-                logger.log(u"Skipping " + curResult["name"], logger.DEBUG)
+                logger.log(u"Ignoring " + curResult["name"], logger.DEBUG)
                 continue
 
             epObj = showObj.getEpisode(curSeason, curEp)
