@@ -638,7 +638,6 @@ class GitUpdateManager(UpdateManager):
 
             if exit_status == 0:
                 self._find_installed_version()
-                sickbeard.GIT_NEWVER = True
 
                 # Notify update successful
                 if sickbeard.NOTIFY_ON_UPDATE:
