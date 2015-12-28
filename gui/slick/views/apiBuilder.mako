@@ -261,13 +261,7 @@ var episodes = ${episodes};
         </select>
         % endif
     % elif parameter == 'tvdbid':
-        <select class="form-control" name="${parameter}" data-command="${command}">
-            <option>${parameter}</option>
-
-            % for show in shows:
-            <option value="${show.indexerid}">${show.name}</option>
-            % endfor
-        </select>
+        <input class="form-control" name="${parameter}" placeholder="${parameter}" type="number" data-command="${command}" />
     % elif type == 'int':
         % if parameter not in ('episode', 'season'):
         <input class="form-control" name="${parameter}" placeholder="${parameter}" type="number" data-command="${command}" />

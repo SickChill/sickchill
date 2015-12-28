@@ -699,7 +699,7 @@ class Home(WebRoot):
         myDB = db.DBConnection()
         today = str(datetime.date.today().toordinal())
 
-        status_quality = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ')'
+        status_quality = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST]) + ')'
         status_download = '(' + ','.join([str(x) for x in Quality.DOWNLOADED + Quality.ARCHIVED]) + ')'
 
         sql_statement = 'SELECT showid, '
