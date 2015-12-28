@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Mr_Orange
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -23,7 +24,7 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import show_name_helpers
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TokyoToshokanProvider(TorrentProvider):
@@ -63,7 +64,7 @@ class TokyoToshokanProvider(TorrentProvider):
         }
 
         searchURL = self.url + 'search.php?' + urllib.urlencode(params)
-        logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+        logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
         data = self.get_url(searchURL)
 
         if not data:

@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -36,7 +37,7 @@ from sickbeard import metadata
 from sickbeard import providers
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
-from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
+from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, auto_postprocessor, \
     subtitles, traktChecker, numdict
 from sickbeard import db
 from sickbeard import helpers
@@ -137,7 +138,6 @@ GIT_USERNAME = None
 GIT_PASSWORD = None
 GIT_PATH = None
 GIT_AUTOISSUES = False
-GIT_NEWVER = False
 DEVELOPER = False
 
 NEWS_URL = 'http://sickrage.github.io/sickrage-news/news.md'
@@ -197,6 +197,7 @@ TRASH_REMOVE_SHOW = False
 TRASH_ROTATE_LOGS = False
 SORT_ARTICLE = False
 DEBUG = False
+DBDEBUG = False
 DISPLAY_ALL_SEASONS = True
 DEFAULT_PAGE = 'home'
 
@@ -569,6 +570,7 @@ __INITIALIZED__ = False
 
 NEWZNAB_DATA = None
 
+
 def get_backlog_cycle_time():
     cycletime = DAILYSEARCH_FREQUENCY * 2 + 7
     return max([cycletime, 720])
@@ -577,7 +579,7 @@ def get_backlog_cycle_time():
 def initialize(consoleLogging=True):
     with INIT_LOCK:
 
-        global BRANCH, GIT_RESET, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, GIT_NEWVER, ACTUAL_LOG_DIR, LOG_DIR, LOG_NR, LOG_SIZE, WEB_PORT, WEB_LOG, ENCRYPTION_VERSION, ENCRYPTION_SECRET, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, WEB_COOKIE_SECRET, WEB_USE_GZIP, API_KEY, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, \
+        global BRANCH, GIT_RESET, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, ACTUAL_LOG_DIR, LOG_DIR, LOG_NR, LOG_SIZE, WEB_PORT, WEB_LOG, ENCRYPTION_VERSION, ENCRYPTION_SECRET, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, WEB_COOKIE_SECRET, WEB_USE_GZIP, API_KEY, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, \
             HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, RANDOMIZE_PROVIDERS, CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, SAB_FORCED, TORRENT_METHOD, NOTIFY_ON_LOGIN, \
             SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, SAB_CATEGORY_BACKLOG, SAB_CATEGORY_ANIME, SAB_CATEGORY_ANIME_BACKLOG, SAB_HOST, \
             NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_CATEGORY_BACKLOG, NZBGET_CATEGORY_ANIME, NZBGET_CATEGORY_ANIME_BACKLOG, NZBGET_PRIORITY, NZBGET_HOST, NZBGET_USE_HTTPS, backlogSearchScheduler, \
@@ -616,7 +618,7 @@ def initialize(consoleLogging=True):
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
             USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_DOWNLOAD_IN_PP, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH, subtitlesFinderScheduler, \
             SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, OPENSUBTITLES_USER, OPENSUBTITLES_PASS, \
-            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, \
+            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
@@ -657,11 +659,11 @@ def initialize(consoleLogging=True):
         # git login info
         GIT_USERNAME = check_setting_str(CFG, 'General', 'git_username', '')
         GIT_PASSWORD = check_setting_str(CFG, 'General', 'git_password', '', censor_log=True)
-        GIT_NEWVER = bool(check_setting_int(CFG, 'General', 'git_newver', 0))
         DEVELOPER = bool(check_setting_int(CFG, 'General', 'developer', 0))
 
         # debugging
         DEBUG = bool(check_setting_int(CFG, 'General', 'debug', 0))
+        DBDEBUG = bool(check_setting_int(CFG, 'General', 'dbdebug', 0))
 
         DEFAULT_PAGE = check_setting_str(CFG, 'General', 'default_page', 'home')
         if DEFAULT_PAGE not in ('home', 'schedule', 'history', 'news', 'IRC'):
@@ -679,7 +681,7 @@ def initialize(consoleLogging=True):
             fileLogging = False
 
         # init logging
-        logger.initLogging(consoleLogging=consoleLogging, fileLogging=fileLogging, debugLogging=DEBUG)
+        logger.initLogging(consoleLogging=consoleLogging, fileLogging=fileLogging, debugLogging=DEBUG, databaseLogging=DBDEBUG)
 
         # github api
         try:
@@ -762,7 +764,6 @@ def initialize(consoleLogging=True):
                     except Exception as e:
                         logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
-
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
 
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
@@ -820,7 +821,7 @@ def initialize(consoleLogging=True):
 
         ENABLE_HTTPS = bool(check_setting_int(CFG, 'General', 'enable_https', 0))
 
-        NOTIFY_ON_LOGIN  = bool(check_setting_int(CFG, 'General', 'notify_on_login', 0))
+        NOTIFY_ON_LOGIN = bool(check_setting_int(CFG, 'General', 'notify_on_login', 0))
 
         HTTPS_CERT = check_setting_str(CFG, 'General', 'https_cert', 'server.crt')
         HTTPS_KEY = check_setting_str(CFG, 'General', 'https_key', 'server.key')
@@ -1238,7 +1239,8 @@ def initialize(consoleLogging=True):
                                                                 curTorrentProvider.get_id(), 0))
             if hasattr(curTorrentProvider, 'custom_url'):
                 curTorrentProvider.custom_url = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
-                                                                curTorrentProvider.get_id() + '_custom_url', '', censor_log=True)
+                                                                  curTorrentProvider.get_id() + '_custom_url',
+                                                                  '', censor_log=True)
             if hasattr(curTorrentProvider, 'api_key'):
                 curTorrentProvider.api_key = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
                                                                curTorrentProvider.get_id() + '_api_key', '', censor_log=True)
@@ -1435,7 +1437,7 @@ def initialize(consoleLogging=True):
                                                     run_delay=update_interval)
 
         # processors
-        autoPostProcesserScheduler = scheduler.Scheduler(autoPostProcesser.PostProcesser(),
+        autoPostProcesserScheduler = scheduler.Scheduler(auto_postprocessor.PostProcessor(),
                                                          cycleTime=datetime.timedelta(
                                                              minutes=AUTOPOSTPROCESSER_FREQUENCY),
                                                          threadName="POSTPROCESSER",
@@ -1572,7 +1574,7 @@ def halt():
                     pass
 
             __INITIALIZED__ = False
-            started = False
+        started = False
 
 
 def sig_handler(signum=None, frame=None):
@@ -1608,7 +1610,6 @@ def save_config():
     new_config['General']['git_remote_url'] = GIT_REMOTE_URL
     new_config['General']['cur_commit_hash'] = CUR_COMMIT_HASH
     new_config['General']['cur_commit_branch'] = CUR_COMMIT_BRANCH
-    new_config['General']['git_newver'] = int(GIT_NEWVER)
     new_config['General']['config_version'] = CONFIG_VERSION
     new_config['General']['encryption_version'] = int(ENCRYPTION_VERSION)
     new_config['General']['encryption_secret'] = ENCRYPTION_SECRET
@@ -1632,6 +1633,7 @@ def save_config():
     new_config['General']['anon_redirect'] = ANON_REDIRECT
     new_config['General']['api_key'] = API_KEY
     new_config['General']['debug'] = int(DEBUG)
+    new_config['General']['dbdebug'] = int(DBDEBUG)
     new_config['General']['default_page'] = DEFAULT_PAGE
     new_config['General']['enable_https'] = int(ENABLE_HTTPS)
     new_config['General']['notify_on_login'] = int(NOTIFY_ON_LOGIN)

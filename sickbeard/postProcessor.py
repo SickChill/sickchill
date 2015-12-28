@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -147,7 +148,7 @@ class PostProcessor(object):
                       logger.DEBUG)
             return PostProcessor.DOESNT_EXIST
 
-    def list_associated_files(self, file_path, base_name_only=False, subtitles_only=False, subfolders=False):
+    def list_associated_files(self, file_path, base_name_only=False, subtitles_only=False, subfolders=False):  # pylint: disable=unused-argument
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
 
@@ -180,7 +181,7 @@ class PostProcessor(object):
             base_name = globbable_file_path.rpartition('.')[0]
 
         if not base_name_only:
-            base_name = base_name + '.'
+            base_name += '.'
 
         # don't strip it all and use cwd by accident
         if not base_name:
@@ -348,7 +349,10 @@ class PostProcessor(object):
                     cur_lang = cur_lang.lower()
                     if cur_lang == 'pt-br':
                         cur_lang = 'pt-BR'
-                    cur_extension = cur_lang + ek(os.path.splitext, cur_extension)[1]
+                    if new_base_name:
+                        cur_extension = cur_lang + ek(os.path.splitext, cur_extension)[1]
+                    else:
+                        cur_extension = cur_extension.rpartition('.')[2]
 
             # replace .nfo with .nfo-orig to avoid conflicts
             if cur_extension == 'nfo' and sickbeard.NFO_RENAME is True:
@@ -492,7 +496,7 @@ class PostProcessor(object):
         myDB = db.DBConnection()
         for curName in names:
             search_name = re.sub(r"[\.\- ]", "_", curName)
-            sql_results = myDB.select("SELECT showid, season, quality, version, resource FROM history WHERE resource LIKE ?", [search_name])
+            sql_results = myDB.select("SELECT showid, season, quality, version, resource FROM history WHERE resource LIKE ? AND (action % 100 = 4 OR action % 100 = 6)", [search_name])
 
             if len(sql_results) == 0:
                 continue
@@ -511,7 +515,8 @@ class PostProcessor(object):
             self.version = version
             to_return = (show, season, [], quality, version)
 
-            self._log("Found result in history for %s - Season: %s - Quality: %s - Version: %s" % (show.name, season, common.Quality.qualityStrings[quality], version), logger.DEBUG)
+            qual_str = common.Quality.qualityStrings[quality] if quality is not None else quality
+            self._log("Found result in history for %s - Season: %s - Quality: %s - Version: %s" % (show.name, season, qual_str, version), logger.DEBUG)
 
             return to_return
 
@@ -532,8 +537,8 @@ class PostProcessor(object):
 
         # if the result is complete then remember that for later
         # if the result is complete then set release name
-        if parse_result.series_name and ((parse_result.season_number is not None and parse_result.episode_numbers)
-                                         or parse_result.air_date) and parse_result.release_group:
+        if parse_result.series_name and ((parse_result.season_number is not None and parse_result.episode_numbers) or
+                                         parse_result.air_date) and parse_result.release_group:
 
             if not self.release_name:
                 self.release_name = helpers.remove_non_release_groups(remove_extension(ek(os.path.basename, parse_result.original_name)))
@@ -715,9 +720,9 @@ class PostProcessor(object):
                     season = 1
 
             if show and season and episodes:
-                return (show, season, episodes, quality, version)
+                return show, season, episodes, quality, version
 
-        return (show, season, episodes, quality, version)
+        return show, season, episodes, quality, version
 
     def _get_ep_obj(self, show, season, episodes):
         """
@@ -961,12 +966,14 @@ class PostProcessor(object):
                 self._log(u"File exists and new file is same size, marking it unsafe to replace")
                 return False
 
-            if new_ep_quality <= old_ep_quality and old_ep_quality != common.Quality.UNKNOWN and existing_file_status != PostProcessor.DOESNT_EXIST:
+            if new_ep_quality <= old_ep_quality != common.Quality.UNKNOWN and existing_file_status != PostProcessor.DOESNT_EXIST:
                 if self.is_proper and new_ep_quality == old_ep_quality:
                     self._log(u"New file is a proper/repack, marking it safe to replace")
                 else:
-                    self._log(u"File exists and new file is the same or lower quality than existing, marking it unsafe to replace")
-                    return False
+                    _, preferred_qualities = common.Quality.splitQuality(int(show.quality))
+                    if new_ep_quality not in preferred_qualities:
+                        self._log(u"File exists and new file quality is not in a preferred quality list, marking it unsafe to replace")
+                        return False
 
             # Check if the processed file season is already in our indexer. If not, the file is most probably mislabled/fake and will be skipped
             # Only proceed if the file season is > 0
@@ -988,7 +995,7 @@ class PostProcessor(object):
 
         # try to find out if we have enough space to perform the copy or move action.
         if not helpers.isFileLocked(self.file_path, False):
-            if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps):
+            if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps):  # pylint: disable=protected-access
                 self._log("Not enough space to continue PP, exiting", logger.WARNING)
                 return False
         else:
@@ -1001,7 +1008,7 @@ class PostProcessor(object):
 
                 # clean up any left over folders
                 if cur_ep.location:
-                    helpers.delete_empty_folders(ek(os.path.dirname, cur_ep.location), keep_dir=ep_obj.show._location)
+                    helpers.delete_empty_folders(ek(os.path.dirname, cur_ep.location), keep_dir=ep_obj.show._location)  # pylint: disable=protected-access
             except (OSError, IOError):
                 raise EpisodePostProcessingFailedException("Unable to delete the existing files")
 
@@ -1010,16 +1017,16 @@ class PostProcessor(object):
             #    curEp.status = common.Quality.compositeStatus(common.SNATCHED, new_ep_quality)
 
         # if the show directory doesn't exist then make it if allowed
-        if not ek(os.path.isdir, ep_obj.show._location) and sickbeard.CREATE_MISSING_SHOW_DIRS:
+        if not ek(os.path.isdir, ep_obj.show._location) and sickbeard.CREATE_MISSING_SHOW_DIRS:  # pylint: disable=protected-access
             self._log(u"Show directory doesn't exist, creating it", logger.DEBUG)
             try:
-                ek(os.mkdir, ep_obj.show._location)
-                helpers.chmodAsParent(ep_obj.show._location)
+                ek(os.mkdir, ep_obj.show._location)  # pylint: disable=protected-access
+                helpers.chmodAsParent(ep_obj.show._location)  # pylint: disable=protected-access
 
                 # do the library update for synoindex
-                notifiers.synoindex_notifier.addFolder(ep_obj.show._location)
+                notifiers.synoindex_notifier.addFolder(ep_obj.show._location)  # pylint: disable=protected-access
             except (OSError, IOError):
-                raise EpisodePostProcessingFailedException("Unable to create the show directory: " + ep_obj.show._location)
+                raise EpisodePostProcessingFailedException("Unable to create the show directory: " + ep_obj.show._location)  # pylint: disable=protected-access
 
             # get metadata for the show (but not episode because it hasn't been fully processed)
             ep_obj.show.writeMetadata(True)
@@ -1153,7 +1160,11 @@ class PostProcessor(object):
                     cur_ep.airdateModifyStamp()
 
         # generate nfo/tbn
-        ep_obj.createMetaFiles()
+        try:
+            ep_obj.createMetaFiles()
+        except Exception:
+            logger.log(u"Could not create/update meta files. Continuing with postProcessing...")
+
 
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group, new_ep_version)
@@ -1161,7 +1172,7 @@ class PostProcessor(object):
         # If any notification fails, don't stop postProcessor
         try:
             # send notifications
-            notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
+            notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))  # pylint: disable=protected-access
 
             # do the library update for KODI
             notifiers.kodi_notifier.update_library(ep_obj.show.name)

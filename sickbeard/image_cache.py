@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -31,7 +32,8 @@ from hachoir_metadata import extractMetadata
 from hachoir_core.log import log
 log.use_print = False
 
-class ImageCache:
+
+class ImageCache(object):
     def __init__(self):
         pass
 
@@ -274,8 +276,7 @@ class ImageCache:
                        self.BANNER_THUMB: not self.has_banner_thumbnail(show_obj.indexerid),
                        self.FANART: not self.has_fanart(show_obj.indexerid)}
 
-        if not need_images[self.POSTER] and not need_images[self.BANNER] and not need_images[self.POSTER_THUMB] and not \
-        need_images[self.BANNER_THUMB] and not need_images[self.FANART]:
+        if not need_images[self.POSTER] and not need_images[self.BANNER] and not need_images[self.POSTER_THUMB] and not need_images[self.BANNER_THUMB] and not need_images[self.FANART]:
             logger.log(u"No new cache images needed, not retrieving new ones", logger.DEBUG)
             return
 
@@ -307,7 +308,7 @@ class ImageCache:
                 logger.log(u"Unable to search for images in show dir because it doesn't exist", logger.WARNING)
 
         # download from indexer for missing ones
-        for cur_image_type in [self.POSTER, self.BANNER, self.POSTER_THUMB, self.BANNER_THUMB,self.FANART]:
+        for cur_image_type in [self.POSTER, self.BANNER, self.POSTER_THUMB, self.BANNER_THUMB, self.FANART]:
             logger.log(u"Seeing if we still need an image of type " + str(cur_image_type) + ": " + str(
                 need_images[cur_image_type]), logger.DEBUG)
             if cur_image_type in need_images and need_images[cur_image_type]:

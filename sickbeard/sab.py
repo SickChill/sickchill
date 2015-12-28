@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage
@@ -17,13 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import urllib, httplib
+import urllib
+import httplib
 
 import sickbeard
 import datetime
 
 import MultipartPostHandler
-import urllib2, cookielib
+import urllib2
+import cookielib
 
 try:
     import json
@@ -244,12 +247,13 @@ def testAuthentication(host=None, username=None, password=None, apikey=None):
     """
 
     # build up the URL parameters
-    params = {}
-    params['mode'] = 'queue'
-    params['output'] = 'json'
-    params['ma_username'] = username
-    params['ma_password'] = password
-    params['apikey'] = apikey
+    params = {
+        'mode': 'queue',
+        'output': 'json',
+        'ma_username': username,
+        'ma_password': password,
+        'apikey': apikey
+    }
     url = host + "api?" + urllib.urlencode(params)
 
     # send the test request

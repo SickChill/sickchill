@@ -305,10 +305,10 @@ class ApiCall(ApiHandler):
                 for paramName in paramDict:
                     if paramName not in self._help[paramType]:
                         self._help[paramType][paramName] = {}
-                    if paramDict[paramName]["allowed_values"]:
-                        self._help[paramType][paramName]["allowed_values"] = paramDict[paramName]["allowed_values"]
+                    if paramDict[paramName]["allowedValues"]:
+                        self._help[paramType][paramName]["allowedValues"] = paramDict[paramName]["allowedValues"]
                     else:
-                        self._help[paramType][paramName]["allowed_values"] = "see desc"
+                        self._help[paramType][paramName]["allowedValues"] = "see desc"
                     self._help[paramType][paramName]["defaultValue"] = paramDict[paramName]["defaultValue"]
                     self._help[paramType][paramName]["type"] = paramDict[paramName]["type"]
 
@@ -362,7 +362,7 @@ class ApiCall(ApiHandler):
                 self._requiredParams.append(key)
             except AttributeError:
                 self._missing = []
-                self._requiredParams = {key: {"allowed_values": allowed_values,
+                self._requiredParams = {key: {"allowedValues": allowed_values,
                                               "defaultValue": org_default,
                                               "type": arg_type}}
 
@@ -370,11 +370,11 @@ class ApiCall(ApiHandler):
                 self._missing.append(key)
         else:
             try:
-                self._optionalParams[key] = {"allowed_values": allowed_values,
+                self._optionalParams[key] = {"allowedValues": allowed_values,
                                              "defaultValue": org_default,
                                              "type": arg_type}
             except AttributeError:
-                self._optionalParams = {key: {"allowed_values": allowed_values,
+                self._optionalParams = {key: {"allowedValues": allowed_values,
                                               "defaultValue": org_default,
                                               "type": arg_type}}
 
@@ -2146,7 +2146,7 @@ class CMD_ShowAddNew(ApiCall):
             default_ep_status_after = self.future_status
 
         indexer_name = None
-        indexer_result = CMD_SickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid}).run()
+        indexer_result = CMD_SickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid, 'lang': self.lang}).run()
 
         if indexer_result['result'] == result_type_map[RESULT_SUCCESS]:
             if not indexer_result['data']['results']:

@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: moparisthebest <admin@moparisthebest.com>
 #
 # This file is part of Sick Beard.
@@ -20,7 +21,7 @@ import re
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.NZBProvider import NZBProvider
+from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
 class BinSearchProvider(NZBProvider):
@@ -79,7 +80,7 @@ class BinSearchCache(tvcache.TVCache):
         if url:
             url = url.replace('&amp;', '&')
 
-        return (title, url)
+        return title, url
 
     def updateCache(self):
         # check if we should update

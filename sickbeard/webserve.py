@@ -282,7 +282,7 @@ class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
 
         if self.get_current_user():
-            self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+            self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
         else:
             t = PageTemplate(rh=self, filename="login.mako")
             self.finish(t.render(title="Login", header="Login", topmenu="login"))
@@ -308,7 +308,7 @@ class LoginHandler(BaseHandler):
         else:
             logger.log(u'User attempted a failed login to the SickRage web interface from IP: ' + self.request.remote_ip, logger.WARNING)
 
-        self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+        self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
 
 class LogoutHandler(BaseHandler):
@@ -344,7 +344,7 @@ class WebRoot(WebHandler):
         super(WebRoot, self).__init__(*args, **kwargs)
 
     def index(self):
-        return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+        return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
     def robots_txt(self):
         """ Keep web crawlers out """
@@ -699,7 +699,7 @@ class Home(WebRoot):
         myDB = db.DBConnection()
         today = str(datetime.date.today().toordinal())
 
-        status_quality = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ')'
+        status_quality = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST]) + ')'
         status_download = '(' + ','.join([str(x) for x in Quality.DOWNLOADED + Quality.ARCHIVED]) + ')'
 
         sql_statement = 'SELECT showid, '
@@ -1007,7 +1007,7 @@ class Home(WebRoot):
         data = {}
         size = 0
         for r in rows:
-            NotifyList = {'emails':'', 'prowlAPIs':''}
+            NotifyList = {'emails': '', 'prowlAPIs': ''}
             if r['notify_list'] and len(r['notify_list']) > 0:
                 # First, handle legacy format (emails only)
                 if not r['notify_list'][0] == '{':
@@ -1015,10 +1015,12 @@ class Home(WebRoot):
                 else:
                     NotifyList = dict(ast.literal_eval(r['notify_list']))
 
-            data[r['show_id']] = {'id': r['show_id'], 'name': r['show_name'],
-                                  'list': NotifyList['emails'],
-                                  'prowl_notify_list': NotifyList['prowlAPIs']
-                                 }
+            data[r['show_id']] = {
+                'id': r['show_id'],
+                'name': r['show_name'],
+                'list': NotifyList['emails'],
+                'prowl_notify_list': NotifyList['prowlAPIs']
+            }
             size += 1
         data['_size'] = size
         return json.dumps(data)
@@ -1026,7 +1028,7 @@ class Home(WebRoot):
     @staticmethod
     def saveShowNotifyList(show=None, emails=None, prowlAPIs=None):
 
-        entries = {'emails':'', 'prowlAPIs':''}
+        entries = {'emails': '', 'prowlAPIs': ''}
         myDB = db.DBConnection()
 
         # Get current data
@@ -1162,7 +1164,7 @@ class Home(WebRoot):
                 return self._genericMessage("Update Failed",
                                             "Update wasn't successful, not restarting. Check your log for more information.")
         else:
-            return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+            return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
     def branchCheckout(self, branch):
         if sickbeard.BRANCH != branch:
@@ -1171,7 +1173,7 @@ class Home(WebRoot):
             return self.update(sickbeard.PID, branch)
         else:
             ui.notifications.message('Already on branch: ', branch)
-            return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
+            return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
     @staticmethod
     def getDBcompare():
@@ -1263,16 +1265,17 @@ class Home(WebRoot):
                         showObj) and showObj.subtitles:
                     submenu.append({'title': 'Download Subtitles', 'path': 'home/subtitleShow?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-comment'})
 
-        epCounts = {}
+        epCounts = {
+            Overview.SKIPPED: 0,
+            Overview.WANTED: 0,
+            Overview.QUAL: 0,
+            Overview.GOOD: 0,
+            Overview.UNAIRED: 0,
+            Overview.SNATCHED: 0,
+            Overview.SNATCHED_PROPER: 0,
+            Overview.SNATCHED_BEST: 0
+        }
         epCats = {}
-        epCounts[Overview.SKIPPED] = 0
-        epCounts[Overview.WANTED] = 0
-        epCounts[Overview.QUAL] = 0
-        epCounts[Overview.GOOD] = 0
-        epCounts[Overview.UNAIRED] = 0
-        epCounts[Overview.SNATCHED] = 0
-        epCounts[Overview.SNATCHED_PROPER] = 0
-        epCounts[Overview.SNATCHED_BEST] = 0
 
         for curResult in sqlResults:
             curEpCat = showObj.getOverview(int(curResult["status"] or -1))
@@ -1583,6 +1586,9 @@ class Home(WebRoot):
             )
 
             time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+
+        # Remove show from 'RECENT SHOWS' in 'Shows' menu
+        sickbeard.SHOWS_RECENT = [x for x in sickbeard.SHOWS_RECENT if x['indexerid'] != show.indexerid]
 
         # Don't redirect to the default page, so the user can confirm that the show was deleted
         return self.redirect('/home/')
@@ -1939,7 +1945,7 @@ class Home(WebRoot):
         else:
             return json.dumps({'result': 'failure'})
 
-    ### Returns the current ep_queue_item status for the current viewed show.
+    # ## Returns the current ep_queue_item status for the current viewed show.
     # Possible status: Downloaded, Snatched, etc...
     # Returns {'show': 279530, 'episodes' : ['episode' : 6, 'season' : 1, 'searchstatus' : 'queued', 'status' : 'running', 'quality': '4013']
     def getManualSearchStatus(self, show=None):
@@ -2001,7 +2007,7 @@ class Home(WebRoot):
                 if not [x for x in episodes if x['episodeindexid'] == searchThread.segment.indexerid]:
                     episodes += getEpisodes(searchThread, searchstatus)
             else:
-                ### These are only Failed Downloads/Retry SearchThreadItems.. lets loop through the segement/episodes
+                # ## These are only Failed Downloads/Retry SearchThreadItems.. lets loop through the segement/episodes
                 if not [i for i, j in zip(searchThread.segment, episodes) if i.indexerid == j['episodeindexid']]:
                     episodes += getEpisodes(searchThread, searchstatus)
 
@@ -3089,16 +3095,17 @@ class Manage(Home, WebRoot):
         myDB = db.DBConnection()
         for curShow in sickbeard.showList:
 
-            epCounts = {}
+            epCounts = {
+                Overview.SKIPPED: 0,
+                Overview.WANTED: 0,
+                Overview.QUAL: 0,
+                Overview.GOOD: 0,
+                Overview.UNAIRED: 0,
+                Overview.SNATCHED: 0,
+                Overview.SNATCHED_PROPER: 0,
+                Overview.SNATCHED_BEST: 0
+            }
             epCats = {}
-            epCounts[Overview.SKIPPED] = 0
-            epCounts[Overview.WANTED] = 0
-            epCounts[Overview.QUAL] = 0
-            epCounts[Overview.GOOD] = 0
-            epCounts[Overview.UNAIRED] = 0
-            epCounts[Overview.SNATCHED] = 0
-            epCounts[Overview.SNATCHED_PROPER] = 0
-            epCounts[Overview.SNATCHED_BEST] = 0
 
             sqlResults = myDB.select(
                 "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
@@ -3114,8 +3121,11 @@ class Manage(Home, WebRoot):
             showCats[curShow.indexerid] = epCats
             showSQLResults[curShow.indexerid] = sqlResults
 
-        return t.render(showCounts=showCounts, showCats=showCats, showSQLResults=showSQLResults,
-                        title='Backlog Overview', header='Backlog Overview', topmenu='manage')
+        return t.render(
+            showCounts=showCounts, showCats=showCats,
+            showSQLResults=showSQLResults, controller='manage',
+            action='backlogOverview', title='Backlog Overview',
+            header='Backlog Overview', topmenu='manage')
 
     def massEdit(self, toEdit=None):
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")

@@ -23,7 +23,7 @@
         <meta charset="utf-8">
         <meta name="robots" content="noindex, nofollow">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
         <!-- These values come from css/dark.css and css/light.css -->
         % if sickbeard.THEME_NAME == "dark":

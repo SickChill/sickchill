@@ -26,7 +26,7 @@ from sickbeard.bs4_parser import BS4Parser
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BLUETIGERSProvider(TorrentProvider):
@@ -45,11 +45,11 @@ class BLUETIGERSProvider(TorrentProvider):
             'search': 'https://www.bluetigers.ca/torrents-search.php',
             'login': 'https://www.bluetigers.ca/account-login.php',
             'download': 'https://www.bluetigers.ca/torrents-details.php?id=%s&hit=1',
-            }
+        }
 
         self.search_params = {
             "c16": 1, "c10": 1, "c130": 1, "c131": 1, "c17": 1, "c18": 1, "c19": 1
-            }
+        }
 
         self.url = self.urls['base_url']
 
@@ -60,8 +60,8 @@ class BLUETIGERSProvider(TorrentProvider):
         login_params = {
             'username': self.username,
             'password': self.password,
-            'take_login' : '1'
-            }
+            'take_login': '1'
+        }
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
 

@@ -1,3 +1,4 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -19,7 +20,7 @@ import urllib
 from sickbeard import classes
 from sickbeard import logger, tvcache
 from sickrage.helper.exceptions import AuthException
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 try:
     import json
@@ -79,7 +80,7 @@ class HDBitsProvider(TorrentProvider):
         # FIXME
         results = []
 
-        logger.log(u"Search string: %s" %  search_params, logger.DEBUG)
+        logger.log(u"Search string: %s" % search_params, logger.DEBUG)
 
         self._check_auth()
 

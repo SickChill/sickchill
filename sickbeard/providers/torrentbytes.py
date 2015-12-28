@@ -1,4 +1,5 @@
-﻿# Author: Idan Gutman
+﻿# coding=utf-8
+# Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
 # This file is part of SickRage.
@@ -23,7 +24,7 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TorrentBytesProvider(TorrentProvider):
@@ -86,7 +87,7 @@ class TorrentBytesProvider(TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
                 data = self.get_url(searchURL)
                 if not data:
@@ -122,7 +123,7 @@ class TorrentBytesProvider(TorrentProvider):
                                 continue
 
                             try:
-                                if link.has_key('title'):
+                                if link.get('title', ''):
                                     title = cells[1].find('a', {'class': 'index'})['title']
                                 else:
                                     title = link.contents[0]
@@ -173,14 +174,14 @@ class TorrentBytesProvider(TorrentProvider):
         modifier = sizeString[-2:]
         size = float(size)
         if modifier in 'KB':
-            size = size * 1024
+            size *= 1024 ** 1
         elif modifier in 'MB':
-            size = size * 1024**2
+            size *= 1024 ** 2
         elif modifier in 'GB':
-            size = size * 1024**3
+            size *= 1024 ** 3
         elif modifier in 'TB':
-            size = size * 1024**4
-        return int(size)
+            size *= 1024 ** 4
+        return long(size)
 
 
 class TorrentBytesCache(tvcache.TVCache):

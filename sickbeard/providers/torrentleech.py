@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Idan Gutman
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -23,7 +24,7 @@ import urllib
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TorrentLeechProvider(TorrentProvider):
@@ -90,7 +91,7 @@ class TorrentLeechProvider(TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 data = self.get_url(searchURL)
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 if not data:
                     continue
 

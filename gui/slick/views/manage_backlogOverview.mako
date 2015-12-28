@@ -23,7 +23,7 @@
     showQualSnatched = lambda x: Quality.splitQuality(x.quality)[1]
 
     totalWanted = totalQual = totalQualSnatched = 0
-    backLogShows = sorted([x for x in sickbeard.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + showCounts[x.indexerid][Overview.SNATCHED]], key=lambda x: x.name)
+    backLogShows = sorted([x for x in sickbeard.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]], key=lambda x: x.name)
     for curShow in backLogShows:
         totalWanted += showCounts[curShow.indexerid][Overview.WANTED]
         totalQual += showCounts[curShow.indexerid][Overview.QUAL]
@@ -73,9 +73,8 @@ Jump to Show
             if whichStr not in showCats[curShow.indexerid] or showCats[curShow.indexerid][whichStr] not in (Overview.QUAL, Overview.WANTED, Overview.SNATCHED):
                 continue
 
-            if not showQualSnatched(curShow):
-                if showCats[curShow.indexerid][whichStr] == Overview.SNATCHED:
-                    continue
+            if not showQualSnatched(curShow) and showCats[curShow.indexerid][whichStr] == Overview.SNATCHED:
+                continue
         %>
         <tr class="seasonstyle ${Overview.overviewStrings[showCats[curShow.indexerid][whichStr]]}">
             <td class="tableleft" align="center">${whichStr}</td>

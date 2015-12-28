@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: seedboy
 # URL: https://github.com/seedboy
 #
@@ -23,7 +24,7 @@ import re
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 from sickbeard.bs4_parser import BS4Parser
 
@@ -190,14 +191,14 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         size = float(size)
         if modifier in 'KB':
-            size *= 1024
+            size *= 1024 ** 1
         elif modifier in 'MB':
-            size *= 1024**2
+            size *= 1024 ** 2
         elif modifier in 'GB':
-            size *= 1024**3
+            size *= 1024 ** 3
         elif modifier in 'TB':
-            size *= 1024**4
-        return int(size)
+            size *= 1024 ** 4
+        return long(size)
 
     def seedRatio(self):
         return self.ratio

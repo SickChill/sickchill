@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 # Git: https://github.com/SickRage/SickRage.git
@@ -497,7 +498,7 @@ def clean_url(url):
         scheme, netloc, path, query, fragment = urlparse.urlsplit(url, 'http')
 
         if not path:
-            path = path + '/'
+            path += '/'
 
         cleaned_url = urlparse.urlunsplit((scheme, netloc, path, query, fragment))
 
@@ -606,7 +607,7 @@ def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_
     return my_val
 
 
-class ConfigMigrator():
+class ConfigMigrator(object):
     def __init__(self, config_obj):
         """
         Initializes a config migrator that can take the config from the version indicated in the config

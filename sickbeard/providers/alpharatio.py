@@ -24,7 +24,7 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class AlphaRatioProvider(TorrentProvider):
@@ -111,8 +111,8 @@ class AlphaRatioProvider(TorrentProvider):
                             try:
                                 title = link.contents[0]
                                 download_url = self.urls['download'] % (url['href'])
-                                seeders = cells[len(cells)-2].contents[0]
-                                leechers = cells[len(cells)-1].contents[0]
+                                seeders = cells[len(cells) - 2].contents[0]
+                                leechers = cells[len(cells) - 1].contents[0]
                                 # FIXME
                                 size = -1
                             except (AttributeError, TypeError):

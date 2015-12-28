@@ -22,7 +22,7 @@
 from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BTDIGGProvider(TorrentProvider):
@@ -63,7 +63,7 @@ class BTDIGGProvider(TorrentProvider):
                     search_params['order'] = '2'
 
                 search_url = self.urls['api'] + '?' + urlencode(search_params)
-                logger.log(u"Search URL: %s" %  search_url, logger.DEBUG)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 jdata = self.get_url(search_url, json=True)
                 if not jdata:

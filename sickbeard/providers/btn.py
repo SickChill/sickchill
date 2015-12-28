@@ -31,7 +31,7 @@ from sickbeard import scene_exceptions
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.common import cpu_presets
 from sickrage.helper.exceptions import AuthException, ex
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BTNProvider(TorrentProvider):
@@ -46,7 +46,7 @@ class BTNProvider(TorrentProvider):
         self.cache = BTNCache(self)
 
         self.urls = {'base_url': u'http://api.btnapps.net',
-                     'website': u'http://broadcasthe.net/',}
+                     'website': u'http://broadcasthe.net/', }
 
         self.url = self.urls['website']
 
@@ -82,7 +82,7 @@ class BTNProvider(TorrentProvider):
 
         if search_params:
             params.update(search_params)
-            logger.log(u"Search string: %s" %  search_params, logger.DEBUG)
+            logger.log(u"Search string: %s" % search_params, logger.DEBUG)
 
         parsedJSON = self._api_call(apikey, params)
         if not parsedJSON:
@@ -190,7 +190,7 @@ class BTNProvider(TorrentProvider):
                 # unescaped / is valid in JSON, but it can be escaped
                 url = url.replace("\\/", "/")
 
-        return (title, url)
+        return title, url
 
     def _get_season_search_strings(self, ep_obj):
         search_params = []

@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Idan Gutman
 # Modified by jkaberg, https://github.com/jkaberg for SceneAccess
 # Modified by 7ca for HDSpace
@@ -25,7 +26,7 @@ from bs4 import BeautifulSoup
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class HDSpaceProvider(TorrentProvider):
@@ -45,12 +46,12 @@ class HDSpaceProvider(TorrentProvider):
                      'search': u'https://hd-space.org/index.php?page=torrents&search=%s&active=1&options=0',
                      'rss': u'https://hd-space.org/rss_torrents.php?feed=dl'}
 
-        self.categories = [15, 21, 22, 24, 25, 40] # HDTV/DOC 1080/720, bluray, remux
+        self.categories = [15, 21, 22, 24, 25, 40]  # HDTV/DOC 1080/720, bluray, remux
         self.urls['search'] += '&category='
         for cat in self.categories:
             self.urls['search'] += str(cat) + '%%3B'
             self.urls['rss'] += '&cat[]=' + str(cat)
-        self.urls['search'] = self.urls['search'][:-4] # remove extra %%3B
+        self.urls['search'] = self.urls['search'][:-4]  # remove extra %%3B
 
         self.url = self.urls['base_url']
 
@@ -97,9 +98,9 @@ class HDSpaceProvider(TorrentProvider):
                 else:
                     searchURL = self.urls['search'] % ''
 
-                logger.log(u"Search URL: %s" %  searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s" %  search_string, logger.DEBUG)
+                    logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
                 data = self.get_url(searchURL)
                 if not data or 'please try later' in data:
@@ -132,11 +133,11 @@ class HDSpaceProvider(TorrentProvider):
                         continue
 
                     try:
-                        dl_href = result.find('a', attrs={'href':re.compile(r'download.php.*')})['href']
+                        dl_href = result.find('a', attrs={'href': re.compile(r'download.php.*')})['href']
                         title = re.search('f=(.*).torrent', dl_href).group(1).replace('+', '.')
                         download_url = self.urls['base_url'] + dl_href
-                        seeders = int(result.find('span', attrs={'class':'seedy'}).find('a').text)
-                        leechers = int(result.find('span', attrs={'class':'leechy'}).find('a').text)
+                        seeders = int(result.find('span', attrs={'class': 'seedy'}).find('a').text)
+                        leechers = int(result.find('span', attrs={'class': 'leechy'}).find('a').text)
                         size = re.match(r'.*?([0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+).*', str(result), re.DOTALL).group(1)
 
                         if not all([title, download_url]):
@@ -171,14 +172,14 @@ class HDSpaceProvider(TorrentProvider):
         size, modifier = size.split(' ')
         size = float(size)
         if modifier in 'KB':
-            size = size * 1024
+            size *= 1024 ** 1
         elif modifier in 'MB':
-            size = size * 1024**2
+            size *= 1024 ** 2
         elif modifier in 'GB':
-            size = size * 1024**3
+            size *= 1024 ** 3
         elif modifier in 'TB':
-            size = size * 1024**4
-        return int(size)
+            size *= 1024 ** 4
+        return long(size)
 
 
 class HDSpaceCache(tvcache.TVCache):

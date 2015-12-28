@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
 # URL: https://github.com/SickRage/SickRage
 #
@@ -27,7 +28,8 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import cpu_presets
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickbeard.common import USER_AGENT
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TORRENTZProvider(TorrentProvider):
@@ -41,6 +43,7 @@ class TORRENTZProvider(TorrentProvider):
         self.minseed = None
         self.minleech = None
         self.cache = TORRENTZCache(self)
+        self.headers.update({'User-Agent': USER_AGENT})
         self.urls = {'verified': 'https://torrentz.eu/feed_verified',
                      'feed': 'https://torrentz.eu/feed',
                      'base': 'https://torrentz.eu/'}
@@ -52,7 +55,7 @@ class TORRENTZProvider(TorrentProvider):
     @staticmethod
     def _split_description(description):
         match = re.findall(r'[0-9]+', description)
-        return (int(match[0]) * 1024**2, int(match[1]), int(match[2]))
+        return int(match[0]) * 1024 ** 2, int(match[1]), int(match[2])
 
     def search(self, search_strings, age=0, ep_obj=None):
         results = []

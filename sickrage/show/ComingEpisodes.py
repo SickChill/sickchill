@@ -1,3 +1,4 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
 # URL: https://sickrage.github.io
@@ -27,7 +28,7 @@ from sickrage.helper.common import dateFormat, timeFormat
 from sickrage.helper.quality import get_quality_string
 
 
-class ComingEpisodes:
+class ComingEpisodes(object):
     """
     Missed:   yesterday...(less than 1 week)
     Today:    today

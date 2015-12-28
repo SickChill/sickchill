@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: duramato <matigonkas@outlook.com>
 # Author: miigotu
 # URL: https://github.com/SickRage/sickrage
@@ -25,7 +26,7 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
 from sickrage.helper.common import try_int
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class ExtraTorrentProvider(TorrentProvider):
@@ -35,7 +36,7 @@ class ExtraTorrentProvider(TorrentProvider):
         self.urls = {
             'index': 'http://extratorrent.cc',
             'rss': 'http://extratorrent.cc/rss.xml',
-            }
+        }
 
         self.url = self.urls['index']
 
@@ -43,6 +44,7 @@ class ExtraTorrentProvider(TorrentProvider):
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.custom_url = None
 
         self.cache = ExtraTorrentCache(self)
         self.headers.update({'User-Agent': USER_AGENT})
@@ -62,7 +64,11 @@ class ExtraTorrentProvider(TorrentProvider):
 
                 try:
                     self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string})
-                    data = self.get_url(self.urls['rss'], params=self.search_params)
+                    if self.custom_url:
+                        url = self.custom_url + '/rss.xml'
+                        data = self.get_url(url, params=self.search_params)
+                    else:
+                        data = self.get_url(self.urls['rss'], params=self.search_params)
                     if not data:
                         logger.log(u"No data returned from provider", logger.DEBUG)
                         continue
@@ -87,7 +93,7 @@ class ExtraTorrentProvider(TorrentProvider):
 
                     for item in entries:
                         title = item['title'].decode('utf-8')
-                       # info_hash = item['info_hash']
+                        # info_hash = item['info_hash']
                         size = int(item['size'])
                         seeders = try_int(item['seeders'], 0)
                         leechers = try_int(item['leechers'], 0)

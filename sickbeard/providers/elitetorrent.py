@@ -25,7 +25,7 @@ from six.moves import urllib
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class elitetorrentProvider(TorrentProvider):
@@ -149,7 +149,6 @@ class elitetorrentProvider(TorrentProvider):
 
         return results
 
-
     @staticmethod
     def _processTitle(title):
 
@@ -163,7 +162,7 @@ class elitetorrentProvider(TorrentProvider):
         title = title.replace('(calidad regular)', 'DVDrip x264')
         title = title.replace('(calidad media)', 'DVDrip x264')
 
-        #Language, all results from this provider have spanish audio, we append it to title (avoid to download undesired torrents)
+        # Language, all results from this provider have spanish audio, we append it to title (avoid to download undesired torrents)
         title += ' SPANISH AUDIO'
         title += '-ELITETORRENT'
 

@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -40,7 +41,7 @@ resultFilters = [
     "dub(bed)?"
 ]
 
-if hasattr('General','ignored_subs_list') and sickbeard.IGNORED_SUBS_LIST:
+if hasattr('General', 'ignored_subs_list') and sickbeard.IGNORED_SUBS_LIST:
     resultFilters.append("(" + sickbeard.IGNORED_SUBS_LIST.replace(",", "|") + ")sub(bed|ed|s)?")
 
 
@@ -210,10 +211,9 @@ def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
                         if ep_obj.show.release_groups is not None:
                             if len(show.release_groups.whitelist) > 0:
                                 for keyword in show.release_groups.whitelist:
-                                    toReturn.append(keyword + '.' + curShow+ "." + cur_season)
+                                    toReturn.append(keyword + '.' + curShow + "." + cur_season)
                     else:
                         toReturn.append(curShow + "." + cur_season)
-
 
     return toReturn
 
@@ -334,6 +334,7 @@ def allPossibleShowNames(show, season=-1):
         showNames += newShowNames
 
     return showNames
+
 
 def determineReleaseName(dir_name=None, nzb_name=None):
     """Determine a release name from an nzb and/or folder name"""

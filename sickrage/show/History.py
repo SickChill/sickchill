@@ -1,3 +1,4 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
 # URL: https://sickrage.github.io
@@ -23,7 +24,7 @@ from sickbeard.db import DBConnection
 from sickrage.helper.common import try_int
 
 
-class History:
+class History(object):
     date_format = '%Y%m%d%H%M%S'
 
     def __init__(self):

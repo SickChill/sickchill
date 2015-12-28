@@ -1,3 +1,4 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
 # URL: https://sickrage.github.io
@@ -25,7 +26,7 @@ from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowE
 from sickrage.helper.exceptions import MultipleShowObjectsException
 
 
-class Show:
+class Show(object):
     def __init__(self):
         pass
 

@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -33,7 +34,8 @@ from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowE
 from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
 
-class ShowUpdater:
+
+class ShowUpdater(object):
     def __init__(self):
         self.lock = threading.Lock()
         self.amActive = False

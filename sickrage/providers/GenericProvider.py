@@ -1,3 +1,4 @@
+# coding=utf-8
 # This file is part of SickRage.
 #
 # URL: https://sickrage.github.io
@@ -27,7 +28,7 @@ from random import shuffle
 from requests import Session
 from sickbeard import logger
 from sickbeard.classes import Proper, SearchResult
-from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, user_agents
+from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, UA_POOL
 from sickbeard.db import DBConnection
 from sickbeard.helpers import download_file, getURL, remove_file_failed
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
@@ -43,8 +44,6 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     TORRENT = 'torrent'
 
     def __init__(self, name):
-        shuffle(user_agents)
-
         self.name = name
 
         self.anime_only = False
@@ -59,9 +58,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         self.enable_backlog = False
         self.enable_daily = False
         self.enabled = False
-        self.headers = {
-            'User-Agent': user_agents[0]
-        }
+        self.headers = {'User-Agent': UA_POOL.random}
         self.proper_strings = ['PROPER|REPACK|REAL']
         self.provider_type = None
         self.public = False
@@ -213,9 +210,9 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                         )
                         add_cache_entry = True
 
-                    if len(parse_result.episode_numbers) and \
-                       (parse_result.season_number not in set([ep.season for ep in episodes]) or
-                        not [ep for ep in episodes if ep.scene_episode in parse_result.episode_numbers]):
+                    if len(parse_result.episode_numbers) and (
+                            parse_result.season_number not in set([ep.season for ep in episodes]) or
+                            not [ep for ep in episodes if ep.scene_episode in parse_result.episode_numbers]):
                         logger.log(
                             u'The result %s doesn\'t seem to be a valid episode that we are trying to snatch, ignoring' % title,
                             logger.DEBUG)
@@ -293,8 +290,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                     break
 
             if not episode_wanted:
-                logger.log(u'Ignoring result %s because we don\'t want an episode that is %s' % (
-                    title, Quality.qualityStrings[quality]), logger.INFO)
+                logger.log(u'Ignoring result %s.' % (title), logger.DEBUG)
                 continue
 
             logger.log(u'Found result %s at %s' % (title, url), logger.DEBUG)
