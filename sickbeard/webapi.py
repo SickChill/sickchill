@@ -789,7 +789,7 @@ class CMD_EpisodeSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         # retrieve the episode object and fail if we can't get one
-        ep_obj = show_obj.getEpisode(int(self.s), int(self.e))
+        ep_obj = show_obj.getEpisode(self.s, self.e)
         if isinstance(ep_obj, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
@@ -958,7 +958,7 @@ class CMD_SubtitleSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         # retrieve the episode object and fail if we can't get one
-        ep_obj = show_obj.getEpisode(int(self.s), int(self.e))
+        ep_obj = show_obj.getEpisode(self.s, self.e)
         if isinstance(ep_obj, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
