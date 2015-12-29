@@ -88,7 +88,7 @@ class DailySearcher(object):
                 if air_time > curTime:
                     continue
 
-            ep = show.getEpisode(int(sqlEp["season"]), int(sqlEp["episode"]))
+            ep = show.getEpisode(sqlEp["season"], sqlEp["episode"])
             with ep.lock:
                 if ep.season == 0:
                     logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to SKIPPED because is a special season")
