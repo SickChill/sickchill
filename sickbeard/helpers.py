@@ -1733,7 +1733,7 @@ def getTVDBFromID(indexer_id, indexer):
     tvdb_id = ''
     if indexer == 'IMDB':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=%s" % indexer_id
-        data = getURL(url, session=session)
+        data = getURL(url, session=session, need_bytes=True)
         if data is None:
             return tvdb_id
         try:
@@ -1747,7 +1747,7 @@ def getTVDBFromID(indexer_id, indexer):
         return tvdb_id
     elif indexer == 'ZAP2IT':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it=%s" % indexer_id
-        data = getURL(url, session=session)
+        data = getURL(url, session=session, need_bytes=True)
         if data is None:
             return tvdb_id
         try:
