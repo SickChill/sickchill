@@ -65,7 +65,7 @@ def update_network_dict():
         existing = network in network_list
         if not existing:
             queries.append(['INSERT OR IGNORE INTO network_timezones VALUES (?,?);', [network, timezone]])
-        elif network_list[network] is not timezone:
+        elif network_list[network] != timezone:
             queries.append(['UPDATE OR IGNORE network_timezones SET timezone = ? WHERE network_name = ?;', [timezone, network]])
 
         if existing:
