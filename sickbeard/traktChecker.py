@@ -39,7 +39,7 @@ def setEpisodeToWanted(show, s, e):
     """
     Sets an episode to wanted, only if it is currently skipped
     """
-    epObj = show.getEpisode(int(s), int(e))
+    epObj = show.getEpisode(s, e)
     if epObj:
 
         with epObj.lock:
