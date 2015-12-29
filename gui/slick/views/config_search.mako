@@ -565,6 +565,9 @@
                                             <span id="label_warning_deluge" style="display:none"><p>(blank spaces are not allowed)</p>
                                                 <div class="clear-left"><p>note: label plugin must be enabled in Deluge clients</p></div>
                                             </span>
+                                            <span id="label_warning_qbittorrent" style="display:none"><p>(blank spaces are not allowed)</p>
+                                                <div class="clear-left"><p>note: for QBitTorrent 3.3.1 and up</p></div>
+                                            </span>                                            
                                         </span>
                                     </label>
                                 </div>
@@ -577,6 +580,9 @@
                                             <span id="label_anime_warning_deluge" style="display:none"><p>(blank spaces are not allowed)</p>
                                                 <div class="clear-left"><p>note: label plugin must be enabled in Deluge clients</p></div>
                                             </span>
+                                            <span id="label_anime_warning_qbittorrent" style="display:none"><p>(blank spaces are not allowed)</p>
+                                                <div class="clear-left"><p>note: for QBitTorrent 3.3.1 and up </p></div>
+                                            </span>          
                                         </span>
                                     </label>
                                 </div>

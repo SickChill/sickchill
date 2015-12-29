@@ -84,7 +84,7 @@ class qbittorrentAPI(GenericClient):
 
         if self.api > 6:
             self.url = self.host + 'command/setLabel'
-            data = {'hashes': result.hash, 'label': label}
+            data = {'hashes': result.hash.lower(), 'label': label}
             return self._request(method='post', data=data, cookies=self.session.cookies)
         return None
 
