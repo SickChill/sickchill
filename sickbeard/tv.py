@@ -224,7 +224,7 @@ class TVShow(object):
 
         ep_list = []
         for cur_result in results:
-            cur_ep = self.getEpisode(int(cur_result["season"]), int(cur_result["episode"]))
+            cur_ep = self.getEpisode(cur_result["season"], cur_result["episode"])
             if not cur_ep:
                 continue
 
@@ -236,7 +236,7 @@ class TVShow(object):
                         "SELECT season, episode FROM tv_episodes WHERE showid = ? AND season = ? AND location = ? AND episode != ? ORDER BY episode ASC",
                         [self.indexerid, cur_ep.season, cur_ep.location, cur_ep.episode])
                     for cur_related_ep in related_eps_result:
-                        related_ep = self.getEpisode(int(cur_related_ep["season"]), int(cur_related_ep["episode"]))
+                        related_ep = self.getEpisode(cur_related_ep["season"], cur_related_ep["episode"])
                         if related_ep and related_ep not in cur_ep.relatedEps:
                             cur_ep.relatedEps.append(related_ep)
             ep_list.append(cur_ep)
@@ -244,6 +244,9 @@ class TVShow(object):
         return ep_list
 
     def getEpisode(self, season=None, episode=None, file=None, noCreate=False, absolute_number=None, forceUpdate=False):
+        season = try_int(season, None)
+        episode = try_int(episode, None)
+        absolute_number = try_int(absolute_number, None)
 
         # if we get an anime get the real season and episode
         if self.is_anime and absolute_number and not season and not episode:

@@ -666,9 +666,9 @@ class Home(WebRoot):
             return "Invalid show paramaters"
 
         if absolute:
-            epObj = showObj.getEpisode(absolute_number=int(absolute))
+            epObj = showObj.getEpisode(absolute_number=absolute)
         elif season and episode:
-            epObj = showObj.getEpisode(int(season), int(episode))
+            epObj = showObj.getEpisode(season, episode)
         else:
             return "Invalid paramaters"
 
@@ -1742,7 +1742,7 @@ class Home(WebRoot):
                     logger.log(u"Something went wrong when trying to setStatus, epInfo[0]: %s, epInfo[1]: %s" % (epInfo[0], epInfo[1]), logger.DEBUG)
                     continue
 
-                epObj = showObj.getEpisode(int(epInfo[0]), int(epInfo[1]))
+                epObj = showObj.getEpisode(epInfo[0], epInfo[1])
 
                 if not epObj:
                     return self._genericMessage("Error", "Episode couldn't be retrieved")
@@ -1913,11 +1913,11 @@ class Home(WebRoot):
             related_eps_result = myDB.select("SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?",
                                              [ep_result[0]["location"], epInfo[1]])
 
-            root_ep_obj = show_obj.getEpisode(int(epInfo[0]), int(epInfo[1]))
+            root_ep_obj = show_obj.getEpisode(epInfo[0], epInfo[1])
             root_ep_obj.relatedEps = []
 
             for cur_related_ep in related_eps_result:
-                related_ep_obj = show_obj.getEpisode(int(cur_related_ep["season"]), int(cur_related_ep["episode"]))
+                related_ep_obj = show_obj.getEpisode(cur_related_ep["season"], cur_related_ep["episode"])
                 if related_ep_obj not in root_ep_obj.relatedEps:
                     root_ep_obj.relatedEps.append(related_ep_obj)
 
@@ -3073,7 +3073,7 @@ class Manage(Home, WebRoot):
                 season, episode = epResult.split('x')
 
                 show = Show.find(sickbeard.showList, int(cur_indexer_id))
-                show.getEpisode(int(season), int(episode)).download_subtitles()
+                show.getEpisode(season, episode).download_subtitles()
 
         return self.redirect('/manage/subtitleMissed/')
 
