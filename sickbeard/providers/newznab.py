@@ -404,7 +404,7 @@ class NewznabProvider(NZBProvider):
         for sqlshow in sqlResults:
             self.show = Show.find(sickbeard.showList, int(sqlshow["showid"]))
             if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
+                curEp = self.show.getEpisode(sqlshow["season"], sqlshow["episode"])
                 searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
                 for searchString in searchStrings:
                     for item in self.search(searchString):
