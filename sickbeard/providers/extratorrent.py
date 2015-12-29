@@ -99,7 +99,7 @@ class ExtraTorrentProvider(TorrentProvider):
                             items[mode].append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
-                    logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.WARNING)
 
             # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
