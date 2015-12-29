@@ -59,7 +59,7 @@ class DailySearcher(object):
         curTime = datetime.datetime.now(network_timezones.sb_timezone)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND season > 0 AND (airdate <= ? and airdate > 1)",
+        sqlResults = myDB.select("SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND (airdate <= ? and airdate > 1)",
                                  [common.UNAIRED, curDate])
 
         sql_l = []
@@ -88,7 +88,7 @@ class DailySearcher(object):
                 if air_time > curTime:
                     continue
 
-            ep = show.getEpisode(int(sqlEp["season"]), int(sqlEp["episode"]))
+            ep = show.getEpisode(sqlEp["season"], sqlEp["episode"])
             with ep.lock:
                 if ep.season == 0:
                     logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to SKIPPED because is a special season")

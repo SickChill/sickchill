@@ -666,9 +666,9 @@ class Home(WebRoot):
             return "Invalid show paramaters"
 
         if absolute:
-            epObj = showObj.getEpisode(absolute_number=int(absolute))
+            epObj = showObj.getEpisode(absolute_number=absolute)
         elif season and episode:
-            epObj = showObj.getEpisode(int(season), int(episode))
+            epObj = showObj.getEpisode(season, episode)
         else:
             return "Invalid paramaters"
 
@@ -699,7 +699,7 @@ class Home(WebRoot):
         myDB = db.DBConnection()
         today = str(datetime.date.today().toordinal())
 
-        status_quality = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ')'
+        status_quality = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST]) + ')'
         status_download = '(' + ','.join([str(x) for x in Quality.DOWNLOADED + Quality.ARCHIVED]) + ')'
 
         sql_statement = 'SELECT showid, '
@@ -1265,16 +1265,17 @@ class Home(WebRoot):
                         showObj) and showObj.subtitles:
                     submenu.append({'title': 'Download Subtitles', 'path': 'home/subtitleShow?show=%d' % showObj.indexerid, 'icon': 'ui-icon ui-icon-comment'})
 
-        epCounts = {}
+        epCounts = {
+            Overview.SKIPPED: 0,
+            Overview.WANTED: 0,
+            Overview.QUAL: 0,
+            Overview.GOOD: 0,
+            Overview.UNAIRED: 0,
+            Overview.SNATCHED: 0,
+            Overview.SNATCHED_PROPER: 0,
+            Overview.SNATCHED_BEST: 0
+        }
         epCats = {}
-        epCounts[Overview.SKIPPED] = 0
-        epCounts[Overview.WANTED] = 0
-        epCounts[Overview.QUAL] = 0
-        epCounts[Overview.GOOD] = 0
-        epCounts[Overview.UNAIRED] = 0
-        epCounts[Overview.SNATCHED] = 0
-        epCounts[Overview.SNATCHED_PROPER] = 0
-        epCounts[Overview.SNATCHED_BEST] = 0
 
         for curResult in sqlResults:
             curEpCat = showObj.getOverview(int(curResult["status"] or -1))
@@ -1586,6 +1587,9 @@ class Home(WebRoot):
 
             time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
+        # Remove show from 'RECENT SHOWS' in 'Shows' menu
+        sickbeard.SHOWS_RECENT = [x for x in sickbeard.SHOWS_RECENT if x['indexerid'] != show.indexerid]
+
         # Don't redirect to the default page, so the user can confirm that the show was deleted
         return self.redirect('/home/')
 
@@ -1738,7 +1742,7 @@ class Home(WebRoot):
                     logger.log(u"Something went wrong when trying to setStatus, epInfo[0]: %s, epInfo[1]: %s" % (epInfo[0], epInfo[1]), logger.DEBUG)
                     continue
 
-                epObj = showObj.getEpisode(int(epInfo[0]), int(epInfo[1]))
+                epObj = showObj.getEpisode(epInfo[0], epInfo[1])
 
                 if not epObj:
                     return self._genericMessage("Error", "Episode couldn't be retrieved")
@@ -1909,11 +1913,11 @@ class Home(WebRoot):
             related_eps_result = myDB.select("SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?",
                                              [ep_result[0]["location"], epInfo[1]])
 
-            root_ep_obj = show_obj.getEpisode(int(epInfo[0]), int(epInfo[1]))
+            root_ep_obj = show_obj.getEpisode(epInfo[0], epInfo[1])
             root_ep_obj.relatedEps = []
 
             for cur_related_ep in related_eps_result:
-                related_ep_obj = show_obj.getEpisode(int(cur_related_ep["season"]), int(cur_related_ep["episode"]))
+                related_ep_obj = show_obj.getEpisode(cur_related_ep["season"], cur_related_ep["episode"])
                 if related_ep_obj not in root_ep_obj.relatedEps:
                     root_ep_obj.relatedEps.append(related_ep_obj)
 
@@ -3069,7 +3073,7 @@ class Manage(Home, WebRoot):
                 season, episode = epResult.split('x')
 
                 show = Show.find(sickbeard.showList, int(cur_indexer_id))
-                show.getEpisode(int(season), int(episode)).download_subtitles()
+                show.getEpisode(season, episode).download_subtitles()
 
         return self.redirect('/manage/subtitleMissed/')
 
@@ -3091,16 +3095,17 @@ class Manage(Home, WebRoot):
         myDB = db.DBConnection()
         for curShow in sickbeard.showList:
 
-            epCounts = {}
+            epCounts = {
+                Overview.SKIPPED: 0,
+                Overview.WANTED: 0,
+                Overview.QUAL: 0,
+                Overview.GOOD: 0,
+                Overview.UNAIRED: 0,
+                Overview.SNATCHED: 0,
+                Overview.SNATCHED_PROPER: 0,
+                Overview.SNATCHED_BEST: 0
+            }
             epCats = {}
-            epCounts[Overview.SKIPPED] = 0
-            epCounts[Overview.WANTED] = 0
-            epCounts[Overview.QUAL] = 0
-            epCounts[Overview.GOOD] = 0
-            epCounts[Overview.UNAIRED] = 0
-            epCounts[Overview.SNATCHED] = 0
-            epCounts[Overview.SNATCHED_PROPER] = 0
-            epCounts[Overview.SNATCHED_BEST] = 0
 
             sqlResults = myDB.select(
                 "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
@@ -3116,8 +3121,11 @@ class Manage(Home, WebRoot):
             showCats[curShow.indexerid] = epCats
             showSQLResults[curShow.indexerid] = sqlResults
 
-        return t.render(showCounts=showCounts, showCats=showCats, showSQLResults=showSQLResults,
-                        title='Backlog Overview', header='Backlog Overview', topmenu='manage')
+        return t.render(
+            showCounts=showCounts, showCats=showCats,
+            showSQLResults=showSQLResults, controller='manage',
+            action='backlogOverview', title='Backlog Overview',
+            header='Backlog Overview', topmenu='manage')
 
     def massEdit(self, toEdit=None):
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")

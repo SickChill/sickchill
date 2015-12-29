@@ -28,7 +28,7 @@ from sickbeard import show_name_helpers
 from sickbeard import logger
 
 from sickbeard import tvcache
-from sickrage.providers.NZBProvider import NZBProvider
+from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
 class animenzb(NZBProvider):
@@ -69,15 +69,16 @@ class animenzb(NZBProvider):
         searchURL = self.url + "rss?" + urllib.urlencode(params)
         logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
         results = []
-        for curItem in self.cache.getRSSFeed(searchURL)['entries'] or []:
-            (title, url) = self._get_title_and_url(curItem)
-
-            if title and url:
-                results.append(curItem)
-                logger.log(u"Found result: %s " % title, logger.DEBUG)
-
-        # For each search mode sort all the items by seeders if available if available
-        results.sort(key=lambda tup: tup[0], reverse=True)
+        if 'entries' in self.cache.getRSSFeed(searchURL): 
+            for curItem in self.cache.getRSSFeed(searchURL)['entries']:
+                (title, url) = self._get_title_and_url(curItem)
+    
+                if title and url:
+                    results.append(curItem)
+                    logger.log(u"Found result: %s " % title, logger.DEBUG)
+    
+            # For each search mode sort all the items by seeders if available if available
+            results.sort(key=lambda tup: tup[0], reverse=True)
 
         return results
 

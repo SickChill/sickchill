@@ -195,11 +195,11 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                           subtitles_info['episode']), logger.DEBUG)
             return existing_subtitles, None
 
-        for sub in subtitles_list:
-            matches = sub.get_matches(video, hearing_impaired=False)
+        for subtitle in subtitles_list:
+            matches = subtitle.get_matches(video, hearing_impaired=False)
             score = subliminal.subtitle.compute_score(matches, video)
             logger.log(u"[%s] Subtitle score for %s is: %s (min=%s)"
-                       % (sub.provider_name, sub.id, score, user_score), logger.DEBUG)
+                       % (subtitle.provider_name, subtitle.id, score, user_score), logger.DEBUG)
 
         found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
                                                        hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED,
@@ -238,7 +238,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
             run_subs_extra_scripts(subtitles_info, subtitle, video, single=not sickbeard.SUBTITLES_MULTI)
 
     new_subtitles = sorted({subtitle.language.opensubtitles for subtitle in found_subtitles})
-    current_subtitles = sorted({subtitle for subtitle in new_subtitles + existing_subtitles})
+    current_subtitles = sorted({subtitle for subtitle in new_subtitles + existing_subtitles}) if existing_subtitles else new_subtitles
     if not sickbeard.SUBTITLES_MULTI and len(found_subtitles) == 1:
         new_code = found_subtitles[0].language.opensubtitles
         if new_code not in existing_subtitles:
@@ -371,11 +371,11 @@ class SubtitlesFinder(object):
                                                                            min_score=user_score,
                                                                            only_one=not sickbeard.SUBTITLES_MULTI)
 
-                            for sub in subtitles_list:
-                                matches = sub.get_matches(video, hearing_impaired=False)
+                            for subtitle in subtitles_list:
+                                matches = subtitle.get_matches(video, hearing_impaired=False)
                                 score = subliminal.subtitle.compute_score(matches, video)
                                 logger.log(u"[%s] Subtitle score for %s is: %s (min=%s)"
-                                           % (sub.provider_name, sub.id, score, user_score), logger.DEBUG)
+                                           % (subtitle.provider_name, subtitle.id, score, user_score), logger.DEBUG)
 
                             downloaded_languages = set()
                             for subtitle in found_subtitles:
@@ -497,7 +497,7 @@ class SubtitlesFinder(object):
                     logger.log(u'Show with ID %s not found in the database' % ep_to_sub['showid'], logger.DEBUG)
                     continue
 
-                episode_object = show_object.getEpisode(int(ep_to_sub["season"]), int(ep_to_sub["episode"]))
+                episode_object = show_object.getEpisode(ep_to_sub["season"], ep_to_sub["episode"])
                 if isinstance(episode_object, str):
                     logger.log(u'%s S%02dE%02d not found in the database'
                                % (ep_to_sub['show_name'], ep_to_sub['season'], ep_to_sub['episode']), logger.DEBUG)

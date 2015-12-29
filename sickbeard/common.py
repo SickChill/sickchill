@@ -132,6 +132,7 @@ class Quality(object):
     UNKNOWN = 1 << 15  # 32768
 
     qualityStrings = NumDict({
+        None: "None",
         NONE: "N/A",
         UNKNOWN: "Unknown",
         SDTV: "SDTV",
@@ -146,6 +147,7 @@ class Quality(object):
     })
 
     sceneQualityStrings = NumDict({
+        None: "None",
         NONE: "N/A",
         UNKNOWN: "Unknown",
         SDTV: "HDTV",
@@ -166,6 +168,7 @@ class Quality(object):
     })
 
     cssClassStrings = NumDict({
+        None: "None",
         NONE: "N/A",
         UNKNOWN: "Unknown",
         SDTV: "SDTV",
@@ -201,8 +204,11 @@ class Quality(object):
         """
         to_return = {}
         for quality in Quality.qualityStrings:
-            to_return[Quality.compositeStatus(status, quality)] = Quality.statusPrefixes[status] + " (" + \
-                                                                  Quality.qualityStrings[quality] + ")"
+            if quality is not None:
+                stat = Quality.statusPrefixes[status]
+                qual = Quality.qualityStrings[quality]
+                comp = Quality.compositeStatus(status, quality)
+                to_return[comp] = '%s (%s)' % (stat, qual)
         return to_return
 
     @staticmethod
@@ -217,9 +223,13 @@ class Quality(object):
 
     @staticmethod
     def splitQuality(quality):
+        if quality is None:
+            quality = Quality.NONE
         any_qualities = []
         best_qualities = []
         for cur_qual in Quality.qualityStrings:
+            if cur_qual is None:
+                cur_qual = Quality.NONE
             if cur_qual & quality:
                 any_qualities.append(cur_qual)
             if cur_qual << 16 & quality:
@@ -390,6 +400,8 @@ class Quality(object):
 
     @staticmethod
     def compositeStatus(status, quality):
+        if quality is None:
+            quality = Quality.NONE
         return status + 100 * quality
 
     @staticmethod

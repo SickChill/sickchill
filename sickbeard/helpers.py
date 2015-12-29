@@ -1379,8 +1379,9 @@ def _setUpSession(session, headers):
     """
 
     # request session
-    cache_dir = sickbeard.CACHE_DIR or _getTempDir()
-    session = CacheControl(sess=session, cache=caches.FileCache(ek(os.path.join, cache_dir, 'sessions'), use_dir_lock=True), cache_etags=False)
+    # Lets try without caching sessions to disk for awhile
+    # cache_dir = sickbeard.CACHE_DIR or _getTempDir()
+    # session = CacheControl(sess=session, cache=caches.FileCache(ek(os.path.join, cache_dir, 'sessions'), use_dir_lock=True), cache_etags=False)
 
     # request session clear residual referer
     # pylint: disable=superfluous-parens
@@ -1732,7 +1733,7 @@ def getTVDBFromID(indexer_id, indexer):
     tvdb_id = ''
     if indexer == 'IMDB':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=%s" % indexer_id
-        data = getURL(url, session=session)
+        data = getURL(url, session=session, need_bytes=True)
         if data is None:
             return tvdb_id
         try:
@@ -1746,7 +1747,7 @@ def getTVDBFromID(indexer_id, indexer):
         return tvdb_id
     elif indexer == 'ZAP2IT':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it=%s" % indexer_id
-        data = getURL(url, session=session)
+        data = getURL(url, session=session, need_bytes=True)
         if data is None:
             return tvdb_id
         try:

@@ -205,9 +205,7 @@ def split_result(obj):
         want_ep = True
         for ep_num in parsed_obj.episode_numbers:
             if not obj.extraInfo[0].wantEpisode(season, ep_num, obj.quality):
-                # pylint: disable=no-member
-                logger.log(u"Ignoring result " + new_nzb + " because we don't want an episode that is " +
-                           Quality.qualityStrings[obj.quality], logger.INFO)
+                logger.log(u"Ignoring result: " + new_nzb, logger.DEBUG)
                 want_ep = False
                 break
         if not want_ep:

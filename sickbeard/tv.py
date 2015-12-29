@@ -224,7 +224,7 @@ class TVShow(object):
 
         ep_list = []
         for cur_result in results:
-            cur_ep = self.getEpisode(int(cur_result["season"]), int(cur_result["episode"]))
+            cur_ep = self.getEpisode(cur_result["season"], cur_result["episode"])
             if not cur_ep:
                 continue
 
@@ -236,7 +236,7 @@ class TVShow(object):
                         "SELECT season, episode FROM tv_episodes WHERE showid = ? AND season = ? AND location = ? AND episode != ? ORDER BY episode ASC",
                         [self.indexerid, cur_ep.season, cur_ep.location, cur_ep.episode])
                     for cur_related_ep in related_eps_result:
-                        related_ep = self.getEpisode(int(cur_related_ep["season"]), int(cur_related_ep["episode"]))
+                        related_ep = self.getEpisode(cur_related_ep["season"], cur_related_ep["episode"])
                         if related_ep and related_ep not in cur_ep.relatedEps:
                             cur_ep.relatedEps.append(related_ep)
             ep_list.append(cur_ep)
@@ -244,6 +244,9 @@ class TVShow(object):
         return ep_list
 
     def getEpisode(self, season=None, episode=None, file=None, noCreate=False, absolute_number=None, forceUpdate=False):
+        season = try_int(season, None)
+        episode = try_int(episode, None)
+        absolute_number = try_int(absolute_number, None)
 
         # if we get an anime get the real season and episode
         if self.is_anime and absolute_number and not season and not episode:
@@ -1204,20 +1207,8 @@ class TVShow(object):
         toReturn += "anime: " + str(self.is_anime) + "\n"
         return toReturn
 
-    def qualitiesToString(self, qualities=[]):
-        result = u''
-        for quality in qualities:
-            if quality in Quality.qualityStrings:
-                result += Quality.qualityStrings[quality] + u', '
-            else:
-                logger.log(u"Bad quality value: " + str(quality))
-
-        result = re.sub(', $', '', result)
-
-        if not len(result):
-            result = u'None'
-
-        return result
+    def qualitiesToString(self, qualities=None):
+        return ', '.join([Quality.qualityStrings[quality] for quality in qualities or [] if quality and quality in Quality.qualityStrings]) or 'None'
 
     def wantEpisode(self, season, episode, quality, manualSearch=False, downCurQuality=False):
 
@@ -1231,7 +1222,8 @@ class TVShow(object):
                     self.qualitiesToString([quality])), logger.DEBUG)
 
         if quality not in allowed_qualities + preferred_qualities or quality is UNKNOWN:
-            logger.log(u"Don't want this quality, ignoring found episode", logger.DEBUG)
+            logger.log(u"Skipping %s (S%02dE%02d, %s): Don't want this quality, ignoring found episode" %
+                (self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.INFO)
             return False
 
         myDB = db.DBConnection()
@@ -1239,7 +1231,8 @@ class TVShow(object):
                                  [self.indexerid, season, episode])
 
         if not sqlResults or not len(sqlResults):
-            logger.log(u"Unable to find a matching episode in database, ignoring found episode", logger.DEBUG)
+            logger.log(u"Skipping %s (S%02dE%02d, %s): Unable to find a matching episode in database, ignoring found episode" %
+                (self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.INFO)
             return False
 
         epStatus = int(sqlResults[0]["status"])
@@ -1249,14 +1242,15 @@ class TVShow(object):
 
         # if we know we don't want it then just say no
         if epStatus in Quality.ARCHIVED + [UNAIRED, SKIPPED, IGNORED] and not manualSearch:
-            logger.log(u"Existing episode status is unaired/skipped/ignored/archived, ignoring found episode", logger.DEBUG)
+            logger.log(u"Skipping %s (S%02dE%02d, %s): Existing episode status is '%s', ignoring found episode" %
+                (self.name, season or 0, episode or 0, Quality.qualityStrings[quality], epStatus_text), logger.INFO)
             return False
 
         curStatus, curQuality = Quality.splitCompositeStatus(epStatus)
 
         # if it's one of these then we want it as long as it's in our allowed initial qualities
         if epStatus in (WANTED, SKIPPED, UNKNOWN):
-            logger.log(u"Existing episode status is wanted/skipped/unknown, getting found episode", logger.DEBUG)
+            logger.log(u"Existing episode status is '%s', getting found episode" % epStatus_text, logger.DEBUG)
             return True
         elif manualSearch:
             if (downCurQuality and quality >= curQuality) or (not downCurQuality and quality > curQuality):
@@ -1278,7 +1272,8 @@ class TVShow(object):
             logger.log(u"Episode already exists and the found episode has same/lower quality, ignoring found episode",
                        logger.DEBUG)
 
-        logger.log(u"None of the conditions were met, ignoring found episode", logger.DEBUG)
+        logger.log(u"Skipping %s (S%02dE%02d, %s): None of the conditions were met, ignoring found episode" %
+            (self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.INFO)
         return False
 
     def getOverview(self, epStatus):

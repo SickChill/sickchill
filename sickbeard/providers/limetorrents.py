@@ -1,5 +1,5 @@
 # coding=utf-8
-# Author: Gonçalo (aka duramato) <matigonkas@outlook.com>
+# Author: Gonçalo (aka duramato/supergonkas) <matigonkas@outlook.com>
 # URL: https://github.com/SickRage/sickrage
 # This file is part of SickRage.
 #
@@ -18,23 +18,22 @@
 
 import traceback
 from bs4 import BeautifulSoup
-
-import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
+from sickbeard.common import USER_AGENT
 from sickrage.helper.common import try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
     def __init__(self):
-        TorrentProvider.__init__(self, "BitSnoop")
+        TorrentProvider.__init__(self, "LimeTorrents")
 
         self.urls = {
-            'index': 'http://bitsnoop.com',
-            'search': 'http://bitsnoop.com/search/video/',
-            'rss': 'http://bitsnoop.com/new_video.html?fmt=rss'
-        }
+            'index': 'https://www.limetorrents.cc/',
+            'search': 'https://www.limetorrents.cc/searchrss/20/',
+            'rss': 'https://www.limetorrents.cc/rss/20/'
+            }
 
         self.url = self.urls['index']
 
@@ -42,12 +41,12 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.headers.update({'User-Agent': USER_AGENT})
+        self.proper_strings = ['PROPER', 'REPACK', 'REAL']
 
-        self.proper_strings = ['PROPER', 'REPACK']
+        self.cache = LimeTorrentsCache(self)
 
-        self.cache = BitSnoopCache(self)
-
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches,too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None): # pylint: disable=too-many-branches,too-many-locals
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -60,7 +59,8 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 try:
-                    url = (self.urls['rss'], self.urls['search'] + search_string + '/s/d/1/?fmt=rss')[mode != 'RSS']
+                    url = (self.urls['rss'], self.urls['search'] + search_string)[mode != 'RSS']
+                    logger.log(u"URL: %r " % url, logger.DEBUG)
                     data = self.get_url(url)
                     if not data:
                         logger.log(u"No data returned from provider", logger.DEBUG)
@@ -72,31 +72,32 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                     data = BeautifulSoup(data, 'html5lib')
 
-                    entries = entries = data.findAll('item')
+                    entries = data.findAll('item')
+                    if not entries:
+                        logger.log(u'Returned xml contained no results', logger.INFO)
+                        continue
 
                     for item in entries:
                         try:
-                            if not item.category.text.endswith(('TV', 'Anime')):
-                                continue
-
                             title = item.title.text
-                            assert isinstance(title, unicode)
-                            # Use the torcache link bitsnoop provides,
-                            # unless it is not torcache or we are not using blackhole
-                            # because we want to use magnets if connecting direct to client
-                            # so that proxies work.
                             download_url = item.enclosure['url']
-                            if sickbeard.TORRENT_METHOD != "blackhole" or 'torcache' not in download_url:
-                                download_url = item.find('magneturi').next.replace('CDATA', '').strip('[]') + self._custom_trackers
 
                             if not (title and download_url):
                                 continue
-
-                            seeders = try_int(item.find('numseeders').text, 0)
-                            leechers = try_int(item.find('numleechers').text, 0)
+                            #seeders and leechers are presented diferently when doing a search and when looking for newly added
+                            if mode == 'RSS':
+                                # <![CDATA[
+                                # Category: <a href="http://www.limetorrents.cc/browse-torrents/TV-shows/">TV shows</a><br /> Seeds: 1<br />Leechers: 0<br />Size: 7.71 GB<br /><br /><a href="http://www.limetorrents.cc/Owen-Hart-of-Gold-Djon91-torrent-7180661.html">More @ limetorrents.cc</a><br />
+                                # ]]>
+                                description = item.find('description')
+                                seeders = description.find_all('br')[0].next_sibling.strip().lstrip('Seeds: ')
+                                leechers = description.find_all('br')[1].next_sibling.strip().lstrip('Leechers: ')
+                            else:
+                                #<description>Seeds: 6982 , Leechers 734</description>
+                                description = item.find('description').text.partition(',')
+                                seeders = description[0].lstrip('Seeds: ').strip()
+                                leechers = description[2].lstrip('Leechers ').strip()
                             size = try_int(item.find('size').text, -1)
-
-                            info_hash = item.find('infohash').text
 
                         except (AttributeError, TypeError, KeyError, ValueError):
                             continue
@@ -107,7 +108,7 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                                 logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        item = title, download_url, size, seeders, leechers, info_hash
+                        item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
@@ -127,7 +128,7 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         return self.ratio
 
 
-class BitSnoopCache(tvcache.TVCache):
+class LimeTorrentsCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
         tvcache.TVCache.__init__(self, provider_obj)
@@ -139,4 +140,4 @@ class BitSnoopCache(tvcache.TVCache):
         return {'entries': self.provider.search(search_strings)}
 
 
-provider = BitSnoopProvider()
+provider = LimeTorrentsProvider()

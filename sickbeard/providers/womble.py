@@ -19,7 +19,7 @@
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.providers.NZBProvider import NZBProvider
+from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
 class WombleProvider(NZBProvider):

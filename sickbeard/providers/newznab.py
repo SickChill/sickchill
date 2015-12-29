@@ -39,7 +39,7 @@ from sickrage.helper.encoding import ek, ss
 from sickrage.show.Show import Show
 from sickrage.helper.common import try_int
 from sickbeard.common import USER_AGENT
-from sickrage.providers.NZBProvider import NZBProvider
+from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
 class NewznabProvider(NZBProvider):
@@ -404,7 +404,7 @@ class NewznabProvider(NZBProvider):
         for sqlshow in sqlResults:
             self.show = Show.find(sickbeard.showList, int(sqlshow["showid"]))
             if self.show:
-                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
+                curEp = self.show.getEpisode(sqlshow["season"], sqlshow["episode"])
                 searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
                 for searchString in searchStrings:
                     for item in self.search(searchString):

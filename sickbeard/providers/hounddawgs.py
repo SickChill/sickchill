@@ -23,7 +23,7 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.common import try_int
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -107,6 +107,9 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 self.search_params['searchstr'] = search_string
 
                 data = self.get_url(self.urls['search'], params=self.search_params)
+                if not data:
+                    logger.log(u'URL did not return data', logger.DEBUG)
+                    continue
 
                 strTableStart = "<table class=\"torrent_table"
                 startTableIndex = data.find(strTableStart)

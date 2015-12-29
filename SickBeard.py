@@ -104,6 +104,15 @@ class SickRage(object):
         self.consoleLogging = True
 
     @staticmethod
+    def clear_cache():
+        try:
+            cache_folder = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
+            if os.path.isdir(cache_folder):
+                shutil.rmtree(cache_folder)
+        except Exception:
+            logger.log(u"Unable to remove the cache/mako directory!", logger.WARNING)
+
+    @staticmethod
     def help_message():
         """
         print help message for commandline options
@@ -301,8 +310,12 @@ class SickRage(object):
         # Build from the DB to start with
         self.loadShowsFromDB()
 
+        logger.log(u"Starting up SickRage [%s] from '%s'" % (sickbeard.BRANCH, sickbeard.CONFIG_FILE))
+
+        self.clear_cache()
+
         if self.forcedPort:
-            logger.log(u"Forcing web server to port " + str(self.forcedPort))
+            logger.log(u"Forcing web server to port %s" % self.forcedPort)
             self.startPort = self.forcedPort
         else:
             self.startPort = sickbeard.WEB_PORT
@@ -340,19 +353,6 @@ class SickRage(object):
         # start web server
         self.webserver = SRWebServer(self.web_options)
         self.webserver.start()
-
-        if self.consoleLogging:
-            print "Starting up SickRage " + sickbeard.BRANCH + " from " + sickbeard.CONFIG_FILE
-
-        # Clean up after update
-        if sickbeard.GIT_NEWVER:
-            toclean = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
-            for root, dirs, files in ek(os.walk, toclean, topdown=False):
-                for name in files:
-                    ek(os.remove, ek(os.path.join, root, name))
-                for name in dirs:
-                    ek(os.rmdir, ek(os.path.join, root, name))
-            sickbeard.GIT_NEWVER = False
 
         # Fire up all our threads
         sickbeard.start()
@@ -502,6 +502,9 @@ class SickRage(object):
                     self.webserver.join(10)
                 except Exception:
                     pass
+
+            # Clean cache
+            self.clear_cache()
 
             # if run as daemon delete the pidfile
             if self.runAsDaemon and self.CREATEPID:

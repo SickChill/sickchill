@@ -27,7 +27,7 @@ from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class newpctProvider(TorrentProvider):

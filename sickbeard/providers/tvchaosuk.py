@@ -24,7 +24,7 @@ from sickbeard import show_name_helpers
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.exceptions import AuthException
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TVChaosUKProvider(TorrentProvider):

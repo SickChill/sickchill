@@ -18,17 +18,14 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import time
 import traceback
-import xmltodict
 from six.moves import urllib
-from xml.parsers.expat import ExpatError
 
-import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.common import cpu_presets
-from sickrage.providers.TorrentProvider import TorrentProvider
+from sickbeard.common import USER_AGENT
+from sickbeard.bs4_parser import BS4Parser
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TORRENTZProvider(TorrentProvider):
@@ -42,6 +39,7 @@ class TORRENTZProvider(TorrentProvider):
         self.minseed = None
         self.minleech = None
         self.cache = TORRENTZCache(self)
+        self.headers.update({'User-Agent': USER_AGENT})
         self.urls = {'verified': 'https://torrentz.eu/feed_verified',
                      'feed': 'https://torrentz.eu/feed',
                      'base': 'https://torrentz.eu/'}
@@ -75,47 +73,32 @@ class TORRENTZProvider(TorrentProvider):
                     logger.log(u'Wrong data returned from: ' + search_url, logger.DEBUG)
                     continue
 
-                if not data.startswith('<?xml'):
-                    logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
-                    continue
-
                 try:
-                    data = xmltodict.parse(data)
-                except ExpatError:
-                    logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
-                    continue
+                    with BS4Parser(data, 'html5lib') as parser:
+                        for item in parser.findAll('item'):
+                            if item.category and 'tv' not in item.category.text:
+                                continue
 
-                if not all([data, 'rss' in data, 'channel' in data['rss'], 'item' in data['rss']['channel']]):
-                    logger.log(u"Malformed rss returned or no results, skipping", logger.DEBUG)
-                    continue
+                            title = item.title.text.rsplit(' ', 1)[0].replace(' ', '.')
+                            t_hash = item.guid.text.rsplit('/', 1)[-1]
 
-                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+                            if not all([title, t_hash]):
+                                continue
 
-                # https://github.com/martinblech/xmltodict/issues/111
-                entries = data['rss']['channel']['item']
-                entries = entries if isinstance(entries, list) else [entries]
+                            # TODO: Add method to generic provider for building magnet from hash.
+                            download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + self._custom_trackers
+                            size, seeders, leechers = self._split_description(item.find('description').text)
 
-                for item in entries:
-                    if item.get('category', None) and 'tv' not in item.get('category', ''):
-                        continue
+                            # Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                continue
 
-                    title = item.get('title', '').rsplit(' ', 1)[0].replace(' ', '.')
-                    t_hash = item.get('guid', '').rsplit('/', 1)[-1]
+                            items[mode].append((title, download_url, size, seeders, leechers))
 
-                    if not all([title, t_hash]):
-                        continue
-
-                    # TODO: Add method to generic provider for building magnet from hash.
-                    download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + self._custom_trackers
-                    size, seeders, leechers = self._split_description(item.get('description', ''))
-
-                    # Filter unseeded torrent
-                    if seeders < self.minseed or leechers < self.minleech:
-                        if mode != 'RSS':
-                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                        continue
-
-                    items[mode].append((title, download_url, size, seeders, leechers))
+                except (AttributeError, TypeError, KeyError, ValueError):
+                    logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.WARNING)
 
             # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
