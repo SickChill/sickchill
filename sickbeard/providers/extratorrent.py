@@ -19,13 +19,11 @@
 
 import re
 import traceback
-import xmltodict
-from xml.parsers.expat import ExpatError
-
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
 from sickrage.helper.common import try_int
+from sickbeard.bs4_parser import BS4Parser
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -58,17 +56,15 @@ class ExtraTorrentProvider(TorrentProvider):
         for mode in search_strings.keys():
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
-
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 try:
                     self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string})
-                    if self.custom_url:
-                        url = self.custom_url + '/rss.xml'
-                        data = self.get_url(url, params=self.search_params)
-                    else:
-                        data = self.get_url(self.urls['rss'], params=self.search_params)
+
+                    url = self.urls['rss'] if not self.custom_url else self.urls['rss'].replace(self.urls['index'], self.custom_url)
+
+                    data = self.get_url(url, params=self.search_params)
                     if not data:
                         logger.log(u"No data returned from provider", logger.DEBUG)
                         continue
@@ -77,42 +73,30 @@ class ExtraTorrentProvider(TorrentProvider):
                         logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
                         continue
 
-                    try:
-                        data = xmltodict.parse(data)
-                    except ExpatError:
-                        logger.log(u"Failed parsing provider. Traceback: %r\n%r" % (traceback.format_exc(), data), logger.ERROR)
-                        continue
+                    with BS4Parser(data, 'html5lib') as parser:
+                        for item in parser.findAll('item'):
+                            title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').text)
+                            # info_hash = item.get('info_hash', '')
+                            size = try_int(item.find('size').text, -1)
+                            seeders = try_int(item.find('seeders').text)
+                            leechers = try_int(item.find('leechers').text)
+                            enclosure = item.find('enclosure')
+                            download_url = enclosure['url'] if enclosure else self._magnet_from_details(item.find('link').text)
 
-                    if not all([data, 'rss' in data, 'channel' in data['rss'], 'item' in data['rss']['channel']]):
-                        logger.log(u"Malformed rss returned, skipping", logger.DEBUG)
-                        continue
+                            if not all([title, download_url]):
+                                continue
 
-                    # https://github.com/martinblech/xmltodict/issues/111
-                    entries = data['rss']['channel']['item']
-                    entries = entries if isinstance(entries, list) else [entries]
+                                # Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                continue
 
-                    for item in entries:
-                        title = item['title'].decode('utf-8')
-                        # info_hash = item['info_hash']
-                        size = int(item['size'])
-                        seeders = try_int(item['seeders'], 0)
-                        leechers = try_int(item['leechers'], 0)
-                        download_url = item['enclosure']['@url'] if 'enclosure' in item else self._magnet_from_details(item['link'])
-
-                        if not all([title, download_url]):
-                            continue
-
-                            # Filter unseeded torrent
-                        if seeders < self.minseed or leechers < self.minleech:
+                            item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                            continue
+                                logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                        item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
-
-                        items[mode].append(item)
+                            items[mode].append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
                     logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
