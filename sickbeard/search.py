@@ -372,8 +372,6 @@ def searchForNeededEpisodes():
 
     didSearch = False
 
-    origThreadName = threading.currentThread().name
-
     show_list = sickbeard.showList
     fromDate = datetime.date.fromordinal(1)
     episodes = []
@@ -382,13 +380,19 @@ def searchForNeededEpisodes():
         if not curShow.paused:
             sickbeard.name_cache.buildNameCache(curShow)
             episodes.extend(wantedEpisodes(curShow, fromDate))
+    if not episodes:
+        # nothing wanted so early out, ie: avoid whatever abritrarily
+        # complex thing a provider cache update entails, for example,
+        # reading rss feeds
+        logger.log(u"No episodes needed.", logger.INFO)
+        return foundResults.values()
+
+    origThreadName = threading.currentThread().name
 
     providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active() and x.enable_daily]
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
         curProvider.cache.updateCache()
-
-    threading.currentThread().name = origThreadName
 
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
