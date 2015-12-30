@@ -1277,27 +1277,27 @@ class TVShow(object):
         return False
 
     def getOverview(self, epStatus):
-        epStatus = try_int(epStatus) or UNKNOWN
+        ep_status = try_int(epStatus) or UNKNOWN
 
-        if epStatus == WANTED:
+        if ep_status == WANTED:
             return Overview.WANTED
-        elif epStatus in (UNAIRED, UNKNOWN):
+        elif ep_status in (UNAIRED, UNKNOWN):
             return Overview.UNAIRED
-        elif epStatus in (SKIPPED, IGNORED):
+        elif ep_status in (SKIPPED, IGNORED):
             return Overview.SKIPPED
-        elif epStatus in Quality.ARCHIVED:
+        elif ep_status in Quality.ARCHIVED:
             return Overview.GOOD
-        elif epStatus in Quality.FAILED:
+        elif ep_status in Quality.FAILED:
             return Overview.WANTED
-        elif epStatus in Quality.SNATCHED:
+        elif ep_status in Quality.SNATCHED:
             return Overview.SNATCHED
-        elif epStatus in Quality.SNATCHED_PROPER:
+        elif ep_status in Quality.SNATCHED_PROPER:
             return Overview.SNATCHED_PROPER
-        elif epStatus in Quality.SNATCHED_BEST:
+        elif ep_status in Quality.SNATCHED_BEST:
             return Overview.SNATCHED_BEST
-        elif epStatus in Quality.DOWNLOADED:
+        elif ep_status in Quality.DOWNLOADED:
             allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)  # @UnusedVariable
-            epStatus, cur_quality = Quality.splitCompositeStatus(epStatus)
+            ep_status, cur_quality = Quality.splitCompositeStatus(ep_status)
 
             if cur_quality not in allowed_qualities + preferred_qualities:
                 if cur_quality != Quality.UNKNOWN and (
