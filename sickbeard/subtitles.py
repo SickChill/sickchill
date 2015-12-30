@@ -50,6 +50,7 @@ ENTRY_POINTS = {
         'napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider',
         'opensubtitles = subliminal.providers.opensubtitles:OpenSubtitlesProvider',
         'podnapisi = subliminal.providers.podnapisi:PodnapisiProvider',
+        'subscenter = subliminal.providers.subscenter:SubsCenterProvider',
         'thesubdb = subliminal.providers.thesubdb:TheSubDBProvider',
         'tvsubtitles = subliminal.providers.tvsubtitles:TVsubtitlesProvider'
     ],
@@ -74,6 +75,7 @@ PROVIDER_URLS = {
     'napiprojekt': 'http://www.napiprojekt.pl',
     'opensubtitles': 'http://www.opensubtitles.org',
     'podnapisi': 'http://www.podnapisi.net',
+    'subscenter': 'http://www.subscenter.org',
     'thesubdb': 'http://www.thesubdb.com',
     'tvsubtitles': 'http://www.tvsubtitles.net'
 }

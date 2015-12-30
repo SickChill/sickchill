@@ -22,6 +22,8 @@ class Subtitle(object):
     :param bool hearing_impaired: whether or not the subtitle is hearing impaired.
     :param page_link: URL of the web page from which the subtitle can be downloaded.
     :type page_link: str
+    :param encoding: Text encoding of the subtitle
+    :type encoding: str
 
     """
     #: Name of the provider that returns that class of subtitle
@@ -254,9 +256,7 @@ def sanitized_string_equal(string1, string2):
     :rtype: bool
 
     """
-    valid_pattern = '[^a-zA-Z0-9]'
-
-    return sanitize_string(string1).lower() == sanitize_string(string2).lower()
+    return string1 and string2 and sanitize_string(string1).lower() == sanitize_string(string2).lower()
 
 
 def guess_matches(video, guess, partial=False):
