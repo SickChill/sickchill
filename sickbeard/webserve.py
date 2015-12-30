@@ -3694,7 +3694,7 @@ class Config(WebRoot):
     def index(self):
         t = PageTemplate(rh=self, filename="config.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='Configuration', header='Configuration', topmenu="config")
+        return t.render(submenu=self.ConfigMenu(), title='SickRage Configuration', header='SickRage Configuration', topmenu="config")
 
 
 @route('/config/general(/?.*)')
