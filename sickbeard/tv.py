@@ -1277,6 +1277,13 @@ class TVShow(object):
         return False
 
     def getOverview(self, epStatus):
+        """
+        Get the Overview status from the Episode status
+
+        :param epStatus: an Episode status
+        :return: an Overview status
+        """
+
         ep_status = try_int(epStatus) or UNKNOWN
 
         if ep_status == WANTED:
@@ -1296,7 +1303,7 @@ class TVShow(object):
         elif ep_status in Quality.SNATCHED_BEST:
             return Overview.SNATCHED_BEST
         elif ep_status in Quality.DOWNLOADED:
-            allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)  # @UnusedVariable
+            allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)
             ep_status, cur_quality = Quality.splitCompositeStatus(ep_status)
 
             if cur_quality not in allowed_qualities + preferred_qualities:
@@ -1311,6 +1318,9 @@ class TVShow(object):
                 return Overview.QUAL
             else:
                 return Overview.GOOD
+        else:
+            logger.log(u'Could not parse episode status into a valid overview status: %s' % epStatus, logger.ERROR)
+
 
     def __getstate__(self):
         d = dict(self.__dict__)
