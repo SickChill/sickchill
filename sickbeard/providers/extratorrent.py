@@ -78,8 +78,8 @@ class ExtraTorrentProvider(TorrentProvider):
                             title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').text)
                             # info_hash = item.get('info_hash', '')
                             size = try_int(item.find('size').text, -1) if item.find('size') else -1
-                            seeders = try_int(item.find('seeders').text)
-                            leechers = try_int(item.find('leechers').text)
+                            seeders = try_int(item.find('seeders').text, 1) if item.find('seeders') else 1
+                            leechers = try_int(item.find('leechers').text) if item.find('leechers') else 0
                             enclosure = item.find('enclosure')
                             download_url = enclosure['url'] if enclosure else self._magnet_from_details(item.find('link').text)
 
