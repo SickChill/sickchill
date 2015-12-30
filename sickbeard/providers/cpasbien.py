@@ -18,10 +18,10 @@
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
 import traceback
-import re
 
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import try_int
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -42,7 +42,7 @@ class CpasbienProvider(TorrentProvider):
 
         self.cache = CpasbienCache(self)
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-statements, too-many-branches
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -53,10 +53,9 @@ class CpasbienProvider(TorrentProvider):
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
-                if mode != 'RSS':
-                    searchURL = self.url + '/recherche/' + search_string.replace('.', '-') + '.html'
+                    searchURL = self.url + '/recherche/' + search_string.replace('.', '-').replace(' ', '-') + '.html'
                 else:
-                    searchURL = self.url + '/view_cat.php?categorie=series'
+                    searchURL = self.url + '/view_cat.php?categorie=series&trie=date-d'
 
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
                 data = self.get_url(searchURL)
@@ -66,35 +65,25 @@ class CpasbienProvider(TorrentProvider):
 
                 try:
                     with BS4Parser(data, 'html5lib') as html:
-                        lin = erlin = 0
-                        resultdiv = []
-                        while erlin == 0:
-                            try:
-                                classlin = 'ligne' + str(lin)
-                                resultlin = html.findAll(attrs={'class': [classlin]})
-                                if resultlin:
-                                    for ele in resultlin:
-                                        resultdiv.append(ele)
-                                    lin += 1
-                                else:
-                                    erlin = 1
-                            except Exception:
-                                erlin = 1
+                        line = 0
+                        torrents = []
+                        while True:
+                            resultlin = html.findAll(class_='ligne%i' % line)
+                            if not resultlin:
+                                break
 
-                        for torrent in resultdiv:
+                            torrents += resultlin
+                            line += 1
+
+                        for torrent in torrents:
                             try:
-                                title = torrent.findAll(attrs={'class': ["titre"]})[0].text.replace("HDTV", "HDTV x264-CPasBien")
-                                detail_url = torrent.find("a")['href']
-                                tmp = detail_url.split('/')[-1].replace('.html', '.torrent')
+                                title = torrent.find(class_="titre").get_text(strip=True).replace("HDTV", "HDTV x264-CPasBien")
+                                tmp = torrent.find("a")['href'].split('/')[-1].replace('.html', '.torrent').strip()
                                 download_url = (self.url + '/telechargement/%s' % tmp)
-                                torrent_size = (str(torrent.findAll(attrs={'class': ["poid"]})[0].text).rstrip('&nbsp;')).rstrip()
-                                size = -1
-                                if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Oo]", torrent_size):
-                                    size = self._convertSize(torrent_size.rstrip())
-                                seeders = torrent.findAll(attrs={'class': ["seed_ok"]})[0].text
-                                leechers = torrent.findAll(attrs={'class': ["down"]})[0].text
-
-                            except (AttributeError, TypeError):
+                                size = self._convertSize(torrent.find(class_="poid").get_text(strip=True))
+                                seeders = try_int(torrent.find(class_="up").get_text(strip=True))
+                                leechers = try_int(torrent.find(class_="down").get_text(strip=True))
+                            except (AttributeError, TypeError, KeyError, IndexError):
                                 continue
 
                             if not all([title, download_url]):
@@ -125,7 +114,8 @@ class CpasbienProvider(TorrentProvider):
     def seed_ratio(self):
         return self.ratio
 
-    def _convertSize(self, sizeString):
+    @staticmethod
+    def _convertSize(sizeString):
         size = sizeString[:-2].strip()
         modifier = sizeString[-2:].upper()
         try:
@@ -138,8 +128,11 @@ class CpasbienProvider(TorrentProvider):
                 size *= 1024 ** 3
             elif modifier in 'TO':
                 size *= 1024 ** 4
+            else:
+                raise
         except Exception:
             size = -1
+
         return long(size)
 
 

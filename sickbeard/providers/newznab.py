@@ -38,7 +38,7 @@ from sickbeard.common import Quality
 from sickrage.helper.encoding import ek, ss
 from sickrage.show.Show import Show
 from sickrage.helper.common import try_int
-from sickbeard.common import USER_AGENT
+# from sickbeard.common import USER_AGENT
 from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
@@ -53,7 +53,7 @@ class NewznabProvider(NZBProvider):
 
         NZBProvider.__init__(self, name)
 
-        self.headers.update({'User-Agent': USER_AGENT})
+        # self.headers.update({'User-Agent': USER_AGENT})
 
         self.urls = {'base_url': url}
         self.url = self.urls['base_url']
