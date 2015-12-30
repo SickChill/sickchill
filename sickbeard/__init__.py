@@ -1355,6 +1355,10 @@ def initialize(consoleLogging=True):
 
         # initialize the main SB database
         myDB = db.DBConnection()
+        if myDB.checkDBVersion() == 1:
+            # db has a damaged version number only
+            logger.log(u"Repair damaged db version number.... first run with data from SRTV?", logger.WARNING)
+            myDB.action("UPDATE db_version SET db_version = ?", [mainDB.MAX_DB_VERSION])
         db.upgradeDatabase(myDB, mainDB.InitialSchema)
 
         # initialize the cache database
