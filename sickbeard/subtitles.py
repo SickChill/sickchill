@@ -198,7 +198,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
             return existing_subtitles, None
 
         for subtitle in subtitles_list:
-            matches = subtitle.get_matches(video, hearing_impaired=False)
+            matches = subtitle.get_matches(video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
             score = subliminal.subtitle.compute_score(matches, video)
             logger.log(u"[%s] Subtitle score for %s is: %s (min=%s)"
                        % (subtitle.provider_name, subtitle.id, score, user_score), logger.DEBUG)
@@ -374,7 +374,7 @@ class SubtitlesFinder(object):
                                                                            only_one=not sickbeard.SUBTITLES_MULTI)
 
                             for subtitle in subtitles_list:
-                                matches = subtitle.get_matches(video, hearing_impaired=False)
+                                matches = subtitle.get_matches(video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
                                 score = subliminal.subtitle.compute_score(matches, video)
                                 logger.log(u"[%s] Subtitle score for %s is: %s (min=%s)"
                                            % (subtitle.provider_name, subtitle.id, score, user_score), logger.DEBUG)
