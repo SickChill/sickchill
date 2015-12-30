@@ -149,15 +149,15 @@ class TVShow(object):
 
     @property
     def is_anime(self):
-        return True if int(self.anime) > 0 else False
+        return int(self.anime) > 0
 
     @property
     def is_sports(self):
-        return True if int(self.sports) > 0 else False
+        return int(self.sports) > 0
 
     @property
     def is_scene(self):
-        return True if int(self.scene) > 0 else False
+        return int(self.scene) > 0
 
     @property
     def network_logo_name(self):
@@ -165,13 +165,10 @@ class TVShow(object):
 
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
-        if sickbeard.CREATE_MISSING_SHOW_DIRS:
+        if sickbeard.CREATE_MISSING_SHOW_DIRS or ek(os.path.isdir, self._location):
             return self._location
 
-        if ek(os.path.isdir, self._location):
-            return self._location
-        else:
-            raise ShowDirectoryNotFoundException("Show folder doesn't exist, you shouldn't be using it")
+        raise ShowDirectoryNotFoundException("Show folder doesn't exist, you shouldn't be using it")
 
     def _setLocation(self, newLocation):
         logger.log(u"Setter sets location to " + newLocation, logger.DEBUG)
