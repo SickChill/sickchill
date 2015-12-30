@@ -20,7 +20,6 @@
 import re
 import traceback
 from six.moves import urllib
-
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
@@ -63,14 +62,13 @@ class TORRENTZProvider(TorrentProvider):
                 if mode != 'RSS':
                     search_url += '?q=' + urllib.parse.quote_plus(search_string)
 
-                logger.log(search_url)
                 data = self.get_url(search_url)
                 if not data:
-                    logger.log(u'Seems to be down right now!')
+                    logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 if not data.startswith("<?xml"):
-                    logger.log(u'Wrong data returned from: ' + search_url, logger.DEBUG)
+                    logger.log(u"Expected xml but got something else, is your mirror failing?", logger.INFO)
                     continue
 
                 try:
@@ -98,7 +96,7 @@ class TORRENTZProvider(TorrentProvider):
                             items[mode].append((title, download_url, size, seeders, leechers))
 
                 except (AttributeError, TypeError, KeyError, ValueError):
-                    logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.WARNING)
+                    logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
