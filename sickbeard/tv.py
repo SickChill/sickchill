@@ -149,24 +149,15 @@ class TVShow(object):
 
     @property
     def is_anime(self):
-        if int(self.anime) > 0:
-            return True
-        else:
-            return False
+        return True if int(self.anime) > 0 else False
 
     @property
     def is_sports(self):
-        if int(self.sports) > 0:
-            return True
-        else:
-            return False
+        return True if int(self.sports) > 0 else False
 
     @property
     def is_scene(self):
-        if int(self.scene) > 0:
-            return True
-        else:
-            return False
+        return True if int(self.scene) > 0 else False
 
     @property
     def network_logo_name(self):
