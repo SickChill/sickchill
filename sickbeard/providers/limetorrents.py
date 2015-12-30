@@ -91,7 +91,8 @@ class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance
                                 # ]]>
                                 description = item.find('description')
                                 seeders = try_int(description.find_all('br')[0].next_sibling.strip().lstrip('Seeds: '))
-                                leechers = try_int(description.find_all('br')[1].next_sibling.strip().lstrip('Leechers: '))                            else:
+                                leechers = try_int(description.find_all('br')[1].next_sibling.strip().lstrip('Leechers: '))
+                            else:
                                 #<description>Seeds: 6982 , Leechers 734</description>
                                 description = item.find('description').text.partition(',')
                                 seeders = try_int(description[0].lstrip('Seeds: ').strip())
