@@ -55,7 +55,7 @@ class DBConnection(object):
         self.row_type = row_type
 
         try:
-            if self.filename not in db_cons:
+            if self.filename not in db_cons or not db_cons[self.filename]:
                 db_locks[self.filename] = threading.Lock()
 
                 self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20, check_same_thread=False)
@@ -407,27 +407,10 @@ def _processUpgrade(connection, upgradeClass):
         logger.log(u"Database upgrade required: " + prettyName(upgradeClass.__name__), logger.DEBUG)
         try:
             instance.execute()
-        except sqlite3.DatabaseError as e:
-            # attemping to restore previous DB backup and perform upgrade
-            try:
-                instance.execute()
-            except:
-                restored = False
-                result = connection.select("SELECT db_version FROM db_version")
-                if result:
-                    version = int(result[0]["db_version"])
+        except Exception as e:
+            logger.log("Error in " + str(upgradeClass.__name__) + ": " + ex(e), logger.ERROR)
+            raise
 
-                    # close db before attempting restore
-                    connection.close()
-
-                    if restoreDatabase(version):
-                        # initialize the main SB database
-                        upgradeDatabase(DBConnection(), sickbeard.mainDB.InitialSchema)
-                        restored = True
-
-                if not restored:
-                    print "Error in " + str(upgradeClass.__name__) + ": " + ex(e)
-                    raise
         logger.log(upgradeClass.__name__ + " upgrade completed", logger.DEBUG)
     else:
         logger.log(upgradeClass.__name__ + " upgrade not required", logger.DEBUG)
