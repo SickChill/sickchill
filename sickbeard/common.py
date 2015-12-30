@@ -225,17 +225,17 @@ class Quality(object):
     def splitQuality(quality):
         if quality is None:
             quality = Quality.NONE
-        any_qualities = []
-        best_qualities = []
+        allowed_qualities = []
+        prefferred_qualities = []
         for cur_qual in Quality.qualityStrings:
             if cur_qual is None:
                 cur_qual = Quality.NONE
             if cur_qual & quality:
-                any_qualities.append(cur_qual)
+                allowed_qualities.append(cur_qual)
             if cur_qual << 16 & quality:
-                best_qualities.append(cur_qual)
+                prefferred_qualities.append(cur_qual)
 
-        return sorted(any_qualities), sorted(best_qualities)
+        return sorted(allowed_qualities), sorted(prefferred_qualities)
 
     @staticmethod
     def nameQuality(name, anime=False):
