@@ -1626,9 +1626,9 @@ var SICKRAGE = {
                         $('#torrent_auth_type_option').show();
                     } else if (selectedProvider.toLowerCase() === 'qbittorrent'){
                         client = 'qbittorrent';
+                        $('#torrent_path_option').hide();
                         $('#label_warning_qbittorrent').show();
                         $('#label_anime_warning_qbittorrrent').show();
-                        $('#torrent_label_anime_option').hide();
                         $('#host_desc_torrent').text('URL to your qbittorrent client (e.g. http://localhost:8080)');
                     } else if (selectedProvider.toLowerCase() === 'mlnet'){
                         client = 'mlnet';
