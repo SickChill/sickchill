@@ -1277,6 +1277,7 @@ class TVShow(object):
         return False
 
     def getOverview(self, epStatus):
+        epStatus = try_int(epStatus) or UNKNOWN
 
         if epStatus == WANTED:
             return Overview.WANTED
