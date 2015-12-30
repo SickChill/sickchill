@@ -385,7 +385,7 @@ var SICKRAGE = {
                 plex.client.host = $.trim($('#plex_host').val());
                 plex.client.username = $.trim($('#plex_client_username').val());
                 plex.client.password = $.trim($('#plex_client_password').val());
-                if (!plex.host) {
+                if (!plex.client.host) {
                     $('#testPMC-result').html('Please fill out the necessary fields above.');
                     $('#plex_host').addClass('warning');
                     return;
