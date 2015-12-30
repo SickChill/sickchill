@@ -176,7 +176,7 @@ class NewznabProvider(NZBProvider):
             'NZBGeek|https://api.nzbgeek.info/||5030,5040|0|eponly|0|0|0!!!' + \
             'NZBs.org|https://nzbs.org/||5030,5040|0|eponly|0|0|0!!!' + \
             'Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0|0|0!!!' + \
-            'DOGnzb|http://api.dognzb.cr/||5030,5040,5060,5070|0|eponly|0|1|1'
+            'DOGnzb|https://api.dognzb.cr/||5030,5040,5060,5070|0|eponly|0|1|1'
 
     def _get_season_search_strings(self, ep_obj):
         """
