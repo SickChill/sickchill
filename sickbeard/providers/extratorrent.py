@@ -77,7 +77,7 @@ class ExtraTorrentProvider(TorrentProvider):
                         for item in parser.findAll('item'):
                             title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').text)
                             # info_hash = item.get('info_hash', '')
-                            size = try_int(item.find('size').text, -1)
+                            size = try_int(item.find('size').text, -1) if item.find('size') else -1
                             seeders = try_int(item.find('seeders').text)
                             leechers = try_int(item.find('leechers').text)
                             enclosure = item.find('enclosure')
