@@ -2851,6 +2851,37 @@ class CMD_ShowsStats(ApiCall):
             'shows_total': stats['shows']['total'],
         })
 
+import threading
+class SimLoadThread(threading.Thread):
+    '''
+    webapi calls are serialized so we have to setup this worker thread
+    to simulate what other threads in the system would be up to while
+    regular webapi calls might be going on
+    '''
+    n_dicts = 0
+
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        my_db = db.DBConnection()
+        for curShow in sickbeard.showList:
+            sql_results = my_db.select(
+                "SELECT tv_episodes.*, tv_shows.paused FROM tv_episodes INNER JOIN tv_shows ON tv_episodes.showid = tv_shows.indexer_id WHERE showid = ? and paused = 0 ORDER BY season DESC, episode DESC",
+                [curShow.indexerid])
+            if len(sql_results) > 0 and isinstance(sql_results[0],dict):
+                SimLoadThread.n_dicts += 1
+
+class CMD_SimLoad(ApiCall):
+    _help = {"desc": "Start a thread that makes a bunch of db queries in the manner of the server threads"}
+
+    def __init__(self, args, kwargs):
+        ApiCall.__init__(self, args, kwargs)
+
+    def run(self):
+        t = SimLoadThread()
+        t.start()
+        return _responds(RESULT_SUCCESS, {'n_dicts':SimLoadThread.n_dicts})
 
 # WARNING: never define a cmd call string that contains a "_" (underscore)
 # this is reserved for cmd indexes used while cmd chaining
@@ -2907,5 +2938,6 @@ function_mapper = {
     "show.stats": CMD_ShowStats,
     "show.update": CMD_ShowUpdate,
     "shows": CMD_Shows,
-    "shows.stats": CMD_ShowsStats
+    "shows.stats": CMD_ShowsStats,
+    "simload": CMD_SimLoad
 }
