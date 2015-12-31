@@ -59,29 +59,36 @@ class DBConnection(object):
                 db_locks[self.filename] = threading.Lock()
 
                 self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20, check_same_thread=False)
-                self.connection.text_factory = self._unicode_text_factory
+                self.connection.text_factory = DBConnection._unicode_text_factory
 
                 db_cons[self.filename] = self.connection
             else:
                 self.connection = db_cons[self.filename]
 
-            if self.row_type == "dict":
-                self.connection.row_factory = self._dict_factory
-            else:
-                self.connection.row_factory = sqlite3.Row
+            # start off row factory configured as before out of
+            # paranoia but wait to do so until other potential users
+            # of the shared connection are done using
+            # it... technically not required as row factory is reset
+            # in all the public methods after the lock has been
+            # aquired
+            with db_locks[self.filename]:
+                self._set_row_factory()
+
         except Exception as e:
             logger.log(u"DB error: " + ex(e), logger.ERROR)
             raise
 
-    def _execute(self, query, args):
-        try:
-            if not args:
-                return self.connection.cursor().execute(query)
-            return self.connection.cursor().execute(query, args)
-        except Exception:
-            raise
+    def _set_row_factory(self):
+        """
+        once lock is aquired we can configure the connection for
+        this particular instance of DBConnection
+        """
+        if self.row_type == "dict":
+            self.connection.row_factory = DBConnection._dict_factory
+        else:
+            self.connection.row_factory = sqlite3.Row
 
-    def execute(self, query, args=None, fetchall=False, fetchone=False):
+    def _execute(self, query, args=None, fetchall=False, fetchone=False):
         """
         Executes DB query
 
@@ -92,12 +99,16 @@ class DBConnection(object):
         :return: query results
         """
         try:
-            if fetchall:
-                return self._execute(query, args).fetchall()
-            elif fetchone:
-                return self._execute(query, args).fetchone()
+            if not args:
+                sqlResult = self.connection.cursor().execute(query)
             else:
-                return self._execute(query, args)
+                sqlResult = self.connection.cursor().execute(query, args)
+            if fetchall:
+                return sqlResult.fetchall()
+            elif fetchone:
+                return sqlResult.fetchone()
+            else:
+                return sqlResult
         except Exception:
             raise
 
@@ -136,17 +147,18 @@ class DBConnection(object):
         attempt = 0
 
         with db_locks[self.filename]:
+            self._set_row_factory()
             while attempt < 5:
                 try:
                     for qu in querylist:
                         if len(qu) == 1:
                             if logTransaction:
                                 logger.log(qu[0], logger.DEBUG)
-                            sqlResult.append(self.execute(qu[0], fetchall=fetchall))
+                            sqlResult.append(self._execute(qu[0], fetchall=fetchall))
                         elif len(qu) > 1:
                             if logTransaction:
                                 logger.log(qu[0] + " with args " + str(qu[1]), logger.DEBUG)
-                            sqlResult.append(self.execute(qu[0], qu[1], fetchall=fetchall))
+                            sqlResult.append(self._execute(qu[0], qu[1], fetchall=fetchall))
                     self.connection.commit()
                     logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
 
@@ -191,6 +203,7 @@ class DBConnection(object):
         attempt = 0
 
         with db_locks[self.filename]:
+            self._set_row_factory()
             while attempt < 5:
                 try:
                     if args is None:
@@ -198,7 +211,7 @@ class DBConnection(object):
                     else:
                         logger.log(self.filename + ": " + query + " with args " + str(args), logger.DB)
 
-                    sqlResult = self.execute(query, args, fetchall=fetchall, fetchone=fetchone)
+                    sqlResult = self._execute(query, args, fetchall=fetchall, fetchone=fetchone)
                     self.connection.commit()
 
                     # get out of the connection attempt loop since we were successful
@@ -287,7 +300,8 @@ class DBConnection(object):
             columns[column['name']] = {'type': column['type']}
         return columns
 
-    def _unicode_text_factory(self, x):
+    @staticmethod
+    def _unicode_text_factory(x):
         """
         Convert text to unicode
 
@@ -300,7 +314,8 @@ class DBConnection(object):
         except:
             return unicode(x, sickbeard.SYS_ENCODING, errors="ignore")
 
-    def _dict_factory(self, cursor, row):
+    @staticmethod
+    def _dict_factory(cursor, row):
         d = {}
         for idx, col in enumerate(cursor.description):
             d[col[0]] = row[idx]
