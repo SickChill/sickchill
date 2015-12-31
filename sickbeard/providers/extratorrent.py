@@ -19,6 +19,7 @@
 
 import re
 import traceback
+import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
@@ -27,7 +28,7 @@ from sickbeard.bs4_parser import BS4Parser
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class ExtraTorrentProvider(TorrentProvider):
+class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
         TorrentProvider.__init__(self, "ExtraTorrent")
 
@@ -48,7 +49,7 @@ class ExtraTorrentProvider(TorrentProvider):
         self.headers.update({'User-Agent': USER_AGENT})
         self.search_params = {'cid': 8}
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -74,14 +75,17 @@ class ExtraTorrentProvider(TorrentProvider):
                     for item in parser.findAll('item'):
                         try:
                             title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').get_text(strip=True))
-                            # info_hash = item.find('info_hash').
                             size = try_int(item.find('size').get_text(strip=True), -1) if item.find('size') else -1
                             seeders = try_int(item.find('seeders').get_text(strip=True)) if item.find('seeders') else 0
                             leechers = try_int(item.find('leechers').get_text(strip=True)) if item.find('leechers') else 0
 
-                            enclosure = item.find('enclosure')  # Backlog doesnt have enclosure
-                            download_url = enclosure['url'] if enclosure else item.find('link').next.strip()
-                            download_url = re.sub(r'(.*)/torrent/(.*).html', r'\1/download/\2.torrent', download_url)
+                            if sickbeard.TORRENT_METHOD == 'blackhole':
+                                enclosure = item.find('enclosure')  # Backlog doesnt have enclosure
+                                download_url = enclosure['url'] if enclosure else item.find('link').next.strip()
+                                download_url = re.sub(r'(.*)/torrent/(.*).html', r'\1/download/\2.torrent', download_url)
+                            else:
+                                info_hash = item.find('info_hash').get_text(strip=True)
+                                download_url = "magnet:?xt=urn:btih:" + info_hash + "&dn=" + title + self._custom_trackers
 
                             if not all([title, download_url]):
                                 continue
