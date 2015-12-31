@@ -38,7 +38,7 @@ from sickbeard.common import Quality
 from sickrage.helper.encoding import ek, ss
 from sickrage.show.Show import Show
 from sickrage.helper.common import try_int
-from sickbeard.common import USER_AGENT
+# from sickbeard.common import USER_AGENT
 from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
@@ -53,7 +53,7 @@ class NewznabProvider(NZBProvider):
 
         NZBProvider.__init__(self, name)
 
-        self.headers.update({'User-Agent': USER_AGENT})
+        # self.headers.update({'User-Agent': USER_AGENT})
 
         self.urls = {'base_url': url}
         self.url = self.urls['base_url']
@@ -173,9 +173,10 @@ class NewznabProvider(NZBProvider):
     def _get_default_providers():
         # name|url|key|catIDs|enabled|search_mode|search_fallback|enable_daily|enable_backlog
         return 'NZB.Cat|https://nzb.cat/||5030,5040,5010|0|eponly|1|1|1!!!' + \
-               'NZBGeek|https://api.nzbgeek.info/||5030,5040|0|eponly|0|0|0!!!' + \
-               'NZBs.org|https://nzbs.org/||5030,5040|0|eponly|0|0|0!!!' + \
-               'Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0|0|0'
+            'NZBGeek|https://api.nzbgeek.info/||5030,5040|0|eponly|0|0|0!!!' + \
+            'NZBs.org|https://nzbs.org/||5030,5040|0|eponly|0|0|0!!!' + \
+            'Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0|0|0!!!' + \
+            'DOGnzb|https://api.dognzb.cr/||5030,5040,5060,5070|0|eponly|0|1|1'
 
     def _get_season_search_strings(self, ep_obj):
         """

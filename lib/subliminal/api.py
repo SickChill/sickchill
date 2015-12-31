@@ -37,6 +37,7 @@ provider_manager = InternalExtensionManager('subliminal.providers', [EntryPoint.
     'napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider',
     'opensubtitles = subliminal.providers.opensubtitles:OpenSubtitlesProvider',
     'podnapisi = subliminal.providers.podnapisi:PodnapisiProvider',
+    'subscenter = subliminal.providers.subscenter:SubsCenterProvider',
     'thesubdb = subliminal.providers.thesubdb:TheSubDBProvider',
     'tvsubtitles = subliminal.providers.tvsubtitles:TVsubtitlesProvider'
 )])

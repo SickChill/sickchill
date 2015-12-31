@@ -19,6 +19,7 @@
 
 import re
 import traceback
+import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
@@ -27,7 +28,7 @@ from sickbeard.bs4_parser import BS4Parser
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class ExtraTorrentProvider(TorrentProvider):
+class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
         TorrentProvider.__init__(self, "ExtraTorrent")
 
@@ -48,7 +49,7 @@ class ExtraTorrentProvider(TorrentProvider):
         self.headers.update({'User-Agent': USER_AGENT})
         self.search_params = {'cid': 8}
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -59,29 +60,32 @@ class ExtraTorrentProvider(TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                try:
-                    self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string})
+                self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string})
+                url = self.urls['rss'] if not self.custom_url else self.urls['rss'].replace(self.urls['index'], self.custom_url)
+                data = self.get_url(url, params=self.search_params)
+                if not data:
+                    logger.log(u"No data returned from provider", logger.DEBUG)
+                    continue
 
-                    url = self.urls['rss'] if not self.custom_url else self.urls['rss'].replace(self.urls['index'], self.custom_url)
+                if not data.startswith('<?xml'):
+                    logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
+                    continue
 
-                    data = self.get_url(url, params=self.search_params)
-                    if not data:
-                        logger.log(u"No data returned from provider", logger.DEBUG)
-                        continue
+                with BS4Parser(data, 'html5lib') as parser:
+                    for item in parser.findAll('item'):
+                        try:
+                            title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').get_text(strip=True))
+                            size = try_int(item.find('size').get_text(strip=True), -1) if item.find('size') else -1
+                            seeders = try_int(item.find('seeders').get_text(strip=True)) if item.find('seeders') else 0
+                            leechers = try_int(item.find('leechers').get_text(strip=True)) if item.find('leechers') else 0
 
-                    if not data.startswith('<?xml'):
-                        logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
-                        continue
-
-                    with BS4Parser(data, 'html5lib') as parser:
-                        for item in parser.findAll('item'):
-                            title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').text)
-                            # info_hash = item.get('info_hash', '')
-                            size = try_int(item.find('size').text, -1)
-                            seeders = try_int(item.find('seeders').text)
-                            leechers = try_int(item.find('leechers').text)
-                            enclosure = item.find('enclosure')
-                            download_url = enclosure['url'] if enclosure else self._magnet_from_details(item.find('link').text)
+                            if sickbeard.TORRENT_METHOD == 'blackhole':
+                                enclosure = item.find('enclosure')  # Backlog doesnt have enclosure
+                                download_url = enclosure['url'] if enclosure else item.find('link').next.strip()
+                                download_url = re.sub(r'(.*)/torrent/(.*).html', r'\1/download/\2.torrent', download_url)
+                            else:
+                                info_hash = item.find('info_hash').get_text(strip=True)
+                                download_url = "magnet:?xt=urn:btih:" + info_hash + "&dn=" + title + self._custom_trackers
 
                             if not all([title, download_url]):
                                 continue
@@ -98,8 +102,8 @@ class ExtraTorrentProvider(TorrentProvider):
 
                             items[mode].append(item)
 
-                except (AttributeError, TypeError, KeyError, ValueError):
-                    logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.WARNING)
+                        except (AttributeError, TypeError, KeyError, ValueError):
+                            logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.WARNING)
 
             # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
@@ -107,17 +111,6 @@ class ExtraTorrentProvider(TorrentProvider):
             results += items[mode]
 
         return results
-
-    def _magnet_from_details(self, link):
-        details = self.get_url(link)
-        if not details:
-            return ''
-
-        match = re.search(r'href="(magnet.*?)"', details)
-        if not match:
-            return ''
-
-        return match.group(1)
 
     def seed_ratio(self):
         return self.ratio

@@ -516,7 +516,8 @@ class PostProcessor(object):
             to_return = (show, season, [], quality, version)
 
             qual_str = common.Quality.qualityStrings[quality] if quality is not None else quality
-            self._log("Found result in history for %s - Season: %s - Quality: %s - Version: %s" % (show.name, season, qual_str, version), logger.DEBUG)
+            self._log("Found result in history for %s - Season: %s - Quality: %s - Version: %s" 
+                % (show.name if show else "UNDEFINED", season, qual_str, version), logger.DEBUG)
 
             return to_return
 
@@ -681,7 +682,14 @@ class PostProcessor(object):
                 self._log(
                     u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
                     logger.DEBUG)
-                airdate = episodes[0].toordinal()
+
+                try:   
+                    airdate = episodes[0].toordinal()
+                except AttributeError:
+                    self._log(u"Could not convert to a valid airdate: %s" % episodes[0], logger.DEBUG)
+                    episodes = []
+                    continue
+
                 myDB = db.DBConnection()
                 # Ignore season 0 when searching for episode(Conflict between special and regular episode, same air date)
                 sql_result = myDB.select(

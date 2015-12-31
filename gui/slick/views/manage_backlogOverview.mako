@@ -32,13 +32,21 @@
 %>
 
 <div class="h2footer pull-right">
+    % if totalWanted > 0:
     <span class="listing-key wanted">Wanted: <b>${totalWanted}</b></span>
+    % endif
+
+    % if totalQualSnatched > 0:
     <span class="listing-key snatched">Snatched (Low Quality): <b>${totalQualSnatched}</b></span>
+    % endif
+
+    % if totalQual > 0:
     <span class="listing-key qual">Low Quality: <b>${totalQual}</b></span>
+    % endif
 </div><br>
 
 <div class="float-left">
-Jump to Show
+Jump to Show:
     <select id="pickShow" class="form-control form-control-inline input-sm">
     % for curShow in backLogShows:
         <option value="${curShow.indexerid}">${curShow.name}</option>
@@ -52,14 +60,21 @@ Jump to Show
         <% continue %>
     % endif
     <tr class="seasonheader" id="show-${curShow.indexerid}">
-        <td colspan="3" class="align-left">
-            <br><h2><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></h2>
-            <div class="pull-right">
+        <td colspan="3" class="align-left" style="position: relative;">
+            <h2 style="display: inline-block;"><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></h2>
+            <div style="position: absolute; bottom: 10px; right: 0;">
+                % if showCounts[curShow.indexerid][Overview.WANTED] > 0:
                 <span class="listing-key wanted">Wanted: <b>${showCounts[curShow.indexerid][Overview.WANTED]}</b></span>
-                % if showQualSnatched(curShow):
+                % endif
+
+                % if showQualSnatched(curShow) and showCounts[curShow.indexerid][Overview.SNATCHED] > 0:
                     <span class="listing-key snatched">Snatched (Low Quality): <b>${showCounts[curShow.indexerid][Overview.SNATCHED]}</b></span>
                 % endif
+
+                % if showCounts[curShow.indexerid][Overview.QUAL] > 0:
                 <span class="listing-key qual">Low Quality: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>
+                % endif
+
                 <a class="btn btn-inline forceBacklog" href="${srRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> Force Backlog</a>
             </div>
         </td>

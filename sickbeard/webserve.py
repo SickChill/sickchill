@@ -1278,7 +1278,7 @@ class Home(WebRoot):
         epCats = {}
 
         for curResult in sqlResults:
-            curEpCat = showObj.getOverview(int(curResult["status"] or -1))
+            curEpCat = showObj.getOverview(curResult["status"])
             if curEpCat:
                 epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
                 epCounts[curEpCat] += 1
@@ -1965,7 +1965,8 @@ class Home(WebRoot):
                                 'searchstatus': searchstatus,
                                 'status': statusStrings[searchThread.segment.status],
                                 'quality': self.getQualityClass(searchThread.segment),
-                                'overview': Overview.overviewStrings[showObj.getOverview(int(searchThread.segment.status or -1))]})
+                                'overview': Overview.overviewStrings[showObj.getOverview(searchThread.segment.status)]
+                                })
             else:
                 for epObj in searchThread.segment:
                     results.append({'show': epObj.show.indexerid,
@@ -1975,7 +1976,8 @@ class Home(WebRoot):
                                     'searchstatus': searchstatus,
                                     'status': statusStrings[epObj.status],
                                     'quality': self.getQualityClass(epObj),
-                                    'overview': Overview.overviewStrings[showObj.getOverview(int(epObj.status or -1))]})
+                                    'overview': Overview.overviewStrings[showObj.getOverview(epObj.status)]
+                                    })
 
             return results
 
@@ -3112,7 +3114,7 @@ class Manage(Home, WebRoot):
                 [curShow.indexerid])
 
             for curResult in sqlResults:
-                curEpCat = curShow.getOverview(int(curResult["status"] or -1))
+                curEpCat = curShow.getOverview(curResult["status"])
                 if curEpCat:
                     epCats['S%02dE%02d' % (curResult['season'], curResult['episode'])] = curEpCat
                     epCounts[curEpCat] += 1
@@ -3692,7 +3694,7 @@ class Config(WebRoot):
     def index(self):
         t = PageTemplate(rh=self, filename="config.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='Configuration', header='Configuration', topmenu="config")
+        return t.render(submenu=self.ConfigMenu(), title='SickRage Configuration', header='SickRage Configuration', topmenu="config")
 
 
 @route('/config/general(/?.*)')
