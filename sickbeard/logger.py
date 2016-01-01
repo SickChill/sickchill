@@ -161,7 +161,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
 
         # Change the SSL error to a warning with a link to information about how to fix it.
         check = re.sub(ur'error \[Errno 1\] _ssl.c:\d{3}: error:\d{8}:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error', 'See: http://git.io/vJrkM', message)
-        if check is not message:
+        if check != message:
             message = check
             level = WARNING
 

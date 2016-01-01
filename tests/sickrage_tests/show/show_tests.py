@@ -133,11 +133,9 @@ class TestTVShow(TVShow):
     def __init__(self, indexer, indexer_id):
         super(TestTVShow, self).__init__(indexer, indexer_id)
 
-    def loadFromDB(self, skip_nfo=False):
+    def loadFromDB(self):
         """
         Override TVShow.loadFromDB to avoid DB access during testing
-
-        :param skip_nfo: ...not used
         """
         pass
 
