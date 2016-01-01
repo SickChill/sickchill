@@ -1598,7 +1598,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             logger.log(u"" + sickbeard.indexerApi(self.indexer).name + " threw up an error: " + ex(e), logger.DEBUG)
             # if the episode is already valid just log it, if not throw it up
             if self.name:
-                logger.log(u"" + sickbeard.indexerApi(self.indexer).name
+                logger.log(u"" + sickbeard.indexerApi(self.indexer).name +
                            " timed out but we have enough info from other sources, allowing the error", logger.DEBUG)
                 return
             else:

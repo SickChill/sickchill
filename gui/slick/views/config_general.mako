@@ -750,17 +750,6 @@
                                 </span>
                             </label>
                         </div>
-
-                        <div class="field-pair" hidden>
-                            <label for="git_autoissues">
-                                <span class="component-title">Git auto-issues submit</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="git_autoissues" id="git_autoissues" ${('', 'checked="checked"')[bool(sickbeard.GIT_AUTOISSUES)]} disable/>
-                                    <p>automatically submit bug/issue reports to our issue tracker when errors are logged</p>
-                                </span>
-                            </label>
-                        </div>
-
                         <input type="submit" class="btn config_submitter" value="Save Changes" />
                     </fieldset>
 

@@ -3755,7 +3755,7 @@ class ConfigGeneral(Config):
                     calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None,
-                    git_reset=None, git_username=None, git_password=None, git_autoissues=None, display_all_seasons=None):
+                    git_reset=None, git_username=None, git_password=None, display_all_seasons=None):
 
         results = []
 
@@ -3787,7 +3787,6 @@ class ConfigGeneral(Config):
         # sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
         # Force GIT_RESET
         sickbeard.GIT_RESET = 1
-        sickbeard.GIT_AUTOISSUES = config.checkbox_to_value(git_autoissues)
         sickbeard.GIT_PATH = git_path
         sickbeard.GIT_REMOTE = git_remote
         sickbeard.CALENDAR_UNPROTECTED = config.checkbox_to_value(calendar_unprotected)
@@ -4516,8 +4515,8 @@ class ConfigProviders(Config):
         provider_list = provider_list + disabled_list
 
         # dynamically load provider settings
-        for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
-                                   curProvider.provider_type == GenericProvider.TORRENT]:
+        for curTorrentProvider in [prov for prov in sickbeard.providers.sortedProviderList() if
+                                   prov.provider_type == GenericProvider.TORRENT]:
 
             if hasattr(curTorrentProvider, 'custom_url'):
                 try:
@@ -4667,8 +4666,8 @@ class ConfigProviders(Config):
                 except Exception:
                     curTorrentProvider.subtitle = 0
 
-        for curNzbProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
-                               curProvider.provider_type == GenericProvider.NZB]:
+        for curNzbProvider in [prov for prov in sickbeard.providers.sortedProviderList() if
+                               prov.provider_type == GenericProvider.NZB]:
 
             if hasattr(curNzbProvider, 'api_key'):
                 try:
