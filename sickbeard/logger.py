@@ -160,8 +160,8 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         message = meThread + u" :: " + msg
 
         # Change the SSL error to a warning with a link to information about how to fix it.
-        check = re.sub(ur'error \[Errno 1\] _ssl.c:\d{3}: error:\d{8}:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error', 'See: http://git.io/vJrkM', message)
-        if check is not message:
+        check = re.sub(ur'error \[Errno 1\] _ssl.c:\d{3}: error:\d{8}:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error', 'See: http://git.io/vuU5V', message)
+        if check != message:
             message = check
             level = WARNING
 
@@ -169,9 +169,6 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             classes.ErrorViewer.add(classes.UIError(message))
         elif level == WARNING:
             classes.WarningViewer.add(classes.UIError(message))
-
-            # if sickbeard.GIT_AUTOISSUES:
-            #    self.submit_errors()
 
         if level == ERROR:
             self.logger.exception(message, *args, **kwargs)
@@ -186,7 +183,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         else:
             sys.exit(1)
 
-    def submit_errors(self):  # Too many local variables, too many branches, pylint: disable=too-many-branches,too-many-locals
+    def submit_errors(self):  # pylint: disable=too-many-branches,too-many-locals
 
         submitter_result = u''
         issue_id = None

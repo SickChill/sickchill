@@ -66,11 +66,11 @@ class TVShowTests(test.SickbeardTestDBCase):
         show.startyear = 1987
 
         show.saveToDB()
-        show.loadFromDB(skipNFO=True)
+        show.loadFromDB()
 
         show.indexerid = 0002
         show.saveToDB()
-        show.loadFromDB(skipNFO=True)
+        show.loadFromDB()
 
         self.assertEqual(show.indexerid, 0002)
 
@@ -81,7 +81,7 @@ class TVShowTests(test.SickbeardTestDBCase):
         show = TVShow(1, 0001, "en")
         show.name = "newName"
         show.saveToDB()
-        show.loadFromDB(skipNFO=True)
+        show.loadFromDB()
         self.assertEqual(show.name, "newName")
 
 

@@ -137,7 +137,6 @@ GIT_REPO = 'SickRage'
 GIT_USERNAME = None
 GIT_PASSWORD = None
 GIT_PATH = None
-GIT_AUTOISSUES = False
 DEVELOPER = False
 
 NEWS_URL = 'http://sickrage.github.io/sickrage-news/news.md'
@@ -622,7 +621,7 @@ def initialize(consoleLogging=True):
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
-            GIT_AUTOISSUES, DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT
+            DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT
 
         if __INITIALIZED__:
             return False
@@ -653,8 +652,6 @@ def initialize(consoleLogging=True):
         # Need to be before any passwords
         ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
         ENCRYPTION_SECRET = check_setting_str(CFG, 'General', 'encryption_secret', helpers.generateCookieSecret(), censor_log=True)
-
-        GIT_AUTOISSUES = bool(check_setting_int(CFG, 'General', 'git_autoissues', 0))
 
         # git login info
         GIT_USERNAME = check_setting_str(CFG, 'General', 'git_username', '')
@@ -1601,7 +1598,6 @@ def save_config():
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     new_config['General'] = {}
-    new_config['General']['git_autoissues'] = int(GIT_AUTOISSUES)
     new_config['General']['git_username'] = GIT_USERNAME
     new_config['General']['git_password'] = helpers.encrypt(GIT_PASSWORD, ENCRYPTION_VERSION)
     new_config['General']['git_reset'] = int(GIT_RESET)
