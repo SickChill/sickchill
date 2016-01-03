@@ -746,7 +746,7 @@ class GenericMetadata(object):
         except (sickbeard.indexer_error, IOError) as e:
             logger.log(u"Unable to look up show on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log(u"Indexer " + sickbeard.indexerApi(show_obj.indexer).name + "maybe experiencing some problems. Try again later", logger.DEBUG)
+            logger.log(u"%s may be experiencing some problems. Try again later." % sickbeard.indexerApi(show_obj.indexer).name, logger.DEBUG)
             return None
 
         if image_type not in ('fanart', 'poster', 'banner', 'poster_thumb', 'banner_thumb'):
@@ -816,7 +816,7 @@ class GenericMetadata(object):
         except (sickbeard.indexer_error, IOError) as e:
             logger.log(u"Unable to look up show on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log(u"Indexer " + sickbeard.indexerApi(show_obj.indexer).name + "maybe experiencing some problems. Try again later", logger.DEBUG)
+            logger.log(u"%s may be experiencing some problems. Try again later." % sickbeard.indexerApi(show_obj.indexer).name, logger.DEBUG)
             return result
 
         # if we have no season banners then just finish
@@ -870,7 +870,7 @@ class GenericMetadata(object):
         except (sickbeard.indexer_error, IOError) as e:
             logger.log(u"Unable to look up show on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log(u"Indexer " + sickbeard.indexerApi(show_obj.indexer).name + "maybe experiencing some problems. Try again later", logger.DEBUG)
+            logger.log(u"%s may be experiencing some problems. Try again later." % sickbeard.indexerApi(show_obj.indexer).name, logger.DEBUG)
             return result
 
         # if we have no season banners then just finish
