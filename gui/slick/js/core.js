@@ -45,6 +45,15 @@ function isMeta(pyVar, result){
 var SICKRAGE = {
     common: {
         init: function() {
+            (function init() {
+                var imgDefer = document.getElementsByTagName('img');
+                for (var i=0; i<imgDefer.length; i++) {
+                    if(imgDefer[i].getAttribute('data-src')) {
+                        imgDefer[i].setAttribute('src',imgDefer[i].getAttribute('data-src'));
+                    }
+                }
+            })();
+
             $.confirm.options = {
                 confirmButton: "Yes",
                 cancelButton: "Cancel",
@@ -1793,11 +1802,11 @@ var SICKRAGE = {
             });
 
             // Handle filtering in the poster layout
-            $('#filterShowName').on('input', _.debounce(function (e) {
+            $('#filterShowName').on('input', _.debounce(function() {
                 $('.show-grid').isotope({
                     filter: function () {
-                      var name = $('div.show-title', this).text();
-                      return (name.toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1);
+                      var name = $(this).data('name');
+                      return name.toLowerCase();
                     }
                 });
             }, 500));
@@ -1885,7 +1894,6 @@ var SICKRAGE = {
                     5: function(node) { return $(node).find("span:first").text(); },
                     6: function(node) { return $(node).data('show-size'); },
                     7: function(node) { return $(node).find("img").attr("alt"); }
-
                 },
                 widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
                 headers: {
