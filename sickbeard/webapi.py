@@ -2775,7 +2775,7 @@ class CMD_Shows(ApiCall):
         "desc": "Get all shows in SickRage",
         "optionalParameters": {
             "sort": {"desc": "The sorting strategy to apply to the list of shows"},
-            "paused": {"desc": "True to include paused shows, False otherwise"},
+            "paused": {"desc": "True: show paused, False: show un-paused, otherwise show all"},
         },
     }
 
@@ -2791,9 +2791,9 @@ class CMD_Shows(ApiCall):
         """ Get all shows in SickRage """
         shows = {}
         for curShow in sickbeard.showList:
-
-            if not self.paused and curShow.paused:  # If we're not including paused shows, and the current show is paused
-                continue  # continue with the next show
+            # If self.paused is None: show all, 0: show un-paused, 1: show paused
+            if self.paused is not None and self.paused != curShow.paused:
+                    continue
 
             indexer_show = helpers.mapIndexersToShow(curShow)
 
