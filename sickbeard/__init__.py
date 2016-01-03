@@ -76,7 +76,7 @@ CFG = None
 CONFIG_FILE = None
 
 # This is the version of the config we EXPECT to find
-CONFIG_VERSION = 7
+CONFIG_VERSION = 8
 
 # Default encryption version (0 for None)
 ENCRYPTION_VERSION = 0
@@ -342,19 +342,20 @@ KODI_HOST = ''
 KODI_USERNAME = None
 KODI_PASSWORD = None
 
-USE_PLEX = False
+USE_PLEX_SERVER = False
 PLEX_NOTIFY_ONSNATCH = False
 PLEX_NOTIFY_ONDOWNLOAD = False
 PLEX_NOTIFY_ONSUBTITLEDOWNLOAD = False
 PLEX_UPDATE_LIBRARY = False
 PLEX_SERVER_HOST = None
 PLEX_SERVER_TOKEN = None
-PLEX_HOST = None
-PLEX_USERNAME = None
-PLEX_PASSWORD = None
+PLEX_CLIENT_HOST = None
+PLEX_SERVER_USERNAME = None
+PLEX_SERVER_PASSWORD = None
 USE_PLEX_CLIENT = False
 PLEX_CLIENT_USERNAME = None
 PLEX_CLIENT_PASSWORD = None
+PLEX_SERVER_HTTPS = None
 
 USE_EMBY = False
 EMBY_HOST = None
@@ -586,8 +587,8 @@ def initialize(consoleLogging=True):
             USE_KODI, KODI_ALWAYS_ON, KODI_NOTIFY_ONSNATCH, KODI_NOTIFY_ONDOWNLOAD, KODI_NOTIFY_ONSUBTITLEDOWNLOAD, KODI_UPDATE_FULL, KODI_UPDATE_ONLYFIRST, \
             KODI_UPDATE_LIBRARY, KODI_HOST, KODI_USERNAME, KODI_PASSWORD, BACKLOG_FREQUENCY, \
             USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, TRAKT_SYNC_WATCHLIST, TRAKT_REMOVE_SHOW_FROM_SICKRAGE, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, TRAKT_USE_RECOMMENDED, TRAKT_SYNC, TRAKT_SYNC_REMOVE, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_TIMEOUT, TRAKT_BLACKLIST_NAME, \
-            USE_PLEX, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
-            PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, \
+            USE_PLEX_SERVER, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
+            PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, \
             USE_EMBY, EMBY_HOST, EMBY_APIKEY, \
             showUpdateScheduler, __INITIALIZED__, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, showList, loadingShowList, \
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
@@ -987,19 +988,20 @@ def initialize(consoleLogging=True):
         KODI_USERNAME = check_setting_str(CFG, 'KODI', 'kodi_username', '', censor_log=True)
         KODI_PASSWORD = check_setting_str(CFG, 'KODI', 'kodi_password', '', censor_log=True)
 
-        USE_PLEX = bool(check_setting_int(CFG, 'Plex', 'use_plex', 0))
+        USE_PLEX_SERVER = bool(check_setting_int(CFG, 'Plex', 'use_plex_server', 0))
         PLEX_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Plex', 'plex_notify_onsnatch', 0))
         PLEX_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Plex', 'plex_notify_ondownload', 0))
         PLEX_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'Plex', 'plex_notify_onsubtitledownload', 0))
         PLEX_UPDATE_LIBRARY = bool(check_setting_int(CFG, 'Plex', 'plex_update_library', 0))
         PLEX_SERVER_HOST = check_setting_str(CFG, 'Plex', 'plex_server_host', '')
         PLEX_SERVER_TOKEN = check_setting_str(CFG, 'Plex', 'plex_server_token', '')
-        PLEX_HOST = check_setting_str(CFG, 'Plex', 'plex_host', '')
-        PLEX_USERNAME = check_setting_str(CFG, 'Plex', 'plex_username', '', censor_log=True)
-        PLEX_PASSWORD = check_setting_str(CFG, 'Plex', 'plex_password', '', censor_log=True)
+        PLEX_CLIENT_HOST = check_setting_str(CFG, 'Plex', 'plex_client_host', '')
+        PLEX_SERVER_USERNAME = check_setting_str(CFG, 'Plex', 'plex_server_username', '', censor_log=True)
+        PLEX_SERVER_PASSWORD = check_setting_str(CFG, 'Plex', 'plex_server_password', '', censor_log=True)
         USE_PLEX_CLIENT = bool(check_setting_int(CFG, 'Plex', 'use_plex_client', 0))
         PLEX_CLIENT_USERNAME = check_setting_str(CFG, 'Plex', 'plex_client_username', '', censor_log=True)
         PLEX_CLIENT_PASSWORD = check_setting_str(CFG, 'Plex', 'plex_client_password', '', censor_log=True)
+        PLEX_SERVER_HTTPS = bool(check_setting_int(CFG, 'Plex', 'plex_server_https', 0))
 
         USE_EMBY = bool(check_setting_int(CFG, 'Emby', 'use_emby', 0))
         EMBY_HOST = check_setting_str(CFG, 'Emby', 'emby_host', '')
@@ -1894,16 +1896,21 @@ def save_config():
     new_config['KODI']['kodi_password'] = helpers.encrypt(KODI_PASSWORD, ENCRYPTION_VERSION)
 
     new_config['Plex'] = {}
-    new_config['Plex']['use_plex'] = int(USE_PLEX)
+    new_config['Plex']['use_plex_server'] = int(USE_PLEX_SERVER)
     new_config['Plex']['plex_notify_onsnatch'] = int(PLEX_NOTIFY_ONSNATCH)
     new_config['Plex']['plex_notify_ondownload'] = int(PLEX_NOTIFY_ONDOWNLOAD)
     new_config['Plex']['plex_notify_onsubtitledownload'] = int(PLEX_NOTIFY_ONSUBTITLEDOWNLOAD)
     new_config['Plex']['plex_update_library'] = int(PLEX_UPDATE_LIBRARY)
     new_config['Plex']['plex_server_host'] = PLEX_SERVER_HOST
     new_config['Plex']['plex_server_token'] = PLEX_SERVER_TOKEN
-    new_config['Plex']['plex_host'] = PLEX_HOST
-    new_config['Plex']['plex_username'] = PLEX_USERNAME
-    new_config['Plex']['plex_password'] = helpers.encrypt(PLEX_PASSWORD, ENCRYPTION_VERSION)
+    new_config['Plex']['plex_client_host'] = PLEX_CLIENT_HOST
+    new_config['Plex']['plex_server_username'] = PLEX_SERVER_USERNAME
+    new_config['Plex']['plex_server_password'] = helpers.encrypt(PLEX_SERVER_PASSWORD, ENCRYPTION_VERSION)
+
+    new_config['Plex']['use_plex_client'] = int(USE_PLEX_CLIENT)
+    new_config['Plex']['plex_client_username'] = PLEX_CLIENT_USERNAME
+    new_config['Plex']['plex_client_password'] = helpers.encrypt(PLEX_CLIENT_PASSWORD, ENCRYPTION_VERSION)
+    new_config['Plex']['plex_server_https'] = int(PLEX_SERVER_HTTPS)
 
     new_config['Emby'] = {}
     new_config['Emby']['use_emby'] = int(USE_EMBY)

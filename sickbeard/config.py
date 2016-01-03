@@ -467,17 +467,12 @@ def clean_hosts(hosts, default_port=None):
     """
     cleaned_hosts = []
 
-    for cur_host in [x.strip() for x in hosts.split(",")]:
-        if cur_host:
-            cleaned_host = clean_host(cur_host, default_port)
-            if cleaned_host:
-                cleaned_hosts.append(cleaned_host)
+    for cur_host in [host.strip() for host in hosts.split(",") if host.strip()]:
+        cleaned_host = clean_host(cur_host, default_port)
+        if cleaned_host:
+            cleaned_hosts.append(cleaned_host)
 
-    if cleaned_hosts:
-        cleaned_hosts = ",".join(cleaned_hosts)
-
-    else:
-        cleaned_hosts = ''
+    cleaned_hosts = ",".join(cleaned_hosts) if cleaned_hosts else ''
 
     return cleaned_hosts
 
@@ -626,7 +621,8 @@ class ConfigMigrator(object):
             4: 'Add newznab catIDs',
             5: 'Metadata update',
             6: 'Convert from XBMC to new KODI variables',
-            7: 'Use version 2 for password encryption'
+            7: 'Use version 2 for password encryption',
+            8: 'Convert Plex setting keys'
         }
 
     def migrate_config(self):
@@ -734,7 +730,6 @@ class ConfigMigrator(object):
                           "s%0Se%0E",
                           "S%0SE%0E",
                           "%0Sx%0E")
-        naming_sep_type = (" - ", " ")
 
         # set up our data to use
         if use_periods:
@@ -914,3 +909,9 @@ class ConfigMigrator(object):
     # Migration v6: Use version 2 for password encryption
     def _migrate_v7(self):
         sickbeard.ENCRYPTION_VERSION = 2
+
+    def _migrate_v8(self):
+        sickbeard.PLEX_CLIENT_HOST = check_setting_str(self.config_obj, 'Plex', 'plex_host', '')
+        sickbeard.PLEX_SERVER_USERNAME = check_setting_str(self.config_obj, 'Plex', 'plex_username', '', censor_log=True)
+        sickbeard.PLEX_SERVER_PASSWORD = check_setting_str(self.config_obj, 'Plex', 'plex_password', '', censor_log=True)
+        sickbeard.USE_PLEX_SERVER = bool(check_setting_int(self.config_obj, 'Plex', 'use_plex', 0))

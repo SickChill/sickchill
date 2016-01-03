@@ -141,7 +141,7 @@
                                 <li><a href="${srRoot}/manage/backlogOverview/"><i class="menu-icon-backlog-view"></i>&nbsp;Backlog Overview</a></li>
                                 <li><a href="${srRoot}/manage/manageSearches/"><i class="menu-icon-manage-searches"></i>&nbsp;Manage Searches</a></li>
                                 <li><a href="${srRoot}/manage/episodeStatuses/"><i class="menu-icon-backlog"></i>&nbsp;Episode Status Management</a></li>
-                            % if sickbeard.USE_PLEX and sickbeard.PLEX_SERVER_HOST != "":
+                            % if sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_SERVER_HOST != "":
                                 <li><a href="${srRoot}/home/updatePLEX/"><i class="menu-icon-backlog-view"></i>&nbsp;Update PLEX</a></li>
                             % endif
                             % if sickbeard.USE_KODI and sickbeard.KODI_HOST != "":
