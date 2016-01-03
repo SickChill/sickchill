@@ -1577,22 +1577,23 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         try:
             if cachedSeason:
                 myEp = cachedSeason[episode]
-            elif tvapi:
-                t = tvapi
             else:
-                lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
+                if tvapi:
+                    t = tvapi
+                else:
+                    lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
 
-                if not cache:
-                    lINDEXER_API_PARMS['cache'] = False
+                    if not cache:
+                        lINDEXER_API_PARMS['cache'] = False
 
-                if indexer_lang:
-                    lINDEXER_API_PARMS['language'] = indexer_lang
+                    if indexer_lang:
+                        lINDEXER_API_PARMS['language'] = indexer_lang
 
-                if self.show.dvdorder != 0:
-                    lINDEXER_API_PARMS['dvdorder'] = True
+                    if self.show.dvdorder != 0:
+                        lINDEXER_API_PARMS['dvdorder'] = True
 
-                t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
-            myEp = t[self.show.indexerid][season][episode]
+                    t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
+                myEp = t[self.show.indexerid][season][episode]
 
         except (sickbeard.indexer_error, IOError) as e:
             logger.log(u"" + sickbeard.indexerApi(self.indexer).name + " threw up an error: " + ex(e), logger.DEBUG)
