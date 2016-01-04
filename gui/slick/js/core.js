@@ -388,27 +388,27 @@ var SICKRAGE = {
                 });
             });
 
-            $('#testPMC').on('click', function () {
+            $('#testPHT').on('click', function () {
                 var plex = {};
                 plex.client = {};
-                plex.client.host = $.trim($('#plex_host').val());
+                plex.client.host = $.trim($('#plex_client_host').val());
                 plex.client.username = $.trim($('#plex_client_username').val());
                 plex.client.password = $.trim($('#plex_client_password').val());
                 if (!plex.client.host) {
-                    $('#testPMC-result').html('Please fill out the necessary fields above.');
-                    $('#plex_host').addClass('warning');
+                    $('#testPHT-result').html('Please fill out the necessary fields above.');
+                    $('#plex_client_host').addClass('warning');
                     return;
                 }
-                $('#plex_host').removeClass('warning');
+                $('#plex_client_host').removeClass('warning');
                 $(this).prop('disabled', true);
-                $('#testPMC-result').html(loading);
-                $.get(srRoot + '/home/testPMC', {
+                $('#testPHT-result').html(loading);
+                $.get(srRoot + '/home/testPHT', {
                     'host': plex.client.host,
                     'username': plex.client.username,
                     'password': plex.client.password
                 }).done(function (data) {
-                    $('#testPMC-result').html(data);
-                    $('#testPMC').prop('disabled', false);
+                    $('#testPHT-result').html(data);
+                    $('#testPHT').prop('disabled', false);
                 });
             });
 
@@ -416,8 +416,8 @@ var SICKRAGE = {
                 var plex = {};
                 plex.server = {};
                 plex.server.host = $.trim($('#plex_server_host').val());
-                plex.username = $.trim($('#plex_username').val());
-                plex.password = $.trim($('#plex_password').val());
+                plex.server.username = $.trim($('#plex_server_username').val());
+                plex.server.password = $.trim($('#plex_server_password').val());
                 plex.server.token = $.trim($('#plex_server_token').val());
                 if (!plex.server.host) {
                     $('#testPMS-result').html('Please fill out the necessary fields above.');
@@ -429,8 +429,8 @@ var SICKRAGE = {
                 $('#testPMS-result').html(loading);
                 $.get(srRoot + '/home/testPMS', {
                     'host': plex.server.host,
-                    'username': plex.username,
-                    'password': plex.password,
+                    'username': plex.server.username,
+                    'password': plex.server.password,
                     'plex_server_token': plex.server.token
                 }).done(function (data) {
                     $('#testPMS-result').html(data);
@@ -990,7 +990,7 @@ var SICKRAGE = {
             });
 
             // show instructions for plex when enabled
-            $('#use_plex').on('click', function() {
+            $('#use_plex_server').on('click', function() {
                 if ($(this).is(':checked')) {
                     $('.plexinfo').removeClass('hide');
                 } else {

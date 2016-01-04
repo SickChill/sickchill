@@ -37,69 +37,14 @@ except ImportError:
 
 class PLEXNotifier(object):
 
-    def _send_to_plex(self, command, host, username=None, password=None):
-        """Handles communication to Plex hosts via HTTP API
-
-        Args:
-            command: Dictionary of field/data pairs, encoded via urllib and passed to the legacy xbmcCmds HTTP API
-            host: Plex host:port
-            username: Plex API username
-            password: Plex API password
-
-        Returns:
-            Returns 'OK' for successful commands or False if there was an error
-
-        """
-
-        # fill in omitted parameters
-        if not username:
-            username = sickbeard.PLEX_CLIENT_USERNAME
-        if not password:
-            password = sickbeard.PLEX_CLIENT_PASSWORD
-
-        if not host:
-            logger.log(u'PLEX: No host specified, check your settings', logger.WARNING)
-            return False
-
-        for key in command:
-            if type(command[key]) == unicode:
-                command[key] = command[key].encode('utf-8')
-
-        enc_command = urllib.urlencode(command)
-        logger.log(u'PLEX: Encoded API command: ' + enc_command, logger.DEBUG)
-
-        url = u'http://%s/xbmcCmds/xbmcHttp/?%s' % (host, enc_command)
-        try:
-            req = urllib2.Request(url)
-            # if we have a password, use authentication
-            if password:
-                base64string = base64.encodestring('%s:%s' % (username, password))[:-1]
-                authheader = 'Basic %s' % base64string
-                req.add_header('Authorization', authheader)
-                logger.log(u'PLEX: Contacting (with auth header) via url: ' + url, logger.DEBUG)
-            else:
-                logger.log(u'PLEX: Contacting via url: ' + url, logger.DEBUG)
-
-            response = urllib2.urlopen(req)
-
-            result = response.read().decode(sickbeard.SYS_ENCODING)
-            response.close()
-
-            logger.log(u'PLEX: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
-            # could return result response = re.compile('<html><li>(.+\w)</html>').findall(result)
-            return 'OK'
-
-        except (urllib2.URLError, IOError) as e:
-            logger.log(u'PLEX: Warning: Couldn\'t contact Plex at ' + url + ' ' + ex(e), logger.WARNING)
-            return False
-
-    def _notify_pmc(self, message, title='SickRage', host=None, username=None, password=None, force=False):
+    @staticmethod
+    def _notify_pht(message, title='SickRage', host=None, username=None, password=None, force=False):  # pylint: disable=too-many-arguments
         """Internal wrapper for the notify_snatch and notify_download functions
 
         Args:
             message: Message body of the notice to send
             title: Title of the notice to send
-            host: Plex Media Client(s) host:port
+            host: Plex Home Theater(s) host:port
             username: Plex username
             password: Plex password
             force: Used for the Test method to override config safety checks
@@ -116,22 +61,13 @@ class PLEXNotifier(object):
 
         # fill in omitted parameters
         if not host:
-            host = sickbeard.PLEX_HOST
+            host = sickbeard.PLEX_CLIENT_HOST
         if not username:
             username = sickbeard.PLEX_CLIENT_USERNAME
         if not password:
             password = sickbeard.PLEX_CLIENT_PASSWORD
 
-        result = ''
-        for curHost in [x.strip() for x in host.split(',')]:
-            logger.log(u'PLEX: Sending notification to \'%s\' - %s' % (curHost, message), logger.DEBUG)
-
-            command = {'command': 'ExecBuiltIn', 'parameter': 'Notification(%s,%s)' % (title.encode('utf-8'), message.encode('utf-8'))}
-            notify_result = self._send_to_plex(command, curHost, username, password)
-            if notify_result:
-                result += '%s:%s' % (curHost, str(notify_result))
-
-        return result
+        return sickbeard.notifiers.kodi_notifier._notify_kodi(message, title=title, host=host, username=username, password=password, force=force, dest_app="PLEX")  # pylint: disable=protected-access
 
 ##############################################################################
 # Public functions
@@ -139,36 +75,37 @@ class PLEXNotifier(object):
 
     def notify_snatch(self, ep_name):
         if sickbeard.PLEX_NOTIFY_ONSNATCH:
-            self._notify_pmc(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
+            self._notify_pht(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
 
     def notify_download(self, ep_name):
         if sickbeard.PLEX_NOTIFY_ONDOWNLOAD:
-            self._notify_pmc(ep_name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
+            self._notify_pht(ep_name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
 
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notify_pmc(ep_name + ': ' + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
+            self._notify_pht(ep_name + ': ' + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
     def notify_git_update(self, new_version='??'):
-        if sickbeard.USE_PLEX:
+        if sickbeard.USE_PLEX_SERVER:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             if update_text and title and new_version:
-                self._notify_pmc(update_text + new_version, title)
+                self._notify_pht(update_text + new_version, title)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_PLEX:
+        if sickbeard.USE_PLEX_SERVER:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
-            self._notify_pmc(update_text.format(ipaddress), title)
+            self._notify_pht(update_text.format(ipaddress), title)
 
-    def test_notify_pmc(self, host, username, password):
-        return self._notify_pmc('This is a test notification from SickRage', 'Test Notification', host, username, password, force=True)
+    def test_notify_pht(self, host, username, password):
+        return self._notify_pht('This is a test notification from SickRage', 'Test Notification', host, username, password, force=True)
 
     def test_notify_pms(self, host, username, password, plex_server_token):
         return self.update_library(host=host, username=username, password=password, plex_server_token=plex_server_token, force=False)
 
-    def update_library(self, ep_obj=None, host=None, username=None, password=None, plex_server_token=None, force=True):
+    @staticmethod
+    def update_library(ep_obj=None, host=None, username=None, password=None, plex_server_token=None, force=True):  # pylint: disable=too-many-arguments, too-many-locals, too-many-statements, too-many-branches
         """Handles updating the Plex Media Server host via HTTP API
 
         Plex Media Server currently only supports updating the whole video library and not a specific path.
@@ -178,18 +115,19 @@ class PLEXNotifier(object):
 
         """
 
-        if sickbeard.USE_PLEX and sickbeard.PLEX_UPDATE_LIBRARY:
-
-            if not sickbeard.PLEX_SERVER_HOST:
-                logger.log(u'PLEX: No Plex Media Server host specified, check your settings', logger.DEBUG)
-                return False
+        if sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_UPDATE_LIBRARY:
 
             if not host:
+                if not sickbeard.PLEX_SERVER_HOST:
+                    logger.log(u'PLEX: No Plex Media Server host specified, check your settings', logger.DEBUG)
+                    return False
                 host = sickbeard.PLEX_SERVER_HOST
+
             if not username:
-                username = sickbeard.PLEX_USERNAME
+                username = sickbeard.PLEX_SERVER_USERNAME
+
             if not password:
-                password = sickbeard.PLEX_PASSWORD
+                password = sickbeard.PLEX_SERVER_PASSWORD
 
             if not plex_server_token:
                 plex_server_token = sickbeard.PLEX_SERVER_TOKEN
@@ -221,13 +159,13 @@ class PLEXNotifier(object):
                     logger.log(u'PLEX: Error parsing plex.tv response: ' + ex(e), logger.DEBUG)
 
             file_location = '' if None is ep_obj else ep_obj.location
-            host_list = [x.strip() for x in host.split(',')]
+            host_list = [x.strip() for x in host.split(',') if x.strip()]
             hosts_all = {}
             hosts_match = {}
             hosts_failed = []
             for cur_host in host_list:
 
-                url = 'http://%s/library/sections%s' % (cur_host, token_arg)
+                url = 'http%s://%s/library/sections%s' % (('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host, token_arg)
                 try:
                     xml_tree = etree.parse(urllib.urlopen(url))
                     media_container = xml_tree.getroot()
@@ -269,9 +207,10 @@ class PLEXNotifier(object):
             host_list = []
             for section_key, cur_host in hosts_try.iteritems():
 
-                url = 'http://%s/library/sections/%s/refresh%s' % (cur_host, section_key, token_arg)
+                url = 'http%s://%s/library/sections/%s/refresh%s' % (('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host, section_key, token_arg)
                 try:
-                    force and urllib.urlopen(url)
+                    if force:
+                        urllib.urlopen(url)
                     host_list.append(cur_host)
                 except Exception as e:
                     logger.log(u'PLEX: Error updating library section for Plex Media Server: ' + ex(e), logger.WARNING)
