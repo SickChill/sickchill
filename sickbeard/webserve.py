@@ -751,7 +751,7 @@ class Home(WebRoot):
 
     @staticmethod
     def havePLEX():
-        return sickbeard.USE_PLEX and sickbeard.PLEX_UPDATE_LIBRARY
+        return sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_UPDATE_LIBRARY
 
     @staticmethod
     def haveEMBY():
@@ -884,7 +884,7 @@ class Home(WebRoot):
 
         return finalResult
 
-    def testPMC(self, host=None, username=None, password=None):
+    def testPHT(self, host=None, username=None, password=None):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         if None is not password and set('*') == set(password):
@@ -892,14 +892,14 @@ class Home(WebRoot):
 
         finalResult = ''
         for curHost in [x.strip() for x in host.split(',')]:
-            curResult = notifiers.plex_notifier.test_notify_pmc(urllib.unquote_plus(curHost), username, password)
+            curResult = notifiers.plex_notifier.test_notify_pht(urllib.unquote_plus(curHost), username, password)
             if len(curResult.split(':')) > 2 and 'OK' in curResult.split(':')[2]:
-                finalResult += 'Successful test notice sent to Plex client ... ' + urllib.unquote_plus(curHost)
+                finalResult += 'Successful test notice sent to Plex Home Theater ... ' + urllib.unquote_plus(curHost)
             else:
-                finalResult += 'Test failed for Plex client ... ' + urllib.unquote_plus(curHost)
+                finalResult += 'Test failed for Plex Home Theater ... ' + urllib.unquote_plus(curHost)
             finalResult += '<br>' + '\n'
 
-        ui.notifications.message('Tested Plex client(s): ', urllib.unquote_plus(host.replace(',', ', ')))
+        ui.notifications.message('Tested Plex Home Theater(s): ', urllib.unquote_plus(host.replace(',', ', ')))
 
         return finalResult
 
@@ -907,17 +907,17 @@ class Home(WebRoot):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         if password is not None and set('*') == set(password):
-            password = sickbeard.PLEX_PASSWORD
+            password = sickbeard.PLEX_SERVER_PASSWORD
 
         finalResult = ''
 
         curResult = notifiers.plex_notifier.test_notify_pms(urllib.unquote_plus(host), username, password, plex_server_token)
         if curResult is None:
-            finalResult += 'Successful test of Plex server(s) ... ' + urllib.unquote_plus(host.replace(',', ', '))
+            finalResult += 'Successful test of Plex Media Server(s) ... ' + urllib.unquote_plus(host.replace(',', ', '))
         elif curResult is False:
             finalResult += 'Test failed, No Plex Media Server host specified'
         else:
-            finalResult += 'Test failed for Plex server(s) ... ' + urllib.unquote_plus(str(curResult).replace(',', ', '))
+            finalResult += 'Test failed for Plex Media Server(s) ... ' + urllib.unquote_plus(str(curResult).replace(',', ', '))
         finalResult += '<br>' + '\n'
 
         ui.notifications.message('Tested Plex Media Server host(s): ', urllib.unquote_plus(host.replace(',', ', ')))
@@ -3755,7 +3755,7 @@ class ConfigGeneral(Config):
                     calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None,
-                    git_reset=None, git_username=None, git_password=None, git_autoissues=None, display_all_seasons=None):
+                    git_reset=None, git_username=None, git_password=None, display_all_seasons=None):
 
         results = []
 
@@ -3787,7 +3787,6 @@ class ConfigGeneral(Config):
         # sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
         # Force GIT_RESET
         sickbeard.GIT_RESET = 1
-        sickbeard.GIT_AUTOISSUES = config.checkbox_to_value(git_autoissues)
         sickbeard.GIT_PATH = git_path
         sickbeard.GIT_REMOTE = git_remote
         sickbeard.CALENDAR_UNPROTECTED = config.checkbox_to_value(calendar_unprotected)
@@ -4516,8 +4515,8 @@ class ConfigProviders(Config):
         provider_list = provider_list + disabled_list
 
         # dynamically load provider settings
-        for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
-                                   curProvider.provider_type == GenericProvider.TORRENT]:
+        for curTorrentProvider in [prov for prov in sickbeard.providers.sortedProviderList() if
+                                   prov.provider_type == GenericProvider.TORRENT]:
 
             if hasattr(curTorrentProvider, 'custom_url'):
                 try:
@@ -4667,8 +4666,8 @@ class ConfigProviders(Config):
                 except Exception:
                     curTorrentProvider.subtitle = 0
 
-        for curNzbProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
-                               curProvider.provider_type == GenericProvider.NZB]:
+        for curNzbProvider in [prov for prov in sickbeard.providers.sortedProviderList() if
+                               prov.provider_type == GenericProvider.NZB]:
 
             if hasattr(curNzbProvider, 'api_key'):
                 try:
@@ -4742,11 +4741,11 @@ class ConfigNotifications(Config):
                           kodi_notify_onsubtitledownload=None, kodi_update_onlyfirst=None,
                           kodi_update_library=None, kodi_update_full=None, kodi_host=None, kodi_username=None,
                           kodi_password=None,
-                          use_plex=None, plex_notify_onsnatch=None, plex_notify_ondownload=None,
+                          use_plex_server=None, plex_notify_onsnatch=None, plex_notify_ondownload=None,
                           plex_notify_onsubtitledownload=None, plex_update_library=None,
-                          plex_server_host=None, plex_server_token=None, plex_host=None, plex_username=None, plex_password=None,
+                          plex_server_host=None, plex_server_token=None, plex_client_host=None, plex_server_username=None, plex_server_password=None,
                           use_plex_client=None, plex_client_username=None, plex_client_password=None,
-                          use_emby=None, emby_host=None, emby_apikey=None,
+                          plex_server_https=None, use_emby=None, emby_host=None, emby_apikey=None,
                           use_growl=None, growl_notify_onsnatch=None, growl_notify_ondownload=None,
                           growl_notify_onsubtitledownload=None, growl_host=None, growl_password=None,
                           use_freemobile=None, freemobile_notify_onsnatch=None, freemobile_notify_ondownload=None,
@@ -4799,19 +4798,20 @@ class ConfigNotifications(Config):
         sickbeard.KODI_USERNAME = kodi_username
         sickbeard.KODI_PASSWORD = kodi_password
 
-        sickbeard.USE_PLEX = config.checkbox_to_value(use_plex)
+        sickbeard.USE_PLEX_SERVER = config.checkbox_to_value(use_plex_server)
         sickbeard.PLEX_NOTIFY_ONSNATCH = config.checkbox_to_value(plex_notify_onsnatch)
         sickbeard.PLEX_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(plex_notify_ondownload)
         sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(plex_notify_onsubtitledownload)
         sickbeard.PLEX_UPDATE_LIBRARY = config.checkbox_to_value(plex_update_library)
-        sickbeard.PLEX_HOST = config.clean_hosts(plex_host)
+        sickbeard.PLEX_CLIENT_HOST = config.clean_hosts(plex_client_host)
         sickbeard.PLEX_SERVER_HOST = config.clean_hosts(plex_server_host)
         sickbeard.PLEX_SERVER_TOKEN = config.clean_host(plex_server_token)
-        sickbeard.PLEX_USERNAME = plex_username
-        sickbeard.PLEX_PASSWORD = plex_password
-        sickbeard.USE_PLEX_CLIENT = config.checkbox_to_value(use_plex)
-        sickbeard.PLEX_CLIENT_USERNAME = plex_username
-        sickbeard.PLEX_CLIENT_PASSWORD = plex_password
+        sickbeard.PLEX_SERVER_USERNAME = plex_server_username
+        sickbeard.PLEX_SERVER_PASSWORD = plex_server_password
+        sickbeard.USE_PLEX_CLIENT = config.checkbox_to_value(use_plex_server)
+        sickbeard.PLEX_CLIENT_USERNAME = plex_client_username
+        sickbeard.PLEX_CLIENT_PASSWORD = plex_client_password
+        sickbeard.PLEX_SERVER_HTTPS = config.checkbox_to_value(plex_server_https)
 
         sickbeard.USE_EMBY = config.checkbox_to_value(use_emby)
         sickbeard.EMBY_HOST = config.clean_host(emby_host)
