@@ -755,11 +755,12 @@ def initialize(consoleLogging=True):
                 except Exception as e:
                     logger.log(u"Restore: Unable to remove the restore directory: {0}".format(ex(e)), logger.ERROR)
 
-                for cleanupDir in ['mako', 'sessions', 'indexers']:
+                for cleanupDir in ['mako', 'sessions', 'indexers', 'rss']:
                     try:
                         shutil.rmtree(ek(os.path.join, CACHE_DIR, cleanupDir))
                     except Exception as e:
-                        logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
+                        if cleanupDir not in ['rss', 'sessions', 'indexers']:
+                            logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
 
