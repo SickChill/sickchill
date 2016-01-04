@@ -30,7 +30,7 @@ class InitialSchema(db.SchemaUpgrade):
         queries = [
             ("CREATE TABLE lastUpdate (provider TEXT, time NUMERIC);",),
             ("CREATE TABLE lastSearch (provider TEXT, time NUMERIC);",),
-            ("CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER KEY, show_name TEXT, season NUMERIC DEFAULT -1, custom NUMERIC DEFAULT 0);",),
+            ("CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER, show_name TEXT, season NUMERIC DEFAULT -1, custom NUMERIC DEFAULT 0);",),
             ("CREATE TABLE scene_names (indexer_id INTEGER, name TEXT);",),
             ("CREATE TABLE network_timezones (network_name TEXT PRIMARY KEY, timezone TEXT);",),
             ("CREATE TABLE scene_exceptions_refresh (list TEXT PRIMARY KEY, last_refreshed INTEGER);",),
@@ -50,7 +50,7 @@ class AddSceneExceptions(InitialSchema):
 
     def execute(self):
         self.connection.action(
-            "CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER KEY, show_name TEXT);")
+            "CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER, show_name TEXT);")
 
 
 class AddSceneNameCache(AddSceneExceptions):
@@ -108,6 +108,17 @@ class ConvertSceneExeptionsToIndexerScheme(AddSceneExceptionsRefresh):
     def execute(self):
         self.connection.action("DROP TABLE IF EXISTS tmp_scene_exceptions;")
         self.connection.action("ALTER TABLE scene_exceptions RENAME TO tmp_scene_exceptions;")
-        self.connection.action("CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER KEY, show_name TEXT, season NUMERIC DEFAULT -1, custom NUMERIC DEFAULT 0);")
+        self.connection.action("CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER, show_name TEXT, season NUMERIC DEFAULT -1, custom NUMERIC DEFAULT 0);")
         self.connection.action("INSERT INTO scene_exceptions SELECT exception_id, tvdb_id as indexer_id, show_name, season, custom FROM tmp_scene_exceptions;")
         self.connection.action("DROP TABLE tmp_scene_exceptions;")
+
+class ConvertSceneNamesToIndexerScheme(AddSceneExceptionsRefresh):
+    def test(self):
+        return self.hasColumn("scene_names", "indexer_id")
+
+    def execute(self):
+        self.connection.action("DROP TABLE IF EXISTS tmp_scene_names;")
+        self.connection.action("ALTER TABLE scene_names RENAME TO tmp_scene_names;")
+        self.connection.action("CREATE TABLE scene_names (indexer_id INTEGER, name TEXT);")
+        self.connection.action("INSERT INTO scene_names SELECT * FROM tmp_scene_names;")
+        self.connection.action("DROP TABLE tmp_scene_names;")
