@@ -1,3 +1,4 @@
+from .exception import NoMatches, MultipleMatches
 from .named import NamedExtensionManager
 
 
@@ -93,14 +94,14 @@ class DriverManager(NamedExtensionManager):
 
         if not self.extensions:
             name = self._names[0]
-            raise RuntimeError('No %r driver found, looking for %r' %
-                               (self.namespace, name))
+            raise NoMatches('No %r driver found, looking for %r' %
+                            (self.namespace, name))
         if len(self.extensions) > 1:
             discovered_drivers = ','.join(e.entry_point_target
                                           for e in self.extensions)
 
-            raise RuntimeError('Multiple %r drivers found: %s' %
-                               (self.namespace, discovered_drivers))
+            raise MultipleMatches('Multiple %r drivers found: %s' %
+                                  (self.namespace, discovered_drivers))
 
     def __call__(self, func, *args, **kwds):
         """Invokes func() for the single loaded extension.

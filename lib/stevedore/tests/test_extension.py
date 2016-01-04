@@ -3,6 +3,7 @@
 
 import mock
 
+from stevedore import exception
 from stevedore import extension
 from stevedore.tests import utils
 
@@ -159,7 +160,7 @@ class TestCallback(utils.TestCase):
                                         )
         try:
             em.map(mapped, 1, 2, a='A', b='B')
-        except RuntimeError as err:
+        except exception.NoMatches as err:
             self.assertEqual(expected_str, str(err))
 
     def test_map_method(self):
