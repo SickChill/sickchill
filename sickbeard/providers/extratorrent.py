@@ -18,7 +18,6 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import traceback
 import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
@@ -74,36 +73,36 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                 with BS4Parser(data, 'html5lib') as parser:
                     for item in parser.findAll('item'):
                         try:
-                            title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').get_text(strip=True)) if item.find('title') else None
-                            size = try_int(item.find('size').get_text(strip=True), -1) if item.find('size') else -1
-                            seeders = try_int(item.find('seeders').get_text(strip=True)) if item.find('seeders') else 0
-                            leechers = try_int(item.find('leechers').get_text(strip=True)) if item.find('leechers') else 0
+                            title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').get_text(strip=True))
+                            size = try_int(item.find('size').get_text(strip=True), -1)
+                            seeders = try_int(item.find('seeders').get_text(strip=True))
+                            leechers = try_int(item.find('leechers').get_text(strip=True))
 
                             if sickbeard.TORRENT_METHOD == 'blackhole':
                                 enclosure = item.find('enclosure')  # Backlog doesnt have enclosure
                                 download_url = enclosure['url'] if enclosure else item.find('link').next.strip()
                                 download_url = re.sub(r'(.*)/torrent/(.*).html', r'\1/download/\2.torrent', download_url)
                             else:
-                                info_hash = item.find('info_hash').get_text(strip=True) if item.find('info_hash') else None
-                                download_url = "magnet:?xt=urn:btih:" + info_hash + "&dn=" + title + self._custom_trackers if info_hash and title else None
-
-                            if not all([title, download_url]):
-                                continue
-
-                                # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                continue
-
-                            item = title, download_url, size, seeders, leechers
-                            if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
-
-                            items[mode].append(item)
+                                info_hash = item.find('info_hash').get_text(strip=True)
+                                download_url = "magnet:?xt=urn:btih:" + info_hash + "&dn=" + title + self._custom_trackers
 
                         except (AttributeError, TypeError, KeyError, ValueError):
-                            logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.WARNING)
+                            continue
+
+                        if not all([title, download_url]):
+                            continue
+
+                            # Filter unseeded torrent
+                        if seeders < self.minseed or leechers < self.minleech:
+                            if mode != 'RSS':
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            continue
+
+                        item = title, download_url, size, seeders, leechers
+                        if mode != 'RSS':
+                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+
+                        items[mode].append(item)
 
             # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)

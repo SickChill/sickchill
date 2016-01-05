@@ -116,7 +116,7 @@ class TorrentLeechProvider(TorrentProvider):
 
                             seeders = try_int(result.find('td', class_='seeders').get_text(strip=True))
                             leechers = try_int(result.find('td', class_='leechers').get_text(strip=True))
-                            size = self._convertSize(result.find_all('td')[labels.indexof('Size')].get_text(strip=True))
+                            size = self._convertSize(result.find_all('td')[labels.index('Size')].get_text(strip=True))
                         except (AttributeError, TypeError, KeyError, ValueError):
                             continue
 
