@@ -1211,9 +1211,11 @@ class Home(WebRoot):
             [showObj.indexerid]
         )
 
+        min_season = 0 if sickbeard.DISPLAY_SHOW_SPECIALS else 1
+
         sqlResults = myDB.select(
-            "SELECT * FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
-            [showObj.indexerid]
+            "SELECT * FROM tv_episodes WHERE showid = ? and season >= ? ORDER BY season DESC, episode DESC",
+            [showObj.indexerid, min_season]
         )
 
         t = PageTemplate(rh=self, filename="displayShow.mako")
