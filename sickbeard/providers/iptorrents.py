@@ -66,11 +66,14 @@ class IPTorrentsProvider(TorrentProvider):
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
-        if re.search('tries left', response):
-            logger.log(u"You tried too often, please try again after 1 hour! Disable IPTorrents for at least 1 hour", logger.WARNING)
-            return False
-        if re.search('Password not correct', response):
+        # Invalid username and password combination
+        if re.search('Invalid username and password combination', response):
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            return False
+
+        # You tried too often, please try again after 2 hours!
+        if re.search('You tried too often', response):
+            logger.log(u"You tried too often, please try again after 2 hours! Disable IPTorrents for at least 2 hours", logger.WARNING)
             return False
 
         return True
