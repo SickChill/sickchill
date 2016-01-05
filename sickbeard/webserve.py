@@ -5115,7 +5115,7 @@ class ErrorLogs(WebRoot):
                     logName = match.group(8)
                     if not sickbeard.DEBUG and (level == 'DEBUG' or level == 'DB'):
                         continue
-                    if level not in logger.reverseNames:
+                    if level not in logger.LOGGING_LEVELS:
                         lastLine = False
                         continue
 
@@ -5123,7 +5123,7 @@ class ErrorLogs(WebRoot):
                         lastLine = True
                         finalData.append(x)
                         numLines += 1
-                    elif not logSearch and logger.reverseNames[level] >= minLevel and (logFilter == '<NONE>' or logName.startswith(logFilter)):
+                    elif not logSearch and logger.LOGGING_LEVELS[level] >= minLevel and (logFilter == '<NONE>' or logName.startswith(logFilter)):
                         lastLine = True
                         finalData.append(x)
                         numLines += 1
@@ -5175,13 +5175,13 @@ class ErrorLogs(WebRoot):
 
         data = []
 
-        if ek(os.path.isfile, logger.logFile):
-            with io.open(logger.logFile, 'r', encoding='utf-8') as f:
+        if ek(os.path.isfile, logger.log_file):
+            with io.open(logger.log_file, 'r', encoding='utf-8') as f:
                 data = Get_Data(minLevel, f.readlines(), 0, regex, logFilter, logSearch, maxLines)
 
         for i in range(1, int(sickbeard.LOG_NR)):
-            if ek(os.path.isfile, logger.logFile + "." + str(i)) and (len(data) <= maxLines):
-                with io.open(logger.logFile + "." + str(i), 'r', encoding='utf-8') as f:
+            if ek(os.path.isfile, logger.log_file + "." + str(i)) and (len(data) <= maxLines):
+                with io.open(logger.log_file + "." + str(i), 'r', encoding='utf-8') as f:
                     data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 
         return t.render(

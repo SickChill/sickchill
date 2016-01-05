@@ -678,7 +678,7 @@ def initialize(consoleLogging=True):
             fileLogging = False
 
         # init logging
-        logger.initLogging(consoleLogging=consoleLogging, fileLogging=fileLogging, debugLogging=DEBUG, databaseLogging=DBDEBUG)
+        logger.init_logging(console_logging=consoleLogging, file_logging=fileLogging, debug_logging=DEBUG, database_logging=DBDEBUG)
 
         # github api
         try:

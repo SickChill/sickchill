@@ -126,14 +126,14 @@ sickbeard.GIT_USERNAME = sickbeard.config.check_setting_str(sickbeard.CFG, 'Gene
 sickbeard.GIT_PASSWORD = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_password', '', censor_log=True)
 
 sickbeard.LOG_DIR = os.path.join(TEST_DIR, 'Logs')
-sickbeard.logger.logFile = os.path.join(sickbeard.LOG_DIR, 'test_sickbeard.log')
+sickbeard.logger.log_file = os.path.join(sickbeard.LOG_DIR, 'test_sickbeard.log')
 create_test_log_folder()
 
 sickbeard.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
 create_test_cache_folder()
 
 # pylint: disable=no-member
-sickbeard.logger.initLogging(False, True)
+sickbeard.logger.init_logging(False, True)
 
 
 # =================

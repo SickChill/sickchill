@@ -1197,11 +1197,11 @@ class CMD_Logs(ApiCall):
     def run(self):
         """ Get the logs """
         # 10 = Debug / 20 = Info / 30 = Warning / 40 = Error
-        min_level = logger.reverseNames[str(self.min_level).upper()]
+        min_level = logger.LOGGING_LEVELS[str(self.min_level).upper()]
 
         data = []
-        if ek(os.path.isfile, logger.logFile):
-            with io.open(logger.logFile, 'r', encoding='utf-8') as f:
+        if ek(os.path.isfile, logger.log_file):
+            with io.open(logger.log_file, 'r', encoding='utf-8') as f:
                 data = f.readlines()
 
         regex = r"^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
@@ -1218,11 +1218,11 @@ class CMD_Logs(ApiCall):
 
             if match:
                 level = match.group(7)
-                if level not in logger.reverseNames:
+                if level not in logger.LOGGING_LEVELS:
                     last_line = False
                     continue
 
-                if logger.reverseNames[level] >= min_level:
+                if logger.LOGGING_LEVELS[level] >= min_level:
                     last_line = True
                     final_data.append(x.rstrip("\n"))
                 else:
