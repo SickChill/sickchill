@@ -113,14 +113,13 @@ class SceneTimeProvider(TorrentProvider):
                             torrent_id = full_id.split("&")[0]
 
                             try:
-                                title = link.contents[0].get_text()
-                                filename = "%s.torrent" % title.replace(" ", ".")
-                                download_url = self.urls['download'] % (torrent_id, filename)
+                                title = link.contents[0].get_text() if link.contents[0].get_text() else None
+                                filename = "%s.torrent" % title.replace(" ", ".") if title else None
+                                download_url = self.urls['download'] % (torrent_id, filename) if torrent_id and filename else None
 
-                                seeders = int(cells[labels.index('Seeders')].get_text())
-                                leechers = int(cells[labels.index('Leechers')].get_text())
-                                # FIXME
-                                size = -1
+                                seeders = int(cells[labels.index('Seeders')].get_text()) if cells[labels.index('Seeders')].get_text() else 1
+                                leechers = int(cells[labels.index('Leechers')].get_text()) if cells[labels.index('Leechers')].get_text() else 0
+                                size = self._convertSize(cells[labels.index('Size')].get_text()) if cells[labels.index('Size')].get_text() else -1
 
                             except (AttributeError, TypeError):
                                 continue
@@ -153,6 +152,23 @@ class SceneTimeProvider(TorrentProvider):
     def seed_ratio(self):
         return self.ratio
 
+
+    def _convertSize(sizeString):
+        size = sizeString[:-2].strip()
+        modifier = sizeString[-2:].upper()
+        try:
+            size = float(size)
+            if modifier in 'KB':
+                size *= 1024 ** 1
+            elif modifier in 'MB':
+                size *= 1024 ** 2
+            elif modifier in 'GB':
+                size *= 1024 ** 3
+            elif modifier in 'TB':
+                size *= 1024 ** 4
+        except Exception:
+            size = -1
+        return long(size)
 
 class SceneTimeCache(tvcache.TVCache):
     def __init__(self, provider_obj):
