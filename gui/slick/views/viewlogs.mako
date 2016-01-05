@@ -22,15 +22,15 @@ pre {
 
 <div class="h2footer pull-right">Minimum logging level to display: <select name="minLevel" id="minLevel" class="form-control form-control-inline input-sm">
     <%
-        levels = reverseNames.keys()
-        levels.sort(lambda x, y: cmp(reverseNames[x], reverseNames[y]))
+        levels = LOGGING_LEVELS.keys()
+        levels.sort(lambda x, y: cmp(LOGGING_LEVELS[x], LOGGING_LEVELS[y]))
         if not sickbeard.DEBUG:
             levels.remove('DEBUG')
         if not sickbeard.DBDEBUG:
             levels.remove('DB')
     %>
     % for level in levels:
-        <option value="${reverseNames[level]}" ${('', 'selected="selected"')[minLevel == reverseNames[level]]}>${level.title()}</option>
+        <option value="${LOGGING_LEVELS[level]}" ${('', 'selected="selected"')[minLevel == LOGGING_LEVELS[level]]}>${level.title()}</option>
     % endfor
     </select>
 
