@@ -117,7 +117,7 @@ def change_LOG_DIR(log_dir, web_log):
             sickbeard.ACTUAL_LOG_DIR = ek(os.path.normpath, log_dir)
             sickbeard.LOG_DIR = abs_log_dir
 
-            logger.initLogging()
+            logger.init_logging()
             logger.log(u"Initialized new log file in " + sickbeard.LOG_DIR)
             log_dir_changed = True
 
@@ -592,9 +592,9 @@ def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_
             config[cfg_name] = {}
             config[cfg_name][item_name] = helpers.encrypt(my_val, encryption_version)
 
-    if censor_log or (cfg_name, item_name) in logger.censoredItems.iteritems():
+    if censor_log or (cfg_name, item_name) in logger.censored_items.iteritems():
         if not item_name.endswith('custom_url'):
-            logger.censoredItems[cfg_name, item_name] = my_val
+            logger.censored_items[cfg_name, item_name] = my_val
 
     if not silent:
         logger.log(item_name + " -> " + my_val, logger.DEBUG)
