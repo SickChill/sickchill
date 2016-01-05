@@ -52,6 +52,7 @@ from __future__ import print_function
 import codecs
 import datetime
 import getopt
+import io
 import locale
 import os
 import shutil
@@ -419,7 +420,7 @@ class SickRage(object):
             logger.log('Writing PID: %s to %s' % (pid, self.pid_file))
 
             try:
-                with codecs.open(self.pid_file, 'w') as f_pid:
+                with io.open(self.pid_file, 'w') as f_pid:
                     f_pid.write('%s\n' % pid)
             except EnvironmentError as error_message:
                 logger.log_error_and_exit('Unable to write PID file: %s Error: %s [%s]' % (self.pid_file, error_message.strerror, error_message.errno))

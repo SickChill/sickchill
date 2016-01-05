@@ -24,7 +24,7 @@ Custom Logger for SickRage
 
 from __future__ import unicode_literals
 
-import codecs
+import io
 import os
 import re
 import sys
@@ -250,13 +250,13 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             log_data = None
 
             if ek(os.path.isfile, self.log_file):
-                with codecs.open(self.log_file, encoding='utf-8') as log_f:
+                with io.open(self.log_file, encoding='utf-8') as log_f:
                     log_data = log_f.readlines()
 
             for i in range(1, int(sickbeard.LOG_NR)):
                 f_name = '%s.%i' % (self.log_file, i)
                 if ek(os.path.isfile, f_name) and (len(log_data) <= 500):
-                    with codecs.open(f_name, encoding='utf-8') as log_f:
+                    with io.open(f_name, encoding='utf-8') as log_f:
                         log_data += log_f.readlines()
 
             log_data = [line for line in reversed(log_data)]
