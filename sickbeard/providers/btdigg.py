@@ -70,43 +70,47 @@ class BTDIGGProvider(TorrentProvider):
                     logger.log(u"No data returned to be parsed!!!", logger.DEBUG)
                     continue
 
-                for torrent in jdata:
-                    if not torrent['name']:
-                        logger.log(u"Ignoring result since it has no name", logger.DEBUG)
-                        continue
+                try:
 
-                    if torrent['ff']:
-                        logger.log(u"Ignoring result for %s since it's a fake (level = %s)" % (torrent['name'], torrent['ff']), logger.DEBUG)
-                        continue
+                    for torrent in jdata:
+                        if not torrent['name']:
+                            logger.log(u"Ignoring result since it has no name", logger.DEBUG)
+                            continue
+        
+                        if torrent['ff']:
+                            logger.log(u"Ignoring result for %s since it's a fake (level = %s)" % (torrent['name'], torrent['ff']), logger.DEBUG)
+                            continue
+        
+                        if not torrent['files']:
+                            logger.log(u"Ignoring result for %s without files" % torrent['name'], logger.DEBUG)
+                            continue
+        
+                        download_url = torrent['magnet'] + self._custom_trackers if torrent['magnet'] else None
+                        size = _convertSize(torrent['size']) if torrent['size'] else -1
+                        # Provider doesn't provide seeders/leechers
+                        seeders = 1
+                        leechers = 0
+        
+                        if not all([title, download_url]):
+                            continue
+        
+                        # Filter unseeded torrent (Unsupported)
+                        #if seeders < self.minseed or leechers < self.minleech:
+                        #    if mode != 'RSS':
+                        #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                        #    continue
+        
+                        item = title, download_url, size, seeders, leechers
+                        if mode != 'RSS':
+                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+        
+                        items[mode].append(item)
 
-                    if not torrent['files']:
-                        logger.log(u"Ignoring result for %s without files" % torrent['name'], logger.DEBUG)
-                        continue
+                except Exception:
+                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
-                    download_url = torrent['magnet'] + self._custom_trackers
-
-                    if not download_url:
-                        logger.log(u"Ignoring result for %s without a url" % torrent['name'], logger.DEBUG)
-                        continue
-
-                    # FIXME
-                    seeders = 1
-                    leechers = 0
-
-                    # # Filter unseeded torrent (Unsupported)
-                    # if seeders < self.minseed or leechers < self.minleech:
-                    #    if mode != 'RSS':
-                    #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                    #    continue
-
-                    if mode != 'RSS':
-                        logger.log(u"Found result: %s" % torrent['name'], logger.DEBUG)
-
-                    item = torrent['name'], download_url, torrent['size'], seeders, leechers
-                    items[mode].append(item)
-
-            # # For each search mode sort all the items by seeders if available (Unsupported)
-            # items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            # For each search mode sort all the items by seeders if available
+            #items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 
@@ -115,6 +119,21 @@ class BTDIGGProvider(TorrentProvider):
     def seed_ratio(self):
         return self.ratio
 
+    @staticmethod
+    def _convertSize(size):
+        try:
+            modifier = size[-2:].upper()
+            size = float(size[:-2].strip())
+
+            units = ['KB', 'MB', 'GB', 'TB', 'PB']
+            if modifier in units:
+                size *= 1024. ** units.index(modifier)
+            else:
+                raise
+        except Exception:
+            size = -1
+
+        return long(size)
 
 class BTDiggCache(tvcache.TVCache):
     def __init__(self, provider_obj):
