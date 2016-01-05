@@ -118,7 +118,7 @@ class elitetorrentProvider(TorrentProvider):
                                 seeders = seeders_raw if seeders_raw.isnumeric() else 0
                                 leechers = leechers_raw if leechers_raw.isnumeric() else 0
 
-                                # FIXME: Provider does not provide size
+                                # Provider does not provide size
                                 size = 0
 
                             except (AttributeError, TypeError):
