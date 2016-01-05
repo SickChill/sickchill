@@ -109,13 +109,12 @@ class AlphaRatioProvider(TorrentProvider):
                             url = result.find('a', attrs={'title': 'Download'})
 
                             try:
-                                title = link.contents[0]
-                                download_url = self.urls['download'] % (url['href'])
-                                seeders = cells[len(cells) - 2].contents[0]
-                                leechers = cells[len(cells) - 1].contents[0]
-                                # FIXME
-                                size = -1
-                            except (AttributeError, TypeError):
+                                title = link.contents[0] if link.contents[0] else None
+                                download_url = self.urls['download'] % (url['href']) if url['href'] else None
+                                size = self._convertSize(cells[len(cells) - 4].contents[0]) if cells[len(cells) - 4].contents[0] else -1
+                                seeders = cells[len(cells) - 2].contents[0] if cells[len(cells) - 2].contents[0] else 1
+                                leechers = cells[len(cells) - 1].contents[0] if cells[len(cells) - 1].contents[0] else 0
+                            except (AttributeError, TypeError, KeyError, ValueError):
                                 continue
 
                             if not all([title, download_url]):
@@ -145,6 +144,23 @@ class AlphaRatioProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
+
+
+    @staticmethod
+    def _convertSize(size):
+        try:
+            modifier = size[-2:].upper()
+            size = float(size[:-2].strip())
+
+            units = ['KB', 'MB', 'GB', 'TB', 'PB']
+            if modifier in units:
+                size *= 1024. ** units.index(modifier)
+            else:
+                raise
+        except Exception:
+            size = -1
+
+        return long(size)
 
 
 class AlphaRatioCache(tvcache.TVCache):
