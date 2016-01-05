@@ -27,6 +27,8 @@ from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
+from sickrage.helper.common import try_int
+
 
 class elitetorrentProvider(TorrentProvider):
     def __init__(self):
@@ -98,30 +100,26 @@ class elitetorrentProvider(TorrentProvider):
                 try:
                     with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', class_='fichas-listado')
+                        torrent_rows = []
 
-                        if torrent_table is None:
+                        if torrent_table is not None:
+                            torrent_rows = torrent_table.findAll('tr')
+
+                        if not torrent_rows:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
-                            continue
-
-                        torrent_rows = torrent_table.findAll('tr')
-                        if torrent_rows is None:
-                            logger.log(u"Torrent table does not have any rows", logger.DEBUG)
                             continue
 
                         for row in torrent_rows[1:]:
                             try:
-                                seeders_raw = row.find('td', class_='semillas').text
-                                leechers_raw = row.find('td', class_='clientes').text
-
-                                download_url = self.urls['base_url'] + row.findAll('a')[0].get('href', '')
-                                title = self._processTitle(row.findAll('a')[1].text)
-                                seeders = seeders_raw if seeders_raw.isnumeric() else 0
-                                leechers = leechers_raw if leechers_raw.isnumeric() else 0
+                                download_url = self.urls['base_url'] + row.find('a')['href']
+                                title = self._processTitle(row.find('a', class_='nombre')['title'])
+                                seeders = try_int(row.find('td', class_='semillas').get_text(strip=True))
+                                leechers = try_int(row.find('td', class_='clientes').get_text(strip=True))
 
                                 # Provider does not provide size
-                                size = 0
+                                size = -1
 
-                            except (AttributeError, TypeError):
+                            except (AttributeError, TypeError, KeyError, ValueError):
                                 continue
 
                             if not all([title, download_url]):
