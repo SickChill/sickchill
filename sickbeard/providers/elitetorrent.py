@@ -113,13 +113,13 @@ class elitetorrentProvider(TorrentProvider):
                                 seeders_raw = row.find('td', class_='semillas').text
                                 leechers_raw = row.find('td', class_='clientes').text
 
-                                download_url = self.urls['base_url'] + row.findAll('a')[0].get('href', '')
-                                title = self._processTitle(row.findAll('a')[1].text)
-                                seeders = seeders_raw if seeders_raw.isnumeric() else 0
+                                download_url = self.urls['base_url'] + row.findAll('a')[0].get('href', '') if row.findAll('a')[0].get('href', '') else None
+                                title = self._processTitle(row.findAll('a')[1].text) if row.findAll('a')[1].text else None
+                                seeders = seeders_raw if seeders_raw.isnumeric() else 1
                                 leechers = leechers_raw if leechers_raw.isnumeric() else 0
 
                                 # Provider does not provide size
-                                size = 0
+                                size = -1
 
                             except (AttributeError, TypeError):
                                 continue
