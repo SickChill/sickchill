@@ -74,7 +74,7 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                 with BS4Parser(data, 'html5lib') as parser:
                     for item in parser.findAll('item'):
                         try:
-                            title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').get_text(strip=True))
+                            title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').get_text(strip=True)) if item.find('title') else None
                             size = try_int(item.find('size').get_text(strip=True), -1) if item.find('size') else -1
                             seeders = try_int(item.find('seeders').get_text(strip=True)) if item.find('seeders') else 0
                             leechers = try_int(item.find('leechers').get_text(strip=True)) if item.find('leechers') else 0
@@ -84,8 +84,8 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                 download_url = enclosure['url'] if enclosure else item.find('link').next.strip()
                                 download_url = re.sub(r'(.*)/torrent/(.*).html', r'\1/download/\2.torrent', download_url)
                             else:
-                                info_hash = item.find('info_hash').get_text(strip=True)
-                                download_url = "magnet:?xt=urn:btih:" + info_hash + "&dn=" + title + self._custom_trackers
+                                info_hash = item.find('info_hash').get_text(strip=True) if item.find('info_hash') else None
+                                download_url = "magnet:?xt=urn:btih:" + info_hash + "&dn=" + title + self._custom_trackers if info_hash and title else None
 
                             if not all([title, download_url]):
                                 continue
