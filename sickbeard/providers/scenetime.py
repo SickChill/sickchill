@@ -26,6 +26,8 @@ from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
+from sickrage.helper.common import try_int
+
 
 class SceneTimeProvider(TorrentProvider):
 
@@ -89,59 +91,53 @@ class SceneTimeProvider(TorrentProvider):
                 if not data:
                     continue
 
-                try:
-                    with BS4Parser(data, 'html5lib') as html:
-                        torrent_table = html.select("#torrenttable table")
-                        torrent_rows = torrent_table[0].select("tr") if torrent_table else []
+                with BS4Parser(data, 'html5lib') as html:
+                    torrent_table = html.find('div', id="torrenttable")
+                    torrent_rows = []
+                    if torrent_table:
+                        torrent_rows = torrent_table.select("tr")
 
-                        # Continue only if one Release is found
-                        if len(torrent_rows) < 2:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
-                            continue
+                    # Continue only if one Release is found
+                    if len(torrent_rows) < 2:
+                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        continue
 
-                        # Scenetime apparently uses different number of cells in #torrenttable based
-                        # on who you are. This works around that by extracting labels from the first
-                        # <tr> and using their index to find the correct download/seeders/leechers td.
-                        labels = [label.get_text() for label in torrent_rows[0].find_all('td')]
+                    # Scenetime apparently uses different number of cells in #torrenttable based
+                    # on who you are. This works around that by extracting labels from the first
+                    # <tr> and using their index to find the correct download/seeders/leechers td.
+                    labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all('td')]
 
-                        for result in torrent_rows[1:]:
+                    for result in torrent_rows[1:]:
+                        try:
                             cells = result.find_all('td')
 
                             link = cells[labels.index('Name')].find('a')
+                            torrent_id = link['href'].replace('details.php?id=', '').split("&")[0]
 
-                            full_id = link['href'].replace('details.php?id=', '')
-                            torrent_id = full_id.split("&")[0]
+                            title = link.get_text(strip=True)
+                            download_url = self.urls['download'] % (torrent_id, "%s.torrent" % title.replace(" ", "."))
 
-                            try:
-                                title = link.contents[0].get_text()
-                                filename = "%s.torrent" % title.replace(" ", ".")
-                                download_url = self.urls['download'] % (torrent_id, filename)
+                            seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
+                            leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
+                            size = self._convertSize(cells[labels.index('Size')].get_text(strip=True))
 
-                                seeders = int(cells[labels.index('Seeders')].get_text())
-                                leechers = int(cells[labels.index('Leechers')].get_text())
-                                # FIXME
-                                size = -1
+                        except (AttributeError, TypeError, KeyError, ValueError):
+                            continue
 
-                            except (AttributeError, TypeError):
-                                continue
+                        if not all([title, download_url]):
+                            continue
 
-                            if not all([title, download_url]):
-                                continue
-
-                            # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                continue
-
-                            item = title, download_url, size, seeders, leechers
+                        # Filter unseeded torrent
+                        if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            continue
 
-                            items[mode].append(item)
+                        item = title, download_url, size, seeders, leechers
+                        if mode != 'RSS':
+                            logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                except Exception as e:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                        items[mode].append(item)
 
             # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
@@ -153,6 +149,26 @@ class SceneTimeProvider(TorrentProvider):
     def seed_ratio(self):
         return self.ratio
 
+    @staticmethod
+    def _convertSize(size):
+        modifier = size[-2:].upper()
+        size = size[:-2].strip()
+        try:
+            size = float(size)
+            if modifier in 'KB':
+                size *= 1024 ** 1
+            elif modifier in 'MB':
+                size *= 1024 ** 2
+            elif modifier in 'GB':
+                size *= 1024 ** 3
+            elif modifier in 'TB':
+                size *= 1024 ** 4
+            else:
+                raise
+        except Exception:
+            size = -1
+
+        return long(size)
 
 class SceneTimeCache(tvcache.TVCache):
     def __init__(self, provider_obj):
