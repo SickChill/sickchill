@@ -120,7 +120,7 @@ class newpctProvider(TorrentProvider):
                                 size = self._convertSize(torrent_size.text)
                                 title = self._processTitle(torrent_row.get('title', ''))
 
-                                # FIXME: Provider does not provide seeders/leechers
+                                # Provider does not provide seeders/leechers
                                 seeders = 1
                                 leechers = 0
 
