@@ -18,13 +18,14 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import traceback
 import urllib
 
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+
+from sickrage.helper.common import try_int
 
 
 class TorrentLeechProvider(TorrentProvider):
@@ -95,47 +96,44 @@ class TorrentLeechProvider(TorrentProvider):
                 if not data:
                     continue
 
-                try:
-                    with BS4Parser(data, 'html5lib') as html:
-                        torrent_table = html.find('table', attrs={'id': 'torrenttable'})
-                        torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+                with BS4Parser(data, 'html5lib') as html:
+                    torrent_table = html.find('table', id='torrenttable')
+                    torrent_rows = []
+                    if torrent_table:
+                        torrent_rows = torrent_table.find_all('tr')
 
-                        # Continue only if one Release is found
-                        if len(torrent_rows) < 2:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                    # Continue only if one Release is found
+                    if len(torrent_rows) < 2:
+                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        continue
+
+                    labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all('td')]
+                    for result in torrent_rows[1:]:
+                        try:
+                            title = result.find('td', class_='name').find('a').get_text(strip=True)
+                            download_url = self.urls['download'] % \
+                                result.find('td', class_='quickdownload').find('a')['href']
+
+                            seeders = try_int(result.find('td', class_='seeders').get_text(strip=True))
+                            leechers = try_int(result.find('td', class_='leechers').get_text(strip=True))
+                            size = self._convertSize(result.find_all('td')[labels.indexof('Size')].get_text(strip=True))
+                        except (AttributeError, TypeError, KeyError, ValueError):
                             continue
 
-                        for result in torrent_table.find_all('tr')[1:]:
+                        if not all([title, download_url]):
+                            continue
 
-                            try:
-                                link = result.find('td', attrs={'class': 'name'}).find('a')
-                                url = result.find('td', attrs={'class': 'quickdownload'}).find('a')
-                                title = link.string
-                                download_url = self.urls['download'] % url['href']
-                                seeders = int(result.find('td', attrs={'class': 'seeders'}).string)
-                                leechers = int(result.find('td', attrs={'class': 'leechers'}).string)
-                                # FIXME
-                                size = -1
-                            except (AttributeError, TypeError):
-                                continue
-
-                            if not all([title, download_url]):
-                                continue
-
-                            # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                continue
-
-                            item = title, download_url, size, seeders, leechers
+                        # Filter unseeded torrent
+                        if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            continue
 
-                            items[mode].append(item)
+                        item = title, download_url, size, seeders, leechers
+                        if mode != 'RSS':
+                            logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                except Exception as e:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                        items[mode].append(item)
 
             # For each search mode sort all the items by seeders if available
             items[mode].sort(key=lambda tup: tup[3], reverse=True)
@@ -147,6 +145,26 @@ class TorrentLeechProvider(TorrentProvider):
     def seed_ratio(self):
         return self.ratio
 
+    @staticmethod
+    def _convertSize(size):
+        modifier = size[-2:].upper()
+        size = size[:-2].strip()
+        try:
+            size = float(size)
+            if modifier in 'KB':
+                size = size * 1024 ** 1
+            elif modifier in 'MB':
+                size = size * 1024 ** 2
+            elif modifier in 'GB':
+                size = size * 1024 ** 3
+            elif modifier in 'TB':
+                size = size * 1024**4
+            else:
+                raise
+        except Exception:
+            size = -1
+
+        return long(size)
 
 class TorrentLeechCache(tvcache.TVCache):
     def __init__(self, provider_obj):

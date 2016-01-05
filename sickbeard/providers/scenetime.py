@@ -19,7 +19,6 @@
 
 import re
 import urllib
-import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
