@@ -114,8 +114,7 @@ class TorrentLeechProvider(TorrentProvider):
                                 download_url = self.urls['download'] % url['href']
                                 seeders = int(result.find('td', attrs={'class': 'seeders'}).string)
                                 leechers = int(result.find('td', attrs={'class': 'leechers'}).string)
-                                # FIXME
-                                size = -1
+                                size = self._convertSize(result.find_all('td')[4].get_text())
                             except (AttributeError, TypeError):
                                 continue
 
@@ -147,6 +146,20 @@ class TorrentLeechProvider(TorrentProvider):
     def seed_ratio(self):
         return self.ratio
 
+
+    def _convertSize(self, sizeString):
+        size = sizeString[:-2]
+        modifier = sizeString[-2:]
+        size = float(size)
+        if modifier in 'KB':
+            size = size * 1024
+        elif modifier in 'MB':
+            size = size * 1024**2
+        elif modifier in 'GB':
+            size = size * 1024**3
+        elif modifier in 'TB':
+            size = size * 1024**4
+        return int(size)
 
 class TorrentLeechCache(tvcache.TVCache):
     def __init__(self, provider_obj):
