@@ -214,7 +214,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         gh_org = sickbeard.GIT_ORG or 'SickRage'
         gh_repo = 'sickrage-issues'
 
-        gh = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD, user_agent="SiCKRAGE")
+        gh = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD, user_agent="SickRage")
 
         try:
             # read log file

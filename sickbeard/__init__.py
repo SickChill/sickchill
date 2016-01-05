@@ -683,9 +683,9 @@ def initialize(consoleLogging=True):
         # github api
         try:
             if not (GIT_USERNAME and GIT_PASSWORD):
-                gh = Github(user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
+                gh = Github(user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
             else:
-                gh = Github(login_or_token=GIT_USERNAME, password=GIT_PASSWORD, user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
+                gh = Github(login_or_token=GIT_USERNAME, password=GIT_PASSWORD, user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
         except Exception as e:
             gh = None
             logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: %s' % str(e), logger.WARNING)
