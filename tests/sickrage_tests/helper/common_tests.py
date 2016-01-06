@@ -34,7 +34,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 import sickbeard
 from sickrage.helper.common import http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size
-from sickrage.helper.common import remove_extension, replace_extension, sanitize_filename, try_int
+from sickrage.helper.common import remove_extension, replace_extension, sanitize_filename, try_int, convert_size
 
 
 class CommonTests(unittest.TestCase):
@@ -397,6 +397,21 @@ class CommonTests(unittest.TestCase):
             for (candidate, result) in test.iteritems():
                 self.assertEqual(try_int(candidate, default_value), result)
 
+    def test_convert_size(self):
+        self.assertEqual(convert_size('1 B'), 1)
+        self.assertEqual(convert_size('1 KB'), 1024)
+        self.assertEqual(convert_size('elephant', 'frog'), 'frog')
+        self.assertEqual(convert_size(100, -1), 100)
+        self.assertEqual(convert_size(1.312, -1), 1)
+        self.assertEqual(convert_size(None, -1), -1)
+        self.assertEqual(convert_size(0, -1), 0)
+        self.assertEqual(convert_size(None) or -1, -1)
+        self.assertEqual(convert_size('1 kb', use_decimal=True), 1000)  # Wrong units so result is None
+
+        french_units = ['O', 'KO', 'MO', 'GO', 'TO', 'PO']
+        self.assertEqual(convert_size('1 o', units=french_units), 1)
+        self.assertEqual(convert_size('1 o'), None)  # Wrong units so result is None
+        self.assertEqual(convert_size('1 go', use_decimal=True, units=french_units), 1000000000)  # Wrong units so result is None
 
 if __name__ == '__main__':
     print('=====> Testing %s' % __file__)
