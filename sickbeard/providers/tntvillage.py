@@ -336,8 +336,8 @@ class TNTVillageProvider(TorrentProvider):
                                     leechers = int(leechers.strip('[]'))
                                     seeders = result.find_all('td')[3].find_all('td')[2].text
                                     seeders = int(seeders.strip('[]'))
-                                    # FIXME
-                                    size = -1
+                                    size = result.find_all('td')[3].find_all('td')[3].text
+                                    size = self._convertSize(str(size.strip('[]')) + " GB")
                                 except (AttributeError, TypeError):
                                     continue
 
@@ -399,6 +399,21 @@ class TNTVillageProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
+
+
+    @staticmethod
+    def _convertSize(size):
+        size, modifier = size.split(' ')
+        size = float(size)
+        if modifier in 'KB':
+            size = size * 1024
+        elif modifier in 'MB':
+            size = size * 1024**2
+        elif modifier in 'GB':
+            size = size * 1024**3
+        elif modifier in 'TB':
+            size = size * 1024**4
+        return int(size)
 
 
 class TNTVillageCache(tvcache.TVCache):
