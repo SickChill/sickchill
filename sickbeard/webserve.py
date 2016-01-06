@@ -803,6 +803,15 @@ class Home(WebRoot):
             return "Problem sending SMS: " + message
 
     @staticmethod
+    def testTelegram(telegram_id=None, telegram_apikey=None):
+
+        result, message = notifiers.telegram_notifier.test_notify(telegram_id, telegram_apikey)
+        if result:
+            return "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
+        else:
+            return "Error sending Telegram notification: " + message
+
+    @staticmethod
     def testGrowl(host=None, password=None):
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
@@ -4752,6 +4761,8 @@ class ConfigNotifications(Config):
                           growl_notify_onsubtitledownload=None, growl_host=None, growl_password=None,
                           use_freemobile=None, freemobile_notify_onsnatch=None, freemobile_notify_ondownload=None,
                           freemobile_notify_onsubtitledownload=None, freemobile_id=None, freemobile_apikey=None,
+                          use_telegram=None, telegram_notify_onsnatch=None, telegram_notify_ondownload=None,
+                          telegram_notify_onsubtitledownload=None, telegram_id=None, telegram_apikey=None,
                           use_prowl=None, prowl_notify_onsnatch=None, prowl_notify_ondownload=None,
                           prowl_notify_onsubtitledownload=None, prowl_api=None, prowl_priority=0,
                           prowl_show_list=None, prowl_show=None, prowl_message_title=None,
@@ -4832,6 +4843,13 @@ class ConfigNotifications(Config):
         sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(freemobile_notify_onsubtitledownload)
         sickbeard.FREEMOBILE_ID = freemobile_id
         sickbeard.FREEMOBILE_APIKEY = freemobile_apikey
+
+        sickbeard.USE_TELEGRAM = config.checkbox_to_value(use_telegram)
+        sickbeard.TELEGRAM_NOTIFY_ONSNATCH = config.checkbox_to_value(telegram_notify_onsnatch)
+        sickbeard.TELEGRAM_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(telegram_notify_ondownload)
+        sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(telegram_notify_onsubtitledownload)
+        sickbeard.TELEGRAM_ID = telegram_id
+        sickbeard.TELEGRAM_APIKEY = telegram_apikey
 
         sickbeard.USE_PROWL = config.checkbox_to_value(use_prowl)
         sickbeard.PROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(prowl_notify_onsnatch)

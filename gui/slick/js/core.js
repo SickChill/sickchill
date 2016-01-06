@@ -700,6 +700,36 @@ var SICKRAGE = {
                 });
             });
 
+            $('#testTelegram').on('click', function () {
+                var telegram = {};
+                telegram.id = $.trim($('#telegram_id').val());
+                telegram.apikey = $.trim($('#telegram_apikey').val());
+                if (!telegram.id || !telegram.apikey) {
+                    $('#testTelegram-result').html('Please fill out the necessary fields above.');
+                    if (!telegram.id) {
+                        $('#telegram_id').addClass('warning');
+                    } else {
+                        $('#telegram_id').removeClass('warning');
+                    }
+                    if (!telegram.apikey) {
+                        $('#telegram_apikey').addClass('warning');
+                    } else {
+                        $('#telegram_apikey').removeClass('warning');
+                    }
+                    return;
+                }
+                $('#telegram_id,#telegram_apikey').removeClass('warning');
+                $(this).prop('disabled', true);
+                $('#testTelegram-result').html(loading);
+                $.get(srRoot + '/home/testTelegram', {
+                    'telegram_id': telegram.id,
+                    'telegram_apikey': telegram.apikey
+                }).done(function (data) {
+                    $('#testTelegram-result').html(data);
+                    $('#testTelegram').prop('disabled', false);
+                });
+            });
+
             $('#TraktGetPin').on('click', function () {
                 window.open($('#trakt_pin_url').val(), "popUp", "toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=550");
                 $('#trakt_pin').removeClass('hide');

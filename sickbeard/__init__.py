@@ -374,6 +374,13 @@ FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = False
 FREEMOBILE_ID = ''
 FREEMOBILE_APIKEY = ''
 
+USE_TELEGRAM = False
+TELEGRAM_NOTIFY_ONSNATCH = False
+TELEGRAM_NOTIFY_ONDOWNLOAD = False
+TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = False
+TELEGRAM_ID = ''
+TELEGRAM_APIKEY = ''
+
 USE_PROWL = False
 PROWL_NOTIFY_ONSNATCH = False
 PROWL_NOTIFY_ONDOWNLOAD = False
@@ -593,6 +600,7 @@ def initialize(consoleLogging=True):
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, \
+            USE_TELEGRAM, TELEGRAM_ID, TELEGRAM_APIKEY, TELEGRAM_NOTIFY_ONSNATCH, TELEGRAM_NOTIFY_ONDOWNLOAD, TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_GROWL, GROWL_HOST, GROWL_PASSWORD, USE_PROWL, PROWL_NOTIFY_ONSNATCH, PROWL_NOTIFY_ONDOWNLOAD, PROWL_NOTIFY_ONSUBTITLEDOWNLOAD, PROWL_API, PROWL_PRIORITY, PROWL_MESSAGE_TITLE, \
             USE_PYTIVO, PYTIVO_NOTIFY_ONSNATCH, PYTIVO_NOTIFY_ONDOWNLOAD, PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD, PYTIVO_UPDATE_LIBRARY, PYTIVO_HOST, PYTIVO_SHARE_NAME, PYTIVO_TIVO_NAME, \
             USE_NMA, NMA_NOTIFY_ONSNATCH, NMA_NOTIFY_ONDOWNLOAD, NMA_NOTIFY_ONSUBTITLEDOWNLOAD, NMA_API, NMA_PRIORITY, \
@@ -1020,6 +1028,13 @@ def initialize(consoleLogging=True):
         FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'FreeMobile', 'freemobile_notify_onsubtitledownload', 0))
         FREEMOBILE_ID = check_setting_str(CFG, 'FreeMobile', 'freemobile_id', '')
         FREEMOBILE_APIKEY = check_setting_str(CFG, 'FreeMobile', 'freemobile_apikey', '')
+
+        USE_TELEGRAM = bool(check_setting_int(CFG, 'Telegram', 'use_telegram', 0))
+        TELEGRAM_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Telegram', 'telegram_notify_onsnatch', 0))
+        TELEGRAM_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Telegram', 'telegram_notify_ondownload', 0))
+        TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'Telegram', 'telegram_notify_onsubtitledownload', 0))
+        TELEGRAM_ID = check_setting_str(CFG, 'Telegram', 'telegram_id', '')
+        TELEGRAM_APIKEY = check_setting_str(CFG, 'Telegram', 'telegram_apikey', '')
 
         USE_PROWL = bool(check_setting_int(CFG, 'Prowl', 'use_prowl', 0))
         PROWL_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Prowl', 'prowl_notify_onsnatch', 0))
@@ -1929,6 +1944,14 @@ def save_config():
     new_config['FreeMobile']['freemobile_notify_onsubtitledownload'] = int(FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD)
     new_config['FreeMobile']['freemobile_id'] = FREEMOBILE_ID
     new_config['FreeMobile']['freemobile_apikey'] = FREEMOBILE_APIKEY
+
+    new_config['Telegram'] = {}
+    new_config['Telegram']['use_telegram'] = int(USE_TELEGRAM)
+    new_config['Telegram']['telegram_notify_onsnatch'] = int(TELEGRAM_NOTIFY_ONSNATCH)
+    new_config['Telegram']['telegram_notify_ondownload'] = int(TELEGRAM_NOTIFY_ONDOWNLOAD)
+    new_config['Telegram']['telegram_notify_onsubtitledownload'] = int(TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD)
+    new_config['Telegram']['telegram_id'] = TELEGRAM_ID
+    new_config['Telegram']['telegram_apikey'] = TELEGRAM_APIKEY
 
     new_config['Prowl'] = {}
     new_config['Prowl']['use_prowl'] = int(USE_PROWL)
