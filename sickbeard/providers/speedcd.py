@@ -105,8 +105,7 @@ class SpeedCDProvider(TorrentProvider):
                     download_url = self.urls['download'] % (torrent['id'])
                     seeders = int(torrent['seed'])
                     leechers = int(torrent['leech'])
-                    # FIXME
-                    size = -1
+                    size = self._convertSize(torrent['size'])
 
                     if not all([title, download_url]):
                         continue
@@ -132,6 +131,27 @@ class SpeedCDProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
+
+    @staticmethod
+    def _convertSize(size):
+        modifier = size[-2:].upper()
+        size = size[:-2].strip()
+        try:
+            size = float(size)
+            if modifier in 'KB':
+                size *= 1024 ** 1
+            elif modifier in 'MB':
+                size *= 1024 ** 2
+            elif modifier in 'GB':
+                size *= 1024 ** 3
+            elif modifier in 'TB':
+                size *= 1024 ** 4
+            else:
+                raise
+        except Exception:
+            size = -1
+
+        return long(size)
 
 
 class SpeedCDCache(tvcache.TVCache):
