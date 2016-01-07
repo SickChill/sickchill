@@ -632,14 +632,14 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         # for now lets assume that any episode in the show dir belongs to that show
         season = parse_result.season_number
         episodes = [ep for ep in parse_result.episode_numbers if ep is not None]
-        absolute_numbers = [ep for ep in parse_result.ab_episode_numbers is not None]
+        absolute_numbers = [ep for ep in parse_result.ab_episode_numbers if ep is not None]
 
         is_absolute = len(absolute_numbers) > 0
 
         if season is None and not is_absolute:
             season = 1
 
-        if episodes + absolute_numbers:
+        if not episodes + absolute_numbers:
             logger.log(u"parse_result: " + str(parse_result))
             logger.log(u"No episode number found in " + file + ", ignoring it", logger.WARNING)
             return None
