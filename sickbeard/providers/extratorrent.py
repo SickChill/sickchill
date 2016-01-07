@@ -22,7 +22,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -74,9 +74,10 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     for item in parser.findAll('item'):
                         try:
                             title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').get_text(strip=True))
-                            size = try_int(item.find('size').get_text(strip=True), -1)
                             seeders = try_int(item.find('seeders').get_text(strip=True))
                             leechers = try_int(item.find('leechers').get_text(strip=True))
+                            torrent_size = item.find('size').get_text()
+                            size = convert_size(torrent_size) or -1
 
                             if sickbeard.TORRENT_METHOD == 'blackhole':
                                 enclosure = item.find('enclosure')  # Backlog doesnt have enclosure
