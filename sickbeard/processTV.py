@@ -267,14 +267,16 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                     if process_method != u"move" or not result.result or (proc_type == u"manual" and not delete_on):
                         continue
 
-                    delete_files(processPath, notwantedFiles, result)
+                # These need done regardless what part of the above `if` is executed.
+                delete_files(processPath, notwantedFiles, result)
+                delete_folder(ek(os.path.join, processPath, u'@eaDir'))
+                if all([not sickbeard.NO_DELETE or proc_type == u"manual",
+                        process_method == u"move",
+                        ek(os.path.normpath, processPath) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]
+                       ):
+                    if delete_folder(processPath, check_empty=True):
+                        result.output += logHelper(u"Deleted folder: %s" % processPath, logger.DEBUG)
 
-                    if all([not sickbeard.NO_DELETE or proc_type == u"manual",
-                            process_method == u"move",
-                            ek(os.path.normpath, processPath) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]
-                           ):
-                        if delete_folder(processPath, check_empty=True):
-                            result.output += logHelper(u"Deleted folder: %s" % processPath, logger.DEBUG)
             else:
                 result.output += logHelper(u"Found temporary sync files: %s in path: %s" % (SyncFiles, processPath))
                 result.output += logHelper(u"Skipping post processing for folder: %s" % processPath)
