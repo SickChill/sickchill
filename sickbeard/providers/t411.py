@@ -24,6 +24,7 @@ from requests.auth import AuthBase
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -123,10 +124,11 @@ class T411Provider(TorrentProvider):
                                 if not all([title, download_url]):
                                     continue
 
-                                size = int(torrent['size'])
                                 seeders = int(torrent['seeders'])
                                 leechers = int(torrent['leechers'])
                                 verified = bool(torrent['isVerified'])
+                                torrent_size = torrent['size']
+                                size = convert_size(torrent_size) or -1
 
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
