@@ -22,7 +22,7 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.exceptions import AuthException
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -136,7 +136,9 @@ class TransmitTheNetProvider(TorrentProvider):
                             if not title:
                                 title = torrent_row.find('a', onmouseout='return nd();').string
                                 title = title.replace("[", "").replace("]", "").replace("/ ", "")
-                            size = try_int(temp_anchor['data-filesize'])
+
+                            torrent_size = temp_anchor['data-filesize']
+                            size = convert_size(torrent_size) or -1
 
                             temp_anchor = torrent_row.find('span', class_='time').parent.find_next_sibling()
                             seeders = try_int(temp_anchor.text.strip())

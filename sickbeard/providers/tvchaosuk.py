@@ -23,6 +23,7 @@ from sickbeard import tvcache
 from sickbeard import show_name_helpers
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -180,10 +181,8 @@ class TVChaosUKProvider(TorrentProvider):
 
                             # Strip year from the end or we can't parse it!
                             title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
-                            torrent_size = cells[4].getText().strip()
-                            size = -1
-                            if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
-                                size = self._convertSize(torrent_size.rstrip())
+                            torrent_size = cells[4].getText()
+                            size = convert_size(torrent_size) or -1
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
@@ -202,23 +201,6 @@ class TVChaosUKProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
-
-    def _convertSize(self, sizeString):
-        size = sizeString[:-2].strip()
-        modifier = sizeString[-2:].upper()
-        try:
-            size = float(size)
-            if modifier in 'KB':
-                size *= 1024 ** 1
-            elif modifier in 'MB':
-                size *= 1024 ** 2
-            elif modifier in 'GB':
-                size *= 1024 ** 3
-            elif modifier in 'TB':
-                size *= 1024 ** 4
-        except Exception:
-            size = -1
-        return long(size)
 
 
 class TVChaosUKCache(tvcache.TVCache):

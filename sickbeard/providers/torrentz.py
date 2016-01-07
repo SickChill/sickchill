@@ -24,6 +24,7 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -85,7 +86,8 @@ class TORRENTZProvider(TorrentProvider):
 
                             # TODO: Add method to generic provider for building magnet from hash.
                             download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + self._custom_trackers
-                            size, seeders, leechers = self._split_description(item.find('description').text)
+                            torrent_size, seeders, leechers = self._split_description(item.find('description').text)
+                            size = convert_size(torrent_size) or -1
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:

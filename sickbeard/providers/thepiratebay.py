@@ -23,6 +23,7 @@ from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -94,9 +95,12 @@ class ThePirateBayProvider(TorrentProvider):
                     title = torrent.group('title')
                     download_url = torrent.group('url')
                     # id = int(torrent.group('id'))
-                    size = self._convertSize(torrent.group('size'))
+
                     seeders = int(torrent.group('seeders'))
                     leechers = int(torrent.group('leechers'))
+                    torrent_size = torrent.group('size')
+
+                    size = convert_size(torrent_size) or -1
 
                     if not all([title, download_url]):
                         continue
@@ -125,19 +129,6 @@ class ThePirateBayProvider(TorrentProvider):
             results += items[mode]
 
         return results
-
-    def _convertSize(self, size):
-        size, modifier = size.split('&nbsp;')
-        size = float(size)
-        if modifier in 'KiB':
-            size *= 1024 ** 1
-        elif modifier in 'MiB':
-            size *= 1024 ** 2
-        elif modifier in 'GiB':
-            size *= 1024 ** 3
-        elif modifier in 'TiB':
-            size *= 1024 ** 4
-        return long(size)
 
     def seed_ratio(self):
         return self.ratio

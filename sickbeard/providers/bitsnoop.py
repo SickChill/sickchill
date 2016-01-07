@@ -92,9 +92,10 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                             if not (title and download_url):
                                 continue
 
-                            seeders = try_int(item.find('numseeders').text, 0)
-                            leechers = try_int(item.find('numleechers').text, 0)
-                            size = try_int(item.find('size').text, -1)
+                            seeders = try_int(item.find('numseeders').text)
+                            leechers = try_int(item.find('numleechers').text)
+                            torrent_size = item.find('size').text
+                            size = convert_size(torrent_size) or -1
 
                             info_hash = item.find('infohash').text
 

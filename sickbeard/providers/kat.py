@@ -26,7 +26,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -114,10 +114,11 @@ class KATProvider(TorrentProvider):
                             if not (title and download_url):
                                 continue
 
-                            seeders = try_int(item.find('torrent:seeds').text, 0)
-                            leechers = try_int(item.find('torrent:peers').text, 0)
-                            verified = bool(try_int(item.find('torrent:verified').text, 0))
-                            size = try_int(item.find('torrent:contentlength').text)
+                            seeders = try_int(item.find('torrent:seeds').text)
+                            leechers = try_int(item.find('torrent:peers').text)
+                            verified = bool(try_int(item.find('torrent:verified').text))
+                            torrent_size = item.find('torrent:contentlength').text
+                            size = convert_size(torrent_size) or -1
 
                             info_hash = item.find('torrent:infohash').text
                             # link = item['link']

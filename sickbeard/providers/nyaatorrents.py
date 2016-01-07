@@ -22,6 +22,7 @@ import re
 
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -80,8 +81,8 @@ class NyaaProvider(TorrentProvider):
                     if not all([title, download_url]):
                         continue
 
-                    seeders, leechers, size, verified = s.findall(curItem['summary'])[0]
-                    size = self._convertSize(size)
+                    seeders, leechers, torrent_size, verified = s.findall(curItem['summary'])[0]
+                    size = convert_size(torrent_size) or -1
 
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
@@ -105,20 +106,6 @@ class NyaaProvider(TorrentProvider):
             results += items[mode]
 
         return results
-
-    @staticmethod
-    def _convertSize(size):
-        size, modifier = size.split(' ')
-        size = float(size)
-        if modifier in 'KiB':
-            size *= 1024 ** 1
-        elif modifier in 'MiB':
-            size *= 1024 ** 2
-        elif modifier in 'GiB':
-            size *= 1024 ** 3
-        elif modifier in 'TiB':
-            size *= 1024 ** 4
-        return long(size)
 
     def seed_ratio(self):
         return self.ratio

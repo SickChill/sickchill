@@ -21,7 +21,7 @@ from bs4 import BeautifulSoup
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -97,7 +97,10 @@ class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance
                                 description = item.find('description').text.partition(',')
                                 seeders = try_int(description[0].lstrip('Seeds: ').strip())
                                 leechers = try_int(description[2].lstrip('Leechers ').strip())
-                            size = try_int(item.find('size').text, -1)
+
+                            torrent_size = item.find('size').text
+
+                            size = convert_size(torrent_size) or -1
 
                         except (AttributeError, TypeError, KeyError, ValueError):
                             continue

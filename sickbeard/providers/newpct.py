@@ -27,6 +27,7 @@ from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -113,17 +114,18 @@ class newpctProvider(TorrentProvider):
 
                         for row in torrent_table[:-1]:
                             try:
-                                torrent_size = row.findAll('td')[2]
                                 torrent_row = row.findAll('a')[0]
 
                                 download_url = torrent_row.get('href', '')
-                                size = self._convertSize(torrent_size.text)
+
                                 title = self._processTitle(torrent_row.get('title', ''))
 
                                 # Provider does not provide seeders/leechers
                                 seeders = 1
                                 leechers = 0
+                                torrent_size = row.findAll('td')[2].text
 
+                                size = convert_size(torrent_size) or -1
                             except (AttributeError, TypeError):
                                 continue
 
@@ -199,19 +201,6 @@ class newpctProvider(TorrentProvider):
 
         return False
 
-    @staticmethod
-    def _convertSize(size):
-        size, modifier = size.split(' ')
-        size = float(size)
-        if modifier in 'KB':
-            size *= 1024 ** 1
-        elif modifier in 'MB':
-            size *= 1024 ** 2
-        elif modifier in 'GB':
-            size *= 1024 ** 3
-        elif modifier in 'TB':
-            size *= 1024 ** 4
-        return long(size)
 
     @staticmethod
     def _processTitle(title):

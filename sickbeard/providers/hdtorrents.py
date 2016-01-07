@@ -25,7 +25,7 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
 
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -152,7 +152,9 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             title = cells[labels.index(u'Filename')].a.get_text(strip=True)
                             seeders = try_int(cells[labels.index(u'S')].get_text(strip=True))
                             leechers = try_int(cells[labels.index(u'L')].get_text(strip=True))
-                            size = self._convertSize(cells[labels.index(u'Size')].get_text(strip=True))
+                            torrent_size = cells[labels.index(u'Size')].get_text()
+
+                            size = convert_size(torrent_size) or -1
                             download_url = self.url + '/' + cells[labels.index(u'Dl')].a['href']
                         except (AttributeError, TypeError, KeyError, ValueError, IndexError):
                             continue
@@ -181,22 +183,6 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def seed_ratio(self):
         return self.ratio
-
-    @staticmethod
-    def _convertSize(size):
-        try:
-            modifier = size[-2:].upper()
-            size = float(size[:-2].strip())
-
-            units = ['KB', 'MB', 'GB', 'TB', 'PB']
-            if modifier in units:
-                size *= 1024. ** units.index(modifier)
-            else:
-                raise
-        except Exception:
-            size = -1
-
-        return long(size)
 
 
 class HDTorrentsCache(tvcache.TVCache):

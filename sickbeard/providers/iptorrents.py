@@ -21,6 +21,7 @@ import re
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -127,9 +128,10 @@ class IPTorrentsProvider(TorrentProvider):
                             try:
                                 title = result.find_all('td')[1].find('a').text
                                 download_url = self.urls['base_url'] + result.find_all('td')[3].find('a')['href']
-                                size = self._convertSize(result.find_all('td')[5].text)
                                 seeders = int(result.find('td', attrs={'class': 'ac t_seeders'}).text)
                                 leechers = int(result.find('td', attrs={'class': 'ac t_leechers'}).text)
+                                torrent_size = result.find_all('td')[5].text
+                                size = convert_size(torrent_size) or -1
                             except (AttributeError, TypeError, KeyError):
                                 continue
 
@@ -160,20 +162,6 @@ class IPTorrentsProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
-
-    @staticmethod
-    def _convertSize(size):
-        size, modifier = size.split(' ')
-        size = float(size)
-        if modifier in 'KB':
-            size *= 1024 ** 1
-        elif modifier in 'MB':
-            size *= 1024 ** 2
-        elif modifier in 'GB':
-            size *= 1024 ** 3
-        elif modifier in 'TB':
-            size *= 1024 ** 4
-        return long(size)
 
 
 class IPTorrentsCache(tvcache.TVCache):

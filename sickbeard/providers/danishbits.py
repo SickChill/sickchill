@@ -20,10 +20,10 @@
 import traceback
 import urllib
 import time
-import re
 
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 from sickbeard.bs4_parser import BS4Parser
@@ -146,7 +146,9 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             download_url = self.urls['base_url'] + result.find('span', attrs={'class': 'right'}).find('a')['href']
                             seeders = int(result.find_all('td')[6].text)
                             leechers = int(result.find_all('td')[7].text)
-                            size = self._convertSize(result.find_all('td')[2].text)
+                            torrent_size = result.find_all('td')[2].text
+
+                            size = convert_size(torrent_size) or -1
                             freeleech = result.find('span', class_='freeleech')
                             # except (AttributeError, TypeError, KeyError):
                             #     logger.log(u"attrErr: {0}, tErr: {1}, kErr: {2}".format(AttributeError, TypeError, KeyError), logger.DEBUG)
@@ -179,26 +181,6 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             results += items[mode]
 
         return results
-
-    @staticmethod
-    def _convertSize(size):
-        regex = re.compile(r'(.+?\w{2})\d+ file\w')
-        m = regex.match(size)
-        size = m.group(1)
-
-        size, modifier = size[:-2], size[-2:]
-        size = size.replace(',', '')  # strip commas from comma separated values
-
-        size = float(size)
-        if modifier in 'KB':
-            size *= 1024 ** 1
-        elif modifier in 'MB':
-            size *= 1024 ** 2
-        elif modifier in 'GB':
-            size *= 1024 ** 3
-        elif modifier in 'TB':
-            size *= 1024 ** 4
-        return long(size)
 
     def seedRatio(self):
         return self.ratio
