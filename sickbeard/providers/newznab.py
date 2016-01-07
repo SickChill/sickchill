@@ -25,6 +25,7 @@ import os
 import re
 import urllib
 import datetime
+import time
 from bs4 import BeautifulSoup
 
 import sickbeard
@@ -40,6 +41,7 @@ from sickrage.show.Show import Show
 from sickrage.helper.common import try_int, convert_size
 # from sickbeard.common import USER_AGENT
 from sickrage.providers.nzb.NZBProvider import NZBProvider
+from sickbeard.common  import cpu_presets
 
 
 class NewznabProvider(NZBProvider):
@@ -332,6 +334,7 @@ class NewznabProvider(NZBProvider):
         search_url = ek(os.path.join, self.url, 'api?') + urllib.urlencode(params)
         logger.log(u"Search url: %s" % search_url, logger.DEBUG)
         data = self.get_url(search_url)
+        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
         if not data:
             return results
 
