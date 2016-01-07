@@ -21,7 +21,7 @@ import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -80,9 +80,11 @@ class CpasbienProvider(TorrentProvider):
                                 title = torrent.find(class_="titre").get_text(strip=True).replace("HDTV", "HDTV x264-CPasBien")
                                 tmp = torrent.find("a")['href'].split('/')[-1].replace('.html', '.torrent').strip()
                                 download_url = (self.url + '/telechargement/%s' % tmp)
-                                size = self._convertSize(torrent.find(class_="poid").get_text(strip=True))
                                 seeders = try_int(torrent.find(class_="up").get_text(strip=True))
                                 leechers = try_int(torrent.find(class_="down").get_text(strip=True))
+                                torrent_size = torrent.find(class_="poid").get_text()
+
+                                size = convert_size(torrent_size) or -1
                             except (AttributeError, TypeError, KeyError, IndexError):
                                 continue
 
@@ -113,27 +115,6 @@ class CpasbienProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
-
-    @staticmethod
-    def _convertSize(sizeString):
-        size = sizeString[:-2].strip()
-        modifier = sizeString[-2:].upper()
-        try:
-            size = float(size)
-            if modifier in 'KO':
-                size *= 1024 ** 1
-            elif modifier in 'MO':
-                size *= 1024 ** 2
-            elif modifier in 'GO':
-                size *= 1024 ** 3
-            elif modifier in 'TO':
-                size *= 1024 ** 4
-            else:
-                raise
-        except Exception:
-            size = -1
-
-        return long(size)
 
 
 class CpasbienCache(tvcache.TVCache):
