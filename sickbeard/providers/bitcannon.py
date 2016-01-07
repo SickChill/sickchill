@@ -22,6 +22,7 @@ from urllib import urlencode
 
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -95,10 +96,11 @@ class BitCannonProvider(TorrentProvider):
                                 title = result.get('title', '')
                                 info_hash = result.get('infoHash', '')
                                 swarm = result.get('swarm', None)
-                                size = int(result.get('size', 0))
                                 if swarm is not None:
                                     seeders = int(swarm.get('seeders', 0))
                                     leechers = int(swarm.get('leechers', 0))
+                                torrent_size = result.get('size', 0)
+                                size = convert_size(torrent_size) or -1
                                 download_url = "magnet:?xt=urn:btih:" + info_hash
 
                             except (AttributeError, TypeError, KeyError, ValueError):
