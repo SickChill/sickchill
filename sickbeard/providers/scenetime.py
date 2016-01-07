@@ -23,6 +23,7 @@ import urllib
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 from sickrage.helper.common import try_int
@@ -118,7 +119,9 @@ class SceneTimeProvider(TorrentProvider):
 
                             seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
-                            size = self._convertSize(cells[labels.index('Size')].get_text(strip=True))
+                            torrent_size = cells[labels.index('Size')].get_text()
+
+                            size = convert_size(torrent_size) or -1
 
                         except (AttributeError, TypeError, KeyError, ValueError):
                             continue
@@ -148,26 +151,6 @@ class SceneTimeProvider(TorrentProvider):
     def seed_ratio(self):
         return self.ratio
 
-    @staticmethod
-    def _convertSize(size):
-        modifier = size[-2:].upper()
-        size = size[:-2].strip()
-        try:
-            size = float(size)
-            if modifier in 'KB':
-                size *= 1024 ** 1
-            elif modifier in 'MB':
-                size *= 1024 ** 2
-            elif modifier in 'GB':
-                size *= 1024 ** 3
-            elif modifier in 'TB':
-                size *= 1024 ** 4
-            else:
-                raise
-        except Exception:
-            size = -1
-
-        return long(size)
 
 class SceneTimeCache(tvcache.TVCache):
     def __init__(self, provider_obj):
