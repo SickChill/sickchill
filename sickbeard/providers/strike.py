@@ -19,6 +19,7 @@
 
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -58,7 +59,8 @@ class STRIKEProvider(TorrentProvider):
                     seeders = ('seeds' in item and item['seeds']) or 0
                     leechers = ('leeches' in item and item['leeches']) or 0
                     title = ('torrent_title' in item and item['torrent_title']) or ''
-                    size = ('size' in item and item['size']) or 0
+                    torrent_size = ('size' in item and item['size'])
+                    size = convert_size(torrent_size) or -1
                     download_url = ('magnet_uri' in item and item['magnet_uri']) or ''
 
                     if not all([title, download_url]):
