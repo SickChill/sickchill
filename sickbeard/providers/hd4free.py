@@ -20,6 +20,7 @@
 from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -87,8 +88,10 @@ class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                     seeders = jdata[i]["seeders"]
                     leechers = jdata[i]["leechers"]
                     title = jdata[i]["release_name"]
-                    size = jdata[i]["size"]
+                    torrent_size = jdata[i]["size"]
                     download_url = jdata[i]["download_url"]
+
+                    size = convert_size(torrent_size) or -1
 
                     if not all([title, download_url]):
                         continue
