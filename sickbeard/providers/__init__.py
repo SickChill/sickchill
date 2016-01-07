@@ -24,14 +24,14 @@ from random import shuffle
 import sickbeard
 from sickbeard import logger
 from sickbeard.providers import btn, newznab, rsstorrent, womble, thepiratebay, torrentleech, kat, iptorrents, torrentz, \
-    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, \
+    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, animenzb, bluetigers, cpasbien, fnt, xthor, torrentbytes, tvvault, \
     freshontv, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
     scenetime, btdigg, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, bitsnoop, danishbits, hd4free, limetorrents
 
 __all__ = [
     'womble', 'btn', 'thepiratebay', 'kat', 'torrentleech', 'scc', 'hdtorrents',
     'torrentday', 'hdbits', 'hounddawgs', 'iptorrents', 'omgwtfnzbs',
-    'speedcd', 'nyaatorrents', 'animenzb', 'torrentbytes', 'freshontv',
+    'speedcd', 'nyaatorrents', 'animenzb', 'torrentbytes', 'freshontv', 'tvvault',
     'morethantv', 'bitsoup', 't411', 'tokyotoshokan', 'alpharatio',
     'shazbat', 'rarbg', 'tntvillage', 'binsearch', 'bluetigers', 'cpasbien',
     'fnt', 'xthor', 'scenetime', 'btdigg', 'transmitthenet', 'tvchaosuk',
