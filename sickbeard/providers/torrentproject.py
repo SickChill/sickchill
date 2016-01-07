@@ -22,7 +22,7 @@ from urllib import quote_plus
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -74,7 +74,8 @@ class TORRENTPROJECTProvider(TorrentProvider):
                         continue
 
                     t_hash = torrents[i]["torrent_hash"]
-                    size = int(torrents[i]["torrent_size"])
+                    torrent_size = torrents[i]["torrent_size"]
+                    size = convert_size(torrent_size) or -1
 
                     try:
                         assert seeders < 10
