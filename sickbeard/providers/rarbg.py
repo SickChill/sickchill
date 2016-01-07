@@ -27,6 +27,7 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -217,9 +218,10 @@ class RarbgProvider(TorrentProvider):
                         try:
                             title = item['title']
                             download_url = item['download']
-                            size = item['size']
                             seeders = item['seeders']
                             leechers = item['leechers']
+                            torrent_size = item['size']
+                            size = convert_size(torrent_size) or -1
                             # pubdate = item['pubdate']
 
                             if not all([title, download_url]):
