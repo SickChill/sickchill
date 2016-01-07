@@ -41,9 +41,9 @@ class ThePirateBayProvider(TorrentProvider):
         self.cache = ThePirateBayCache(self)
 
         self.urls = {
-            'base_url': 'https://thepiratebay.se/',
-            'search': 'https://thepiratebay.se/s/',
-            'rss': 'https://thepiratebay.se/tv/latest'
+            'base_url': 'https://thepiratebay.ms/',
+            'search': 'https://thepiratebay.ms/s/',
+            'rss': 'https://thepiratebay.ms/tv/latest'
         }
 
         self.url = self.urls['base_url']
