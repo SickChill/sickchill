@@ -23,6 +23,7 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -119,9 +120,7 @@ class BitSoupProvider(TorrentProvider):
                                 seeders = int(cells[10].getText().replace(',', ''))
                                 leechers = int(cells[11].getText().replace(',', ''))
                                 torrent_size = cells[8].getText()
-                                size = -1
-                                if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
-                                    size = self._convertSize(torrent_size.rstrip())
+                                size = convert_size(torrent_size) or -1
                             except (AttributeError, TypeError):
                                 continue
 
@@ -155,23 +154,6 @@ class BitSoupProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
-
-    def _convertSize(self, sizeString):
-        size = sizeString[:-2].strip()
-        modifier = sizeString[-2:].upper()
-        try:
-            size = float(size)
-            if modifier in 'KB':
-                size *= 1024 ** 1
-            elif modifier in 'MB':
-                size *= 1024 ** 2
-            elif modifier in 'GB':
-                size *= 1024 ** 3
-            elif modifier in 'TB':
-                size *= 1024 ** 4
-        except Exception:
-            size = -1
-        return long(size)
 
 
 class BitSoupCache(tvcache.TVCache):
