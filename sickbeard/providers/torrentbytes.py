@@ -24,6 +24,7 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -106,7 +107,7 @@ class TorrentBytesProvider(TorrentProvider):
 
                         for result in torrent_rows[1:]:
                             cells = result.find_all('td')
-                            size = None
+                            torrent_size = None
                             link = cells[1].find('a', attrs={'class': 'index'})
 
                             full_id = link['href'].replace('details.php?id=', '')
@@ -132,11 +133,7 @@ class TorrentBytesProvider(TorrentProvider):
                                 leechers = int(cells[9].find('span').contents[0])
 
                                 # Need size for failed downloads handling
-                                if size is None:
-                                    if re.match(r'[0-9]+,?\.?[0-9]*[KkMmGg]+[Bb]+', cells[6].text):
-                                        size = self._convertSize(cells[6].text)
-                                        if not size:
-                                            size = -1
+                                torrent_size = cells[6].text if torrent_size is None else torrent_size
 
                             except (AttributeError, TypeError):
                                 continue
@@ -149,6 +146,8 @@ class TorrentBytesProvider(TorrentProvider):
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
+
+                            size = convert_size(torrent_size) or -1
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
@@ -168,20 +167,6 @@ class TorrentBytesProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
-
-    def _convertSize(self, sizeString):
-        size = sizeString[:-2]
-        modifier = sizeString[-2:]
-        size = float(size)
-        if modifier in 'KB':
-            size *= 1024 ** 1
-        elif modifier in 'MB':
-            size *= 1024 ** 2
-        elif modifier in 'GB':
-            size *= 1024 ** 3
-        elif modifier in 'TB':
-            size *= 1024 ** 4
-        return long(size)
 
 
 class TorrentBytesCache(tvcache.TVCache):
