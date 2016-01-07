@@ -20,6 +20,7 @@ import re
 import requests
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -129,12 +130,12 @@ class TorrentDayProvider(TorrentProvider):
 
                 for torrent in torrents:
 
-                    title = re.sub(r"\[.*\=.*\].*\[/.*\]", "", torrent['name'])
-                    download_url = self.urls['download'] % (torrent['id'], torrent['fname'])
-                    seeders = int(torrent['seed'])
-                    leechers = int(torrent['leech'])
-                    # FIXME
-                    size = -1
+                    title = re.sub(r"\[.*\=.*\].*\[/.*\]", "", torrent['name']) if torrent['name'] else None
+                    download_url = self.urls['download'] % (torrent['id'], torrent['fname']) if torrent['id'] and torrent['fname'] else None
+                    seeders = int(torrent['seed']) if torrent['seed'] else 1
+                    leechers = int(torrent['leech']) if torrent['leech'] else 0
+                    torrent_size = torrent['size']
+                    size = convert_size(torrent_size) or -1
 
                     if not all([title, download_url]):
                         continue
