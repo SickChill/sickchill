@@ -26,6 +26,7 @@ import sickbeard
 from sickbeard.common import cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import convert_size
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -136,7 +137,9 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                             download_url = self.urls['download'] % url['href']
                             seeders = int(result.find('td', attrs={'class': 'ttr_seeders'}).string)
                             leechers = int(result.find('td', attrs={'class': 'ttr_leechers'}).string)
-                            size = self._convertSize(result.find('td', attrs={'class': 'ttr_size'}).contents[0])
+                            torrent_size = result.find('td', attrs={'class': 'ttr_size'}).contents[0]
+
+                            size = convert_size(torrent_size) or -1
                         except (AttributeError, TypeError):
                             continue
 
@@ -164,20 +167,6 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
     def seed_ratio(self):
         return self.ratio
-
-    @staticmethod
-    def _convertSize(size):
-        size, base = size.split()
-        size = float(size)
-        if base in 'KB':
-            size *= 1024 ** 1
-        elif base in 'MB':
-            size *= 1024 ** 2
-        elif base in 'GB':
-            size *= 1024 ** 3
-        elif base in 'TB':
-            size *= 1024 ** 4
-        return long(size)
 
 
 class SCCCache(tvcache.TVCache):
