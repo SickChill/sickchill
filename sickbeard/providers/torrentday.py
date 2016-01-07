@@ -129,12 +129,11 @@ class TorrentDayProvider(TorrentProvider):
 
                 for torrent in torrents:
 
-                    title = re.sub(r"\[.*\=.*\].*\[/.*\]", "", torrent['name'])
-                    download_url = self.urls['download'] % (torrent['id'], torrent['fname'])
-                    seeders = int(torrent['seed'])
-                    leechers = int(torrent['leech'])
-                    # FIXME
-                    size = -1
+                    title = re.sub(r"\[.*\=.*\].*\[/.*\]", "", torrent['name']) if torrent['name'] else None
+                    download_url = self.urls['download'] % (torrent['id'], torrent['fname']) if torrent['id'] and torrent['fname'] else None
+                    seeders = int(torrent['seed']) if torrent['seed'] else 1
+                    leechers = int(torrent['leech']) if torrent['leech'] else 0
+                    size = self._convertSize(torrent['size']) if torrent['size'] else -1
 
                     if not all([title, download_url]):
                         continue
@@ -160,6 +159,23 @@ class TorrentDayProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
+
+
+    @staticmethod
+    def _convertSize(size):
+        try:
+            modifier = size[-2:].upper()
+            size = float(size[:-2].strip())
+
+            units = ['KB', 'MB', 'GB', 'TB', 'PB']
+            if modifier in units:
+                size *= 1024. ** units.index(modifier)
+            else:
+                raise
+        except Exception:
+            size = -1
+
+        return long(size)
 
 
 class TorrentDayCache(tvcache.TVCache):
