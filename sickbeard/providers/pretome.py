@@ -24,11 +24,11 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class PretomeProvider(TorrentProvider):
-
     def __init__(self):
 
         TorrentProvider.__init__(self, "Pretome")
@@ -134,10 +134,8 @@ class PretomeProvider(TorrentProvider):
 
                                 # Need size for failed downloads handling
                                 if size is None:
-                                    if re.match(r'[0-9]+,?\.?[0-9]*[KkMmGg]+[Bb]+', cells[7].text):
-                                        size = self._convertSize(cells[7].text)
-                                        if not size:
-                                            size = -1
+                                    torrent_size = cells[7].text
+                                    size = convert_size(torrent_size) or -1
 
                             except (AttributeError, TypeError):
                                 continue
@@ -169,20 +167,6 @@ class PretomeProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
-
-    def _convertSize(self, sizeString):
-        size = sizeString[:-2]
-        modifier = sizeString[-2:]
-        size = float(size)
-        if modifier in 'KB':
-            size *= 1024 ** 1
-        elif modifier in 'MB':
-            size *= 1024 ** 2
-        elif modifier in 'GB':
-            size *= 1024 ** 3
-        elif modifier in 'TB':
-            size *= 1024 ** 4
-        return long(size)
 
 
 class PretomeCache(tvcache.TVCache):
