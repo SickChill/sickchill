@@ -26,6 +26,7 @@ from sickbeard import db
 
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickrage.helper.common import convert_size
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -336,8 +337,8 @@ class TNTVillageProvider(TorrentProvider):
                                     leechers = int(leechers.strip('[]'))
                                     seeders = result.find_all('td')[3].find_all('td')[2].text
                                     seeders = int(seeders.strip('[]'))
-                                    # FIXME
-                                    size = -1
+                                    torrent_size = result.find_all('td')[3].find_all('td')[3].text.strip('[]') + " GB"
+                                    size = convert_size(torrent_size) or -1
                                 except (AttributeError, TypeError):
                                     continue
 
