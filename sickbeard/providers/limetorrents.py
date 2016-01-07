@@ -23,6 +23,7 @@ from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
 from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from urllib import urlencode
 
 
 class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
@@ -60,6 +61,7 @@ class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance
 
                 try:
                     url = (self.urls['rss'], self.urls['search'] + search_string)[mode != 'RSS']
+                    url = urlencode(url)
                     logger.log(u"URL: %r " % url, logger.DEBUG)
                     data = self.get_url(url)
                     if not data:

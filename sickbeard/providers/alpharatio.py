@@ -26,6 +26,7 @@ from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from urllib import urlencode
 
 
 class AlphaRatioProvider(TorrentProvider):
@@ -87,7 +88,7 @@ class AlphaRatioProvider(TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (search_string, self.categories)
+                searchURL = self.urls['search'] % (urlencode(search_string), self.categories)
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
                 data = self.get_url(searchURL)
