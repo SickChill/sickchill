@@ -22,6 +22,7 @@
 from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -70,43 +71,49 @@ class BTDIGGProvider(TorrentProvider):
                     logger.log(u"No data returned to be parsed!!!", logger.DEBUG)
                     continue
 
-                for torrent in jdata:
-                    if not torrent['name']:
-                        logger.log(u"Ignoring result since it has no name", logger.DEBUG)
-                        continue
+                try:
 
-                    if torrent['ff']:
-                        logger.log(u"Ignoring result for %s since it's a fake (level = %s)" % (torrent['name'], torrent['ff']), logger.DEBUG)
-                        continue
+                    for torrent in jdata:
+                        if not torrent['name']:
+                            logger.log(u"Ignoring result since it has no name", logger.DEBUG)
+                            continue
 
-                    if not torrent['files']:
-                        logger.log(u"Ignoring result for %s without files" % torrent['name'], logger.DEBUG)
-                        continue
+                        if torrent['ff']:
+                            logger.log(u"Ignoring result for %s since it's a fake (level = %s)" % (torrent['name'], torrent['ff']), logger.DEBUG)
+                            continue
 
-                    download_url = torrent['magnet'] + self._custom_trackers
+                        if not torrent['files']:
+                            logger.log(u"Ignoring result for %s without files" % torrent['name'], logger.DEBUG)
+                            continue
 
-                    if not download_url:
-                        logger.log(u"Ignoring result for %s without a url" % torrent['name'], logger.DEBUG)
-                        continue
+                        download_url = torrent['magnet'] + self._custom_trackers if torrent['magnet'] else None
 
-                    # FIXME
-                    seeders = 1
-                    leechers = 0
+                        # Provider doesn't provide seeders/leechers
+                        seeders = 1
+                        leechers = 0
+                        torrent_size = torrent['size']
+                        size = convert_size(torrent_size) or -1
+        
+                        if not all([title, download_url]):
+                            continue
+        
+                        # Filter unseeded torrent (Unsupported)
+                        #if seeders < self.minseed or leechers < self.minleech:
+                        #    if mode != 'RSS':
+                        #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                        #    continue
+        
+                        item = title, download_url, size, seeders, leechers
+                        if mode != 'RSS':
+                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+        
+                        items[mode].append(item)
 
-                    # # Filter unseeded torrent (Unsupported)
-                    # if seeders < self.minseed or leechers < self.minleech:
-                    #    if mode != 'RSS':
-                    #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                    #    continue
+                except Exception:
+                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
-                    if mode != 'RSS':
-                        logger.log(u"Found result: %s" % torrent['name'], logger.DEBUG)
-
-                    item = torrent['name'], download_url, torrent['size'], seeders, leechers
-                    items[mode].append(item)
-
-            # # For each search mode sort all the items by seeders if available (Unsupported)
-            # items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            # For each search mode sort all the items by seeders if available
+            #items[mode].sort(key=lambda tup: tup[3], reverse=True)
 
             results += items[mode]
 
