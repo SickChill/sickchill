@@ -24,6 +24,7 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -109,13 +110,14 @@ class AlphaRatioProvider(TorrentProvider):
                             url = result.find('a', attrs={'title': 'Download'})
 
                             try:
-                                title = link.contents[0]
-                                download_url = self.urls['download'] % (url['href'])
-                                seeders = cells[len(cells) - 2].contents[0]
-                                leechers = cells[len(cells) - 1].contents[0]
-                                # FIXME
-                                size = -1
-                            except (AttributeError, TypeError):
+                                num_cells = len(cells)
+                                title = link.contents[0] if link.contents[0] else None
+                                download_url = self.urls['download'] % (url['href']) if url['href'] else None
+                                seeders = cells[num_cells - 2].contents[0] if cells[len(cells) - 2].contents[0] else 1
+                                leechers = cells[num_cells - 1].contents[0] if cells[len(cells) - 1].contents[0] else 0
+                                torrent_size = cells[len(cells) - 4].contents[0]
+                                size = convert_size(torrent_size) or -1
+                            except (AttributeError, TypeError, KeyError, ValueError):
                                 continue
 
                             if not all([title, download_url]):
