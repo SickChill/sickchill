@@ -28,7 +28,7 @@ from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TORRENTZProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
@@ -38,7 +38,7 @@ class TORRENTZProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         self.ratio = None
         self.minseed = None
         self.minleech = None
-        self.cache = TORRENTZCache(self)
+        self.cache = TorrentzCache(self)
         self.headers.update({'User-Agent': USER_AGENT})
         self.urls = {'verified': 'https://torrentz.eu/feed_verified',
                      'feed': 'https://torrentz.eu/feed',
@@ -106,7 +106,7 @@ class TORRENTZProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         return results
 
 
-class TORRENTZCache(tvcache.TVCache):
+class TorrentzCache(tvcache.TVCache):
 
     def __init__(self, provider_obj):
 
@@ -118,4 +118,4 @@ class TORRENTZCache(tvcache.TVCache):
     def _getRSSData(self):
         return {'entries': self.provider.search({'RSS': ['']})}
 
-provider = TORRENTZProvider()
+provider = TorrentzProvider()

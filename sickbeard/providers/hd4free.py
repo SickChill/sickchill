@@ -24,7 +24,7 @@ from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
         TorrentProvider.__init__(self, "HD4Free")
@@ -32,7 +32,7 @@ class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         self.public = True
         self.url = 'https://hd4free.xyz'
         self.ratio = 0
-        self.cache = HD4FREECache(self)
+        self.cache = HD4FreeCache(self)
         self.minseed, self.minleech = 2 * [None]
         self.username = None
         self.api_key = None
@@ -117,7 +117,7 @@ class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         return self.ratio
 
 
-class HD4FREECache(tvcache.TVCache):
+class HD4FreeCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
         tvcache.TVCache.__init__(self, provider_obj)
@@ -130,4 +130,4 @@ class HD4FREECache(tvcache.TVCache):
         search_params = {'RSS': ['']}
         return {'entries': self.provider.search(search_params)}
 
-provider = HD4FREEProvider()
+provider = HD4FreeProvider()
