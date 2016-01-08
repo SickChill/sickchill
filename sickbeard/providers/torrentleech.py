@@ -101,7 +101,7 @@ class TorrentLeechProvider(TorrentProvider):
                     if torrent_table:
                         torrent_rows = torrent_table.find_all('tr')
 
-                    # Continue only if one Release is found
+                    # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
