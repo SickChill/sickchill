@@ -89,6 +89,7 @@ from tornado.ioloop import IOLoop
 from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
 from mako.runtime import UNDEFINED
+from cgi import escape
 
 mako_lookup = None
 mako_cache = None
@@ -1200,7 +1201,8 @@ class Home(WebRoot):
             show = int(show)  # fails if show id ends in a period SickRage/sickrage-issues#65
             showObj = Show.find(sickbeard.showList, show)
         except (ValueError, TypeError):
-            return self._genericMessage("Error", "Invalid show ID: %s" % str(show))
+            return self._genericMessage("Error", "Invalid show ID: %s" % escape(str(show))) # Vulnerable to XSS attack unless escaped.
+
 
         if showObj is None:
             return self._genericMessage("Error", "Show not in show list")
