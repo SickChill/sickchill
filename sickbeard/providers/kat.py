@@ -30,7 +30,7 @@ from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class KATProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
+class KatProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "KickAssTorrents")
@@ -60,7 +60,7 @@ class KATProvider(TorrentProvider): # pylint: disable=too-many-instance-attribut
             'category': 'tv'
         }
 
-        self.cache = KATCache(self)
+        self.cache = KatCache(self)
 
     def search(self, search_strings, age=0, ep_obj=None): # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
@@ -157,7 +157,7 @@ class KATProvider(TorrentProvider): # pylint: disable=too-many-instance-attribut
         return self.ratio
 
 
-class KATCache(tvcache.TVCache):
+class KatCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
         tvcache.TVCache.__init__(self, provider_obj)
@@ -169,4 +169,4 @@ class KATCache(tvcache.TVCache):
         search_params = {'RSS': ['tv', 'anime']}
         return {'entries': self.provider.search(search_params)}
 
-provider = KATProvider()
+provider = KatProvider()

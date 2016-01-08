@@ -27,7 +27,7 @@ from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class BTDIGGProvider(TorrentProvider):
+class BTDiggProvider(TorrentProvider):
 
     def __init__(self):
         TorrentProvider.__init__(self, "BTDigg")
@@ -138,4 +138,4 @@ class BTDiggCache(tvcache.TVCache):
         search_params = {'RSS': ['x264', 'x264.HDTV', '720.HDTV.x264']}
         return {'entries': self.provider.search(search_params)}
 
-provider = BTDIGGProvider()
+provider = BTDiggProvider()
