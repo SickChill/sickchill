@@ -200,7 +200,8 @@ class FreshOnTVProvider(TorrentProvider): # pylint: disable=too-many-instance-at
                                     download_url = self.urls['download'] % (str(torrent_id))
                                     seeders = try_int(individual_torrent.find('td', {'class': 'table_seeders'}).find('span').text.strip(), 1)
                                     leechers = try_int(individual_torrent.find('td', {'class': 'table_leechers'}).find('a').text.strip(), 0)
-                                    size = convert_size(individual_torrent.find('td', {'class': 'table_size'}).text.strip()) or -1
+                                    torrent_size = individual_torrent.find('td', {'class': 'table_size'}).get_text()
+                                    size = convert_size(torrent_size) or -1
                                 except Exception:
                                     continue
 
