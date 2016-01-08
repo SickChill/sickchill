@@ -1411,7 +1411,7 @@
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
                                         <input type="checkbox" name="telegram_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONSNATCH)]}/>
-                                        <p>Send a Telegram message when a download starts?</p>
+                                        <p>Send a message when a download starts?</p>
                                     </span>
                                 </label>
                             </div>
@@ -1420,23 +1420,22 @@
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
                                         <input type="checkbox" name="telegram_notify_ondownload" id="telegram_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONDOWNLOAD)]}/>
-                                        <p>Send a Telegram message when a download finishes?</p>
+                                        <p>Send a message when a download finishes?</p>
                                     </span>
                                 </label>
-                            </div>
                             </div>
                             <div class="field-pair">
                                 <label for="telegram_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
                                         <input type="checkbox" name="telegram_notify_onsubtitledownload" id="telegram_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                        <p>Send a Telegram message when subtitles are downloaded?</p>
+                                        <p>Send a message when subtitles are downloaded?</p>
                                     </span>
                                 </label>
                             </div>
                             <div class="field-pair">
                                 <label for="telegram_id">
-                                    <span class="component-title">Telegram user/group ID</span>
+                                    <span class="component-title">User/group ID</span>
                                     <input type="text" name="telegram_id" id="telegram_id" value="${sickbeard.TELEGRAM_ID}" class="form-control input-sm input250" autocapitalize="off" />
                                 </label>
                                 <label>
@@ -1446,7 +1445,7 @@
                             </div>
                             <div class="field-pair">
                                 <label for="telegram_password">
-                                    <span class="component-title">Telegram bot API token</span>
+                                    <span class="component-title">bot API token</span>
                                     <input type="text" name="telegram_apikey" id="telegram_apikey" value="${sickbeard.TELEGRAM_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
                                 </label>
                                 <label>
