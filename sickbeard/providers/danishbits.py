@@ -129,7 +129,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     continue
 
                 try:
-                    with BS4Parser(data.decode('iso-8859-1'), features=["html5lib", "permissive"]) as html:
+                    with BS4Parser(data,"html5lib") as html:
                         # Collecting entries
                         entries = html.find_all('tr', attrs={'class': 'torrent'})
 
