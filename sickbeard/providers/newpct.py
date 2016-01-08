@@ -69,15 +69,15 @@ class newpctProvider(TorrentProvider):
             'bus_de_': 'All'
         }
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
 
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
 
         # Only search if user conditions are true
         lang_info = '' if not ep_obj or not ep_obj.show else ep_obj.show.lang
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
 
             # Only search if user conditions are true
@@ -142,19 +142,19 @@ class newpctProvider(TorrentProvider):
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                            items[mode].append(item)
+                            items.append(item)
 
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
             # For each search mode sort all the items by seeders if available (Unsupported)
-            # items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            # items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
-    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False):
+    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False):  # pylint: disable=too-many-arguments
         """
         need_bytes=True when trying access to torrent info (For calling torrent client). Previously we must parse
         the URL to get torrent file
@@ -208,23 +208,23 @@ class newpctProvider(TorrentProvider):
         title = title[22:]
 
         # Quality - Use re module to avoid case sensitive problems with replace
-        title = re.sub('\[HDTV 1080p[^\[]*]', '1080p HDTV x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[HDTV 720p[^\[]*]', '720p HDTV x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[ALTA DEFINICION 720p[^\[]*]', '720p HDTV x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[HDTV]', 'HDTV x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[DVD[^\[]*]', 'DVDrip x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[BluRay 1080p[^\[]*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[BluRay MicroHD[^\[]*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[MicroHD 1080p[^\[]*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[BLuRay[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[BRrip[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub('\[BDrip[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[HDTV 1080p[^\[]*]', '1080p HDTV x264', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[HDTV 720p[^\[]*]', '720p HDTV x264', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[ALTA DEFINICION 720p[^\[]*]', '720p HDTV x264', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[HDTV]', 'HDTV x264', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[DVD[^\[]*]', 'DVDrip x264', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[BluRay 1080p[^\[]*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[BluRay MicroHD[^\[]*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[MicroHD 1080p[^\[]*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[BLuRay[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[BRrip[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[BDrip[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
 
         # Language
-        title = re.sub('\[Spanish[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
-        title = re.sub('\[Castellano[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[Spanish[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[Castellano[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
         title = re.sub(ur'\[Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
-        title = re.sub(u'\[AC3 5\.1 Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
+        title = re.sub(ur'\[AC3 5\.1 Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
 
         title += '-NEWPCT'
 

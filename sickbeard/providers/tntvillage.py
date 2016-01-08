@@ -57,7 +57,7 @@ category_excluded = {'Sport': 22,
                      'Mobile': 37}
 
 
-class TNTVillageProvider(TorrentProvider):
+class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
         TorrentProvider.__init__(self, "TNTVillage")
 
@@ -137,7 +137,8 @@ class TNTVillageProvider(TorrentProvider):
 
         return True
 
-    def _reverseQuality(self, quality):
+    @staticmethod
+    def _reverseQuality(quality):
 
         quality_string = ''
 
@@ -162,7 +163,8 @@ class TNTVillageProvider(TorrentProvider):
 
         return quality_string
 
-    def _episodeQuality(self, torrent_rows):
+    @staticmethod
+    def _episodeQuality(torrent_rows):  # pylint: disable=too-many-return-statements, too-many-branches
         """
             Return The quality from the scene episode HTML row.
         """
@@ -238,7 +240,8 @@ class TNTVillageProvider(TorrentProvider):
 
         return italian
 
-    def _is_english(self, torrent_rows):
+    @staticmethod
+    def _is_english(torrent_rows):
 
         name = str(torrent_rows.find_all('td')[1].find('b').find('span'))
         if not name or name == 'None':
@@ -251,7 +254,8 @@ class TNTVillageProvider(TorrentProvider):
 
         return english
 
-    def _is_season_pack(self, name):
+    @staticmethod
+    def _is_season_pack(name):
 
         try:
             myParser = NameParser(tryIndexers=True)
@@ -269,17 +273,15 @@ class TNTVillageProvider(TorrentProvider):
         if int(episodes[0]['count']) == len(parse_result.episode_numbers):
             return True
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        self.categories = "cat=" + str(self.cat)
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
+        self.categories = "cat=" + str(self.cat)
+
+        for mode in search_params:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
@@ -386,15 +388,15 @@ class TNTVillageProvider(TorrentProvider):
                                 if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                                items[mode].append(item)
+                                items.append(item)
 
                     except Exception:
                         logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
                 # For each search mode sort all the items by seeders if available if available
-                items[mode].sort(key=lambda tup: tup[3], reverse=True)
+                items.sort(key=lambda tup: tup[3], reverse=True)
 
-                results += items[mode]
+                results += items
 
         return results
 

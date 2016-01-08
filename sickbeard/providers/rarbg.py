@@ -95,24 +95,25 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         for mode in search_strings:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
-            for search_string in search_strings[mode]:
-                if mode == 'RSS':
-                    search_params['sorting'] = 'last'
-                    search_params['mode'] = 'list'
-                    search_params.pop('search_string', None)
-                    search_params.pop('search_tvdb', None)
+            if mode == 'RSS':
+                search_params['sorting'] = 'last'
+                search_params['mode'] = 'list'
+                search_params.pop('search_string', None)
+                search_params.pop('search_tvdb', None)
+            else:
+
+                search_params['sorting'] = self.sorting if self.sorting else 'seeders'
+                search_params['mode'] = 'search'
+
+                if ep_indexer == INDEXER_TVDB and ep_indexerid:
+                    search_params['search_tvdb'] = ep_indexerid
                 else:
-                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+                    search_params.pop('search_tvdb', None)
 
-                    search_params['sorting'] = self.sorting if self.sorting else 'seeders'
-                    search_params['mode'] = 'search'
-
-                    if ep_indexer == INDEXER_TVDB and ep_indexerid:
-                        search_params['search_tvdb'] = ep_indexerid
-                    else:
-                        search_params.pop('search_tvdb', None)
-
+            for search_string in search_strings[mode]:
+                if mode != 'RSS':
                     search_params['search_string'] = search_string
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 logger.log(u"Search URL: %s" % self.url_api + '?' + urlencode(search_params), logger.DEBUG)
                 data = self.get_url(self.url_api, params=search_params, json=True)

@@ -26,7 +26,7 @@ from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class NyaaProvider(TorrentProvider):
+class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "NyaaTorrents")
@@ -46,14 +46,13 @@ class NyaaProvider(TorrentProvider):
         self.minleech = 0
         self.confirmed = False
 
-    def search(self, search_strings, age=0, ep_obj=None):
-        if self.show and not self.show.is_anime:
-            return []
-
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
+        if self.show and not self.show.is_anime:
+            return results
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
@@ -98,12 +97,11 @@ class NyaaProvider(TorrentProvider):
                     if mode != 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                    items[mode].append(item)
+                    items.append(item)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            items.sort(key=lambda tup: tup[3], reverse=True)
+            results += items
 
         return results
 

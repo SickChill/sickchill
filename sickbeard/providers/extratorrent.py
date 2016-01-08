@@ -49,11 +49,9 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.search_params = {'cid': 8}
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
-
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
@@ -103,12 +101,11 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                        items[mode].append(item)
+                        items.append(item)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            items.sort(key=lambda tup: tup[3], reverse=True)
+            results += items
 
         return results
 

@@ -47,13 +47,12 @@ class BTDIGGProvider(TorrentProvider):
 
         self.cache = BTDiggCache(self)
 
-    def search(self, search_strings, age=0, ep_obj=None):
-
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
         search_params = {'p': 0}
 
         for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 search_params['q'] = search_string.encode('utf-8')
@@ -95,29 +94,29 @@ class BTDIGGProvider(TorrentProvider):
                         title = torrent['name']
                         torrent_size = torrent['size']
                         size = convert_size(torrent_size) or -1
-        
+
                         if not all([title, download_url]):
                             continue
-        
+
                         # Filter unseeded torrent (Unsupported)
                         #if seeders < self.minseed or leechers < self.minleech:
                         #    if mode != 'RSS':
                         #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         #    continue
-        
+
                         item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
-        
-                        items[mode].append(item)
+
+                        items.append(item)
 
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
             # For each search mode sort all the items by seeders if available
-            #items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            #items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 

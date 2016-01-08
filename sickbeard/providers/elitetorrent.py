@@ -67,14 +67,12 @@ class elitetorrentProvider(TorrentProvider):
 
         }
 
-    def search(self, search_strings, age=0, ep_obj=None):
-
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         lang_info = '' if not ep_obj or not ep_obj.show else ep_obj.show.lang
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
 
             # Only search if user conditions are true
@@ -93,7 +91,6 @@ class elitetorrentProvider(TorrentProvider):
                 logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
 
                 data = self.get_url(searchURL, timeout=30)
-
                 if not data:
                     continue
 
@@ -135,15 +132,15 @@ class elitetorrentProvider(TorrentProvider):
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                            items[mode].append(item)
+                            items.append(item)
 
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 

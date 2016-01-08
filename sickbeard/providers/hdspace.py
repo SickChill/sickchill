@@ -30,7 +30,7 @@ from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class HDSpaceProvider(TorrentProvider):
+class HDSpaceProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
     def __init__(self):
         TorrentProvider.__init__(self, "HDSpace")
 
@@ -82,18 +82,15 @@ class HDSpaceProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
-
+    def search(self, search_strings, age=0, ep_obj=None): # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
-
                 if mode != 'RSS':
                     searchURL = self.urls['search'] % (urllib.quote_plus(search_string.replace('.', ' ')),)
                 else:
@@ -155,15 +152,14 @@ class HDSpaceProvider(TorrentProvider):
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                        items[mode].append(item)
+                        items.append(item)
 
                     except (AttributeError, TypeError, KeyError, ValueError):
                         continue
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            items.sort(key=lambda tup: tup[3], reverse=True)
+            results += items
 
         return results
 

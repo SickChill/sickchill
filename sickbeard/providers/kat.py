@@ -30,7 +30,7 @@ from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class KATProvider(TorrentProvider):
+class KATProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "KickAssTorrents")
@@ -62,15 +62,15 @@ class KATProvider(TorrentProvider):
 
         self.cache = KATCache(self)
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None): # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
 
         # select the correct category
         anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False
         self.search_params['category'] = ('tv', 'anime')[anime]
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
@@ -141,15 +141,15 @@ class KATProvider(TorrentProvider):
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                        items[mode].append(item)
+                        items.append(item)
 
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 

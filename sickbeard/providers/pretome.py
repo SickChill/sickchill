@@ -28,7 +28,7 @@ from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class PretomeProvider(TorrentProvider):
+class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "Pretome")
@@ -78,15 +78,13 @@ class PretomeProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-statements, too-many-locals
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
+        for mode in search_params:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
@@ -153,15 +151,15 @@ class PretomeProvider(TorrentProvider):
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                            items[mode].append(item)
+                            items.append(item)
 
-                except Exception as e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 

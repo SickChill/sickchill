@@ -23,7 +23,7 @@ from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class STRIKEProvider(TorrentProvider):
+class StrikeProvider(TorrentProvider):
 
     def __init__(self):
         TorrentProvider.__init__(self, "Strike")
@@ -35,11 +35,9 @@ class STRIKEProvider(TorrentProvider):
         self.minseed, self.minleech = 2 * [None]
 
     def search(self, search_strings, age=0, ep_obj=None):
-
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        for mode in search_strings.keys():  # Mode = RSS, Season, Episode
+        for mode in search_strings:  # Mode = RSS, Season, Episode
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
@@ -76,12 +74,12 @@ class STRIKEProvider(TorrentProvider):
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                     item = title, download_url, size, seeders, leechers
-                    items[mode].append(item)
+                    items.append(item)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
@@ -103,4 +101,4 @@ class StrikeCache(tvcache.TVCache):
         search_params = {'RSS': ['x264']}
         return {'entries': self.provider.search(search_params)}
 
-provider = STRIKEProvider()
+provider = StrikeProvider()
