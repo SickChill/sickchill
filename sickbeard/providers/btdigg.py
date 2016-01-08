@@ -92,6 +92,7 @@ class BTDIGGProvider(TorrentProvider):
                         # Provider doesn't provide seeders/leechers
                         seeders = 1
                         leechers = 0
+                        title = torrent['name']
                         torrent_size = torrent['size']
                         size = convert_size(torrent_size) or -1
         
