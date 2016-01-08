@@ -22,7 +22,7 @@ from bs4 import BeautifulSoup
 import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
