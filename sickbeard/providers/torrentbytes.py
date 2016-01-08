@@ -28,7 +28,7 @@ from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TorrentBytesProvider(TorrentProvider):
+class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
@@ -41,11 +41,13 @@ class TorrentBytesProvider(TorrentProvider):
         self.minleech = None
         self.freeleech = False
 
-        self.urls = {'base_url': 'https://www.torrentbytes.net',
-                     'login': 'https://www.torrentbytes.net/takelogin.php',
-                     'detail': 'https://www.torrentbytes.net/details.php?id=%s',
-                     'search': 'https://www.torrentbytes.net/browse.php?search=%s%s',
-                     'download': 'https://www.torrentbytes.net/download.php?id=%s&name=%s'}
+        self.urls = {
+            'base_url': 'https://www.torrentbytes.net',
+            'login': 'https://www.torrentbytes.net/takelogin.php',
+            'detail': 'https://www.torrentbytes.net/details.php?id=%s',
+            'search': 'https://www.torrentbytes.net/browse.php?search=%s%s',
+            'download': 'https://www.torrentbytes.net/download.php?id=%s&name=%s'
+        }
 
         self.url = self.urls['base_url']
 
@@ -72,15 +74,13 @@ class TorrentBytesProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
+        for mode in search_params:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
@@ -153,15 +153,15 @@ class TorrentBytesProvider(TorrentProvider):
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                            items[mode].append(item)
+                            items.append(item)
 
-                except Exception as e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 

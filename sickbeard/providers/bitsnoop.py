@@ -48,11 +48,9 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         self.cache = BitSnoopCache(self)
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches,too-many-locals
-
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
@@ -71,10 +69,7 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                         continue
 
                     data = BeautifulSoup(data, 'html5lib')
-
-                    entries = entries = data.findAll('item')
-
-                    for item in entries:
+                    for item in data.findAll('item'):
                         try:
                             if not item.category.text.endswith(('TV', 'Anime')):
                                 continue
@@ -112,15 +107,14 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                        items[mode].append(item)
+                        items.append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
                     logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            items.sort(key=lambda tup: tup[3], reverse=True)
+            results += items
 
         return results
 

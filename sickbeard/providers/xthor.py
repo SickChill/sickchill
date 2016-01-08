@@ -75,11 +75,7 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             return False
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
-
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        # check for auth
         if not self.login():
             return results
 
@@ -101,7 +97,8 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             'c16': 1, 'c17': 1, 'c32': 1
         }
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
 
             # Sorting: 1: Name, 3: Comments, 5: Size, 6: Completed, 7: Seeders, 8: Leechers (4: Time ?)
@@ -155,12 +152,12 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                        items[mode].append(item)
+                        items.append(item)
 
             # For each search mode sort all the items by seeders if available if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 

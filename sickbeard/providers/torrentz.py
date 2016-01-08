@@ -28,7 +28,7 @@ from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TORRENTZProvider(TorrentProvider):
+class TORRENTZProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
@@ -53,11 +53,11 @@ class TORRENTZProvider(TorrentProvider):
         match = re.findall(r'[0-9]+', description)
         return int(match[0]) * 1024 ** 2, int(match[1]), int(match[2])
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
 
         for mode in search_strings:
+            items = []
             for search_string in search_strings[mode]:
                 search_url = self.urls['verified'] if self.confirmed else self.urls['feed']
                 if mode != 'RSS':
@@ -84,7 +84,6 @@ class TORRENTZProvider(TorrentProvider):
                             if not all([title, t_hash]):
                                 continue
 
-                            # TODO: Add method to generic provider for building magnet from hash.
                             download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + self._custom_trackers
                             torrent_size, seeders, leechers = self._split_description(item.find('description').text)
                             size = convert_size(torrent_size) or -1
@@ -95,14 +94,14 @@ class TORRENTZProvider(TorrentProvider):
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            items[mode].append((title, download_url, size, seeders, leechers))
+                            items.append((title, download_url, size, seeders, leechers))
 
                 except (AttributeError, TypeError, KeyError, ValueError):
                     logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-            results += items[mode]
+            items.sort(key=lambda tup: tup[3], reverse=True)
+            results += items
 
         return results
 
