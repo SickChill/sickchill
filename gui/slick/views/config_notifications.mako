@@ -1424,7 +1424,6 @@
                                     </span>
                                 </label>
                             </div>
-                            </div>
                             <div class="field-pair">
                                 <label for="telegram_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
