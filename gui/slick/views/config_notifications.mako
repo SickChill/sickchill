@@ -1445,7 +1445,7 @@
                             </div>
                             <div class="field-pair">
                                 <label for="telegram_password">
-                                    <span class="component-title">bot API token</span>
+                                    <span class="component-title">Bot API token</span>
                                     <input type="text" name="telegram_apikey" id="telegram_apikey" value="${sickbeard.TELEGRAM_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
                                 </label>
                                 <label>
@@ -1476,7 +1476,7 @@
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
                                     <input type="checkbox" class="enabler" name="use_twitter" id="use_twitter" ${('', 'checked="checked"')[bool(sickbeard.USE_TWITTER)]}/>
-                                    <p>should SickRage post tweets on Twitter?</p>
+                                    <p>Should SickRage post tweets on Twitter?</p>
                                 </span>
                             </label>
                             <label>
