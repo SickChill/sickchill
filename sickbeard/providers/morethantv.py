@@ -97,8 +97,6 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         if not self.login():
             return results
 
-        # freeleech = '3' if self.freeleech else '0'
-
         for mode in search_params:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
@@ -107,11 +105,11 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (search_string.replace('(', '').replace(')', ''))
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                search_url = self.urls['search'] % (search_string.replace('(', '').replace(')', ''))
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 # returns top 15 results by default, expandable in user profile to 100
-                data = self.get_url(searchURL)
+                data = self.get_url(search_url)
                 if not data:
                     continue
 
@@ -128,10 +126,14 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         # skip colheader
                         for result in torrent_rows[1:]:
                             cells = result.findChildren('td')
-                            link = cells[1].find('a', attrs={'title': 'Download'})
 
                             # skip if torrent has been nuked due to poor quality
-                            if cells[1].find('img', alt='Nuked') is not None:
+                            nuked = cells[1].find('img', alt='Nuked')
+                            if nuked:
+                                continue
+
+                            link = cells[1].find('a', attrs={'title': 'Download'})
+                            if not link:
                                 continue
 
                             torrent_id_long = link['href'].replace('torrents.php?action=download&id=', '')
