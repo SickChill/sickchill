@@ -43,7 +43,7 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.url = 'http://alpharatio.cc/'
         self.urls = {
             'login': self.url + 'login.php',
-            'search': self.url +'torrents.php',
+            'search': self.url + 'torrents.php',
         }
 
         self.proper_strings = ['PROPER', 'REPACK']
@@ -77,16 +77,16 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         search_params = {
             'searchstr': '',
-            'filter_cat[1]':1,
-            'filter_cat[2]':1,
-            'filter_cat[3]':1,
-            'filter_cat[4]':1,
-            'filter_cat[5]':1
+            'filter_cat[1]': 1,
+            'filter_cat[2]': 1,
+            'filter_cat[3]': 1,
+            'filter_cat[4]': 1,
+            'filter_cat[5]': 1
         }
 
         for mode in search_strings:
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             items = []
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
