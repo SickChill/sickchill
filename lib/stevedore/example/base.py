@@ -5,7 +5,7 @@ import six
 
 @six.add_metaclass(abc.ABCMeta)
 class FormatterBase(object):
-    """Base class for example plugin used in the tutoral.
+    """Base class for example plugin used in the tutorial.
     """
 
     def __init__(self, max_width=60):

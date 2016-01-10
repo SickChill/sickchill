@@ -157,10 +157,15 @@ def is_torrent_or_nzb_file(filename):
     return filename.rpartition('.')[2].lower() in ['nzb', 'torrent']
 
 
-def pretty_file_size(size):
+def pretty_file_size(size, use_decimal=False, **kwargs):
     """
     Return a human readable representation of the provided ``size``.
+
     :param size: The size to convert
+    :param use_decimal: use decimal instead of binary prefixes (e.g. kilo = 1000 instead of 1024)
+
+    :keyword units: A list of unit names in ascending order. Default units: [u'B', u'KB', u'MB', u'GB', u'TB', u'PB']
+
     :return: The converted size
     """
     try:
@@ -169,11 +174,56 @@ def pretty_file_size(size):
         size = 0.
 
     remaining_size = size
-    for unit in ['B', 'KB', 'MB', 'GB', 'TB', 'PB']:
-        if remaining_size < 1024.:
+    units = kwargs.pop('units', ['B', 'KB', 'MB', 'GB', 'TB', 'PB'])
+    block = 1024. if not use_decimal else 1000.
+    for unit in units:
+        if remaining_size < block:
             return '%3.2f %s' % (remaining_size, unit)
-        remaining_size /= 1024.
+        remaining_size /= block
     return size
+
+
+def convert_size(size, default=None, use_decimal=False, **kwargs):
+    """
+    Convert a file size into the number of bytes
+
+    :param size: to be converted
+    :param default: value to return if conversion fails
+    :param use_decimal: use decimal instead of binary prefixes (e.g. kilo = 1000 instead of 1024)
+
+    :keyword units: A list of (uppercase) unit names in ascending order. Default units: [u'B', u'KB', u'MB', u'GB', u'TB', u'PB']
+
+    :returns: the number of bytes, the default value, or 0
+    """
+    result = None
+
+    try:
+        size_tuple = size.strip().split(u' ')
+        scalar, units = size_tuple[0], size_tuple[1:]
+
+        scalar = float(scalar)
+        units = units[0].upper() if units else None
+
+        scale = kwargs.pop(u'units', [u'B', u'KB', u'MB', u'GB', u'TB', u'PB'])
+        scalar *= (1024 if not use_decimal else 1000) ** scale.index(units)
+
+        result = scalar
+
+    except AttributeError:
+        result = size if size is not None else default
+
+    except ValueError:
+        result = default
+
+    finally:
+        try:
+            if result != default:
+                result = long(result)
+                result = max(result, 0)
+        except (TypeError, ValueError):
+            pass
+
+    return result
 
 
 def remove_extension(filename):
@@ -238,5 +288,5 @@ def try_int(candidate, default_value=0):
 
     try:
         return int(candidate)
-    except Exception:
+    except (ValueError, TypeError):
         return default_value

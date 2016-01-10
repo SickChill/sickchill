@@ -23,10 +23,11 @@ from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class ThePirateBayProvider(TorrentProvider):
+class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "ThePirateBay")
@@ -65,12 +66,10 @@ class ThePirateBayProvider(TorrentProvider):
 
         self.re_title_url = r'/torrent/(?P<id>\d+)/(?P<title>.*?)".+?(?P<url>magnet.*?)".+?Size (?P<size>[\d\.]*&nbsp;[TGKMiB]{2,3}).+?(?P<seeders>\d+)</td>.+?(?P<leechers>\d+)</td>'
 
-    def search(self, search_strings, age=0, ep_obj=None):
-
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
@@ -94,9 +93,12 @@ class ThePirateBayProvider(TorrentProvider):
                     title = torrent.group('title')
                     download_url = torrent.group('url')
                     # id = int(torrent.group('id'))
-                    size = self._convertSize(torrent.group('size'))
+
                     seeders = int(torrent.group('seeders'))
                     leechers = int(torrent.group('leechers'))
+                    torrent_size = torrent.group('size')
+
+                    size = convert_size(torrent_size) or -1
 
                     if not all([title, download_url]):
                         continue
@@ -117,27 +119,14 @@ class ThePirateBayProvider(TorrentProvider):
                     if mode != 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                    items[mode].append(item)
+                    items.append(item)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
-
-    def _convertSize(self, size):
-        size, modifier = size.split('&nbsp;')
-        size = float(size)
-        if modifier in 'KiB':
-            size *= 1024 ** 1
-        elif modifier in 'MiB':
-            size *= 1024 ** 2
-        elif modifier in 'GiB':
-            size *= 1024 ** 3
-        elif modifier in 'TiB':
-            size *= 1024 ** 4
-        return long(size)
 
     def seed_ratio(self):
         return self.ratio

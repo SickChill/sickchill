@@ -28,11 +28,12 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class MoreThanTVProvider(TorrentProvider):
+class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
@@ -91,28 +92,24 @@ class MoreThanTVProvider(TorrentProvider):
 
             return True
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        # freeleech = '3' if self.freeleech else '0'
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
+        for mode in search_params:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (search_string.replace('(', '').replace(')', ''))
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                search_url = self.urls['search'] % (search_string.replace('(', '').replace(')', ''))
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 # returns top 15 results by default, expandable in user profile to 100
-                data = self.get_url(searchURL)
+                data = self.get_url(search_url)
                 if not data:
                     continue
 
@@ -129,10 +126,14 @@ class MoreThanTVProvider(TorrentProvider):
                         # skip colheader
                         for result in torrent_rows[1:]:
                             cells = result.findChildren('td')
-                            link = cells[1].find('a', attrs={'title': 'Download'})
 
                             # skip if torrent has been nuked due to poor quality
-                            if cells[1].find('img', alt='Nuked') is not None:
+                            nuked = cells[1].find('img', alt='Nuked')
+                            if nuked:
+                                continue
+
+                            link = cells[1].find('a', attrs={'title': 'Download'})
+                            if not link:
                                 continue
 
                             torrent_id_long = link['href'].replace('torrents.php?action=download&id=', '')
@@ -145,12 +146,10 @@ class MoreThanTVProvider(TorrentProvider):
                                 download_url = self.urls['download'] % torrent_id_long
 
                                 seeders = cells[6].contents[0]
-
                                 leechers = cells[7].contents[0]
+                                torrent_size = cells[4].text.strip()
 
-                                size = -1
-                                if re.match(r'\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]', cells[4].contents[0]):
-                                    size = self._convertSize(cells[4].text.strip())
+                                size = convert_size(torrent_size) or -1
 
                             except (AttributeError, TypeError):
                                 continue
@@ -168,37 +167,20 @@ class MoreThanTVProvider(TorrentProvider):
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                            items[mode].append(item)
+                            items.append(item)
 
-                except Exception as e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
     def seed_ratio(self):
         return self.ratio
-
-    def _convertSize(self, sizeString):
-        size = sizeString[:-2].strip()
-        modifier = sizeString[-2:].upper()
-        try:
-            size = float(size)
-            if modifier in 'KB':
-                size *= 1024 ** 1
-            elif modifier in 'MB':
-                size *= 1024 ** 2
-            elif modifier in 'GB':
-                size *= 1024 ** 3
-            elif modifier in 'TB':
-                size *= 1024 ** 4
-        except Exception:
-            size = -1
-        return long(size)
 
 
 class MoreThanTVCache(tvcache.TVCache):

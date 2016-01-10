@@ -1,6 +1,7 @@
 import logging
 
 from .enabled import EnabledExtensionManager
+from .exception import NoMatches
 
 LOG = logging.getLogger(__name__)
 
@@ -66,7 +67,7 @@ class DispatchExtensionManager(EnabledExtensionManager):
         """
         if not self.extensions:
             # FIXME: Use a more specific exception class here.
-            raise RuntimeError('No %s extensions found' % self.namespace)
+            raise NoMatches('No %s extensions found' % self.namespace)
         response = []
         for e in self.extensions:
             if filter_func(e, *args, **kwds):

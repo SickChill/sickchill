@@ -1,4 +1,4 @@
-"""Tests for stevedore.exmaple.simple
+"""Tests for stevedore.example.simple
 """
 
 from stevedore.example import simple

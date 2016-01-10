@@ -127,6 +127,7 @@ def remove_non_release_groups(name):
         r'\.GiuseppeTnT$': 'searchre',
         r'\.Renc$': 'searchre',
         r'\.gz$': 'searchre',
+        r'(?<![57])\.1$': 'searchre',
         r'-NZBGEEK$': 'searchre',
         r'-Siklopentan$': 'searchre',
         r'-Chamele0n$': 'searchre',

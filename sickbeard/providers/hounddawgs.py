@@ -22,7 +22,7 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -90,14 +90,12 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         return True
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
-
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
@@ -149,7 +147,7 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 download_url = self.urls['base_url'] + allAs[0].attrs['href']
                                 torrent_size = result.find("td", class_="nobr").find_next_sibling("td").string
                                 if torrent_size:
-                                    size = self._convertSize(torrent_size)
+                                    size = convert_size(torrent_size) or -1
                                 seeders = try_int((result.findAll('td')[6]).text)
                                 leechers = try_int((result.findAll('td')[7]).text)
 
@@ -169,30 +167,17 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                            items[mode].append(item)
+                            items.append(item)
 
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
-
-    @staticmethod
-    def _convertSize(size):
-        size = re.sub(r'[i, ]+', '', size)
-        matches = re.match(r'([\d.]+)([TGMK])', size.strip().upper())
-        if not matches:
-            return -1
-
-        size = matches.group(1)
-        modifier = matches.group(2)
-
-        mod = {'K': 1, 'M': 2, 'G': 3, 'T': 4}
-        return long(float(size) * 1024 ** mod[modifier])
 
     def seed_ratio(self):
         return self.ratio

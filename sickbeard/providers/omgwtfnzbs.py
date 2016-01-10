@@ -24,7 +24,6 @@ import sickbeard
 from sickbeard import tvcache
 from sickbeard import classes
 from sickbeard import logger
-from sickbeard import show_name_helpers
 from sickrage.helper.common import try_int
 from sickrage.providers.nzb.NZBProvider import NZBProvider
 
@@ -37,13 +36,17 @@ class OmgwtfnzbsProvider(NZBProvider):
         self.api_key = None
         self.cache = OmgwtfnzbsCache(self)
 
-        self.urls = {'base_url': 'https://omgwtfnzbs.org/'}
-        self.url = self.urls['base_url']
+        self.url = 'https://omgwtfnzbs.org/'
+        self.urls = {
+            'rss': 'https://rss.omgwtfnzbs.org/rss-download.php',
+            'api': 'https://api.omgwtfnzbs.org/json/'
+        }
 
     def _check_auth(self):
 
         if not self.username or not self.api_key:
             logger.log(u"Invalid api key. Check your settings", logger.WARNING)
+            return False
 
         return True
 
@@ -56,15 +59,13 @@ class OmgwtfnzbsProvider(NZBProvider):
             # provider doesn't return xml on error
             return True
         else:
-            parsedJSON = parsed_data
+            if 'notice' in parsed_data:
+                description_text = parsed_data.get('notice')
 
-            if 'notice' in parsedJSON:
-                description_text = parsedJSON.get('notice')
-
-                if 'information is incorrect' in parsedJSON.get('notice'):
+                if 'information is incorrect' in parsed_data.get('notice'):
                     logger.log(u"Invalid api key. Check your settings", logger.WARNING)
 
-                elif '0 results matched your terms' in parsedJSON.get('notice'):
+                elif '0 results matched your terms' in parsed_data.get('notice'):
                     return True
 
                 else:
@@ -73,51 +74,54 @@ class OmgwtfnzbsProvider(NZBProvider):
 
             return True
 
-    def _get_season_search_strings(self, ep_obj):
-        return [x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, ep_obj)]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-        return [x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
-
     def _get_title_and_url(self, item):
         return item['release'], item['getnzb']
 
     def _get_size(self, item):
         return try_int(item['sizebytes'], -1)
 
-    def search(self, search, age=0, ep_obj=None):
-
-        self._check_auth()
-
-        params = {'user': self.username,
-                  'api': self.api_key,
-                  'eng': 1,
-                  'catid': '19,20',  # SD,HD
-                  'retention': sickbeard.USENET_RETENTION,
-                  'search': search}
-
-        if age or not params['retention']:
-            params['retention'] = age
-
-        searchURL = 'https://api.omgwtfnzbs.org/json/?' + urllib.urlencode(params)
-        logger.log(u"Search string: %s" % params, logger.DEBUG)
-        logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-
-        parsedJSON = self.get_url(searchURL, json=True)
-        if not parsedJSON:
-            return []
-
-        if self._checkAuthFromData(parsedJSON, is_XML=False):
-            results = []
-
-            for item in parsedJSON:
-                if 'release' in item and 'getnzb' in item:
-                    logger.log(u"Found result: %s " % item.get('title'), logger.DEBUG)
-                    results.append(item)
-
+    def search(self, search_strings, age=0, ep_obj=None):
+        results = []
+        if not self._check_auth():
             return results
 
-        return []
+        search_params = {
+            'user': self.username,
+            'api': self.api_key,
+            'eng': 1,
+            'catid': '19,20',  # SD,HD
+            'retention': sickbeard.USENET_RETENTION,
+        }
+        if age or not search_params['retention']:
+            search_params['retention'] = age
+
+        for mode in search_strings:
+            items = []
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            for search_string in search_strings[mode]:
+
+                search_params['search'] = search_string
+
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+
+                logger.log(u"Search URL: %s" % self.urls['api'] + '?' + urllib.urlencode(search_params), logger.DEBUG)
+
+                data = self.get_url(self.urls['api'], params=search_params, json=True)
+                if not data:
+                    continue
+
+                if self._checkAuthFromData(data, is_XML=False):
+                    continue
+
+                for item in data:
+                    if 'release' in item and 'getnzb' in item:
+                        logger.log(u"Found result: %s " % item.get('title'), logger.DEBUG)
+                        items.append(item)
+
+            results += items
+
+        return results
 
     def find_propers(self, search_date=None):
         search_terms = ['.PROPER.', '.REPACK.']
@@ -126,7 +130,6 @@ class OmgwtfnzbsProvider(NZBProvider):
         for term in search_terms:
             for item in self.search(term, age=4):
                 if 'usenetage' in item:
-
                     title, url = self._get_title_and_url(item)
                     try:
                         result_date = datetime.fromtimestamp(int(item['usenetage']))
@@ -165,12 +168,14 @@ class OmgwtfnzbsCache(tvcache.TVCache):
         return title, url
 
     def _getRSSData(self):
-        params = {'user': provider.username,
-                  'api': provider.api_key,
-                  'eng': 1,
-                  'catid': '19,20'}  # SD,HD
+        search_params = {
+            'user': provider.username,
+            'api': provider.api_key,
+            'eng': 1,
+            'catid': '19,20'  # SD,HD
+        }
 
-        rss_url = 'https://rss.omgwtfnzbs.org/rss-download.php?' + urllib.urlencode(params)
+        rss_url = self.provider.urls['rss'] + '?' + urllib.urlencode(search_params)
 
         logger.log(u"Cache update URL: %s" % rss_url, logger.DEBUG)
 

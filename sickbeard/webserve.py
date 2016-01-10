@@ -803,6 +803,15 @@ class Home(WebRoot):
             return "Problem sending SMS: " + message
 
     @staticmethod
+    def testTelegram(telegram_id=None, telegram_apikey=None):
+
+        result, message = notifiers.telegram_notifier.test_notify(telegram_id, telegram_apikey)
+        if result:
+            return "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
+        else:
+            return "Error sending Telegram notification: " + message
+
+    @staticmethod
     def testGrowl(host=None, password=None):
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
@@ -1211,9 +1220,11 @@ class Home(WebRoot):
             [showObj.indexerid]
         )
 
+        min_season = 0 if sickbeard.DISPLAY_SHOW_SPECIALS else 1
+
         sqlResults = myDB.select(
-            "SELECT * FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
-            [showObj.indexerid]
+            "SELECT * FROM tv_episodes WHERE showid = ? and season >= ? ORDER BY season DESC, episode DESC",
+            [showObj.indexerid, min_season]
         )
 
         t = PageTemplate(rh=self, filename="displayShow.mako")
@@ -4750,6 +4761,8 @@ class ConfigNotifications(Config):
                           growl_notify_onsubtitledownload=None, growl_host=None, growl_password=None,
                           use_freemobile=None, freemobile_notify_onsnatch=None, freemobile_notify_ondownload=None,
                           freemobile_notify_onsubtitledownload=None, freemobile_id=None, freemobile_apikey=None,
+                          use_telegram=None, telegram_notify_onsnatch=None, telegram_notify_ondownload=None,
+                          telegram_notify_onsubtitledownload=None, telegram_id=None, telegram_apikey=None,
                           use_prowl=None, prowl_notify_onsnatch=None, prowl_notify_ondownload=None,
                           prowl_notify_onsubtitledownload=None, prowl_api=None, prowl_priority=0,
                           prowl_show_list=None, prowl_show=None, prowl_message_title=None,
@@ -4830,6 +4843,13 @@ class ConfigNotifications(Config):
         sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(freemobile_notify_onsubtitledownload)
         sickbeard.FREEMOBILE_ID = freemobile_id
         sickbeard.FREEMOBILE_APIKEY = freemobile_apikey
+
+        sickbeard.USE_TELEGRAM = config.checkbox_to_value(use_telegram)
+        sickbeard.TELEGRAM_NOTIFY_ONSNATCH = config.checkbox_to_value(telegram_notify_onsnatch)
+        sickbeard.TELEGRAM_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(telegram_notify_ondownload)
+        sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(telegram_notify_onsubtitledownload)
+        sickbeard.TELEGRAM_ID = telegram_id
+        sickbeard.TELEGRAM_APIKEY = telegram_apikey
 
         sickbeard.USE_PROWL = config.checkbox_to_value(use_prowl)
         sickbeard.PROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(prowl_notify_onsnatch)
@@ -5115,7 +5135,7 @@ class ErrorLogs(WebRoot):
                     logName = match.group(8)
                     if not sickbeard.DEBUG and (level == 'DEBUG' or level == 'DB'):
                         continue
-                    if level not in logger.reverseNames:
+                    if level not in logger.LOGGING_LEVELS:
                         lastLine = False
                         continue
 
@@ -5123,7 +5143,7 @@ class ErrorLogs(WebRoot):
                         lastLine = True
                         finalData.append(x)
                         numLines += 1
-                    elif not logSearch and logger.reverseNames[level] >= minLevel and (logFilter == '<NONE>' or logName.startswith(logFilter)):
+                    elif not logSearch and logger.LOGGING_LEVELS[level] >= minLevel and (logFilter == '<NONE>' or logName.startswith(logFilter)):
                         lastLine = True
                         finalData.append(x)
                         numLines += 1
@@ -5175,13 +5195,13 @@ class ErrorLogs(WebRoot):
 
         data = []
 
-        if ek(os.path.isfile, logger.logFile):
-            with io.open(logger.logFile, 'r', encoding='utf-8') as f:
+        if ek(os.path.isfile, logger.log_file):
+            with io.open(logger.log_file, 'r', encoding='utf-8') as f:
                 data = Get_Data(minLevel, f.readlines(), 0, regex, logFilter, logSearch, maxLines)
 
         for i in range(1, int(sickbeard.LOG_NR)):
-            if ek(os.path.isfile, logger.logFile + "." + str(i)) and (len(data) <= maxLines):
-                with io.open(logger.logFile + "." + str(i), 'r', encoding='utf-8') as f:
+            if ek(os.path.isfile, logger.log_file + "." + str(i)) and (len(data) <= maxLines):
+                with io.open(logger.log_file + "." + str(i), 'r', encoding='utf-8') as f:
                     data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 
         return t.render(

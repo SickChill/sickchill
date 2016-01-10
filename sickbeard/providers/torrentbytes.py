@@ -24,10 +24,11 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TorrentBytesProvider(TorrentProvider):
+class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
@@ -40,11 +41,13 @@ class TorrentBytesProvider(TorrentProvider):
         self.minleech = None
         self.freeleech = False
 
-        self.urls = {'base_url': 'https://www.torrentbytes.net',
-                     'login': 'https://www.torrentbytes.net/takelogin.php',
-                     'detail': 'https://www.torrentbytes.net/details.php?id=%s',
-                     'search': 'https://www.torrentbytes.net/browse.php?search=%s%s',
-                     'download': 'https://www.torrentbytes.net/download.php?id=%s&name=%s'}
+        self.urls = {
+            'base_url': 'https://www.torrentbytes.net',
+            'login': 'https://www.torrentbytes.net/takelogin.php',
+            'detail': 'https://www.torrentbytes.net/details.php?id=%s',
+            'search': 'https://www.torrentbytes.net/browse.php?search=%s%s',
+            'download': 'https://www.torrentbytes.net/download.php?id=%s&name=%s'
+        }
 
         self.url = self.urls['base_url']
 
@@ -71,15 +74,13 @@ class TorrentBytesProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
+        for mode in search_params:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
@@ -106,7 +107,7 @@ class TorrentBytesProvider(TorrentProvider):
 
                         for result in torrent_rows[1:]:
                             cells = result.find_all('td')
-                            size = None
+                            torrent_size = None
                             link = cells[1].find('a', attrs={'class': 'index'})
 
                             full_id = link['href'].replace('details.php?id=', '')
@@ -132,11 +133,7 @@ class TorrentBytesProvider(TorrentProvider):
                                 leechers = int(cells[9].find('span').contents[0])
 
                                 # Need size for failed downloads handling
-                                if size is None:
-                                    if re.match(r'[0-9]+,?\.?[0-9]*[KkMmGg]+[Bb]+', cells[6].text):
-                                        size = self._convertSize(cells[6].text)
-                                        if not size:
-                                            size = -1
+                                torrent_size = cells[6].text if torrent_size is None else torrent_size
 
                             except (AttributeError, TypeError):
                                 continue
@@ -150,38 +147,26 @@ class TorrentBytesProvider(TorrentProvider):
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
+                            size = convert_size(torrent_size) or -1
+
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                            items[mode].append(item)
+                            items.append(item)
 
-                except Exception as e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
     def seed_ratio(self):
         return self.ratio
-
-    def _convertSize(self, sizeString):
-        size = sizeString[:-2]
-        modifier = sizeString[-2:]
-        size = float(size)
-        if modifier in 'KB':
-            size *= 1024 ** 1
-        elif modifier in 'MB':
-            size *= 1024 ** 2
-        elif modifier in 'GB':
-            size *= 1024 ** 3
-        elif modifier in 'TB':
-            size *= 1024 ** 4
-        return long(size)
 
 
 class TorrentBytesCache(tvcache.TVCache):

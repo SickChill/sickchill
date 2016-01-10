@@ -1388,6 +1388,78 @@
 
                     </fieldset>
                 </div><!-- /freemobile component-group //-->
+                <div class="component-group">
+                    <div class="component-group-desc">
+                        <img class="notifier-icon" src="${srRoot}/images/notifiers/telegram.png" alt="" title="Telegram" />
+                        <h3><a href="${anon_url('https://telegram.org/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Telegram</a></h3>
+                        <p>Telegram is a cloud-based instant messaging service.</p>
+                    </div>
+                    <fieldset class="component-group-list">
+                        <div class="field-pair">
+                            <label for="use_telegram">
+                                <span class="component-title">Enable</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" class="enabler" name="use_telegram" id="use_telegram" ${('', 'checked="checked"')[bool(sickbeard.USE_TELEGRAM)]}/>
+                                    <p>Send Telegram notifications?</p>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div id="content_use_telegram">
+                            <div class="field-pair">
+                                <label for="telegram_notify_onsnatch">
+                                    <span class="component-title">Notify on snatch</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="telegram_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONSNATCH)]}/>
+                                        <p>Send a message when a download starts?</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="telegram_notify_ondownload">
+                                    <span class="component-title">Notify on download</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="telegram_notify_ondownload" id="telegram_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONDOWNLOAD)]}/>
+                                        <p>Send a message when a download finishes?</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="telegram_notify_onsubtitledownload">
+                                    <span class="component-title">Notify on subtitle download</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="telegram_notify_onsubtitledownload" id="telegram_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                        <p>Send a message when subtitles are downloaded?</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="telegram_id">
+                                    <span class="component-title">User/group ID</span>
+                                    <input type="text" name="telegram_id" id="telegram_id" value="${sickbeard.TELEGRAM_ID}" class="form-control input-sm input250" autocapitalize="off" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Contact @myidbot on Telegram to get an ID</span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="telegram_password">
+                                    <span class="component-title">Bot API token</span>
+                                    <input type="text" name="telegram_apikey" id="telegram_apikey" value="${sickbeard.TELEGRAM_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Contact @BotFather on Telegram to set up one</span>
+                                </label>
+                            </div>
+                            <div class="testNotification" id="testTelegram-result">Click below to test your settings.</div>
+                            <input  class="btn" type="button" value="Test Telegram" id="testTelegram" />
+                            <input type="submit" class="config_submitter btn" value="Save Changes" />
+                        </div><!-- /content_use_telegram //-->
+
+                    </fieldset>
+                </div><!-- /telegram component-group //-->
 
             </div>
 
@@ -1404,7 +1476,7 @@
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
                                     <input type="checkbox" class="enabler" name="use_twitter" id="use_twitter" ${('', 'checked="checked"')[bool(sickbeard.USE_TWITTER)]}/>
-                                    <p>should SickRage post tweets on Twitter?</p>
+                                    <p>Should SickRage post tweets on Twitter?</p>
                                 </span>
                             </label>
                             <label>

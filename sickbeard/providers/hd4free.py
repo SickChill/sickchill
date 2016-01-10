@@ -20,10 +20,11 @@
 from urllib import urlencode
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
         TorrentProvider.__init__(self, "HD4Free")
@@ -31,7 +32,7 @@ class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         self.public = True
         self.url = 'https://hd4free.xyz'
         self.ratio = 0
-        self.cache = HD4FREECache(self)
+        self.cache = HD4FreeCache(self)
         self.minseed, self.minleech = 2 * [None]
         self.username = None
         self.api_key = None
@@ -44,21 +45,19 @@ class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         logger.log('Your authentication credentials for %s are missing, check your config.' % self.name, logger.WARNING)
         return False
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
-
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self._check_auth:
             return results
-            
+
         search_params = {
             'tv': 'true',
             'username': self.username,
             'apikey': self.api_key
         }
 
-        for mode in search_strings.keys():  # Mode = RSS, Season, Episode
+        for mode in search_strings:  # Mode = RSS, Season, Episode
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
@@ -87,8 +86,10 @@ class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                     seeders = jdata[i]["seeders"]
                     leechers = jdata[i]["leechers"]
                     title = jdata[i]["release_name"]
-                    size = jdata[i]["size"]
+                    torrent_size = jdata[i]["size"]
                     download_url = jdata[i]["download_url"]
+
+                    size = convert_size(torrent_size) or -1
 
                     if not all([title, download_url]):
                         continue
@@ -103,12 +104,12 @@ class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
 
                     item = title, download_url, size, seeders, leechers
-                    items[mode].append(item)
+                    items.append(item)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
@@ -116,7 +117,7 @@ class HD4FREEProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         return self.ratio
 
 
-class HD4FREECache(tvcache.TVCache):
+class HD4FreeCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
         tvcache.TVCache.__init__(self, provider_obj)
@@ -129,4 +130,4 @@ class HD4FREECache(tvcache.TVCache):
         search_params = {'RSS': ['']}
         return {'entries': self.provider.search(search_params)}
 
-provider = HD4FREEProvider()
+provider = HD4FreeProvider()

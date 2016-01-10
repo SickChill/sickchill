@@ -25,6 +25,7 @@ import os
 import re
 import urllib
 import datetime
+import time
 from bs4 import BeautifulSoup
 
 import sickbeard
@@ -37,9 +38,10 @@ from sickbeard import db
 from sickbeard.common import Quality
 from sickrage.helper.encoding import ek, ss
 from sickrage.show.Show import Show
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 # from sickbeard.common import USER_AGENT
 from sickrage.providers.nzb.NZBProvider import NZBProvider
+from sickbeard.common  import cpu_presets
 
 
 class NewznabProvider(NZBProvider):
@@ -332,6 +334,7 @@ class NewznabProvider(NZBProvider):
         search_url = ek(os.path.join, self.url, 'api?') + urllib.urlencode(params)
         logger.log(u"Search url: %s" % search_url, logger.DEBUG)
         data = self.get_url(search_url)
+        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
         if not data:
             return results
 
@@ -357,14 +360,16 @@ class NewznabProvider(NZBProvider):
                 continue
 
             seeders = leechers = None
-            size = try_int(item.size, -1)
+            torrent_size = item.size
             for attr in item.findAll('newznab:attr') + item.findAll('torznab:attr'):
-                size = try_int(attr['value'], -1) if attr['name'] == 'size' else size
+                torrent_size = attr['value'] if attr['name'] == 'size' else torrent_size
                 seeders = try_int(attr['value'], 1) if attr['name'] == 'seeders' else seeders
-                leechers = try_int(attr['value'], 0) if attr['name'] == 'peers' else leechers
+                leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers
 
-            if not size or (torznab and (seeders is None or leechers is None)):
+            if not torrent_size or (torznab and (seeders is None or leechers is None)):
                 continue
+
+            size = convert_size(torrent_size) or -1
 
             result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
             results.append(result)

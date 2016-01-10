@@ -24,10 +24,11 @@ from requests.auth import AuthBase
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class T411Provider(TorrentProvider):
+class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
         TorrentProvider.__init__(self, "T411")
 
@@ -72,22 +73,20 @@ class T411Provider(TorrentProvider):
         if response and 'token' in response:
             self.token = response['token']
             self.tokenLastUpdate = time.time()
-            self.uid = response['uid'].encode('ascii', 'ignore')
+            # self.uid = response['uid'].encode('ascii', 'ignore')
             self.session.auth = T411Auth(self.token)
             return True
         else:
             logger.log(u"Token not found in authentication response", logger.WARNING)
             return False
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
+        for mode in search_params:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
@@ -123,10 +122,11 @@ class T411Provider(TorrentProvider):
                                 if not all([title, download_url]):
                                     continue
 
-                                size = int(torrent['size'])
                                 seeders = int(torrent['seeders'])
                                 leechers = int(torrent['leechers'])
                                 verified = bool(torrent['isVerified'])
+                                torrent_size = torrent['size']
+                                size = convert_size(torrent_size) or -1
 
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
@@ -142,7 +142,7 @@ class T411Provider(TorrentProvider):
                                 if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                                items[mode].append(item)
+                                items.append(item)
 
                             except Exception:
                                 logger.log(u"Invalid torrent data, skipping result: %s" % torrent, logger.DEBUG)
@@ -153,9 +153,9 @@ class T411Provider(TorrentProvider):
                         logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
@@ -163,7 +163,7 @@ class T411Provider(TorrentProvider):
         return self.ratio
 
 
-class T411Auth(AuthBase):
+class T411Auth(AuthBase):  # pylint: disable=too-few-public-methods
     """Attaches HTTP Authentication to the given Request object."""
     def __init__(self, token):
         self.token = token

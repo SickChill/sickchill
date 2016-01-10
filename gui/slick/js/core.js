@@ -700,6 +700,36 @@ var SICKRAGE = {
                 });
             });
 
+            $('#testTelegram').on('click', function () {
+                var telegram = {};
+                telegram.id = $.trim($('#telegram_id').val());
+                telegram.apikey = $.trim($('#telegram_apikey').val());
+                if (!telegram.id || !telegram.apikey) {
+                    $('#testTelegram-result').html('Please fill out the necessary fields above.');
+                    if (!telegram.id) {
+                        $('#telegram_id').addClass('warning');
+                    } else {
+                        $('#telegram_id').removeClass('warning');
+                    }
+                    if (!telegram.apikey) {
+                        $('#telegram_apikey').addClass('warning');
+                    } else {
+                        $('#telegram_apikey').removeClass('warning');
+                    }
+                    return;
+                }
+                $('#telegram_id,#telegram_apikey').removeClass('warning');
+                $(this).prop('disabled', true);
+                $('#testTelegram-result').html(loading);
+                $.get(srRoot + '/home/testTelegram', {
+                    'telegram_id': telegram.id,
+                    'telegram_apikey': telegram.apikey
+                }).done(function (data) {
+                    $('#testTelegram-result').html(data);
+                    $('#testTelegram').prop('disabled', false);
+                });
+            });
+
             $('#TraktGetPin').on('click', function () {
                 window.open($('#trakt_pin_url').val(), "popUp", "toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=550");
                 $('#trakt_pin').removeClass('hide');
@@ -745,7 +775,7 @@ var SICKRAGE = {
                 }
 
                 if (/\s/g.test(trakt.trendingBlacklist)) {
-                    $('#testTrakt-result').html('Check blacklist name; the value need to be a trakt slug');
+                    $('#testTrakt-result').html('Check blacklist name; the value needs to be a trakt slug');
                     $('#trakt_blacklist_name').addClass('warning');
                     return;
                 }
@@ -1805,8 +1835,8 @@ var SICKRAGE = {
             $('#filterShowName').on('input', _.debounce(function() {
                 $('.show-grid').isotope({
                     filter: function () {
-                      var name = $(this).data('name');
-                      return name.toLowerCase();
+                      var name = $(this).attr('data-name').toLowerCase();
+                      return name.indexOf($('#filterShowName').val()) > -1;
                     }
                 });
             }, 500));
@@ -1916,7 +1946,7 @@ var SICKRAGE = {
                             if (f === '') {
                                 test = true;
                             } else {
-                                var result = f.match(/(<|<=|>=|>)\s(\d+)/i);
+                                var result = f.match(/(<|<=|>=|>)\s+(\d+)/i);
                                 if (result) {
                                     if (result[1] === "<") {
                                         if (pct < parseInt(result[2])) {
@@ -1937,7 +1967,7 @@ var SICKRAGE = {
                                     }
                                 }
 
-                                result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
+                                result = f.match(/(\d+)\s(-|to)\s+(\d+)/i);
                                 if (result) {
                                     if ((result[2] === "-") || (result[2] === "to")) {
                                         if ((pct >= parseInt(result[1])) && (pct <= parseInt(result[3]))) {
@@ -1982,8 +2012,8 @@ var SICKRAGE = {
                     },
                     getSortData: {
                         name: function (itemElem) {
-                            var name = $(itemElem).attr('data-name');
-                            return (metaToBool('sickbeard.SORT_ARTICLE') ? (name || '') : (name || '').replace(/^(The|A|An)\s/i,''));
+                            var name = $(itemElem).attr('data-name') || '';
+                            return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:The|A|An)\s)/i, '')).toLowerCase();
                         },
                         network: '[data-network]',
                         date: function (itemElem) {
@@ -2829,7 +2859,7 @@ var SICKRAGE = {
                         getSortData: {
                             name: function(itemElem) {
                                 var name = $(itemElem).attr('data-name') || '';
-                                return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^(The|A|An)\s/i, '')).toLowerCase();
+                                return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:The|A|An)\s)/i, '')).toLowerCase();
                             },
                             rating: '[data-rating] parseInt',
                             votes: '[data-votes] parseInt',

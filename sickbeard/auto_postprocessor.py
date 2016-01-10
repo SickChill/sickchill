@@ -47,7 +47,7 @@ class PostProcessor(object):
             return
 
         if not (force or ek(os.path.isabs, sickbeard.TV_DOWNLOAD_DIR)):
-            logger.log(u"Automatic post-processing attempted but directory is relatve "
+            logger.log(u"Automatic post-processing attempted but directory is relative "
                        u"(and probably not what you really want to process): %s" %
                        sickbeard.TV_DOWNLOAD_DIR, logger.ERROR)
             self.amActive = False

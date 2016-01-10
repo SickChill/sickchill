@@ -22,10 +22,11 @@ import re
 
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class NyaaProvider(TorrentProvider):
+class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "NyaaTorrents")
@@ -45,14 +46,13 @@ class NyaaProvider(TorrentProvider):
         self.minleech = 0
         self.confirmed = False
 
-    def search(self, search_strings, age=0, ep_obj=None):
-        if self.show and not self.show.is_anime:
-            return []
-
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
+        if self.show and not self.show.is_anime:
+            return results
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
@@ -80,8 +80,8 @@ class NyaaProvider(TorrentProvider):
                     if not all([title, download_url]):
                         continue
 
-                    seeders, leechers, size, verified = s.findall(curItem['summary'])[0]
-                    size = self._convertSize(size)
+                    seeders, leechers, torrent_size, verified = s.findall(curItem['summary'])[0]
+                    size = convert_size(torrent_size) or -1
 
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
@@ -97,28 +97,13 @@ class NyaaProvider(TorrentProvider):
                     if mode != 'RSS':
                         logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                    items[mode].append(item)
+                    items.append(item)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            items.sort(key=lambda tup: tup[3], reverse=True)
+            results += items
 
         return results
-
-    @staticmethod
-    def _convertSize(size):
-        size, modifier = size.split(' ')
-        size = float(size)
-        if modifier in 'KiB':
-            size *= 1024 ** 1
-        elif modifier in 'MiB':
-            size *= 1024 ** 2
-        elif modifier in 'GiB':
-            size *= 1024 ** 3
-        elif modifier in 'TiB':
-            size *= 1024 ** 4
-        return long(size)
 
     def seed_ratio(self):
         return self.ratio

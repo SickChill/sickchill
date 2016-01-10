@@ -22,11 +22,11 @@ from urllib import quote_plus
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TORRENTPROJECTProvider(TorrentProvider):
+class TorrentProjectProvider(TorrentProvider):
     def __init__(self):
         TorrentProvider.__init__(self, "TorrentProject")
 
@@ -38,14 +38,12 @@ class TORRENTPROJECTProvider(TorrentProvider):
         self.headers.update({'User-Agent': USER_AGENT})
         self.minseed = None
         self.minleech = None
-        self.cache = TORRENTPROJECTCache(self)
+        self.cache = TorrentProjectCache(self)
 
     def search(self, search_strings, age=0, ep_obj=None):
-
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        for mode in search_strings.keys():  # Mode = RSS, Season, Episode
+        for mode in search_strings:  # Mode = RSS, Season, Episode
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
@@ -74,7 +72,8 @@ class TORRENTPROJECTProvider(TorrentProvider):
                         continue
 
                     t_hash = torrents[i]["torrent_hash"]
-                    size = int(torrents[i]["torrent_size"])
+                    torrent_size = torrents[i]["torrent_size"]
+                    size = convert_size(torrent_size) or -1
 
                     try:
                         assert seeders < 10
@@ -97,12 +96,12 @@ class TORRENTPROJECTProvider(TorrentProvider):
                     if mode != 'RSS':
                         logger.log(u"Found result: %s" % title, logger.DEBUG)
 
-                    items[mode].append(item)
+                    items.append(item)
 
             # For each search mode sort all the items by seeders
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
@@ -110,7 +109,7 @@ class TORRENTPROJECTProvider(TorrentProvider):
         return self.ratio
 
 
-class TORRENTPROJECTCache(tvcache.TVCache):
+class TorrentProjectCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
         tvcache.TVCache.__init__(self, provider_obj)
@@ -122,4 +121,4 @@ class TORRENTPROJECTCache(tvcache.TVCache):
         search_params = {'RSS': ['0day']}
         return {'entries': self.provider.search(search_params)}
 
-provider = TORRENTPROJECTProvider()
+provider = TorrentProjectProvider()
