@@ -46,7 +46,6 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.ratio = None
         self.minseed = None
         self.minleech = None
-        # self.freeleech = False
 
         self.urls = {'base_url': 'https://www.morethan.tv/',
                      'login': 'https://www.morethan.tv/login.php',
@@ -115,34 +114,31 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 try:
                     with BS4Parser(data, 'html5lib') as html:
-                        torrent_table = html.find('table', attrs={'class': 'torrent_table'})
-                        torrent_rows = torrent_table.findChildren('tr') if torrent_table else []
+                        torrent_table = html.find(id='torrent_table')
 
-                        # Continue only if one Release is found
-                        if len(torrent_rows) < 2:
+                        # Continue only if at least one release is found
+                        if not torrent_table:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
-                        # skip colheader
-                        for result in torrent_rows[1:]:
-                            cells = result.findChildren('td')
+                        torrent_rows = torrent_table.find_all('tr', class_='torrent')
 
-                            # skip if torrent has been nuked due to poor quality
+                        for result in torrent_rows:
+                            cells = result.find_all('td', recursive=False)
+
+                            # Skip if torrent has been nuked due to poor quality
                             nuked = cells[1].find('img', alt='Nuked')
                             if nuked:
                                 continue
 
-                            link = cells[1].find('a', attrs={'title': 'Download'})
+                            link = cells[1].find('a', class_='tooltip')
                             if not link:
                                 continue
 
                             torrent_id_long = link['href'].replace('torrents.php?action=download&id=', '')
 
                             try:
-                                if link.get('title', ''):
-                                    title = cells[1].find('a', {'title': 'View torrent'}).contents[0].strip()
-                                else:
-                                    title = link.contents[0]
+                                title = cells[1].find('a', {'title': 'View torrent'}).string
                                 download_url = self.urls['download'] % torrent_id_long
 
                                 seeders = cells[6].contents[0]
@@ -188,7 +184,7 @@ class MoreThanTVCache(tvcache.TVCache):
 
         tvcache.TVCache.__init__(self, provider_obj)
 
-        # poll delay in minutes
+        # Poll delay in minutes
         self.minTime = 20
 
     def _getRSSData(self):
