@@ -132,17 +132,21 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             if nuked:
                                 continue
 
-                            link = cells[1].find('a', attrs={'title': 'Download'})
+                            link = cells[1].find('span', attrs={'title': 'Download'}).parent
                             if not link:
+                                continue
+
+                            title_anchor = cells[1].find('a', attrs = {'dir': 'ltr'})
+                            if not title_anchor:
                                 continue
 
                             torrent_id_long = link['href'].replace('torrents.php?action=download&id=', '')
 
                             try:
-                                if link.get('title', ''):
+                                if title_anchor.get('title', ''):
                                     title = cells[1].find('a', {'title': 'View torrent'}).contents[0].strip()
                                 else:
-                                    title = link.contents[0]
+                                    title = title_anchor.contents[0]
                                 download_url = self.urls['download'] % torrent_id_long
 
                                 seeders = cells[6].contents[0]
