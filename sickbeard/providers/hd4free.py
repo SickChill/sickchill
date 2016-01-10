@@ -29,7 +29,6 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
     def __init__(self):
         TorrentProvider.__init__(self, "HD4Free")
 
-        self.public = True
         self.url = 'https://hd4free.xyz'
         self.ratio = 0
         self.cache = HD4FreeCache(self)
