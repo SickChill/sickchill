@@ -78,7 +78,7 @@
         // make a fileBrowserDialog object if one doesn't exist already
         if (!fileBrowserDialog) {
             // set up the jquery dialog
-            fileBrowserDialog = $('<div id="fileBrowserDialog" style="display:hidden"></div>').appendTo('body').dialog({
+            fileBrowserDialog = $('<div class="fileBrowserDialog" style="display:hidden"></div>').appendTo('body').dialog({
                 dialogClass: 'browserDialog',
                 title:       options.title,
                 position:    { my: 'center top', at: 'center top+60', of: window },
@@ -89,30 +89,26 @@
                 modal:       true,
                 autoOpen:    false
             });
-        }
-        else {
+        } else {
             // The title may change, even if fileBrowserDialog already exists
-            fileBrowserDialog.dialog('option', 'title', options.title);   
+            fileBrowserDialog.dialog('option', 'title', options.title);
         }
-        
-        fileBrowserDialog.dialog('option', 'buttons', [
-            {
-                text: 'Ok',
-                'class': 'btn',
-                click: function () {
-                    // store the browsed path to the associated text field
-                    callback(currentBrowserPath, options);
-                    $(this).dialog('close');
-                }
-            },
-            {
-                text: 'Cancel',
-                'class': 'btn',
-                click: function () {
-                    $(this).dialog('close');
-                }
+
+        fileBrowserDialog.dialog('option', 'buttons', [{
+            text: 'Ok',
+            'class': 'btn',
+            click: function () {
+                // store the browsed path to the associated text field
+                callback(currentBrowserPath, options);
+                $(this).dialog('close');
             }
-        ]);
+        }, {
+            text: 'Cancel',
+            'class': 'btn',
+            click: function () {
+                $(this).dialog('close');
+            }
+        }]);
 
         // set up the browser and launch the dialog
         var initialDir = '';
