@@ -253,7 +253,7 @@ def makeDir(path):
         try:
             ek(os.makedirs, path)
             # do the library update for synoindex
-            synoindex_notifier().addFolder(path)
+            synoindex_notifier.addFolder(path)
         except OSError:
             return False
     return True
@@ -473,7 +473,7 @@ def make_dirs(path):
                     # use normpath to remove end separator, otherwise checks permissions against itself
                     chmodAsParent(ek(os.path.normpath, sofar))
                     # do the library update for synoindex
-                    synoindex_notifier().addFolder(sofar)
+                    synoindex_notifier.addFolder(sofar)
                 except (OSError, IOError) as e:
                     logger.log(u"Failed creating %s : %r" % (sofar, ex(e)), logger.ERROR)
                     return False
@@ -553,7 +553,7 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
                 # need shutil.rmtree when ignore_items is really implemented
                 ek(os.rmdir, check_empty_dir)
                 # do the library update for synoindex
-                synoindex_notifier().deleteFolder(check_empty_dir)
+                synoindex_notifier.deleteFolder(check_empty_dir)
             except OSError as e:
                 logger.log(u"Unable to delete %s. Error: %r" % (check_empty_dir, repr(e)), logger.WARNING)
                 break
@@ -1772,8 +1772,8 @@ def getTVDBFromID(indexer_id, indexer):
 
 
 def is_ip_private(ip):
-    priv_lo = re.compile("^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
-    priv_24 = re.compile("^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
-    priv_20 = re.compile("^192\.168\.\d{1,3}.\d{1,3}$")
-    priv_16 = re.compile("^172.(1[6-9]|2[0-9]|3[0-1]).[0-9]{1,3}.[0-9]{1,3}$")
+    priv_lo = re.compile(r"^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
+    priv_24 = re.compile(r"^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
+    priv_20 = re.compile(r"^192\.168\.\d{1,3}.\d{1,3}$")
+    priv_16 = re.compile(r"^172.(1[6-9]|2[0-9]|3[0-1]).[0-9]{1,3}.[0-9]{1,3}$")
     return priv_lo.match(ip) or priv_24.match(ip) or priv_20.match(ip) or priv_16.match(ip)
