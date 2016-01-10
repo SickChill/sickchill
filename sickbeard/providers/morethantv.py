@@ -24,7 +24,6 @@
 import re
 import requests
 import traceback
-
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -34,9 +33,7 @@ from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
-
     def __init__(self):
-
         TorrentProvider.__init__(self, "MoreThanTV")
 
         self._uid = None
@@ -47,22 +44,22 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minseed = None
         self.minleech = None
 
-        self.urls = {'base_url': 'https://www.morethan.tv/',
-                     'login': 'https://www.morethan.tv/login.php',
-                     'detail': 'https://www.morethan.tv/torrents.php?id=%s',
-                     'search': 'https://www.morethan.tv/torrents.php?tags_type=1&order_by=time&order_way=desc&action=basic&searchsubmit=1&searchstr=%s',
-                     'download': 'https://www.morethan.tv/torrents.php?action=download&id=%s'}
+        self.urls = {
+            'base_url': 'https://www.morethan.tv/',
+            'login': 'https://www.morethan.tv/login.php',
+            'detail': 'https://www.morethan.tv/torrents.php?id=%s',
+            'search': 'https://www.morethan.tv/torrents.php?tags_type=1&order_by=time&order_way=desc&action=basic&searchsubmit=1&searchstr=%s',
+            'download': 'https://www.morethan.tv/torrents.php?action=download&id=%s'
+        }
 
         self.url = self.urls['base_url']
 
         self.cookies = None
-
-        self.proper_strings = ['PROPER', 'REPACK']
+        self.proper_strings = ['PROPER', 'REPACK', 'REAL']
 
         self.cache = MoreThanTVCache(self)
 
     def _check_auth(self):
-
         if not self.username or not self.password:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
@@ -99,6 +96,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         for mode in search_params:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
@@ -107,7 +105,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 search_url = self.urls['search'] % (search_string.replace('(', '').replace(')', ''))
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                # returns top 15 results by default, expandable in user profile to 100
+                # Returns top 15 results by default, expandable in user profile to 100
                 data = self.get_url(search_url)
                 if not data:
                     continue
