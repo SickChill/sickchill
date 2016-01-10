@@ -28,6 +28,10 @@ module.exports = function(grunt) {
                         'dist/js/widgets/widget-stickyHeaders.min.js',
                         'dist/css/theme.blue.min.css'
                     ],
+                    'bootstrap': [
+                        'dist/css/bootstrap.min.css',
+                        'dist/js/bootstrap.min.js'
+                    ],
                     'bootstrap-formhelpers': [
                         'dist/js/bootstrap-formhelpers.min.js'
                     ],
