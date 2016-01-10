@@ -23,7 +23,7 @@ from urllib import urlencode
 
 from sickbeard import logger, tvcache
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
-
+from sickrage.helper.common import try_int
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -77,11 +77,11 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         search_params = {
             'app_id': 'sickrage2',
             'categories': 'tv',
-            'seeders': int(self.minseed),
-            'leechers': int(self.minleech),
+            'seeders': try_int(self.minseed),
+            'leechers': try_int(self.minleech),
             'limit': 100,
             'format': 'json_extended',
-            'ranked': int(self.ranked),
+            'ranked': try_int(self.ranked),
             'token': self.token,
         }
 
