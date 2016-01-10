@@ -23,12 +23,12 @@
 
 import re
 import requests
-import traceback
+from urllib import urlencode
 
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import convert_size
+from sickrage.helper.common import try_int, convert_size
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -46,17 +46,12 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.ratio = None
         self.minseed = None
         self.minleech = None
-        # self.freeleech = False
 
-        self.urls = {'base_url': 'https://www.morethan.tv/',
-                     'login': 'https://www.morethan.tv/login.php',
-                     'detail': 'https://www.morethan.tv/torrents.php?id=%s',
-                     'search': 'https://www.morethan.tv/torrents.php?tags_type=1&order_by=time&order_way=desc&action=basic&searchsubmit=1&searchstr=%s',
-                     'download': 'https://www.morethan.tv/torrents.php?action=download&id=%s'}
-
-        self.url = self.urls['base_url']
-
-        self.cookies = None
+        self.url = 'https://www.morethan.tv/'
+        self.urls = {
+            'login': self.url + 'login.php',
+            'search': self.url + 'torrents.php',
+        }
 
         self.proper_strings = ['PROPER', 'REPACK']
 
@@ -73,39 +68,48 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        if self._uid and self._hash:
-            requests.utils.add_dict_to_cookiejar(self.session.cookies, self.cookies)
-        else:
-            login_params = {'username': self.username,
-                            'password': self.password,
-                            'login': 'Log in',
-                            'keeplogged': '1'}
+        login_params = {
+            'username': self.username,
+            'password': self.password,
+            'login': 'Log in',
+            'keeplogged': '1'
+        }
 
-            response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
-            if not response:
-                logger.log(u"Unable to connect to provider", logger.WARNING)
-                return False
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        if not response:
+            logger.log(u"Unable to connect to provider", logger.WARNING)
+            return False
 
-            if re.search('Your username or password was incorrect.', response):
-                logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
-                return False
+        if re.search('Your username or password was incorrect.', response):
+            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            return False
 
-            return True
+        return True
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals
         results = []
         if not self.login():
             return results
 
-        for mode in search_params:
+        search_params = {
+            'tags_type': 1,
+            'order_by': 'time',
+            'order_way': 'desc',
+            'action': 'basic',
+            'searchsubmit': 1,
+            'searchstr': ''
+        }
+
+        for mode in search_strings:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
-            for search_string in search_params[mode]:
-
+            for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                search_url = self.urls['search'] % (search_string.replace('(', '').replace(')', ''))
+                search_params['searchstr'] = search_string
+
+                search_url = "%s?%s" % (self.urls['search'], urlencode(search_params))
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 # returns top 15 results by default, expandable in user profile to 100
@@ -113,64 +117,56 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 if not data:
                     continue
 
-                try:
-                    with BS4Parser(data, 'html5lib') as html:
-                        torrent_table = html.find('table', attrs={'class': 'torrent_table'})
-                        torrent_rows = torrent_table.findChildren('tr') if torrent_table else []
+                with BS4Parser(data, 'html5lib') as html:
+                    torrent_table = html.find('table', class_='torrent_table')
+                    torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                        # Continue only if one Release is found
-                        if len(torrent_rows) < 2:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
-                            continue
+                    # Continue only if one Release is found
+                    if len(torrent_rows) < 2:
+                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        continue
 
-                        # skip colheader
-                        for result in torrent_rows[1:]:
-                            cells = result.findChildren('td')
+                    def process_column_header(td):
+                        result = ''
+                        if td.a and td.a.img:
+                            result = td.a.img.get('title', td.a.get_text(strip=True))
+                        if not result:
+                            result = td.get_text(strip=True)
+                        return result
 
+                    labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
+
+                    # skip colheader
+                    for result in torrent_rows[1:]:
+                        try:
                             # skip if torrent has been nuked due to poor quality
-                            nuked = cells[1].find('img', alt='Nuked')
-                            if nuked:
+                            if result.find('img', alt='Nuked'):
                                 continue
 
-                            link = cells[1].find('a', attrs={'title': 'Download'})
-                            if not link:
-                                continue
-
-                            torrent_id_long = link['href'].replace('torrents.php?action=download&id=', '')
-
-                            try:
-                                if link.get('title', ''):
-                                    title = cells[1].find('a', {'title': 'View torrent'}).contents[0].strip()
-                                else:
-                                    title = link.contents[0]
-                                download_url = self.urls['download'] % torrent_id_long
-
-                                seeders = cells[6].contents[0]
-                                leechers = cells[7].contents[0]
-                                torrent_size = cells[4].text.strip()
-
-                                size = convert_size(torrent_size) or -1
-
-                            except (AttributeError, TypeError):
-                                continue
-
+                            title = result.find('a', title='View torrent').get_text(strip=True)
+                            download_url = self.url + result.find('span', title='Download').parent['href']
                             if not all([title, download_url]):
                                 continue
 
-                            # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                continue
+                            cells = result.find_all('td')
+                            seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
+                            leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
+                            torrent_size = cells[labels.index('Size')].get_text(strip=True)
+                        except StandardError:
+                            continue
 
-                            item = title, download_url, size, seeders, leechers
+                        # Filter unseeded torrent
+                        if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            continue
 
-                            items.append(item)
+                        size = convert_size(torrent_size) or -1
+                        item = title, download_url, size, seeders, leechers
+                        if mode != 'RSS':
+                            logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                        items.append(item)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
@@ -192,7 +188,7 @@ class MoreThanTVCache(tvcache.TVCache):
         self.minTime = 20
 
     def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
+        search_strings = {'RSS': ['']}
+        return {'entries': self.provider.search(search_strings)}
 
 provider = MoreThanTVProvider()
