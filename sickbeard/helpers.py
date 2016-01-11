@@ -51,12 +51,11 @@ from socket import timeout as SocketTimeout
 from sickbeard import logger, classes
 from sickbeard.common import USER_AGENT
 from sickbeard import db
-from sickbeard.notifiers.synoindex import notifier as synoindex_notifier
+from sickbeard.notifiers import synoindex_notifier
 from sickrage.helper.common import http_code_description, media_extensions, pretty_file_size, subtitle_extensions
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
-from cachecontrol import CacheControl, caches
 from itertools import izip, cycle
 
 import shutil
