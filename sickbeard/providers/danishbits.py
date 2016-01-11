@@ -1,6 +1,6 @@
 # coding=utf-8
-# Author: seedboy
-# URL: https://github.com/seedboy
+# Author: Dustyn Gibson <miigotu@gmail.com>
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -17,13 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
-import urllib
-import time
+from urllib import urlencode
+from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickrage.helper.common import convert_size
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 from sickbeard.bs4_parser import BS4Parser
@@ -41,125 +40,112 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         self.cache = DanishbitsCache(self)
 
-        self.urls = {'base_url': 'https://danishbits.org/',
-                     'search': 'https://danishbits.org/torrents.php?action=newbrowse&search=%s%s',
-                     'login_page': 'https://danishbits.org/login.php'}
-
-        self.url = self.urls['base_url']
-
-        self.categories = '&group=3'
-
-        self.last_login_check = None
-
-        self.login_opener = None
+        self.url = 'https://danishbits.org/'
+        self.urls = {
+            'login': self.url + 'login.php',
+            'search': self.url + 'torrents.php',
+        }
 
         self.minseed = 0
         self.minleech = 0
         self.freeleech = True
 
-    @staticmethod
-    def loginSuccess(output):
-        return output and "<title>Login :: Danishbits.org</title>" not in output
-
     def login(self):
-
-        now = time.time()
-        if self.login_opener and self.last_login_check < (now - 3600):
-            try:
-                output = self.get_url(self.urls['test'])
-                if self.loginSuccess(output):
-                    self.last_login_check = now
-                    return True
-                else:
-                    self.login_opener = None
-            except Exception:
-                self.login_opener = None
-
-        if self.login_opener:
+        if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        try:
-            data = self.get_url(self.urls['login_page'])
-            if not data:
-                return False
+        login_params = {
+            'langlang': '',
+            'username': self.username.encode('utf-8'),
+            'password': self.password.encode('utf-8'),
+            'keeplogged': 1,
+            'login': 'Login'
+        }
 
-            login_params = {
-                'username': self.username,
-                'password': self.password,
-            }
-            output = self.get_url(self.urls['login_page'], post_data=login_params)
-            if self.loginSuccess(output):
-                self.last_login_check = now
-                self.login_opener = self.session
-                return True
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        if not response:
+            logger.log(u"Unable to connect to provider", logger.WARNING)
+            self.session.cookies.clear()
+            return False
 
-            error = 'unknown'
-        except Exception:
-            error = traceback.format_exc()
-            self.login_opener = None
+        if '<title>Login :: Danishbits.org</title>' in response:
+            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            self.session.cookies.clear()
+            return False
 
-        self.login_opener = None
-        logger.log(u"Failed to login: %s" % error, logger.ERROR)
-        return False
+        return True
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches,too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches,too-many-locals
         results = []
         if not self.login():
             return results
 
-        for mode in search_params:
+        search_params = {
+            'action': 'newbrowse',
+            'group': 3,
+            'search': '',
+        }
+
+        for mode in search_strings:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
-            for search_string in search_params[mode]:
-                if mode == 'RSS':
-                    continue
-
+            for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                data = self.get_url(searchURL)
+                search_params['search'] = search_string
+
+                search_url = "%s?%s" % (self.urls['search'], urlencode(search_params))
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+
+                # returns top 15 results by default, expandable in user profile to 100
+                data = self.get_url(search_url)
                 if not data:
                     continue
 
-                try:
-                    with BS4Parser(data, "html5lib") as html:
-                        # Collecting entries
-                        entries = html.find_all('tr', attrs={'class': 'torrent'})
+                with BS4Parser(data, 'html5lib') as html:
+                    torrent_table = html.find('table', class_='torrent_table')
+                    torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                        # Xirg STANDARD TORRENTS
-                        # Continue only if one Release is found
-                        if not entries:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
-                            continue
+                    # Continue only if at least one Release is found
+                    if len(torrent_rows) < 2:
+                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        continue
 
-                        for result in entries:
+                    def process_column_header(td):
+                        result = ''
+                        if td.img:
+                            result = td.img.get('title')
+                        if not result:
+                            result = td.get_text(strip=True)
+                        return result.encode('utf-8')
 
-                            # try:
-                            title = result.find('div', attrs={'class': 'croptorrenttext'}).find('b').text
-                            download_url = self.urls['base_url'] + result.find('span', attrs={'class': 'right'}).find('a')['href']
-                            seeders = int(result.find_all('td')[6].text)
-                            leechers = int(result.find_all('td')[7].text)
-                            torrent_size = result.find_all('td')[2].text
+                    # Literal:     Navn, Størrelse, Kommentarer, Tilføjet, Snatches, Seeders, Leechers
+                    # Translation: Name, Size,      Comments,    Added,    Snatches, Seeders, Leechers
+                    labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
 
-                            size = convert_size(torrent_size) or -1
-                            freeleech = result.find('span', class_='freeleech')
-                            # except (AttributeError, TypeError, KeyError):
-                            #     logger.log(u"attrErr: {0}, tErr: {1}, kErr: {2}".format(AttributeError, TypeError, KeyError), logger.DEBUG)
-                            #    continue
-
-                            if self.freeleech and not freeleech:
-                                continue
-
+                    for result in torrent_rows[1:]:
+                        try:
+                            title = result.find(class_='croptorrenttext').get_text(strip=True)
+                            download_url = self.url + result.find(title="Direkte download link")['href']
                             if not all([title, download_url]):
                                 continue
 
-                            # Filter unseeded torrent
+                            cells = result.find_all('td')
+
+                            seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
+                            leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
+
+                            freeleech = result.find(class_='freeleech')
+                            if self.freeleech and not freeleech:
+                                continue
+
+                            torrent_size = cells[labels.index('Størrelse')].contents[0]
+                            size = convert_size(torrent_size) or -1
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
@@ -167,8 +153,8 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                             items.append(item)
 
-                except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                        except StandardError:
+                            continue
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
@@ -190,8 +176,8 @@ class DanishbitsCache(tvcache.TVCache):
         self.minTime = 10
 
     def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
+        search_strings = {'RSS': ['']}
+        return {'entries': self.provider.search(search_strings)}
 
 
 provider = DanishbitsProvider()
