@@ -149,6 +149,7 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                             # TODO: Make convert_size work with 123.12GB
                             torrent_size = torrent_size[:-2] + ' ' + torrent_size[-2:]
                             size = convert_size(torrent_size) or -1
+
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
