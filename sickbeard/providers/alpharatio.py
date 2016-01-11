@@ -1,7 +1,6 @@
 # coding=utf-8
-
-# Author: Bill Nasty
-# URL: https://github.com/SickRage/SickRage
+# Author: Dustyn Gibson <miigotu@gmail.com>
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -20,6 +19,7 @@
 
 import re
 from urllib import urlencode
+from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger
 from sickbeard import tvcache
@@ -51,6 +51,9 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.cache = AlphaRatioCache(self)
 
     def login(self):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
+            return True
+
         login_params = {
             'username': self.username,
             'password': self.password,
