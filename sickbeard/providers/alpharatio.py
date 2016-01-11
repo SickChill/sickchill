@@ -132,26 +132,26 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         try:
                             title = cells[labels.index('Name /Year')].find('a', dir='ltr').get_text(strip=True)
                             download_url = self.url + cells[labels.index('Name /Year')].find('a', title='Download')['href']
+                            if not all([title, download_url]):
+                                continue
+
                             seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
-                            size = convert_size(cells[labels.index('Size')].get_text(strip=True)) or -1
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                continue
+
+                            torrent_size = cells[labels.index('Size')].get_text(strip=True)
+                            size = convert_size(torrent_size) or -1
+
+                            item = title, download_url, size, seeders, leechers
+                            if mode != 'RSS':
+                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+
+                            items.append(item)
                         except StandardError:
                             continue
-
-                        if not all([title, download_url]):
-                            continue
-
-                        # Filter unseeded torrent
-                        if seeders < self.minseed or leechers < self.minleech:
-                            if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                            continue
-
-                        item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
-
-                        items.append(item)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
