@@ -51,7 +51,7 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         self.username = None
         self.password = None
         self.freeleech = None
-
+        self.proper_strings = ['PROPER']
         self.cache = XthorCache(self)
 
     def login(self):
