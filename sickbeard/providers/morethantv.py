@@ -1,6 +1,6 @@
 # coding=utf-8
-# Author: Seamus Wassman
-# URL: http://code.google.com/p/sickbeard/
+# Author: Dustyn Gibson <miigotu@gmail.com>
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -11,18 +11,14 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-
-# This file was adapted for MoreThanTV from the freshontv scraper by
-# Sparhawk76, this is my first foray into python, so there most likely
-# are some mistakes or things I could have done better.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import requests
+from requests.utils import dict_from_cookiejar
 from urllib import urlencode
 
 from sickbeard import logger
@@ -65,7 +61,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         return True
 
     def login(self):
-        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
         login_params = {

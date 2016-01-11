@@ -1,6 +1,6 @@
 # coding=utf-8
-# Author: Mr_Orange <mr_orange@hotmail.it>
-# URL: http://code.google.com/p/sickbeard/
+# Author: Dustyn Gibson <miigotu@gmail.com>
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
 import posixpath  # Must use posixpath
@@ -125,7 +125,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                             # Convert size after all possible skip scenarios
                             torrent_size = cells[labels.index('Name')].find(class_='detDesc').get_text(strip=True).split(', ')[1]
-                            torrent_size = re.sub(r'Size ([\d.]+).+([KMG]iB)', r'\1 \2', torrent_size)
+                            torrent_size = re.sub(r'Size ([\d.]+).+([KMGT]iB)', r'\1 \2', torrent_size)
                             size = convert_size(torrent_size) or -1
 
                             item = title, download_url, size, seeders, leechers
