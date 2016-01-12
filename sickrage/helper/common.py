@@ -193,24 +193,34 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
     :param default: value to return if conversion fails
     :param use_decimal: use decimal instead of binary prefixes (e.g. kilo = 1000 instead of 1024)
 
+    :keyword sep: Separator between size and units, default is space
     :keyword units: A list of (uppercase) unit names in ascending order. Default units: ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+    :keyword default_units: Default unit if none is given, default is lowest unit in the scale, e.g. bytes
 
     :returns: the number of bytes, the default value, or 0
     """
     result = None
 
     try:
-        size_tuple = size.strip().split(' ')
-        scalar, units = size_tuple[0], size_tuple[1:]
+        sep = kwargs.pop('sep', ' ')
+        scale = kwargs.pop('units', ['B', 'KB', 'MB', 'GB', 'TB', 'PB'])
+        default_units = kwargs.pop('default_units', scale[0])
+
+        if sep:
+            size_tuple = size.strip().split(sep)
+            scalar, units = size_tuple[0], size_tuple[1:]
+            units = units[0].upper() if units else default_units
+        else:
+            regex_units = re.search(r'(\w+)', size, re.IGNORECASE)
+            units = regex_units.group() if regex_units else default_units
+            scalar = size.strip(units)
 
         scalar = float(scalar)
-        units = units[0].upper() if units else None
-
-        scale = kwargs.pop('units', ['B', 'KB', 'MB', 'GB', 'TB', 'PB'])
         scalar *= (1024 if not use_decimal else 1000) ** scale.index(units)
 
         result = scalar
 
+    # TODO: Make sure fallback methods obey default units
     except AttributeError:
         result = size if size is not None else default
 
