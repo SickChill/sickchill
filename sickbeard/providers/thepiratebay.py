@@ -110,8 +110,8 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             if not all([title, download_url]):
                                 continue
 
-                            seeders = try_int(cells[labels.index('SE')])
-                            leechers = try_int(cells[labels.index('LE')])
+                            seeders = try_int(cells[labels.index('SE')].get_text(strip=True))
+                            leechers = try_int(cells[labels.index('LE')].get_text(strip=True))
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
