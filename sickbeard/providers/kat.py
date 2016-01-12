@@ -82,12 +82,12 @@ class KatProvider(TorrentProvider): # pylint: disable=too-many-instance-attribut
 
                 url_fmt_string = 'usearch' if mode != 'RSS' else search_string
                 try:
-                    searchURL = self.urls['search'] % url_fmt_string + '?' + urlencode(self.search_params)
+                    search_url = self.urls['search'] % url_fmt_string + '?' + urlencode(self.search_params)
                     if self.custom_url:
-                        searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/'))  # Must use posixpath
+                        search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/'))  # Must use posixpath
 
-                    logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                    data = self.get_url(searchURL)
+                    logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+                    data = self.get_url(search_url)
                     if not data:
                         logger.log(u'URL did not return data, maybe try a custom url, or a different one', logger.DEBUG)
                         continue

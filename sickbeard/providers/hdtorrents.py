@@ -92,17 +92,17 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    searchURL = self.urls['search'] % (urllib.quote_plus(search_string), self.categories)
+                    search_url = self.urls['search'] % (urllib.quote_plus(search_string), self.categories)
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
                 else:
-                    searchURL = self.urls['rss'] % self.categories
+                    search_url = self.urls['rss'] % self.categories
 
                 if self.freeleech:
-                    searchURL = searchURL.replace('active=1', 'active=5')
+                    search_url = search_url.replace('active=1', 'active=5')
 
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                data = self.get_url(searchURL)
+                data = self.get_url(search_url)
                 if not data or 'please try later' in data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue

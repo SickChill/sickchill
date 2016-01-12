@@ -67,14 +67,14 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                 if mode != 'RSS':
                     params["term"] = search_string.encode('utf-8')
 
-                searchURL = self.url + '?' + urllib.urlencode(params)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                search_url = self.url + '?' + urllib.urlencode(params)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 summary_regex = ur"(\d+) seeder\(s\), (\d+) leecher\(s\), \d+ download\(s\) - (\d+.?\d* [KMGT]iB)(.*)"
                 s = re.compile(summary_regex, re.DOTALL)
 
                 results = []
-                for curItem in self.cache.getRSSFeed(searchURL)['entries'] or []:
+                for curItem in self.cache.getRSSFeed(search_url)['entries'] or []:
                     title = curItem['title']
                     download_url = curItem['link']
                     if not all([title, download_url]):

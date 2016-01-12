@@ -97,11 +97,11 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (self.categories, search_string)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                search_url = self.urls['search'] % (self.categories, search_string)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 # Returns top 30 results by default, expandable in user profile
-                data = self.get_url(searchURL)
+                data = self.get_url(search_url)
                 if not data:
                     continue
 

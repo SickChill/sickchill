@@ -92,15 +92,15 @@ class HDSpaceProvider(TorrentProvider): # pylint: disable=too-many-instance-attr
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    searchURL = self.urls['search'] % (urllib.quote_plus(search_string.replace('.', ' ')),)
+                    search_url = self.urls['search'] % (urllib.quote_plus(search_string.replace('.', ' ')),)
                 else:
-                    searchURL = self.urls['search'] % ''
+                    search_url = self.urls['search'] % ''
 
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
                 if mode != 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
-                data = self.get_url(searchURL)
+                data = self.get_url(search_url)
                 if not data or 'please try later' in data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue

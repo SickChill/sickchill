@@ -108,9 +108,9 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 search_params['search'] = search_string
-                searchURL = self.urls['search'] + urlencode(search_params)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                data = self.get_url(searchURL)
+                search_url = self.urls['search'] + urlencode(search_params)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+                data = self.get_url(search_url)
                 if not data:
                     continue
 

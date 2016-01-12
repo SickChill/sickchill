@@ -99,11 +99,11 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories[mode])
+                search_url = self.urls['search'] % (urllib.quote(search_string), self.categories[mode])
 
                 try:
-                    logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                    data = self.get_url(searchURL)
+                    logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+                    data = self.get_url(search_url)
                     time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 except Exception as e:
                     logger.log(u"Unable to fetch data. Error: %s" % repr(e), logger.WARNING)
