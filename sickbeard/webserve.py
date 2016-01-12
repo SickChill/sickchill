@@ -181,7 +181,8 @@ class BaseHandler(RequestHandler):
                 url = url[len(sickbeard.WEB_ROOT) + 1:]
 
             if url[:3] != 'api':
-                return self.redirect('/')
+                t = PageTemplate(rh=self, filename="404.mako")
+                return self.finish(t.render(title='404', header='Oops'))
             else:
                 self.finish('Wrong API key used')
 
