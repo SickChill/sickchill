@@ -81,6 +81,7 @@ except ImportError:
 
 from mako.template import Template as MakoTemplate
 from mako.lookup import TemplateLookup
+from mako.exceptions import RichTraceback
 
 from tornado.routes import route
 from tornado.web import RequestHandler, HTTPError, authenticated
@@ -106,7 +107,11 @@ def get_lookup():
         mako_cache = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
     if mako_lookup is None:
         use_strict = sickbeard.BRANCH and sickbeard.BRANCH != 'master'
-        mako_lookup = TemplateLookup(directories=[mako_path], module_directory=mako_cache, format_exceptions=True, strict_undefined=use_strict)
+        mako_lookup = TemplateLookup(directories=[mako_path],
+                                     module_directory=mako_cache,
+                                    #  format_exceptions=True,
+                                     strict_undefined=use_strict,
+                                     filesystem_checks=True)
     return mako_lookup
 
 
@@ -158,9 +163,13 @@ class PageTemplate(MakoTemplate):
                 kwargs[key] = self.arguments[key]
 
         kwargs['makoStartTime'] = time.time()
-
-        return self.template.render_unicode(*args, **kwargs)
-
+        try:
+            return self.template.render_unicode(*args, **kwargs)
+        except Exception:
+            kwargs['title'] = '500'
+            kwargs['header'] = 'Mako Error'
+            kwargs['backtrace'] = RichTraceback()
+            return get_lookup().get_template('500.mako').render_unicode(*args, **kwargs)
 
 class BaseHandler(RequestHandler):
     startTime = 0.
@@ -181,7 +190,8 @@ class BaseHandler(RequestHandler):
                 url = url[len(sickbeard.WEB_ROOT) + 1:]
 
             if url[:3] != 'api':
-                return self.redirect('/')
+                t = PageTemplate(rh=self, filename="404.mako")
+                return self.finish(t.render(title='404', header='Oops'))
             else:
                 self.finish('Wrong API key used')
 
