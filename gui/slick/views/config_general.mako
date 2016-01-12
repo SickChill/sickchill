@@ -771,7 +771,7 @@
 					
 					<fieldset class="component-group-list">
 						<div class="field-pair">
-							<label class="clearfix" for="use_imdb_watchlist">
+							<label class="clearfix" for="content_use_imdb_watchlist">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
 									<input type="checkbox" class="enabler" name="use_imdb_watchlist" id="use_imdb_watchlist" ${('', 'checked="checked"')[bool(sickbeard.USE_IMDB_WATCHLIST)]} />
