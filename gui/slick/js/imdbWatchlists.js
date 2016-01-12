@@ -40,21 +40,40 @@ $(document).ready(function() {
     	else { $('#watchlist-warning').addClass('hidden') }
     }
     
+    function testWl(el) {
+    	
+    	console.log("Clicked, testing for checkbox id: " + $(el).data('checkbox'));
+    	console.log("Clicked, testing for input id: " + $(el).data('input'));
+    }
+    
 	function regHandlers() {
+		$('.key-value-group input').off("input.kvgInput");
 		$('.key-value-group input').on("input", function() {
 	    	fn.checkLastInput();
 	    	fn.updateWatchlists();
 	    });
-		$('.key-value-group input').on("blur", function() {
+		
+		$('.key-value-group input').off("blur.kvgInput");
+		$('.key-value-group input').on("blur.kvgInput", function() {
 	    	fn.updateWatchlists();
 	    	fn.saveWatchlists();
 	    	return false;
 	    });
-		$('.key-value-group input').on("click", function() {
+		
+		$('.key-value-group input').off("click.kvgInputNs");
+		$('.key-value-group input').on("click.kvgInputNs", function() {
 	    	fn.updateWatchlists();
 	    });
-		$('.key-value-group [type="checkbox"]').on("click", function() {
+		
+		$('.key-value-group [type="checkbox"]').off('click.kvgCheckboxNs'); 
+		$('.key-value-group [type="checkbox"]').on("click.kvgCheckboxNs", function() {
 	    	checkImdbWlEnabled();
+	    });
+		
+		$('[id^=test-wl-]').off('click.testWlNs');
+		$('[id^=test-wl-]').on("click.testWlNs", function() {
+	    	testWl(this);
+	    	return false;
 	    });
 	}
 	
@@ -211,8 +230,8 @@ $(document).ready(function() {
     		*/
     		
     		parent = $('#imdb-watchlist-placeholder');
-    		el = parent.append('<div id="kv-' + next_id + '" class="key-value-group clearfix"> <input type="checkbox" class="enabler" id="imdb_wl_ids_enabled-' + next_id + '" '+ enabled +' /><input class="form-control input200" style="margin-top: 0px" type="text" id="imdb_wl_ids-' + next_id + '" value="' + url + '" size="40" /></div>')
-    		el.append('<input class="btn" type="submit" class="" value="Test Watchlist" />');
+    		parent.append('<div id="kv-' + next_id + '" class="key-value-group clearfix"> <input type="checkbox" class="enabler" id="imdb_wl_ids_enabled-' + next_id + '" '+ enabled +' /><input class="form-control input200" style="margin-top: 0px" type="text" id="imdb_wl_ids-' + next_id + '" value="' + url + '" size="40" /></div>')
+    		$('#kv-' + next_id).append('<input class="btn" id="test-wl-' + next_id + '" data-checkbox="imdb_wl_ids_enabled-' + next_id + '" data-input="imdb_wl_ids-' + next_id + '" type="button" class="" value="Test Watchlist" />');
     		regHandlers();
     	}
     	
