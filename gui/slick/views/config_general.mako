@@ -13,6 +13,7 @@
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/imdbWatchlists.js?v=$sbPID"></script>
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -36,6 +37,7 @@
                     <li><a href="#misc">Misc</a></li>
                     <li><a href="#interface">Interface</a></li>
                     <li><a href="#advanced-settings">Advanced Settings</a></li>
+                    <li><a href="#watchlists">Watchlists</a></li>
                 </ul>
 
                 <div id="misc">
@@ -757,6 +759,50 @@
                 </div>
 
                 </div><!-- /component-group3 //-->
+                
+                <div id="watchlists">
+				
+					<div class="component-group">
+
+						<div class="component-group-desc">
+							<img class="notifier-icon" src="${srRoot}/images/imdb.png" alt="" title="IMDB Watchlists" />
+							<h3><a href="${anon_url('http://www.imdb.com/list/watchlist?ref_=nv_wl_all_0/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">IMDB Watchlists</a></h3>
+							<p>Connect a public IMDB watchlist to SickGear and all the shows you add to your watchlist, will be automatically added to your tracked list of shows.</p>
+						</div>
+						
+						<fieldset class="component-group-list">
+							<div class="field-pair">
+								<label class="clearfix" for="use_imdb_watchlist">
+									<span class="component-title">Enable</span>
+									<span class="component-desc">
+										<input type="checkbox" class="enabler" name="use_imdb_watchlist" id="use_imdb_watchlist" #if $sickbeard.USE_IMDB_WATCHLIST then 'checked="checked"' else ''# />
+										<p>Do you want to use an IMDB watchlist ?</p>
+									</span>
+								</label>
+							</div>
+							<div id="content_use_imdb_watchlist">
+								<div class="field-pair">
+									<label class="clearfix" for="IMDB_WL_USE_IDS">
+										<span class="component-title">
+										<span class="component-title">Public Watchlist</span>
+										
+										</span>
+										<span class="component-desc">
+											<div  id="imdb-watchlist-placeholder">
+											</div>
+											
+											<input type="hidden" name="imdb_wl_ids_enabled" id="imdb_wl_ids_enabled" value="${sickbeard.IMDB_WL_IDS_ENABLED}" />
+											<input type="hidden" name="imdb_wl_ids" id="imdb_wl_ids" value="${sickbeard.IMDB_WL_USE_IDS}" />
+											<div class="clear-left">Please add and enable your imdb watchlists ?</div>
+											<div class="clear-left">Watchlists which are not enabled, are still visible as a public watchlist. Take a look <a href="/home/addShows/popular_imdb/">here</a></div>
+										</span>
+									</label>
+								</div>
+
+							</div>	
+							</fieldset>
+						
+						</div><!-- /content_use_imdb_watchlist //-->
 
                 <br>
                 <h6 class="pull-right"><b>All non-absolute folder locations are relative to <span class="path">${sickbeard.DATA_DIR}</span></b> </h6>
