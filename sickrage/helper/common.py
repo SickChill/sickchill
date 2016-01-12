@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import re
 import sickbeard
 
@@ -90,13 +92,13 @@ http_status_code = {
     509: 'Bandwidth Limit Exceeded',
     510: 'Not Extended',
     511: 'Network Authentication Required',
-    520: 'Cloudfare - Web server is returning an unknown error',
-    521: 'Cloudfare - Web server is down',
-    522: 'Cloudfare - Connection timed out',
-    523: 'Cloudfare - Origin is unreachable',
-    524: 'Cloudfare - A timeout occurred',
-    525: 'Cloudfare - SSL handshake failed',
-    526: 'Cloudfare - Invalid SSL certificate',
+    520: 'CloudFlare - Web server is returning an unknown error',
+    521: 'CloudFlare - Web server is down',
+    522: 'CloudFlare - Connection timed out',
+    523: 'CloudFlare - Origin is unreachable',
+    524: 'CloudFlare - A timeout occurred',
+    525: 'CloudFlare - SSL handshake failed',
+    526: 'CloudFlare - Invalid SSL certificate',
     598: 'Network read timeout error',
     599: 'Network connect timeout error',
 }
@@ -124,7 +126,7 @@ def http_code_description(http_code):
         return description
 
     # TODO Restore logger import
-    # logger.log(u'Unknown HTTP status code %s. Please submit an issue' % http_code, logger.ERROR)
+    # logger.log('Unknown HTTP status code %s. Please submit an issue' % http_code, logger.ERROR)
 
     return None
 
@@ -164,7 +166,7 @@ def pretty_file_size(size, use_decimal=False, **kwargs):
     :param size: The size to convert
     :param use_decimal: use decimal instead of binary prefixes (e.g. kilo = 1000 instead of 1024)
 
-    :keyword units: A list of unit names in ascending order. Default units: [u'B', u'KB', u'MB', u'GB', u'TB', u'PB']
+    :keyword units: A list of unit names in ascending order. Default units: ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
 
     :return: The converted size
     """
@@ -191,24 +193,34 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
     :param default: value to return if conversion fails
     :param use_decimal: use decimal instead of binary prefixes (e.g. kilo = 1000 instead of 1024)
 
-    :keyword units: A list of (uppercase) unit names in ascending order. Default units: [u'B', u'KB', u'MB', u'GB', u'TB', u'PB']
+    :keyword sep: Separator between size and units, default is space
+    :keyword units: A list of (uppercase) unit names in ascending order. Default units: ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+    :keyword default_units: Default unit if none is given, default is lowest unit in the scale, e.g. bytes
 
     :returns: the number of bytes, the default value, or 0
     """
     result = None
 
     try:
-        size_tuple = size.strip().split(u' ')
-        scalar, units = size_tuple[0], size_tuple[1:]
+        sep = kwargs.pop('sep', ' ')
+        scale = kwargs.pop('units', ['B', 'KB', 'MB', 'GB', 'TB', 'PB'])
+        default_units = kwargs.pop('default_units', scale[0])
+
+        if sep:
+            size_tuple = size.strip().split(sep)
+            scalar, units = size_tuple[0], size_tuple[1:]
+            units = units[0].upper() if units else default_units
+        else:
+            regex_units = re.search(r'(\w+)', size, re.IGNORECASE)
+            units = regex_units.group() if regex_units else default_units
+            scalar = size.strip(units)
 
         scalar = float(scalar)
-        units = units[0].upper() if units else None
-
-        scale = kwargs.pop(u'units', [u'B', u'KB', u'MB', u'GB', u'TB', u'PB'])
         scalar *= (1024 if not use_decimal else 1000) ** scale.index(units)
 
         result = scalar
 
+    # TODO: Make sure fallback methods obey default units
     except AttributeError:
         result = size if size is not None else default
 
@@ -270,7 +282,7 @@ def sanitize_filename(filename):
     if isinstance(filename, (str, unicode)):
         filename = re.sub(r'[\\/\*]', '-', filename)
         filename = re.sub(r'[:"<>|?]', '', filename)
-        filename = re.sub(ur'\u2122', '', filename)  # Trade Mark Sign
+        filename = re.sub(r'™', '', filename)  # Trade Mark Sign unicode: \u2122
         filename = filename.strip(' .')
 
         return filename
