@@ -63,6 +63,21 @@ module.exports = function(grunt) {
                     ],
                     dest: '../gui/slick/css/'
                 }]
+            },
+            glyphicon: {
+                files: [{
+                    expand: true,
+                    dot: true,
+                    cwd: 'bower_components/bootstrap/fonts',
+                    src: [
+                        '*.eot',
+                        '*.svg',
+                        '*.ttf',
+                        '*.woff',
+                        '*.woff2'
+                    ],
+                    dest: '../gui/slick/fonts/'
+                }]
             }
         },
         uglify: {
