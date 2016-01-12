@@ -3776,7 +3776,8 @@ class ConfigGeneral(Config):
                     calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None,
-                    git_reset=None, git_username=None, git_password=None, display_all_seasons=None):
+                    git_reset=None, git_username=None, git_password=None, display_all_seasons=None,
+                    use_imdb_watchlist=False, imdb_wl_ids_enabled='', imdb_wl_ids=''):
 
         results = []
 
@@ -3867,6 +3868,11 @@ class ConfigGeneral(Config):
         sickbeard.THEME_NAME = theme_name
 
         sickbeard.DEFAULT_PAGE = default_page
+        
+        # Save Custom Imdb Watchlists config
+        sickbeard.USE_IMDB_WATCHLIST = config.checkbox_to_value(use_imdb_watchlist)
+        sickbeard.IMDB_WL_IDS_ENABLED = imdb_wl_ids_enabled
+        sickbeard.IMDB_WL_USE_IDS = imdb_wl_ids
 
         sickbeard.save_config()
 

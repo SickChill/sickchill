@@ -461,6 +461,10 @@ TRAKT_DEFAULT_INDEXER = None
 TRAKT_TIMEOUT = None
 TRAKT_BLACKLIST_NAME = None
 
+USE_IMDB_WATCHLIST = False
+IMDB_WL_USE_IDS = ""
+IMDB_WL_IDS_ENABLED = "" 
+
 USE_PYTIVO = False
 PYTIVO_NOTIFY_ONSNATCH = False
 PYTIVO_NOTIFY_ONDOWNLOAD = False
@@ -629,7 +633,8 @@ def initialize(consoleLogging=True):
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
-            DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT
+            DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
+            USE_IMDB_WATCHLIST, IMDB_WL_USE_IDS, IMDB_WL_IDS_ENABLED
 
         if __INITIALIZED__:
             return False
@@ -1111,6 +1116,11 @@ def initialize(consoleLogging=True):
         TRAKT_DEFAULT_INDEXER = check_setting_int(CFG, 'Trakt', 'trakt_default_indexer', 1)
         TRAKT_TIMEOUT = check_setting_int(CFG, 'Trakt', 'trakt_timeout', 30)
         TRAKT_BLACKLIST_NAME = check_setting_str(CFG, 'Trakt', 'trakt_blacklist_name', '')
+        
+        # Read IMDB Section config
+        USE_IMDB_WATCHLIST = check_setting_int(CFG, 'IMDB', 'imdb_wl_use_imdb_watchlist', 0)
+        IMDB_WL_USE_IDS = check_setting_str(CFG, 'IMDB', 'imdb_wl_use_ids', '')
+        IMDB_WL_IDS_ENABLED = check_setting_str(CFG, 'IMDB', 'imdb_wl_ids_enabled', '')
 
         USE_PYTIVO = bool(check_setting_int(CFG, 'pyTivo', 'use_pytivo', 0))
         PYTIVO_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'pyTivo', 'pytivo_notify_onsnatch', 0))
@@ -2035,6 +2045,11 @@ def save_config():
     new_config['Trakt']['trakt_default_indexer'] = int(TRAKT_DEFAULT_INDEXER)
     new_config['Trakt']['trakt_timeout'] = int(TRAKT_TIMEOUT)
     new_config['Trakt']['trakt_blacklist_name'] = TRAKT_BLACKLIST_NAME
+    
+    new_config['IMDB'] = {}
+    new_config['IMDB']['imdb_wl_use_imdb_watchlist'] = int(USE_IMDB_WATCHLIST)
+    new_config['IMDB']['imdb_wl_use_ids'] = IMDB_WL_USE_IDS
+    new_config['IMDB']['imdb_wl_ids_enabled'] = IMDB_WL_IDS_ENABLED
 
     new_config['pyTivo'] = {}
     new_config['pyTivo']['use_pytivo'] = int(USE_PYTIVO)
