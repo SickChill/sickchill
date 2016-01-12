@@ -116,9 +116,9 @@ class FreshOnTVProvider(TorrentProvider): # pylint: disable=too-many-instance-at
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (freeleech, search_string)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                init_html = self.get_url(searchURL)
+                search_url = self.urls['search'] % (freeleech, search_string)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+                init_html = self.get_url(search_url)
                 max_page_number = 0
 
                 if not init_html:
@@ -160,9 +160,9 @@ class FreshOnTVProvider(TorrentProvider): # pylint: disable=too-many-instance-at
                     for i in range(1, max_page_number):
 
                         time.sleep(1)
-                        page_searchURL = searchURL + '&page=' + str(i)
-                        # '.log(u"Search string: " + page_searchURL, logger.DEBUG)
-                        page_html = self.get_url(page_searchURL)
+                        page_search_url = search_url + '&page=' + str(i)
+                        # '.log(u"Search string: " + page_search_url, logger.DEBUG)
+                        page_html = self.get_url(page_search_url)
 
                         if not page_html:
                             continue

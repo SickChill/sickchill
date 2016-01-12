@@ -302,15 +302,15 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         break
 
                     if mode != 'RSS':
-                        searchURL = (self.urls['search_page'] + '&filter={2}').format(z, self.categories, search_string)
+                        search_url = (self.urls['search_page'] + '&filter={2}').format(z, self.categories, search_string)
                     else:
-                        searchURL = self.urls['search_page'].format(z, self.categories)
+                        search_url = self.urls['search_page'].format(z, self.categories)
 
                     if mode != 'RSS':
                         logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                    logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                    data = self.get_url(searchURL)
+                    logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+                    data = self.get_url(search_url)
                     if not data:
                         logger.log(u"No data returned from provider", logger.DEBUG)
                         continue

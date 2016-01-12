@@ -87,10 +87,10 @@ class elitetorrentProvider(TorrentProvider):
                 search_string = re.sub(r'S0*(\d*)E(\d*)', r'\1x\2', search_string)
                 self.search_params['buscar'] = search_string.strip() if mode != 'RSS' else ''
 
-                searchURL = self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                search_url = self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                data = self.get_url(searchURL, timeout=30)
+                data = self.get_url(search_url, timeout=30)
                 if not data:
                     continue
 

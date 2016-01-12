@@ -92,10 +92,10 @@ class newpctProvider(TorrentProvider):
                 self.search_params['q'] = search_string.strip() if mode != 'RSS' else ''
                 self.search_params['bus_de_'] = 'All' if mode != 'RSS' else 'hoy'
 
-                searchURL = self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                search_url = self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                data = self.get_url(searchURL, timeout=30)
+                data = self.get_url(search_url, timeout=30)
                 if not data:
                     continue
 

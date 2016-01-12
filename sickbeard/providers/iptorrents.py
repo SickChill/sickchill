@@ -95,11 +95,11 @@ class IPTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance-a
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
-                searchURL = self.urls['search'] % (self.categories, freeleech, search_string)
-                searchURL += ';o=seeders' if mode != 'RSS' else ''
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                search_url = self.urls['search'] % (self.categories, freeleech, search_string)
+                search_url += ';o=seeders' if mode != 'RSS' else ''
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                data = self.get_url(searchURL)
+                data = self.get_url(search_url)
                 if not data:
                     continue
 

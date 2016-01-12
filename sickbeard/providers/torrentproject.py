@@ -49,12 +49,12 @@ class TorrentProjectProvider(TorrentProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['api'] + "?s=%s&out=json&filter=2101&num=150" % quote_plus(search_string.encode('utf-8'))
+                search_url = self.urls['api'] + "?s=%s&out=json&filter=2101&num=150" % quote_plus(search_string.encode('utf-8'))
                 if self.custom_url:
-                    searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
+                    search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/')) # Must use posixpath
 
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                torrents = self.get_url(searchURL, json=True)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+                torrents = self.get_url(search_url, json=True)
                 if not (torrents and "total_found" in torrents and int(torrents["total_found"]) > 0):
                     logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                     continue
@@ -81,7 +81,7 @@ class TorrentProjectProvider(TorrentProvider):
                         logger.log(u"Torrent has less than 10 seeds getting dyn trackers: " + title, logger.DEBUG)
                         trackerUrl = self.urls['api'] + "" + t_hash + "/trackers_json"
                         if self.custom_url:
-                            searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
+                            search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/')) # Must use posixpath
                         jdata = self.get_url(trackerUrl, json=True)
                         assert jdata != "maintenance"
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
