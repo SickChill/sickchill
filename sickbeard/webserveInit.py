@@ -124,9 +124,14 @@ class SRWebServer(threading.Thread):
             (r'%s/js/(.*)' % self.options['web_root'], StaticFileHandler,
              {"path": ek(os.path.join, self.options['data_root'], 'js')}),
 
+            # fonts
+            (r'%s/fonts/(.*)' % self.options['web_root'], StaticFileHandler,
+             {"path": ek(os.path.join, self.options['data_root'], 'fonts')}),
+
             # videos
-        ] + [(r'%s/videos/(.*)' % self.options['web_root'], StaticFileHandler,
-              {"path": self.video_root})])
+            (r'%s/videos/(.*)' % self.options['web_root'], StaticFileHandler,
+             {"path": self.video_root})
+        ])
 
     def run(self):
         if self.enable_https:
