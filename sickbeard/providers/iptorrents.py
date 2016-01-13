@@ -26,7 +26,7 @@ from sickrage.helper.exceptions import AuthException, ex
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class IPTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
+class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "IPTorrents")
@@ -79,7 +79,7 @@ class IPTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance-a
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None): # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         results = []
         if not self.login():
             return results
