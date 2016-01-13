@@ -129,7 +129,7 @@ class MoreThanTVProvider(TorrentProvider):
                         # skip colheader
                         for result in torrent_rows[1:]:
                             cells = result.findChildren('td')
-                            link = cells[1].find('a', attrs={'title': 'Download'})
+                            link = cells[1].find('span', attrs={'title': 'Download'}).parent
 
                             # skip if torrent has been nuked due to poor quality
                             if cells[1].find('img', alt='Nuked') is not None:
