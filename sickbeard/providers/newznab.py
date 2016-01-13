@@ -23,9 +23,10 @@
 
 import os
 import re
-import urllib
-import datetime
 import time
+import datetime
+import posixpath  # Must use posixpath
+from urllib import urlencode
 from bs4 import BeautifulSoup
 
 import sickbeard
@@ -39,9 +40,8 @@ from sickbeard.common import Quality
 from sickrage.helper.encoding import ek, ss
 from sickrage.show.Show import Show
 from sickrage.helper.common import try_int, convert_size
-# from sickbeard.common import USER_AGENT
 from sickrage.providers.nzb.NZBProvider import NZBProvider
-from sickbeard.common  import cpu_presets
+from sickbeard.common import cpu_presets
 
 
 class NewznabProvider(NZBProvider):
@@ -54,8 +54,6 @@ class NewznabProvider(NZBProvider):
                  search_fallback=False, enable_daily=True, enable_backlog=False):
 
         NZBProvider.__init__(self, name)
-
-        # self.headers.update({'User-Agent': USER_AGENT})
 
         self.urls = {'base_url': url}
         self.url = self.urls['base_url']
@@ -148,7 +146,7 @@ class NewznabProvider(NZBProvider):
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
-        url = ek(os.path.join, self.url, 'api?') + urllib.urlencode(params)
+        url = posixpath.join(self.url, 'api?') + urlencode(params)
         data = self.get_url(url)
         if not data:
             error_string = u"Error getting xml for [%s]" % url
@@ -156,17 +154,18 @@ class NewznabProvider(NZBProvider):
             return False, return_categories, error_string
 
         data = BeautifulSoup(data, 'html5lib')
-        if not self._checkAuthFromData(data) and data.caps and data.caps.categories:
+        if not (self._checkAuthFromData(data) and data.caps and data.caps.categories):
             data.decompose()
             error_string = u"Error parsing xml for [%s]" % self.name
             logger.log(error_string, logger.DEBUG)
             return False, return_categories, error_string
 
-        for category in data.caps.categories.findAll('category'):
-            if hasattr(category, 'attrs') and 'TV' in category.attrs['name']:
+        for category in data.caps.categories.find_all('category'):
+            if category.attrs and 'TV' in category.attrs.get('name', '') and category.attrs.get('id', ''):
                 return_categories.append({'id': category.attrs['id'], 'name': category.attrs['name']})
-                for subcat in category.findAll('subcat'):
-                    return_categories.append({'id': subcat.attrs['id'], 'name': subcat.attrs['name']})
+                for subcat in category.find_all('subcat'):
+                    if subcat.attrs and subcat.attrs.get('name', '') and subcat.attrs.get('id', ''):
+                        return_categories.append({'id': subcat.attrs['id'], 'name': subcat.attrs['name']})
 
         data.decompose()
         return True, return_categories, ""
@@ -256,14 +255,14 @@ class NewznabProvider(NZBProvider):
         Checks that the returned data is valid
         Returns: _check_auth if valid otherwise False if there is an error
         """
-        if data.findAll('categories') + data.findAll('item'):
+        if data.find_all('categories') + data.find_all('item'):
             return self._check_auth()
 
         try:
             err_desc = data.error.attrs['description']
             if not err_desc:
                 raise
-        except (AssertionError, AttributeError, ValueError):
+        except StandardError:
             return self._check_auth()
 
         # This is all we should really need, the code is irrelevant
@@ -331,10 +330,11 @@ class NewznabProvider(NZBProvider):
 
         params['maxage'] = min(params['maxage'], sickbeard.USENET_RETENTION)
 
-        search_url = ek(os.path.join, self.url, 'api?') + urllib.urlencode(params)
+        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+
+        search_url = posixpath.join(self.url, 'api?') + urlencode(params)
         logger.log(u"Search url: %s" % search_url, logger.DEBUG)
         data = self.get_url(search_url)
-        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
         if not data:
             return results
 
@@ -349,7 +349,7 @@ class NewznabProvider(NZBProvider):
             data.decompose()
             return results
 
-        for item in data.findAll('item'):
+        for item in data.find_all('item'):
             try:
                 title = item.title.next.strip()
                 download_url = item.link.next.strip()
@@ -361,9 +361,9 @@ class NewznabProvider(NZBProvider):
 
             seeders = leechers = None
             torrent_size = item.size
-            for attr in item.findAll('newznab:attr') + item.findAll('torznab:attr'):
+            for attr in item.find_all('newznab:attr') + item.find_all('torznab:attr'):
                 torrent_size = attr['value'] if attr['name'] == 'size' else torrent_size
-                seeders = try_int(attr['value'], 1) if attr['name'] == 'seeders' else seeders
+                seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
                 leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers
 
             if not torrent_size or (torznab and (seeders is None or leechers is None)):
@@ -377,7 +377,7 @@ class NewznabProvider(NZBProvider):
         data.decompose()
 
         if torznab:
-            results.sort(key=lambda d: d.get('seeders', 0) or 0, reverse=True)
+            results.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
 
         return results
 
