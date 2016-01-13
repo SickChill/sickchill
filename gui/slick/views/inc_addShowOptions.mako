@@ -4,6 +4,17 @@
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings
     from sickbeard import subtitles
 %>
+
+        <div class="field-pair alt">
+            <label for="customQuality" class="clearfix">
+                <span class="component-title">Preferred Quality</span>
+                <span class="component-desc">
+                    <% anyQualities, bestQualities = Quality.splitQuality(sickbeard.QUALITY_DEFAULT) %>
+                    <%include file="/inc_qualityChooser.mako"/>
+                </span>
+            </label>
+        </div>
+        
         % if sickbeard.USE_SUBTITLES:
         <br><div class="field-pair">
             <label for="subtitles" class="clearfix">
@@ -71,9 +82,6 @@
                 </span>
             </label>
         </div>
-
-        <% anyQualities, bestQualities = Quality.splitQuality(sickbeard.QUALITY_DEFAULT) %>
-        <%include file="/inc_qualityChooser.mako"/>
 
         <br>
         <div class="field-pair alt">

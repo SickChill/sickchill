@@ -1,6 +1,5 @@
 {
   "name": "SickRage",
-  "version": "4.0.72",
   "private": true,
   "ignore": [
     "**/.*",
@@ -24,7 +23,8 @@
     "tablesorter": "jquery.tablesorter#~2.24.5",
     "jquery-confirm": "~2.5.2",
     "bootstrap-formhelpers": "~2.3.0",
-    "isotope": "~2.2.2"
+    "isotope": "~2.2.2",
+    "openSans": "https://google-fonts.azurewebsites.net/googleFonts/openSans?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic"
   },
   "resolutions": {
     "bootstrap": "~3.3.5"

@@ -7,16 +7,14 @@ setup(
     description='Demonstration package for stevedore',
 
     author='Doug Hellmann',
-    author_email='doug.hellmann@dreamhost.com',
+    author_email='doug@doughellmann.com',
 
-    url='https://github.com/dreamhost/stevedore',
-    download_url='https://github.com/dreamhost/stevedore/tarball/master',
+    url='http://git.openstack.org/cgit/openstack/stevedore',
 
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: OSI Approved :: Apache Software License',
                  'Programming Language :: Python',
                  'Programming Language :: Python :: 2',
-                 'Programming Language :: Python :: 2.6',
                  'Programming Language :: Python :: 2.7',
                  'Programming Language :: Python :: 3',
                  'Programming Language :: Python :: 3.4',
@@ -37,7 +35,6 @@ setup(
     entry_points={
         'stevedore.example.formatter': [
             'simple = stevedore.example.simple:Simple',
-            'field = stevedore.example.fields:FieldList',
             'plain = stevedore.example.simple:Simple',
         ],
     },

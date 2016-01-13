@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
 
 import os.path
@@ -629,30 +629,46 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             logger.log(u"Unable to parse the filename " + file + " into a valid show", logger.DEBUG)
             return None
 
-        if not len(parse_result.episode_numbers):
+        # for now lets assume that any episode in the show dir belongs to that show
+        season = parse_result.season_number
+        episodes = [ep for ep in parse_result.episode_numbers if ep is not None]
+        absolute_numbers = [ep for ep in parse_result.ab_episode_numbers if ep is not None]
+
+        is_absolute = len(absolute_numbers) > 0
+
+        if season is None and not is_absolute:
+            season = 1
+
+        if not episodes + absolute_numbers:
             logger.log(u"parse_result: " + str(parse_result))
             logger.log(u"No episode number found in " + file + ", ignoring it", logger.WARNING)
             return None
 
-        # for now lets assume that any episode in the show dir belongs to that show
-        season = parse_result.season_number if parse_result.season_number is not None else 1
-        episodes = parse_result.episode_numbers
         rootEp = None
 
         sql_l = []
-        for curEpNum in episodes:
+        for current_ep in episodes if not is_absolute else absolute_numbers:
 
-            episode = int(curEpNum)
-
-            logger.log(u"%s: %s parsed to %s S%02dE%02d" % (self.indexerid, file, self.name, season or 0, episode or 0), logger.DEBUG)
+            if is_absolute:
+                logger.log(u"%s: %s parsed to %s with absolute number %d" % (self.indexerid, file, self.name, current_ep), logger.DEBUG)
+            else:
+                logger.log(u"%s: %s parsed to %s S%02dE%02d" % (self.indexerid, file, self.name, season, current_ep), logger.DEBUG)
 
             checkQualityAgain = False
             same_file = False
 
-            curEp = self.getEpisode(season, episode)
+            if is_absolute:
+                curEp = self.getEpisode(absolute_number=current_ep)
+            else:
+                curEp = self.getEpisode(season, current_ep)
+
             if not curEp:
                 try:
-                    curEp = self.getEpisode(season, episode, file)
+                    if is_absolute:
+                        curEp = self.getEpisode(absolute_number=current_ep, file=file)
+                    else:
+                        curEp = self.getEpisode(season, current_ep, file)
+
                     if not curEp:
                         raise EpisodeNotFoundException
                 except EpisodeNotFoundException:
@@ -2187,7 +2203,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         result_name = pattern
 
         # if there's no release group in the db, let the user know we replaced it
-        if replace_map['%RG'] and replace_map['%RG'] != 'SiCKRAGE':
+        if replace_map['%RG'] and replace_map['%RG'] != 'SickRage':
             if not hasattr(self, '_release_group'):
                 logger.log(u"Episode has no release group, replacing it with '" + replace_map['%RG'] + "'", logger.DEBUG)
                 self._release_group = replace_map['%RG']  # if release_group is not in the db, put it there

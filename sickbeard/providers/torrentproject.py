@@ -11,22 +11,22 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import posixpath # Must use posixpath
 from urllib import quote_plus
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TORRENTPROJECTProvider(TorrentProvider):
+class TorrentProjectProvider(TorrentProvider):
     def __init__(self):
         TorrentProvider.__init__(self, "TorrentProject")
 
@@ -38,25 +38,23 @@ class TORRENTPROJECTProvider(TorrentProvider):
         self.headers.update({'User-Agent': USER_AGENT})
         self.minseed = None
         self.minleech = None
-        self.cache = TORRENTPROJECTCache(self)
+        self.cache = TorrentProjectCache(self)
 
     def search(self, search_strings, age=0, ep_obj=None):
-
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        for mode in search_strings.keys():  # Mode = RSS, Season, Episode
+        for mode in search_strings:  # Mode = RSS, Season, Episode
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['api'] + "?s=%s&out=json&filter=2101&num=150" % quote_plus(search_string.encode('utf-8'))
+                search_url = self.urls['api'] + "?s=%s&out=json&filter=2101&num=150" % quote_plus(search_string.encode('utf-8'))
                 if self.custom_url:
-                    searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
+                    search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/')) # Must use posixpath
 
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                torrents = self.get_url(searchURL, json=True)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+                torrents = self.get_url(search_url, json=True)
                 if not (torrents and "total_found" in torrents and int(torrents["total_found"]) > 0):
                     logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                     continue
@@ -74,7 +72,8 @@ class TORRENTPROJECTProvider(TorrentProvider):
                         continue
 
                     t_hash = torrents[i]["torrent_hash"]
-                    size = int(torrents[i]["torrent_size"])
+                    torrent_size = torrents[i]["torrent_size"]
+                    size = convert_size(torrent_size) or -1
 
                     try:
                         assert seeders < 10
@@ -82,7 +81,7 @@ class TORRENTPROJECTProvider(TorrentProvider):
                         logger.log(u"Torrent has less than 10 seeds getting dyn trackers: " + title, logger.DEBUG)
                         trackerUrl = self.urls['api'] + "" + t_hash + "/trackers_json"
                         if self.custom_url:
-                            searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/')) # Must use posixpath
+                            search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/')) # Must use posixpath
                         jdata = self.get_url(trackerUrl, json=True)
                         assert jdata != "maintenance"
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
@@ -97,12 +96,12 @@ class TORRENTPROJECTProvider(TorrentProvider):
                     if mode != 'RSS':
                         logger.log(u"Found result: %s" % title, logger.DEBUG)
 
-                    items[mode].append(item)
+                    items.append(item)
 
             # For each search mode sort all the items by seeders
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
@@ -110,7 +109,7 @@ class TORRENTPROJECTProvider(TorrentProvider):
         return self.ratio
 
 
-class TORRENTPROJECTCache(tvcache.TVCache):
+class TorrentProjectCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
         tvcache.TVCache.__init__(self, provider_obj)
@@ -122,4 +121,4 @@ class TORRENTPROJECTCache(tvcache.TVCache):
         search_params = {'RSS': ['0day']}
         return {'entries': self.provider.search(search_params)}
 
-provider = TORRENTPROJECTProvider()
+provider = TorrentProjectProvider()

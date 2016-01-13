@@ -31,4 +31,11 @@ $(document).ready(function () {
     $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function () {
         $('#saveDefaultsButton').attr('disabled', false);
     });
+
+    $('#qualityPreset').on('change', function() {
+        //fix issue #181 - force re-render to correct the height of the outer div
+        $('span.prev').click();
+        $('span.next').click();
+    });
+
 });

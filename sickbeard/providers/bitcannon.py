@@ -11,21 +11,22 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import traceback
 from urllib import urlencode
 
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class BitCannonProvider(TorrentProvider):
+class BitCannonProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "BitCannon")
@@ -46,13 +47,12 @@ class BitCannonProvider(TorrentProvider):
             'apiKey': ''
         }
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-statements, too-many-locals
         # search_strings comes in one of these formats:
         #      {'Episode': ['Italian Works S05E10']}
         #      {'Season': ['Italian Works S05']}
         #      {'RSS': ['tv', 'anime']}
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
 
         # select the correct category (TODO:  Add more categories?)
         anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False
@@ -62,7 +62,8 @@ class BitCannonProvider(TorrentProvider):
         if self.api_key:
             self.search_params['apiKey'] = self.api_key
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
@@ -95,10 +96,11 @@ class BitCannonProvider(TorrentProvider):
                                 title = result.get('title', '')
                                 info_hash = result.get('infoHash', '')
                                 swarm = result.get('swarm', None)
-                                size = int(result.get('size', 0))
                                 if swarm is not None:
                                     seeders = int(swarm.get('seeders', 0))
                                     leechers = int(swarm.get('leechers', 0))
+                                torrent_size = result.get('size', 0)
+                                size = convert_size(torrent_size) or -1
                                 download_url = "magnet:?xt=urn:btih:" + info_hash
 
                             except (AttributeError, TypeError, KeyError, ValueError):
@@ -113,14 +115,14 @@ class BitCannonProvider(TorrentProvider):
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                            items[mode].append(item)
+                            items.append(item)
 
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-            results += items[mode]
+            items.sort(key=lambda tup: tup[3], reverse=True)
+            results += items
 
         return results
 

@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
 import urllib
@@ -24,11 +24,11 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class PretomeProvider(TorrentProvider):
-
+class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "Pretome")
@@ -78,25 +78,23 @@ class PretomeProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-statements, too-many-locals
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
+        for mode in search_params:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                search_url = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                data = self.get_url(searchURL)
+                data = self.get_url(search_url)
                 if not data:
                     continue
 
@@ -134,10 +132,8 @@ class PretomeProvider(TorrentProvider):
 
                                 # Need size for failed downloads handling
                                 if size is None:
-                                    if re.match(r'[0-9]+,?\.?[0-9]*[KkMmGg]+[Bb]+', cells[7].text):
-                                        size = self._convertSize(cells[7].text)
-                                        if not size:
-                                            size = -1
+                                    torrent_size = cells[7].text
+                                    size = convert_size(torrent_size) or -1
 
                             except (AttributeError, TypeError):
                                 continue
@@ -155,34 +151,20 @@ class PretomeProvider(TorrentProvider):
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                            items[mode].append(item)
+                            items.append(item)
 
-                except Exception as e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
     def seed_ratio(self):
         return self.ratio
-
-    def _convertSize(self, sizeString):
-        size = sizeString[:-2]
-        modifier = sizeString[-2:]
-        size = float(size)
-        if modifier in 'KB':
-            size *= 1024 ** 1
-        elif modifier in 'MB':
-            size *= 1024 ** 2
-        elif modifier in 'GB':
-            size *= 1024 ** 3
-        elif modifier in 'TB':
-            size *= 1024 ** 4
-        return long(size)
 
 
 class PretomeCache(tvcache.TVCache):

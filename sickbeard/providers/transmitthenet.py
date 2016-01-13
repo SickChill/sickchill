@@ -8,11 +8,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
 import traceback
@@ -22,11 +22,11 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.exceptions import AuthException
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TransmitTheNetProvider(TorrentProvider):
+class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "TransmitTheNet")
@@ -75,15 +75,13 @@ class TransmitTheNetProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
-
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
@@ -136,7 +134,9 @@ class TransmitTheNetProvider(TorrentProvider):
                             if not title:
                                 title = torrent_row.find('a', onmouseout='return nd();').string
                                 title = title.replace("[", "").replace("]", "").replace("/ ", "")
-                            size = try_int(temp_anchor['data-filesize'])
+
+                            torrent_size = temp_anchor['data-filesize']
+                            size = convert_size(torrent_size) or -1
 
                             temp_anchor = torrent_row.find('span', class_='time').parent.find_next_sibling()
                             seeders = try_int(temp_anchor.text.strip())
@@ -155,15 +155,15 @@ class TransmitTheNetProvider(TorrentProvider):
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                            items[mode].append(item)
+                            items.append(item)
 
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 

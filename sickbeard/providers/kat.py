@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import posixpath  # Must use posixpath
 import traceback
@@ -26,11 +26,11 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class KATProvider(TorrentProvider):
+class KatProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "KickAssTorrents")
@@ -60,17 +60,17 @@ class KATProvider(TorrentProvider):
             'category': 'tv'
         }
 
-        self.cache = KATCache(self)
+        self.cache = KatCache(self)
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None): # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
 
         # select the correct category
         anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False
         self.search_params['category'] = ('tv', 'anime')[anime]
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
@@ -82,12 +82,12 @@ class KATProvider(TorrentProvider):
 
                 url_fmt_string = 'usearch' if mode != 'RSS' else search_string
                 try:
-                    searchURL = self.urls['search'] % url_fmt_string + '?' + urlencode(self.search_params)
+                    search_url = self.urls['search'] % url_fmt_string + '?' + urlencode(self.search_params)
                     if self.custom_url:
-                        searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/'))  # Must use posixpath
+                        search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/'))  # Must use posixpath
 
-                    logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                    data = self.get_url(searchURL)
+                    logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+                    data = self.get_url(search_url)
                     if not data:
                         logger.log(u'URL did not return data, maybe try a custom url, or a different one', logger.DEBUG)
                         continue
@@ -114,10 +114,11 @@ class KATProvider(TorrentProvider):
                             if not (title and download_url):
                                 continue
 
-                            seeders = try_int(item.find('torrent:seeds').text, 0)
-                            leechers = try_int(item.find('torrent:peers').text, 0)
-                            verified = bool(try_int(item.find('torrent:verified').text, 0))
-                            size = try_int(item.find('torrent:contentlength').text)
+                            seeders = try_int(item.find('torrent:seeds').text)
+                            leechers = try_int(item.find('torrent:peers').text)
+                            verified = bool(try_int(item.find('torrent:verified').text))
+                            torrent_size = item.find('torrent:contentlength').text
+                            size = convert_size(torrent_size) or -1
 
                             info_hash = item.find('torrent:infohash').text
                             # link = item['link']
@@ -140,15 +141,15 @@ class KATProvider(TorrentProvider):
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                        items[mode].append(item)
+                        items.append(item)
 
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
@@ -156,7 +157,7 @@ class KATProvider(TorrentProvider):
         return self.ratio
 
 
-class KATCache(tvcache.TVCache):
+class KatCache(tvcache.TVCache):
     def __init__(self, provider_obj):
 
         tvcache.TVCache.__init__(self, provider_obj)
@@ -168,4 +169,4 @@ class KATCache(tvcache.TVCache):
         search_params = {'RSS': ['tv', 'anime']}
         return {'entries': self.provider.search(search_params)}
 
-provider = KATProvider()
+provider = KatProvider()

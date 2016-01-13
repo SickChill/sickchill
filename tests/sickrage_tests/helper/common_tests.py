@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 # pylint: disable=line-too-long
 
@@ -34,7 +34,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 import sickbeard
 from sickrage.helper.common import http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size
-from sickrage.helper.common import remove_extension, replace_extension, sanitize_filename, try_int
+from sickrage.helper.common import remove_extension, replace_extension, sanitize_filename, try_int, convert_size
 
 
 class CommonTests(unittest.TestCase):
@@ -397,6 +397,47 @@ class CommonTests(unittest.TestCase):
             for (candidate, result) in test.iteritems():
                 self.assertEqual(try_int(candidate, default_value), result)
 
+    def test_convert_size(self):
+        # converts pretty file sizes to integers
+        self.assertEqual(convert_size('1 B'), 1)
+        self.assertEqual(convert_size('1 KB'), 1024)
+        self.assertEqual(convert_size('1 kb', use_decimal=True), 1000)  # can use decimal units (e.g. KB = 1000 bytes instead of 1024)
+
+        # returns integer sizes for integers
+        self.assertEqual(convert_size(0, -1), 0)
+        self.assertEqual(convert_size(100, -1), 100)
+        self.assertEqual(convert_size(1.312, -1), 1)  # returns integer sizes for floats too
+
+        # without a default value, failures return None
+        self.assertEqual(convert_size('pancakes'), None)
+
+        # default value can be anything
+        self.assertEqual(convert_size(None, -1), -1)
+        self.assertEqual(convert_size('', 3.14), 3.14)
+        self.assertEqual(convert_size('elephant', 'frog'), 'frog')
+
+        # negative sizes return 0
+        self.assertEqual(convert_size(-1024, -1), 0)
+        self.assertEqual(convert_size('-1 GB', -1), 0)
+
+        # can also use `or` for a default value
+        self.assertEqual(convert_size(None) or 100, 100)
+        self.assertEqual(convert_size(None) or 1.61803, 1.61803)  # default doesn't have to be integer
+        self.assertEqual(convert_size(None) or '100', '100')  # default doesn't have to be numeric either
+        self.assertEqual(convert_size('-1 GB') or -1, -1)  # can use `or` to provide a default when size evaluates to 0
+
+        # can use custom dictionary to support internationalization
+        french = ['O', 'KO', 'MO', 'GO', 'TO', 'PO']
+        self.assertEqual(convert_size('1 o', units=french), 1)
+        self.assertEqual(convert_size('1 go', use_decimal=True, units=french), 1000000000)
+        self.assertEqual(convert_size('1 o'), None)  # Wrong units so result is None
+
+        # custom units need to be uppercase or they won't match
+        oops = ['b', 'kb', 'Mb', 'Gb', 'tB', 'Pb']
+        self.assertEqual(convert_size('1 b', units=oops), None)
+        self.assertEqual(convert_size('1 B', units=oops), None)
+        self.assertEqual(convert_size('1 Mb', units=oops), None)
+        self.assertEqual(convert_size('1 MB', units=oops), None)
 
 if __name__ == '__main__':
     print('=====> Testing %s' % __file__)

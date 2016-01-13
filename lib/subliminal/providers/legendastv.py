@@ -20,6 +20,7 @@ from ..video import Episode, Movie, SUBTITLE_EXTENSIONS
 TIMEOUT = 10
 
 logger = logging.getLogger(__name__)
+
 language_converters.register('legendastv = subliminal.converters.legendastv:LegendasTvConverter')
 
 

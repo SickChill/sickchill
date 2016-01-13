@@ -4,7 +4,11 @@ module.exports = function(grunt) {
     grunt.initConfig({
         clean: {
             dist: './dist/',
-            bower_components: './bower_components' // jshint ignore:line
+            bower_components: './bower_components', // jshint ignore:line
+            fonts: '../gui/slick/css/*.ttf',
+            options: {
+                force: true
+            }
         },
         bower: {
             install: {
@@ -28,6 +32,10 @@ module.exports = function(grunt) {
                         'dist/js/widgets/widget-stickyHeaders.min.js',
                         'dist/css/theme.blue.min.css'
                     ],
+                    'bootstrap': [
+                        'dist/css/bootstrap.min.css',
+                        'dist/js/bootstrap.min.js'
+                    ],
                     'bootstrap-formhelpers': [
                         'dist/js/bootstrap-formhelpers.min.js'
                     ],
@@ -42,6 +50,34 @@ module.exports = function(grunt) {
                 bowerOptions: {
                     relative: false
                 }
+            }
+        },
+        copy: {
+            openSans: {
+                files: [{
+                    expand: true,
+                    dot: true,
+                    cwd: 'bower_components/openSans',
+                    src: [
+                        '*.ttf'
+                    ],
+                    dest: '../gui/slick/css/'
+                }]
+            },
+            glyphicon: {
+                files: [{
+                    expand: true,
+                    dot: true,
+                    cwd: 'bower_components/bootstrap/fonts',
+                    src: [
+                        '*.eot',
+                        '*.svg',
+                        '*.ttf',
+                        '*.woff',
+                        '*.woff2'
+                    ],
+                    dest: '../gui/slick/fonts/'
+                }]
             }
         },
         uglify: {
@@ -106,6 +142,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-bower-concat');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -115,6 +152,7 @@ module.exports = function(grunt) {
         'clean',
         'bower',
         'bower_concat',
+        'copy',
         'uglify',
         'sass',
         'cssmin',

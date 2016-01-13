@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
 import time
@@ -25,11 +25,11 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class FreshOnTVProvider(TorrentProvider):
+class FreshOnTVProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "FreshOnTV")
@@ -101,26 +101,24 @@ class FreshOnTVProvider(TorrentProvider):
 
                     return False
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None): # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        freeleech = '3' if self.freeleech else '0'
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
+        freeleech = '3' if self.freeleech else '0'
+
+        for mode in search_params:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (freeleech, search_string)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                init_html = self.get_url(searchURL)
+                search_url = self.urls['search'] % (freeleech, search_string)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+                init_html = self.get_url(search_url)
                 max_page_number = 0
 
                 if not init_html:
@@ -162,9 +160,9 @@ class FreshOnTVProvider(TorrentProvider):
                     for i in range(1, max_page_number):
 
                         time.sleep(1)
-                        page_searchURL = searchURL + '&page=' + str(i)
-                        # '.log(u"Search string: " + page_searchURL, logger.DEBUG)
-                        page_html = self.get_url(page_searchURL)
+                        page_search_url = search_url + '&page=' + str(i)
+                        # '.log(u"Search string: " + page_search_url, logger.DEBUG)
+                        page_html = self.get_url(page_search_url)
 
                         if not page_html:
                             continue
@@ -202,8 +200,8 @@ class FreshOnTVProvider(TorrentProvider):
                                     download_url = self.urls['download'] % (str(torrent_id))
                                     seeders = try_int(individual_torrent.find('td', {'class': 'table_seeders'}).find('span').text.strip(), 1)
                                     leechers = try_int(individual_torrent.find('td', {'class': 'table_leechers'}).find('a').text.strip(), 0)
-                                    # FIXME
-                                    size = -1
+                                    torrent_size = individual_torrent.find('td', {'class': 'table_size'}).get_text()
+                                    size = convert_size(torrent_size) or -1
                                 except Exception:
                                     continue
 
@@ -220,15 +218,14 @@ class FreshOnTVProvider(TorrentProvider):
                                 if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                                items[mode].append(item)
+                                items.append(item)
 
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            items.sort(key=lambda tup: tup[3], reverse=True)
+            results += items
 
         return results
 

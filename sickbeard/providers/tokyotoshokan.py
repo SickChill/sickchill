@@ -11,23 +11,24 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+import re
 import urllib
-import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import show_name_helpers
 from sickbeard.bs4_parser import BS4Parser
+
+from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TokyoToshokanProvider(TorrentProvider):
+class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "TokyoToshokan")
@@ -37,76 +38,87 @@ class TokyoToshokanProvider(TorrentProvider):
         self.anime_only = True
         self.ratio = None
 
-        self.cache = TokyoToshokanCache(self)
+        self.minseed = None
+        self.minleech = None
 
-        self.urls = {'base_url': 'http://tokyotosho.info/'}
-        self.url = self.urls['base_url']
+        self.url = 'http://tokyotosho.info/'
+        self.urls = {
+            'search': self.url + 'search.php',
+            'rss': self.url + 'rss.php'
+        }
+        self.cache = TokyoToshokanCache(self)
 
     def seed_ratio(self):
         return self.ratio
 
-    def _get_season_search_strings(self, ep_obj):
-        return [x.replace('.', ' ') for x in show_name_helpers.makeSceneSeasonSearchString(self.show, ep_obj)]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-        return [x.replace('.', ' ') for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
-
-    def search(self, search_string, age=0, ep_obj=None):
-        # FIXME ADD MODE
-        if self.show and not self.show.is_anime:
-            return []
-
-        logger.log(u"Search string: %s " % search_string, logger.DEBUG)
-
-        params = {
-            "terms": search_string.encode('utf-8'),
-            "type": 1,  # get anime types
-        }
-
-        searchURL = self.url + 'search.php?' + urllib.urlencode(params)
-        logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-        data = self.get_url(searchURL)
-
-        if not data:
-            return []
-
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
-        try:
-            with BS4Parser(data, 'html5lib') as soup:
-                torrent_table = soup.find('table', attrs={'class': 'listing'})
-                torrent_rows = torrent_table.find_all('tr') if torrent_table else []
-                if torrent_rows:
-                    if torrent_rows[0].find('td', attrs={'class': 'centertext'}):
-                        a = 1
-                    else:
-                        a = 0
+        if not self.show or not self.show.is_anime:
+            return results
 
-                    for top, bottom in zip(torrent_rows[a::2], torrent_rows[a::2]):
-                        title = top.find('td', attrs={'class': 'desc-top'}).text
-                        title.lstrip()
-                        download_url = top.find('td', attrs={'class': 'desc-top'}).find('a')['href']
-                        # FIXME
-                        size = -1
-                        seeders = 1
-                        leechers = 0
+        for mode in search_strings:
+            items = []
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            for search_string in search_strings[mode]:
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+
+                search_params = {
+                    "terms": search_string.encode('utf-8'),
+                    "type": 1,  # get anime types
+                }
+
+                logger.log(u"Search URL: %s" % self.urls['search'] + '?' + urllib.urlencode(search_params), logger.DEBUG)
+                data = self.get_url(self.urls['search'], params=search_params)
+                if not data:
+                    continue
+
+                with BS4Parser(data, 'html5lib') as soup:
+                    torrent_table = soup.find('table', class_='listing')
+                    torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+
+                    # Continue only if one Release is found
+                    if len(torrent_rows) < 2:
+                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        continue
+
+                    a = 1 if len(torrent_rows[0].find_all('td')) < 2 else 0
+
+                    for top, bot in zip(torrent_rows[a::2], torrent_rows[a+1::2]):
+                        try:
+                            desc_top = top.find('td', class_='desc-top')
+                            title = desc_top.get_text(strip=True)
+                            download_url = desc_top.find('a')['href']
+
+                            desc_bottom = bot.find('td', class_='desc-bot').get_text(strip=True)
+                            size = convert_size(desc_bottom.split('|')[1].strip('Size: ')) or -1
+
+                            stats = bot.find('td', class_='stats').get_text(strip=True)
+                            sl = re.match(r'S:(?P<seeders>\d+)L:(?P<leechers>\d+)C:(?:\d+)ID:(?:\d+)', stats.replace(' ', ''))
+                            seeders = try_int(sl.group('seeders')) if sl else 0
+                            leechers = try_int(sl.group('leechers')) if sl else 0
+                        except StandardError:
+                            continue
 
                         if not all([title, download_url]):
                             continue
 
                         # Filter unseeded torrent
-                        # if seeders < self.minseed or leechers < self.minleech:
-                        #    if mode != 'RSS':
-                        #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                        #    continue
+                        if seeders < self.minseed or leechers < self.minleech:
+                            if mode != 'RSS':
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            continue
 
                         item = title, download_url, size, seeders, leechers
+                        if mode != 'RSS':
+                            logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                        results.append(item)
+                        items.append(item)
 
-        except Exception as e:
-            logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+            # For each search mode sort all the items by seeders if available
+            items.sort(key=lambda tup: tup[3], reverse=True)
+            results += items
 
-        # FIXME SORTING
         return results
 
 
@@ -114,19 +126,22 @@ class TokyoToshokanCache(tvcache.TVCache):
     def __init__(self, provider_obj):
         tvcache.TVCache.__init__(self, provider_obj)
 
-        # only poll NyaaTorrents every 15 minutes max
+        # only poll TokyoToshokan every 15 minutes max
         self.minTime = 15
 
+    # def _getRSSData(self):
+    #     params = {
+    #         "filter": '1',
+    #     }
+    #
+    #     url = self.provider.urls['rss'] + '?' + urllib.urlencode(params)
+    #
+    #     logger.log(u"Cache update URL: %s" % url, logger.DEBUG)
+    #
+    #     return self.getRSSFeed(url)
+
     def _getRSSData(self):
-        params = {
-            "filter": '1',
-        }
-
-        url = self.provider.url + 'rss.php?' + urllib.urlencode(params)
-
-        logger.log(u"Cache update URL: %s" % url, logger.DEBUG)
-
-        return self.getRSSFeed(url)
-
+        search_strings = {'RSS': ['']}
+        return {'entries': self.provider.search(search_strings)}
 
 provider = TokyoToshokanProvider()

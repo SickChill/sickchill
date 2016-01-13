@@ -11,23 +11,25 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
 import urllib
-import traceback
 
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
+from sickrage.helper.common import try_int
 
-class SceneTimeProvider(TorrentProvider):
+
+class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
@@ -67,86 +69,80 @@ class SceneTimeProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
+        for mode in search_params:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                search_url = self.urls['search'] % (urllib.quote(search_string), self.categories)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                data = self.get_url(searchURL)
+                data = self.get_url(search_url)
                 if not data:
                     continue
 
-                try:
-                    with BS4Parser(data, 'html5lib') as html:
-                        torrent_table = html.select("#torrenttable table")
-                        torrent_rows = torrent_table[0].select("tr") if torrent_table else []
+                with BS4Parser(data, 'html5lib') as html:
+                    torrent_table = html.find('div', id="torrenttable")
+                    torrent_rows = []
+                    if torrent_table:
+                        torrent_rows = torrent_table.select("tr")
 
-                        # Continue only if one Release is found
-                        if len(torrent_rows) < 2:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
-                            continue
+                    # Continue only if one Release is found
+                    if len(torrent_rows) < 2:
+                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        continue
 
-                        # Scenetime apparently uses different number of cells in #torrenttable based
-                        # on who you are. This works around that by extracting labels from the first
-                        # <tr> and using their index to find the correct download/seeders/leechers td.
-                        labels = [label.get_text() for label in torrent_rows[0].find_all('td')]
+                    # Scenetime apparently uses different number of cells in #torrenttable based
+                    # on who you are. This works around that by extracting labels from the first
+                    # <tr> and using their index to find the correct download/seeders/leechers td.
+                    labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all('td')]
 
-                        for result in torrent_rows[1:]:
+                    for result in torrent_rows[1:]:
+                        try:
                             cells = result.find_all('td')
 
                             link = cells[labels.index('Name')].find('a')
+                            torrent_id = link['href'].replace('details.php?id=', '').split("&")[0]
 
-                            full_id = link['href'].replace('details.php?id=', '')
-                            torrent_id = full_id.split("&")[0]
+                            title = link.get_text(strip=True)
+                            download_url = self.urls['download'] % (torrent_id, "%s.torrent" % title.replace(" ", "."))
 
-                            try:
-                                title = link.contents[0].get_text()
-                                filename = "%s.torrent" % title.replace(" ", ".")
-                                download_url = self.urls['download'] % (torrent_id, filename)
+                            seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
+                            leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
+                            torrent_size = cells[labels.index('Size')].get_text()
 
-                                seeders = int(cells[labels.index('Seeders')].get_text())
-                                leechers = int(cells[labels.index('Leechers')].get_text())
-                                # FIXME
-                                size = -1
+                            size = convert_size(torrent_size) or -1
 
-                            except (AttributeError, TypeError):
-                                continue
+                        except (AttributeError, TypeError, KeyError, ValueError):
+                            continue
 
-                            if not all([title, download_url]):
-                                continue
+                        if not all([title, download_url]):
+                            continue
 
-                            # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                continue
-
-                            item = title, download_url, size, seeders, leechers
+                        # Filter unseeded torrent
+                        if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            continue
 
-                            items[mode].append(item)
+                        item = title, download_url, size, seeders, leechers
+                        if mode != 'RSS':
+                            logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                except Exception as e:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                        items.append(item)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 

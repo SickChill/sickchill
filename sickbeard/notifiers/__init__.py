@@ -12,11 +12,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 
 import kodi
@@ -37,6 +37,8 @@ import nma
 import pushalot
 import pushbullet
 import freemobile
+import telegram
+
 
 import tweet
 import trakt
@@ -61,6 +63,7 @@ nma_notifier = nma.NMA_Notifier()
 pushalot_notifier = pushalot.PushalotNotifier()
 pushbullet_notifier = pushbullet.PushbulletNotifier()
 freemobile_notifier = freemobile.FreeMobileNotifier()
+telegram_notifier = telegram.TelegramNotifier()
 # social
 twitter_notifier = tweet.TwitterNotifier()
 trakt_notifier = trakt.TraktNotifier()
@@ -77,6 +80,7 @@ notifiers = [
     pytivo_notifier,
     growl_notifier,
     freemobile_notifier,
+    telegram_notifier,
     prowl_notifier,
     pushover_notifier,
     boxcar2_notifier,

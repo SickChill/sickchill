@@ -11,21 +11,22 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class IPTorrentsProvider(TorrentProvider):
+class IPTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "IPTorrents")
@@ -66,26 +67,27 @@ class IPTorrentsProvider(TorrentProvider):
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
-        if re.search('tries left', response):
-            logger.log(u"You tried too often, please try again after 1 hour! Disable IPTorrents for at least 1 hour", logger.WARNING)
-            return False
-        if re.search('Password not correct', response):
+        # Invalid username and password combination
+        if re.search('Invalid username and password combination', response):
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            return False
+
+        # You tried too often, please try again after 2 hours!
+        if re.search('You tried too often', response):
+            logger.log(u"You tried too often, please try again after 2 hours! Disable IPTorrents for at least 2 hours", logger.WARNING)
             return False
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None): # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        freeleech = '&free=on' if self.freeleech else ''
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
+        freeleech = '&free=on' if self.freeleech else ''
+
+        for mode in search_params:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
@@ -93,11 +95,11 @@ class IPTorrentsProvider(TorrentProvider):
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
-                searchURL = self.urls['search'] % (self.categories, freeleech, search_string)
-                searchURL += ';o=seeders' if mode != 'RSS' else ''
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                search_url = self.urls['search'] % (self.categories, freeleech, search_string)
+                search_url += ';o=seeders' if mode != 'RSS' else ''
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                data = self.get_url(searchURL)
+                data = self.get_url(search_url)
                 if not data:
                     continue
 
@@ -124,9 +126,10 @@ class IPTorrentsProvider(TorrentProvider):
                             try:
                                 title = result.find_all('td')[1].find('a').text
                                 download_url = self.urls['base_url'] + result.find_all('td')[3].find('a')['href']
-                                size = self._convertSize(result.find_all('td')[5].text)
                                 seeders = int(result.find('td', attrs={'class': 'ac t_seeders'}).text)
                                 leechers = int(result.find('td', attrs={'class': 'ac t_leechers'}).text)
+                                torrent_size = result.find_all('td')[5].text
+                                size = convert_size(torrent_size) or -1
                             except (AttributeError, TypeError, KeyError):
                                 continue
 
@@ -143,34 +146,20 @@ class IPTorrentsProvider(TorrentProvider):
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                            items[mode].append(item)
+                            items.append(item)
 
                 except Exception as e:
                     logger.log(u"Failed parsing provider. Error: %r" % ex(e), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
     def seed_ratio(self):
         return self.ratio
-
-    @staticmethod
-    def _convertSize(size):
-        size, modifier = size.split(' ')
-        size = float(size)
-        if modifier in 'KB':
-            size *= 1024 ** 1
-        elif modifier in 'MB':
-            size *= 1024 ** 2
-        elif modifier in 'GB':
-            size *= 1024 ** 3
-        elif modifier in 'TB':
-            size *= 1024 ** 4
-        return long(size)
 
 
 class IPTorrentsCache(tvcache.TVCache):

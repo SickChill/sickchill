@@ -60,7 +60,7 @@
     <link rel="apple-touch-icon" sizes="72x72" href="${srRoot}/images/ico/favicon-72.png">
     <link rel="apple-touch-icon" href="${srRoot}/images/ico/favicon-57.png">
 
-    <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/bootstrap.min.css?${sbPID}"/>
+    <link rel="stylesheet" type="text/css" href="${srRoot}/css/vender.min.css?${sbPID}"/>
     <link rel="stylesheet" type="text/css" href="${srRoot}/css/browser.css?${sbPID}" />
     <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}" />
     <link rel="stylesheet" type="text/css" href="${srRoot}/css/style.css?${sbPID}"/>

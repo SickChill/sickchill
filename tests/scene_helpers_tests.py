@@ -21,21 +21,6 @@ class SceneTests(test.SickbeardTestDBCase):
     """
     Test Scene
     """
-    def _test_scene_to_norm_show_name(self, name, expected):
-        """
-        Test scene to normal show names
-
-        :param name:
-        :param expected:
-        :return:
-        """
-        result = show_name_helpers.sceneToNormalShowNames(name)
-        self.assertTrue(len(set(expected).intersection(set(result))) == len(expected))
-
-        dot_result = show_name_helpers.sceneToNormalShowNames(name.replace(' ', '.'))
-        dot_expected = [x.replace(' ', '.') for x in expected]
-        self.assertTrue(len(set(dot_expected).intersection(set(dot_result))) == len(dot_expected))
-
     def _test_all_possible_show_names(self, name, indexerid=0, expected=None):
         """
         Test all possible show names
@@ -62,51 +47,6 @@ class SceneTests(test.SickbeardTestDBCase):
         """
         result = show_name_helpers.filterBadReleases(name)
         self.assertEqual(result, expected)
-
-    def _test_is_good_name(self, name, show):
-        """
-        Test if name is good
-
-        :param name:
-        :param show:
-        :return:
-        """
-        self.assertTrue(show_name_helpers.isGoodResult(name, show))
-
-    def test_is_good_name(self):
-        """
-        Perform good name tests
-        """
-        list_of_cases = [('Show.Name.S01E02.Test-Test', 'Show/Name'),
-                         ('Show.Name.S01E02.Test-Test', 'Show. Name'),
-                         ('Show.Name.S01E02.Test-Test', 'Show- Name'),
-                         ('Show.Name.Part.IV.Test-Test', 'Show Name'),
-                         ('Show.Name.S01.Test-Test', 'Show Name'),
-                         ('Show.Name.E02.Test-Test', 'Show: Name'),
-                         ('Show Name Season 2 Test', 'Show: Name'), ]
-
-        for test_case in list_of_cases:
-            scene_name, show_name = test_case
-            show = Show(1, 0)
-            show.name = show_name
-            self._test_is_good_name(scene_name, show)
-
-    def test_scene_to_norm_show_names(self):
-        """
-        Test scene to normal show names
-        """
-        self._test_scene_to_norm_show_name('Show Name 2010', ['Show Name 2010', 'Show Name (2010)'])
-        self._test_scene_to_norm_show_name('Show Name US', ['Show Name US', 'Show Name (US)'])
-        self._test_scene_to_norm_show_name('Show Name AU', ['Show Name AU', 'Show Name (AU)'])
-        self._test_scene_to_norm_show_name('Show Name CA', ['Show Name CA', 'Show Name (CA)'])
-        self._test_scene_to_norm_show_name('Show and Name', ['Show and Name', 'Show & Name'])
-        self._test_scene_to_norm_show_name('Show and Name 2010', ['Show and Name 2010', 'Show & Name 2010', 'Show and Name (2010)', 'Show & Name (2010)'])
-        self._test_scene_to_norm_show_name('show name us', ['show name us', 'show name (us)'])
-        self._test_scene_to_norm_show_name('Show And Name', ['Show And Name', 'Show & Name'])
-
-        # failure cases
-        self._test_scene_to_norm_show_name('Show Name 90210', ['Show Name 90210'])
-        self._test_scene_to_norm_show_name('Show Name YA', ['Show Name YA'])
 
     def test_all_possible_show_names(self):
         """

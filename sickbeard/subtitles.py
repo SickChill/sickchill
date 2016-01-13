@@ -13,11 +13,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import re
@@ -25,10 +25,9 @@ import datetime
 import traceback
 import subliminal
 import subprocess
-import pkg_resources
 import sickbeard
-from subliminal.api import provider_manager
 from babelfish import Language, language_converters
+from subliminal import ProviderPool, provider_manager
 from sickbeard import logger
 from sickbeard import history
 from sickbeard import db
@@ -40,32 +39,8 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
 
-DISTRIBUTION = pkg_resources.Distribution(location=os.path.dirname(os.path.dirname(__file__)),
-                                          project_name='fake_entry_points', version='1.0.0')
-
-ENTRY_POINTS = {
-    'subliminal.providers': [
-        'addic7ed = subliminal.providers.addic7ed:Addic7edProvider',
-        'legendastv = subliminal.providers.legendastv:LegendasTvProvider',
-        'napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider',
-        'opensubtitles = subliminal.providers.opensubtitles:OpenSubtitlesProvider',
-        'podnapisi = subliminal.providers.podnapisi:PodnapisiProvider',
-        'subscenter = subliminal.providers.subscenter:SubsCenterProvider',
-        'thesubdb = subliminal.providers.thesubdb:TheSubDBProvider',
-        'tvsubtitles = subliminal.providers.tvsubtitles:TVsubtitlesProvider'
-    ],
-    'babelfish.language_converters': [
-        'addic7ed = subliminal.converters.addic7ed:Addic7edConverter',
-        'legendastv = subliminal.converters.legendastv:LegendasTvConverter',
-        'thesubdb = subliminal.converters.thesubdb:TheSubDBConverter',
-        'tvsubtitles = subliminal.converters.tvsubtitles:TVsubtitlesConverter'
-    ]
-}
-
-DISTRIBUTION._ep_map = pkg_resources.EntryPoint.parse_map(ENTRY_POINTS, DISTRIBUTION)  # pylint: disable=protected-access
-pkg_resources.working_set.add(DISTRIBUTION)
-
-provider_manager.ENTRY_POINT_CACHE.pop('subliminal.providers')
+provider_manager.register('legendastv = subliminal.providers.legendastv:LegendasTvProvider')
+provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
 
 subliminal.region.configure('dogpile.cache.memory')
 
@@ -87,14 +62,14 @@ def sorted_service_list():
 
     current_index = 0
     for current_service in sickbeard.SUBTITLES_SERVICES_LIST:
-        if current_service in subliminal.provider_manager.names():
+        if current_service in provider_manager.names():
             new_list.append({'name': current_service,
                              'url': PROVIDER_URLS[current_service] if current_service in PROVIDER_URLS else lmgtfy % current_service,
                              'image': current_service + '.png',
                              'enabled': sickbeard.SUBTITLES_SERVICES_ENABLED[current_index] == 1})
         current_index += 1
 
-    for current_service in subliminal.provider_manager.names():
+    for current_service in provider_manager.names():
         if current_service not in [service['name'] for service in new_list]:
             new_list.append({'name': current_service,
                              'url': PROVIDER_URLS[current_service] if current_service in PROVIDER_URLS else lmgtfy % current_service,
@@ -187,7 +162,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                         'opensubtitles': {'username': sickbeard.OPENSUBTITLES_USER,
                                           'password': sickbeard.OPENSUBTITLES_PASS}}
 
-    pool = subliminal.api.ProviderPool(providers=providers, provider_configs=provider_configs)
+    pool = ProviderPool(providers=providers, provider_configs=provider_configs)
 
     try:
         subtitles_list = pool.list_subtitles(video, languages)
@@ -333,7 +308,7 @@ class SubtitlesFinder(object):
                             'opensubtitles': {'username': sickbeard.OPENSUBTITLES_USER,
                                               'password': sickbeard.OPENSUBTITLES_PASS}}
 
-        pool = subliminal.api.ProviderPool(providers=providers, provider_configs=provider_configs)
+        pool = ProviderPool(providers=providers, provider_configs=provider_configs)
 
         # Search for all wanted languages
         languages = {from_code(language) for language in wanted_languages()}

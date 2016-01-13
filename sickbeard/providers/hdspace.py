@@ -13,11 +13,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
 import urllib
@@ -26,10 +26,11 @@ from bs4 import BeautifulSoup
 
 from sickbeard import logger
 from sickbeard import tvcache
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class HDSpaceProvider(TorrentProvider):
+class HDSpaceProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
     def __init__(self):
         TorrentProvider.__init__(self, "HDSpace")
 
@@ -81,28 +82,25 @@ class HDSpaceProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
-
+    def search(self, search_strings, age=0, ep_obj=None): # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
-
                 if mode != 'RSS':
-                    searchURL = self.urls['search'] % (urllib.quote_plus(search_string.replace('.', ' ')),)
+                    search_url = self.urls['search'] % (urllib.quote_plus(search_string.replace('.', ' ')),)
                 else:
-                    searchURL = self.urls['search'] % ''
+                    search_url = self.urls['search'] % ''
 
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
                 if mode != 'RSS':
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
 
-                data = self.get_url(searchURL)
+                data = self.get_url(search_url)
                 if not data or 'please try later' in data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
@@ -138,7 +136,8 @@ class HDSpaceProvider(TorrentProvider):
                         download_url = self.urls['base_url'] + dl_href
                         seeders = int(result.find('span', attrs={'class': 'seedy'}).find('a').text)
                         leechers = int(result.find('span', attrs={'class': 'leechy'}).find('a').text)
-                        size = re.match(r'.*?([0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+).*', str(result), re.DOTALL).group(1)
+                        torrent_size = re.match(r'.*?([0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+).*', str(result), re.DOTALL).group(1)
+                        size = convert_size(torrent_size) or -1
 
                         if not all([title, download_url]):
                             continue
@@ -153,33 +152,19 @@ class HDSpaceProvider(TorrentProvider):
                         if mode != 'RSS':
                             logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                        items[mode].append(item)
+                        items.append(item)
 
                     except (AttributeError, TypeError, KeyError, ValueError):
                         continue
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            items.sort(key=lambda tup: tup[3], reverse=True)
+            results += items
 
         return results
 
     def seed_ratio(self):
         return self.ratio
-
-    def _convertSize(self, size):
-        size, modifier = size.split(' ')
-        size = float(size)
-        if modifier in 'KB':
-            size *= 1024 ** 1
-        elif modifier in 'MB':
-            size *= 1024 ** 2
-        elif modifier in 'GB':
-            size *= 1024 ** 3
-        elif modifier in 'TB':
-            size *= 1024 ** 4
-        return long(size)
 
 
 class HDSpaceCache(tvcache.TVCache):

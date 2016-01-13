@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import webbrowser
 import datetime
@@ -112,8 +112,7 @@ autoPostProcesserScheduler = None
 subtitlesFinderScheduler = None
 traktCheckerScheduler = None
 
-showList = None
-loadingShowList = None
+showList = []
 
 providerList = []
 newznabProviderList = []
@@ -375,6 +374,13 @@ FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = False
 FREEMOBILE_ID = ''
 FREEMOBILE_APIKEY = ''
 
+USE_TELEGRAM = False
+TELEGRAM_NOTIFY_ONSNATCH = False
+TELEGRAM_NOTIFY_ONDOWNLOAD = False
+TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = False
+TELEGRAM_ID = ''
+TELEGRAM_APIKEY = ''
+
 USE_PROWL = False
 PROWL_NOTIFY_ONSNATCH = False
 PROWL_NOTIFY_ONDOWNLOAD = False
@@ -590,10 +596,11 @@ def initialize(consoleLogging=True):
             USE_PLEX_SERVER, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
             PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, \
             USE_EMBY, EMBY_HOST, EMBY_APIKEY, \
-            showUpdateScheduler, __INITIALIZED__, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, showList, loadingShowList, \
+            showUpdateScheduler, __INITIALIZED__, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, showList, \
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, \
+            USE_TELEGRAM, TELEGRAM_ID, TELEGRAM_APIKEY, TELEGRAM_NOTIFY_ONSNATCH, TELEGRAM_NOTIFY_ONDOWNLOAD, TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_GROWL, GROWL_HOST, GROWL_PASSWORD, USE_PROWL, PROWL_NOTIFY_ONSNATCH, PROWL_NOTIFY_ONDOWNLOAD, PROWL_NOTIFY_ONSUBTITLEDOWNLOAD, PROWL_API, PROWL_PRIORITY, PROWL_MESSAGE_TITLE, \
             USE_PYTIVO, PYTIVO_NOTIFY_ONSNATCH, PYTIVO_NOTIFY_ONDOWNLOAD, PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD, PYTIVO_UPDATE_LIBRARY, PYTIVO_HOST, PYTIVO_SHARE_NAME, PYTIVO_TIVO_NAME, \
             USE_NMA, NMA_NOTIFY_ONSNATCH, NMA_NOTIFY_ONDOWNLOAD, NMA_NOTIFY_ONSUBTITLEDOWNLOAD, NMA_API, NMA_PRIORITY, \
@@ -679,14 +686,14 @@ def initialize(consoleLogging=True):
             fileLogging = False
 
         # init logging
-        logger.initLogging(consoleLogging=consoleLogging, fileLogging=fileLogging, debugLogging=DEBUG, databaseLogging=DBDEBUG)
+        logger.init_logging(console_logging=consoleLogging, file_logging=fileLogging, debug_logging=DEBUG, database_logging=DBDEBUG)
 
         # github api
         try:
             if not (GIT_USERNAME and GIT_PASSWORD):
-                gh = Github(user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
+                gh = Github(user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
             else:
-                gh = Github(login_or_token=GIT_USERNAME, password=GIT_PASSWORD, user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
+                gh = Github(login_or_token=GIT_USERNAME, password=GIT_PASSWORD, user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
         except Exception as e:
             gh = None
             logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: %s' % str(e), logger.WARNING)
@@ -756,11 +763,12 @@ def initialize(consoleLogging=True):
                 except Exception as e:
                     logger.log(u"Restore: Unable to remove the restore directory: {0}".format(ex(e)), logger.ERROR)
 
-                for cleanupDir in ['mako', 'sessions', 'indexers']:
+                for cleanupDir in ['mako', 'sessions', 'indexers', 'rss']:
                     try:
                         shutil.rmtree(ek(os.path.join, CACHE_DIR, cleanupDir))
                     except Exception as e:
-                        logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
+                        if cleanupDir not in ['rss', 'sessions', 'indexers']:
+                            logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
 
@@ -1020,6 +1028,13 @@ def initialize(consoleLogging=True):
         FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'FreeMobile', 'freemobile_notify_onsubtitledownload', 0))
         FREEMOBILE_ID = check_setting_str(CFG, 'FreeMobile', 'freemobile_id', '')
         FREEMOBILE_APIKEY = check_setting_str(CFG, 'FreeMobile', 'freemobile_apikey', '')
+
+        USE_TELEGRAM = bool(check_setting_int(CFG, 'Telegram', 'use_telegram', 0))
+        TELEGRAM_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Telegram', 'telegram_notify_onsnatch', 0))
+        TELEGRAM_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Telegram', 'telegram_notify_ondownload', 0))
+        TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'Telegram', 'telegram_notify_onsubtitledownload', 0))
+        TELEGRAM_ID = check_setting_str(CFG, 'Telegram', 'telegram_id', '')
+        TELEGRAM_APIKEY = check_setting_str(CFG, 'Telegram', 'telegram_apikey', '')
 
         USE_PROWL = bool(check_setting_int(CFG, 'Prowl', 'use_prowl', 0))
         PROWL_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Prowl', 'prowl_notify_onsnatch', 0))
@@ -1451,9 +1466,6 @@ def initialize(consoleLogging=True):
                                                        cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),
                                                        threadName="FINDSUBTITLES",
                                                        silent=not USE_SUBTITLES)
-
-        showList = []
-        loadingShowList = {}
 
         __INITIALIZED__ = True
         return True
@@ -1932,6 +1944,14 @@ def save_config():
     new_config['FreeMobile']['freemobile_notify_onsubtitledownload'] = int(FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD)
     new_config['FreeMobile']['freemobile_id'] = FREEMOBILE_ID
     new_config['FreeMobile']['freemobile_apikey'] = FREEMOBILE_APIKEY
+
+    new_config['Telegram'] = {}
+    new_config['Telegram']['use_telegram'] = int(USE_TELEGRAM)
+    new_config['Telegram']['telegram_notify_onsnatch'] = int(TELEGRAM_NOTIFY_ONSNATCH)
+    new_config['Telegram']['telegram_notify_ondownload'] = int(TELEGRAM_NOTIFY_ONDOWNLOAD)
+    new_config['Telegram']['telegram_notify_onsubtitledownload'] = int(TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD)
+    new_config['Telegram']['telegram_id'] = TELEGRAM_ID
+    new_config['Telegram']['telegram_apikey'] = TELEGRAM_APIKEY
 
     new_config['Prowl'] = {}
     new_config['Prowl']['use_prowl'] = int(USE_PROWL)

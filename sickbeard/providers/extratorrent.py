@@ -11,19 +11,18 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import traceback
 import sickbeard
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int, convert_size
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -50,11 +49,9 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.search_params = {'cid': 8}
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
-
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
@@ -75,9 +72,10 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     for item in parser.findAll('item'):
                         try:
                             title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').get_text(strip=True))
-                            size = try_int(item.find('size').get_text(strip=True), -1) if item.find('size') else -1
-                            seeders = try_int(item.find('seeders').get_text(strip=True)) if item.find('seeders') else 0
-                            leechers = try_int(item.find('leechers').get_text(strip=True)) if item.find('leechers') else 0
+                            seeders = try_int(item.find('seeders').get_text(strip=True))
+                            leechers = try_int(item.find('leechers').get_text(strip=True))
+                            torrent_size = item.find('size').get_text()
+                            size = convert_size(torrent_size) or -1
 
                             if sickbeard.TORRENT_METHOD == 'blackhole':
                                 enclosure = item.find('enclosure')  # Backlog doesnt have enclosure
@@ -87,28 +85,27 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                 info_hash = item.find('info_hash').get_text(strip=True)
                                 download_url = "magnet:?xt=urn:btih:" + info_hash + "&dn=" + title + self._custom_trackers
 
-                            if not all([title, download_url]):
-                                continue
-
-                                # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                continue
-
-                            item = title, download_url, size, seeders, leechers
-                            if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
-
-                            items[mode].append(item)
-
                         except (AttributeError, TypeError, KeyError, ValueError):
-                            logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.WARNING)
+                            continue
+
+                        if not all([title, download_url]):
+                            continue
+
+                            # Filter unseeded torrent
+                        if seeders < self.minseed or leechers < self.minleech:
+                            if mode != 'RSS':
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            continue
+
+                        item = title, download_url, size, seeders, leechers
+                        if mode != 'RSS':
+                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+
+                        items.append(item)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            items.sort(key=lambda tup: tup[3], reverse=True)
+            results += items
 
         return results
 

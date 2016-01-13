@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
 import requests
@@ -24,11 +24,12 @@ import traceback
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class GFTrackerProvider(TorrentProvider):
+class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
@@ -83,26 +84,24 @@ class GFTrackerProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
+        for mode in search_params:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                searchURL = self.urls['search'] % (self.categories, search_string)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                search_url = self.urls['search'] % (self.categories, search_string)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 # Returns top 30 results by default, expandable in user profile
-                data = self.get_url(searchURL)
+                data = self.get_url(search_url)
                 if not data:
                     continue
 
@@ -126,10 +125,7 @@ class GFTrackerProvider(TorrentProvider):
                                 leechers = int(shares[1])
 
                                 torrent_size = cells[7].get_text().split("/", 1)[0]
-                                if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
-                                    size = self._convertSize(torrent_size.strip())
-                                else:
-                                    size = -1
+                                size = convert_size(torrent_size) or -1
 
                             except (AttributeError, TypeError):
                                 continue
@@ -147,37 +143,20 @@ class GFTrackerProvider(TorrentProvider):
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                            items[mode].append(item)
+                            items.append(item)
 
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
     def seed_ratio(self):
         return self.ratio
-
-    def _convertSize(self, sizeString):
-        size = sizeString[:-2].strip()
-        modifier = sizeString[-2:].upper()
-        try:
-            size = float(size)
-            if modifier in 'KB':
-                size *= 1024 ** 1
-            elif modifier in 'MB':
-                size *= 1024 ** 2
-            elif modifier in 'GB':
-                size *= 1024 ** 3
-            elif modifier in 'TB':
-                size *= 1024 ** 4
-        except Exception:
-            size = -1
-        return long(size)
 
 
 class GFTrackerCache(tvcache.TVCache):

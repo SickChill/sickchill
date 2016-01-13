@@ -880,16 +880,16 @@ pre {
 browser.css overrides
 ========================================================================== */
 
-#fileBrowserDialog ul li {
+.fileBrowserDialog ul li {
     margin: 2px 0;
     list-style-type: none;
     cursor: pointer;
-    background: #333;
+    background: #333 !important;
 }
 
-#fileBrowserDialog ul li a:hover {
+.fileBrowserDialog ul li a:hover {
     color: #09a2ff;
-    background: none;
+    background: none !important;
 }
 
 /* =======================================================================

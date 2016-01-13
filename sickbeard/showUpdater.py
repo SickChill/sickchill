@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import xml.etree.ElementTree as ET
 import requests
@@ -35,14 +35,14 @@ from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
 
 
-class ShowUpdater(object):
+class ShowUpdater(object):  # pylint: disable=too-few-public-methods
     def __init__(self):
         self.lock = threading.Lock()
         self.amActive = False
 
         self.session = requests.Session()
 
-    def run(self, force=False):  # pylint: disable=unused-parameter
+    def run(self, force=False):  # pylint: disable=unused-argument, too-many-locals, too-many-branches, too-many-statements
 
         self.amActive = True
 
@@ -79,13 +79,16 @@ class ShowUpdater(object):
         # url = 'http://thetvdb.com/api/Updates.php?type=series&time=%s' % last_update
         url = 'http://thetvdb.com/api/%s/updates/%s' % (sickbeard.indexerApi(INDEXER_TVDB).api_params['apikey'], update_file)
         data = helpers.getURL(url, session=self.session)
+        if not data:
+            logger.log(u"Could not get the recently updated show data from %s. Retrying later. Url was: %s" % (sickbeard.indexerApi(INDEXER_TVDB).name, url))
+            self.amActive = False
+            return
 
         updated_shows = []
         try:
             tree = ET.fromstring(data)
             for show in tree.findall("Series"):
                 updated_shows.append(int(show.find('id').text))
-
         except SyntaxError:
             pass
 

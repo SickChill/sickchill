@@ -11,7 +11,7 @@
 #
 # Sick Beard is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
@@ -21,7 +21,6 @@ import traceback
 import requests
 import re
 
-from requests.auth import AuthBase
 from sickbeard.bs4_parser import BS4Parser
 
 from sickbeard import logger
@@ -29,7 +28,7 @@ from sickbeard import tvcache
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class BLUETIGERSProvider(TorrentProvider):
+class BlueTigersProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
         TorrentProvider.__init__(self, "BLUETIGERS")
 
@@ -38,7 +37,7 @@ class BLUETIGERSProvider(TorrentProvider):
         self.ratio = None
         self.token = None
 
-        self.cache = BLUETIGERSCache(self)
+        self.cache = BlueTigersCache(self)
 
         self.urls = {
             'base_url': 'https://www.bluetigers.ca/',
@@ -79,15 +78,13 @@ class BLUETIGERSProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
-
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_strings.keys():
+        for mode in search_strings:
+            items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
 
@@ -131,15 +128,15 @@ class BLUETIGERSProvider(TorrentProvider):
                                 if mode != 'RSS':
                                     logger.log(u"Found result: %s " % title, logger.DEBUG)
 
-                                items[mode].append(item)
+                                items.append(item)
 
-                except Exception as e:
+                except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda tup: tup[3], reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
@@ -147,17 +144,7 @@ class BLUETIGERSProvider(TorrentProvider):
         return self.ratio
 
 
-class BLUETIGERSAuth(AuthBase):
-    """Attaches HTTP Authentication to the given Request object."""
-    def __init__(self, token):
-        self.token = token
-
-    def __call__(self, r):
-        r.headers['Authorization'] = self.token
-        return r
-
-
-class BLUETIGERSCache(tvcache.TVCache):
+class BlueTigersCache(tvcache.TVCache):
     def __init__(self, provider_obj):
         tvcache.TVCache.__init__(self, provider_obj)
 
@@ -169,4 +156,4 @@ class BLUETIGERSCache(tvcache.TVCache):
         return {'entries': self.provider.search(search_strings)}
 
 
-provider = BLUETIGERSProvider()
+provider = BlueTigersProvider()
