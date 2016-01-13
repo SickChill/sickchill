@@ -295,6 +295,228 @@ var SICKRAGE = {
             });
 
             $('#log_dir').fileBrowser({ title: 'Select log file folder location' });
+            
+            //Helper function
+            function n(number){
+                return number > 9 ? "" + number: "0" + number;
+            }
+            
+            function checkImdbWlEnabled() {
+            	var kvgroups = $('.key-value-group [type="checkbox"]');
+            	var wlEnabled = false;
+            	$(kvgroups).each(function(index, kvgroup){
+            		if ( $(kvgroup).prop('checked') ) { wlEnabled = true;}
+            	});
+            	
+            	if (wlEnabled) { $('#watchlist-warning').removeClass('hidden'); }
+            	else { $('#watchlist-warning').addClass('hidden'); }
+            }
+            
+            function testWl(el) {
+            	
+            	console.log("Clicked, testing for checkbox id: " + $(el).data('checkbox'));
+            	console.log("Clicked, testing for input id: " + $(el).data('input'));
+            }
+            
+        	function regHandlers() {
+        		$('.key-value-group input').off("input.kvgInput");
+        		$('.key-value-group input').on("input", function() {
+        	    	SICKRAGE.config.checkLastInput();
+        	    	SICKRAGE.config.updateWatchlists();
+        	    });
+        		
+        		$('.key-value-group input').off("blur.kvgInput");
+        		$('.key-value-group input').on("blur.kvgInput", function() {
+        	    	SICKRAGE.config.updateWatchlists();
+        	    	SICKRAGE.config.saveWatchlists();
+        	    	return false;
+        	    });
+        		
+        		$('.key-value-group input').off("click.kvgInputNs");
+        		$('.key-value-group input').on("click.kvgInputNs", function() {
+        	    	SICKRAGE.config.updateWatchlists();
+        	    });
+        		
+        		$('.key-value-group [type="checkbox"]').off('click.kvgCheckboxNs'); 
+        		$('.key-value-group [type="checkbox"]').on("click.kvgCheckboxNs", function() {
+        	    	checkImdbWlEnabled();
+        	    });
+        		
+        		$('[id^=test-wl-]').off('click.testWlNs');
+        		$('[id^=test-wl-]').on("click.testWlNs", function() {
+        	    	testWl(this);
+        	    	return false;
+        	    });
+        	}
+        	
+            this.ManageWatchlists = function () {
+            	var self = this;
+            	this.rrWatchlists = [];
+            	
+            	/*
+            	 * Class for describing a Watchlist object.
+            	 */
+            	function Watchlist (url, enabled, elUrl) {
+            	    this.url = url;
+            	    if (enabled === 'on' || enabled === '1' || enabled === true) { this.enabled = 1; }
+            	    else { this.enabled = 0; }
+            	    
+            	    if (typeof elUrl === 'undefined') { elUrl = false; }
+            	    else { this.elUrl = elUrl; }
+            	    
+            	    this.getInfo = function() {
+            	        return this.url + '|' + this.enabled;
+            	    };
+            	    
+            	    /*
+                	 * Function for validating the imdb wl url.
+                	 * If the url is invalid the input field will turn red
+                	 * If valid the input field will turn green
+                	 */
+                	this.validateWatchlistUrl = function() {
+                			if (this.url) {
+        	            		var regexUser = /ur\d+/;
+        	            		
+        	            		if ( regexUser.exec(this.url) ) {
+        	            			//Color green
+        	            			$(this.elUrl).css({'background-color' : '#90EE90'});
+        	            			return true;
+        	            		}
+        	            		else {
+        	            			//Color red
+        	            			$(this.elUrl).css({'background-color' : '#FF0000'});
+        	            			return false;
+        	            		}
+                			}
+                			else {
+                				$(this.elUrl).css({'background-color' : '#FFFFFF'});
+                				return false;
+                			}
+
+                	};
+                	
+                	this.validateWatchlistUrl();
+            	}
+            	
+            	this.createWlInputs = function () {
+            		$.each( this.ids, function( index, value ){
+            			addWatchlistInput(self.idsEnabled[index], value);
+            	    });
+            	};
+            	
+            	/*
+            	 * Function for retrieving data from the hidden inputs, and translating those to 
+            	 * an array with Watchlist Objects
+            	 * Function should only be run once, initializing!.
+            	 */
+            	this.initWatchlists = function() {
+            		this.idsEnabled = $('#imdb_wl_ids_enabled').val().split('|');
+            	    this.ids = $('#imdb_wl_ids').val().split('|');
+
+            	    $.each( this.ids, function( index, value){
+            	        var wl = new Watchlist(value, self.idsEnabled[index]);
+            	        self.rrWatchlists.push(wl);
+            	    });
+            	    
+            	    this.createWlInputs();
+            	    //Add an empty input
+            		addWatchlistInput();
+            	};
+            	
+            	this.updateWatchlists = function() {
+            		var elIdsEnabled = $('.key-value-group input[type=checkbox]');
+            	    var elIds = $('.key-value-group input[type=text]');
+            	    self.rrWatchlists = [];
+            	    
+            	    if (elIdsEnabled.length === elIds.length) {
+            	    	$.each( elIds, function( index, el ){
+                	        var wl = new Watchlist($(el).val(), $(elIdsEnabled[index]).prop('checked'), el);
+                	        wl.validateWatchlistUrl();
+                	        self.rrWatchlists.push(wl);
+                	    });
+            	    }
+            	    
+            	    console.log('Watchlists array upated with ' + elIds.length + ' rows');
+            	    
+            	};
+            	
+            	
+            	
+            	/*
+            	 * This function retrieves all watchlists from the rrWatchlist array, 
+            	 * and saves it into the hidden input fields. Separated with pipes (|)
+            	 */
+            	this.saveWatchlists = function() {
+            		var idsEnabled = [];
+            		var ids = [];
+            		$.each( self.rrWatchlists, function( index, watchlist ){
+            			if ( watchlist.validateWatchlistUrl() ) {
+            				idsEnabled.push(watchlist.enabled);
+                			ids.push(watchlist.url);
+            			}
+            	    });
+            		
+            		$('#imdb_wl_ids_enabled').val(idsEnabled.join('|'));
+            		$('#imdb_wl_ids').val(ids.join('|'));
+            	};
+            	
+            	this.checkLastInput = function() {
+            		if ($('.key-value-group input[type="text"]').last().val()) {
+            			console.log('Last input field is used.. lets generate a new one!');
+            			addWatchlistInput();
+            		}
+            	};
+            	
+            	function addWatchlistInput(enabled, url) {
+            		
+            		if (typeof enabled === 'undefined') { enabled = ''; }
+            		else if (enabled === '1') { enabled = 'checked="checked"'; }
+            		
+            		if (typeof url === 'undefined') { url = ''; }
+            		
+            		var keyValueGroups = $('.key-value-group input[type="text"]');
+                	
+            		var nextId = '';
+            		
+            		if (!keyValueGroups.length) { 
+            			// Create first empty input box
+            			nextId = '00';
+            		}
+            		else {
+        	    		var lastInput = keyValueGroups.last();
+        	    		
+        	    		var rex = /imdb_wl_ids-(\d+)/;
+        	    		var lastInputId = rex.exec(lastInput.attr('id'))[1];
+        	    		
+        	    		nextId = n(parseInt(lastInputId) + 1);
+            		}
+            		
+            		/* Let's add the html to the end of the div: <div  id="imdb-watchlist-placeholder">
+            		* the resulting html shoul look as follows:
+            		* <div id="kv-xx" class="key-value-group clearfix">
+        				<input type="checkbox"class="enabler" name="IMDB_WL_IDS_ENABLED-xx" id="imdb_wl_ids_enabled-xx" checked="checked" value="0" size="100" />
+        				<input type="text" name="IMDB_WL_USE_IDS-xx" id="imdb_wl_ids-xx" value="" size="40" />
+        			  </div>
+        			  x should be replaced with the nextId
+            		*/
+            		
+            		var parent = $('#imdb-watchlist-placeholder');
+            		parent.append('<div id="kv-' + nextId + '" class="key-value-group clearfix"> <input type="checkbox" class="enabler" id="imdb_wl_ids_enabled-' + nextId + '" '+ enabled +' /><input class="form-control input200" style="margin-top: 0px" type="text" id="imdb_wl_ids-' + nextId + '" value="' + url + '" size="40" /></div>');
+            		$('#kv-' + nextId).append('<input class="btn" id="test-wl-' + nextId + '" data-checkbox="imdb_wl_ids_enabled-' + nextId + '" data-input="imdb_wl_ids-' + nextId + '" type="button" class="" value="Test Watchlist" />');
+            		regHandlers();
+            	}
+            	
+            	regHandlers();
+            	self.initWatchlists();
+            	self.updateWatchlists();
+            };
+            this.ManageWatchlists();
+            //$.fn.ManageWatchLists = new ManageWatchlists();
+            //$.fn.ManageWatchLists();
+            
+            //Check if the disclaimer should be shown
+            checkImdbWlEnabled();
+            
         },
         backupRestore: function(){
             $('#Backup').on('click', function() {

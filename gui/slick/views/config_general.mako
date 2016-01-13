@@ -13,7 +13,7 @@
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/imdbWatchlists.js?v=${sbPID}"></script>
+<!-- <script type="text/javascript" src="${srRoot}/js/imdbWatchlists.js?v=${sbPID}"></script> -->
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -766,7 +766,7 @@
 					<div class="component-group-desc">
 						<img class="notifier-icon" src="${srRoot}/images/imdb.png" alt="" title="IMDB Watchlists" />
 						<h3><a href="${anon_url('http://www.imdb.com/list/watchlist?ref_=nv_wl_all_0/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">IMDB Watchlists</a></h3>
-						<p>Connect a public IMDB watchlist to SickGear and all the shows you add to your watchlist, will be automatically added to your tracked list of shows.</p>
+						<p>Connect a public IMDB watchlist to SickRage and all the shows you add to your watchlist, will be automatically added to your tracked list of shows.</p>
 					</div>
 					
 					<fieldset class="component-group-list">
