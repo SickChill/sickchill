@@ -14,8 +14,6 @@
     <h1 class="title">${title}</h1>
 % endif
 
-
-
 <div id="tabs">
 	<span>Select List:</span>
     <select id="showlist" class="form-control form-control-inline input-sm">
