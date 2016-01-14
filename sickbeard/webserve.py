@@ -2625,7 +2625,10 @@ class HomeAddShows(Home):
         e = None
         imdb_shows = None
 
-        if listid:        
+        if listid:
+            # if listid=popular has been send, don't send a listid at all
+            if listid in "popular":
+                listid = None
             try:
                 #listids = imdb_watchlist.fetch_shows_from_watchlist(userid)
                 imdb_shows = imdb_watchlist.fetch_shows_from_watchlist(listid)
@@ -2634,7 +2637,7 @@ class HomeAddShows(Home):
                 imdb_shows = None
                 
 
-            return t.render(title="IMDB_Lists", header="IMDB Lists",
+            return t.render(title="IMDB Lists", header="IMDB Lists",
                             imdb_shows=imdb_shows, imdb_exception=e,
                             topmenu="home",
                             controller="addShows", action="imdbShows")
@@ -2649,7 +2652,7 @@ class HomeAddShows(Home):
             # We're only intrested in enabled watchlists
             watchlists_enabled = sickbeard.IMDB_WL_IDS_ENABLED.split('|')
             
-            if len(watchlists) == len(watchlists_enabled):
+            if len(watchlists) and len(watchlists) == len(watchlists_enabled):
                 # Start looping through the imdb watchlist urls
                 for index, watchlist in enumerate(watchlists):
                     if not int(watchlists_enabled[index]):
@@ -2665,7 +2668,7 @@ class HomeAddShows(Home):
                         imdb_lists[user_id] = imdb_watchlist.get_lists_from_user(user_id)
 
             return w.render(title="IMDB Lists", header="IMDB Lists", imdb_lists=imdb_lists,
-                            topmenu="home",controller="addShows", action="imdbShows")
+                            topmenu="home", controller="addShows", action="imdbShows")
         
     def addShowToBlacklist(self, indexer_id):
         # URL parameters

@@ -31,11 +31,11 @@
 
     <br><br>
 
-    <a href="${srRoot}/addShows/popularShows/" id="btnNewShow" class="btn btn-large">
+    <a href="${srRoot}/addShows/imdbWatchlist/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addrecommendedshow"></div></div>
         <div class="buttontext">
-            <h3>Add From IMDB's Popular Shows</h3>
-            <p>View IMDB's list of the most popular shows. This feature uses IMDB's MOVIEMeter algorithm to identify popular TV Series.</p>
+            <h3>Add From IMDB's Lists</h3>
+            <p>View IMDB's list of the most popular shows, your watchlists or any custom created watchlists. The popular show list uses IMDB's MOVIEMeter algorithm to identify popular TV Series.</p>
         </div>
     </a>
 

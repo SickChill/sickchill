@@ -6,6 +6,27 @@
 <%block name="metas">
 <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 </%block>
+
+<%block name="scripts">
+<script>
+var srRoot = getMeta('srRoot');
+$().ready(function(){
+	function getList(listid) {
+		$.get(srRoot + '/addShows/imdbWatchlist?listid=' + listid, function (data) {
+            $('#container').html(data);
+        });
+	}
+	
+	$("#showlist").on('change', function(select){
+		getList(select.target.value);
+    });
+	
+	getList('popular');
+});
+$('#config-components').tabs();
+</script>
+</%block>
+
 <%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -13,24 +34,29 @@
     <h1 class="title">${title}</h1>
 % endif
 
+
+
 <div id="tabs">
-    <span>Sort By:</span>
-    <select id="showsort" class="form-control form-control-inline input-sm">
-        <option value="name">Name</option>
-        <option value="original" selected="selected">Original</option>
-        <option value="votes">Votes</option>
-        <option value="rating">% Rating</option>
-        <option value="rating_votes">% Rating > Votes</option>
+	<span>Select List:</span>
+    <select id="showlist" class="form-control form-control-inline input-sm">
+    <option value="popular">IMDB Popular</option>
+    
+   		% for i, userlists in enumerate(imdb_lists):
+   		<option disabled>_________</option>
+   			% for x, value in enumerate(imdb_lists[userlists]):
+   				
+   				% for index, key in enumerate(value):
+   					<option value="${value[key]}">${key}</option>
+   				% endfor
+   				
+   			% endfor
+		% endfor
+   		
     </select>
 
-    <span style="margin-left:12px">Sort Order:</span>
-    <select id="showsortdirection" class="form-control form-control-inline input-sm">
-        <option value="asc" selected="selected">Asc</option>
-        <option value="desc">Desc</option>
-    </select>
+
 </div>
 
-${imdb_lists}
 <br>
 <div id="imdbShows">
     <div id="container">
