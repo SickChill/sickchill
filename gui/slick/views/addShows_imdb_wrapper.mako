@@ -7,26 +7,6 @@
 <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 </%block>
 
-<%block name="scripts">
-<script>
-var srRoot = getMeta('srRoot');
-$().ready(function(){
-	function getList(listid) {
-		$.get(srRoot + '/addShows/imdbWatchlist?listid=' + listid, function (data) {
-            $('#container').html(data);
-        });
-	}
-	
-	$("#showlist").on('change', function(select){
-		getList(select.target.value);
-    });
-	
-	getList('popular');
-});
-$('#config-components').tabs();
-</script>
-</%block>
-
 <%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>

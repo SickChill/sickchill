@@ -3427,12 +3427,25 @@ var SICKRAGE = {
             });
         },
         popularShows: function(){
-        	debugger;
             $.initRemoteShowGrid();
         },
         imdbShows: function(){
         	debugger;
             $.initRemoteShowGrid();
+
+            	function getList(listid) {
+            		$.get(srRoot + '/addShows/imdbWatchlist?listid=' + listid, function (data) {
+                        $('#container').html(data);
+                    });
+            	}
+            	
+            	$("#showlist").on('change', function(select){
+            		getList(select.target.value);
+                });
+            	
+            	getList('popular');
+
+
         }
     }
 };

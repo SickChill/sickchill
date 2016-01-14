@@ -1,4 +1,3 @@
-<body data-controller="${controller}" data-action="${action}">
 <%!
     from sickbeard.helpers import anon_url
     import sickbeard
@@ -72,10 +71,3 @@
 <br>
 </%block>
 
-% if sickbeard.DEVELOPER:
-	<script type="text/javascript" src="${srRoot}/js/core.js?${sbPID}"></script>
-% else:
-    <script type="text/javascript" src="${srRoot}/js/core.min.js?${sbPID}"></script>
-% endif
-
-</body>
