@@ -128,8 +128,8 @@ class imdbWatchlist(object):
         # Retrieve the Main Watchlist list id's
         # user_id should be parsed as: ur59344686
         re_main_watchlist = re.compile("(ls[0-9]+)&author_id=%s" % (user_id))
-        main_watchlist_id = re_main_watchlist.search(data)
-        
+        main_watchlist_id = re_main_watchlist.findall(data)
+            
         # Retrieve the any secondary list id's
         re_secondary_list_ids = re.compile(".*<strong><a.href=./list/(ls[0-9]+)\?[^>]+>([^<]+).*")
         secondary_list_ids = re_secondary_list_ids.findall(data)
@@ -138,7 +138,7 @@ class imdbWatchlist(object):
         if not main_watchlist_id:
             return False
         
-        list_ids.append({ "Watchlist" : main_watchlist_id.group(1)})
+        list_ids.append({ "Watchlist" : main_watchlist_id[0]})
         
         # Let's search of addintional watchlists
         for list_id, list_desc in secondary_list_ids:
