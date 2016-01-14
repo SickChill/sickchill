@@ -2848,23 +2848,17 @@ var SICKRAGE = {
                     });
                 });
 
-                $('#traktlistselection').on('change', function() {
-                    window.location.href = srRoot + '/addShows/trendingShows/?traktList=' + this.value;
-                });
-
-                $('#container').imagesLoaded(function() {
-                    $('#container').isotope({
-                        sortBy: 'original-order',
-                        layoutMode: 'fitRows',
-                        getSortData: {
-                            name: function(itemElem) {
-                                var name = $(itemElem).attr('data-name') || '';
-                                return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:The|A|An)\s)/i, '')).toLowerCase();
-                            },
-                            rating: '[data-rating] parseInt',
-                            votes: '[data-votes] parseInt',
-                        }
-                    });
+                $('#container').isotope({
+                    sortBy: 'original-order',
+                    layoutMode: 'fitRows',
+                    getSortData: {
+                        name: function(itemElem) {
+                            var name = $(itemElem).attr('data-name') || '';
+                            return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:The|A|An)\s)/i, '')).toLowerCase();
+                        },
+                        rating: '[data-rating] parseInt',
+                        votes: '[data-votes] parseInt',
+                    }
                 });
             };
 
@@ -3193,13 +3187,21 @@ var SICKRAGE = {
             );
         },
         trendingShows: function(){
-            var traktList = $('#traktList').val();
-
             $('#trendingShows').loadRemoteShows(
-                '/addShows/getTrendingShows/?traktList=' + traktList,
+                '/addShows/getTrendingShows/?traktList=' + $('#traktList').val(),
                 'Loading trending shows...',
                 'Trakt timed out, refresh page to try again'
             );
+
+            $('#traktlistselection').on('change', function(e) {
+                var traktList = e.target.value;
+                window.history.replaceState({}, document.title, '?traktList=' + traktList);
+                $('#trendingShows').loadRemoteShows(
+                    '/addShows/getTrendingShows/?traktList=' + traktList,
+                    'Loading trending shows...',
+                    'Trakt timed out, refresh page to try again'
+                );
+            });
         },
         popularShows: function(){
             $.initRemoteShowGrid();
