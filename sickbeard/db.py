@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-
+import warnings
 import os.path
 import re
 import sqlite3
@@ -114,6 +114,16 @@ class DBConnection(object):
 
     def checkDBVersion(self):
         """
+        Fetch major database version
+
+        :return: Integer indicating current DB major version
+        """
+        if self.hasColumn('db_version', 'db_minor_version'):
+            warnings.warn('Deprecated: Use the version property', DeprecationWarning)
+        return self.check_db_major_version()
+
+    def check_db_major_version(self):
+        """
         Fetch database version
 
         :return: Integer inidicating current DB version
@@ -130,6 +140,33 @@ class DBConnection(object):
             return int(result[0]["db_version"])
         else:
             return 0
+
+    def check_db_minor_version(self):
+        """
+        Fetch database version
+
+        :return: Integer inidicating current DB major version
+        """
+        result = None
+
+        try:
+            if self.hasColumn('db_version', 'db_minor_version'):
+                result = self.select("SELECT db_minor_version FROM db_version")
+        except:
+            return 0
+
+        if result:
+            return int(result[0]["db_minor_version"])
+        else:
+            return 0
+
+    @property
+    def version(self):
+        """The database version
+
+        :return: A tuple containing the major and minor versions
+        """
+        return self.check_db_major_version(), self.check_db_minor_version()
 
     def mass_action(self, querylist=[], logTransaction=False, fetchall=False):
         """
