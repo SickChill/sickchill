@@ -2620,10 +2620,34 @@ class HomeAddShows(Home):
         """
         Fetches data from IMDB to show a list of popular shows.
         """
-        t = PageTemplate(rh=self, filename="addShows_imdb.mako")
-        w = PageTemplate(rh=self, filename="addShows_imdb_wrapper.mako")
+        t = PageTemplate(rh=self, filename="addShows_imdbShows.mako")
+
         e = None
         imdb_shows = None
+
+        # let's get all the available lists
+        imdb_lists = {}
+        
+        # Get the configured imdb watchlist urls
+        watchlists = sickbeard.IMDB_WL_USE_IDS.split('|')
+        
+        # We're only intrested in enabled watchlists
+        watchlists_enabled = sickbeard.IMDB_WL_IDS_ENABLED.split('|')
+        
+        if len(watchlists) and len(watchlists) == len(watchlists_enabled):
+            # Start looping through the imdb watchlist urls
+            for index, watchlist in enumerate(watchlists):
+                if not int(watchlists_enabled[index]):
+                    continue
+                
+                # Extract the userid
+                re_user_id = re.compile(".*(ur[0-9]+)")
+                user_id_match = re_user_id.match(watchlist)
+                if user_id_match:
+                    user_id = user_id_match.group(1)
+                    
+                    # Get all listid's for this user and save it in the dict
+                    imdb_lists[user_id] = imdb_watchlist.get_lists_from_user(user_id)
 
         if listid:
             # if listid=popular has been send, don't send a listid at all
@@ -2637,38 +2661,11 @@ class HomeAddShows(Home):
                 imdb_shows = None
                 
 
-            return t.render(title="IMDB Lists", header="IMDB Lists",
-                            imdb_shows=imdb_shows, imdb_exception=e,
-                            topmenu="home",
-                            controller="addShows", action="imdbShows")
-        else:
-            
-            # let's get all the available lists
-            imdb_lists = {}
-            
-            # Get the configured imdb watchlist urls
-            watchlists = sickbeard.IMDB_WL_USE_IDS.split('|')
-            
-            # We're only intrested in enabled watchlists
-            watchlists_enabled = sickbeard.IMDB_WL_IDS_ENABLED.split('|')
-            
-            if len(watchlists) and len(watchlists) == len(watchlists_enabled):
-                # Start looping through the imdb watchlist urls
-                for index, watchlist in enumerate(watchlists):
-                    if not int(watchlists_enabled[index]):
-                        continue
-                    
-                    # Extract the userid
-                    re_user_id = re.compile(".*(ur[0-9]+)")
-                    user_id_match = re_user_id.match(watchlist)
-                    if user_id_match:
-                        user_id = user_id_match.group(1)
-                        
-                        # Get all listid's for this user and save it in the dict
-                        imdb_lists[user_id] = imdb_watchlist.get_lists_from_user(user_id)
-
-            return w.render(title="IMDB Lists", header="IMDB Lists", imdb_lists=imdb_lists,
-                            topmenu="home", controller="addShows", action="imdbShows")
+        return t.render(title="IMDB Lists", header="IMDB Lists",
+                        imdb_shows=imdb_shows, imdb_exception=e,
+                        topmenu="home", imdb_lists=imdb_lists, 
+                        controller="addShows", action="imdbShows")
+        
         
     def addShowToBlacklist(self, indexer_id):
         # URL parameters
