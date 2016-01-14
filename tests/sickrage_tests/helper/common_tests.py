@@ -426,6 +426,12 @@ class CommonTests(unittest.TestCase):
         self.assertEqual(convert_size(None) or '100', '100')  # default doesn't have to be numeric either
         self.assertEqual(convert_size('-1 GB') or -1, -1)  # can use `or` to provide a default when size evaluates to 0
 
+        # default units can be kwarg'd
+        self.assertEqual(convert_size('1', default_units='GB'), convert_size('1 GB'))
+
+        # separator can be kwarg'd
+        self.assertEqual(convert_size('1?GB', sep='?'), convert_size('1 GB'))
+
         # can use custom dictionary to support internationalization
         french = ['O', 'KO', 'MO', 'GO', 'TO', 'PO']
         self.assertEqual(convert_size('1 o', units=french), 1)
