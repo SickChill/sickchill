@@ -28,7 +28,9 @@
     <div class="trakt_show" data-name="${cur_show['show']['title']}" data-rating="${cur_show['show']['rating']}" data-votes="${cur_show['show']['votes']}">
         <div class="traktContainer">
             <div class="trakt-image">
-                <a class="trakt-image" href="${anon_url(show_url)}" target="_blank"><img alt="" class="trakt-image" src="${poster_url}" /></a>
+                <a class="trakt-image" href="${anon_url(show_url)}" target="_blank">
+                    <img alt="" class="trakt-image" src="${poster_url}" height="273px" width="186px" />
+                </a>
             </div>
 
             <div class="show-title">
