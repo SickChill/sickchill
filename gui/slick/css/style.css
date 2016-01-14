@@ -3150,3 +3150,9 @@ table.home-header {
 input.tablesorter-filter.disabled {
     display: none;
 }
+
+/* This fixes bold fon be used */
+/* @TODO replace this with proper CSS overrides */
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header {
+    font-weight: normal !important;
+}
