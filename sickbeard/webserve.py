@@ -2615,6 +2615,7 @@ class HomeAddShows(Home):
                         topmenu="home",
                         controller="addShows", action="popularShows")
 
+        
     def addShowToBlacklist(self, indexer_id):
         # URL parameters
         data = {'shows': [{'ids': {'tvdb': indexer_id}}]}
