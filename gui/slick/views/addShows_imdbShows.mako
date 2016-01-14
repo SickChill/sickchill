@@ -53,11 +53,16 @@
 <div id="imdbShows">
     <div id="container">
     % if not imdb_shows:
+    	% if imdb_exception:
         <div class="trakt_show" style="width:100%; margin-top:20px">
             <p class="red-text">Fetching of IMDB Data failed. Are you online?
             <strong>Exception:</strong>
             <p>${imdb_exception}</p>
         </div>
+        % else:
+        <div class="trakt_show" style="width:100%; margin-top:20px">
+            <p class="red-text">Fetching of IMDB Data...</p></div>
+        % endif
     % else:
         % for cur_result in imdb_shows:
             % if cur_result['imdb_tt'] in imdb_tt:
