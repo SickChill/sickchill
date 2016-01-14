@@ -1,7 +1,9 @@
+<body data-controller="${controller}" data-action="${action}">
 <%!
     from sickbeard.helpers import anon_url
     import sickbeard
 %>
+
 <%block name="metas">
 <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 
@@ -25,8 +27,7 @@
 <% imdb_tt = [show.imdbid for show in sickbeard.showList if show.imdbid] %>
 
 <br>
-<div id="popularShows">
-    <div id="container">
+
     % if not imdb_shows:
         <div class="trakt_show" style="width:100%; margin-top:20px">
             <p class="red-text">Fetching of IMDB Data failed. Are you online?
@@ -68,7 +69,13 @@
             </div>
         % endfor
     % endif
-    </div>
-</div>
 <br>
 </%block>
+
+% if sickbeard.DEVELOPER:
+	<script type="text/javascript" src="${srRoot}/js/core.js?${sbPID}"></script>
+% else:
+    <script type="text/javascript" src="${srRoot}/js/core.min.js?${sbPID}"></script>
+% endif
+
+</body>

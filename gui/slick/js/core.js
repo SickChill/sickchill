@@ -3032,6 +3032,7 @@ var SICKRAGE = {
             });
 
             $.initRemoteShowGrid = function(){
+            	debugger;
                 // Set defaults on page load
                 $('#showsort').val('original');
                 $('#showsortdirection').val('asc');
@@ -3426,6 +3427,11 @@ var SICKRAGE = {
             });
         },
         popularShows: function(){
+        	debugger;
+            $.initRemoteShowGrid();
+        },
+        imdbShows: function(){
+        	debugger;
             $.initRemoteShowGrid();
         }
     }
