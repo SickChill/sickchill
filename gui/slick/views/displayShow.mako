@@ -6,7 +6,7 @@
     import sickbeard
     from sickbeard import subtitles, sbdatetime, network_timezones
     import sickbeard.helpers
-
+    from sickrage.helper.common import try_int
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
     from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
     from sickbeard.helpers import anon_url
@@ -53,7 +53,7 @@
 
     % if seasonResults:
         ##There is a special/season_0?##
-        % if int(seasonResults[-1]["season"]) == 0:
+        % if try_int(seasonResults[-1]["season"], 1) == 0:
             <% season_special = 1 %>
         % else:
             <% season_special = 0 %>
@@ -80,7 +80,7 @@
             % else:
                 Season:
                 % for seasonNum in seasonResults:
-                    % if int(seasonNum["season"]) == 0:
+                    % if try_int(seasonNum["season"], 1) == 0:
                         <a href="#season-${seasonNum["season"]}">Specials</a>
                     % else:
                         <a href="#season-${seasonNum["season"]}">${str(seasonNum["season"])}</a>
@@ -277,7 +277,7 @@
         if not epStr in epCats:
             continue
 
-        if not sickbeard.DISPLAY_SHOW_SPECIALS and int(epResult["season"]) == 0:
+        if not sickbeard.DISPLAY_SHOW_SPECIALS:
             continue
 
         scene = False
