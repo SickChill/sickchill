@@ -3086,7 +3086,7 @@ var SICKRAGE = {
             };
 
             $.fn.loadRemoteShows = function(path, loadingTxt, errorTxt) {
-                $(this).html('<div id="container"><img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt + '</div>');
+                $(this).html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt);
                 $(this).load(srRoot + path + ' #container', function(response, status) {
                     if (status === "error") {
                         $(this).empty().html(errorTxt);
@@ -3443,7 +3443,8 @@ var SICKRAGE = {
             		getList(select.target.value);
                 });
             	
-            	getList('popular');
+            	//Default load the list with favorite shows
+            	getList('favorites');
         }
     }
 };

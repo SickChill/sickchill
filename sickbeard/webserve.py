@@ -2629,12 +2629,12 @@ class HomeAddShows(Home):
         imdb_lists = {}
         
         # Get the configured imdb watchlist urls
-        watchlists = sickbeard.IMDB_WL_USE_IDS.split('|')
+        watchlists = sickbeard.IMDB_WL_USE_IDS.split('|') if '|' in sickbeard.IMDB_WL_USE_IDS else None
         
         # We're only intrested in enabled watchlists
-        watchlists_enabled = sickbeard.IMDB_WL_IDS_ENABLED.split('|')
+        watchlists_enabled = sickbeard.IMDB_WL_IDS_ENABLED.split('|') if '|' in sickbeard.IMDB_WL_USE_IDS else None
         
-        if len(watchlists) and len(watchlists) == len(watchlists_enabled):
+        if watchlists and len(watchlists) == len(watchlists_enabled):
             # Start looping through the imdb watchlist urls
             for index, watchlist in enumerate(watchlists):
                 if not int(watchlists_enabled[index]):
