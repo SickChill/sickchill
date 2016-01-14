@@ -2629,11 +2629,12 @@ class HomeAddShows(Home):
         imdb_lists = {}
         
         # Get the configured imdb watchlist urls
-        watchlists = sickbeard.IMDB_WL_USE_IDS.split('|') if '|' in sickbeard.IMDB_WL_USE_IDS else None
+        watchlists = sickbeard.IMDB_WL_USE_IDS.strip().split('|') if 'ur' in sickbeard.IMDB_WL_USE_IDS else None
         
         # We're only intrested in enabled watchlists
-        watchlists_enabled = sickbeard.IMDB_WL_IDS_ENABLED.split('|') if '|' in sickbeard.IMDB_WL_USE_IDS else None
+        watchlists_enabled = sickbeard.IMDB_WL_IDS_ENABLED.strip().split('|') if sickbeard.IMDB_WL_IDS_ENABLED in ('0','1') else None
         
+        # If a watchlist has been configured, add it to the select list
         if watchlists and len(watchlists) == len(watchlists_enabled):
             # Start looping through the imdb watchlist urls
             for index, watchlist in enumerate(watchlists):
@@ -2651,11 +2652,13 @@ class HomeAddShows(Home):
 
         if listid:
             # if listid=popular has been send, don't send a listid at all
-            if listid in "popular":
-                listid = None
             try:
+                if listid not in "popular" and 'ls' not in listid:
+                    raise Exception('Did you provide a valid IMDB list?')
+                
                 #listids = imdb_watchlist.fetch_shows_from_watchlist(userid)
                 imdb_shows = imdb_watchlist.fetch_shows_from_watchlist(listid)
+                logger.log('Succesfully retrieved list of shows from IMDB using listid %s' % (listid), logger.DEBUG)
             except Exception as e:
                 # print traceback.format_exc()
                 imdb_shows = None
@@ -2663,7 +2666,7 @@ class HomeAddShows(Home):
 
         return t.render(title="IMDB Lists", header="IMDB Lists",
                         imdb_shows=imdb_shows, imdb_exception=e,
-                        topmenu="home", imdb_lists=imdb_lists, 
+                        topmenu="home", imdb_lists=imdb_lists, enable_anime_options=False, 
                         controller="addShows", action="imdbShows")
         
         

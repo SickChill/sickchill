@@ -3032,7 +3032,6 @@ var SICKRAGE = {
             });
 
             $.initRemoteShowGrid = function(){
-            	debugger;
                 // Set defaults on page load
                 $('#showsort').val('original');
                 $('#showsortdirection').val('asc');
@@ -3431,21 +3430,23 @@ var SICKRAGE = {
         },
         imdbShows: function(){
 
-        	function getList(listid) {
-        		$('#imdbShows').loadRemoteShows(
-            			'/addShows/imdbWatchlist?listid=' + listid,
-                        'Loading imdb shows from list...',
-                        'Imdb timed out, refresh page to try again'
-                    );
-            	}
-            	
-            	$("#showlist").on('change', function(select){
-            		getList(select.target.value);
-                });
-            	
-            	//Default load the list with favorite shows
-            	getList('favorites');
-        }
+	    	$('#imdbShows').loadRemoteShows(
+    			'/addShows/imdbWatchlist?listid=popular',
+                'Loading imdb shows from list...',
+                'Imdb timed out, refresh page to try again'
+            );
+
+			$('#showlist').on('change', function(e) {
+				 var imdbid = e.target.value;
+				 window.history.replaceState({}, document.title, '?listid=' + imdbid);
+				 $('#imdbShows').loadRemoteShows(
+						'/addShows/imdbWatchlist?listid=' + imdbid,
+				         'Loading imdb shows from list...',
+				         'Imdb timed out, refresh page to try again'
+				 );
+			});
+			$.initRemoteShowGrid();
+        },
     }
 };
 

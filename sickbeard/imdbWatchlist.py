@@ -38,7 +38,7 @@ class imdbWatchlist(object):
 
         shows = []
         
-        if list_id:
+        if list_id not in 'popular':
             params = self.params['watchlist']
             params['lists'] = list_id
         else:
@@ -59,7 +59,7 @@ class imdbWatchlist(object):
             if image_td:
                 image = image_td.find("img")
                 show['image_url_large'] = self.change_size(image['src'], 3)
-                show['image_path'] = ek(os.path.join, 'images', 'imdb_popular', ek(os.path.basename, show['image_url_large']))
+                show['image_path'] = ek(os.path.join, 'images', 'imdb', ek(os.path.basename, show['image_url_large']))
 
                 self.cache_image(show['image_url_large'])
 
@@ -151,7 +151,7 @@ class imdbWatchlist(object):
         Store cache of image in cache dir
         :param image_url: Source URL
         """
-        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'imdb_popular'))
+        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'imdb'))
 
         if not ek(os.path.exists, path):
             ek(os.makedirs, path)
