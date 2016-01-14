@@ -3086,7 +3086,7 @@ var SICKRAGE = {
             };
 
             $.fn.loadRemoteShows = function(path, loadingTxt, errorTxt) {
-                $(this).html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt);
+                $(this).html('<div id="container"><img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt + '</div>');
                 $(this).load(srRoot + path + ' #container', function(response, status) {
                     if (status === "error") {
                         $(this).empty().html(errorTxt);
@@ -3430,14 +3430,13 @@ var SICKRAGE = {
             $.initRemoteShowGrid();
         },
         imdbShows: function(){
-        	debugger;
-            
 
-            	function getList(listid) {
-            		$.get(srRoot + '/addShows/imdbWatchlist?listid=' + listid, function (data) {
-                        $('#container').html(data);
-                        $.initRemoteShowGrid();
-                    });
+        	function getList(listid) {
+        		$('#imdbShows').loadRemoteShows(
+            			'/addShows/imdbWatchlist?listid=' + listid,
+                        'Loading imdb shows from list...',
+                        'Imdb timed out, refresh page to try again'
+                    );
             	}
             	
             	$("#showlist").on('change', function(select){
@@ -3445,8 +3444,6 @@ var SICKRAGE = {
                 });
             	
             	getList('popular');
-
-
         }
     }
 };
