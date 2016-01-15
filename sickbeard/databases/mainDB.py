@@ -20,6 +20,7 @@
 
 import datetime
 
+import warnings
 import sickbeard
 import os.path
 
@@ -1118,3 +1119,34 @@ class AlterTVShowsFieldTypes(AddDefaultEpStatusToTvShows):
         self.connection.action("DROP TABLE tmp_tv_shows")
 
         self.incDBVersion()
+
+
+class AddMinorVersion(AlterTVShowsFieldTypes):
+    def test(self):
+        return self.checkDBVersion() >= 42 and self.hasColumn(b'db_version', b'db_minor_version')
+
+    def incDBVersion(self):
+        warnings.warn("Deprecated: Use inc_major_version or inc_minor_version instead", DeprecationWarning)
+
+    def inc_major_version(self):
+        major_version, minor_version = self.connection.version
+        major_version += 1
+        minor_version = 0
+        self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [major_version, minor_version])
+        return self.connection.version
+
+    def inc_minor_version(self):
+        major_version, minor_version = self.connection.version
+        minor_version += 1
+        self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [major_version, minor_version])
+        return self.connection.version
+
+    def execute(self):
+        backupDatabase(self.checkDBVersion())
+
+        logger.log(u"Add minor version numbers to database")
+        self.addColumn(b'db_version', b'db_minor_version')
+
+        self.inc_minor_version()
+
+        logger.log('Updated to: %d.%d' % self.connection.version)

@@ -19,37 +19,30 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=too-many-instance-attributes,too-many-arguments
 
 import os
-import re
 import time
 import datetime
 import posixpath  # Must use posixpath
 from urllib import urlencode
-from bs4 import BeautifulSoup
 
 import sickbeard
-from sickbeard import classes
-from sickbeard import helpers
-from sickbeard import scene_exceptions
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import db
-from sickbeard.common import Quality
 from sickrage.helper.encoding import ek, ss
-from sickrage.show.Show import Show
+from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.nzb.NZBProvider import NZBProvider
 from sickbeard.common import cpu_presets
 
 
-class NewznabProvider(NZBProvider):
+class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attributes, too-many-arguments
     """
     Generic provider for built in and custom providers who expose a newznab
     compatible api.
     Tested with: newznab, nzedb, spotweb, torznab
     """
+    # pylint: disable=too-many-arguments
     def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly',
                  search_fallback=False, enable_daily=True, enable_backlog=False):
 
@@ -153,22 +146,24 @@ class NewznabProvider(NZBProvider):
             logger.log(error_string, logger.WARNING)
             return False, return_categories, error_string
 
-        data = BeautifulSoup(data, 'html5lib')
-        if not (self._checkAuthFromData(data) and data.caps and data.caps.categories):
-            data.decompose()
-            error_string = u"Error parsing xml for [%s]" % self.name
-            logger.log(error_string, logger.DEBUG)
-            return False, return_categories, error_string
+        with BS4Parser(data, 'html5lib') as html:
+            if not (self._checkAuthFromData(html) and html.caps and html.caps.categories):
+                error_string = u"Error parsing xml for [%s]" % self.name
+                logger.log(error_string, logger.DEBUG)
+                return False, return_categories, error_string
 
-        for category in data.caps.categories.find_all('category'):
-            if category.attrs and 'TV' in category.attrs.get('name', '') and category.attrs.get('id', ''):
-                return_categories.append({'id': category.attrs['id'], 'name': category.attrs['name']})
-                for subcat in category.find_all('subcat'):
-                    if subcat.attrs and subcat.attrs.get('name', '') and subcat.attrs.get('id', ''):
-                        return_categories.append({'id': subcat.attrs['id'], 'name': subcat.attrs['name']})
+            for category in html.caps.categories.find_all('category'):
+                if category.attrs and 'TV' in category.attrs.get('name', '') and category.attrs.get('id', ''):
+                    return_categories.append({'id': category.attrs['id'], 'name': category.attrs['name']})
+                    for subcat in category.find_all('subcat'):
+                        if subcat.attrs and subcat.attrs.get('name', '') and subcat.attrs.get('id', ''):
+                            return_categories.append({'id': subcat.attrs['id'], 'name': subcat.attrs['name']})
 
-        data.decompose()
-        return True, return_categories, ""
+            return True, return_categories, ""
+
+        error_string = u"Error getting xml for [%s]" % url
+        logger.log(error_string, logger.WARNING)
+        return False, return_categories, error_string
 
     @staticmethod
     def _get_default_providers():
@@ -178,66 +173,6 @@ class NewznabProvider(NZBProvider):
             'NZBs.org|https://nzbs.org/||5030,5040|0|eponly|0|0|0!!!' + \
             'Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0|0|0!!!' + \
             'DOGnzb|https://api.dognzb.cr/||5030,5040,5060,5070|0|eponly|0|1|1'
-
-    def _get_season_search_strings(self, ep_obj):
-        """
-        Makes objects to pass to search for manual and backlog season pack searching
-        Returns a list containing dicts of search parameters
-        """
-        to_return = []
-        params = {}
-        if not ep_obj:
-            return to_return
-
-        params['maxage'] = (datetime.datetime.now() - datetime.datetime.combine(ep_obj.airdate, datetime.datetime.min.time())).days + 1
-        params['tvdbid'] = ep_obj.show.indexerid
-
-        if ep_obj.show.air_by_date or ep_obj.show.sports:
-            date_str = str(ep_obj.airdate).split('-')[0]
-            params['season'] = date_str
-            params['q'] = date_str.replace('-', '.')
-        else:
-            params['season'] = str(ep_obj.scene_season)
-
-        save_q = ' ' + params['q'] if 'q' in params else ''
-
-        name_exceptions = list(set([ep_obj.show.name] + scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid)))
-        for cur_exception in name_exceptions:
-            params['q'] = helpers.sanitizeSceneName(cur_exception) + save_q
-            to_return.append(dict(params))
-
-        return to_return
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-        """
-        Makes objects to pass to search for manual and backlog season pack searching
-        Returns a list containing dicts of search parameters
-        """
-        to_return = []
-        params = {}
-        if not ep_obj:
-            return to_return
-
-        params['maxage'] = (datetime.datetime.now() - datetime.datetime.combine(ep_obj.airdate, datetime.datetime.min.time())).days + 1
-        params['tvdbid'] = ep_obj.show.indexerid
-
-        if ep_obj.show.air_by_date or ep_obj.show.sports:
-            date_str = str(ep_obj.airdate)
-            params['season'] = date_str.partition('-')[0]
-            params['ep'] = date_str.partition('-')[2].replace('-', '/')
-        else:
-            params['season'] = ep_obj.scene_season
-            params['ep'] = ep_obj.scene_episode
-
-        name_exceptions = list(set([ep_obj.show.name] + scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid)))
-        for cur_exception in name_exceptions:
-            params['q'] = helpers.sanitizeSceneName(cur_exception)
-            if add_string:
-                params['q'] += ' ' + add_string
-
-            to_return.append(dict(params))
-
-        return to_return
 
     def _check_auth(self):
         """
@@ -262,12 +197,9 @@ class NewznabProvider(NZBProvider):
             err_desc = data.error.attrs['description']
             if not err_desc:
                 raise
-        except StandardError:
+        except (AttributeError, TypeError):
             return self._check_auth()
 
-        # This is all we should really need, the code is irrelevant
-        # Provider name is the thread name, and this should INFO,
-        # DEBUG hides from the user, WARNING nags the user, ERROR spams the tracker
         logger.log(ss(err_desc))
 
         return False
@@ -305,79 +237,99 @@ class NewznabProvider(NZBProvider):
 
         return new_provider
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-arguments,too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-arguments, too-many-locals, too-many-branches, too-many-statements
         """
-        Searches indexer using the params in search_params, either for latest releases, or a string/id search
+        Searches indexer using the params in search_strings, either for latest releases, or a string/id search
         Returns: list of results in dict form
         """
         results = []
         if not self._check_auth():
             return results
 
-        params = {
-            "t": "tvsearch",
-            "maxage": (4, age)[age],
-            "limit": 100,
-            "offset": 0,
-            "cat": self.catIDs.strip(', ')
-        }
-
-        if self.needs_auth and self.key:
-            params['apikey'] = self.key
-
-        if search_params:
-            params.update(search_params)
-
-        params['maxage'] = min(params['maxage'], sickbeard.USENET_RETENTION)
-
-        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-
-        search_url = posixpath.join(self.url, 'api?') + urlencode(params)
-        logger.log(u"Search url: %s" % search_url, logger.DEBUG)
-        data = self.get_url(search_url)
-        if not data:
-            return results
-
-        data = BeautifulSoup(data, 'html5lib')
-
-        try:
-            torznab = 'xmlns:torznab' in data.rss.attrs.keys()
-        except AttributeError:
+        for mode in search_strings:
             torznab = False
+            search_params = {
+                "t": "tvsearch",
+                "limit": 100,
+                "offset": 0,
+                "cat": self.catIDs.strip(', ')
+            }
+            if self.needs_auth and self.key:
+                search_params['apikey'] = self.key
 
-        if not self._checkAuthFromData(data):
-            data.decompose()
-            return results
+            if mode != 'RSS':
+                age = (datetime.datetime.now() - datetime.datetime.combine(ep_obj.airdate, datetime.datetime.min.time())).days + 1
+                search_params['tvdbid'] = ep_obj.show.indexerid
 
-        for item in data.find_all('item'):
-            try:
-                title = item.title.next.strip()
-                download_url = item.link.next.strip()
-            except (AttributeError, TypeError):
-                continue
+                if ep_obj.show.air_by_date or ep_obj.show.sports:
+                    date_str = str(ep_obj.airdate)
+                    search_params['season'] = date_str.partition('-')[0]
+                    search_params['ep'] = date_str.partition('-')[2].replace('-', '/')
+                else:
+                    search_params['season'] = ep_obj.scene_season
+                    search_params['ep'] = ep_obj.scene_episode
+            else:
+                age = 4
 
-            if not (title and download_url):
-                continue
+            search_params['maxage'] = min(age, sickbeard.USENET_RETENTION)
 
-            seeders = leechers = None
-            torrent_size = item.size
-            for attr in item.find_all('newznab:attr') + item.find_all('torznab:attr'):
-                torrent_size = attr['value'] if attr['name'] == 'size' else torrent_size
-                seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
-                leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers
+            if mode == 'Season':
+                search_params.pop('ep', '')
 
-            if not torrent_size or (torznab and (seeders is None or leechers is None)):
-                continue
+            items = []
+            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            for search_string in search_strings[mode]:
+                if mode != 'RSS':
+                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-            size = convert_size(torrent_size) or -1
+                search_params['q'] = search_string
+                if mode == 'RSS':
+                    search_params.pop('q', None)
 
-            result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
-            results.append(result)
+                search_url = posixpath.join(self.url, 'api?') + urlencode(search_params)
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-        data.decompose()
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+                data = self.get_url(search_url)
+                if not data:
+                    continue
 
-        if torznab:
-            results.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+                with BS4Parser(data, 'html5lib') as html:
+                    if not self._checkAuthFromData(html):
+                        data.decompose()
+                        return results
+                    try:
+                        torznab = 'xmlns:torznab' in html.rss.attrs
+                    except AttributeError:
+                        torznab = False
+
+                    for item in html.find_all('item'):
+                        try:
+                            title = item.title.get_text(strip=True)
+                            download_url = item.link.get_text(strip=True) or item.enclosure['url']
+                            if not (title and download_url):
+                                continue
+
+                            seeders = leechers = None
+                            item_size = item.size.get_text(strip=True) if item.size else -1
+                            for attr in item.find_all('newznab:attr') + item.find_all('torznab:attr'):
+                                item_size = attr['value'] if attr['name'] == 'size' else item_size
+                                seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
+                                leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers
+
+                            if not item_size or (torznab and (seeders is None or leechers is None)):
+                                continue
+
+                            size = convert_size(item_size) or -1
+
+                            result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
+                            items.append(result)
+                        except StandardError:
+                            continue
+
+            if torznab:
+                results.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            results += items
 
         return results
 
@@ -387,38 +339,6 @@ class NewznabProvider(NZBProvider):
         Returns int size or -1
         """
         return try_int(item.get('size', -1), -1)
-
-    def find_propers(self, search_date=datetime.datetime.today()):
-        """
-        Searches providers for PROPER or REPACK releases
-        Returns a list of objects of type classes.Proper
-        """
-        results = []
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
-
-        if not sqlResults:
-            return results
-
-        for sqlshow in sqlResults:
-            self.show = Show.find(sickbeard.showList, int(sqlshow["showid"]))
-            if self.show:
-                curEp = self.show.getEpisode(sqlshow["season"], sqlshow["episode"])
-                searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
-                for searchString in searchStrings:
-                    for item in self.search(searchString):
-                        title, url = self._get_title_and_url(item)
-                        if re.match(r'.*(REPACK|PROPER).*', title, re.I):
-                            results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
-
-        return results
 
 
 class NewznabCache(tvcache.TVCache):
@@ -430,4 +350,5 @@ class NewznabCache(tvcache.TVCache):
         self.minTime = 30
 
     def _getRSSData(self):
-        return {'entries': self.provider.search({})}
+        search_strings = {'RSS': ['']}
+        return {'entries': self.provider.search(search_strings)}

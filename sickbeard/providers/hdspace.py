@@ -30,7 +30,7 @@ from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class HDSpaceProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
+class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
         TorrentProvider.__init__(self, "HDSpace")
 
@@ -82,7 +82,7 @@ class HDSpaceProvider(TorrentProvider): # pylint: disable=too-many-instance-attr
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None): # pylint: disable=too-many-branches, too-many-locals, too-many-statements
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
         if not self.login():
             return results

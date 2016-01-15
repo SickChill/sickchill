@@ -844,7 +844,6 @@ home_trendingShows.mako
 }
 
 .trakt-image {
-    overflow: hidden;
     height: 273px;
     width: 186px;
     border-top-left-radius: 5px;
@@ -2912,8 +2911,6 @@ span.token-input-delete-token {
 
 .trakt-image {
     display: block;
-    width: 100%;
-    height: 100%;
     z-index: 0;
     background-image: url(/images/poster-dark.jpg)
 }
@@ -3149,4 +3146,10 @@ table.home-header {
 
 input.tablesorter-filter.disabled {
     display: none;
+}
+
+/* This fixes bold fon be used */
+/* @TODO replace this with proper CSS overrides */
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header {
+    font-weight: normal !important;
 }

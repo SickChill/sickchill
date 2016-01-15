@@ -27,7 +27,7 @@ from sickbeard.bs4_parser import BS4Parser
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class FNTProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
+class FNTProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
         TorrentProvider.__init__(self, "FNT")
 
@@ -75,7 +75,7 @@ class FNTProvider(TorrentProvider): # pylint: disable=too-many-instance-attribut
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
-    def search(self, search_strings, age=0, ep_obj=None): # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
         if not self.login():
             return results

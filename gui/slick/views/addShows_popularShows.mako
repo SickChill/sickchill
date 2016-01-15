@@ -58,7 +58,9 @@
             <div class="trakt_show" data-name="${cur_result['name']}" data-rating="${cur_rating}" data-votes="${cur_votes}">
                 <div class="traktContainer">
                     <div class="trakt-image">
-                        <a class="trakt-image" href="${anon_url(cur_result['imdb_url'])}" target="_blank"><img alt="" class="trakt-image" src="${srRoot}/cache/${cur_result['image_path']}" /></a>
+                        <a class="trakt-image" href="${anon_url(cur_result['imdb_url'])}" target="_blank">
+                            <img alt="" class="trakt-image" src="${srRoot}/cache/${cur_result['image_path']}" height="273px" width="186px" />
+                        </a>
                     </div>
 
                     <div class="show-title">
