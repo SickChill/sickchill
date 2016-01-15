@@ -813,14 +813,14 @@
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<!-- Modal for testing the IMDB Watchlist -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="ImdbModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        <h4 class="modal-title" id="myModalLabel">Trying to retrieve your IMDB Watchlist</h4>
       </div>
       <div class="modal-body">
         <div id="imdb-list">
