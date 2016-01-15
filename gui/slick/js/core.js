@@ -301,6 +301,18 @@ var SICKRAGE = {
                 return number > 9 ? "" + number: "0" + number;
             }
             
+            $.fn.loadRemoteShows = function(path, loadingTxt, errorTxt) {
+                $(this).html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt);
+                $(this).load(srRoot + path + ' #container', function(response, status) {
+                    if (status === "error") {
+                        $(this).empty().html(errorTxt);
+                    } else {
+                        //$.initRemoteShowGrid(); //Not working, because it's not part of this controller
+                    	return;
+                    }
+                });
+            };
+            
             function checkImdbWlEnabled() {
             	var kvgroups = $('.key-value-group [type="checkbox"]');
             	var wlEnabled = false;
@@ -312,10 +324,13 @@ var SICKRAGE = {
             	else { $('#watchlist-warning').addClass('hidden'); }
             }
             
-            function testWl(el) {
-            	
-            	console.log("Clicked, testing for checkbox id: " + $(el).data('checkbox'));
-            	console.log("Clicked, testing for input id: " + $(el).data('input'));
+            function testWl(e) {
+            	$('#imdb-list').loadRemoteShows(
+            			'/addShows/imdbWatchlist?wlurl=' + $('#' + $(e).data('input')).val(),
+                        'Loading imdb shows from list...',
+                        'Imdb timed out, refresh page to try again'
+                    );
+            	$('#myModal').modal();
             }
             
         	function regHandlers() {
@@ -502,7 +517,7 @@ var SICKRAGE = {
             		
             		var parent = $('#imdb-watchlist-placeholder');
             		parent.append('<div id="kv-' + nextId + '" class="key-value-group clearfix"> <input type="checkbox" class="enabler" id="imdb_wl_ids_enabled-' + nextId + '" '+ enabled +' /><input class="form-control input200" style="margin-top: 0px" type="text" id="imdb_wl_ids-' + nextId + '" value="' + url + '" size="40" /></div>');
-            		$('#kv-' + nextId).append('<input class="btn" id="test-wl-' + nextId + '" data-checkbox="imdb_wl_ids_enabled-' + nextId + '" data-input="imdb_wl_ids-' + nextId + '" type="button" class="" value="Test Watchlist" />');
+            		$('#kv-' + nextId).append('<input class="btn" id="test-wl-' + nextId + '" data-checkbox="imdb_wl_ids_enabled-' + nextId + '" data-input="imdb_wl_ids-' + nextId + '" type="button" class="" value="Test Watchlist" data-toggle="modal" data-target="#myModal" />');
             		regHandlers();
             	}
             	

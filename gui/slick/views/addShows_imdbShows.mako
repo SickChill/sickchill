@@ -3,9 +3,6 @@
     from sickbeard.helpers import anon_url
     import sickbeard
 %>
-<%block name="metas">
-<meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
-</%block>
 <%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -45,17 +42,20 @@
     <select id="showlist" class="form-control form-control-inline input-sm">
     <option value="popular">IMDB Popular</option>
     
+    % if imdb_lists:
    		% for i, userlists in enumerate(imdb_lists):
-   		<option disabled>_________</option>
-   			% for x, value in enumerate(imdb_lists[userlists]):
-   				
-   				% for index, key in enumerate(value):
-   					<option value="${value[key]}">${key}</option>
-   				% endfor
-   				
-   			% endfor
+   		% if imdb_lists.has_key(userlists):
+	   		<option disabled>_________</option>
+	   			% for x, value in enumerate(imdb_lists[userlists]):
+	   				
+	   				% for index, key in enumerate(value):
+	   					<option value="${value[key]}">${key}</option>
+	   				% endfor
+	   				
+	   			% endfor
+	   	% endif
 		% endfor
-   		
+   	% endif	
     </select>
 </div>
 
@@ -67,7 +67,7 @@
     % if not imdb_shows:
     	% if imdb_exception:
         <div class="trakt_show" style="width:100%; margin-top:20px">
-            <p class="red-text">Fetching of IMDB Data failed. Are you online?
+            <p class="red-text">Fetching of IMDB Data failed.</p>
             <strong>Exception:</strong>
             <p>${imdb_exception}</p>
         </div>

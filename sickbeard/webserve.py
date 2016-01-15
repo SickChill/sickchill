@@ -2616,7 +2616,7 @@ class HomeAddShows(Home):
                         topmenu="home",
                         controller="addShows", action="popularShows")
     
-    def imdbWatchlist(self, listid=None):
+    def imdbWatchlist(self, listid=None, wlurl=None):
         """
         Fetches data from IMDB to show a list of popular shows.
         """
@@ -2632,7 +2632,12 @@ class HomeAddShows(Home):
         watchlists = sickbeard.IMDB_WL_USE_IDS.strip().split('|') if 'ur' in sickbeard.IMDB_WL_USE_IDS else None
         
         # We're only intrested in enabled watchlists
-        watchlists_enabled = sickbeard.IMDB_WL_IDS_ENABLED.strip().split('|') if sickbeard.IMDB_WL_IDS_ENABLED in ('0','1') else None
+        watchlists_enabled = sickbeard.IMDB_WL_IDS_ENABLED.strip().split('|') if re.match('[01]', sickbeard.IMDB_WL_IDS_ENABLED) else None
+        
+        # For testing a passed watchlist url (wlurl)
+        if wlurl:
+            watchlists = [wlurl]
+            watchlists_enabled = ['1']
         
         # If a watchlist has been configured, add it to the select list
         if watchlists and len(watchlists) == len(watchlists_enabled):
@@ -2648,8 +2653,28 @@ class HomeAddShows(Home):
                     user_id = user_id_match.group(1)
                     
                     # Get all listid's for this user and save it in the dict
-                    imdb_lists[user_id] = imdb_watchlist.get_lists_from_user(user_id)
+                    # Only add the lists of there valid.
+                    add_list = imdb_watchlist.get_lists_from_user(user_id)
+                    if add_list:
+                        imdb_lists[user_id] = imdb_watchlist.get_lists_from_user(user_id)
 
+        # If whe're just testing the watchlist url from the Config watchlist page, 
+        # we only need the main Watchlist, let's see if we can get that from the userid (ur54333123)
+        if wlurl:
+            try:
+                if imdb_lists and imdb_lists[user_id]:
+                    listid = imdb_lists.get(user_id)[0]['Watchlist']
+                else:
+                    e = 'Could not find watchlist for url: %s' % (wlurl)
+                    imdb_lists = None
+            except Exception as e:
+                logger.log('Could not find watchlist for url: %s' % (wlurl), logger.ERROR)
+#                 try:
+#                     raise Exception('Could not find watchlist for url: %s' % (wlurl))
+#                 except Exception as e:
+#                     # print traceback.format_exc()
+#                     imdb_shows = None
+        
         if listid:
             # if listid=popular has been send, don't send a listid at all
             try:
