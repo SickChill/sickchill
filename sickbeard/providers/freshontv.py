@@ -29,7 +29,7 @@ from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class FreshOnTVProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
+class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
 
         TorrentProvider.__init__(self, "FreshOnTV")
@@ -101,7 +101,7 @@ class FreshOnTVProvider(TorrentProvider): # pylint: disable=too-many-instance-at
 
                     return False
 
-    def search(self, search_params, age=0, ep_obj=None): # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         results = []
         if not self.login():
             return results
