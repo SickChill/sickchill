@@ -46,7 +46,6 @@ start() {
         --start \
         --user ${SICKRAGE_USER} \
         --group ${SICKRAGE_GROUP} \
-        --name sickrage \
         --background \
         --pidfile $(get_pidfile) \
         --exec ${PATH_TO_PYTHON_2} \
