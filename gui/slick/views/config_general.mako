@@ -13,7 +13,6 @@
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
-<!-- <script type="text/javascript" src="${srRoot}/js/imdbWatchlists.js?v=${sbPID}"></script> -->
 </%block>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -812,6 +811,25 @@
 
         </form>
     </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        <div id="imdb-list">
+        	<div id="container">
+        	</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div></div>

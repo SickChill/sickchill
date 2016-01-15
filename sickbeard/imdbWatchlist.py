@@ -122,6 +122,8 @@ class imdbWatchlist(object):
         url = "http://www.imdb.com/user/%s/watchlist"
         
         data = helpers.getURL(url % user_id, session=self.session, params={"ref_" : "wt_nv_wl_all_0"}, headers={'Referer': 'http://akas.imdb.com/'})
+        if not data:
+            return False
         
         list_ids = []
         
