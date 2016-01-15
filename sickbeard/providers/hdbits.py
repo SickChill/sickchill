@@ -31,7 +31,7 @@ except ImportError:
 class HDBitsProvider(TorrentProvider):
     def __init__(self):
 
-        TorrentProvider.__init__(self, "HDBits")
+        TorrentProvider.__init__(self, "HDBits.org")
 
         self.username = None
         self.passkey = None
