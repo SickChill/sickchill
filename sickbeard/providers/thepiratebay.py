@@ -41,7 +41,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         self.cache = ThePirateBayCache(self)
 
-        self.url = 'https://thepiratebay.ms/'
+        self.url = 'https://thepiratebay.al/'
         self.urls = {
             'search': self.url + 's/',
             'rss': self.url + 'tv/latest'
