@@ -31,7 +31,7 @@
 
     <br><br>
 
-    <a href="${srRoot}/addShows/imdbWatchlist?listid=popular" id="btnNewShow" class="btn btn-large">
+    <a href="${srRoot}/addShows/imdbWatchlist" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addrecommendedshow"></div></div>
         <div class="buttontext">
             <h3>Add From IMDB's Lists</h3>
