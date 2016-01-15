@@ -84,7 +84,7 @@
                         </div>
                         <div class="field-pair">
                             <label for="showupdate_hour">
-                                <span class="component-title">choose hour to update shows</span>
+                                <span class="component-title">Choose hour to update shows</span>
                                 <span class="component-desc">
                                     <input type="number" min="0" max="23" step="1" name="showupdate_hour" id="showupdate_hour" value="${sickbeard.SHOWUPDATE_HOUR}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc.</p>
