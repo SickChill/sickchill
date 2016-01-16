@@ -80,11 +80,11 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             return results
 
         """
-            SÃ©ries / Pack TV 13
-            SÃ©ries / TV FR 14
-            SÃ©ries / HD FR 15
-            SÃ©ries / TV VOSTFR 16
-            SÃ©ries / HD VOSTFR 17
+            Séries / Pack TV 13
+            Séries / TV FR 14
+            Séries / HD FR 15
+            Séries / TV VOSTFR 16
+            Séries / HD VOSTFR 17
             Mangas (Anime) 32
             Sport 34
         """
@@ -125,34 +125,50 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    # CatÃ©gorie, Nom du Torrent, (Download), (Bookmark), Com., Taille, ComplÃ©tÃ©, Seeders, Leechers
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all('td')]
+                    def process_column_header(td):
+                        result = ''
+                        if td.a:
+                            result = td.a.get('title', td.a.get_text(strip=True))
+                        if not result:
+                            result = td.get_text(strip=True)
+                        return result
+
+                    # Catégorie, Nom du Torrent, (Download), (Bookmark), Com., Taille, Complété, Seeders, Leechers
+                    labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
+                    logger.log(u"labels %s" % ', '.join(labels), logger.DEBUG)
 
                     for row in torrent_rows[1:]:
+                        cells = row.find_all('td')
+                        if len(cells) < len(labels):
+                            continue
                         try:
-                            cells = row.find_all('td')
                             title = cells[labels.index('Nom du Torrent')].get_text(strip=True)
+                            logger.log(u"title %s" % title, logger.DEBUG)
                             download_url = self.url + '/' + row.find("a", href=re.compile("download.php"))['href']
-                            size = convert_size(cells[labels.index('Taille')].get_text(strip=True))
+                            logger.log(u"download_url %s" % download_url, logger.DEBUG)
+                            if not all([title, download_url]):
+                                continue
+
                             seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
+                            logger.log(u"seeders %s" % seeders, logger.DEBUG)
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
-                        except (AttributeError, TypeError, KeyError, ValueError):
-                            continue
+                            logger.log(u"leechers %s" % leechers, logger.DEBUG)
 
-                        if not all([title, download_url]):
-                            continue
+                            # Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                continue
 
-                        # Filter unseeded torrent
-                        if seeders < self.minseed or leechers < self.minleech:
+                            size = convert_size(cells[labels.index('Taille')].get_text(strip=True))
+
+                            item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+
+                            items.append(item)
+                        except StandardError:
                             continue
-
-                        item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
-
-                        items.append(item)
 
             # For each search mode sort all the items by seeders if available if available
             items.sort(key=lambda tup: tup[3], reverse=True)
