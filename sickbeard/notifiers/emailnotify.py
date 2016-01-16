@@ -60,7 +60,7 @@ class EmailNotifier(object):
         """
         ep_name = ss(ep_name)
 
-        if sickbeard.EMAIL_NOTIFY_ONSNATCH:
+        if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONSNATCH:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
             if len(to) == 0:
@@ -99,7 +99,7 @@ class EmailNotifier(object):
         """
         ep_name = ss(ep_name)
 
-        if sickbeard.EMAIL_NOTIFY_ONDOWNLOAD:
+        if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONDOWNLOAD:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
             if len(to) == 0:
@@ -138,7 +138,7 @@ class EmailNotifier(object):
         """
         ep_name = ss(ep_name)
 
-        if sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
             if len(to) == 0:
