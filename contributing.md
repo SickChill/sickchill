@@ -34,6 +34,9 @@ If you are new to SickRage, it is usually a much better idea to ask for help fir
 
 Bugs in old versions of SickRage may have already been fixed. In order to avoid reporting known issues, make sure you are always testing against the latest build/source. Also, we put new code in the `develop` branch first before pushing down to the `master` branch (which is what the binary builds are built off of).
 
+### Reporting the issue
+
+If the above steps fail and you are sure its a bug, issues are tracked in the [SickRage issue tracker](https://github.com/SickRage/sickrage-issues). 
 
 ## Tips For Submitting Code
 
