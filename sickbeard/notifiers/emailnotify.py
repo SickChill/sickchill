@@ -215,16 +215,17 @@ class EmailNotifier(object):
         if smtpDebug:
             srv.set_debuglevel(1)
         try:
-            if use_tls == '1' or (len(user) > 0 and len(pwd) > 0):
+            if use_tls in ('1', True) or (user and pwd):
                 logger.log(u'Sending initial EHLO command!', logger.DEBUG)
                 srv.ehlo()
-            if use_tls == '1':
+            if use_tls in ('1', True):
                 logger.log(u'Sending STARTTLS command!', logger.DEBUG)
                 srv.starttls()
                 srv.ehlo()
-            if len(user) > 0 and len(pwd) > 0:
+            if user and pwd:
                 logger.log(u'Sending LOGIN command!', logger.DEBUG)
                 srv.login(user, pwd)
+
             srv.sendmail(smtp_from, to, msg.as_string())
             srv.quit()
             return True
