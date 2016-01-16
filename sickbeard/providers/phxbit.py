@@ -120,7 +120,6 @@ class PhxBitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
 
                     # Catégorie, Nom,  DL, Com, Taille, C, Seed, Leech,	Share
                     labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
-                    logger.log(u"labels : %s" % ', '.join(labels), logger.DEBUG)
 
                     # We don't loop through the latest entry
                     for row in torrent_rows[1:]:

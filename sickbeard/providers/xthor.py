@@ -135,7 +135,6 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
                     # Catégorie, Nom du Torrent, (Download), (Bookmark), Com., Taille, Complété, Seeders, Leechers
                     labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
-                    logger.log(u"labels %s" % ', '.join(labels), logger.DEBUG)
 
                     for row in torrent_rows[1:]:
                         cells = row.find_all('td')
@@ -143,16 +142,12 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                             continue
                         try:
                             title = cells[labels.index('Nom du Torrent')].get_text(strip=True)
-                            logger.log(u"title %s" % title, logger.DEBUG)
                             download_url = self.url + '/' + row.find("a", href=re.compile("download.php"))['href']
-                            logger.log(u"download_url %s" % download_url, logger.DEBUG)
                             if not all([title, download_url]):
                                 continue
 
                             seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
-                            logger.log(u"seeders %s" % seeders, logger.DEBUG)
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
-                            logger.log(u"leechers %s" % leechers, logger.DEBUG)
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
