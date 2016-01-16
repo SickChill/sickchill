@@ -111,7 +111,7 @@ class OmgwtfnzbsProvider(NZBProvider):
                 if not data:
                     continue
 
-                if self._checkAuthFromData(data, is_XML=False):
+                if not self._checkAuthFromData(data, is_XML=False):
                     continue
 
                 for item in data:
