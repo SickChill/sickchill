@@ -59,30 +59,20 @@ class TelegramNotifier(object):
 
         try:
             urllib2.urlopen(req)
+            message = "Telegram message sent successfully."
         except IOError as e:
             if hasattr(e, 'code'):
-                if e.code == 400:
-                    message = "Missing parameter(s)."
-                    logger.log(message, logger.ERROR)
-                    return False, message
-                if e.code == 401:
-                    message = "Authentication failed."
-                    logger.log(message, logger.ERROR)
-                    return False, message
-                if e.code == 420:
-                    message = "Too many messages."
-                    logger.log(message, logger.ERROR)
-                    return False, message
-                if e.code == 500:
-                    message = "Server error. Please retry in few moment."
-                    logger.log(message, logger.ERROR)
-                    return False, message
+                message = {
+    400: 'Missing parameter(s) double check your settings or if the channel/user exists.',
+    401: 'Authentication failed.',
+    420: 'Too many messages.',
+    500: 'Server error. Please retry in few moment.',}
+                logger.log('Telegram: %s' % message.get(e.code, 'Unknown error'), logger.WARNING)
+                return False, message.get(e.code, 'Unknown error')
         except Exception as e:
             message = u"Error while sending Telegram message: {0}".format(e)
             logger.log(message, logger.ERROR)
             return False, message
-
-        message = "Telegram message sent successfully."
         logger.log(message, logger.INFO)
         return True, message
 
