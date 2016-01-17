@@ -73,10 +73,8 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         if not self.login():
             return results
 
-        categories = ['TV|SD|VOSTFR', 'TV|HD|VOSTFR', 'TV|SD|VF', 'TV|HD|VF', 'TV|PACK|FR', 'TV|PACK|VOSTFR', 'TV|EMISSIONS', 'ANIME']
-
         search_params = {
-            'cat[]': categories[:7],
+            'cat[]': ['TV|SD|VOSTFR', 'TV|HD|VOSTFR', 'TV|SD|VF', 'TV|HD|VF', 'TV|PACK|FR', 'TV|PACK|VOSTFR', 'TV|EMISSIONS', 'ANIME'],
             # Sorting: by time. Available parameters: ReleaseName, Seeders, Leechers, Snatched, Size
             'order': 'Time',
             # Both ASC and DESC are available
