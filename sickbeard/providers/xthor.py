@@ -20,7 +20,6 @@
 
 import re
 import requests
-import cookielib
 from urllib import urlencode
 
 from sickbeard import logger
@@ -36,8 +35,6 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
     def __init__(self):
 
         TorrentProvider.__init__(self, "Xthor")
-
-        self.cj = cookielib.CookieJar()
 
         self.url = 'https://xthor.bz'
         self.urls = {

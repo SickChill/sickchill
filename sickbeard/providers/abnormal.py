@@ -19,7 +19,6 @@
 
 import re
 import requests
-import cookielib
 from urllib import urlencode
 
 from sickbeard import logger
@@ -35,8 +34,6 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
     def __init__(self):
 
         TorrentProvider.__init__(self, "ABNormal")
-
-        self.cj = cookielib.CookieJar()
 
         self.url = 'https://abnormal.ws'
         self.urls = {

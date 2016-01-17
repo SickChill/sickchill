@@ -1,6 +1,5 @@
 # -*- coding: latin-1 -*-
 # Author: adaur <adaur.underground@gmail.com>
-# Rewrite: Dustyn Gibson (miigotu) <miigotu@gmail.com>
 # URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
@@ -20,7 +19,6 @@
 
 import re
 import requests
-import cookielib
 from urllib import urlencode
 
 from sickbeard import logger
@@ -36,8 +34,6 @@ class PhxBitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
     def __init__(self):
 
         TorrentProvider.__init__(self, "PhxBit")
-
-        self.cj = cookielib.CookieJar()
 
         self.url = 'https://phxbit.com'
         self.urls = {
