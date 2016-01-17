@@ -217,8 +217,8 @@ class NameParser(object):
             # if we have an air-by-date show then get the real season/episode numbers
             if bestResult.is_air_by_date:
                 airdate = bestResult.air_date.toordinal()
-                myDB = db.DBConnection()
-                sql_result = myDB.select(
+                main_db_con = db.DBConnection()
+                sql_result = main_db_con.select(
                     "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
                     [bestResult.show.indexerid, bestResult.show.indexer, airdate])
 

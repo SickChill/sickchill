@@ -52,13 +52,13 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
 
         # update_timestamp = calendar.timegm(update_datetime.timetuple())
         update_timestamp = time.mktime(update_datetime.timetuple())
-        my_db = db.DBConnection('cache.db')
-        result = my_db.select("SELECT `time` FROM lastUpdate WHERE provider = 'theTVDB'")
+        cache_db_con = db.DBConnection('cache.db')
+        result = cache_db_con.select("SELECT `time` FROM lastUpdate WHERE provider = 'theTVDB'")
         if result:
             last_update = int(result[0]['time'])
         else:
             last_update = update_timestamp - 86400
-            my_db.action("INSERT INTO lastUpdate (provider,`time`) VALUES (?, ?)", ['theTVDB', last_update])
+            cache_db_con.action("INSERT INTO lastUpdate (provider,`time`) VALUES (?, ?)", ['theTVDB', last_update])
 
         # refresh network timezones
         network_timezones.update_network_dict()
@@ -126,7 +126,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
 
         ui.ProgressIndicators.setIndicator('dailyUpdate', ui.QueueProgressIndicator("Daily Update", pi_list))
 
-        my_db.action("UPDATE lastUpdate SET `time` = ? WHERE provider=?", [update_timestamp, 'theTVDB'])
+        cache_db_con.action("UPDATE lastUpdate SET `time` = ? WHERE provider=?", [update_timestamp, 'theTVDB'])
 
         logger.log(u"Completed full update on all shows")
 

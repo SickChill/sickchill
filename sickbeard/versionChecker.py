@@ -219,8 +219,8 @@ class CheckVersion(object):
 
             match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})", response)
             branchDestDBversion = int(match.group('version'))
-            myDB = db.DBConnection()
-            branchCurrDBversion = myDB.checkDBVersion()
+            main_db_con = db.DBConnection()
+            branchCurrDBversion = main_db_con.checkDBVersion()
             if branchDestDBversion > branchCurrDBversion:
                 return 'upgrade'
             elif branchDestDBversion == branchCurrDBversion:

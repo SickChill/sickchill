@@ -58,8 +58,8 @@ class DailySearcher(object):
 
         curTime = datetime.datetime.now(network_timezones.sb_timezone)
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND (airdate <= ? and airdate > 1)",
+        main_db_con = db.DBConnection()
+        sqlResults = main_db_con.select("SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND (airdate <= ? and airdate > 1)",
                                  [common.UNAIRED, curDate])
 
         sql_l = []
@@ -100,8 +100,8 @@ class DailySearcher(object):
                 sql_l.append(ep.get_sql())
 
         if len(sql_l) > 0:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
         else:
             logger.log(u"No new released episodes found ...")
 

@@ -340,8 +340,8 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
         return False
 
     # make sure the dir isn't inside a show dir
-    myDB = db.DBConnection()
-    sqlResults = myDB.select("SELECT location FROM tv_shows")
+    main_db_con = db.DBConnection()
+    sqlResults = main_db_con.select("SELECT location FROM tv_shows")
 
     for sqlShow in sqlResults:
         if dirName.lower().startswith(ek(os.path.realpath, sqlShow["location"]).lower() + os.sep) or \
@@ -476,8 +476,8 @@ def already_postprocessed(dirName, videofile, force, result):  # pylint: disable
         return False
 
     # Avoid processing the same dir again if we use a process method <> move
-    myDB = db.DBConnection()
-    sqlResult = myDB.select("SELECT release_name FROM tv_episodes WHERE release_name IN (?, ?) LIMIT 1", [dirName, videofile.rpartition('.')[0]])
+    main_db_con = db.DBConnection()
+    sqlResult = main_db_con.select("SELECT release_name FROM tv_episodes WHERE release_name IN (?, ?) LIMIT 1", [dirName, videofile.rpartition('.')[0]])
     if sqlResult:
         # result.output += logHelper(u"You're trying to post process a dir that's already been processed, skipping", logger.DEBUG)
         return True
@@ -500,7 +500,7 @@ def already_postprocessed(dirName, videofile, force, result):  # pylint: disable
 
     search_sql += " AND tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED]) + ")"
     search_sql += " AND history.resource LIKE ? LIMIT 1"
-    sqlResult = myDB.select(search_sql, ['%' + videofile])
+    sqlResult = main_db_con.select(search_sql, ['%' + videofile])
     if sqlResult:
         # result.output += logHelper(u"You're trying to post process a video that's already been processed, skipping", logger.DEBUG)
         return True
