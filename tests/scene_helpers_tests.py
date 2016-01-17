@@ -53,8 +53,8 @@ class SceneTests(test.SickbeardTestDBCase):
         Test all possible show names
         """
         # common.sceneExceptions[-1] = ['Exception Test']
-        my_db = db.DBConnection("cache.db")
-        my_db.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)", [-1, 'Exception Test', -1])
+        test_cache_db_con = db.DBConnection('cache.db')
+        test_cache_db_con.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)", [-1, 'Exception Test', -1])
         common.countryList['Full Country Name'] = 'FCN'
 
         self._test_all_possible_show_names('Show Name', expected=['Show Name'])
@@ -118,8 +118,8 @@ class SceneExceptionTestCase(test.SickbeardTestDBCase):
         Test scene exceptions reset name cache
         """
         # clear the exceptions
-        my_db = db.DBConnection("cache.db")
-        my_db.action("DELETE FROM scene_exceptions")
+        test_cache_db_con = db.DBConnection('cache.db')
+        test_cache_db_con.action("DELETE FROM scene_exceptions")
 
         # put something in the cache
         name_cache.addNameToCache('Cached Name', 0)

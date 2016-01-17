@@ -461,8 +461,8 @@ class SickRage(object):
         """
         logger.log('Loading initial show list', logger.DEBUG)  # pylint: disable=no-member
 
-        my_db = db.DBConnection()
-        sql_results = my_db.select('SELECT indexer, indexer_id, location FROM tv_shows;')
+        main_db_con = db.DBConnection()
+        sql_results = main_db_con.select('SELECT indexer, indexer_id, location FROM tv_shows;')
 
         sickbeard.showList = []
         for sql_show in sql_results:

@@ -208,8 +208,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         # need ORDER episode ASC to rename multi-episodes in order S01E01-02
         sql_selection += " ORDER BY season ASC, episode ASC"
 
-        myDB = db.DBConnection()
-        results = myDB.select(sql_selection)
+        main_db_con = db.DBConnection()
+        results = main_db_con.select(sql_selection)
 
         ep_list = []
         for cur_result in results:
@@ -221,7 +221,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             if cur_ep.location:
                 # if there is a location, check if it's a multi-episode (share_location > 0) and put them in relatedEps
                 if cur_result["share_location"] > 0:
-                    related_eps_result = myDB.select(
+                    related_eps_result = main_db_con.select(
                         "SELECT season, episode FROM tv_episodes WHERE showid = ? AND season = ? AND location = ? AND episode != ? ORDER BY episode ASC",
                         [self.indexerid, cur_ep.season, cur_ep.location, cur_ep.episode])
                     for cur_related_ep in related_eps_result:
@@ -239,9 +239,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         # if we get an anime get the real season and episode
         if self.is_anime and absolute_number and not season and not episode:
-            myDB = db.DBConnection()
+            main_db_con = db.DBConnection()
             sql = "SELECT season, episode FROM tv_episodes WHERE showid = ? AND absolute_number = ? AND season != 0"
-            sqlResults = myDB.select(sql, [self.indexerid, absolute_number])
+            sqlResults = main_db_con.select(sql, [self.indexerid, absolute_number])
 
             if len(sqlResults) == 1:
                 episode = int(sqlResults[0]["episode"])
@@ -290,8 +290,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         last_airdate = datetime.date.fromordinal(1)
 
         # get latest aired episode to compare against today - graceperiod and today + graceperiod
-        myDB = db.DBConnection()
-        sql_result = myDB.select(
+        main_db_con = db.DBConnection()
+        sql_result = main_db_con.select(
             "SELECT IFNULL(MAX(airdate), 0) as last_aired FROM tv_episodes WHERE showid = ? AND season > 0 AND airdate > 1 AND status > 1",
             [self.indexerid])
 
@@ -301,7 +301,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 return True
 
         # get next upcoming UNAIRED episode to compare against today + graceperiod
-        sql_result = myDB.select(
+        sql_result = main_db_con.select(
             "SELECT IFNULL(MIN(airdate), 0) as airing_next FROM tv_episodes WHERE showid = ? AND season > 0 AND airdate > 1 AND status = 1",
             [self.indexerid])
 
@@ -353,8 +353,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         logger.log(str(self.indexerid) + u": Writing NFOs for all episodes", logger.DEBUG)
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
+        main_db_con = db.DBConnection()
+        sqlResults = main_db_con.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
 
         for epResult in sqlResults:
             logger.log(str(self.indexerid) + u": Retrieving/creating episode S%02dE%02d" % (epResult["season"] or 0, epResult["episode"] or 0), logger.DEBUG)
@@ -447,8 +447,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 sql_l.append(curEpisode.get_sql())
 
         if sql_l:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
 
     def loadEpisodesFromDB(self):  # pylint: disable=too-many-locals
 
@@ -456,9 +456,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         scannedEps = {}
 
         try:
-            myDB = db.DBConnection()
+            main_db_con = db.DBConnection()
             sql = "SELECT season, episode, showid, show_name FROM tv_episodes JOIN tv_shows WHERE showid = indexer_id and showid = ?"
-            sqlResults = myDB.select(sql, [self.indexerid])
+            sqlResults = main_db_con.select(sql, [self.indexerid])
         except Exception as error:
             logger.log(u"Could not load episodes from the DB. Error: %s" % error, logger.ERROR)
             return scannedEps
@@ -581,8 +581,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 scannedEps[season][episode] = True
 
         if len(sql_l) > 0:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
 
         # Done updating save last update date
         self.last_update_indexer = datetime.date.today().toordinal()
@@ -752,8 +752,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 sql_l.append(curEp.get_sql())
 
         if len(sql_l) > 0:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
 
         # creating metafiles on the root should be good enough
         if rootEp:
@@ -766,8 +766,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         logger.log(str(self.indexerid) + u": Loading show info from database", logger.DEBUG)
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_shows WHERE indexer_id = ?", [self.indexerid])
+        main_db_con = db.DBConnection()
+        sqlResults = main_db_con.select("SELECT * FROM tv_shows WHERE indexer_id = ?", [self.indexerid])
 
         if len(sqlResults) > 1:
             raise MultipleShowsInDatabaseException()
@@ -829,8 +829,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 self.release_groups = BlackAndWhiteList(self.indexerid)
 
         # Get IMDb_info from database
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
+        main_db_con = db.DBConnection()
+        sqlResults = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
 
         if len(sqlResults) == 0:
             logger.log(str(self.indexerid) + ": Unable to find IMDb show info in the database")
@@ -976,8 +976,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         curDate = datetime.date.today().toordinal()
         if not self.nextaired or self.nextaired and curDate > self.nextaired:
-            myDB = db.DBConnection()
-            sqlResults = myDB.select(
+            main_db_con = db.DBConnection()
+            sqlResults = main_db_con.select(
                 "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status IN (?,?) ORDER BY airdate ASC LIMIT 1",
                 [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED])
 
@@ -998,8 +998,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                  ["DELETE FROM xem_refresh WHERE indexer_id = ?", [self.indexerid]],
                  ["DELETE FROM scene_numbering WHERE indexer_id = ?", [self.indexerid]]]
 
-        myDB = db.DBConnection()
-        myDB.mass_action(sql_l)
+        main_db_con = db.DBConnection()
+        main_db_con.mass_action(sql_l)
 
         action = ('delete', 'trash')[sickbeard.TRASH_REMOVE_SHOW]
 
@@ -1069,8 +1069,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         # run through all locations from DB, check that they exist
         logger.log(str(self.indexerid) + u": Loading all episodes with a location from the database", logger.DEBUG)
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT season, episode, location FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
+        main_db_con = db.DBConnection()
+        sqlResults = main_db_con.select("SELECT season, episode, location FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
 
         sql_l = []
         for ep in sqlResults:
@@ -1122,8 +1122,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         curEp.airdateModifyStamp()
 
         if sql_l:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
 
     def download_subtitles(self, force=False):
         if not ek(os.path.isdir, self._location):
@@ -1180,8 +1180,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         "rls_require_words": self.rls_require_words,
                         "default_ep_status": self.default_ep_status}
 
-        myDB = db.DBConnection()
-        myDB.upsert("tv_shows", newValueDict, controlValueDict)
+        main_db_con = db.DBConnection()
+        main_db_con.upsert("tv_shows", newValueDict, controlValueDict)
 
         helpers.update_anime_support()
 
@@ -1189,8 +1189,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             controlValueDict = {"indexer_id": self.indexerid}
             newValueDict = self.imdb_info
 
-            myDB = db.DBConnection()
-            myDB.upsert("imdb_info", newValueDict, controlValueDict)
+            main_db_con = db.DBConnection()
+            main_db_con.upsert("imdb_info", newValueDict, controlValueDict)
 
     def __str__(self):
         toReturn = ""
@@ -1232,8 +1232,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                        (self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.DEBUG)
             return False
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+        main_db_con = db.DBConnection()
+        sqlResults = main_db_con.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
                                  [self.indexerid, season, episode])
 
         if not sqlResults or not len(sqlResults):
@@ -1504,8 +1504,8 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
     def loadFromDB(self, season, episode):  # pylint: disable=too-many-branches
         # logger.log(u"%s: Loading episode details for %s S%02dE%02d from DB" % (self.show.indexerid, self.show.name, season or 0, episode or 0), logger.DEBUG)
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+        main_db_con = db.DBConnection()
+        sqlResults = main_db_con.select("SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
                                  [self.show.indexerid, season, episode])
 
         if len(sqlResults) > 1:
@@ -1854,10 +1854,10 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         # delete myself from the DB
         logger.log(u"Deleting myself from the database", logger.DEBUG)
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
         sql = "DELETE FROM tv_episodes WHERE showid=" + str(self.show.indexerid) + " AND season=" + str(
             self.season) + " AND episode=" + str(self.episode)
-        myDB.action(sql)
+        main_db_con.action(sql)
 
         raise EpisodeDeletedException()
 
@@ -1873,8 +1873,8 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 logger.log(str(self.show.indexerid) + u": Not creating SQL queue - record is not dirty", logger.DEBUG)
                 return
 
-            myDB = db.DBConnection()
-            rows = myDB.select(
+            main_db_con = db.DBConnection()
+            rows = main_db_con.select(
                 'SELECT episode_id, subtitles FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?',
                 [self.show.indexerid, self.season, self.episode])
 
@@ -1964,8 +1964,8 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         #            (self.show.indexerid, self.season, self.episode, statusStrings[self.status]), logger.DEBUG)
 
         # use a custom update/insert method to get the data into the DB
-        myDB = db.DBConnection()
-        myDB.upsert("tv_episodes", newValueDict, controlValueDict)
+        main_db_con = db.DBConnection()
+        main_db_con.upsert("tv_episodes", newValueDict, controlValueDict)
 
     def fullPath(self):
         if self.location is None or self.location == "":
@@ -2498,8 +2498,8 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 sql_l.append(relEp.get_sql())
 
         if len(sql_l) > 0:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
 
     def airdateModifyStamp(self):
         """

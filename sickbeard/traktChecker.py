@@ -186,9 +186,9 @@ class TraktChecker(object):
         if sickbeard.TRAKT_SYNC_REMOVE and sickbeard.TRAKT_SYNC and sickbeard.USE_TRAKT:
             logger.log(u"COLLECTION::REMOVE::START - Look for Episodes to Remove From Trakt Collection", logger.DEBUG)
 
-            myDB = db.DBConnection()
+            main_db_con = db.DBConnection()
             sql_selection = 'select tv_shows.indexer, tv_shows.startyear, showid, show_name, season, episode, tv_episodes.status, tv_episodes.location from tv_episodes,tv_shows where tv_shows.indexer_id = tv_episodes.showid'
-            episodes = myDB.select(sql_selection)
+            episodes = main_db_con.select(sql_selection)
 
             if episodes is not None:
                 trakt_data = []
@@ -216,9 +216,9 @@ class TraktChecker(object):
         if sickbeard.TRAKT_SYNC and sickbeard.USE_TRAKT:
             logger.log(u"COLLECTION::ADD::START - Look for Episodes to Add to Trakt Collection", logger.DEBUG)
 
-            myDB = db.DBConnection()
+            main_db_con = db.DBConnection()
             sql_selection = 'select tv_shows.indexer, tv_shows.startyear, showid, show_name, season, episode from tv_episodes,tv_shows where tv_shows.indexer_id = tv_episodes.showid and tv_episodes.status in (' + ','.join([str(x) for x in Quality.DOWNLOADED + Quality.ARCHIVED]) + ')'
-            episodes = myDB.select(sql_selection)
+            episodes = main_db_con.select(sql_selection)
 
             if episodes is not None:
                 trakt_data = []
@@ -260,9 +260,9 @@ class TraktChecker(object):
         if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
             logger.log(u"WATCHLIST::REMOVE::START - Look for Episodes to Remove from Trakt Watchlist", logger.DEBUG)
 
-            myDB = db.DBConnection()
+            main_db_con = db.DBConnection()
             sql_selection = 'select tv_shows.indexer, tv_shows.startyear, showid, show_name, season, episode, tv_episodes.status from tv_episodes,tv_shows where tv_shows.indexer_id = tv_episodes.showid'
-            episodes = myDB.select(sql_selection)
+            episodes = main_db_con.select(sql_selection)
 
             if episodes is not None:
                 trakt_data = []
@@ -290,9 +290,9 @@ class TraktChecker(object):
         if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
             logger.log(u"WATCHLIST::ADD::START - Look for Episodes to Add to Trakt Watchlist", logger.DEBUG)
 
-            myDB = db.DBConnection()
+            main_db_con = db.DBConnection()
             sql_selection = 'select tv_shows.indexer, tv_shows.startyear, showid, show_name, season, episode from tv_episodes,tv_shows where tv_shows.indexer_id = tv_episodes.showid and tv_episodes.status in (' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER + [WANTED]]) + ')'
-            episodes = myDB.select(sql_selection)
+            episodes = main_db_con.select(sql_selection)
 
             if episodes is not None:
                 trakt_data = []

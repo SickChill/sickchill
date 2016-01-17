@@ -49,8 +49,8 @@ def shouldRefresh(exList):
     """
     MAX_REFRESH_AGE_SECS = 86400  # 1 day
 
-    myDB = db.DBConnection('cache.db')
-    rows = myDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?", [exList])
+    cache_db_con = db.DBConnection('cache.db')
+    rows = cache_db_con.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?", [exList])
     if rows:
         lastRefresh = int(rows[0]['last_refreshed'])
         return int(time.mktime(datetime.datetime.today().timetuple())) > lastRefresh + MAX_REFRESH_AGE_SECS
@@ -64,8 +64,8 @@ def setLastRefresh(exList):
 
     :param exList: exception list to set refresh time
     """
-    myDB = db.DBConnection('cache.db')
-    myDB.upsert("scene_exceptions_refresh",
+    cache_db_con = db.DBConnection('cache.db')
+    cache_db_con.upsert("scene_exceptions_refresh",
                 {'last_refreshed': int(time.mktime(datetime.datetime.today().timetuple()))},
                 {'list': exList})
 
@@ -78,8 +78,8 @@ def get_scene_exceptions(indexer_id, season=-1):
     exceptionsList = []
 
     if indexer_id not in exceptionsCache or season not in exceptionsCache[indexer_id]:
-        myDB = db.DBConnection('cache.db')
-        exceptions = myDB.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?",
+        cache_db_con = db.DBConnection('cache.db')
+        exceptions = cache_db_con.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?",
                                  [indexer_id, season])
         if exceptions:
             exceptionsList = list(set([cur_exception["show_name"] for cur_exception in exceptions]))
@@ -105,8 +105,8 @@ def get_all_scene_exceptions(indexer_id):
     """
     exceptionsDict = {}
 
-    myDB = db.DBConnection('cache.db')
-    exceptions = myDB.select("SELECT show_name,season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
+    cache_db_con = db.DBConnection('cache.db')
+    exceptions = cache_db_con.select("SELECT show_name,season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
 
     if exceptions:
         for cur_exception in exceptions:
@@ -124,8 +124,8 @@ def get_scene_seasons(indexer_id):
     exceptionsSeasonList = []
 
     if indexer_id not in exceptionsSeasonCache:
-        myDB = db.DBConnection('cache.db')
-        sqlResults = myDB.select("SELECT DISTINCT(season) as season FROM scene_exceptions WHERE indexer_id = ?",
+        cache_db_con = db.DBConnection('cache.db')
+        sqlResults = cache_db_con.select("SELECT DISTINCT(season) as season FROM scene_exceptions WHERE indexer_id = ?",
                                  [indexer_id])
         if sqlResults:
             exceptionsSeasonList = list(set([int(x["season"]) for x in sqlResults]))
@@ -151,15 +151,15 @@ def get_scene_exception_by_name_multiple(show_name):
     """
 
     # try the obvious case first
-    myDB = db.DBConnection('cache.db')
-    exception_result = myDB.select(
+    cache_db_con = db.DBConnection('cache.db')
+    exception_result = cache_db_con.select(
         "SELECT indexer_id, season FROM scene_exceptions WHERE LOWER(show_name) = ? ORDER BY season ASC",
         [show_name.lower()])
     if exception_result:
         return [(int(x["indexer_id"]), int(x["season"])) for x in exception_result]
 
     out = []
-    all_exception_results = myDB.select("SELECT show_name, indexer_id, season FROM scene_exceptions")
+    all_exception_results = cache_db_con.select("SELECT show_name, indexer_id, season FROM scene_exceptions")
 
     for cur_exception in all_exception_results:
 
@@ -237,9 +237,9 @@ def retrieve_exceptions():
             exception_dict[anidb_ex] = anidb_exception_dict[anidb_ex]
 
     queries = []
-    myDB = db.DBConnection('cache.db')
+    cache_db_con = db.DBConnection('cache.db')
     for cur_indexer_id in exception_dict:
-        sql_ex = myDB.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ?;", [cur_indexer_id])
+        sql_ex = cache_db_con.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ?;", [cur_indexer_id])
         existing_exceptions = [x["show_name"] for x in sql_ex]
         if cur_indexer_id not in exception_dict:
             continue
@@ -252,7 +252,7 @@ def retrieve_exceptions():
                         ["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?);",
                          [cur_indexer_id, cur_exception, curSeason]])
     if queries:
-        myDB.mass_action(queries)
+        cache_db_con.mass_action(queries)
         logger.log(u"Updated scene exceptions", logger.DEBUG)
     # else:
     #     logger.log(u"No scene exceptions update needed", logger.DEBUG)
@@ -267,8 +267,8 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
     """
     Given a indexer_id, and a list of all show scene exceptions, update the db.
     """
-    myDB = db.DBConnection('cache.db')
-    myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=? and season=?', [indexer_id, season])
+    cache_db_con = db.DBConnection('cache.db')
+    cache_db_con.action('DELETE FROM scene_exceptions WHERE indexer_id=? and season=?', [indexer_id, season])
 
     logger.log(u"Updating scene exceptions", logger.INFO)
 
@@ -278,7 +278,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
         exceptionsCache[indexer_id][season] = scene_exceptions
 
     for cur_exception in scene_exceptions:
-        myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
+        cache_db_con.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
                     [indexer_id, cur_exception, season])
 
 
@@ -333,6 +333,6 @@ def _xem_exceptions_fetcher():
 
 def getSceneSeasons(indexer_id):
     """get a list of season numbers that have scene exceptions"""
-    myDB = db.DBConnection('cache.db')
-    seasons = myDB.select("SELECT DISTINCT season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
+    cache_db_con = db.DBConnection('cache.db')
+    seasons = cache_db_con.select("SELECT DISTINCT season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
     return [cur_exception["season"] for cur_exception in seasons]

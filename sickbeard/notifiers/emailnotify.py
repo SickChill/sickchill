@@ -175,7 +175,7 @@ class EmailNotifier(object):
 
     def _generate_recipients(self, show):
         addrs = []
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
 
         # Grab the global recipients
         if sickbeard.EMAIL_LIST:
@@ -186,7 +186,7 @@ class EmailNotifier(object):
         # Grab the per-show-notification recipients
         if show is not None:
             for s in show:
-                for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (s,)):
+                for subs in main_db_con.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (s,)):
                     if subs['notify_list']:
                         if subs['notify_list'][0] == '{':
                             entries = dict(ast.literal_eval(subs['notify_list']))

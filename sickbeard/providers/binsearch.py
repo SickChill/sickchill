@@ -108,8 +108,8 @@ class BinSearchCache(tvcache.TVCache):
                     cl.append(ci)
 
         if len(cl) > 0:
-            myDB = self._getDB()
-            myDB.mass_action(cl)
+            cache_db_con = self._getDB()
+            cache_db_con.mass_action(cl)
 
     def _checkAuth(self, data):
         return data if data['feed'] and data['feed']['title'] != 'Invalid Link' else None
