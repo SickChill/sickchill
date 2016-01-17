@@ -89,7 +89,7 @@ class Show(object):
         total_status = [SKIPPED, WANTED]
 
         results = db.select(
-            'SELECT airdate, status '
+            'SELECT airdate, status, file_size '
             'FROM tv_episodes '
             'WHERE season > 0 '
             'AND episode > 0 '
@@ -101,6 +101,7 @@ class Show(object):
                 'downloaded': 0,
                 'snatched': 0,
                 'total': 0,
+                'total_size': 0,
             },
             'shows': {
                 'active': len([show for show in shows if show.paused == 0 and show.status == 'Continuing']),
@@ -112,6 +113,7 @@ class Show(object):
             if result['status'] in downloaded_status:
                 stats['episodes']['downloaded'] += 1
                 stats['episodes']['total'] += 1
+                stats['episodes']['total_size'] += result['file_size']
             elif result['status'] in snatched_status:
                 stats['episodes']['snatched'] += 1
                 stats['episodes']['total'] += 1
