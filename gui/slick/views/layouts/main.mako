@@ -284,6 +284,7 @@
                 ep_downloaded = stats['episodes']['downloaded']
                 ep_snatched = stats['episodes']['snatched']
                 ep_total = stats['episodes']['total']
+                ep_total_size = stats['episodes']['total_size']
                 ep_percentage = '' if ep_total == 0 else '(<span class="footerhighlight">%s%%</span>)' % re.sub(r'(\d+)(\.\d)\d+', r'\1\2', str((float(ep_downloaded)/float(ep_total))*100))
             %>
                 <span class="footerhighlight">${stats['shows']['total']}</span> Shows (<span class="footerhighlight">${stats['shows']['active']}</span> Active)
@@ -302,6 +303,7 @@
                     Memory used: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span> |
                     % endif
                     Load time: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
+                    Total Disk Usage: <span class="footerhighlight">${pretty_file_size(ep_total_size)}</span> |
                     Branch: <span class="footerhighlight">${sickbeard.BRANCH}</span> |
                     Now: <span class="footerhighlight">${datetime.datetime.now(network_timezones.sb_timezone).strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET)}</span>
                 </div>
