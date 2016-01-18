@@ -3131,13 +3131,18 @@ class Manage(Home, WebRoot):
             epCats = {}
 
             sqlResults = main_db_con.select(
-                "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
+                "SELECT status, season, episode, name, airdate, absolute_number FROM tv_episodes WHERE tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
                 [curShow.indexerid])
 
             for curResult in sqlResults:
                 curEpCat = curShow.getOverview(curResult["status"])
                 if curEpCat:
-                    epCats['S%02dE%02d' % (curResult['season'], curResult['episode'])] = curEpCat
+                    if curResult['season'] and curResult['episode']:
+                        epCats['S%02dE%02d' % (curResult['season'], curResult['episode'])] = curEpCat
+                    elif curResult['absolute_number']:
+                        epCats['E%03d' % (curResult['absolute_number'])] = curEpCat
+                    else:
+                        epCats['N/D'] = curEpCat                        
                     epCounts[curEpCat] += 1
 
             showCounts[curShow.indexerid] = epCounts
