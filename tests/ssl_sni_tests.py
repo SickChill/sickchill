@@ -36,14 +36,14 @@ import requests  # pylint: disable=import-error
 import sickbeard.providers as providers
 
 
-def test_generator(_provider):
+def generator(_provider):
     """
     Generate tests for each provider
 
     :param test_strings: to generate tests from
     :return: test
     """
-    def _connectivity_test(self):  # pylint: disable=unused-argument
+    def _connectivity_test():
         """
         Generate tests
         :param self:
@@ -71,14 +71,14 @@ class SniTests(unittest.TestCase):
     pass
 
 if __name__ == "__main__":
-    print("==================")
-    print("STARTING - Provider Connectivity TESTS and SSL/SNI")
-    print("==================")
-    print("######################################################################")
+    print "=================="
+    print "STARTING - Provider Connectivity TESTS and SSL/SNI"
+    print "=================="
+    print "######################################################################"
     # Just checking all providers - we should make this error on non-existent urls.
     for provider in [p for p in providers.makeProviderList()]:
         test_name = 'test_%s' % provider.name
-        test = test_generator(provider)
+        test = generator(provider)
         setattr(SniTests, test_name, test)
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(SniTests)
