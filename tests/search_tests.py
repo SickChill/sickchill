@@ -54,7 +54,7 @@ class SearchTest(test.SickbeardTestDBCase):
         super(SearchTest, self).__init__(something)
 
 
-def test_generator(cur_data, cur_name, cur_provider):
+def generator(cur_data, cur_name, cur_provider):
     """
     Generate test
 
@@ -64,7 +64,7 @@ def test_generator(cur_data, cur_name, cur_provider):
     :return:
     """
 
-    def do_test(self):
+    def do_test():
         """
         Test to perform
         """
@@ -157,7 +157,7 @@ if __name__ == '__main__':
                         test_name = 'test_manual_%s_%s_%s' % (filename, data["tvdbid"], provider.name)
                     else:
                         test_name = 'test_%s_%s_%s' % (filename, data["tvdbid"], provider.name)
-                    test = test_generator(data, name, provider)
+                    test = generator(data, name, provider)
                     setattr(SearchTest, test_name, test)
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(SearchTest)

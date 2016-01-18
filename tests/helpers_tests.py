@@ -152,7 +152,7 @@ class HelpersTests(unittest.TestCase):
         super(HelpersTests, self).__init__(*args, **kwargs)
 
 
-def test_generator(test_strings):
+def generator(test_strings):
     """
     Generate tests from test strings
 
@@ -691,7 +691,7 @@ if __name__ == '__main__':
     print("######################################################################")
     for name, test_data in TEST_CASES.items():
         test_name = 'test_%s' % name
-        test = test_generator(test_data)
+        test = generator(test_data)
         setattr(HelpersTests, test_name, test)
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersTests)
