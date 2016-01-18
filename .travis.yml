@@ -1,7 +1,7 @@
-language:
-  - python
+language: python
 
-python: 2.7.9
+python:
+  - 2.7.9
 
 sudo: false
 
@@ -15,11 +15,11 @@ before_install:
   - cd .build && npm install && bower install && cd ..
 
 install:
-    - pip install coveralls
+    - pip install coveralls nose rednose
 
 script:
   - cd .build && grunt travis && cd ..
-  - coverage run --source sickbeard,sickrage,SickBeard.py tests/all_tests.py
+  - nosetests -c nose.cfg
 
 cache:
   directories:
@@ -34,7 +34,6 @@ after_failure:
 
 notifications:
   irc: "irc.freenode.net#sickrage-builds"
-
   email:
     on_success: change
     on_failure: change

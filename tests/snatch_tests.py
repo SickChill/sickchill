@@ -100,7 +100,7 @@ class SearchTest(test.SickbeardTestDBCase):
         super(SearchTest, self).__init__(something)
 
 
-def test_generator(tvdb_id, show_name, cur_data, force_search):
+def generator(tvdb_id, show_name, cur_data, force_search):
     """
     Generate tests
 
@@ -152,7 +152,7 @@ if __name__ == '__main__':
             else:
                 test_name = 'test_%s_%s' % (filename, cur_tvdb_id)
 
-            test = test_generator(cur_tvdb_id, name, data, forceSearch)
+            test = generator(cur_tvdb_id, name, data, forceSearch)
             setattr(SearchTest, test_name, test)
             cur_tvdb_id += 1
 
