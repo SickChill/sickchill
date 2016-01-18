@@ -44,9 +44,9 @@ class CacheDBConnection(db.DBConnection):
                 self.action(
                     "CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)")
             else:
-                sqlResults = self.select("SELECT url, COUNT(url) AS count FROM [" + providerName + "] GROUP BY url HAVING count > 1")
+                sql_results = self.select("SELECT url, COUNT(url) AS count FROM [" + providerName + "] GROUP BY url HAVING count > 1")
 
-                for cur_dupe in sqlResults:
+                for cur_dupe in sql_results:
                     self.action("DELETE FROM [" + providerName + "] WHERE url = ?", [cur_dupe["url"]])
 
             # add unique index to prevent further dupes from happening if one does not exist
@@ -177,10 +177,10 @@ class TVCache(object):
 
     def _getLastUpdate(self):
         cache_db_con = self._getDB()
-        sqlResults = cache_db_con.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.providerID])
+        sql_results = cache_db_con.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.providerID])
 
-        if sqlResults:
-            lastTime = int(sqlResults[0]["time"])
+        if sql_results:
+            lastTime = int(sql_results[0]["time"])
             if lastTime > int(time.mktime(datetime.datetime.today().timetuple())):
                 lastTime = 0
         else:
@@ -190,10 +190,10 @@ class TVCache(object):
 
     def _getLastSearch(self):
         cache_db_con = self._getDB()
-        sqlResults = cache_db_con.select("SELECT time FROM lastSearch WHERE provider = ?", [self.providerID])
+        sql_results = cache_db_con.select("SELECT time FROM lastSearch WHERE provider = ?", [self.providerID])
 
-        if sqlResults:
-            lastTime = int(sqlResults[0]["time"])
+        if sql_results:
+            lastTime = int(sql_results[0]["time"])
             if lastTime > int(time.mktime(datetime.datetime.today().timetuple())):
                 lastTime = 0
         else:
@@ -308,9 +308,9 @@ class TVCache(object):
 
         cache_db_con = self._getDB()
         if not episode:
-            sqlResults = cache_db_con.select("SELECT * FROM [" + self.providerID + "]")
+            sql_results = cache_db_con.select("SELECT * FROM [" + self.providerID + "]")
         elif type(episode) != list:
-            sqlResults = cache_db_con.select(
+            sql_results = cache_db_con.select(
                 "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?",
                 [episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"])
         else:
@@ -320,11 +320,11 @@ class TVCache(object):
                         [str(x) for x in epObj.wantedQuality]) + ")",
                     [epObj.show.indexerid, epObj.season, "%|" + str(epObj.episode) + "|%"]])
 
-            sqlResults = cache_db_con.mass_action(cl, fetchall=True)
-            sqlResults = list(itertools.chain(*sqlResults))
+            sql_results = cache_db_con.mass_action(cl, fetchall=True)
+            sql_results = list(itertools.chain(*sql_results))
 
         # for each cache entry
-        for curResult in sqlResults:
+        for curResult in sql_results:
             # ignored/required words, and non-tv junk
             if not show_name_helpers.filterBadReleases(curResult["name"]):
                 continue

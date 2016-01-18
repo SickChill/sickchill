@@ -57,11 +57,11 @@ class MainSanityCheck(db.DBSanityCheck):
         query = "SELECT episode_id, showid, status, location, season, episode " + \
                 "FROM tv_episodes WHERE status = %s" % common.ARCHIVED
 
-        sqlResults = self.connection.select(query)
-        if sqlResults:
-            logger.log(u"Found %i shows with bare archived status, attempting automatic conversion..." % len(sqlResults), logger.WARNING)
+        sql_results = self.connection.select(query)
+        if sql_results:
+            logger.log(u"Found %i shows with bare archived status, attempting automatic conversion..." % len(sql_results), logger.WARNING)
 
-        for archivedEp in sqlResults:
+        for archivedEp in sql_results:
             fixedStatus = common.Quality.compositeStatus(common.ARCHIVED, common.Quality.UNKNOWN)
             existing = archivedEp['location'] and ek(os.path.exists, archivedEp['location'])
             if existing:
@@ -80,12 +80,12 @@ class MainSanityCheck(db.DBSanityCheck):
         from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
         from sickbeard.indexers.indexer_config import INDEXER_TVDB
 
-        sqlResults = self.connection.select("SELECT indexer_id, show_name, location FROM tv_shows WHERE indexer = %i" % INDEXER_TVRAGE)
+        sql_results = self.connection.select("SELECT indexer_id, show_name, location FROM tv_shows WHERE indexer = %i" % INDEXER_TVRAGE)
 
-        if sqlResults:
-            logger.log(u"Found %i shows with TVRage ID's, attempting automatic conversion..." % len(sqlResults), logger.WARNING)
+        if sql_results:
+            logger.log(u"Found %i shows with TVRage ID's, attempting automatic conversion..." % len(sql_results), logger.WARNING)
 
-        for tvrage_show in sqlResults:
+        for tvrage_show in sql_results:
             logger.log(u"Processing %s at %s" % (tvrage_show['show_name'], tvrage_show['location']))
             mapping = self.connection.select("SELECT mindexer_id FROM indexer_mapping WHERE indexer_id=%i AND indexer=%i AND mindexer=%i" %
                                              (tvrage_show['indexer_id'], INDEXER_TVRAGE, INDEXER_TVDB))
@@ -130,10 +130,10 @@ class MainSanityCheck(db.DBSanityCheck):
 
     def fix_duplicate_shows(self, column='indexer_id'):
 
-        sqlResults = self.connection.select(
+        sql_results = self.connection.select(
             "SELECT show_id, " + column + ", COUNT(" + column + ") as count FROM tv_shows GROUP BY " + column + " HAVING count > 1")
 
-        for cur_duplicate in sqlResults:
+        for cur_duplicate in sql_results:
 
             logger.log(u"Duplicate show detected! " + column + ": " + str(cur_duplicate[column]) + u" count: " + str(
                 cur_duplicate["count"]), logger.DEBUG)
@@ -151,10 +151,10 @@ class MainSanityCheck(db.DBSanityCheck):
 
     def fix_duplicate_episodes(self):
 
-        sqlResults = self.connection.select(
+        sql_results = self.connection.select(
             "SELECT showid, season, episode, COUNT(showid) as count FROM tv_episodes GROUP BY showid, season, episode HAVING count > 1")
 
-        for cur_duplicate in sqlResults:
+        for cur_duplicate in sql_results:
 
             logger.log(u"Duplicate episode detected! showid: " + str(cur_duplicate["showid"]) + u" season: " + str(
                 cur_duplicate["season"]) + u" episode: " + str(cur_duplicate["episode"]) + u" count: " + str(
@@ -172,10 +172,10 @@ class MainSanityCheck(db.DBSanityCheck):
 
     def fix_orphan_episodes(self):
 
-        sqlResults = self.connection.select(
+        sql_results = self.connection.select(
             "SELECT episode_id, showid, tv_shows.indexer_id FROM tv_episodes LEFT JOIN tv_shows ON tv_episodes.showid=tv_shows.indexer_id WHERE tv_shows.indexer_id is NULL")
 
-        for cur_orphan in sqlResults:
+        for cur_orphan in sql_results:
             logger.log(u"Orphan episode detected! episode_id: " + str(cur_orphan["episode_id"]) + " showid: " + str(
                 cur_orphan["showid"]), logger.DEBUG)
             logger.log(u"Deleting orphan episode with episode_id: " + str(cur_orphan["episode_id"]))
@@ -210,11 +210,11 @@ class MainSanityCheck(db.DBSanityCheck):
 
         curDate = datetime.date.today()
 
-        sqlResults = self.connection.select(
+        sql_results = self.connection.select(
             "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?) AND season > 0",
             [curDate.toordinal(), common.SKIPPED, common.WANTED])
 
-        for cur_unaired in sqlResults:
+        for cur_unaired in sql_results:
             logger.log(u"Fixing unaired episode status for episode_id: %s" % cur_unaired["episode_id"])
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
                                    [common.UNAIRED, cur_unaired["episode_id"]])
@@ -240,9 +240,9 @@ class MainSanityCheck(db.DBSanityCheck):
             self.connection.action("UPDATE tv_shows SET status = ? WHERE LOWER(status) = ?", [new_status, old_status])
 
     def fix_episode_statuses(self):
-        sqlResults = self.connection.select("SELECT episode_id, showid FROM tv_episodes WHERE status IS NULL")
+        sql_results = self.connection.select("SELECT episode_id, showid FROM tv_episodes WHERE status IS NULL")
 
-        for cur_ep in sqlResults:
+        for cur_ep in sql_results:
             logger.log(u"MALFORMED episode status detected! episode_id: " + str(cur_ep["episode_id"]) + " showid: " + str(
                 cur_ep["showid"]), logger.DEBUG)
             logger.log(u"Fixing malformed episode status with episode_id: " + str(cur_ep["episode_id"]))
@@ -251,11 +251,11 @@ class MainSanityCheck(db.DBSanityCheck):
 
     def fix_invalid_airdates(self):
 
-        sqlResults = self.connection.select(
+        sql_results = self.connection.select(
             "SELECT episode_id, showid FROM tv_episodes WHERE airdate >= ? OR airdate < 1",
             [datetime.date.max.toordinal()])
 
-        for bad_airdate in sqlResults:
+        for bad_airdate in sql_results:
             logger.log(u"Bad episode airdate detected! episode_id: " + str(bad_airdate["episode_id"]) + " showid: " + str(
                 bad_airdate["showid"]), logger.DEBUG)
             logger.log(u"Fixing bad episode airdate for episode_id: " + str(bad_airdate["episode_id"]))
@@ -263,30 +263,30 @@ class MainSanityCheck(db.DBSanityCheck):
 
     def fix_subtitles_codes(self):
 
-        sqlResults = self.connection.select(
+        sql_results = self.connection.select(
             "SELECT subtitles, episode_id FROM tv_episodes WHERE subtitles != '' AND subtitles_lastsearch < ?;",
             [datetime.datetime(2015, 7, 15, 17, 20, 44, 326380).strftime(dateTimeFormat)]
         )
 
-        if not sqlResults:
+        if not sql_results:
             return
 
-        for sqlResult in sqlResults:
+        for sql_result in sql_results:
             langs = []
 
             logger.log(u"Checking subtitle codes for episode_id: %s, codes: %s" %
-                       (sqlResult['episode_id'], sqlResult['subtitles']), logger.DEBUG)
+                       (sql_result['episode_id'], sql_result['subtitles']), logger.DEBUG)
 
-            for subcode in sqlResult['subtitles'].split(','):
+            for subcode in sql_result['subtitles'].split(','):
                 if not len(subcode) == 3 or subcode not in subtitles.subtitle_code_filter():
                     logger.log(u"Fixing subtitle codes for episode_id: %s, invalid code: %s" %
-                               (sqlResult['episode_id'], subcode), logger.DEBUG)
+                               (sql_result['episode_id'], subcode), logger.DEBUG)
                     continue
 
                 langs.append(subcode)
 
             self.connection.action("UPDATE tv_episodes SET subtitles = ?, subtitles_lastsearch = ? WHERE episode_id = ?;",
-                                   [','.join(langs), datetime.datetime.now().strftime(dateTimeFormat), sqlResult['episode_id']])
+                                   [','.join(langs), datetime.datetime.now().strftime(dateTimeFormat), sql_result['episode_id']])
 
     def fix_show_nfo_lang(self):
         self.connection.action("UPDATE tv_shows SET lang = '' WHERE lang = 0 or lang = '0'")

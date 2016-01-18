@@ -59,13 +59,13 @@ class DailySearcher(object):
         curTime = datetime.datetime.now(network_timezones.sb_timezone)
 
         main_db_con = db.DBConnection()
-        sqlResults = main_db_con.select("SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND (airdate <= ? and airdate > 1)",
+        sql_results = main_db_con.select("SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND (airdate <= ? and airdate > 1)",
                                  [common.UNAIRED, curDate])
 
         sql_l = []
         show = None
 
-        for sqlEp in sqlResults:
+        for sqlEp in sql_results:
             try:
                 if not show or int(sqlEp["showid"]) != show.indexerid:
                     show = Show.find(sickbeard.showList, int(sqlEp["showid"]))
