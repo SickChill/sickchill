@@ -721,8 +721,7 @@ class Home(WebRoot):
         sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total, '
 
         sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + today + ' AND (status = ' + str(UNAIRED) + ' OR status = ' + str(WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
-        sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str(UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev, '
-        sql_statement += ' (SELECT SUM(file_size) FROM tv_episodes WHERE showid=tv_eps.showid) AS show_size'
+        sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str(UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev '
         sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
         sql_result = main_db_con.select(sql_statement)
@@ -730,9 +729,16 @@ class Home(WebRoot):
         show_stat = {}
         max_download_count = 1000
         for cur_result in sql_result:
-            show_stat[cur_result['showid']] = cur_result
+            show_stat[cur_result['showid']] = dict(cur_result)
+            show_stat[cur_result['showid']]['show_size'] = 0
             if cur_result['ep_total'] > max_download_count:
                 max_download_count = cur_result['ep_total']
+                
+            sql_statement = 'SELECT location, file_size FROM tv_episodes WHERE showid='+str(cur_result['showid'])+' AND file_size > 0 AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + status_download
+            sql_size_results = myDB.select(sql_statement)
+            for sql_size_result in sql_size_results:
+                if os.path.isfile(sql_size_result['location']):
+                    show_stat[cur_result['showid']]['show_size'] += sql_size_result['file_size']
 
         max_download_count *= 100
 
