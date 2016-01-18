@@ -320,18 +320,3 @@ def teardown_test_show_dir():
     """
     if os.path.exists(SHOW_DIR):
         shutil.rmtree(SHOW_DIR)
-
-
-if __name__ == '__main__':
-    print "=================="
-    print "Don't call this directly"
-    print "=================="
-    print "you might want to call"
-
-    DIR_LIST = os.listdir(TEST_DIR)
-    for filename in DIR_LIST:
-        if (filename.find("_test") > 0) and (filename.find("pyc") < 0):
-            print "- " + filename
-
-    print "=================="
-    print "or just call all_tests.py"
