@@ -42,10 +42,12 @@ Classes:
 import os.path
 import shutil
 import sys
+import tempfile
 import unittest
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+TEST_DIR = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(1, os.path.join(TEST_DIR, '../lib'))
+sys.path.insert(1, os.path.join(TEST_DIR, '..'))
 
 from configobj import ConfigObj
 from sickbeard import db, providers
@@ -59,10 +61,6 @@ import sickbeard
 
 shutil.copyfile = shutil_custom.copyfile_custom
 
-# =================
-#  test globals
-# =================
-TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 TEST_DB_NAME = "sickbeard.db"
 TEST_CACHE_DB_NAME = "cache.db"
 TEST_FAILED_DB_NAME = "failed.db"
@@ -71,9 +69,10 @@ SHOW_NAME = u"show name"
 SEASON = 4
 EPISODE = 2
 FILENAME = u"show name - s0" + str(SEASON) + "e0" + str(EPISODE) + ".mkv"
-FILE_DIR = os.path.join(TEST_DIR, SHOW_NAME)
+TMP_DIR = tempfile.mkdtemp()
+FILE_DIR = os.path.join(TMP_DIR, SHOW_NAME)
 FILE_PATH = os.path.join(FILE_DIR, FILENAME)
-SHOW_DIR = os.path.join(TEST_DIR, SHOW_NAME + " final")
+SHOW_DIR = os.path.join(TMP_DIR, SHOW_NAME + " final")
 
 
 # =================
