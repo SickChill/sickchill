@@ -1232,7 +1232,7 @@ class Home(WebRoot):
 
         min_season = 0 if sickbeard.DISPLAY_SHOW_SPECIALS else 1
 
-        sqlResults = main_db_con.select(
+        sql_results = main_db_con.select(
             "SELECT * FROM tv_episodes WHERE showid = ? and season >= ? ORDER BY season DESC, episode DESC",
             [showObj.indexerid, min_season]
         )
@@ -1298,7 +1298,7 @@ class Home(WebRoot):
         }
         epCats = {}
 
-        for curResult in sqlResults:
+        for curResult in sql_results:
             curEpCat = showObj.getOverview(curResult["status"])
             if curEpCat:
                 epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
@@ -1346,7 +1346,7 @@ class Home(WebRoot):
 
         return t.render(
             submenu=submenu, showLoc=showLoc, show_message=show_message,
-            show=showObj, sqlResults=sqlResults, seasonResults=seasonResults,
+            show=showObj, sql_results=sql_results, seasonResults=seasonResults,
             sortedShowLists=sortedShowLists, bwl=bwl, epCounts=epCounts,
             epCats=epCats, all_scene_exceptions=showObj.exceptions,
             scene_numbering=get_scene_numbering_for_show(indexerid, indexer),
@@ -3130,11 +3130,11 @@ class Manage(Home, WebRoot):
             }
             epCats = {}
 
-            sqlResults = main_db_con.select(
+            sql_results = main_db_con.select(
                 "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
                 [curShow.indexerid])
 
-            for curResult in sqlResults:
+            for curResult in sql_results:
                 curEpCat = curShow.getOverview(curResult["status"])
                 if curEpCat:
                     epCats['S%02dE%02d' % (curResult['season'], curResult['episode'])] = curEpCat
@@ -3142,7 +3142,7 @@ class Manage(Home, WebRoot):
 
             showCounts[curShow.indexerid] = epCounts
             showCats[curShow.indexerid] = epCats
-            showSQLResults[curShow.indexerid] = sqlResults
+            showSQLResults[curShow.indexerid] = sql_results
 
         return t.render(
             showCounts=showCounts, showCats=showCats,
@@ -3528,9 +3528,9 @@ class Manage(Home, WebRoot):
         failed_db_con = db.DBConnection('failed.db')
 
         if limit == "0":
-            sqlResults = failed_db_con.select("SELECT * FROM failed")
+            sql_results = failed_db_con.select("SELECT * FROM failed")
         else:
-            sqlResults = failed_db_con.select("SELECT * FROM failed LIMIT ?", [limit])
+            sql_results = failed_db_con.select("SELECT * FROM failed LIMIT ?", [limit])
 
         toRemove = toRemove.split("|") if toRemove is not None else []
 
@@ -3542,7 +3542,7 @@ class Manage(Home, WebRoot):
 
         t = PageTemplate(rh=self, filename="manage_failedDownloads.mako")
 
-        return t.render(limit=limit, failedResults=sqlResults,
+        return t.render(limit=limit, failedResults=sql_results,
                         title='Failed Downloads', header='Failed Downloads',
                         topmenu='manage', controller="manage",
                         action="failedDownloads")
