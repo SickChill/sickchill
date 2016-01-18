@@ -1369,20 +1369,20 @@ def initialize(consoleLogging=True):
             save_config()
 
         # initialize the main SB database
-        myDB = db.DBConnection()
-        db.upgradeDatabase(myDB, mainDB.InitialSchema)
+        main_db_con = db.DBConnection()
+        db.upgradeDatabase(main_db_con, mainDB.InitialSchema)
 
         # initialize the cache database
-        myDB = db.DBConnection('cache.db')
-        db.upgradeDatabase(myDB, cache_db.InitialSchema)
+        cache_db_con = db.DBConnection('cache.db')
+        db.upgradeDatabase(cache_db_con, cache_db.InitialSchema)
 
         # initialize the failed downloads database
-        myDB = db.DBConnection('failed.db')
-        db.upgradeDatabase(myDB, failed_db.InitialSchema)
+        failed_db_con = db.DBConnection('failed.db')
+        db.upgradeDatabase(failed_db_con, failed_db.InitialSchema)
 
         # fix up any db problems
-        myDB = db.DBConnection()
-        db.sanityCheckDatabase(myDB, mainDB.MainSanityCheck)
+        main_db_con = db.DBConnection()
+        db.sanityCheckDatabase(main_db_con, mainDB.MainSanityCheck)
 
         # migrate the config if it needs it
         migrator = ConfigMigrator(CFG)

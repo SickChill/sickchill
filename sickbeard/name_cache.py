@@ -33,13 +33,13 @@ def addNameToCache(name, indexer_id=0):
     :param name: The show name to cache
     :param indexer_id: the TVDB id that this show should be cached with (can be None/0 for unknown)
     """
-    cacheDB = db.DBConnection('cache.db')
+    cache_db_con = db.DBConnection('cache.db')
 
     # standardize the name we're using to account for small differences in providers
     name = sickbeard.helpers.full_sanitizeSceneName(name)
     if name not in nameCache:
         nameCache[name] = int(indexer_id)
-        cacheDB.action("INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
+        cache_db_con.action("INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
 
 
 def retrieveNameFromCache(name):
@@ -58,8 +58,8 @@ def clearCache(indexerid=0):
     """
     Deletes all "unknown" entries from the cache (names with indexer_id of 0).
     """
-    cacheDB = db.DBConnection('cache.db')
-    cacheDB.action("DELETE FROM scene_names WHERE indexer_id = ? OR indexer_id = ?", (indexerid, 0))
+    cache_db_con = db.DBConnection('cache.db')
+    cache_db_con.action("DELETE FROM scene_names WHERE indexer_id = ? OR indexer_id = ?", (indexerid, 0))
 
     toRemove = [key for key, value in nameCache.iteritems() if value == 0 or value == indexerid]
     for key in toRemove:
@@ -68,10 +68,10 @@ def clearCache(indexerid=0):
 
 def saveNameCacheToDb():
     """Commit cache to database file"""
-    cacheDB = db.DBConnection('cache.db')
+    cache_db_con = db.DBConnection('cache.db')
 
     for name, indexer_id in nameCache.iteritems():
-        cacheDB.action("INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
+        cache_db_con.action("INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
 
 
 def buildNameCache(show=None):

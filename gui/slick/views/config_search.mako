@@ -323,7 +323,7 @@
                                 <label for="sab_forced">
                                     <span class="component-title">Use forced priority</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="sab_forced" class="enabler" id="sab_forced" ${('', 'selected="selected"')[bool(sickbeard.SAB_FORCED)]}/>
+                                        <input type="checkbox" name="sab_forced" class="enabler" id="sab_forced" ${('', 'checked="checked"')[bool(sickbeard.SAB_FORCED)]}/>
                                         <p>enable to change priority from HIGH to FORCED</p></span>
                                 </label>
                             </div>
@@ -335,7 +335,7 @@
                                 <label for="nzbget_use_https">
                                     <span class="component-title">Connect using HTTPS</span>
                                     <span class="component-desc">
-                                        <input id="nzbget_use_https" type="checkbox" class="enabler" name="nzbget_use_https" ${('', 'selected="selected"')[bool(sickbeard.NZBGET_USE_HTTPS)]}/>
+                                        <input id="nzbget_use_https" type="checkbox" class="enabler" name="nzbget_use_https" ${('', 'checked="checked"')[bool(sickbeard.NZBGET_USE_HTTPS)]}/>
                                         <p><b>note:</b> enable Secure control in NZBGet and set the correct Secure Port here</p>
                                     </span>
                                 </label>
@@ -567,7 +567,7 @@
                                             </span>
                                             <span id="label_warning_qbittorrent" style="display:none"><p>(blank spaces are not allowed)</p>
                                                 <div class="clear-left"><p>note: for QBitTorrent 3.3.1 and up</p></div>
-                                            </span>                                            
+                                            </span>
                                         </span>
                                     </label>
                                 </div>
@@ -582,7 +582,7 @@
                                             </span>
                                             <span id="label_anime_warning_qbittorrent" style="display:none"><p>(blank spaces are not allowed)</p>
                                                 <div class="clear-left"><p>note: for QBitTorrent 3.3.1 and up </p></div>
-                                            </span>          
+                                            </span>
                                         </span>
                                     </label>
                                 </div>

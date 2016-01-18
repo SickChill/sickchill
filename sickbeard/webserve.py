@@ -365,11 +365,11 @@ class WebRoot(WebHandler):
         def titler(x):
             return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
 
-        myDB = db.DBConnection(row_type='dict')
+        main_db_con = db.DBConnection(row_type='dict')
         shows = sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))
         episodes = {}
 
-        results = myDB.select(
+        results = main_db_con.select(
             'SELECT episode, season, showid '
             'FROM tv_episodes '
             'ORDER BY season ASC, episode ASC'
@@ -560,12 +560,12 @@ class CalendarHandler(BaseHandler):
         future_date = (datetime.date.today() + datetime.timedelta(weeks=52)).toordinal()
 
         # Get all the shows that are not paused and are currently on air (from kjoconnor Fork)
-        myDB = db.DBConnection()
-        calendar_shows = myDB.select(
+        main_db_con = db.DBConnection()
+        calendar_shows = main_db_con.select(
             "SELECT show_name, indexer_id, network, airs, runtime FROM tv_shows WHERE ( status = 'Continuing' OR status = 'Returning Series' ) AND paused != '1'")
         for show in calendar_shows:
             # Get all episodes of this show airing between today and next month
-            episode_list = myDB.select(
+            episode_list = main_db_con.select(
                 "SELECT indexerid, name, season, episode, description, airdate FROM tv_episodes WHERE airdate >= ? AND airdate < ? AND showid = ?",
                 (past_date, future_date, int(show["indexer_id"])))
 
@@ -706,7 +706,7 @@ class Home(WebRoot):
 
     @staticmethod
     def show_statistics():
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
         today = str(datetime.date.today().toordinal())
 
         status_quality = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST]) + ')'
@@ -725,7 +725,7 @@ class Home(WebRoot):
         sql_statement += ' (SELECT SUM(file_size) FROM tv_episodes WHERE showid=tv_eps.showid) AS show_size'
         sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
-        sql_result = myDB.select(sql_statement)
+        sql_result = main_db_con.select(sql_statement)
 
         show_stat = {}
         max_download_count = 1000
@@ -1020,8 +1020,8 @@ class Home(WebRoot):
     @staticmethod
     def loadShowNotifyLists():
 
-        myDB = db.DBConnection()
-        rows = myDB.select("SELECT show_id, show_name, notify_list FROM tv_shows ORDER BY show_name ASC")
+        main_db_con = db.DBConnection()
+        rows = main_db_con.select("SELECT show_id, show_name, notify_list FROM tv_shows ORDER BY show_name ASC")
 
         data = {}
         size = 0
@@ -1048,10 +1048,10 @@ class Home(WebRoot):
     def saveShowNotifyList(show=None, emails=None, prowlAPIs=None):
 
         entries = {'emails': '', 'prowlAPIs': ''}
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
 
         # Get current data
-        for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_id = ?", [show]):
+        for subs in main_db_con.select("SELECT notify_list FROM tv_shows WHERE show_id = ?", [show]):
             if subs['notify_list'] and len(subs['notify_list']) > 0:
                 # First, handle legacy format (emails only)
                 if not subs['notify_list'][0] == '{':
@@ -1061,12 +1061,12 @@ class Home(WebRoot):
 
         if emails is not None:
             entries['emails'] = emails
-            if not myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
+            if not main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
                 return 'ERROR'
 
         if prowlAPIs is not None:
             entries['prowlAPIs'] = prowlAPIs
-            if not myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
+            if not main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
                 return 'ERROR'
 
         return 'OK'
@@ -1224,15 +1224,15 @@ class Home(WebRoot):
         if showObj is None:
             return self._genericMessage("Error", "Show not in show list")
 
-        myDB = db.DBConnection()
-        seasonResults = myDB.select(
+        main_db_con = db.DBConnection()
+        seasonResults = main_db_con.select(
             "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC",
             [showObj.indexerid]
         )
 
         min_season = 0 if sickbeard.DISPLAY_SHOW_SPECIALS else 1
 
-        sqlResults = myDB.select(
+        sqlResults = main_db_con.select(
             "SELECT * FROM tv_episodes WHERE showid = ? and season >= ? ORDER BY season DESC, episode DESC",
             [showObj.indexerid, min_season]
         )
@@ -1360,8 +1360,8 @@ class Home(WebRoot):
 
     @staticmethod
     def plotDetails(show, season, episode):
-        myDB = db.DBConnection()
-        result = myDB.selectOne(
+        main_db_con = db.DBConnection()
+        result = main_db_con.selectOne(
             "SELECT description FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
             (int(show), int(season), int(episode)))
         return result['description'] if result else 'Episode not found.'
@@ -1816,8 +1816,8 @@ class Home(WebRoot):
                     notifiers.trakt_notifier.update_watchlist(showObj, data_episode=data, update=upd)
 
             if len(sql_l) > 0:
-                myDB = db.DBConnection()
-                myDB.mass_action(sql_l)
+                main_db_con = db.DBConnection()
+                main_db_con.mass_action(sql_l)
 
         if int(status) == WANTED and not showObj.paused:
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br>"
@@ -1919,19 +1919,19 @@ class Home(WebRoot):
         if eps is None:
             return self.redirect("/home/displayShow?show=" + show)
 
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
         for curEp in eps.split('|'):
 
             epInfo = curEp.split('x')
 
             # this is probably the worst possible way to deal with double eps but I've kinda painted myself into a corner here with this stupid database
-            ep_result = myDB.select(
+            ep_result = main_db_con.select(
                 "SELECT location FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND 5=5",
                 [show, epInfo[0], epInfo[1]])
             if not ep_result:
                 logger.log(u"Unable to find an episode for " + curEp + ", skipping", logger.WARNING)
                 continue
-            related_eps_result = myDB.select("SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?",
+            related_eps_result = main_db_con.select("SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?",
                                              [ep_result[0]["location"], epInfo[1]])
 
             root_ep_obj = show_obj.getEpisode(epInfo[0], epInfo[1])
@@ -2371,7 +2371,7 @@ class HomeAddShows(Home):
 
         dir_list = []
 
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
         for root_dir in root_dirs:
             try:
                 file_list = ek(os.listdir, root_dir)
@@ -2395,7 +2395,7 @@ class HomeAddShows(Home):
                 }
 
                 # see if the folder is in KODI already
-                dirResults = myDB.select("SELECT indexer_id FROM tv_shows WHERE location = ? LIMIT 1", [cur_path])
+                dirResults = main_db_con.select("SELECT indexer_id FROM tv_shows WHERE location = ? LIMIT 1", [cur_path])
 
                 if dirResults:
                     cur_dir['added_already'] = True
@@ -2899,8 +2899,8 @@ class Manage(Home, WebRoot):
         if status_list[0] == SNATCHED:
             status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
 
-        myDB = db.DBConnection()
-        cur_show_results = myDB.select(
+        main_db_con = db.DBConnection()
+        cur_show_results = main_db_con.select(
             "SELECT season, episode, name FROM tv_episodes WHERE showid = ? AND season != 0 AND status IN (" + ','.join(
                 ['?'] * len(status_list)) + ")", [int(indexer_id)] + status_list)
 
@@ -2934,8 +2934,8 @@ class Manage(Home, WebRoot):
                 ep_counts=None, sorted_show_ids=None,
                 controller="manage", action="episodeStatuses")
 
-        myDB = db.DBConnection()
-        status_results = myDB.select(
+        main_db_con = db.DBConnection()
+        status_results = main_db_con.select(
             "SELECT show_name, tv_shows.indexer_id AS indexer_id FROM tv_episodes, tv_shows WHERE tv_episodes.status IN (" + ','.join(
                 ['?'] * len(
                     status_list)) + ") AND season != 0 AND tv_episodes.showid = tv_shows.indexer_id ORDER BY show_name",
@@ -2981,12 +2981,12 @@ class Manage(Home, WebRoot):
 
             to_change[indexer_id].append(what)
 
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
         for cur_indexer_id in to_change:
 
             # get a list of all the eps we want to change if they just said "all"
             if 'all' in to_change[cur_indexer_id]:
-                all_eps_results = myDB.select(
+                all_eps_results = main_db_con.select(
                     "SELECT season, episode FROM tv_episodes WHERE status IN (" + ','.join(
                         ['?'] * len(status_list)) + ") AND season != 0 AND showid = ?",
                     status_list + [cur_indexer_id])
@@ -2999,8 +2999,8 @@ class Manage(Home, WebRoot):
 
     @staticmethod
     def showSubtitleMissed(indexer_id, whichSubs):
-        myDB = db.DBConnection()
-        cur_show_results = myDB.select(
+        main_db_con = db.DBConnection()
+        cur_show_results = main_db_con.select(
             "SELECT season, episode, name, subtitles FROM tv_episodes WHERE showid = ? AND season != 0 AND (status LIKE '%4' OR status LIKE '%6') and location != ''",
             [int(indexer_id)])
 
@@ -3036,8 +3036,8 @@ class Manage(Home, WebRoot):
                             show_names=None, ep_counts=None, sorted_show_ids=None,
                             controller="manage", action="subtitleMissed")
 
-        myDB = db.DBConnection()
-        status_results = myDB.select(
+        main_db_con = db.DBConnection()
+        status_results = main_db_con.select(
             "SELECT show_name, tv_shows.indexer_id as indexer_id, tv_episodes.subtitles subtitles " +
             "FROM tv_episodes, tv_shows " +
             "WHERE tv_shows.subtitles = 1 AND (tv_episodes.status LIKE '%4' OR tv_episodes.status LIKE '%6') AND tv_episodes.season != 0 " +
@@ -3086,8 +3086,8 @@ class Manage(Home, WebRoot):
         for cur_indexer_id in to_download:
             # get a list of all the eps we want to download subtitles if they just said "all"
             if 'all' in to_download[cur_indexer_id]:
-                myDB = db.DBConnection()
-                all_eps_results = myDB.select(
+                main_db_con = db.DBConnection()
+                all_eps_results = main_db_con.select(
                     "SELECT season, episode FROM tv_episodes WHERE (status LIKE '%4' OR status LIKE '%6') AND season != 0 AND showid = ? AND location != ''",
                     [cur_indexer_id])
                 to_download[cur_indexer_id] = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
@@ -3115,7 +3115,7 @@ class Manage(Home, WebRoot):
         showCats = {}
         showSQLResults = {}
 
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
         for curShow in sickbeard.showList:
 
             epCounts = {
@@ -3130,7 +3130,7 @@ class Manage(Home, WebRoot):
             }
             epCats = {}
 
-            sqlResults = myDB.select(
+            sqlResults = main_db_con.select(
                 "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
                 [curShow.indexerid])
 
@@ -3525,17 +3525,17 @@ class Manage(Home, WebRoot):
             title='Manage Torrents', header='Manage Torrents', topmenu='manage')
 
     def failedDownloads(self, limit=100, toRemove=None):
-        myDB = db.DBConnection('failed.db')
+        failed_db_con = db.DBConnection('failed.db')
 
         if limit == "0":
-            sqlResults = myDB.select("SELECT * FROM failed")
+            sqlResults = failed_db_con.select("SELECT * FROM failed")
         else:
-            sqlResults = myDB.select("SELECT * FROM failed LIMIT ?", [limit])
+            sqlResults = failed_db_con.select("SELECT * FROM failed LIMIT ?", [limit])
 
         toRemove = toRemove.split("|") if toRemove is not None else []
 
         for release in toRemove:
-            myDB.action("DELETE FROM failed WHERE failed.release = ?", [release])
+            failed_db_con.action("DELETE FROM failed WHERE failed.release = ?", [release])
 
         if toRemove:
             return self.redirect('/manage/failedDownloads/')

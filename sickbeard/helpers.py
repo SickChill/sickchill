@@ -698,9 +698,9 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
     absolute_number = None
 
     if season and episode:
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
         sql = "SELECT * FROM tv_episodes WHERE showid = ? and season = ? and episode = ?"
-        sqlResults = myDB.select(sql, [show.indexerid, season, episode])
+        sqlResults = main_db_con.select(sql, [show.indexerid, season, episode])
 
         if len(sqlResults) == 1:
             absolute_number = int(sqlResults[0]["absolute_number"])
@@ -1274,8 +1274,8 @@ def mapIndexersToShow(showObj):
     for indexer in sickbeard.indexerApi().indexers:
         mapped[indexer] = showObj.indexerid if int(indexer) == int(showObj.indexer) else 0
 
-    myDB = db.DBConnection()
-    sqlResults = myDB.select(
+    main_db_con = db.DBConnection()
+    sqlResults = main_db_con.select(
         "SELECT * FROM indexer_mapping WHERE indexer_id = ? AND indexer = ?",
         [showObj.indexerid, showObj.indexer])
 
@@ -1318,8 +1318,8 @@ def mapIndexersToShow(showObj):
                     [showObj.indexerid, showObj.indexer, int(mapped_show[0]['id']), indexer]])
 
         if len(sql_l) > 0:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
 
     return mapped
 

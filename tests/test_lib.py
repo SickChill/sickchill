@@ -255,10 +255,10 @@ def setup_test_db():
     db.sanityCheckDatabase(db.DBConnection(), mainDB.MainSanityCheck)
 
     # and for cache.db too
-    db.upgradeDatabase(db.DBConnection("cache.db"), cache_db.InitialSchema)
+    db.upgradeDatabase(db.DBConnection('cache.db'), cache_db.InitialSchema)
 
     # and for failed.db too
-    db.upgradeDatabase(db.DBConnection("failed.db"), failed_db.InitialSchema)
+    db.upgradeDatabase(db.DBConnection('failed.db'), failed_db.InitialSchema)
 
 
 def teardown_test_db():
