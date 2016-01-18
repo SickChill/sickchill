@@ -36,7 +36,7 @@ from sickbeard.name_parser.parser import NameParser, InvalidNameException, Inval
 
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
-        db.DBConnection.__init__(self, "cache.db")
+        db.DBConnection.__init__(self, 'cache.db')
 
         # Create the table if it's not already there
         try:
@@ -89,8 +89,8 @@ class TVCache(object):
 
     def _clearCache(self):
         if self.shouldClearCache():
-            myDB = self._getDB()
-            myDB.action("DELETE FROM [" + self.providerID + "] WHERE 1")
+            cache_db_con = self._getDB()
+            cache_db_con.action("DELETE FROM [" + self.providerID + "] WHERE 1")
 
     def _get_title_and_url(self, item):
         return self.provider._get_title_and_url(item)
@@ -125,8 +125,8 @@ class TVCache(object):
                         cl.append(ci)
 
                 if len(cl) > 0:
-                    myDB = self._getDB()
-                    myDB.mass_action(cl)
+                    cache_db_con = self._getDB()
+                    cache_db_con.mass_action(cl)
 
         except AuthException as e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
@@ -176,8 +176,8 @@ class TVCache(object):
         return False
 
     def _getLastUpdate(self):
-        myDB = self._getDB()
-        sqlResults = myDB.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.providerID])
+        cache_db_con = self._getDB()
+        sqlResults = cache_db_con.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.providerID])
 
         if sqlResults:
             lastTime = int(sqlResults[0]["time"])
@@ -189,8 +189,8 @@ class TVCache(object):
         return datetime.datetime.fromtimestamp(lastTime)
 
     def _getLastSearch(self):
-        myDB = self._getDB()
-        sqlResults = myDB.select("SELECT time FROM lastSearch WHERE provider = ?", [self.providerID])
+        cache_db_con = self._getDB()
+        sqlResults = cache_db_con.select("SELECT time FROM lastSearch WHERE provider = ?", [self.providerID])
 
         if sqlResults:
             lastTime = int(sqlResults[0]["time"])
@@ -205,8 +205,8 @@ class TVCache(object):
         if not toDate:
             toDate = datetime.datetime.today()
 
-        myDB = self._getDB()
-        myDB.upsert("lastUpdate",
+        cache_db_con = self._getDB()
+        cache_db_con.upsert("lastUpdate",
                     {'time': int(time.mktime(toDate.timetuple()))},
                     {'provider': self.providerID})
 
@@ -214,8 +214,8 @@ class TVCache(object):
         if not toDate:
             toDate = datetime.datetime.today()
 
-        myDB = self._getDB()
-        myDB.upsert("lastSearch",
+        cache_db_con = self._getDB()
+        cache_db_con.upsert("lastSearch",
                     {'time': int(time.mktime(toDate.timetuple()))},
                     {'provider': self.providerID})
 
@@ -293,24 +293,24 @@ class TVCache(object):
         return neededEps[episode] if episode in neededEps else []
 
     def listPropers(self, date=None):
-        myDB = self._getDB()
+        cache_db_con = self._getDB()
         sql = "SELECT * FROM [" + self.providerID + "] WHERE name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
 
         if date is not None:
             sql += " AND time >= " + str(int(time.mktime(date.timetuple())))
 
-        propers_results = myDB.select(sql)
+        propers_results = cache_db_con.select(sql)
         return [x for x in propers_results if x['indexerid']]
 
     def findNeededEpisodes(self, episode, manualSearch=False, downCurQuality=False):
         neededEps = {}
         cl = []
 
-        myDB = self._getDB()
+        cache_db_con = self._getDB()
         if not episode:
-            sqlResults = myDB.select("SELECT * FROM [" + self.providerID + "]")
+            sqlResults = cache_db_con.select("SELECT * FROM [" + self.providerID + "]")
         elif type(episode) != list:
-            sqlResults = myDB.select(
+            sqlResults = cache_db_con.select(
                 "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?",
                 [episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"])
         else:
@@ -320,7 +320,7 @@ class TVCache(object):
                         [str(x) for x in epObj.wantedQuality]) + ")",
                     [epObj.show.indexerid, epObj.season, "%|" + str(epObj.episode) + "|%"]])
 
-            sqlResults = myDB.mass_action(cl, fetchall=True)
+            sqlResults = cache_db_con.mass_action(cl, fetchall=True)
             sqlResults = list(itertools.chain(*sqlResults))
 
         # for each cache entry

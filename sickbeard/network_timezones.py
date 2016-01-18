@@ -56,9 +56,9 @@ def update_network_dict():
     except (IOError, OSError):
         pass
 
-    my_db = db.DBConnection('cache.db')
+    cache_db_con = db.DBConnection('cache.db')
 
-    network_list = dict(my_db.select('SELECT * FROM network_timezones;'))
+    network_list = dict(cache_db_con.select('SELECT * FROM network_timezones;'))
 
     queries = []
     for network, timezone in d.iteritems():
@@ -76,7 +76,7 @@ def update_network_dict():
         queries.append(['DELETE FROM network_timezones WHERE network_name IN (%s);' % ','.join(['?'] * len(purged)), purged])
 
     if queries:
-        my_db.mass_action(queries)
+        cache_db_con.mass_action(queries)
         load_network_dict()
 
 
@@ -86,11 +86,11 @@ def load_network_dict():
     Load network timezones from db into dict network_dict (global dict)
     """
     try:
-        my_db = db.DBConnection('cache.db')
-        cur_network_list = my_db.select('SELECT * FROM network_timezones;')
+        cache_db_con = db.DBConnection('cache.db')
+        cur_network_list = cache_db_con.select('SELECT * FROM network_timezones;')
         if not cur_network_list:
             update_network_dict()
-            cur_network_list = my_db.select('SELECT * FROM network_timezones;')
+            cur_network_list = cache_db_con.select('SELECT * FROM network_timezones;')
         d = dict(cur_network_list)
     except Exception:
         d = {}
