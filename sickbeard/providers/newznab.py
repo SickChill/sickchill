@@ -296,8 +296,8 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
                 with BS4Parser(data, 'html5lib') as html:
                     if not self._checkAuthFromData(html):
-                        data.decompose()
                         return results
+
                     try:
                         torznab = 'xmlns:torznab' in html.rss.attrs
                     except AttributeError:
