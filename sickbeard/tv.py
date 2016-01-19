@@ -241,14 +241,14 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         if self.is_anime and absolute_number and not season and not episode:
             main_db_con = db.DBConnection()
             sql = "SELECT season, episode FROM tv_episodes WHERE showid = ? AND absolute_number = ? AND season != 0"
-            sqlResults = main_db_con.select(sql, [self.indexerid, absolute_number])
+            sql_results = main_db_con.select(sql, [self.indexerid, absolute_number])
 
-            if len(sqlResults) == 1:
-                episode = int(sqlResults[0]["episode"])
-                season = int(sqlResults[0]["season"])
+            if len(sql_results) == 1:
+                episode = int(sql_results[0]["episode"])
+                season = int(sql_results[0]["season"])
                 logger.log(
                     "Found episode by absolute_number %s which is S%02dE%02d" % (absolute_number, season or 0, episode or 0), logger.DEBUG)
-            elif len(sqlResults) > 1:
+            elif len(sql_results) > 1:
                 logger.log(u"Multiple entries for absolute number: " + str(
                     absolute_number) + " in show: " + self.name + " found ", logger.ERROR)
                 return None
@@ -354,9 +354,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         logger.log(str(self.indexerid) + u": Writing NFOs for all episodes", logger.DEBUG)
 
         main_db_con = db.DBConnection()
-        sqlResults = main_db_con.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
+        sql_results = main_db_con.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
 
-        for epResult in sqlResults:
+        for epResult in sql_results:
             logger.log(str(self.indexerid) + u": Retrieving/creating episode S%02dE%02d" % (epResult["season"] or 0, epResult["episode"] or 0), logger.DEBUG)
             curEp = self.getEpisode(epResult["season"], epResult["episode"])
             if not curEp:
@@ -458,7 +458,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         try:
             main_db_con = db.DBConnection()
             sql = "SELECT season, episode, showid, show_name FROM tv_episodes JOIN tv_shows WHERE showid = indexer_id and showid = ?"
-            sqlResults = main_db_con.select(sql, [self.indexerid])
+            sql_results = main_db_con.select(sql, [self.indexerid])
         except Exception as error:
             logger.log(u"Could not load episodes from the DB. Error: %s" % error, logger.ERROR)
             return scannedEps
@@ -479,7 +479,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         cachedShow = t[self.indexerid]
         cachedSeasons = {}
 
-        for curResult in sqlResults:
+        for curResult in sql_results:
 
             curSeason = int(curResult["season"])
             curEpisode = int(curResult["episode"])
@@ -767,76 +767,76 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         logger.log(str(self.indexerid) + u": Loading show info from database", logger.DEBUG)
 
         main_db_con = db.DBConnection()
-        sqlResults = main_db_con.select("SELECT * FROM tv_shows WHERE indexer_id = ?", [self.indexerid])
+        sql_results = main_db_con.select("SELECT * FROM tv_shows WHERE indexer_id = ?", [self.indexerid])
 
-        if len(sqlResults) > 1:
+        if len(sql_results) > 1:
             raise MultipleShowsInDatabaseException()
-        elif len(sqlResults) == 0:
+        elif len(sql_results) == 0:
             logger.log(str(self.indexerid) + ": Unable to find the show in the database")
             return
         else:
-            self.indexer = int(sqlResults[0]["indexer"] or 0)
+            self.indexer = int(sql_results[0]["indexer"] or 0)
 
             if not self.name:
-                self.name = sqlResults[0]["show_name"]
+                self.name = sql_results[0]["show_name"]
             if not self.network:
-                self.network = sqlResults[0]["network"]
+                self.network = sql_results[0]["network"]
             if not self.genre:
-                self.genre = sqlResults[0]["genre"]
+                self.genre = sql_results[0]["genre"]
             if not self.classification:
-                self.classification = sqlResults[0]["classification"]
+                self.classification = sql_results[0]["classification"]
 
-            self.runtime = sqlResults[0]["runtime"]
+            self.runtime = sql_results[0]["runtime"]
 
-            self.status = sqlResults[0]["status"]
+            self.status = sql_results[0]["status"]
             if self.status is None:
                 self.status = "Unknown"
 
-            self.airs = sqlResults[0]["airs"]
+            self.airs = sql_results[0]["airs"]
             if self.airs is None:
                 self.airs = ""
 
-            self.startyear = int(sqlResults[0]["startyear"] or 0)
-            self.air_by_date = int(sqlResults[0]["air_by_date"] or 0)
-            self.anime = int(sqlResults[0]["anime"] or 0)
-            self.sports = int(sqlResults[0]["sports"] or 0)
-            self.scene = int(sqlResults[0]["scene"] or 0)
-            self.subtitles = int(sqlResults[0]["subtitles"] or 0)
-            self.dvdorder = int(sqlResults[0]["dvdorder"] or 0)
-            self.quality = int(sqlResults[0]["quality"] or UNKNOWN)
-            self.flatten_folders = int(sqlResults[0]["flatten_folders"] or 0)
-            self.paused = int(sqlResults[0]["paused"] or 0)
+            self.startyear = int(sql_results[0]["startyear"] or 0)
+            self.air_by_date = int(sql_results[0]["air_by_date"] or 0)
+            self.anime = int(sql_results[0]["anime"] or 0)
+            self.sports = int(sql_results[0]["sports"] or 0)
+            self.scene = int(sql_results[0]["scene"] or 0)
+            self.subtitles = int(sql_results[0]["subtitles"] or 0)
+            self.dvdorder = int(sql_results[0]["dvdorder"] or 0)
+            self.quality = int(sql_results[0]["quality"] or UNKNOWN)
+            self.flatten_folders = int(sql_results[0]["flatten_folders"] or 0)
+            self.paused = int(sql_results[0]["paused"] or 0)
 
             try:
-                self.location = sqlResults[0]["location"]
+                self.location = sql_results[0]["location"]
             except Exception:
-                dirty_setter("_location")(self, sqlResults[0]["location"])
+                dirty_setter("_location")(self, sql_results[0]["location"])
 
             if not self.lang:
-                self.lang = sqlResults[0]["lang"]
+                self.lang = sql_results[0]["lang"]
 
-            self.last_update_indexer = sqlResults[0]["last_update_indexer"]
+            self.last_update_indexer = sql_results[0]["last_update_indexer"]
 
-            self.rls_ignore_words = sqlResults[0]["rls_ignore_words"]
-            self.rls_require_words = sqlResults[0]["rls_require_words"]
+            self.rls_ignore_words = sql_results[0]["rls_ignore_words"]
+            self.rls_require_words = sql_results[0]["rls_require_words"]
 
-            self.default_ep_status = int(sqlResults[0]["default_ep_status"] or SKIPPED)
+            self.default_ep_status = int(sql_results[0]["default_ep_status"] or SKIPPED)
 
             if not self.imdbid:
-                self.imdbid = sqlResults[0]["imdb_id"]
+                self.imdbid = sql_results[0]["imdb_id"]
 
             if self.is_anime:
                 self.release_groups = BlackAndWhiteList(self.indexerid)
 
         # Get IMDb_info from database
         main_db_con = db.DBConnection()
-        sqlResults = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
+        sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
 
-        if len(sqlResults) == 0:
+        if len(sql_results) == 0:
             logger.log(str(self.indexerid) + ": Unable to find IMDb show info in the database")
             return
         else:
-            self.imdb_info = dict(zip(sqlResults[0].keys(), sqlResults[0]))
+            self.imdb_info = dict(zip(sql_results[0].keys(), sql_results[0]))
 
         self.dirty = False
         return True
@@ -977,16 +977,16 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         curDate = datetime.date.today().toordinal()
         if not self.nextaired or self.nextaired and curDate > self.nextaired:
             main_db_con = db.DBConnection()
-            sqlResults = main_db_con.select(
+            sql_results = main_db_con.select(
                 "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status IN (?,?) ORDER BY airdate ASC LIMIT 1",
                 [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED])
 
-            if sqlResults is None or len(sqlResults) == 0:
+            if sql_results is None or len(sql_results) == 0:
                 logger.log(str(self.indexerid) + u": No episode found... need to implement a show status", logger.DEBUG)
                 self.nextaired = ""
             else:
-                logger.log(u"%s: Found episode S%02dE%02d" % (self.indexerid, sqlResults[0]["season"] or 0, sqlResults[0]["episode"] or 0), logger.DEBUG)
-                self.nextaired = sqlResults[0]['airdate']
+                logger.log(u"%s: Found episode S%02dE%02d" % (self.indexerid, sql_results[0]["season"] or 0, sql_results[0]["episode"] or 0), logger.DEBUG)
+                self.nextaired = sql_results[0]['airdate']
 
         return self.nextaired
 
@@ -1070,10 +1070,10 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         logger.log(str(self.indexerid) + u": Loading all episodes with a location from the database", logger.DEBUG)
 
         main_db_con = db.DBConnection()
-        sqlResults = main_db_con.select("SELECT season, episode, location FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
+        sql_results = main_db_con.select("SELECT season, episode, location FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
 
         sql_l = []
-        for ep in sqlResults:
+        for ep in sql_results:
             curLoc = ek(os.path.normpath, ep["location"])
             season = int(ep["season"])
             episode = int(ep["episode"])
@@ -1233,15 +1233,15 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             return False
 
         main_db_con = db.DBConnection()
-        sqlResults = main_db_con.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+        sql_results = main_db_con.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
                                  [self.indexerid, season, episode])
 
-        if not sqlResults or not len(sqlResults):
+        if not sql_results or not len(sql_results):
             logger.log(u"Unable to find a matching episode in database, ignoring found result for %s S%02dE%02d with quality %s" %
                        (self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.DEBUG)
             return False
 
-        epStatus = int(sqlResults[0]["status"])
+        epStatus = int(sql_results[0]["status"])
         epStatus_text = statusStrings[epStatus]
 
         # if we know we don't want it then just say no
@@ -1480,9 +1480,9 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
     def specifyEpisode(self, season, episode):
 
-        sqlResult = self.loadFromDB(season, episode)
+        sql_results = self.loadFromDB(season, episode)
 
-        if not sqlResult:
+        if not sql_results:
             # only load from NFO if we didn't load from DB
             if ek(os.path.isfile, self.location):
                 try:
@@ -1505,49 +1505,49 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         # logger.log(u"%s: Loading episode details for %s S%02dE%02d from DB" % (self.show.indexerid, self.show.name, season or 0, episode or 0), logger.DEBUG)
 
         main_db_con = db.DBConnection()
-        sqlResults = main_db_con.select("SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+        sql_results = main_db_con.select("SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
                                  [self.show.indexerid, season, episode])
 
-        if len(sqlResults) > 1:
+        if len(sql_results) > 1:
             raise MultipleEpisodesInDatabaseException("Your DB has two records for the same show somehow.")
-        elif len(sqlResults) == 0:
+        elif len(sql_results) == 0:
             logger.log(u"%s: Episode S%02dE%02d not found in the database" % (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
             return False
         else:
-            # NAMEIT logger.log(u"AAAAA from" + str(self.season)+"x"+str(self.episode) + " -" + self.name + " to " + str(sqlResults[0]["name"]))
-            if sqlResults[0]["name"]:
-                self.name = sqlResults[0]["name"]
+            # NAMEIT logger.log(u"AAAAA from" + str(self.season)+"x"+str(self.episode) + " -" + self.name + " to " + str(sql_results[0]["name"]))
+            if sql_results[0]["name"]:
+                self.name = sql_results[0]["name"]
 
             self.season = season
             self.episode = episode
-            self.absolute_number = sqlResults[0]["absolute_number"]
-            self.description = sqlResults[0]["description"]
+            self.absolute_number = sql_results[0]["absolute_number"]
+            self.description = sql_results[0]["description"]
             if not self.description:
                 self.description = ""
-            if sqlResults[0]["subtitles"] and sqlResults[0]["subtitles"]:
-                self.subtitles = sqlResults[0]["subtitles"].split(",")
-            self.subtitles_searchcount = sqlResults[0]["subtitles_searchcount"]
-            self.subtitles_lastsearch = sqlResults[0]["subtitles_lastsearch"]
-            self.airdate = datetime.date.fromordinal(int(sqlResults[0]["airdate"]))
-            # logger.log(u"1 Status changes from " + str(self.status) + " to " + str(sqlResults[0]["status"]), logger.DEBUG)
-            self.status = int(sqlResults[0]["status"] or -1)
+            if sql_results[0]["subtitles"] and sql_results[0]["subtitles"]:
+                self.subtitles = sql_results[0]["subtitles"].split(",")
+            self.subtitles_searchcount = sql_results[0]["subtitles_searchcount"]
+            self.subtitles_lastsearch = sql_results[0]["subtitles_lastsearch"]
+            self.airdate = datetime.date.fromordinal(int(sql_results[0]["airdate"]))
+            # logger.log(u"1 Status changes from " + str(self.status) + " to " + str(sql_results[0]["status"]), logger.DEBUG)
+            self.status = int(sql_results[0]["status"] or -1)
 
             # don't overwrite my location
-            if sqlResults[0]["location"] and sqlResults[0]["location"]:
-                self.location = ek(os.path.normpath, sqlResults[0]["location"])
-            if sqlResults[0]["file_size"]:
-                self.file_size = int(sqlResults[0]["file_size"])
+            if sql_results[0]["location"] and sql_results[0]["location"]:
+                self.location = ek(os.path.normpath, sql_results[0]["location"])
+            if sql_results[0]["file_size"]:
+                self.file_size = int(sql_results[0]["file_size"])
             else:
                 self.file_size = 0
 
-            self.indexerid = int(sqlResults[0]["indexerid"])
-            self.indexer = int(sqlResults[0]["indexer"])
+            self.indexerid = int(sql_results[0]["indexerid"])
+            self.indexer = int(sql_results[0]["indexer"])
 
             sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
-            self.scene_season = try_int(sqlResults[0]["scene_season"], 0)
-            self.scene_episode = try_int(sqlResults[0]["scene_episode"], 0)
-            self.scene_absolute_number = try_int(sqlResults[0]["scene_absolute_number"], 0)
+            self.scene_season = try_int(sql_results[0]["scene_season"], 0)
+            self.scene_episode = try_int(sql_results[0]["scene_episode"], 0)
+            self.scene_absolute_number = try_int(sql_results[0]["scene_absolute_number"], 0)
 
             if self.scene_absolute_number == 0:
                 self.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(
@@ -1563,17 +1563,17 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                     self.season, self.episode
                 )
 
-            if sqlResults[0]["release_name"] is not None:
-                self.release_name = sqlResults[0]["release_name"]
+            if sql_results[0]["release_name"] is not None:
+                self.release_name = sql_results[0]["release_name"]
 
-            if sqlResults[0]["is_proper"]:
-                self.is_proper = int(sqlResults[0]["is_proper"])
+            if sql_results[0]["is_proper"]:
+                self.is_proper = int(sql_results[0]["is_proper"])
 
-            if sqlResults[0]["version"]:
-                self.version = int(sqlResults[0]["version"])
+            if sql_results[0]["version"]:
+                self.version = int(sql_results[0]["version"])
 
-            if sqlResults[0]["release_group"] is not None:
-                self.release_group = sqlResults[0]["release_group"]
+            if sql_results[0]["release_group"] is not None:
+                self.release_group = sql_results[0]["release_group"]
 
             self.dirty = False
             return True

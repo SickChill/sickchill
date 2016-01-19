@@ -92,11 +92,11 @@ class BlackAndWhiteList(object):
         :return: keywords in list
         """
         main_db_con = db.DBConnection()
-        sqlResults = main_db_con.select('SELECT keyword FROM [' + table + '] WHERE show_id = ?', [self.show_id])
-        if not sqlResults or not len(sqlResults):
+        sql_results = main_db_con.select('SELECT keyword FROM [' + table + '] WHERE show_id = ?', [self.show_id])
+        if not sql_results or not len(sql_results):
             return []
         groups = []
-        for result in sqlResults:
+        for result in sql_results:
             groups.append(result["keyword"])
 
         logger.log(u'BWL: ' + str(self.show_id) + ' loaded keywords from ' + table + ': ' + str(groups), logger.DEBUG)

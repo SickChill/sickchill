@@ -121,14 +121,14 @@ class BacklogSearcher(object):
         logger.log(u"Retrieving the last check time from the DB", logger.DEBUG)
 
         main_db_con = db.DBConnection()
-        sqlResults = main_db_con.select("SELECT last_backlog FROM info")
+        sql_results = main_db_con.select("SELECT last_backlog FROM info")
 
-        if len(sqlResults) == 0:
+        if len(sql_results) == 0:
             lastBacklog = 1
-        elif sqlResults[0]["last_backlog"] is None or sqlResults[0]["last_backlog"] == "":
+        elif sql_results[0]["last_backlog"] is None or sql_results[0]["last_backlog"] == "":
             lastBacklog = 1
         else:
-            lastBacklog = int(sqlResults[0]["last_backlog"])
+            lastBacklog = int(sql_results[0]["last_backlog"])
             if lastBacklog > datetime.date.today().toordinal():
                 lastBacklog = 1
 
@@ -152,8 +152,8 @@ class BacklogSearcher(object):
         )
 
         # check through the list of statuses to see if we want any
-        for result in sql_results:
-            cur_status, cur_quality = common.Quality.splitCompositeStatus(int(result["status"] or -1))
+        for sql_result in sql_results:
+            cur_status, cur_quality = common.Quality.splitCompositeStatus(int(sql_result["status"] or -1))
 
             if cur_status not in {common.WANTED, common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER}:
                 continue
@@ -165,7 +165,7 @@ class BacklogSearcher(object):
                 elif cur_quality in allowed_qualities:
                     continue
 
-            ep_obj = show.getEpisode(result["season"], result["episode"])
+            ep_obj = show.getEpisode(sql_result["season"], sql_result["episode"])
 
             if ep_obj.season not in wanted:
                 wanted[ep_obj.season] = [ep_obj]
@@ -179,9 +179,9 @@ class BacklogSearcher(object):
         logger.log(u"Setting the last backlog in the DB to " + str(when), logger.DEBUG)
 
         main_db_con = db.DBConnection()
-        sqlResults = main_db_con.select("SELECT last_backlog FROM info")
+        sql_results = main_db_con.select("SELECT last_backlog FROM info")
 
-        if len(sqlResults) == 0:
+        if len(sql_results) == 0:
             main_db_con.action("INSERT INTO info (last_backlog, last_indexer) VALUES (?,?)", [str(when), 0])
         else:
             main_db_con.action("UPDATE info SET last_backlog=" + str(when))
