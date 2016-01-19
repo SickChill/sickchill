@@ -302,3 +302,24 @@ def try_int(candidate, default_value=0):
         return int(candidate)
     except (ValueError, TypeError):
         return default_value
+
+
+def episode_num(season=None, episode=None, **kwargs):
+    """
+    Convert season and episode into string
+
+    :param season: Season number
+    :param episode: Episode Number
+    :keyword numbering: Absolute for absolute numbering
+    :returns: a string in s01e01 format or absolute numbering
+    """
+
+    numbering = kwargs.pop('numbering', 'standard')
+
+    if numbering == 'standard':
+        if season is not None and episode:
+            return 'S{0:0>2}E{1:02}'.format(season, episode)
+    elif numbering == 'absolute':
+        if not (season and episode) and (season or episode):
+            return '{0:0>3}'.format(season or episode)
+

@@ -34,7 +34,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 import sickbeard
 from sickrage.helper.common import http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size
-from sickrage.helper.common import remove_extension, replace_extension, sanitize_filename, try_int, convert_size
+from sickrage.helper.common import remove_extension, replace_extension, sanitize_filename, try_int, convert_size, episode_num
 
 
 class CommonTests(unittest.TestCase):
@@ -444,6 +444,31 @@ class CommonTests(unittest.TestCase):
         self.assertEqual(convert_size('1 B', units=oops), None)
         self.assertEqual(convert_size('1 Mb', units=oops), None)
         self.assertEqual(convert_size('1 MB', units=oops), None)
+        
+    def test_episode_num(self):
+        # Standard numbering
+        self.assertEqual(episode_num(0, 1), 'S00E01')  # Seasons start at 0 for specials
+        self.assertEqual(episode_num(1, 1), 'S01E01')
+
+        # Absolute numbering
+        self.assertEqual(episode_num(1, numbering='absolute'), '001')
+        self.assertEqual(episode_num(0, 1, numbering='absolute'), '001')
+        self.assertEqual(episode_num(1, 0, numbering='absolute'), '001')
+
+        # Must have both season and episode for standard numbering
+        self.assertEqual(episode_num(0), None)
+        self.assertEqual(episode_num(1), None)
+
+        # Episode numbering starts at 1
+        self.assertEqual(episode_num(0, 0), None)
+        self.assertEqual(episode_num(1, 0), None)
+
+        # Absolute numbering starts at 1
+        self.assertEqual(episode_num(0, 0, numbering='absolute'), None)
+
+        # Absolute numbering can't have both season and episode
+        self.assertEqual(episode_num(1, 1, numbering='absolute'), None)
+
 
 if __name__ == '__main__':
     print('=====> Testing %s' % __file__)
