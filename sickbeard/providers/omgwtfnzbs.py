@@ -18,11 +18,9 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
-from datetime import datetime
 
 import sickbeard
 from sickbeard import tvcache
-from sickbeard import classes
 from sickbeard import logger
 from sickrage.helper.common import try_int
 from sickrage.providers.nzb.NZBProvider import NZBProvider
@@ -41,6 +39,8 @@ class OmgwtfnzbsProvider(NZBProvider):
             'rss': 'https://rss.omgwtfnzbs.org/rss-download.php',
             'api': 'https://api.omgwtfnzbs.org/json/'
         }
+
+        self.proper_strings = ['.PROPER.', '.REPACK.']
 
     def _check_auth(self):
 
@@ -120,24 +120,6 @@ class OmgwtfnzbsProvider(NZBProvider):
                         items.append(item)
 
             results += items
-
-        return results
-
-    def find_propers(self, search_date=None):
-        search_terms = ['.PROPER.', '.REPACK.']
-        results = []
-
-        for term in search_terms:
-            for item in self.search(term, age=4):
-                if 'usenetage' in item:
-                    title, url = self._get_title_and_url(item)
-                    try:
-                        result_date = datetime.fromtimestamp(int(item['usenetage']))
-                    except Exception:
-                        result_date = None
-
-                    if result_date:
-                        results.append(classes.Proper(title, url, result_date, self.show))
 
         return results
 
