@@ -102,7 +102,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                 search_params.pop('search_tvdb', None)
             else:
 
-                search_params['sorting'] = self.sorting if self.sorting else 'seeders'
+                search_params['sort'] = self.sorting if self.sorting else 'seeders'
                 search_params['mode'] = 'search'
 
                 if ep_indexer == INDEXER_TVDB and ep_indexerid:
