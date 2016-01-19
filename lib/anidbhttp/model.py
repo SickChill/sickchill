@@ -91,12 +91,14 @@ class Anime(Entity, Titled, Typed, Described):
         Typed.__init__(self)
         Described.__init__(self)
         self._type = None
+        self._tvdbid = None
         self._episodecount = None
         self._episodes = {}
         self._startdate = None
         self._enddate = None
         self._categories = []
         self._tags = []
+        self._picture = None
         self._ratings = {
                     "permanent":
                     { "count": None, "rating": None},
@@ -151,7 +153,25 @@ class Anime(Entity, Titled, Typed, Described):
         :param tag: A :class:`anidb.model.Tag`
         """
         self._tags.append(tag)
+    
+    def set_picture(self, picture):
+        """
+        Set the cover picture of this anime
 
+        :param picture: the image filename
+        """
+        self._picture = picture
+    
+    def set_tvdbid(self):
+        """
+        Tries to get the thtvdb id from the anime-list.xml
+        Requires the adba package for this functionality
+
+        No params required.
+        """
+        from adba.aniDBtvDBmaper import TvDBMap
+        self._tvdbid = TvDBMap().get_tvdb_for_anidb(self.id) if self.id else None
+        
     @property
     def episodecount(self):
         """The episodecount property"""
@@ -198,6 +218,16 @@ class Anime(Entity, Titled, Typed, Described):
     def tags(self):
         """The tags property"""
         return self._tags
+    
+    @property
+    def picture(self):
+        """The Picture property"""
+        return self._picture
+    
+    @property
+    def tvdbid(self):
+        """The tvdbid mapped property"""
+        return self._tvdbid
 
 class Episode(Entity, Titled):
     """

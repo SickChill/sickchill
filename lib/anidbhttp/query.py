@@ -156,6 +156,7 @@ class AnidbQuery(object):
         # ... anidb has just "id"
         else:
             result = model.Anime(anime.attrib["id"])
+        result.set_tvdbid()
         for elem in anime:
             # AniDB returns an element "titles" with lots of "title" subelements
             if elem.tag == "titles":
@@ -183,6 +184,8 @@ class AnidbQuery(object):
             elif elem.tag == "tags":
                 for tag in self.parse_tags(elem):
                     result.add_tag(tag)
+            elif elem.tag == "picture":
+                result.set_picture(elem.text)
         return result
     
     def parse_categorylist(self, categorylist):

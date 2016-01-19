@@ -30,48 +30,47 @@
     </select>
 </div>
 
-<% imdb_tt = [show.imdbid for show in sickbeard.showList if show.imdbid] %>
+<% current_shows = [show.indexerid for show in sickbeard.showList if show.indexerid] %>
 
 <br>
 <div id="popularShows">
     <div id="container">
-    % if not popular_shows:
+    % if not anime:
         <div class="trakt_show" style="width:100%; margin-top:20px">
-            <p class="red-text">Fetching of IMDB Data failed. Are you online?
+            <p class="red-text">Fetching of AniDB Data failed. Are you online?
             <strong>Exception:</strong>
             <p>${imdb_exception}</p>
         </div>
     % else:
-        % for cur_result in popular_shows:
-            % if cur_result['imdb_tt'] in imdb_tt:
-                <% continue %>
-            % endif
+        % for cur_result in anime:
 
-            % if 'rating' in cur_result and cur_result['rating']:
-                <% cur_rating = cur_result['rating'] %>
-                <% cur_votes = cur_result['votes'] %>
+            % if cur_result.ratings:
+                <% cur_rating = cur_result.ratings['temporary']['rating'] %>
+                <% cur_votes = cur_result.ratings['temporary']['count'] %>
             % else:
                 <% cur_rating = '0' %>
                 <% cur_votes = '0' %>
             % endif
+            
+            <% show_title = cur_result.titles['x-jat'][0].title %>
 
-            <div class="trakt_show" data-name="${cur_result['name']}" data-rating="${cur_rating}" data-votes="${cur_votes}">
+            <div class="trakt_show" data-name="${show_title}" data-rating="${cur_rating}" data-votes="${cur_votes}">
                 <div class="traktContainer">
                     <div class="trakt-image">
-                        <a class="trakt-image" href="${anon_url(cur_result['imdb_url'])}" target="_blank">
-                            <img alt="" class="trakt-image" src="${srRoot}/cache/${cur_result['image_path']}" height="273px" width="186px" />
+                        <a class="trakt-image" href="/" target="_blank">
+                            <img alt="" class="trakt-image" src="http://img7.anidb.net/pics/anime/${cur_result.picture}" height="273px" width="186px" />
                         </a>
                     </div>
 
                     <div class="show-title">
-                        ${(cur_result['name'], '<span>&nbsp;</span>')['' == cur_result['name']]}
+                        ${show_title}
                     </div>
 
                     <div class="clearfix">
                         <p>${int(float(cur_rating)*10)}% <img src="${srRoot}/images/heart.png"></p>
                         <i>${cur_votes} votes</i>
                         <div class="traktShowTitleIcons">
-                            <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_result['imdb_tt']}&amp;show_name=${cur_result['name'] | u}&amp;indexer=IMDB" class="btn btn-xs" data-no-redirect>Add Show</a>
+                            <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_result.tvdbid}&amp;show_name=${show_title | u}&amp;indexer=TVDB" class="btn btn-xs" data-no-redirect>Add Show</a>
                         </div>
                     </div>
                 </div>

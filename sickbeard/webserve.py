@@ -2626,13 +2626,14 @@ class HomeAddShows(Home):
         e = None
 
         try:
-            hot_anime = anidbquery.query(QUERY_HOT)
+            all_anime = anidbquery.query(QUERY_HOT)
+            mapped_anime = [ anime for anime in all_anime if anime.tvdbid ]
         except Exception as e:
-            # print traceback.format_exc()
-            hot_anime = None
+            # print traceback.fox1rmat_exc()
+            mapped_anime = None
 
         return t.render(title="Anidb Hot Anime", header="Anidb Hot Anime",
-                        hot_anime=hot_anime, imdb_exception=e,
+                        anime=mapped_anime, imdb_exception=e,
                         topmenu="home",
                         controller="addShows", action="hotAnime")
     
