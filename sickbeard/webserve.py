@@ -49,6 +49,8 @@ from sickbeard.webapi import function_mapper
 
 from sickbeard.imdbPopular import imdb_popular
 from sickbeard.imdbWatchlist import imdb_watchlist
+from lib.anidbhttp import anidbquery
+from lib.anidbhttp.query import QUERY_HOT
 
 from dateutil import tz
 from unrar2 import RarFile
@@ -2615,6 +2617,24 @@ class HomeAddShows(Home):
                         popular_shows=popular_shows, imdb_exception=e,
                         topmenu="home",
                         controller="addShows", action="popularShows")
+        
+    def anidbHotAnime(self):
+        """
+        Fetches data from IMDB to show a list of popular shows.
+        """
+        t = PageTemplate(rh=self, filename="addShows_anidbHotAnime.mako")
+        e = None
+
+        try:
+            hot_anime = anidbquery.query(QUERY_HOT)
+        except Exception as e:
+            # print traceback.format_exc()
+            hot_anime = None
+
+        return t.render(title="Anidb Hot Anime", header="Anidb Hot Anime",
+                        hot_anime=hot_anime, imdb_exception=e,
+                        topmenu="home",
+                        controller="addShows", action="hotAnime")
     
     def imdbWatchlist(self, listid=None, wlurl=None):
         """
