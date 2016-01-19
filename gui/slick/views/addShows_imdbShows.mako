@@ -3,6 +3,12 @@
     from sickbeard.helpers import anon_url
     import sickbeard
 %>
+<%block name="scripts">
+<script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
+<script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
+</%block>
+
 <%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -11,17 +17,38 @@
 % endif
 
 <div id="tabs">
-	<ul>
-        <li><a href="#tabs-1">Manage Directories</a></li>
-        <li><a href="#tabs-2">Customize Options</a></li>
-    </ul>
-    <div id="tabs-1" class="existingtabs">
-        <%include file="/inc_rootDirs.mako"/>
-    </div>
-    <div id="tabs-2" class="existingtabs">
-        <%include file="/inc_addShowOptions.mako"/>
-    </div>
-    <br>
+
+	<fieldset class="component-group-list">
+		<div class="field-pair">
+			<label class="clearfix" for="content_configure_show_options">
+				<span class="component-title">Configure Show Options</span>
+				<span class="component-desc">
+					<input type="checkbox" class="enabler" name="configure_show_options" id="configure_show_options" />
+					<p>If you don't want to use the default show options, you can change them here!</p>
+				</span>
+			</label>
+		</div>
+		<div id="content_configure_show_options">
+			<div class="field-pair">
+
+				<label class="clearfix" for="configure_show_options">
+				<ul>
+			        <li><a href="#tabs-1">Manage Directories</a></li>
+			        <li><a href="#tabs-2">Customize Options</a></li>
+			    </ul>
+			    <div id="tabs-1" class="existingtabs">
+			        <%include file="/inc_rootDirs.mako"/>
+			        <br/>
+			    </div>
+			    <div id="tabs-2" class="existingtabs">
+			        <%include file="/inc_addShowOptions.mako"/>
+			    </div>
+			    </label>
+
+			</div>
+		</div>	<!-- /content_configure_show_options //-->
+	</fieldset>
+
 
     <span>Sort By:</span>
     <select id="showsort" class="form-control form-control-inline input-sm">
@@ -77,9 +104,6 @@
         % endif
     % else:
         % for cur_result in imdb_shows:
-            % if cur_result['imdb_tt'] in imdb_tt:
-                <% continue %>
-            % endif
 
             % if 'rating' in cur_result and cur_result['rating']:
                 <% cur_rating = cur_result['rating'] %>
@@ -89,7 +113,7 @@
                 <% cur_votes = '0' %>
             % endif
 
-            <div class="trakt_show" data-name="${cur_result['name']}" data-rating="${cur_rating}" data-votes="${cur_votes}">
+            <div class="show-row" data-callback_id="${cur_result['imdb_tt']}" data-name="${cur_result['name']}" data-rating="${cur_rating}" data-votes="${cur_votes}">
                 <div class="traktContainer">
                     <div class="trakt-image">
                         <a class="trakt-image" href="${anon_url(cur_result['imdb_url'])}" target="_blank"><img alt="" class="trakt-image" src="${srRoot}/cache/${cur_result['image_path']}" /></a>
@@ -103,7 +127,12 @@
                         <p>${int(float(cur_rating)*10)}% <img src="${srRoot}/images/heart.png"></p>
                         <i>${cur_votes} votes</i>
                         <div class="traktShowTitleIcons">
-                            <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_result['imdb_tt']}&amp;show_name=${cur_result['name'] | u}&amp;indexer=IMDB" class="btn btn-xs" data-no-redirect>Add Show</a>
+                            % if cur_result['imdb_tt'] in imdb_tt:
+                            <% indexer_id = [show.indexerid for show in sickbeard.showList if show.imdbid == cur_result['imdb_tt']][0] %>
+                            <a href="${srRoot}/home/displayShow?show=${indexer_id}" class="btn btn-xs">In List</a>
+                            % else:
+                            <a href="${srRoot}/addShows/addShowByID" class="btn btn-xs" data-indexer="IMDB" data-indexer_id="${cur_result['imdb_tt']}" data-show_name="${cur_result['name'] | u}" data-add-show>Add Show</a>
+                        	% endif
                         </div>
                     </div>
                 </div>

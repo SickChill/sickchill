@@ -798,7 +798,7 @@
 							</div>
 
 						</div>	<!-- /content_use_imdb_watchlist //-->
-						</fieldset>
+					</fieldset>
 						
 				</div>
 				</div><!-- /watchlists //-->

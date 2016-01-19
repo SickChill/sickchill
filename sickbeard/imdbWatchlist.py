@@ -77,7 +77,7 @@ class imdbWatchlist(object):
                     if rating_string:
                         rating_string = rating_string['title']
 
-                        match = re.search(r".* (.*)\/10.*\((.*)\).*", rating_string)
+                        match = re.search(r".* (.*)\/10.*\((.*).votes\).*", rating_string)
                         if match:
                             matches = match.groups()
                             show['rating'] = matches[0]
