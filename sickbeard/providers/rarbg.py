@@ -76,9 +76,9 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
         search_params = {
             'app_id': 'sickrage2',
-            'categories': 'tv',
-            'seeders': try_int(self.minseed),
-            'leechers': try_int(self.minleech),
+            'category': 'tv',
+            'min_seeders': try_int(self.minseed),
+            'min_leechers': try_int(self.minleech),
             'limit': 100,
             'format': 'json_extended',
             'ranked': try_int(self.ranked),
@@ -96,7 +96,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             if mode == 'RSS':
-                search_params['sorting'] = 'last'
+                search_params['sort'] = 'last'
                 search_params['mode'] = 'list'
                 search_params.pop('search_string', None)
                 search_params.pop('search_tvdb', None)
