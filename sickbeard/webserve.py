@@ -2638,10 +2638,13 @@ class HomeAddShows(Home):
         if wlurl:
             watchlists = [wlurl]
             watchlists_enabled = ["1"]
+            logger.log("Testing watchlist with url: [%s]" % (wlurl), logger.DEBUG)
         
         # If a watchlist has been configured, add it to the select list
         if watchlists and len(watchlists) == len(watchlists_enabled):
             # Start looping through the imdb watchlist urls
+            cache_userid = [] # Keeping a list of userids, for when users add the same watchlists multiple times. Will save some time.
+            
             for index, watchlist in enumerate(watchlists):
                 if not int(watchlists_enabled[index]):
                     continue
@@ -2652,11 +2655,14 @@ class HomeAddShows(Home):
                 if user_id_match:
                     user_id = user_id_match.group(1)
                     
-                    # Get all listid's for this user and save it in the dict
-                    # Only add the lists of there valid.
-                    add_list = imdb_watchlist.get_lists_from_user(user_id)
-                    if add_list:
-                        imdb_lists[user_id] = imdb_watchlist.get_lists_from_user(user_id)
+                    if user_id not in cache_userid:
+                        logger.log("Userid found [%s], trying to look for some list(s)" % (user_id), logger.DEBUG)
+                        cache_userid.append(user_id)
+                        # Get all listid's for this user and save it in the dict
+                        # Only add the lists of there valid.
+                        add_list = imdb_watchlist.get_lists_from_user(user_id)
+                        if add_list:
+                            imdb_lists[user_id] = imdb_watchlist.get_lists_from_user(user_id)
 
         # If whe're just testing the watchlist url from the Config watchlist page, 
         # we only need the main Watchlist, let's see if we can get that from the userid (ur54333123)
@@ -2666,14 +2672,11 @@ class HomeAddShows(Home):
                     listid = imdb_lists.get(user_id)[0]["Watchlist"]
                 else:
                     e = "Could not find watchlist for url: %s" % (wlurl)
+                    logger.log("Could not find watchlist for url: %s, Exception: %s" % (wlurl, e), logger.ERROR)
                     imdb_lists = None
             except Exception as e:
-                logger.log("Could not find watchlist for url: %s" % (wlurl), logger.ERROR)
-#                 try:
-#                     raise Exception('Could not find watchlist for url: %s' % (wlurl))
-#                 except Exception as e:
-#                     # print traceback.format_exc()
-#                     imdb_shows = None
+                logger.log("Could not find watchlist for url: %s, Exception: %s" % (wlurl, e), logger.ERROR)
+                imdb_lists = None
         
         # If a listid is known, let's try to get some shows from it.
         if listid:
