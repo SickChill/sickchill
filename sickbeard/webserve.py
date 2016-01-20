@@ -2742,7 +2742,7 @@ class HomeAddShows(Home):
     def addShowByID(self, indexerId, showName, indexer="TVDB", whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
                    qualityPreset=None, anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
                    fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
-                   scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None,defaultFlattenFolders=None,
+                   scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None, defaultFlattenFolders=None,
                    configureShowOptions=None):
 
         if indexer != "TVDB":
@@ -2794,7 +2794,7 @@ class HomeAddShows(Home):
                 anyQualities = [anyQualities]
             if not isinstance(bestQualities, list):
                 bestQualities = [bestQualities]
-            newQuality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
+            quality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
     
             location = rootDir
                 
@@ -2806,6 +2806,7 @@ class HomeAddShows(Home):
             anime=sickbeard.ANIME_DEFAULT
             scene=sickbeard.SCENE_DEFAULT
             default_status_after=sickbeard.STATUS_DEFAULT_AFTER
+            
             
             if sickbeard.ROOT_DIRS:
                 root_dirs = sickbeard.ROOT_DIRS.split('|')
@@ -2826,7 +2827,7 @@ class HomeAddShows(Home):
         helpers.chmodAsParent(show_dir)
         
         # add the show
-        sickbeard.showQueueScheduler.action.addShow(1, int(indexerId), show_dir, int(defaultStatus), newQuality,
+        sickbeard.showQueueScheduler.action.addShow(1, int(indexerId), show_dir, int(defaultStatus), quality,
                                                     flatten_folders, indexerLang, subtitles, anime,
                                                     scene, None, blacklist, whitelist, int(defaultStatusAfter))
         

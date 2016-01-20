@@ -3500,7 +3500,7 @@ var SICKRAGE = {
 		        
                 // get paramaters
 		        var rootDir = $("#rootDirs option:selected").val();
-		        var configureShowOptions = $('#configure_show_options').val();
+		        var configureShowOptions = $('#configure_show_options').prop('checked');
                 var indexer = $(this).data('indexer');
                 var indexerId = $(this).data('indexer_id');
                 var showName = $(this).data('show_name');
@@ -3510,14 +3510,14 @@ var SICKRAGE = {
                 var bestQualities = bestQualArray.join(',');
                 var defaultFlattenFolders = $('#flatten_folders').prop('checked');
                 var subtitles = $('#subtitles').prop('checked');
-                var anime = $('#anime').prop('checked'); 
+                var anime = $('#anime').prop('checked');
                 var scene = $('#scene').prop('checked');
                 var defaultStatusAfter = $('#statusSelectAfter').val();
                 
                 // If we are going to add an anime, let's by default configure it as one
-                if ( $(this).data("isanime") ) { 
+                if ( !configureShowOptions && $(this).data("isanime") ) { 
                 	anime = true;
-                	configureShowOptions = '1';
+                	configureShowOptions = true;
                 }
                 
                 $.get(url, {
