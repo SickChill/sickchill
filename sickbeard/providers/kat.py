@@ -139,7 +139,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
                         item = title, download_url, size, seeders, leechers, info_hash
                         if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+                            logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 
