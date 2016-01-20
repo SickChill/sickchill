@@ -1,8 +1,17 @@
+import re
+import os
+from sickrage.helper.encoding import ek
+import sickbeard
+from sickbeard import helpers
+import requests
+from sickbeard.helpers import anon_url
+
 __all__ = ["Anime", "Category", "Title", "Episode", "Tag"]
 
 class Entity(object):
     def __init__(self, id):
         self._id = int(id)
+        self.session = requests.Session()
 
     @property
     def id(self):
@@ -99,6 +108,8 @@ class Anime(Entity, Titled, Typed, Described):
         self._categories = []
         self._tags = []
         self._picture = None
+        self._image_path = None
+        self._url = "https://anidb.net/perl-bin/animedb.pl?show=anime&aid={0}".format(self.id)
         self._ratings = {
                     "permanent":
                     { "count": None, "rating": None},
@@ -161,6 +172,8 @@ class Anime(Entity, Titled, Typed, Described):
         :param picture: the image filename
         """
         self._picture = picture
+        self.cache_image("http://img7.anidb.net/pics/anime/{0}".format(picture))
+        self._image_path = ek(os.path.join, 'images', 'anidb', ek(os.path.basename, self._picture))
     
     def set_tvdbid(self):
         """
@@ -171,6 +184,21 @@ class Anime(Entity, Titled, Typed, Described):
         """
         from adba.aniDBtvDBmaper import TvDBMap
         self._tvdbid = TvDBMap().get_tvdb_for_anidb(self.id) if self.id else None
+        
+    def cache_image(self, image_url):
+        """
+        Store cache of image in cache dir
+        :param image_url: Source URL
+        """
+        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'anidb'))
+
+        if not ek(os.path.exists, path):
+            ek(os.makedirs, path)
+
+        full_path = ek(os.path.join, path, ek(os.path.basename, image_url))
+
+        if not ek(os.path.isfile, full_path):
+            helpers.download_file(image_url, full_path, session=self.session)
         
     @property
     def episodecount(self):
@@ -223,6 +251,16 @@ class Anime(Entity, Titled, Typed, Described):
     def picture(self):
         """The Picture property"""
         return self._picture
+    
+    @property
+    def image_path(self):
+        """The image_path property"""
+        return self._image_path
+    
+    @property
+    def url(self):
+        """The url property"""
+        return self._url
     
     @property
     def tvdbid(self):

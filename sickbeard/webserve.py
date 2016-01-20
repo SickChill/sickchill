@@ -2633,9 +2633,9 @@ class HomeAddShows(Home):
             mapped_anime = None
 
         return t.render(title="Anidb Hot Anime", header="Anidb Hot Anime",
-                        anime=mapped_anime, imdb_exception=e,
-                        topmenu="home",
-                        controller="addShows", action="hotAnime")
+                        anime=mapped_anime, imdb_exception=e, whitelist=[], 
+                        blacklist=[], groups=[], topmenu="home", enable_anime_options=True,
+                        controller="addShows", action="imdbShows")
     
     def imdbWatchlist(self, listid=None, wlurl=None):
         """
@@ -2826,7 +2826,7 @@ class HomeAddShows(Home):
         helpers.chmodAsParent(show_dir)
         
         # add the show
-        sickbeard.showQueueScheduler.action.addShow(1, indexerId, show_dir, int(defaultStatus), newQuality,
+        sickbeard.showQueueScheduler.action.addShow(1, int(indexerId), show_dir, int(defaultStatus), newQuality,
                                                     flatten_folders, indexerLang, subtitles, anime,
                                                     scene, None, blacklist, whitelist, int(defaultStatusAfter))
         

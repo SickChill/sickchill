@@ -38,6 +38,16 @@
             <p>View IMDB's list of the most popular shows, your watchlists or any custom created watchlists. The popular show list uses IMDB's MOVIEMeter algorithm to identify popular TV Series.</p>
         </div>
     </a>
+    
+    <br><br>
+    
+    <a href="${srRoot}/addShows/anidbHotAnime/" id="btnExistingShow" class="btn btn-large">
+        <div class="button"><div class="icon-addrecommendedshow"></div></div>
+        <div class="buttontext">
+            <h3>Add From AniDB Lists</h3>
+            <p>View AniDB Show lists from the latest Hot Anime list and others. Add shows directly from the AniDB list.</p>
+        </div>
+    </a>
 
     <br><br>
 

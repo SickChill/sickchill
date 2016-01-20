@@ -3510,9 +3510,15 @@ var SICKRAGE = {
                 var bestQualities = bestQualArray.join(',');
                 var defaultFlattenFolders = $('#flatten_folders').prop('checked');
                 var subtitles = $('#subtitles').prop('checked');
-                var anime = $('#anime').prop('checked');
+                var anime = $('#anime').prop('checked'); 
                 var scene = $('#scene').prop('checked');
                 var defaultStatusAfter = $('#statusSelectAfter').val();
+                
+                // If we are going to add an anime, let's by default configure it as one
+                if ( $(this).data("isanime") ) { 
+                	anime = true;
+                	configureShowOptions = '1';
+                }
                 
                 $.get(url, {
                 	rootDir: rootDir,

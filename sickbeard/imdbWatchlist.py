@@ -119,6 +119,11 @@ class imdbWatchlist(object):
             return image_url
     
     def get_lists_from_user(self, user_id):
+        """
+        Get IMDB lists using the userid. It uses the imdb homepage main watchlist page, 
+        which has information on the main Watchlist as additional custom lists.
+        :param user_id: IMDB userid
+        """
         url = "http://www.imdb.com/user/%s/watchlist"
         
         data = helpers.getURL(url % user_id, session=self.session, params={"ref_" : "wt_nv_wl_all_0"}, headers={'Referer': 'http://akas.imdb.com/'})
