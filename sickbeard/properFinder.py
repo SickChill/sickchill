@@ -168,26 +168,26 @@ class ProperFinder(object):
                     continue
 
             # check if we actually want this proper (if it's the right quality)
-            myDB = db.DBConnection()
-            sqlResults = myDB.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+            main_db_con = db.DBConnection()
+            sql_results = main_db_con.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
                                      [bestResult.indexerid, bestResult.season, bestResult.episode])
-            if not sqlResults:
+            if not sql_results:
                 continue
 
             # only keep the proper if we have already retrieved the same quality ep (don't get better/worse ones)
-            oldStatus, oldQuality = Quality.splitCompositeStatus(int(sqlResults[0]["status"]))
+            oldStatus, oldQuality = Quality.splitCompositeStatus(int(sql_results[0]["status"]))
             if oldStatus not in (DOWNLOADED, SNATCHED) or oldQuality != bestResult.quality:
                 continue
 
             # check if we actually want this proper (if it's the right release group and a higher version)
             if bestResult.show.is_anime:
-                myDB = db.DBConnection()
-                sqlResults = myDB.select(
+                main_db_con = db.DBConnection()
+                sql_results = main_db_con.select(
                     "SELECT release_group, version FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
                     [bestResult.indexerid, bestResult.season, bestResult.episode])
 
-                oldVersion = int(sqlResults[0]["version"])
-                oldRelease_group = (sqlResults[0]["release_group"])
+                oldVersion = int(sql_results[0]["version"])
+                oldRelease_group = (sql_results[0]["release_group"])
 
                 if -1 < oldVersion < bestResult.version:
                     logger.log(u"Found new anime v" + str(bestResult.version) + " to replace existing v" + str(oldVersion))
@@ -218,8 +218,8 @@ class ProperFinder(object):
             historyLimit = datetime.datetime.today() - datetime.timedelta(days=30)
 
             # make sure the episode has been downloaded before
-            myDB = db.DBConnection()
-            historyResults = myDB.select(
+            main_db_con = db.DBConnection()
+            historyResults = main_db_con.select(
                 "SELECT resource FROM history " +
                 "WHERE showid = ? AND season = ? AND episode = ? AND quality = ? AND date >= ? " +
                 "AND action IN (" + ",".join([str(x) for x in Quality.SNATCHED + Quality.DOWNLOADED]) + ")",
@@ -275,25 +275,25 @@ class ProperFinder(object):
 
         logger.log(u"Setting the last Proper search in the DB to " + str(when), logger.DEBUG)
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT last_proper_search FROM info")
+        main_db_con = db.DBConnection()
+        sql_results = main_db_con.select("SELECT last_proper_search FROM info")
 
-        if len(sqlResults) == 0:
-            myDB.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)",
+        if len(sql_results) == 0:
+            main_db_con.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)",
                         [0, 0, str(when)])
         else:
-            myDB.action("UPDATE info SET last_proper_search=" + str(when))
+            main_db_con.action("UPDATE info SET last_proper_search=" + str(when))
 
     def _get_lastProperSearch(self):
         """
         Find last propersearch from DB
         """
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT last_proper_search FROM info")
+        main_db_con = db.DBConnection()
+        sql_results = main_db_con.select("SELECT last_proper_search FROM info")
 
         try:
-            last_proper_search = datetime.date.fromordinal(int(sqlResults[0]["last_proper_search"]))
+            last_proper_search = datetime.date.fromordinal(int(sql_results[0]["last_proper_search"]))
         except Exception:
             return datetime.date.fromordinal(1)
 

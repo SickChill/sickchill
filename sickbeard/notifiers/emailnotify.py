@@ -60,7 +60,7 @@ class EmailNotifier(object):
         """
         ep_name = ss(ep_name)
 
-        if sickbeard.EMAIL_NOTIFY_ONSNATCH:
+        if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONSNATCH:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
             if len(to) == 0:
@@ -99,7 +99,7 @@ class EmailNotifier(object):
         """
         ep_name = ss(ep_name)
 
-        if sickbeard.EMAIL_NOTIFY_ONDOWNLOAD:
+        if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONDOWNLOAD:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
             if len(to) == 0:
@@ -138,7 +138,7 @@ class EmailNotifier(object):
         """
         ep_name = ss(ep_name)
 
-        if sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
             if len(to) == 0:
@@ -175,7 +175,7 @@ class EmailNotifier(object):
 
     def _generate_recipients(self, show):
         addrs = []
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
 
         # Grab the global recipients
         if sickbeard.EMAIL_LIST:
@@ -186,7 +186,7 @@ class EmailNotifier(object):
         # Grab the per-show-notification recipients
         if show is not None:
             for s in show:
-                for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (s,)):
+                for subs in main_db_con.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (s,)):
                     if subs['notify_list']:
                         if subs['notify_list'][0] == '{':
                             entries = dict(ast.literal_eval(subs['notify_list']))
@@ -215,15 +215,17 @@ class EmailNotifier(object):
         if smtpDebug:
             srv.set_debuglevel(1)
         try:
-            if (use_tls == '1' or use_tls is True) or (len(user) > 0 and len(pwd) > 0):
+            if use_tls in ('1', True) or (user and pwd):
+                logger.log(u'Sending initial EHLO command!', logger.DEBUG)
                 srv.ehlo()
-                logger.log(u'Sent initial EHLO command!', logger.DEBUG)
-            if use_tls == '1' or use_tls is True:
+            if use_tls in ('1', True):
+                logger.log(u'Sending STARTTLS command!', logger.DEBUG)
                 srv.starttls()
-                logger.log(u'Sent STARTTLS command!', logger.DEBUG)
-            if len(user) > 0 and len(pwd) > 0:
+                srv.ehlo()
+            if user and pwd:
+                logger.log(u'Sending LOGIN command!', logger.DEBUG)
                 srv.login(user, pwd)
-                logger.log(u'Sent LOGIN command!', logger.DEBUG)
+
             srv.sendmail(smtp_from, to, msg.as_string())
             srv.quit()
             return True

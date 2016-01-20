@@ -142,7 +142,8 @@ def logHelper(logMessage, logLevel=logger.INFO):
     return logMessage + u"\n"
 
 
-def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, proc_type="auto"):  # pylint: disable=too-many-arguments,too-many-branches,too-many-statements,too-many-locals
+# pylint: disable=too-many-arguments,too-many-branches,too-many-statements,too-many-locals
+def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, proc_type="auto"):
     """
     Scans through the files in dirName and processes whatever media files it finds
 
@@ -263,17 +264,17 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 else:
                     process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result)
 
-                    # Delete all file not needed and avoid deleting files if Manual PostProcessing
-                    if process_method != u"move" or not result.result or (proc_type == u"manual" and not delete_on):
-                        continue
+                # Delete all file not needed and avoid deleting files if Manual PostProcessing
+                if not(process_method == u"move" and result.result) or (proc_type == u"manual" and not delete_on):
+                    continue
 
-                # These need done regardless what part of the above `if` is executed.
-                delete_files(processPath, notwantedFiles, result)
                 delete_folder(ek(os.path.join, processPath, u'@eaDir'))
+                delete_files(processPath, notwantedFiles, result)
+
                 if all([not sickbeard.NO_DELETE or proc_type == u"manual",
                         process_method == u"move",
-                        ek(os.path.normpath, processPath) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]
-                       ):
+                        ek(os.path.normpath, processPath) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]):
+
                     if delete_folder(processPath, check_empty=True):
                         result.output += logHelper(u"Deleted folder: %s" % processPath, logger.DEBUG)
 
@@ -339,10 +340,10 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
         return False
 
     # make sure the dir isn't inside a show dir
-    myDB = db.DBConnection()
-    sqlResults = myDB.select("SELECT location FROM tv_shows")
+    main_db_con = db.DBConnection()
+    sql_results = main_db_con.select("SELECT location FROM tv_shows")
 
-    for sqlShow in sqlResults:
+    for sqlShow in sql_results:
         if dirName.lower().startswith(ek(os.path.realpath, sqlShow["location"]).lower() + os.sep) or \
                 dirName.lower() == ek(os.path.realpath, sqlShow["location"]).lower():
 
@@ -475,9 +476,9 @@ def already_postprocessed(dirName, videofile, force, result):  # pylint: disable
         return False
 
     # Avoid processing the same dir again if we use a process method <> move
-    myDB = db.DBConnection()
-    sqlResult = myDB.select("SELECT release_name FROM tv_episodes WHERE release_name in (?, ?) LIMIT 1", [dirName, videofile.rpartition('.')[0]])
-    if sqlResult:
+    main_db_con = db.DBConnection()
+    sql_result = main_db_con.select("SELECT release_name FROM tv_episodes WHERE release_name IN (?, ?) LIMIT 1", [dirName, videofile.rpartition('.')[0]])
+    if sql_result:
         # result.output += logHelper(u"You're trying to post process a dir that's already been processed, skipping", logger.DEBUG)
         return True
 
@@ -490,15 +491,17 @@ def already_postprocessed(dirName, videofile, force, result):  # pylint: disable
         parse_result = False
 
     search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same
-    search_sql += " WHERE history.season=tv_episodes.season and history.episode=tv_episodes.episode"
-    # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
-    if parse_result and (parse_result.show.indexerid and parse_result.episode_numbers and parse_result.season_number):
-        search_sql += " and tv_episodes.showid = '" + str(parse_result.show.indexerid) + "' and tv_episodes.season = '" + str(parse_result.season_number) + "' and tv_episodes.episode = '" + str(parse_result.episode_numbers[0]) + "'"
+    search_sql += " WHERE history.season=tv_episodes.season AND history.episode=tv_episodes.episode"
 
-    search_sql += " and tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED]) + ")"
-    search_sql += " and history.resource LIKE ? LIMIT 1"
-    sqlResult = myDB.select(search_sql, ['%' + videofile])
-    if sqlResult:
+    # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
+    if parse_result and parse_result.show.indexerid and parse_result.episode_numbers and parse_result.season_number:
+        search_sql += " AND tv_episodes.showid=%s AND tv_episodes.season=%s AND tv_episodes.episode=%s" % \
+            (parse_result.show.indexerid, parse_result.season_number, parse_result.episode_numbers[0])
+
+    search_sql += " AND tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED]) + ")"
+    search_sql += " AND history.resource LIKE ? LIMIT 1"
+    sql_result = main_db_con.select(search_sql, ['%' + videofile])
+    if sql_result:
         # result.output += logHelper(u"You're trying to post process a video that's already been processed, skipping", logger.DEBUG)
         return True
 

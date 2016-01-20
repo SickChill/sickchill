@@ -698,12 +698,12 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
     absolute_number = None
 
     if season and episode:
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
         sql = "SELECT * FROM tv_episodes WHERE showid = ? and season = ? and episode = ?"
-        sqlResults = myDB.select(sql, [show.indexerid, season, episode])
+        sql_results = main_db_con.select(sql, [show.indexerid, season, episode])
 
-        if len(sqlResults) == 1:
-            absolute_number = int(sqlResults[0]["absolute_number"])
+        if len(sql_results) == 1:
+            absolute_number = int(sql_results[0]["absolute_number"])
             logger.log(u"Found absolute number %s for show %s S%02dE%02d" % (absolute_number, show.name, season, episode), logger.DEBUG)
         else:
             logger.log(u"No entries for absolute number for show %s S%02dE%02d" % (show.name, season, episode), logger.DEBUG)
@@ -1274,13 +1274,13 @@ def mapIndexersToShow(showObj):
     for indexer in sickbeard.indexerApi().indexers:
         mapped[indexer] = showObj.indexerid if int(indexer) == int(showObj.indexer) else 0
 
-    myDB = db.DBConnection()
-    sqlResults = myDB.select(
+    main_db_con = db.DBConnection()
+    sql_results = main_db_con.select(
         "SELECT * FROM indexer_mapping WHERE indexer_id = ? AND indexer = ?",
         [showObj.indexerid, showObj.indexer])
 
     # for each mapped entry
-    for curResult in sqlResults:
+    for curResult in sql_results:
         nlist = [i for i in curResult if i is not None]
         # Check if its mapped with both tvdb and tvrage.
         if len(nlist) >= 4:
@@ -1318,8 +1318,8 @@ def mapIndexersToShow(showObj):
                     [showObj.indexerid, showObj.indexer, int(mapped_show[0]['id']), indexer]])
 
         if len(sql_l) > 0:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
 
     return mapped
 

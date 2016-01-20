@@ -47,8 +47,8 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         Populates the showList with shows from the database
         """
 
-        my_db = test.db.DBConnection()
-        sql_results = my_db.select("SELECT * FROM tv_shows")
+        test_main_db_con = test.db.DBConnection()
+        sql_results = test_main_db_con.select("SELECT * FROM tv_shows")
 
         for sql_show in sql_results:
             try:
@@ -62,8 +62,8 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         """
         Populates the showList with shows from the database
         """
-        my_db = test.db.DBConnection()
-        sql_results = my_db.select("SELECT * FROM tv_shows")
+        test_main_db_con = test.db.DBConnection()
+        sql_results = test_main_db_con.select("SELECT * FROM tv_shows")
 
         for sql_show in sql_results:
             try:

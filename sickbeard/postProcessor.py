@@ -493,10 +493,10 @@ class PostProcessor(object):
             names.append(self.folder_name)
 
         # search the database for a possible match and return immediately if we find one
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
         for curName in names:
             search_name = re.sub(r"[\.\- ]", "_", curName)
-            sql_results = myDB.select("SELECT showid, season, quality, version, resource FROM history WHERE resource LIKE ? AND (action % 100 = 4 OR action % 100 = 6)", [search_name])
+            sql_results = main_db_con.select("SELECT showid, season, quality, version, resource FROM history WHERE resource LIKE ? AND (action % 100 = 4 OR action % 100 = 6)", [search_name])
 
             if len(sql_results) == 0:
                 continue
@@ -690,9 +690,9 @@ class PostProcessor(object):
                     episodes = []
                     continue
 
-                myDB = db.DBConnection()
+                main_db_con = db.DBConnection()
                 # Ignore season 0 when searching for episode(Conflict between special and regular episode, same air date)
-                sql_result = myDB.select(
+                sql_result = main_db_con.select(
                     "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ? and season != 0",
                     [show.indexerid, show.indexer, airdate])
 
@@ -701,7 +701,7 @@ class PostProcessor(object):
                     episodes = [int(sql_result[0]['episode'])]
                 else:
                     # Found no result, try with season 0
-                    sql_result = myDB.select(
+                    sql_result = main_db_con.select(
                         "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
                         [show.indexerid, show.indexer, airdate])
                     if sql_result:
@@ -717,8 +717,8 @@ class PostProcessor(object):
 
             # if there's no season then we can hopefully just use 1 automatically
             elif season is None and show:
-                myDB = db.DBConnection()
-                numseasonsSQlResult = myDB.select(
+                main_db_con = db.DBConnection()
+                numseasonsSQlResult = main_db_con.select(
                     "SELECT COUNT(DISTINCT season) FROM tv_episodes WHERE showid = ? and indexer = ? and season != 0",
                     [show.indexerid, show.indexer])
                 if int(numseasonsSQlResult[0][0]) == 1 and season is None:
@@ -986,8 +986,8 @@ class PostProcessor(object):
             # Check if the processed file season is already in our indexer. If not, the file is most probably mislabled/fake and will be skipped
             # Only proceed if the file season is > 0
             if int(ep_obj.season) > 0:
-                myDB = db.DBConnection()
-                max_season = myDB.select(
+                main_db_con = db.DBConnection()
+                max_season = main_db_con.select(
                     "SELECT MAX(season) FROM tv_episodes WHERE showid = ? and indexer = ?", [show.indexerid, show.indexer])
 
                 # If the file season (ep_obj.season) is bigger than the indexer season (max_season[0][0]), skip the file
@@ -1147,8 +1147,8 @@ class PostProcessor(object):
 
         # now that processing has finished, we can put the info in the DB. If we do it earlier, then when processing fails, it won't try again.
         if len(sql_l) > 0:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
 
         # put the new location in the database
         sql_l = []
@@ -1158,8 +1158,8 @@ class PostProcessor(object):
                 sql_l.append(cur_ep.get_sql())
 
         if len(sql_l) > 0:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
 
         # set file modify stamp to show airdate
         if sickbeard.AIRDATE_EPISODES:

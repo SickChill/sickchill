@@ -185,8 +185,8 @@ def snatchEpisode(result, endStatus=SNATCHED):
             notifiers.trakt_notifier.update_watchlist(result.show, data_episode=data, update="add")
 
     if len(sql_l) > 0:
-        myDB = db.DBConnection()
-        myDB.mass_action(sql_l)
+        main_db_con = db.DBConnection()
+        main_db_con.mass_action(sql_l)
 
     return True
 
@@ -548,9 +548,9 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                 u"The quality of the season " + bestSeasonResult.provider.provider_type + " is " + Quality.qualityStrings[
                     seasonQual], logger.DEBUG)
 
-            myDB = db.DBConnection()
+            main_db_con = db.DBConnection()
             allEps = [int(x["episode"])
-                      for x in myDB.select("SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ','.join(searchedSeasons) + " ) )",
+                      for x in main_db_con.select("SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ','.join(searchedSeasons) + " ) )",
                                            [show.indexerid])]
 
             logger.log(u"Executed query: [SELECT episode FROM tv_episodes WHERE showid = %s AND season in  %s]" % (show.indexerid, ','.join(searchedSeasons)))

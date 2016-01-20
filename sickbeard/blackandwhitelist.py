@@ -48,9 +48,9 @@ class BlackAndWhiteList(object):
         :param table: SQL table to add keywords to
         :param values: Values to be inserted in table
         """
-        myDB = db.DBConnection()
+        main_db_con = db.DBConnection()
         for value in values:
-            myDB.action('INSERT INTO [' + table + '] (show_id, keyword) VALUES (?,?)', [self.show_id, value])
+            main_db_con.action('INSERT INTO [' + table + '] (show_id, keyword) VALUES (?,?)', [self.show_id, value])
 
     def set_black_keywords(self, values):
         """
@@ -80,8 +80,8 @@ class BlackAndWhiteList(object):
 
         :param table: SQL table remove keywords from
         """
-        myDB = db.DBConnection()
-        myDB.action('DELETE FROM [' + table + '] WHERE show_id = ?', [self.show_id])
+        main_db_con = db.DBConnection()
+        main_db_con.action('DELETE FROM [' + table + '] WHERE show_id = ?', [self.show_id])
 
     def _load_list(self, table):
         """
@@ -91,12 +91,12 @@ class BlackAndWhiteList(object):
 
         :return: keywords in list
         """
-        myDB = db.DBConnection()
-        sqlResults = myDB.select('SELECT keyword FROM [' + table + '] WHERE show_id = ?', [self.show_id])
-        if not sqlResults or not len(sqlResults):
+        main_db_con = db.DBConnection()
+        sql_results = main_db_con.select('SELECT keyword FROM [' + table + '] WHERE show_id = ?', [self.show_id])
+        if not sql_results or not len(sql_results):
             return []
         groups = []
-        for result in sqlResults:
+        for result in sql_results:
             groups.append(result["keyword"])
 
         logger.log(u'BWL: ' + str(self.show_id) + ' loaded keywords from ' + table + ': ' + str(groups), logger.DEBUG)

@@ -1,9 +1,8 @@
 # coding=utf-8
-
 # Author: Marvin Pinto <me@marvinp.ca>
 # Author: Dennis Lutter <lad1337@gmail.com>
 # Author: Aaron Bieber <deftly@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -19,115 +18,154 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+
+from __future__ import unicode_literals
+
 import urllib
 import urllib2
 
 import sickbeard
 from sickbeard import logger
-from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_GIT_UPDATE_TEXT
+from sickbeard.common import notifyStrings, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, \
+    NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD
+
+from sickrage.helper.common import http_status_code
 
 
 class TelegramNotifier(object):
+    """
+    Use Telegram to send notifications
 
-    def test_notify(self, id=None, apiKey=None):
-        return self._notifyTelegram('Test', "This is a test notification from SickRage", id, apiKey, force=True)
+    https://telegram.org/
+    """
+    def test_notify(self, id=None, api_key=None):
+        """
+        Send a test notification
+        :param id: The Telegram user/group id to send the message to
+        :param api_key: Your Telegram bot API token
+        :returns: the notification
+        """
+        return self._notify_telegram('Test', 'This is a test notification from SickRage', id, api_key, force=True)
 
-    def _sendTelegramMsg(self, title, msg, id=None, apiKey=None):
+    def _send_telegram_msg(self, title, msg, id=None, api_key=None):
         """
         Sends a Telegram notification
 
-        title: The title of the notification to send
-        msg: The message string to send
-        id: The Telegram user/group id to send the message to
-        apikey: Your Telegram bot API token
+        :param title: The title of the notification to send
+        :param msg: The message string to send
+        :param id: The Telegram user/group id to send the message to
+        :param api_key: Your Telegram bot API token
 
-        returns: True if the message succeeded, False otherwise
+        :returns: True if the message succeeded, False otherwise
         """
+        id = sickbeard.TELEGRAM_ID if id is None else id
+        api_key = sickbeard.TELEGRAM_APIKEY if api_key is None else api_key
 
-        if id is None:
-            id = sickbeard.TELEGRAM_ID
-        if apiKey is None:
-            apiKey = sickbeard.TELEGRAM_APIKEY
+        logger.log('Telegram in use with API KEY: %s' % api_key, logger.DEBUG)
 
-        logger.log(u"Telegram in use with API KEY: " + apiKey, logger.DEBUG)
-
-        message = title.encode('utf-8') + ": " + msg.encode('utf-8')
+        message = '%s : %s' % (title.encode(), msg.encode())
         payload = urllib.urlencode({'chat_id': id, 'text': message})
-        TELEGRAM_API = "https://api.telegram.org/bot%s/%s"
+        telegram_api = 'https://api.telegram.org/bot%s/%s'
 
-        req = urllib2.Request(TELEGRAM_API % (apiKey, "sendMessage"), payload)
+        req = urllib2.Request(telegram_api % (api_key, 'sendMessage'), payload)
 
+        success = False
         try:
             urllib2.urlopen(req)
+            message = 'Telegram message sent successfully.'
+            success = True
         except IOError as e:
-            if hasattr(e, 'code'):
-                if e.code == 400:
-                    message = "Missing parameter(s)."
-                    logger.log(message, logger.ERROR)
-                    return False, message
-                if e.code == 401:
-                    message = "Authentication failed."
-                    logger.log(message, logger.ERROR)
-                    return False, message
-                if e.code == 420:
-                    message = "Too many messages."
-                    logger.log(message, logger.ERROR)
-                    return False, message
-                if e.code == 500:
-                    message = "Server error. Please retry in few moment."
-                    logger.log(message, logger.ERROR)
-                    return False, message
+            message = 'Unknown IO error: %s' % e
+            if hasattr(e, b'code'):
+                error_message = {
+                    400: 'Missing parameter(s). Double check your settings or if the channel/user exists.',
+                    401: 'Authentication failed.',
+                    420: 'Too many messages.',
+                    500: 'Server error. Please retry in a few moments.',
+                }
+                if e.code in error_message:
+                    message = error_message.get(e.code)
+                else:
+                    http_status_code.get(e.code, message)
         except Exception as e:
-            message = u"Error while sending Telegram message: {0}".format(e)
-            logger.log(message, logger.ERROR)
-            return False, message
-
-        message = "Telegram message sent successfully."
-        logger.log(message, logger.INFO)
-        return True, message
+            message = 'Error while sending Telegram message: %s ' % e
+        finally:
+            logger.log(message, logger.INFO)
+            return success, message
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
+        """
+        Sends a Telegram notification when an episode is snatched
+
+        :param ep_name: The name of the episode snatched
+        :param title: The title of the notification to send
+        """
         if sickbeard.TELEGRAM_NOTIFY_ONSNATCH:
-            self._notifyTelegram(title, ep_name)
+            self._notify_telegram(title, ep_name)
 
     def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
+        """
+        Sends a Telegram notification when an episode is downloaded
+
+        :param ep_name: The name of the episode downloaded
+        :param title: The title of the notification to send
+        """
         if sickbeard.TELEGRAM_NOTIFY_ONDOWNLOAD:
-            self._notifyTelegram(title, ep_name)
+            self._notify_telegram(title, ep_name)
 
     def notify_subtitle_download(self, ep_name, lang, title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
-        if sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notifyTelegram(title, ep_name + ": " + lang)
+        """
+        Sends a Telegram notification when subtitles for an episode are downloaded
 
-    def notify_git_update(self, new_version="??"):
+        :param ep_name: The name of the episode subtitles were downloaded for
+        :param lang: The language of the downloaded subtitles
+        :param title: The title of the notification to send
+        """
+        if sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD:
+            self._notify_telegram(title, '%s: %s' % (ep_name, lang))
+
+    def notify_git_update(self, new_version='??'):
+        """
+        Sends a Telegram notification for git updates
+
+        :param new_version: The new version available from git
+        """
         if sickbeard.USE_TELEGRAM:
             update_text = notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
             title = notifyStrings[NOTIFY_GIT_UPDATE]
-            self._notifyTelegram(title, update_text + new_version)
+            self._notify_telegram(title, update_text + new_version)
 
-    def notify_login(self, ipaddress=""):
+    def notify_login(self, ipaddress=''):
+        """
+        Sends a Telegram notification on login
+
+        :param ipaddress: The ip address the login is originating from
+        """
         if sickbeard.USE_TELEGRAM:
-            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
-            title = common.notifyStrings[common.NOTIFY_LOGIN]
-            self._notifyTelegram(title, update_text.format(ipaddress))
+            update_text = notifyStrings[NOTIFY_LOGIN_TEXT]
+            title = notifyStrings[NOTIFY_LOGIN]
+            self._notify_telegram(title, update_text.format(ipaddress))
 
-    def _notifyTelegram(self, title, message, id=None, apiKey=None, force=False):
+    def _notify_telegram(self, title, message, id=None, api_key=None, force=False):
         """
         Sends a Telegram notification
 
-        title: The title of the notification to send
-        message: The message string to send
-        id: The Telegram user/group id to send the message to
-        apikey: Your Telegram bot API token
-        force: Enforce sending, for instance for testing
+        :param title: The title of the notification to send
+        :param message: The message string to send
+        :param id: The Telegram user/group id to send the message to
+        :param api_key: Your Telegram bot API token
+        :param force: Enforce sending, for instance for testing
+
+        :returns: the message to send
         """
 
-        if not sickbeard.USE_TELEGRAM and not force:
-            logger.log("Notification for Telegram not enabled, skipping this notification", logger.DEBUG)
-            return False, "Disabled"
+        if not (force or sickbeard.USE_TELEGRAM):
+            logger.log('Notification for Telegram not enabled, skipping this notification', logger.DEBUG)
+            return False, 'Disabled'
 
-        logger.log("Sending a Telegram message for " + message, logger.DEBUG)
+        logger.log('Sending a Telegram message for %s' % message, logger.DEBUG)
 
-        return self._sendTelegramMsg(title, message, id, apiKey)
+        return self._send_telegram_msg(title, message, id, api_key)
 
 
 notifier = TelegramNotifier

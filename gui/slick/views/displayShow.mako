@@ -271,7 +271,7 @@
 <table id="${("showTable", "animeTable")[bool(show.is_anime)]}" class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
     <% curSeason = -1 %>
     <% odd = 0 %>
-    % for epResult in sqlResults:
+    % for epResult in sql_results:
         <%
         epStr = str(epResult["season"]) + "x" + str(epResult["episode"])
         if not epStr in epCats:

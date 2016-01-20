@@ -723,8 +723,8 @@ class CMD_Episode(ApiCall):
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        my_db = db.DBConnection(row_type="dict")
-        sql_results = my_db.select(
+        main_db_con = db.DBConnection(row_type="dict")
+        sql_results = main_db_con.select(
             "SELECT name, description, airdate, status, location, file_size, release_name, subtitles FROM tv_episodes WHERE showid = ? AND episode = ? AND season = ?",
             [self.indexerid, self.e, self.s])
         if not len(sql_results) == 1:
@@ -909,8 +909,8 @@ class CMD_EpisodeSetStatus(ApiCall):
                 ep_results.append(_ep_result(RESULT_SUCCESS, ep_obj))
 
         if len(sql_l) > 0:
-            my_db = db.DBConnection()
-            my_db.mass_action(sql_l)
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
 
         extra_msg = ""
         if start_backlog:
@@ -999,10 +999,10 @@ class CMD_Exceptions(ApiCall):
 
     def run(self):
         """ Get the scene exceptions for all or a given show """
-        my_db = db.DBConnection("cache.db", row_type="dict")
+        cache_db_con = db.DBConnection('cache.db', row_type='dict')
 
         if self.indexerid is None:
-            sql_results = my_db.select("SELECT show_name, indexer_id AS 'indexerid' FROM scene_exceptions")
+            sql_results = cache_db_con.select("SELECT show_name, indexer_id AS 'indexerid' FROM scene_exceptions")
             scene_exceptions = {}
             for row in sql_results:
                 indexerid = row["indexerid"]
@@ -1015,7 +1015,7 @@ class CMD_Exceptions(ApiCall):
             if not show_obj:
                 return _responds(RESULT_FAILURE, msg="Show not found")
 
-            sql_results = my_db.select(
+            sql_results = cache_db_con.select(
                 "SELECT show_name, indexer_id AS 'indexerid' FROM scene_exceptions WHERE indexer_id = ?",
                 [self.indexerid])
             scene_exceptions = []
@@ -1123,13 +1123,13 @@ class CMD_Failed(ApiCall):
     def run(self):
         """ Get the failed downloads """
 
-        my_db = db.DBConnection('failed.db', row_type="dict")
+        failed_db_con = db.DBConnection('failed.db', row_type="dict")
 
         u_limit = min(int(self.limit), 100)
         if u_limit == 0:
-            sql_results = my_db.select("SELECT * FROM failed")
+            sql_results = failed_db_con.select("SELECT * FROM failed")
         else:
-            sql_results = my_db.select("SELECT * FROM failed LIMIT ?", [u_limit])
+            sql_results = failed_db_con.select("SELECT * FROM failed LIMIT ?", [u_limit])
 
         return _responds(RESULT_SUCCESS, sql_results)
 
@@ -1148,12 +1148,12 @@ class CMD_Backlog(ApiCall):
 
         shows = []
 
-        my_db = db.DBConnection(row_type="dict")
+        main_db_con = db.DBConnection(row_type="dict")
         for curShow in sickbeard.showList:
 
             show_eps = []
 
-            sql_results = my_db.select(
+            sql_results = main_db_con.select(
                 "SELECT tv_episodes.*, tv_shows.paused FROM tv_episodes INNER JOIN tv_shows ON tv_episodes.showid = tv_shows.indexer_id WHERE showid = ? and paused = 0 ORDER BY season DESC, episode DESC",
                 [curShow.indexerid])
 
@@ -1407,8 +1407,8 @@ class CMD_SickBeardCheckScheduler(ApiCall):
 
     def run(self):
         """ Get information about the scheduler """
-        my_db = db.DBConnection()
-        sql_results = my_db.select("SELECT last_backlog FROM info")
+        main_db_con = db.DBConnection()
+        sql_results = main_db_con.select("SELECT last_backlog FROM info")
 
         backlog_paused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
         backlog_running = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
@@ -2476,12 +2476,12 @@ class CMD_ShowSeasonList(ApiCall):
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        my_db = db.DBConnection(row_type="dict")
+        main_db_con = db.DBConnection(row_type="dict")
         if self.sort == "asc":
-            sql_results = my_db.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season ASC",
+            sql_results = main_db_con.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season ASC",
                                        [self.indexerid])
         else:
-            sql_results = my_db.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC",
+            sql_results = main_db_con.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC",
                                        [self.indexerid])
         season_list = []  # a list with all season numbers
         for row in sql_results:
@@ -2516,10 +2516,10 @@ class CMD_ShowSeasons(ApiCall):
         if not sho_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        my_db = db.DBConnection(row_type="dict")
+        main_db_con = db.DBConnection(row_type="dict")
 
         if self.season is None:
-            sql_results = my_db.select(
+            sql_results = main_db_con.select(
                 "SELECT name, episode, airdate, status, release_name, season, location, file_size, subtitles FROM tv_episodes WHERE showid = ?",
                 [self.indexerid])
             seasons = {}
@@ -2542,7 +2542,7 @@ class CMD_ShowSeasons(ApiCall):
                 seasons[cur_season][cur_episode] = row
 
         else:
-            sql_results = my_db.select(
+            sql_results = main_db_con.select(
                 "SELECT name, episode, airdate, status, location, file_size, release_name, subtitles FROM tv_episodes WHERE showid = ? AND season = ?",
                 [self.indexerid, self.season])
             if len(sql_results) == 0:
@@ -2680,8 +2680,8 @@ class CMD_ShowStats(ApiCall):
                 continue
             episode_qualities_counts_snatch[statusCode] = 0
 
-        my_db = db.DBConnection(row_type="dict")
-        sql_results = my_db.select("SELECT status, season FROM tv_episodes WHERE season != 0 AND showid = ?",
+        main_db_con = db.DBConnection(row_type="dict")
+        sql_results = main_db_con.select("SELECT status, season FROM tv_episodes WHERE season != 0 AND showid = ?",
                                    [self.indexerid])
         # the main loop that goes through all episodes
         for row in sql_results:

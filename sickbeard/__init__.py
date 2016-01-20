@@ -25,6 +25,7 @@ import re
 import os.path
 import shutil
 import shutil_custom
+import random
 
 shutil.copyfile = shutil_custom.copyfile_custom
 
@@ -257,7 +258,7 @@ DEFAULT_AUTOPOSTPROCESSER_FREQUENCY = 10
 DEFAULT_DAILYSEARCH_FREQUENCY = 40
 DEFAULT_BACKLOG_FREQUENCY = 21
 DEFAULT_UPDATE_FREQUENCY = 1
-DEFAULT_SHOWUPDATE_HOUR = 3
+DEFAULT_SHOWUPDATE_HOUR = random.randint(2, 4)
 
 MIN_AUTOPOSTPROCESSER_FREQUENCY = 1
 MIN_DAILYSEARCH_FREQUENCY = 10
@@ -1368,20 +1369,20 @@ def initialize(consoleLogging=True):
             save_config()
 
         # initialize the main SB database
-        myDB = db.DBConnection()
-        db.upgradeDatabase(myDB, mainDB.InitialSchema)
+        main_db_con = db.DBConnection()
+        db.upgradeDatabase(main_db_con, mainDB.InitialSchema)
 
         # initialize the cache database
-        myDB = db.DBConnection('cache.db')
-        db.upgradeDatabase(myDB, cache_db.InitialSchema)
+        cache_db_con = db.DBConnection('cache.db')
+        db.upgradeDatabase(cache_db_con, cache_db.InitialSchema)
 
         # initialize the failed downloads database
-        myDB = db.DBConnection('failed.db')
-        db.upgradeDatabase(myDB, failed_db.InitialSchema)
+        failed_db_con = db.DBConnection('failed.db')
+        db.upgradeDatabase(failed_db_con, failed_db.InitialSchema)
 
         # fix up any db problems
-        myDB = db.DBConnection()
-        db.sanityCheckDatabase(myDB, mainDB.MainSanityCheck)
+        main_db_con = db.DBConnection()
+        db.sanityCheckDatabase(main_db_con, mainDB.MainSanityCheck)
 
         # migrate the config if it needs it
         migrator = ConfigMigrator(CFG)
@@ -1416,7 +1417,7 @@ def initialize(consoleLogging=True):
         showUpdateScheduler = scheduler.Scheduler(showUpdater.ShowUpdater(),
                                                   cycleTime=datetime.timedelta(hours=1),
                                                   threadName="SHOWUPDATER",
-                                                  start_time=datetime.time(hour=SHOWUPDATE_HOUR))
+                                                  start_time=datetime.time(hour=SHOWUPDATE_HOUR, minute=random.randint(0, 59)))
 
         # searchers
         searchQueueScheduler = scheduler.Scheduler(search_queue.SearchQueue(),
