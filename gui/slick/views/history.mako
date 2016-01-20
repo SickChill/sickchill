@@ -158,7 +158,7 @@
                             % if action["provider"] != "-1":
                                 <span style="cursor: help;" title="${ek(os.path.basename, action["resource"])}"><i>${action["provider"]}</i></span>
                             % else:
-                                <span style="cursor: help;" title="${ek(os.path.basename, action["resource"])}"></span>
+                                <span style="cursor: help;" title="${ek(os.path.basename, action["resource"])}"><i>Unknown</i></span>
                             % endif
                         % endif
                     % endfor
