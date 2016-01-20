@@ -169,11 +169,14 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
         if curEpObj.status not in Quality.DOWNLOADED:
             try:
-                notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN') + " from " + result.provider.name)
-            except:
+                if result.seeders and result.leechers:
+                    notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN') + " with " + str(result.seeders) + " seeders and " + str(result.leechers) + " leechers from " + result.provider.name)
+                else:
+                    notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN') + " from " + result.provider.name)
+            except Exception as e:
                 # Without this, when notification fail, it crashes the snatch thread and SR will
                 # keep snatching until notification is sent
-                logger.log(u"Failed to send snatch notification", logger.DEBUG)
+                logger.log(u"Failed to send snatch notification. Error: %r" % repr(e), logger.DEBUG)
 
             trakt_data.append((curEpObj.season, curEpObj.episode))
 

@@ -21,7 +21,7 @@ import time
 import datetime
 import itertools
 import urllib2
-
+import traceback
 import sickbeard
 from sickbeard import db
 from sickbeard import logger
@@ -133,6 +133,8 @@ class TVCache(object):
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
         except Exception as e:
             logger.log(u"Error while searching " + self.provider.name + ", skipping: " + repr(e), logger.DEBUG)
+            logger.log(traceback.format_exc(), logger.DEBUG)
+
 
     def getRSSFeed(self, url):
         handlers = []
@@ -158,7 +160,7 @@ class TVCache(object):
         return url.replace('&amp;', '&')
 
     def _parseItem(self, item):
-        title, url = self._get_title_and_url(item)
+        title, url, seeders, leechers = self._get_title_and_url(item)
 
         self._checkItemAuth(title, url)
 
@@ -365,12 +367,16 @@ class TVCache(object):
             # build a result object
             title = curResult["name"]
             url = curResult["url"]
+            seeders = curResult["seeders"]
+            leechers = curResult["leechers"]
 
             logger.log(u"Found result " + title + " at " + url)
 
             result = self.provider.get_result([epObj])
             result.show = showObj
             result.url = url
+            result.seeders = seeders
+            result.leechers = leechers
             result.name = title
             result.quality = curQuality
             result.release_group = curReleaseGroup

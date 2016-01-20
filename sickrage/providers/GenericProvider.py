@@ -183,7 +183,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         cl = []
 
         for item in items_list:
-            (title, url) = self._get_title_and_url(item)
+            (title, url, seeders, leechers) = self._get_title_and_url(item)
 
             try:
                 parser = NameParser(parse_method=('normal', 'anime')[show.is_anime])
@@ -303,6 +303,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             result.show = show_object
             result.url = url
             result.name = title
+            result.seeders = seeders
+            result.leechers = leechers
             result.quality = quality
             result.release_group = release_group
             result.version = version
@@ -337,7 +339,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         return GenericProvider.make_id(self.name)
 
     def get_quality(self, item, anime=False):
-        (title, _) = self._get_title_and_url(item)
+        (title, _, _, _) = self._get_title_and_url(item)
         quality = Quality.sceneQuality(title, anime)
 
         return quality
@@ -449,6 +451,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         title = item.get('title', '')
         url = item.get('link', '')
+        seeders = ''
+        leechers = ''
 
         if title:
             title = u'' + title.replace(' ', '.')
@@ -460,7 +464,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         else:
             url = ''
 
-        return title, url
+        return title, url, seeders, leechers
 
     def _make_url(self, result):
         if not result:
