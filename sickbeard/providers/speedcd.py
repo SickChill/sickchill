@@ -49,7 +49,7 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         self.proper_strings = ['PROPER', 'REPACK']
 
-        self.cache = SpeedCDCache(self)
+        self.cache = SpeedCDCache(self, min_time=20)  # only poll SpeedCD every 20 minutes max
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
@@ -169,13 +169,6 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
 
 class SpeedCDCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll Speedcd every 20 minutes max
-        self.minTime = 20
-
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}

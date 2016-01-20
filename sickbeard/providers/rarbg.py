@@ -48,7 +48,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
         self.proper_strings = ['{{PROPER|REPACK}}']
 
-        self.cache = RarbgCache(self)
+        self.cache = RarbgCache(self, min_time=10)  # only poll RARBG every 10 minutes max
 
     def login(self):
         if self.token and self.token_expires and datetime.datetime.now() < self.token_expires:
@@ -153,13 +153,6 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
 
 class RarbgCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll RARBG every 10 minutes max
-        self.minTime = 10
-
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}

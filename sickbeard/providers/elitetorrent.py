@@ -38,7 +38,7 @@ class elitetorrentProvider(TorrentProvider):
         self.onlyspasearch = None
         self.minseed = None
         self.minleech = None
-        self.cache = elitetorrentCache(self)
+        self.cache = elitetorrentCache(self, min_time=20)  # Only poll EliteTorrent every 20 minutes max
 
         self.urls = {
             'base_url': 'http://www.elitetorrent.net',
@@ -165,12 +165,6 @@ class elitetorrentProvider(TorrentProvider):
 
 
 class elitetorrentCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        self.minTime = 20
-
     def _getRSSData(self):
         search_params = {'RSS': ['']}
         return {'entries': self.provider.search(search_params)}

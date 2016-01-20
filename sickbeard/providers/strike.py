@@ -31,7 +31,7 @@ class StrikeProvider(TorrentProvider):
         self.public = True
         self.url = 'https://getstrike.net/'
         self.ratio = 0
-        self.cache = StrikeCache(self)
+        self.cache = StrikeCache(self, min_time=10)
         self.minseed, self.minleech = 2 * [None]
 
     def search(self, search_strings, age=0, ep_obj=None):
@@ -88,13 +88,6 @@ class StrikeProvider(TorrentProvider):
 
 
 class StrikeCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Cache results for 10 min
-        self.minTime = 10
-
     def _getRSSData(self):
 
         # Use this hacky way for RSS search since most results will use this codec

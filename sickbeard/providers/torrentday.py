@@ -39,7 +39,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minseed = None
         self.minleech = None
 
-        self.cache = TorrentDayCache(self)
+        self.cache = TorrentDayCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
         self.urls = {
             'base_url': 'https://classic.torrentday.com',
@@ -162,13 +162,6 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
 
 class TorrentDayCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Only poll IPTorrents every 10 minutes max
-        self.minTime = 10
-
     def _getRSSData(self):
         search_params = {'RSS': ['']}
         return {'entries': self.provider.search(search_params)}

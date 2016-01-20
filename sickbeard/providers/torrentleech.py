@@ -48,7 +48,7 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         self.proper_strings = ['PROPER', 'REPACK']
 
-        self.cache = TorrentLeechCache(self)
+        self.cache = TorrentLeechCache(self, min_time=20)  # only poll TorrentLeech every 20 minutes max
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
@@ -163,13 +163,6 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
 
 class TorrentLeechCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll TorrentLeech every 20 minutes max
-        self.minTime = 20
-
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}

@@ -37,7 +37,7 @@ class BlueTigersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.ratio = None
         self.token = None
 
-        self.cache = BlueTigersCache(self)
+        self.cache = BlueTigersCache(self, min_time=10)  # Only poll BLUETIGERS every 10 minutes max
 
         self.urls = {
             'base_url': 'https://www.bluetigers.ca/',
@@ -145,12 +145,6 @@ class BlueTigersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
 
 class BlueTigersCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Only poll BLUETIGERS every 10 minutes max
-        self.minTime = 10
-
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}

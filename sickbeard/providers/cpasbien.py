@@ -38,7 +38,7 @@ class CpasbienProvider(TorrentProvider):
         self.url = "http://www.cpasbien.io"
 
         self.proper_strings = ['PROPER', 'REPACK']
-        self.cache = CpasbienCache(self)
+        self.cache = CpasbienCache(self, min_time=20)  # Only poll Cpasbien every 20 minutes max
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
@@ -99,12 +99,6 @@ class CpasbienProvider(TorrentProvider):
 
 
 class CpasbienCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        self.minTime = 20
-
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}

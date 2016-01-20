@@ -41,7 +41,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.minseed = None
         self.minleech = None
 
-        self.cache = SceneTimeCache(self)
+        self.cache = SceneTimeCache(self, min_time=20)  # only poll SceneTime every 20 minutes max
 
         self.urls = {'base_url': 'https://www.scenetime.com',
                      'login': 'https://www.scenetime.com/takelogin.php',
@@ -151,13 +151,6 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
 
 class SceneTimeCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll SceneTime every 20 minutes max
-        self.minTime = 20
-
     def _getRSSData(self):
         search_params = {'RSS': ['']}
         return {'entries': self.provider.search(search_params)}

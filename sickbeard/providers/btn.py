@@ -43,7 +43,7 @@ class BTNProvider(TorrentProvider):
         self.api_key = None
         self.ratio = None
 
-        self.cache = BTNCache(self)
+        self.cache = BTNCache(self, min_time=15)  # Only poll BTN every 15 minutes max
 
         self.urls = {'base_url': u'http://api.btnapps.net',
                      'website': u'http://broadcasthe.net/', }
@@ -284,12 +284,6 @@ class BTNProvider(TorrentProvider):
 
 
 class BTNCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # At least 15 minutes between queries
-        self.minTime = 15
-
     def _getRSSData(self):
         # Get the torrents uploaded since last check.
         seconds_since_last_update = math.ceil(time.time() - time.mktime(self._getLastUpdate().timetuple()))

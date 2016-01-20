@@ -38,7 +38,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minseed = None
         self.minleech = None
 
-        self.cache = IPTorrentsCache(self)
+        self.cache = IPTorrentsCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
         self.urls = {'base_url': 'https://iptorrents.eu',
                      'login': 'https://iptorrents.eu/torrents/',
@@ -163,13 +163,6 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
 
 class IPTorrentsCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Only poll IPTorrents every 10 minutes max
-        self.minTime = 10
-
     def _getRSSData(self):
         search_params = {'RSS': ['']}
         return {'entries': self.provider.search(search_params)}

@@ -110,7 +110,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         self.categories = "cat=29"
 
-        self.cache = TNTVillageCache(self)
+        self.cache = TNTVillageCache(self, min_time=30)  # only poll TNTVillage every 30 minutes max
 
     def _check_auth(self):
 
@@ -405,13 +405,6 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
 
 class TNTVillageCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll TNTVillage every 30 minutes max
-        self.minTime = 30
-
     def _getRSSData(self):
         search_params = {'RSS': []}
         return {'entries': self.provider.search(search_params)}

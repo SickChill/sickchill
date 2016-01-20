@@ -37,7 +37,7 @@ class HDBitsProvider(TorrentProvider):
         self.passkey = None
         self.ratio = None
 
-        self.cache = HDBitsCache(self)
+        self.cache = HDBitsCache(self, min_time=15)  # only poll HDBits every 15 minutes max
 
         self.urls = {'base_url': 'https://hdbits.org',
                      'search': 'https://hdbits.org/api/torrents',
@@ -179,13 +179,6 @@ class HDBitsProvider(TorrentProvider):
 
 
 class HDBitsCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll HDBits every 15 minutes max
-        self.minTime = 15
-
     def _getRSSData(self):
         results = []
 

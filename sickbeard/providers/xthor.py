@@ -52,7 +52,7 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         self.password = None
         self.freeleech = None
         self.proper_strings = ['PROPER']
-        self.cache = XthorCache(self)
+        self.cache = XthorCache(self, min_time=30)
 
     def login(self):
 
@@ -80,11 +80,11 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             return results
 
         """
-            SÃ©ries / Pack TV 13
-            SÃ©ries / TV FR 14
-            SÃ©ries / HD FR 15
-            SÃ©ries / TV VOSTFR 16
-            SÃ©ries / HD VOSTFR 17
+            Séries / Pack TV 13
+            Séries / TV FR 14
+            Séries / HD FR 15
+            Séries / TV VOSTFR 16
+            Séries / HD VOSTFR 17
             Mangas (Anime) 32
             Sport 34
         """
@@ -125,7 +125,7 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    # CatÃ©gorie, Nom du Torrent, (Download), (Bookmark), Com., Taille, ComplÃ©tÃ©, Seeders, Leechers
+                    # Catégorie, Nom du Torrent, (Download), (Bookmark), Com., Taille, Complété, Seeders, Leechers
                     labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all('td')]
 
                     for row in torrent_rows[1:]:
@@ -166,12 +166,6 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
 
 class XthorCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        self.minTime = 30
-
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}

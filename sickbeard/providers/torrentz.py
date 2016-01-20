@@ -38,7 +38,7 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         self.ratio = None
         self.minseed = None
         self.minleech = None
-        self.cache = TorrentzCache(self)
+        self.cache = TorrentzCache(self, min_time=15)  # only poll Torrentz every 15 minutes max
         self.headers.update({'User-Agent': USER_AGENT})
         self.urls = {'verified': 'https://torrentz.eu/feed_verified',
                      'feed': 'https://torrentz.eu/feed',
@@ -107,14 +107,6 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
 
 class TorrentzCache(tvcache.TVCache):
-
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll every 15 minutes max
-        self.minTime = 15
-
     def _getRSSData(self):
         return {'entries': self.provider.search({'RSS': ['']})}
 

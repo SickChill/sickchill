@@ -39,7 +39,7 @@ class BitCannonProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.custom_url = None
         self.api_key = None
 
-        self.cache = BitCannonCache(self)
+        self.cache = BitCannonCache(self, min_time=20)  # only poll BitCannon every 20 minutes max
 
         self.search_params = {
             'q': '',
@@ -140,13 +140,6 @@ class BitCannonProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
 
 class BitCannonCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll bitcannon every 20 minutes max
-        self.minTime = 20
-
     def _getRSSData(self):
         search_params = {'RSS': ['tv', 'anime']}
         return {'entries': self.provider.search(search_params)}

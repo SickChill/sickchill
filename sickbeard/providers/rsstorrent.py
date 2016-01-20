@@ -36,9 +36,9 @@ class TorrentRssProvider(TorrentProvider):
     def __init__(self, name, url, cookies='', titleTAG='title', search_mode='eponly', search_fallback=False, enable_daily=False,
                  enable_backlog=False):
         TorrentProvider.__init__(self, name)
-        self.cache = TorrentRssCache(self)
+        self.cache = TorrentRssCache(self, min_time=15)
 
-        self.urls = {'base_url': re.sub(r'\/$', '', url)}
+        self.urls = {'base_url': re.sub(r'/$', '', url)}
 
         self.url = self.urls['base_url']
 
@@ -202,10 +202,6 @@ class TorrentRssProvider(TorrentProvider):
 
 
 class TorrentRssCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-        self.minTime = 15
-
     def _getRSSData(self):
         logger.log(u"Cache update URL: %s" % self.provider.url, logger.DEBUG)
 

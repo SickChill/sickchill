@@ -32,7 +32,7 @@ class OmgwtfnzbsProvider(NZBProvider):
 
         self.username = None
         self.api_key = None
-        self.cache = OmgwtfnzbsCache(self)
+        self.cache = OmgwtfnzbsCache(self, min_time=20)  # only poll Omgwtfnzbs every 15 minutes max
 
         self.url = 'https://omgwtfnzbs.org/'
         self.urls = {
@@ -125,10 +125,6 @@ class OmgwtfnzbsProvider(NZBProvider):
 
 
 class OmgwtfnzbsCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-        self.minTime = 20
-
     def _get_title_and_url(self, item):
         """
         Retrieves the title and URL data from the item XML node

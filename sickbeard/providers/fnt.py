@@ -37,7 +37,7 @@ class FNTProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         self.minseed = None
         self.minleech = None
 
-        self.cache = FNTCache(self)
+        self.cache = FNTCache(self, min_time=10)  # Only poll FNT every 10 minutes max
 
         self.urls = {
             'base_url': 'https://fnt.nu',
@@ -154,12 +154,6 @@ class FNTProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
 
 class FNTCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Only poll FNT every 10 minutes max
-        self.minTime = 10
-
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}

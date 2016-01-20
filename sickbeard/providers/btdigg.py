@@ -45,7 +45,7 @@ class BTDiggProvider(TorrentProvider):
         # self.minseed = 1
         # self.minleech = 0
 
-        self.cache = BTDiggCache(self)
+        self.cache = BTDiggCache(self, min_time=30)  # Only poll BTDigg every 30 minutes max, since BTDigg takes some time to crawl
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
@@ -125,13 +125,6 @@ class BTDiggProvider(TorrentProvider):
 
 
 class BTDiggCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Cache results for a 30min, since BTDigg takes some time to crawl
-        self.minTime = 30
-
     def _getRSSData(self):
 
         # Use this hacky way for RSS search since most results will use this codecs

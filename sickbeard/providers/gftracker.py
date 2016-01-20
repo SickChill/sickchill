@@ -50,7 +50,7 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
         self.proper_strings = ['PROPER', 'REPACK', 'REAL']
 
-        self.cache = GFTrackerCache(self)
+        self.cache = GFTrackerCache(self, min_time=20)  # Only poll GFTracker every 20 minutes max
 
     def _check_auth(self):
 
@@ -176,13 +176,6 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
 
 class GFTrackerCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Poll delay in minutes
-        self.minTime = 20
-
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}

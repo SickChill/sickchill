@@ -46,7 +46,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
         self.minleech = None
         self.freeleech = None
 
-        self.cache = TransmitTheNetCache(self)
+        self.cache = TransmitTheNetCache(self, min_time=20)  # Only poll TransmitTheNet every 20 minutes max
 
     def _check_auth(self):
 
@@ -172,12 +172,6 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
 
 class TransmitTheNetCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Only poll TransmitTheNet every 20 minutes max
-        self.minTime = 20
-
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}

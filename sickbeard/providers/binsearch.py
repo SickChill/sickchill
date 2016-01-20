@@ -29,17 +29,16 @@ class BinSearchProvider(NZBProvider):
         NZBProvider.__init__(self, "BinSearch")
 
         self.public = True
-        self.cache = BinSearchCache(self)
+        self.cache = BinSearchCache(self, min_time=30)  # only poll Binsearch every 30 minutes max
         self.urls = {'base_url': 'https://www.binsearch.info/'}
         self.url = self.urls['base_url']
         self.supports_backlog = False
 
 
+
 class BinSearchCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-        # only poll Binsearch every 30 minutes max
-        self.minTime = 30
+    def __init__(self, provider_obj, **kwargs):
+        tvcache.TVCache.__init__(self, provider_obj, **kwargs)
 
         # compile and save our regular expressions
 

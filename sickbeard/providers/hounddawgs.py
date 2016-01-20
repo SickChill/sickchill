@@ -64,7 +64,7 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             "searchtags": ''
         }
 
-        self.cache = HoundDawgsCache(self)
+        self.cache = HoundDawgsCache(self, min_time=20)  # only poll HoundDawgs every 20 minutes max
 
     def login(self):
 
@@ -184,13 +184,6 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
 
 class HoundDawgsCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll HoundDawgs every 20 minutes max
-        self.minTime = 20
-
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}

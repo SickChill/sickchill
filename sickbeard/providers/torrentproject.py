@@ -38,7 +38,7 @@ class TorrentProjectProvider(TorrentProvider):
         self.headers.update({'User-Agent': USER_AGENT})
         self.minseed = None
         self.minleech = None
-        self.cache = TorrentProjectCache(self)
+        self.cache = TorrentProjectCache(self, min_time=20)  # only poll TorrentProject every 20 minutes max
 
     def search(self, search_strings, age=0, ep_obj=None):
         results = []
@@ -110,12 +110,6 @@ class TorrentProjectProvider(TorrentProvider):
 
 
 class TorrentProjectCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        self.minTime = 20
-
     def _getRSSData(self):
 
         search_params = {'RSS': ['0day']}

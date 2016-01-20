@@ -44,9 +44,9 @@ class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance
         self.headers.update({'User-Agent': USER_AGENT})
         self.proper_strings = ['PROPER', 'REPACK', 'REAL']
 
-        self.cache = LimeTorrentsCache(self)
+        self.cache = LimeTorrentsCache(self, min_time=20)  # only poll LimeTorrents every 20 minutes max
 
-    def search(self, search_strings, age=0, ep_obj=None): # pylint: disable=too-many-branches,too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches,too-many-locals
         results = []
         for mode in search_strings:
             items = []
@@ -130,12 +130,6 @@ class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance
 
 
 class LimeTorrentsCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        self.minTime = 20
-
     def _getRSSData(self):
         search_strings = {'RSS': ['rss']}
         return {'entries': self.provider.search(search_strings)}

@@ -74,11 +74,11 @@ class CacheDBConnection(db.DBConnection):
 
 
 class TVCache(object):
-    def __init__(self, provider):
+    def __init__(self, provider, **kwargs):
         self.provider = provider
         self.providerID = self.provider.get_id()
         self.providerDB = None
-        self.minTime = 10
+        self.minTime = kwargs.pop(u'min_time', 10)
 
     def _getDB(self):
         # init provider database if not done already
