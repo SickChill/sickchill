@@ -47,7 +47,7 @@ class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instan
             'search': self.url + 'search.php',
             'rss': self.url + 'rss.php'
         }
-        self.cache = TokyoToshokanCache(self, min_time=15)  # only poll TokyoToshokan every 15 minutes max
+        self.cache = tvcache.TVCache(self, min_time=15)  # only poll TokyoToshokan every 15 minutes max
 
     def seed_ratio(self):
         return self.ratio
@@ -121,22 +121,5 @@ class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instan
             results += items
 
         return results
-
-
-class TokyoToshokanCache(tvcache.TVCache):
-    # def _getRSSData(self):
-    #     params = {
-    #         "filter": '1',
-    #     }
-    #
-    #     url = self.provider.urls['rss'] + '?' + urllib.urlencode(params)
-    #
-    #     logger.log(u"Cache update URL: %s" % url, logger.DEBUG)
-    #
-    #     return self.getRSSFeed(url)
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = TokyoToshokanProvider()

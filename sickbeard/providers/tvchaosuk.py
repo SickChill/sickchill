@@ -44,7 +44,7 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.minleech = None
         self.freeleech = None
 
-        self.cache = TVChaosUKCache(self, min_time=20)  # only poll TVChaosUK every 20 minutes max
+        self.cache = tvcache.TVCache(self)
 
         self.search_params = {
             'do': 'search',
@@ -197,11 +197,5 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
     def seed_ratio(self):
         return self.ratio
-
-
-class TVChaosUKCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = TVChaosUKProvider()

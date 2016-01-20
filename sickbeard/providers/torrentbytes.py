@@ -56,7 +56,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         self.proper_strings = ['PROPER', 'REPACK']
 
-        self.cache = TorrentBytesCache(self, min_time=20)  # only poll TorrentBytes every 20 minutes max
+        self.cache = tvcache.TVCache(self)
 
     def login(self):
 
@@ -168,11 +168,5 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
     def seed_ratio(self):
         return self.ratio
-
-
-class TorrentBytesCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = TorrentBytesProvider()

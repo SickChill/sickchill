@@ -42,7 +42,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         self.minleech = None
         self.ratio = 0
 
-        self.cache = HD4FreeCache(self, min_time=10)  # Only poll HD4Free every 10 minutes max
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll HD4Free every 10 minutes max
 
     def _check_auth(self):
         if self.username and self.api_key:
@@ -126,11 +126,5 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
     def seed_ratio(self):
         return self.ratio
-
-
-class HD4FreeCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = HD4FreeProvider()

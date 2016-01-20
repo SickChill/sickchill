@@ -40,7 +40,7 @@ class FNTProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         self.minseed = None
         self.minleech = None
 
-        self.cache = FNTCache(self, min_time=10)  # Only poll FNT every 10 minutes max
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll FNT every 10 minutes max
 
         self.urls = {
             'base_url': 'https://fnt.nu',
@@ -154,11 +154,5 @@ class FNTProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
     def seed_ratio(self):
         return self.ratio
-
-
-class FNTCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = FNTProvider()

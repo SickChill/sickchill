@@ -33,7 +33,8 @@ class StrikeProvider(TorrentProvider):
         self.public = True
         self.url = 'https://getstrike.net/'
         self.ratio = 0
-        self.cache = StrikeCache(self, min_time=10)
+        params = {'RSS': ['x264']}  # Use this hack for RSS search since most results will use this codec
+        self.cache = tvcache.TVCache(self, min_time=10, search_params=params)
         self.minseed, self.minleech = 2 * [None]
 
     def search(self, search_strings, age=0, ep_obj=None):
@@ -87,11 +88,5 @@ class StrikeProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
-
-
-class StrikeCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_params = {'RSS': ['x264']}  # Use this hacky way for RSS search since most results will use this codec
-        return {'entries': self.provider.search(search_params)}
 
 provider = StrikeProvider()

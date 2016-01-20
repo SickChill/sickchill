@@ -54,7 +54,7 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         self.proper_strings = ['PROPER', 'REPACK']
 
-        self.cache = PretomeCache(self, min_time=20)  # only poll Pretome every 20 minutes max
+        self.cache = tvcache.TVCache(self)
 
     def _check_auth(self):
 
@@ -167,11 +167,5 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
     def seed_ratio(self):
         return self.ratio
-
-
-class PretomeCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = PretomeProvider()

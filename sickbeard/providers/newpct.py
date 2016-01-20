@@ -37,7 +37,7 @@ class newpctProvider(TorrentProvider):
         TorrentProvider.__init__(self, "Newpct")
 
         self.onlyspasearch = None
-        self.cache = newpctCache(self, min_time=10)
+        self.cache = tvcache.TVCache(self, min_time=10)
 
         # Unsupported
         # self.minseed = None
@@ -229,11 +229,5 @@ class newpctProvider(TorrentProvider):
         title += '-NEWPCT'
 
         return title.strip()
-
-
-class newpctCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = newpctProvider()

@@ -61,7 +61,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
             'category': 'tv'
         }
 
-        self.cache = KatCache(self, min_time=20)  # only poll KickAss every 20 minutes max
+        self.cache = tvcache.TVCache(self, search_params={'RSS': ['tv', 'anime']})
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
@@ -156,11 +156,5 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
     def seed_ratio(self):
         return self.ratio
-
-
-class KatCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_params = {'RSS': ['tv', 'anime']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = KatProvider()

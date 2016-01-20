@@ -65,7 +65,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
         self.default = False
 
-        self.cache = NewznabCache(self, min_time=30)  # only poll newznab providers every 30 minutes max
+        self.cache = tvcache.TVCache(self, min_time=30)  # only poll newznab providers every 30 minutes max
 
     def configStr(self):
         """
@@ -338,9 +338,3 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         Returns int size or -1
         """
         return try_int(item.get('size', -1), -1)
-
-
-class NewznabCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}

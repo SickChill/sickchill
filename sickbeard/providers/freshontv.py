@@ -45,7 +45,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.minleech = None
         self.freeleech = False
 
-        self.cache = FreshOnTVCache(self, min_time=20)  # Only poll FreshOnTV every 20 minutes max
+        self.cache = tvcache.TVCache(self)
 
         self.urls = {'base_url': 'https://freshon.tv/',
                      'login': 'https://freshon.tv/login.php?action=makelogin',
@@ -233,11 +233,5 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
     def seed_ratio(self):
         return self.ratio
-
-
-class FreshOnTVCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = FreshOnTVProvider()

@@ -34,7 +34,8 @@ class OmgwtfnzbsProvider(NZBProvider):
 
         self.username = None
         self.api_key = None
-        self.cache = OmgwtfnzbsCache(self, min_time=20)  # only poll Omgwtfnzbs every 15 minutes max
+
+        self.cache = OmgwtfnzbsCache(self)
 
         self.url = 'https://omgwtfnzbs.org/'
         self.urls = {
@@ -156,9 +157,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
         }
 
         rss_url = self.provider.urls['rss'] + '?' + urlencode(search_params)
-
         logger.log(u"Cache update URL: %s" % rss_url, logger.DEBUG)
-
         return self.getRSSFeed(rss_url)
 
 provider = OmgwtfnzbsProvider()

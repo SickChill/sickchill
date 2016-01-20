@@ -42,7 +42,7 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         self.minseed = None
         self.minleech = None
 
-        self.cache = HDSpaceCache(self, min_time=10)  # only poll HDSpace every 10 minutes max
+        self.cache = tvcache.TVCache(self, min_time=10)  # only poll HDSpace every 10 minutes max
 
         self.urls = {'base_url': u'https://hd-space.org/',
                      'login': u'https://hd-space.org/index.php?page=login',
@@ -167,11 +167,5 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
     def seed_ratio(self):
         return self.ratio
-
-
-class HDSpaceCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = HDSpaceProvider()

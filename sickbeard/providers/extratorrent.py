@@ -49,7 +49,7 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.minleech = None
         self.custom_url = None
 
-        self.cache = ExtraTorrentCache(self, min_time=30)  # Only poll ExtraTorrent every 30 minutes max
+        self.cache = tvcache.TVCache(self, min_time=30)  # Only poll ExtraTorrent every 30 minutes max
         self.headers.update({'User-Agent': USER_AGENT})
         self.search_params = {'cid': 8}
 
@@ -116,11 +116,5 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
     def seed_ratio(self):
         return self.ratio
-
-
-class ExtraTorrentCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = ExtraTorrentProvider()

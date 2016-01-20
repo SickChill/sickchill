@@ -30,6 +30,7 @@ try:
 except ImportError:
     import simplejson as json
 
+
 class HDBitsProvider(TorrentProvider):
 
     def __init__(self):
@@ -183,6 +184,7 @@ class HDBitsProvider(TorrentProvider):
 
 class HDBitsCache(tvcache.TVCache):
     def _getRSSData(self):
+        self.search_params = None  # HDBits cache does not use search_params so set it to None
         results = []
 
         try:

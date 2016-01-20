@@ -53,7 +53,7 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.categories = "&category[]=59&category[]=60&category[]=30&category[]=38"
         self.proper_strings = ['PROPER', 'REPACK']
 
-        self.cache = HDTorrentsCache(self, min_time=30)  # only poll HDTorrents every 30 minutes max
+        self.cache = tvcache.TVCache(self, min_time=30)  # only poll HDTorrents every 30 minutes max
 
     def _check_auth(self):
 
@@ -181,11 +181,5 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def seed_ratio(self):
         return self.ratio
-
-
-class HDTorrentsCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = HDTorrentsProvider()

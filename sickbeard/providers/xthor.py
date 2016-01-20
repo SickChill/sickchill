@@ -51,7 +51,7 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         self.password = None
         self.freeleech = None
         self.proper_strings = ['PROPER']
-        self.cache = XthorCache(self, min_time=30)
+        self.cache = tvcache.TVCache(self, min_time=30)
 
     def login(self):
 
@@ -162,11 +162,5 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
     def seed_ratio(self):
         return self.ratio
-
-
-class XthorCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = XthorProvider()

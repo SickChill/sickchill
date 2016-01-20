@@ -41,7 +41,7 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
         self.token = None
         self.tokenLastUpdate = None
 
-        self.cache = T411Cache(self, min_time=10)  # Only poll T411 every 10 minutes max
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll T411 every 10 minutes max
 
         self.urls = {'base_url': 'http://www.t411.in/',
                      'search': 'https://api.t411.in/torrents/search/%s?cid=%s&limit=100',
@@ -174,11 +174,5 @@ class T411Auth(AuthBase):  # pylint: disable=too-few-public-methods
     def __call__(self, r):
         r.headers['Authorization'] = self.token
         return r
-
-
-class T411Cache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = T411Provider()

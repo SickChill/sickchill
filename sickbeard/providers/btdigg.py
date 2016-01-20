@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Jodi Jones <venom@gen-x.co.nz>
-# Rewrite: Gonçalo <matigonkas@outlook.com>
+# Rewrite: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
 # URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
@@ -46,7 +46,10 @@ class BTDiggProvider(TorrentProvider):
         # self.minseed = 1
         # self.minleech = 0
 
-        self.cache = BTDiggCache(self, min_time=30)  # Only poll BTDigg every 30 minutes max, since BTDigg takes some time to crawl
+        # Use this hacky way for RSS search since most results will use this codecs
+        params = {'RSS': ['x264', 'x264.HDTV', '720.HDTV.x264']}
+        # Only poll BTDigg every 30 minutes max, since BTDigg takes some time to crawl
+        self.cache = tvcache.TVCache(self, min_time=30, search_params=params)
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
@@ -123,11 +126,5 @@ class BTDiggProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
-
-
-class BTDiggCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_params = {'RSS': ['x264', 'x264.HDTV', '720.HDTV.x264']}  # Use this hacky way for RSS search since most results will use this codecs
-        return {'entries': self.provider.search(search_params)}
 
 provider = BTDiggProvider()

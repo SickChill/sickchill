@@ -50,7 +50,7 @@ class BitSoupProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         self.minseed = None
         self.minleech = None
 
-        self.cache = BitSoupCache(self, min_time=20)  # only poll TorrentBytes every 20 minutes max
+        self.cache = tvcache.TVCache(self)
 
         self.search_params = {
             "c42": 1, "c45": 1, "c49": 1, "c7": 1
@@ -154,11 +154,5 @@ class BitSoupProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
     def seed_ratio(self):
         return self.ratio
-
-
-class BitSoupCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = BitSoupProvider()

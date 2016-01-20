@@ -301,6 +301,7 @@ class BTNCache(tvcache.TVCache):
                 logger.DEBUG)
             seconds_since_last_update = 86400
 
-        return {'entries': self.provider.search(search_params=None, age=seconds_since_last_update)}
+        self.search_params = None  # BTN cache does not use search params
+        return {'entries': self.provider.search(search_params=self.search_params, age=seconds_since_last_update)}
 
 provider = BTNProvider()

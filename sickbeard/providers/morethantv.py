@@ -51,7 +51,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         self.proper_strings = ['PROPER', 'REPACK']
 
-        self.cache = MoreThanTVCache(self, min_time=20)  # only poll MoreThanTV every 20 minutes max
+        self.cache = tvcache.TVCache(self)
 
     def _check_auth(self):
 
@@ -172,11 +172,5 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def seed_ratio(self):
         return self.ratio
-
-
-class MoreThanTVCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = MoreThanTVProvider()

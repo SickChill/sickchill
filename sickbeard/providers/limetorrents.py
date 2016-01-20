@@ -49,7 +49,7 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.headers.update({'User-Agent': USER_AGENT})
         self.proper_strings = ['PROPER', 'REPACK', 'REAL']
 
-        self.cache = LimeTorrentsCache(self, min_time=20)  # only poll LimeTorrents every 20 minutes max
+        self.cache = tvcache.TVCache(self, search_params={'RSS': ['rss']})
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches,too-many-locals
         results = []
@@ -132,11 +132,5 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
     def seed_ratio(self):
         return self.ratio
-
-
-class LimeTorrentsCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['rss']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = LimeTorrentsProvider()

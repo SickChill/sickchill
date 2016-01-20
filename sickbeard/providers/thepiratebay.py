@@ -42,7 +42,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.minseed = None
         self.minleech = None
 
-        self.cache = ThePirateBayCache(self, min_time=30)  # only poll ThePirateBay every 30 minutes max
+        self.cache = tvcache.TVCache(self, min_time=30)  # only poll ThePirateBay every 30 minutes max
 
         self.url = 'https://thepiratebay.se/'
         self.urls = {
@@ -148,11 +148,5 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
     def seed_ratio(self):
         return self.ratio
-
-
-class ThePirateBayCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = ThePirateBayProvider()

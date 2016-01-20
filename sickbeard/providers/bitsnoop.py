@@ -49,7 +49,7 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
         self.proper_strings = ['PROPER', 'REPACK']
 
-        self.cache = BitSnoopCache(self, min_time=20)  # only poll BitSnoop every 20 minutes max
+        self.cache = tvcache.TVCache(self, search_params={'RSS': ['rss']})
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches,too-many-locals
         results = []
@@ -124,11 +124,5 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
     def seed_ratio(self):
         return self.ratio
-
-
-class BitSnoopCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['rss']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = BitSnoopProvider()

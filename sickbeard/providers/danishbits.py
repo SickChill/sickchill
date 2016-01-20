@@ -38,7 +38,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.password = None
         self.ratio = None
 
-        self.cache = DanishbitsCache(self, min_time=10)  # Only poll Danishbits every 10 minutes max
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll Danishbits every 10 minutes max
 
         self.url = 'https://danishbits.org/'
         self.urls = {
@@ -165,11 +165,5 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def seedRatio(self):
         return self.ratio
-
-
-class DanishbitsCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = DanishbitsProvider()

@@ -43,7 +43,7 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         self.minseed = None
         self.minleech = None
 
-        self.cache = SCCCache(self, min_time=20)  # only poll SCC every 20 minutes max
+        self.cache = tvcache.TVCache(self)  # only poll SCC every 20 minutes max
 
         self.urls = {
             'base_url': 'https://sceneaccess.eu',
@@ -165,11 +165,5 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
     def seed_ratio(self):
         return self.ratio
-
-
-class SCCCache(tvcache.TVCache):
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = SCCProvider()
