@@ -300,19 +300,19 @@ class GenericProviderTests(unittest.TestCase):
         Test _get_title_and_url
         """
         items_list = [
-            None, {}, {'link': None, 'title': None}, {'link': '', 'title': ''},
-            {'link': 'http://www.google.com/&amp;foo=bar%26tr%3Dtest', 'title': 'Some Title'}
+            None, {}, {'link': None, 'title': None, 'seeders': None, 'leechers': None}, {'link': '', 'title': '', 'seeders': '1', 'leechers': '1'},
+            {'link': 'http://www.google.com/&amp;foo=bar%26tr%3Dtest', 'title': 'Some Title', 'seeders': '10', 'leechers': '0'}
         ]
         results_list = [
-            ('', ''), ('', ''), ('', ''), ('', ''), ('Some.Title', 'http://www.google.com/&foo=bar&tr=test')
+            ('', '', '', ''), ('', '', '', ''), ('', '', '', ''), ('', '', '1', '1'), ('Some.Title', 'http://www.google.com/&foo=bar&tr=test', '10', '0')
         ]
 
         unicode_items_list = [
-            {'link': u'', 'title': u''},
-            {'link': u'http://www.google.com/&amp;foo=bar%26tr%3Dtest', 'title': u'Some Title'}
+            {'link': u'', 'title': u'', 'seeders': u'', 'leechers': u''},
+            {'link': u'http://www.google.com/&amp;foo=bar%26tr%3Dtest', 'title': u'Some Title', 'seeders': '1', 'leechers': '1'}
         ]
         unicode_results_list = [
-            ('', ''), ('Some.Title', 'http://www.google.com/&foo=bar&tr=test')
+            ('', '', '', ''), ('Some.Title', 'http://www.google.com/&foo=bar&tr=test', '1', '1')
         ]
 
         self.assertEqual(
