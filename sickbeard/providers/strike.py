@@ -74,7 +74,7 @@ class StrikeProvider(TorrentProvider):
                         continue
 
                     if mode != 'RSS':
-                        logger.log(u"Found result: %s " % title, logger.DEBUG)
+                        logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                     item = title, download_url, size, seeders, leechers
                     items.append(item)

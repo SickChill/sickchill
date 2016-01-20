@@ -116,7 +116,7 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                         item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+                            logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 
