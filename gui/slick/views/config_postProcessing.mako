@@ -216,29 +216,6 @@
                             </label>
                         </div>
                         <div class="field-pair">
-                            <input id="use_failed_downloads" type="checkbox" class="enabler" name="use_failed_downloads" ${('', 'checked="checked"')[bool(sickbeard.USE_FAILED_DOWNLOADS)]}/>
-                            <label for="use_failed_downloads">
-                                <span class="component-title">Use Failed Downloads</span>
-                                <span class="component-desc">Use Failed Download Handling?</span>
-                            </label>
-                            <label class="nocheck" for="use_failed_downloads">
-                                <span class="component-title">&nbsp;</span>
-                            </label>
-                        </div>
-                        <div id="content_use_failed_downloads">
-                            <div class="field-pair">
-                                <input id="delete_failed" type="checkbox" name="delete_failed" ${('', 'checked="checked"')[bool(sickbeard.DELETE_FAILED)]}/>
-                                <label for="delete_failed">
-                                    <span class="component-title">Delete Failed</span>
-                                    <span class="component-desc">Delete files left over from a failed download?</span>
-                                </label>
-                                <label class="nocheck" for="delete_failed">
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc"><b>NOTE:</b> This only works if Use Failed Downloads is enabled.</span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="field-pair">
                             <label class="nocheck">
                                 <span class="component-title">Extra Scripts</span>
                                 <input type="text" name="extra_scripts" value="${'|'.join(sickbeard.EXTRA_SCRIPTS)}" class="form-control input-sm input350" autocapitalize="off" />
