@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Jordon Smith <smith@jordon.me.uk>
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -17,11 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import urllib
+from datetime import datetime
+from urllib import urlencode
 
 import sickbeard
-from sickbeard import tvcache
-from sickbeard import logger
+from sickbeard import classes, logger, tvcache
+
 from sickrage.helper.common import try_int
 from sickrage.providers.nzb.NZBProvider import NZBProvider
 
@@ -105,7 +107,7 @@ class OmgwtfnzbsProvider(NZBProvider):
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                logger.log(u"Search URL: %s" % self.urls['api'] + '?' + urllib.urlencode(search_params), logger.DEBUG)
+                logger.log(u"Search URL: %s" % self.urls['api'] + '?' + urlencode(search_params), logger.DEBUG)
 
                 data = self.get_url(self.urls['api'], params=search_params, json=True)
                 if not data:
@@ -153,7 +155,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
             'catid': '19,20'  # SD,HD
         }
 
-        rss_url = self.provider.urls['rss'] + '?' + urllib.urlencode(search_params)
+        rss_url = self.provider.urls['rss'] + '?' + urlencode(search_params)
 
         logger.log(u"Cache update URL: %s" % rss_url, logger.DEBUG)
 

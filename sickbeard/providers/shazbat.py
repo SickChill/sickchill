@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -17,13 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class ShazbatProvider(TorrentProvider):
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "Shazbat.tv")
@@ -60,7 +61,6 @@ class ShazbatProvider(TorrentProvider):
 
 class ShazbatCache(tvcache.TVCache):
     def _getRSSData(self):
-
         rss_url = self.provider.urls['base_url'] + 'rss/recent?passkey=' + provider.passkey + '&fname=true'
         logger.log(u"Cache update URL: %s" % rss_url, logger.DEBUG)
 

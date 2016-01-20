@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: CristianBB
 #
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,19 +18,19 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
 import re
 from six.moves import urllib
+import traceback
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 from sickrage.helper.common import try_int
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class elitetorrentProvider(TorrentProvider):
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "EliteTorrent")
@@ -168,6 +168,5 @@ class elitetorrentCache(tvcache.TVCache):
     def _getRSSData(self):
         search_params = {'RSS': ['']}
         return {'entries': self.provider.search(search_params)}
-
 
 provider = elitetorrentProvider()

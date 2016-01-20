@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# coding=utf-8
 # Author: adaur <adaur.underground@gmail.com>
 # Rewrite: Dustyn Gibson (miigotu) <miigotu@gmail.com>
 # URL: https://sickrage.github.io
@@ -19,16 +19,15 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import requests
 import cookielib
+from requests.utils import dict_from_cookiejar
 from urllib import urlencode
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
-from sickrage.helper.common import try_int, convert_size
+from sickrage.helper.common import convert_size, try_int
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -56,7 +55,7 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
     def login(self):
 
-        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
         login_params = {'username': self.username,
@@ -80,11 +79,11 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             return results
 
         """
-            Séries / Pack TV 13
-            Séries / TV FR 14
-            Séries / HD FR 15
-            Séries / TV VOSTFR 16
-            Séries / HD VOSTFR 17
+            SÃ©ries / Pack TV 13
+            SÃ©ries / TV FR 14
+            SÃ©ries / HD FR 15
+            SÃ©ries / TV VOSTFR 16
+            SÃ©ries / HD VOSTFR 17
             Mangas (Anime) 32
             Sport 34
         """
@@ -125,7 +124,7 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    # Catégorie, Nom du Torrent, (Download), (Bookmark), Com., Taille, Complété, Seeders, Leechers
+                    # CatÃ©gorie, Nom du Torrent, (Download), (Bookmark), Com., Taille, ComplÃ©tÃ©, Seeders, Leechers
                     labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all('td')]
 
                     for row in torrent_rows[1:]:
@@ -169,6 +168,5 @@ class XthorCache(tvcache.TVCache):
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}
-
 
 provider = XthorProvider()

@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Mr_Orange
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -17,16 +18,17 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import urllib
 import re
+from urllib import urlencode
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "NyaaTorrents")
@@ -67,7 +69,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                 if mode != 'RSS':
                     params["term"] = search_string.encode('utf-8')
 
-                search_url = self.url + '?' + urllib.urlencode(params)
+                search_url = self.url + '?' + urlencode(params)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 summary_regex = ur"(\d+) seeder\(s\), (\d+) leecher\(s\), \d+ download\(s\) - (\d+.?\d* [KMGT]iB)(.*)"

@@ -1,6 +1,8 @@
 # coding=utf-8
-# Author: Gonçalo (aka duramato/supergonkas) <matigonkas@outlook.com>
-# URL: https://github.com/SickRage/sickrage
+# Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
+#
+# URL: https://sickrage.github.io
+#
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -18,15 +20,18 @@
 
 import traceback
 from bs4 import BeautifulSoup
-from sickbeard import logger
-from sickbeard import tvcache
+
+from sickbeard import logger, tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int, convert_size
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
+class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "LimeTorrents")
 
         self.urls = {
@@ -133,6 +138,5 @@ class LimeTorrentsCache(tvcache.TVCache):
     def _getRSSData(self):
         search_strings = {'RSS': ['rss']}
         return {'entries': self.provider.search(search_strings)}
-
 
 provider = LimeTorrentsProvider()

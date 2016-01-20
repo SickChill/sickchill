@@ -1,8 +1,7 @@
 # coding=utf-8
 # Author: Jodi Jones <venom@gen-x.co.nz>
-# URL: http://code.google.com/p/sickbeard/
 # Rewrite: Gonçalo <matigonkas@outlook.com>
-# URL: https://github.com/SickRage/SickRage
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,11 +17,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
-import traceback
 
+import traceback
 from urllib import urlencode
-from sickbeard import logger
-from sickbeard import tvcache
+
+from sickbeard import logger, tvcache
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -30,6 +30,7 @@ from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 class BTDiggProvider(TorrentProvider):
 
     def __init__(self):
+
         TorrentProvider.__init__(self, "BTDigg")
 
         self.public = True
@@ -126,9 +127,7 @@ class BTDiggProvider(TorrentProvider):
 
 class BTDiggCache(tvcache.TVCache):
     def _getRSSData(self):
-
-        # Use this hacky way for RSS search since most results will use this codecs
-        search_params = {'RSS': ['x264', 'x264.HDTV', '720.HDTV.x264']}
+        search_params = {'RSS': ['x264', 'x264.HDTV', '720.HDTV.x264']}  # Use this hacky way for RSS search since most results will use this codecs
         return {'entries': self.provider.search(search_params)}
 
 provider = BTDiggProvider()

@@ -1,6 +1,8 @@
 # coding=utf-8
-# Author: Gonçalo (aka duramato) <matigonkas@outlook.com>
-# URL: https://github.com/SickRage/sickrage
+# Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
+#
+# URL: https://sickrage.github.io
+#
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -20,14 +22,16 @@ import traceback
 from bs4 import BeautifulSoup
 
 import sickbeard
-from sickbeard import logger
-from sickbeard import tvcache
-from sickrage.helper.common import try_int, convert_size
+from sickbeard import logger, tvcache
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "BitSnoop")
 
         self.urls = {
@@ -126,6 +130,5 @@ class BitSnoopCache(tvcache.TVCache):
     def _getRSSData(self):
         search_strings = {'RSS': ['rss']}
         return {'entries': self.provider.search(search_strings)}
-
 
 provider = BitSnoopProvider()

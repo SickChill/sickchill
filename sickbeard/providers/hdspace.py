@@ -2,7 +2,7 @@
 # Author: Idan Gutman
 # Modified by jkaberg, https://github.com/jkaberg for SceneAccess
 # Modified by 7ca for HDSpace
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -20,18 +20,20 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import urllib
-import requests
+from requests.utils import dict_from_cookiejar
+from urllib import quote_plus
 from bs4 import BeautifulSoup
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "HDSpace")
 
         self.username = None
@@ -65,7 +67,7 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
     def login(self):
 
-        if 'pass' in requests.utils.dict_from_cookiejar(self.session.cookies):
+        if 'pass' in dict_from_cookiejar(self.session.cookies):
             return True
 
         login_params = {'uid': self.username,
@@ -92,7 +94,7 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    search_url = self.urls['search'] % (urllib.quote_plus(search_string.replace('.', ' ')),)
+                    search_url = self.urls['search'] % (quote_plus(search_string.replace('.', ' ')),)
                 else:
                     search_url = self.urls['search'] % ''
 

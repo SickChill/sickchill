@@ -1,9 +1,7 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
-#
 # Rewrite: Dustyn Gibson (miigotu) <miigotu@gmail.com>
-# URL: http://sickrage.github.io
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -20,20 +18,20 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import time
 import datetime
+import os
 import posixpath  # Must use posixpath
+import time
 from urllib import urlencode
 
 import sickbeard
-from sickbeard import logger
-from sickbeard import tvcache
-from sickrage.helper.encoding import ek, ss
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import try_int, convert_size
-from sickrage.providers.nzb.NZBProvider import NZBProvider
 from sickbeard.common import cpu_presets
+
+from sickrage.helper.common import convert_size, try_int
+from sickrage.helper.encoding import ek, ss
+from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
 class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attributes, too-many-arguments
@@ -43,6 +41,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
     Tested with: newznab, nzedb, spotweb, torznab
     """
     # pylint: disable=too-many-arguments
+
     def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly',
                  search_fallback=False, enable_daily=True, enable_backlog=False):
 

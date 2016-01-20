@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Idan Gutman
 # Modified by jkaberg, https://github.com/jkaberg for SceneAccess
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -20,14 +20,14 @@
 
 import re
 import time
-import urllib
+from urllib import quote
 
 import sickbeard
-from sickbeard.common import cpu_presets
-from sickbeard import logger
-from sickbeard import tvcache
-from sickrage.helper.common import convert_size
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickbeard.common import cpu_presets
+
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -99,7 +99,7 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                search_url = self.urls['search'] % (urllib.quote(search_string), self.categories[mode])
+                search_url = self.urls['search'] % (quote(search_string), self.categories[mode])
 
                 try:
                     logger.log(u"Search URL: %s" % search_url, logger.DEBUG)

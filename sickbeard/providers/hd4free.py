@@ -1,6 +1,7 @@
 # coding=utf-8
-# Author: Gonçalo (aka duramato) <matigonkas@outlook.com>
-# URL: https://github.com/SickRage/SickRage
+# Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,8 +19,9 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 from urllib import urlencode
-from sickbeard import logger
-from sickbeard import tvcache
+
+from sickbeard import logger, tvcache
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -27,6 +29,7 @@ from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
+
         TorrentProvider.__init__(self, "HD4Free")
 
         self.url = 'https://hd4free.xyz'
@@ -127,7 +130,6 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
 class HD4FreeCache(tvcache.TVCache):
     def _getRSSData(self):
-
         search_params = {'RSS': ['']}
         return {'entries': self.provider.search(search_params)}
 

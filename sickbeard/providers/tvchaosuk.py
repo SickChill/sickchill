@@ -15,14 +15,12 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-# from urllib import urlencode
 
 import sickbeard
-from sickbeard import logger
-from sickbeard import tvcache
-from sickbeard import show_name_helpers
-from sickbeard.helpers import sanitizeSceneName
+from sickbeard import logger, show_name_helpers, tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickbeard.helpers import sanitizeSceneName
+
 from sickrage.helper.common import convert_size
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -205,6 +203,5 @@ class TVChaosUKCache(tvcache.TVCache):
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}
-
 
 provider = TVChaosUKProvider()

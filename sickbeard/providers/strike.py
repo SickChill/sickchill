@@ -1,6 +1,7 @@
 # coding=utf-8
-# Author: Gonçalo (aka duramato) <matigonkas@outlook.com>
-# URL: https://github.com/SickRage/SickRage
+# Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -17,8 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -26,6 +27,7 @@ from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 class StrikeProvider(TorrentProvider):
 
     def __init__(self):
+
         TorrentProvider.__init__(self, "Strike")
 
         self.public = True
@@ -89,9 +91,7 @@ class StrikeProvider(TorrentProvider):
 
 class StrikeCache(tvcache.TVCache):
     def _getRSSData(self):
-
-        # Use this hacky way for RSS search since most results will use this codec
-        search_params = {'RSS': ['x264']}
+        search_params = {'RSS': ['x264']}  # Use this hacky way for RSS search since most results will use this codec
         return {'entries': self.provider.search(search_params)}
 
 provider = StrikeProvider()

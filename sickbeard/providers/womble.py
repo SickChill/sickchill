@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -17,14 +18,17 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
+
 from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
 class WombleProvider(NZBProvider):
+
     def __init__(self):
+
         NZBProvider.__init__(self, "Womble's Index")
+
         self.public = True
         self.cache = WombleCache(self, min_time=15)  # only poll Womble's Index every 15 minutes max
         self.urls = {'base_url': 'http://newshost.co.za/'}

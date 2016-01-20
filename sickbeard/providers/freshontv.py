@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Idan Gutman
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,18 +19,19 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+from requests.utils import add_dict_to_cookiejar, dict_from_cookiejar
 import time
-import requests
 import traceback
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import try_int, convert_size
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "FreshOnTV")
@@ -63,11 +65,11 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         return True
 
     def login(self):
-        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
         if self._uid and self._hash:
-            requests.utils.add_dict_to_cookiejar(self.session.cookies, self.cookies)
+            add_dict_to_cookiejar(self.session.cookies, self.cookies)
         else:
             login_params = {'username': self.username,
                             'password': self.password,
@@ -81,9 +83,9 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             if re.search('/logout.php', response):
 
                 try:
-                    if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
-                        self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
-                        self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
+                    if dict_from_cookiejar(self.session.cookies)['uid'] and dict_from_cookiejar(self.session.cookies)['pass']:
+                        self._uid = dict_from_cookiejar(self.session.cookies)['uid']
+                        self._hash = dict_from_cookiejar(self.session.cookies)['pass']
 
                         self.cookies = {'uid': self._uid,
                                         'pass': self._hash}

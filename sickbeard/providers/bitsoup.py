@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Idan Gutman
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -20,15 +21,17 @@
 import re
 import traceback
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BitSoupProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "BitSoup")
 
         self.urls = {
@@ -157,6 +160,5 @@ class BitSoupCache(tvcache.TVCache):
     def _getRSSData(self):
         search_strings = {'RSS': ['']}
         return {'entries': self.provider.search(search_strings)}
-
 
 provider = BitSoupProvider()

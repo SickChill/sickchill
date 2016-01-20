@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: seedboy
-# URL: https://github.com/seedboy
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,15 +19,17 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from sickbeard import logger
-from sickbeard import tvcache
+
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import convert_size
+
 from sickrage.helper.exceptions import AuthException, ex
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "IPTorrents")
@@ -166,6 +169,5 @@ class IPTorrentsCache(tvcache.TVCache):
     def _getRSSData(self):
         search_params = {'RSS': ['']}
         return {'entries': self.provider.search(search_params)}
-
 
 provider = IPTorrentsProvider()

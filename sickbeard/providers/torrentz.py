@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: https://github.com/SickRage/SickRage
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,12 +19,13 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import traceback
 from six.moves import urllib
-from sickbeard import logger
-from sickbeard import tvcache
-from sickbeard.common import USER_AGENT
+import traceback
+
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickbeard.common import USER_AGENT
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -33,6 +35,7 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
     def __init__(self):
 
         TorrentProvider.__init__(self, "Torrentz")
+
         self.public = True
         self.confirmed = True
         self.ratio = None
@@ -108,6 +111,7 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
 class TorrentzCache(tvcache.TVCache):
     def _getRSSData(self):
-        return {'entries': self.provider.search({'RSS': ['']})}
+        search_strings = {'RSS': ['']}
+        return {'entries': self.provider.search(search_strings)}
 
 provider = TorrentzProvider()

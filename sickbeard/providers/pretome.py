@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Nick Sologoub
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,17 +19,18 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import urllib
 import traceback
+from urllib import quote
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "Pretome")
@@ -91,7 +93,7 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                search_url = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
+                search_url = self.urls['search'] % (quote(search_string.encode('utf-8')), self.categories)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 data = self.get_url(search_url)
@@ -171,6 +173,5 @@ class PretomeCache(tvcache.TVCache):
     def _getRSSData(self):
         search_params = {'RSS': ['']}
         return {'entries': self.provider.search(search_params)}
-
 
 provider = PretomeProvider()

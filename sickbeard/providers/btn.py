@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Daniel Heimans
-# URL: http://code.google.com/p/sickbeard
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -17,25 +18,25 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import time
-import socket
-import math
-import jsonrpclib
 from datetime import datetime
+import jsonrpclib
+import math
+import socket
+import time
 
 import sickbeard
-from sickbeard import logger
-from sickbeard import classes
-from sickbeard import tvcache
-from sickbeard import scene_exceptions
-from sickbeard.helpers import sanitizeSceneName
+from sickbeard import classes, logger, scene_exceptions, tvcache
 from sickbeard.common import cpu_presets
+from sickbeard.helpers import sanitizeSceneName
+
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BTNProvider(TorrentProvider):
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "BTN")
 
         self.supports_absolute_numbering = True
@@ -301,6 +302,5 @@ class BTNCache(tvcache.TVCache):
             seconds_since_last_update = 86400
 
         return {'entries': self.provider.search(search_params=None, age=seconds_since_last_update)}
-
 
 provider = BTNProvider()

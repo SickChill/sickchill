@@ -1,4 +1,7 @@
 # coding=utf-8
+#
+# URL: https://sickrage.github.io
+#
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -15,10 +18,10 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import urllib
+from urllib import urlencode
 
-from sickbeard import classes
-from sickbeard import logger, tvcache
+from sickbeard import classes, logger, tvcache
+
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -27,8 +30,8 @@ try:
 except ImportError:
     import simplejson as json
 
-
 class HDBitsProvider(TorrentProvider):
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "HDBits")
@@ -71,7 +74,7 @@ class HDBitsProvider(TorrentProvider):
 
     def _get_title_and_url(self, item):
         title = item.get('name', '').replace(' ', '.')
-        url = self.urls['download'] + urllib.urlencode({'id': item['id'], 'passkey': self.passkey})
+        url = self.urls['download'] + urlencode({'id': item['id'], 'passkey': self.passkey})
 
         return title, url
 
@@ -191,6 +194,5 @@ class HDBitsCache(tvcache.TVCache):
             pass
 
         return {'entries': results}
-
 
 provider = HDBitsProvider()

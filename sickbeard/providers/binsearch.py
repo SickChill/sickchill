@@ -1,31 +1,35 @@
 # coding=utf-8
 # Author: moparisthebest <admin@moparisthebest.com>
 #
-# This file is part of Sick Beard.
+# URL: https://sickrage.github.io
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# This file is part of SickRage.
+#
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import urllib
 import re
+from urllib import urlencode
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
+
 from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
 class BinSearchProvider(NZBProvider):
+
     def __init__(self):
+
         NZBProvider.__init__(self, "BinSearch")
 
         self.public = True
@@ -33,7 +37,6 @@ class BinSearchProvider(NZBProvider):
         self.urls = {'base_url': 'https://www.binsearch.info/'}
         self.url = self.urls['base_url']
         self.supports_backlog = False
-
 
 
 class BinSearchCache(tvcache.TVCache):
@@ -97,7 +100,7 @@ class BinSearchCache(tvcache.TVCache):
             url = self.provider.url + 'rss.php?'
             urlArgs = {'max': 50, 'g': group}
 
-            url += urllib.urlencode(urlArgs)
+            url += urlencode(urlArgs)
 
             logger.log(u"Cache update URL: %s " % url, logger.DEBUG)
 
