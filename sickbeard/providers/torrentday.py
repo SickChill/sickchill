@@ -1,7 +1,9 @@
 # coding=utf-8
 # Author: Mr_Orange <mr_orange@hotmail.it>
 #
-# This file is part of SickRage.
+# URL: https://sickrage.github.io
+#
+#  This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,9 +19,10 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import requests
-from sickbeard import logger
-from sickbeard import tvcache
+from requests.utils import add_dict_to_cookiejar, dict_from_cookiejar
+
+from sickbeard import logger, tvcache
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -39,7 +42,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minseed = None
         self.minleech = None
 
-        self.cache = TorrentDayCache(self)
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
         self.urls = {
             'base_url': 'https://classic.torrentday.com',
@@ -57,11 +60,11 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def login(self):
 
-        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
         if self._uid and self._hash:
-            requests.utils.add_dict_to_cookiejar(self.session.cookies, self.cookies)
+            add_dict_to_cookiejar(self.session.cookies, self.cookies)
         else:
 
             login_params = {
@@ -81,9 +84,9 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 return False
 
             try:
-                if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
-                    self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
-                    self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
+                if dict_from_cookiejar(self.session.cookies)['uid'] and dict_from_cookiejar(self.session.cookies)['pass']:
+                    self._uid = dict_from_cookiejar(self.session.cookies)['uid']
+                    self._hash = dict_from_cookiejar(self.session.cookies)['pass']
 
                     self.cookies = {'uid': self._uid,
                                     'pass': self._hash}
@@ -159,18 +162,5 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def seed_ratio(self):
         return self.ratio
-
-
-class TorrentDayCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Only poll IPTorrents every 10 minutes max
-        self.minTime = 10
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = TorrentDayProvider()

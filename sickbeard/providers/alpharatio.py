@@ -1,5 +1,6 @@
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
+#
 # URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
@@ -18,13 +19,13 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from urllib import urlencode
 from requests.utils import dict_from_cookiejar
+from urllib import urlencode
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import try_int, convert_size
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -48,7 +49,7 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         self.proper_strings = ['PROPER', 'REPACK']
 
-        self.cache = AlphaRatioCache(self)
+        self.cache = tvcache.TVCache(self)
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
@@ -161,19 +162,5 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def seed_ratio(self):
         return self.ratio
-
-
-class AlphaRatioCache(tvcache.TVCache):
-
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll AlphaRatio every 20 minutes max
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = AlphaRatioProvider()

@@ -1,6 +1,7 @@
 # coding=utf-8
-# Author: duramato <matigonkas@outlook.com>
-# URL: https://github.com/SickRage/sickrage
+# Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -17,17 +18,20 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import posixpath # Must use posixpath
+import posixpath  # Must use posixpath
 from urllib import quote_plus
-from sickbeard import logger
-from sickbeard import tvcache
+
+from sickbeard import logger, tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int, convert_size
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TorrentProjectProvider(TorrentProvider):
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "TorrentProject")
 
         self.public = True
@@ -38,7 +42,7 @@ class TorrentProjectProvider(TorrentProvider):
         self.headers.update({'User-Agent': USER_AGENT})
         self.minseed = None
         self.minleech = None
-        self.cache = TorrentProjectCache(self)
+        self.cache = tvcache.TVCache(self, search_params={'RSS': ['0day']})
 
     def search(self, search_strings, age=0, ep_obj=None):
         results = []
@@ -107,18 +111,5 @@ class TorrentProjectProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
-
-
-class TorrentProjectCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        self.minTime = 20
-
-    def _getRSSData(self):
-
-        search_params = {'RSS': ['0day']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = TorrentProjectProvider()

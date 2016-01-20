@@ -1,4 +1,7 @@
 # coding=utf-8
+#
+# URL: https://sickrage.github.io
+#
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -18,15 +21,16 @@ import re
 import traceback
 from urllib import urlencode
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.helper.exceptions import AuthException
-from sickrage.helper.common import try_int, convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "TransmitTheNet")
@@ -46,7 +50,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
         self.minleech = None
         self.freeleech = None
 
-        self.cache = TransmitTheNetCache(self)
+        self.cache = tvcache.TVCache(self)
 
     def _check_auth(self):
 
@@ -169,18 +173,5 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
     def seed_ratio(self):
         return self.ratio
-
-
-class TransmitTheNetCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Only poll TransmitTheNet every 20 minutes max
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
-
 
 provider = TransmitTheNetProvider()

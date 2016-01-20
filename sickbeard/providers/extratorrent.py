@@ -1,7 +1,9 @@
 # coding=utf-8
-# Author: duramato <matigonkas@outlook.com>
-# Author: miigotu
-# URL: https://github.com/SickRage/sickrage
+# Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
+# Author: Dustyn Gibson <miigotu@gmail.com>
+#
+# URL: https://sickrage.github.io
+#
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -18,17 +20,20 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+
 import sickbeard
-from sickbeard import logger
-from sickbeard import tvcache
-from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int, convert_size
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickbeard.common import USER_AGENT
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "ExtraTorrent")
 
         self.urls = {
@@ -44,7 +49,7 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.minleech = None
         self.custom_url = None
 
-        self.cache = ExtraTorrentCache(self)
+        self.cache = tvcache.TVCache(self, min_time=30)  # Only poll ExtraTorrent every 30 minutes max
         self.headers.update({'User-Agent': USER_AGENT})
         self.search_params = {'cid': 8}
 
@@ -111,18 +116,5 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
     def seed_ratio(self):
         return self.ratio
-
-
-class ExtraTorrentCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        self.minTime = 30
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
-
 
 provider = ExtraTorrentProvider()

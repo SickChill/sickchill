@@ -1,34 +1,37 @@
-# -*- coding: latin-1 -*-
+# coding=utf-8
 # Author: raver2046 <raver2046@gmail.com> from djoole <bobby.djoole@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
 import re
-import requests
+from requests.utils import dict_from_cookiejar
+import traceback
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class FNTProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "FNT")
 
         self.username = None
@@ -37,7 +40,7 @@ class FNTProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         self.minseed = None
         self.minleech = None
 
-        self.cache = FNTCache(self)
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll FNT every 10 minutes max
 
         self.urls = {
             'base_url': 'https://fnt.nu',
@@ -55,7 +58,7 @@ class FNTProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
     def login(self):
 
-        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
         login_params = {
@@ -151,18 +154,5 @@ class FNTProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
     def seed_ratio(self):
         return self.ratio
-
-
-class FNTCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Only poll FNT every 10 minutes max
-        self.minTime = 10
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
-
 
 provider = FNTProvider()

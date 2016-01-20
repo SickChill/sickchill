@@ -23,14 +23,15 @@ from urllib import urlencode
 from bs4 import BeautifulSoup
 
 import sickbeard
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int, convert_size
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "KickAssTorrents")
@@ -60,7 +61,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
             'category': 'tv'
         }
 
-        self.cache = KatCache(self)
+        self.cache = tvcache.TVCache(self, search_params={'RSS': ['tv', 'anime']})
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
@@ -155,18 +156,5 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
     def seed_ratio(self):
         return self.ratio
-
-
-class KatCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll KickAss every 10 minutes max
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['tv', 'anime']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = KatProvider()

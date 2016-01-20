@@ -1,6 +1,7 @@
 ﻿# coding=utf-8
 # Author: Idan Gutman
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,12 +19,12 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import urllib
 import traceback
+from urllib import quote
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -55,7 +56,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         self.proper_strings = ['PROPER', 'REPACK']
 
-        self.cache = TorrentBytesCache(self)
+        self.cache = tvcache.TVCache(self)
 
     def login(self):
 
@@ -87,7 +88,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                search_url = self.urls['search'] % (urllib.quote(search_string.encode('utf-8')), self.categories)
+                search_url = self.urls['search'] % (quote(search_string.encode('utf-8')), self.categories)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 data = self.get_url(search_url)
@@ -167,19 +168,5 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
     def seed_ratio(self):
         return self.ratio
-
-
-class TorrentBytesCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll TorrentBytes every 20 minutes max
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
-
 
 provider = TorrentBytesProvider()

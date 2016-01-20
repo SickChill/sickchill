@@ -2,7 +2,7 @@
 # Author: Idan Gutman
 # Modified by jkaberg, https://github.com/jkaberg for SceneAccess
 # Modified by 7ca for HDSpace
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -20,18 +20,20 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import urllib
-import requests
+from requests.utils import dict_from_cookiejar
+from urllib import quote_plus
 from bs4 import BeautifulSoup
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "HDSpace")
 
         self.username = None
@@ -40,7 +42,7 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         self.minseed = None
         self.minleech = None
 
-        self.cache = HDSpaceCache(self)
+        self.cache = tvcache.TVCache(self, min_time=10)  # only poll HDSpace every 10 minutes max
 
         self.urls = {'base_url': u'https://hd-space.org/',
                      'login': u'https://hd-space.org/index.php?page=login',
@@ -65,7 +67,7 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
     def login(self):
 
-        if 'pass' in requests.utils.dict_from_cookiejar(self.session.cookies):
+        if 'pass' in dict_from_cookiejar(self.session.cookies):
             return True
 
         login_params = {'uid': self.username,
@@ -92,7 +94,7 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    search_url = self.urls['search'] % (urllib.quote_plus(search_string.replace('.', ' ')),)
+                    search_url = self.urls['search'] % (quote_plus(search_string.replace('.', ' ')),)
                 else:
                     search_url = self.urls['search'] % ''
 
@@ -165,18 +167,5 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
     def seed_ratio(self):
         return self.ratio
-
-
-class HDSpaceCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll HDSpace every 10 minutes max
-        self.minTime = 10
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = HDSpaceProvider()

@@ -1,8 +1,7 @@
 # coding=utf-8
 # Author: CristianBB
 # Greetings to Mr. Pine-apple
-#
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -19,25 +18,26 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
 import re
 from six.moves import urllib
+import traceback
 
 from sickbeard import helpers
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class newpctProvider(TorrentProvider):
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "Newpct")
 
         self.onlyspasearch = None
-        self.cache = newpctCache(self)
+        self.cache = tvcache.TVCache(self, min_time=10)
 
         # Unsupported
         # self.minseed = None
@@ -229,19 +229,5 @@ class newpctProvider(TorrentProvider):
         title += '-NEWPCT'
 
         return title.strip()
-
-
-class newpctCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # set this 0 to suppress log line, since we aren't updating it anyways
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
-
 
 provider = newpctProvider()

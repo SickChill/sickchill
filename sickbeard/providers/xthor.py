@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# coding=utf-8
 # Author: adaur <adaur.underground@gmail.com>
 # Rewrite: Dustyn Gibson (miigotu) <miigotu@gmail.com>
 # URL: https://sickrage.github.io
@@ -19,16 +19,15 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import requests
 import cookielib
+from requests.utils import dict_from_cookiejar
 from urllib import urlencode
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
-from sickrage.helper.common import try_int, convert_size
+from sickrage.helper.common import convert_size, try_int
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -52,11 +51,11 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         self.password = None
         self.freeleech = None
         self.proper_strings = ['PROPER']
-        self.cache = XthorCache(self)
+        self.cache = tvcache.TVCache(self, min_time=30)
 
     def login(self):
 
-        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
         login_params = {'username': self.username,
@@ -163,18 +162,5 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
     def seed_ratio(self):
         return self.ratio
-
-
-class XthorCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        self.minTime = 30
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
-
 
 provider = XthorProvider()

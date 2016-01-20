@@ -1,4 +1,7 @@
 # coding=utf-8
+#
+# URL: https://sickrage.github.io
+#
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -15,10 +18,10 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import urllib
+from urllib import urlencode
 
-from sickbeard import classes
-from sickbeard import logger, tvcache
+from sickbeard import classes, logger, tvcache
+
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -29,6 +32,7 @@ except ImportError:
 
 
 class HDBitsProvider(TorrentProvider):
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "HDBits")
@@ -37,7 +41,7 @@ class HDBitsProvider(TorrentProvider):
         self.passkey = None
         self.ratio = None
 
-        self.cache = HDBitsCache(self)
+        self.cache = HDBitsCache(self, min_time=15)  # only poll HDBits every 15 minutes max
 
         self.urls = {'base_url': 'https://hdbits.org',
                      'search': 'https://hdbits.org/api/torrents',
@@ -71,7 +75,7 @@ class HDBitsProvider(TorrentProvider):
 
     def _get_title_and_url(self, item):
         title = item.get('name', '').replace(' ', '.')
-        url = self.urls['download'] + urllib.urlencode({'id': item['id'], 'passkey': self.passkey})
+        url = self.urls['download'] + urlencode({'id': item['id'], 'passkey': self.passkey})
 
         return title, url
 
@@ -179,14 +183,8 @@ class HDBitsProvider(TorrentProvider):
 
 
 class HDBitsCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll HDBits every 15 minutes max
-        self.minTime = 15
-
     def _getRSSData(self):
+        self.search_params = None  # HDBits cache does not use search_params so set it to None
         results = []
 
         try:
@@ -198,6 +196,5 @@ class HDBitsCache(tvcache.TVCache):
             pass
 
         return {'entries': results}
-
 
 provider = HDBitsProvider()
