@@ -77,11 +77,11 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             return results
 
         """
-            Sï¿½ries / Pack TV 13
-            Sï¿½ries / TV FR 14
-            Sï¿½ries / HD FR 15
-            Sï¿½ries / TV VOSTFR 16
-            Sï¿½ries / HD VOSTFR 17
+            Séries / Pack TV 13
+            Séries / TV FR 14
+            Séries / HD FR 15
+            Séries / TV VOSTFR 16
+            Séries / HD VOSTFR 17
             Mangas (Anime) 32
             Sport 34
         """
@@ -130,7 +130,7 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                             result = td.get_text(strip=True)
                         return result
 
-                    # Catï¿½gorie, Nom du Torrent, (Download), (Bookmark), Com., Taille, Complï¿½tï¿½, Seeders, Leechers
+                    # Catégorie, Nom du Torrent, (Download), (Bookmark), Com., Taille, Complété, Seeders, Leechers
                     labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
 
                     for row in torrent_rows[1:]:
