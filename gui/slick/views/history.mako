@@ -83,6 +83,8 @@
                 % if curStatus in [DOWNLOADED, ARCHIVED]:
                     % if hItem["provider"] != "-1":
                         <span style="vertical-align:middle;"><i>${hItem["provider"]}</i></span>
+                    % else:
+                        <span style="vertical-align:middle;"><i>Unknown</i></span>
                     % endif
                 % else:
                     % if hItem["provider"] > 0:
