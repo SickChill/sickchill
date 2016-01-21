@@ -77,7 +77,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
     @staticmethod
     def get_providers_list(data):
-        default_list = [NewznabProvider._make_provider(x) for x in NewznabProvider._get_default_providers().split('!!!')]
+        default_list = [x for x in [NewznabProvider._make_provider(x) for x in NewznabProvider._get_default_providers().split('!!!')] if x]
         providers_list = [x for x in [NewznabProvider._make_provider(x) for x in data.split('!!!')] if x]
         seen_values = set()
         providers_set = []
@@ -108,6 +108,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 providers_dict[default.name].search_fallback = default.search_fallback
                 providers_dict[default.name].enable_daily = default.enable_daily
                 providers_dict[default.name].enable_backlog = default.enable_backlog
+                providers_dict[default.name].catIDs = default.catIDs
 
         return [x for x in providers_list if x]
 
@@ -219,11 +220,11 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
             if len(values) == 9:
                 name, url, key, category_ids, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
             else:
-                category_ids = values[3]
-                enabled = values[4]
-                key = values[2]
                 name = values[0]
                 url = values[1]
+                key = values[2]
+                category_ids = values[3]
+                enabled = values[4]
         except ValueError:
             logger.log(u'Skipping Newznab provider string: \'%s\', incorrect format' % config, logger.ERROR)
             return None
@@ -251,7 +252,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 "t": "tvsearch",
                 "limit": 100,
                 "offset": 0,
-                "cat": self.catIDs.strip(', ')
+                "cat": self.catIDs.strip(', ') or '5030,5040'
             }
             if self.needs_auth and self.key:
                 search_params['apikey'] = self.key
@@ -281,9 +282,9 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                search_params['q'] = search_string
-                if mode == 'RSS':
-                    search_params.pop('q', None)
+                # search_params['q'] = search_string
+                # if mode == 'RSS':
+                #     search_params.pop('q', None)
 
                 search_url = posixpath.join(self.url, 'api?') + urlencode(search_params)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
@@ -291,11 +292,11 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 data = self.get_url(search_url)
                 if not data:
-                    continue
+                    break
 
                 with BS4Parser(data, 'html5lib') as html:
                     if not self._checkAuthFromData(html):
-                        return results
+                        break
 
                     try:
                         torznab = 'xmlns:torznab' in html.rss.attrs
@@ -325,6 +326,10 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                             items.append(result)
                         except StandardError:
                             continue
+
+                # Since we arent using the search string,
+                # break out of the search string loop
+                break
 
             if torznab:
                 results.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
