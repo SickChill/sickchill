@@ -60,9 +60,9 @@ class TorrentProvider(GenericProvider):
                     search_strings = self._get_episode_search_strings(episode, add_string=term)
 
                     for item in self.search(search_strings[0]):
-                        title, url = self._get_title_and_url(item)
+                        title, url, seeders, leechers = self._get_title_and_url(item)
 
-                        results.append(Proper(title, url, datetime.today(), show))
+                        results.append(Proper(title, url, seeders, leechers, datetime.today(), show))
 
         return results
 
@@ -100,15 +100,21 @@ class TorrentProvider(GenericProvider):
         if isinstance(item, (dict, FeedParserDict)):
             download_url = item.get('url', '')
             title = item.get('title', '')
+            seeders = item.get('seeders', '')
+            leechers = item.get('leechers', '')
 
             if not download_url:
                 download_url = item.get('link', '')
         elif isinstance(item, (list, tuple)) and len(item) > 1:
             download_url = item[1]
             title = item[0]
+            seeders = item[3]
+            leechers = item[4]
         else:
             download_url = ''
             title = ''
+            seeders = ''
+            leechers = ''
 
         if title.endswith('DIAMOND'):
             logger.log(u'Skipping DIAMOND release for mass fake releases.')
@@ -120,7 +126,7 @@ class TorrentProvider(GenericProvider):
         if title:
             title = title.replace(' ', '.')
 
-        return title, download_url
+        return title, download_url, seeders, leechers
 
     def _verify_download(self, file_name=None):
         try:
