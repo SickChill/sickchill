@@ -184,6 +184,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         for item in items_list:
             (title, url) = self._get_title_and_url(item)
+            (seeders, leechers) = self._get_result_info(item)
 
             try:
                 parser = NameParser(parse_method=('normal', 'anime')[show.is_anime])
@@ -302,6 +303,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             result = self.get_result(episode_object)
             result.show = show_object
             result.url = url
+            result.seeders = seeders
+            result.leechers = leechers
             result.name = title
             result.quality = quality
             result.release_group = release_group
@@ -442,6 +445,9 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
     def _get_storage_dir(self):  # pylint: disable=no-self-use
         return ''
+
+    def _get_result_info(self, item):  # pylint: disable=no-self-use
+        return '', ''
 
     def _get_title_and_url(self, item):  # pylint: disable=no-self-use
         if not item:
