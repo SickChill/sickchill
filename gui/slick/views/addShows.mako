@@ -42,7 +42,7 @@
     <br><br>
     
     <a href="${srRoot}/addShows/anidbHotAnime/" id="btnExistingShow" class="btn btn-large">
-        <div class="button"><div class="icon-addrecommendedshow"></div></div>
+        <div class="button"><div class="icon-addanimelatesthotshow"></div></div>
         <div class="buttontext">
             <h3>Add From AniDB Lists</h3>
             <p>View AniDB Show lists from the latest Hot Anime list and others. Add shows directly from the AniDB list.</p>

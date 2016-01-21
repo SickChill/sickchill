@@ -315,6 +315,7 @@
         <script type="text/javascript" src="${srRoot}/js/lib/formwizard.js?${sbPID}"></script><!-- Can't be added to bower -->
         <script type="text/javascript" src="${srRoot}/js/parsers.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
         % if sickbeard.DEVELOPER:
         <script type="text/javascript" src="${srRoot}/js/core.js?${sbPID}"></script>
         % else:
