@@ -60,6 +60,14 @@ class CacheDBConnection(db.DBConnection):
             if not self.hasColumn(providerName, 'version'):
                 self.addColumn(providerName, 'version', "NUMERIC", "-1")
 
+            # add seeders column to table if missing
+            if not self.hasColumn(providerName, 'seeders'):
+                self.addColumn(providerName, 'seeders', "NUMERIC", "")
+
+            # add leechers column to table if missing
+            if not self.hasColumn(providerName, 'leechers'):
+                self.addColumn(providerName, 'leechers', "NUMERIC", "")
+
         except Exception as e:
             if str(e) != "table [" + providerName + "] already exists":
                 raise
@@ -95,6 +103,9 @@ class TVCache(object):
 
     def _get_title_and_url(self, item):
         return self.provider._get_title_and_url(item)
+
+    def _get_result_info(self, item):
+        return self.provider._get_result_info(item)
 
     def _getRSSData(self):
         return {u'entries': self.provider.search(self.search_params)} if self.search_params else None
@@ -160,6 +171,7 @@ class TVCache(object):
 
     def _parseItem(self, item):
         title, url = self._get_title_and_url(item)
+        seeders, leechers = self._get_result_info(item)
 
         self._checkItemAuth(title, url)
 
@@ -168,7 +180,7 @@ class TVCache(object):
             url = self._translateLinkURL(url)
 
             #logger.log(u"Attempting to add item to cache: " + title, logger.DEBUG)
-            return self._addCacheEntry(title, url)
+            return self._addCacheEntry(title, url, seeders, leechers)
 
         else:
             logger.log(
@@ -239,7 +251,7 @@ class TVCache(object):
 
         return True
 
-    def _addCacheEntry(self, name, url, parse_result=None, indexer_id=0):
+    def _addCacheEntry(self, name, url, seeders, leechers, parse_result=None, indexer_id=0):
 
         # check if we passed in a parsed result or should we try and create one
         if not parse_result:
@@ -287,8 +299,8 @@ class TVCache(object):
             logger.log(u"Added RSS item: [" + name + "] to cache: [" + self.providerID + "]", logger.DEBUG)
 
             return [
-                "INSERT OR IGNORE INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality, release_group, version) VALUES (?,?,?,?,?,?,?,?,?)",
-                [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality, release_group, version]]
+                "INSERT OR IGNORE INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality, release_group, version, seeders, leechers) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality, release_group, version, seeders, leechers]]
 
     def searchCache(self, episode, manualSearch=False, downCurQuality=False):
         neededEps = self.findNeededEpisodes(episode, manualSearch, downCurQuality)
