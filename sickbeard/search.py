@@ -252,8 +252,10 @@ def pickBestResult(results, show):
             bestResult = cur_result
         elif bestResult.quality == cur_result.quality:
             if "proper" in cur_result.name.lower() or "repack" in cur_result.name.lower():
+                logger.log(u"Preferring " + cur_result.name + " (repack/proper over nuked)")
                 bestResult = cur_result
             elif "internal" in bestResult.name.lower() and "internal" not in cur_result.name.lower():
+                logger.log(u"Preferring " + cur_result.name + " (normal instead of internal)")
                 bestResult = cur_result
             elif "xvid" in bestResult.name.lower() and "x264" in cur_result.name.lower():
                 logger.log(u"Preferring " + cur_result.name + " (x264 over xvid)")
