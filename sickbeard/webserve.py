@@ -2658,7 +2658,7 @@ class HomeAddShows(Home):
                         controller="addShows", action="addExistingShow")
 
     def addShowByID(self, indexerId, showName, indexer="TVDB", whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
-        qualityPreset=None, anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
+        qualityPreset=None, anyQualities=None, bestQualities=None, flattenFolders=None, subtitles=None,
         fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
         scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None, defaultFlattenFolders=None,
         configureShowOptions=None):
@@ -2717,13 +2717,13 @@ class HomeAddShows(Home):
             location = rootDir
                 
         else:
-            default_status=sickbeard.STATUS_DEFAULT
+            defaultStatus=sickbeard.STATUS_DEFAULT
             quality=sickbeard.QUALITY_DEFAULT
-            flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT
+            flattenFolders=sickbeard.FLATTEN_FOLDERS_DEFAULT
             subtitles=sickbeard.SUBTITLES_DEFAULT
             anime=sickbeard.ANIME_DEFAULT
             scene=sickbeard.SCENE_DEFAULT
-            default_status_after=sickbeard.STATUS_DEFAULT_AFTER
+            defaultStatusAfter=sickbeard.STATUS_DEFAULT_AFTER
             
             
             if sickbeard.ROOT_DIRS:
@@ -2740,7 +2740,7 @@ class HomeAddShows(Home):
         show_dir = None
         
         # add the show
-        sickbeard.showQueueScheduler.action.addShow(1, int(indexerId), show_dir, int(defaultStatus), quality,flatten_folders, 
+        sickbeard.showQueueScheduler.action.addShow(1, int(indexerId), show_dir, int(defaultStatus), quality, flattenFolders, 
                                                     indexerLang, subtitles, anime, scene, None, blacklist, whitelist, 
                                                     int(defaultStatusAfter), root_dir=location)
         

@@ -41,7 +41,7 @@
             <p>${int(cur_show['show']['rating']*10)}% <img src="${srRoot}/images/heart.png"></p>
             <i>${cur_show['show']['votes']} votes</i>
             <div class="traktShowTitleIcons">
-                <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_show['show']['ids']['tvdb']}&amp;show_name=${cur_show['show']['title'] | u}" class="btn btn-xs" data-no-redirect>Add Show</a>
+                <a href="${srRoot}/addShows/addShowByID?indexerId=${cur_show['show']['ids']['tvdb']}&amp;showName=${cur_show['show']['title'] | u}" class="btn btn-xs" data-no-redirect>Add Show</a>
                 % if blacklist:
                 <a href="${srRoot}/addShows/addShowToBlacklist?indexer_id=${cur_show['show']['ids']['tvdb'] or cur_show['show']['ids']['tvrage']}" class="btn btn-xs">Remove Show</a>
                 % endif
