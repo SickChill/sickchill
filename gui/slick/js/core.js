@@ -2330,10 +2330,15 @@ var SICKRAGE = {
                 var forSeason = $(this).attr('data-for-season');
                 var forEpisode = $(this).attr('data-for-episode');
                 var m = $(this).val().match(/^(\d+)x(\d+)$/i);
+                var firstSeason = $(this).val().match(/^(\d+)$/i);
                 var sceneSeason = null, sceneEpisode = null;
                 if (m) {
                     sceneSeason = m[1];
                     sceneEpisode = m[2];
+                } else if (firstSeason) {
+                	// For example when '5' is filled in instead of '1x5', asume it's the first season
+                	sceneSeason = '1';
+                	sceneEpisode = firstSeason[1];
                 }
                 setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode);
             });
