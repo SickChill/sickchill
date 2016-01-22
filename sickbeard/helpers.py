@@ -1769,6 +1769,20 @@ def getTVDBFromID(indexer_id, indexer):
     else:
         return tvdb_id
 
+def get_showname_from_indexer(indexer, indexer_id, lang='en'):
+    lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
+    if lang:
+        lINDEXER_API_PARMS['language'] = lang
+
+    logger.log(u"" + str(sickbeard.indexerApi(indexer).name) + ": " + repr(lINDEXER_API_PARMS))
+
+    t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
+    s = t[int(indexer_id)]
+    
+    if hasattr(s,'data'):
+        return s.data.get('seriesname')
+    
+    return None
 
 def is_ip_private(ip):
     priv_lo = re.compile(r"^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
