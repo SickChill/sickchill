@@ -34,7 +34,7 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, CantUpdateShowException
 from sickrage.helper.exceptions import EpisodeDeletedException, ex, MultipleShowObjectsException
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
-from sickbeard.helpers import getShowNameFromIndexer
+from sickbeard.helpers import get_show_name_from_indexer
 from libtrakt import TraktAPI
 from sickrage.helper.encoding import ek
 from sickbeard.helpers import makeDir, chmodAsParent
@@ -304,7 +304,7 @@ class QueueItemAdd(ShowQueueItem):
             ## Let's try to create the show Dir if it's not provided. This way we force the show dir to build build using the
             # Indexers provided series name
             if not self.showDir and self.root_dir:
-                show_name = getShowNameFromIndexer(self.indexer, self.indexer_id, self.lang)
+                show_name = get_show_name_from_indexer(self.indexer, self.indexer_id, self.lang)
                 if show_name:
                     self.showDir = ek(os.path.join, self.root_dir, sanitize_filename(show_name))
                     dir_exists = makeDir(self.showDir)
