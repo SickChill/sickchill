@@ -2616,7 +2616,7 @@ class HomeAddShows(Home):
                         popular_shows=popular_shows, imdb_exception=e,
                         topmenu="home",
                         controller="addShows", action="popularShows")
-        
+
     def anidbPopular(self):
         """
         Fetches data from IMDB to show a list of popular shows.
