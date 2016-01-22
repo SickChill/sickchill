@@ -4,6 +4,7 @@
     import datetime
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
     from sickbeard.common import Overview, Quality, qualityPresets, qualityPresetStrings
+    from sickrage.helper.common import episode_num
     from sickbeard import sbdatetime, network_timezones
 %>
 <%block name="scripts">
@@ -84,7 +85,7 @@ Jump to Show:
 
     % for curResult in showSQLResults[curShow.indexerid]:
         <%
-            whichStr = 'S%02dE%02d' % (curResult['season'], curResult['episode'])
+            whichStr = episode_num(curResult['season'], curResult['episode']) or episode_num(curResult['season'], curResult['episode'], numbering='absolute')
             if whichStr not in showCats[curShow.indexerid] or showCats[curShow.indexerid][whichStr] not in (Overview.QUAL, Overview.WANTED, Overview.SNATCHED):
                 continue
 
