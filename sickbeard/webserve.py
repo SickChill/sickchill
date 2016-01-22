@@ -37,6 +37,7 @@ from sickbeard import search_queue
 from sickbeard import naming
 from sickbeard import subtitles
 from sickbeard import network_timezones
+from sickbeard.helpers import getShowNameFromIndexer
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, cpu_presets
 from sickbeard.common import SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
@@ -2735,20 +2736,15 @@ class HomeAddShows(Home):
             logger.log(u"There was an error creating the show, no root directory setting found")
             return "No root directories setup, please go back and add one."
 
-        show_dir = ek(os.path.join, location, sanitize_filename(showName))
-        dir_exists = helpers.makeDir(show_dir)
-        if not dir_exists:
-            logger.log(u"Unable to create the folder " + show_dir + ", can't add the show")
-            return
-
-        helpers.chmodAsParent(show_dir)
+        show_name = getShowNameFromIndexer(1, indexerId)
+        show_dir = None
         
         # add the show
-        sickbeard.showQueueScheduler.action.addShow(1, int(indexerId), show_dir, int(defaultStatus), quality,
-                                                    flatten_folders, indexerLang, subtitles, anime,
-                                                    scene, None, blacklist, whitelist, int(defaultStatusAfter))
+        sickbeard.showQueueScheduler.action.addShow(1, int(indexerId), show_dir, int(defaultStatus), quality,flatten_folders, 
+                                                    indexerLang, subtitles, anime, scene, None, blacklist, whitelist, 
+                                                    int(defaultStatusAfter), root_dir=location)
         
-        ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
+        ui.notifications.message('Show added', 'Adding the specified show {0}'.format(show_name))
 
         # done adding show
         return self.redirect('/home/')
