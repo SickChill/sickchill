@@ -37,7 +37,7 @@ from sickbeard import search_queue
 from sickbeard import naming
 from sickbeard import subtitles
 from sickbeard import network_timezones
-from sickbeard.helpers import getShowNameFromIndexer
+from sickbeard.helpers import get_show_name_from_indexer
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, cpu_presets
 from sickbeard.common import SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
@@ -2657,40 +2657,40 @@ class HomeAddShows(Home):
                         header='Existing Show', topmenu="home",
                         controller="addShows", action="addExistingShow")
 
-    def addShowByID(self, indexerId, showName, indexer="TVDB", whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
-        qualityPreset=None, anyQualities=None, bestQualities=None, flattenFolders=None, subtitles=None,
-        fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
-        scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None, defaultFlattenFolders=None,
-        configureShowOptions=None):
+    def addShowByID(self, indexer_id, show_name, indexer="TVDB", which_series=None, indexer_lang=None, root_dir=None, default_status=None,
+        quality_preset=None, any_qualities=None, best_qualities=None, flatten_folders=None, subtitles=None,
+        full_show_path=None, other_shows=None, skip_show=None, provided_indexer=None, anime=None,
+        scene=None, blacklist=None, whitelist=None, default_status_after=None, default_flatten_folders=None,
+        configure_show_options=None):
 
         if indexer != "TVDB":
-            tvdb_id = helpers.getTVDBFromID(indexerId, indexer.upper())
+            tvdb_id = helpers.getTVDBFromID(indexer_id, indexer.upper())
             if not tvdb_id:
-                logger.log(u"Unable to to find tvdb ID to add %s" % showName)
+                logger.log(u"Unable to to find tvdb ID to add %s" % show_name)
                 ui.notifications.error(
-                    "Unable to add %s" % showName,
+                    "Unable to add %s" % show_name,
                     "Could not add %s.  We were unable to locate the tvdb id at this time." % showName
                 )
                 return
 
-            indexerId = try_int(tvdb_id, None)
+            indexer_id = try_int(tvdb_id, None)
 
-        if Show.find(sickbeard.showList, int(indexerId)):
+        if Show.find(sickbeard.showList, int(indexer_id)):
             return
         
         # Sanitize the paramater anyQualities and bestQualities. As these would normally be passed as lists
-        if anyQualities:
-            anyQualities = anyQualities.split(',')  
+        if any_qualities:
+            any_qualities = any_qualities.split(',')  
         else:
-            anyQualities = []
+            any_qualities = []
 
-        if bestQualities:
-            bestQualities = bestQualities.split(',')
+        if best_qualities:
+            best_qualities = best_qualities.split(',')
         else:
-            bestQualities = []
+            best_qualities = []
         
         # If configure_show_options is enabled let's use the provided settings
-        configure_show_options = config.checkbox_to_value(configureShowOptions)
+        configure_show_options = config.checkbox_to_value(configure_show_options)
         
         if configure_show_options:
             # prepare the inputs for passing along
@@ -2704,26 +2704,26 @@ class HomeAddShows(Home):
             if blacklist:
                 blacklist = short_group_names(blacklist)
                 
-            if not anyQualities:
-                anyQualities = []
-            if not bestQualities or try_int(qualityPreset, None):
-                bestQualities = []
-            if not isinstance(anyQualities, list):
-                anyQualities = [anyQualities]
-            if not isinstance(bestQualities, list):
-                bestQualities = [bestQualities]
-            quality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
+            if not any_qualities:
+                any_qualities = []
+            if not best_qualities or try_int(quality_preset, None):
+                best_qualities = []
+            if not isinstance(any_qualities, list):
+                any_qualities = [any_qualities]
+            if not isinstance(best_qualities, list):
+                bestQualities = [best_qualities]
+            quality = Quality.combineQualities([int(q) for q in any_qualities], [int(q) for q in best_qualities])
     
-            location = rootDir
+            location = root_dir
                 
         else:
-            defaultStatus=sickbeard.STATUS_DEFAULT
+            default_status=sickbeard.STATUS_DEFAULT
             quality=sickbeard.QUALITY_DEFAULT
-            flattenFolders=sickbeard.FLATTEN_FOLDERS_DEFAULT
+            flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT
             subtitles=sickbeard.SUBTITLES_DEFAULT
             anime=sickbeard.ANIME_DEFAULT
             scene=sickbeard.SCENE_DEFAULT
-            defaultStatusAfter=sickbeard.STATUS_DEFAULT_AFTER
+            default_status_after=sickbeard.STATUS_DEFAULT_AFTER
             
             
             if sickbeard.ROOT_DIRS:
@@ -2736,13 +2736,13 @@ class HomeAddShows(Home):
             logger.log(u"There was an error creating the show, no root directory setting found")
             return "No root directories setup, please go back and add one."
 
-        show_name = getShowNameFromIndexer(1, indexerId)
+        show_name = get_show_name_from_indexer(1, indexer_id)
         show_dir = None
         
         # add the show
-        sickbeard.showQueueScheduler.action.addShow(1, int(indexerId), show_dir, int(defaultStatus), quality, flattenFolders, 
-                                                    indexerLang, subtitles, anime, scene, None, blacklist, whitelist, 
-                                                    int(defaultStatusAfter), root_dir=location)
+        sickbeard.showQueueScheduler.action.addShow(1, int(indexer_id), show_dir, int(default_status), quality, flatten_folders, 
+                                                    indexer_lang, subtitles, anime, scene, None, blacklist, whitelist, 
+                                                    int(default_status_after), root_dir=location)
         
         ui.notifications.message('Show added', 'Adding the specified show {0}'.format(show_name))
 

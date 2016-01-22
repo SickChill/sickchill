@@ -1777,7 +1777,7 @@ def is_ip_private(ip):
     priv_16 = re.compile(r"^172.(1[6-9]|2[0-9]|3[0-1]).[0-9]{1,3}.[0-9]{1,3}$")
     return priv_lo.match(ip) or priv_24.match(ip) or priv_20.match(ip) or priv_16.match(ip)
 
-def getShowNameFromIndexer(indexer, indexer_id, lang='en'):
+def get_show_name_from_indexer(indexer, indexer_id, lang='en'):
     lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
     if lang:
         lINDEXER_API_PARMS['language'] = lang

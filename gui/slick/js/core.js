@@ -3263,46 +3263,46 @@ var SICKRAGE = {
 		        $('#bestQualities option:selected').each(function (i, d) {
 		            bestQualArray.push($(d).val());
 		        });
-		        
+		        /*jshint camelcase: false */
                 // get paramaters
-		        var rootDir = $("#rootDirs option:selected").val();
-		        var configureShowOptions = $('#configure_show_options').prop('checked');
+		        var root_dir = $("#rootDirs option:selected").val();
+		        var configure_show_options = $('#configure_show_options').prop('checked');
                 var indexer = $(this).data('indexer');
-                var indexerId = $(this).data('indexer_id');
-                var showName = $(this).data('show_name');
-                var defaultStatus = $('#statusSelect').val();
-                var qualityPreset = $('#qualityPreset').val();
-                var anyQualities = anyQualArray.join(',');
-                var bestQualities = bestQualArray.join(',');
-                var defaultFlattenFolders = $('#flatten_folders').prop('checked');
+                var indexer_id = $(this).data('indexer_id');
+                var show_name = $(this).data('show_name');
+                var default_status = $('#statusSelect').val();
+                var quality_preset = $('#qualityPreset').val();
+                var any_qualities = anyQualArray.join(',');
+                var best_qualities = bestQualArray.join(',');
+                var default_flatten_folders = $('#flatten_folders').prop('checked');
                 var subtitles = $('#subtitles').prop('checked');
                 var anime = $('#anime').prop('checked');
                 var scene = $('#scene').prop('checked');
-                var defaultStatusAfter = $('#statusSelectAfter').val();
+                var default_status_after = $('#statusSelectAfter').val();
                 
                 // If we are going to add an anime, let's by default configure it as one
-                if ( !configureShowOptions && $(this).data("isanime") ) { 
+                if ( !configure_show_options && $(this).data("isanime") ) { 
                 	anime = true;
-                	configureShowOptions = true;
+                	configure_show_options = true;
                 }
                 
                 $.get(url, {
-                	rootDir: rootDir,
-                	configureShowOptions: configureShowOptions,
+                	root_dir: root_dir,
+                	configure_show_options: configure_show_options,
                 	indexer: indexer,
-                	indexerId: indexerId,
-                	showName: showName,
-                	qualityPreset: qualityPreset,
-		            defaultStatus: defaultStatus,
-		            anyQualities: anyQualities,
-		            bestQualities: bestQualities,
-		            defaultFlattenFolders: defaultFlattenFolders,
+                	indexer_id: indexer_id,
+                	show_name: show_name,
+                	quality_preset: quality_preset,
+                	default_status: default_status,
+                	any_qualities: any_qualities,
+                	best_qualities: best_qualities,
+                	default_flatten_folders: default_flatten_folders,
 		            subtitles: subtitles,
 		            anime: anime,
 		            scene: scene,
-		            defaultStatusAfter: defaultStatusAfter,
+		            default_status_after: default_status_after,
                 });
-                
+                /*jshint camelcase: true */
                 return false;
             });
 			
