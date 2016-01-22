@@ -155,18 +155,24 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def removeShow(self, show, full=False):
+        if show is None:
+            raise CantRemoveShowException(u'Failed removing show: Show does not exist')
+
+        if not hasattr(show, u'indexerid'):
+            raise CantRemoveShowException(u'Failed removing show: Show does not have an indexer id')
+
         if self._isInQueue(show, (ShowQueueActions.REMOVE,)):
-            raise CantRemoveShowException("This show is already queued to be removed")
+            raise CantRemoveShowException(u'[{!s}]: Show is already queued to be removed'.format(show.indexerid))
 
         # remove other queued actions for this show.
-        for x in self.queue:
-            if x and x != self.currentItem and show.indexerid == x.show.indexerid:
-                self.queue.remove(x)
+        for item in self.queue:
+            if all([item, item.show, item != self.currentItem, show.indexerid == item.show.indexerid]):
+                self.queue.remove(item)
 
-        queueItemObj = QueueItemRemove(show=show, full=full)
-        self.add_item(queueItemObj)
+        queue_item_obj = QueueItemRemove(show=show, full=full)
+        self.add_item(queue_item_obj)
 
-        return queueItemObj
+        return queue_item_obj
 
 
 class ShowQueueActions(object):
