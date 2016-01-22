@@ -299,7 +299,7 @@ class TVCache(object):
             logger.log(u"Added RSS item: [" + name + "] to cache: [" + self.providerID + "]", logger.DEBUG)
 
             return [
-                "INSERT OR IGNORE INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality, release_group, version, seeders, leechers) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT OR REPLACE INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality, release_group, version, seeders, leechers) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                 [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality, release_group, version, seeders, leechers]]
 
     def searchCache(self, episode, manualSearch=False, downCurQuality=False):
