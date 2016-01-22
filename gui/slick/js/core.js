@@ -3286,21 +3286,22 @@ var SICKRAGE = {
                 	configure_show_options = true;
                 }
                 
+                /*jshint camelcase: false */
                 $.get(url, {
-                	root_dir: root_dir,
-                	configure_show_options: configure_show_options,
+                	root_dir: rootDir,
+                	configure_show_options: configureShowOptions,
                 	indexer: indexer,
-                	indexer_id: indexer_id,
-                	show_name: show_name,
-                	quality_preset: quality_preset,
-                	default_status: default_status,
-                	any_qualities: any_qualities,
-                	best_qualities: best_qualities,
-                	default_flatten_folders: default_flatten_folders,
+                	indexer_id: indexerId,
+                	show_name: showName,
+                	quality_preset: qualityPreset,
+                	default_status: defaultStatus,
+                	any_qualities: anyQualities,
+                	best_qualities: bestQualities,
+                	default_flatten_folders: defaultFlattenFolders,
 		            subtitles: subtitles,
 		            anime: anime,
 		            scene: scene,
-		            default_status_after: default_status_after,
+		            default_status_after: defaultStatusAfter,
                 });
                 /*jshint camelcase: true */
                 return false;
