@@ -1776,3 +1776,18 @@ def is_ip_private(ip):
     priv_20 = re.compile(r"^192\.168\.\d{1,3}.\d{1,3}$")
     priv_16 = re.compile(r"^172.(1[6-9]|2[0-9]|3[0-1]).[0-9]{1,3}.[0-9]{1,3}$")
     return priv_lo.match(ip) or priv_24.match(ip) or priv_20.match(ip) or priv_16.match(ip)
+
+def getShowNameFromIndexer(indexer, indexer_id, lang='en'):
+    lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
+    if lang:
+        lINDEXER_API_PARMS['language'] = lang
+
+    logger.log(u"" + str(sickbeard.indexerApi(indexer).name) + ": " + repr(lINDEXER_API_PARMS))
+
+    t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
+    s = t[int(indexer_id)]
+    
+    if hasattr(s,'data'):
+        return s.data.get('seriesname')
+    
+    return None
