@@ -355,6 +355,12 @@ home_addShows.mako
     height: 32px;
 }
 
+.icon-addanimelatesthotshow {
+    background-image: url("../images/addshows/add-anime32-white.png");
+    width: 32px;
+    height: 32px;
+}
+
 /* =======================================================================
 home_newShow.mako
 ========================================================================== */

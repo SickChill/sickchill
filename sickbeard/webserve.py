@@ -48,6 +48,8 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
 from sickbeard.webapi import function_mapper
 
 from sickbeard.imdbPopular import imdb_popular
+from lib.anidbhttp import anidbquery
+from lib.anidbhttp.query import QUERY_HOT
 
 from dateutil import tz
 from unrar2 import RarFile
@@ -2614,6 +2616,25 @@ class HomeAddShows(Home):
                         popular_shows=popular_shows, imdb_exception=e,
                         topmenu="home",
                         controller="addShows", action="popularShows")
+        
+    def anidbPopular(self):
+        """
+        Fetches data from IMDB to show a list of popular shows.
+        """
+        t = PageTemplate(rh=self, filename="addShows_anidbPopular.mako")
+        e = None
+
+        try:
+            all_anime = anidbquery.query(QUERY_HOT)
+            mapped_anime = [ anime for anime in all_anime if anime.tvdbid ]
+        except Exception as e:
+            # print traceback.fox1rmat_exc()
+            mapped_anime = None
+
+        return t.render(title="Anidb Hot Anime", header="Anidb Hot Anime",
+                        anime=mapped_anime, imdb_exception=e, whitelist=[], 
+                        blacklist=[], groups=[], topmenu="home", enable_anime_options=True,
+                        controller="addShows", action="addFromList")
 
         
     def addShowToBlacklist(self, indexer_id):
@@ -2635,52 +2656,98 @@ class HomeAddShows(Home):
                         header='Existing Show', topmenu="home",
                         controller="addShows", action="addExistingShow")
 
-    def addShowByID(self, indexer_id, show_name, indexer="TVDB"):
+    def addShowByID(self, indexerId, showName, indexer="TVDB", whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
+        qualityPreset=None, anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
+        fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
+        scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None, defaultFlattenFolders=None,
+        configureShowOptions=None):
 
         if indexer != "TVDB":
-            tvdb_id = helpers.getTVDBFromID(indexer_id, indexer.upper())
+            tvdb_id = helpers.getTVDBFromID(indexerId, indexer.upper())
             if not tvdb_id:
-                logger.log(u"Unable to to find tvdb ID to add %s" % show_name)
+                logger.log(u"Unable to to find tvdb ID to add %s" % showName)
                 ui.notifications.error(
-                    "Unable to add %s" % show_name,
-                    "Could not add %s.  We were unable to locate the tvdb id at this time." % show_name
+                    "Unable to add %s" % showName,
+                    "Could not add %s.  We were unable to locate the tvdb id at this time." % showName
                 )
                 return
 
-            indexer_id = tvdb_id
+            indexerId = try_int(tvdb_id, None)
 
-        if Show.find(sickbeard.showList, int(indexer_id)):
+        if Show.find(sickbeard.showList, int(indexerId)):
             return
-
-        if sickbeard.ROOT_DIRS:
-            root_dirs = sickbeard.ROOT_DIRS.split('|')
-            location = root_dirs[int(root_dirs[0]) + 1]
+        
+        # Sanitize the paramater anyQualities and bestQualities. As these would normally be passed as lists
+        if anyQualities:
+            anyQualities = anyQualities.split(',')  
         else:
-            location = None
+            anyQualities = []
+
+        if bestQualities:
+            bestQualities = bestQualities.split(',')
+        else:
+            bestQualities = []
+        
+        # If configure_show_options is enabled let's use the provided settings
+        configure_show_options = config.checkbox_to_value(configureShowOptions)
+        
+        if configure_show_options:
+            # prepare the inputs for passing along
+            scene = config.checkbox_to_value(scene)
+            anime = config.checkbox_to_value(anime)
+            flatten_folders = config.checkbox_to_value(flatten_folders)
+            subtitles = config.checkbox_to_value(subtitles)
+            
+            if whitelist:
+                whitelist = short_group_names(whitelist)
+            if blacklist:
+                blacklist = short_group_names(blacklist)
+                
+            if not anyQualities:
+                anyQualities = []
+            if not bestQualities or try_int(qualityPreset, None):
+                bestQualities = []
+            if not isinstance(anyQualities, list):
+                anyQualities = [anyQualities]
+            if not isinstance(bestQualities, list):
+                bestQualities = [bestQualities]
+            quality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
+    
+            location = rootDir
+                
+        else:
+            default_status=sickbeard.STATUS_DEFAULT
+            quality=sickbeard.QUALITY_DEFAULT
+            flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT
+            subtitles=sickbeard.SUBTITLES_DEFAULT
+            anime=sickbeard.ANIME_DEFAULT
+            scene=sickbeard.SCENE_DEFAULT
+            default_status_after=sickbeard.STATUS_DEFAULT_AFTER
+            
+            
+            if sickbeard.ROOT_DIRS:
+                root_dirs = sickbeard.ROOT_DIRS.split('|')
+                location = root_dirs[int(root_dirs[0]) + 1]
+            else:
+                location = None
 
         if not location:
             logger.log(u"There was an error creating the show, no root directory setting found")
             return "No root directories setup, please go back and add one."
 
-        show_dir = ek(os.path.join, location, sanitize_filename(show_name))
+        show_dir = ek(os.path.join, location, sanitize_filename(showName))
         dir_exists = helpers.makeDir(show_dir)
         if not dir_exists:
             logger.log(u"Unable to create the folder " + show_dir + ", can't add the show")
             return
 
         helpers.chmodAsParent(show_dir)
-
-        sickbeard.showQueueScheduler.action.addShow(
-            1, int(indexer_id), show_dir,
-            default_status=sickbeard.STATUS_DEFAULT,
-            quality=sickbeard.QUALITY_DEFAULT,
-            flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT,
-            subtitles=sickbeard.SUBTITLES_DEFAULT,
-            anime=sickbeard.ANIME_DEFAULT,
-            scene=sickbeard.SCENE_DEFAULT,
-            default_status_after=sickbeard.STATUS_DEFAULT_AFTER,
-        )
-
+        
+        # add the show
+        sickbeard.showQueueScheduler.action.addShow(1, int(indexerId), show_dir, int(defaultStatus), quality,
+                                                    flatten_folders, indexerLang, subtitles, anime,
+                                                    scene, None, blacklist, whitelist, int(defaultStatusAfter))
+        
         ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
 
         # done adding show
