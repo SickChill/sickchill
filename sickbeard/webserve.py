@@ -723,7 +723,7 @@ class Home(WebRoot):
 
         sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + today + ' AND (status = ' + str(UNAIRED) + ' OR status = ' + str(WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
         sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str(UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev, '
-        sql_statement += ' (SELECT SUM(file_size) FROM tv_episodes WHERE showid=tv_eps.showid) AS show_size'
+        sql_statement += ' (SELECT SUM(file_size) FROM (SELECT DISTINCT location, file_size FROM tv_episodes WHERE showid=tv_eps.showid)) AS show_size'
         sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
         sql_result = main_db_con.select(sql_statement)
@@ -2655,10 +2655,10 @@ class HomeAddShows(Home):
 
         if Show.find(sickbeard.showList, int(indexer_id)):
             return
-        
+
         # Sanitize the paramater anyQualities and bestQualities. As these would normally be passed as lists
         if any_qualities:
-            any_qualities = any_qualities.split(',')  
+            any_qualities = any_qualities.split(',')
         else:
             any_qualities = []
 
@@ -2666,22 +2666,22 @@ class HomeAddShows(Home):
             best_qualities = best_qualities.split(',')
         else:
             best_qualities = []
-        
+
         # If configure_show_options is enabled let's use the provided settings
         configure_show_options = config.checkbox_to_value(configure_show_options)
-        
+
         if configure_show_options:
             # prepare the inputs for passing along
             scene = config.checkbox_to_value(scene)
             anime = config.checkbox_to_value(anime)
             flatten_folders = config.checkbox_to_value(flatten_folders)
             subtitles = config.checkbox_to_value(subtitles)
-            
+
             if whitelist:
                 whitelist = short_group_names(whitelist)
             if blacklist:
                 blacklist = short_group_names(blacklist)
-                
+
             if not any_qualities:
                 any_qualities = []
             if not best_qualities or try_int(quality_preset, None):
@@ -2691,9 +2691,9 @@ class HomeAddShows(Home):
             if not isinstance(best_qualities, list):
                 bestQualities = [best_qualities]
             quality = Quality.combineQualities([int(q) for q in any_qualities], [int(q) for q in best_qualities])
-    
+
             location = root_dir
-                
+
         else:
             default_status=sickbeard.STATUS_DEFAULT
             quality=sickbeard.QUALITY_DEFAULT
@@ -2702,8 +2702,8 @@ class HomeAddShows(Home):
             anime=sickbeard.ANIME_DEFAULT
             scene=sickbeard.SCENE_DEFAULT
             default_status_after=sickbeard.STATUS_DEFAULT_AFTER
-            
-            
+
+
             if sickbeard.ROOT_DIRS:
                 root_dirs = sickbeard.ROOT_DIRS.split('|')
                 location = root_dirs[int(root_dirs[0]) + 1]
@@ -2716,12 +2716,12 @@ class HomeAddShows(Home):
 
         show_name = get_showname_from_indexer(1, indexer_id)
         show_dir = None
-        
+
         # add the show
-        sickbeard.showQueueScheduler.action.addShow(1, int(indexer_id), show_dir, int(default_status), quality, flatten_folders, 
-                                                    indexer_lang, subtitles, anime, scene, None, blacklist, whitelist, 
+        sickbeard.showQueueScheduler.action.addShow(1, int(indexer_id), show_dir, int(default_status), quality, flatten_folders,
+                                                    indexer_lang, subtitles, anime, scene, None, blacklist, whitelist,
                                                     int(default_status_after), root_dir=location)
-        
+
         ui.notifications.message('Show added', 'Adding the specified show {0}'.format(show_name))
 
         # done adding show
