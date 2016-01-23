@@ -121,7 +121,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                 continue
 
                             # Accept Torrent only from Good People for every Episode Search
-                            if self.confirmed and result.find(alt=re.compile(r'(VIP|Trusted|Helper|Moderator)')):
+                            if self.confirmed and not result.find(alt=re.compile(r'VIP|Trusted')):
                                 if mode != 'RSS':
                                     logger.log(u"Found result %s but that doesn't seem like a trusted result so I'm ignoring it" % title, logger.DEBUG)
                                 continue
