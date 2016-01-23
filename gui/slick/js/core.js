@@ -179,12 +179,7 @@ var SICKRAGE = {
                     $(this).prop('checked', $(bulkCheck).prop('checked'));
                 });
             });
-        }
-    },
-    config: {
-        init: function() {
-            $('#config-components').tabs();
-
+            
             $(".enabler").each(function(){
                 if (!$(this).prop('checked')) { $('#content_'+$(this).attr('id')).hide(); }
             });
@@ -196,6 +191,11 @@ var SICKRAGE = {
                     $('#content_'+$(this).attr('id')).fadeOut("fast", "linear");
                 }
             });
+        }
+    },
+    config: {
+        init: function() {
+            $('#config-components').tabs();
 
             $(".viewIf").on('click', function() {
                 if ($(this).prop('checked')) {
@@ -2327,13 +2327,13 @@ var SICKRAGE = {
             }
 
             function setInputValidInvalid(valid, el) {
-            	if (valid) {
-            		$(el).css({'background-color': '#90EE90','color': '#FFF', 'font-weight': 'bold'}); //green
-            		return true;
-            	} else {
-            		$(el).css({'background-color': '#FF0000','color': '#FFF!important', 'font-weight': 'bold'}); //red
-            		return false;
-            	}
+                if (valid) {
+                    $(el).css({'background-color': '#90EE90','color': '#FFF', 'font-weight': 'bold'}); //green
+                    return true;
+                } else {
+                    $(el).css({'background-color': '#FF0000','color': '#FFF!important', 'font-weight': 'bold'}); //red
+                    return false;
+                }
             }
             
             $('.sceneSeasonXEpisode').on('change', function() {
@@ -2350,16 +2350,16 @@ var SICKRAGE = {
                     sceneEpisode = m[2];
                     isValid = setInputValidInvalid(true, $(this));
                 } else if (onlyEpisode) {
-                	// For example when '5' is filled in instead of '1x5', asume it's the first season
-                	sceneSeason = forSeason;
-                	sceneEpisode = onlyEpisode[1];
-                	isValid = setInputValidInvalid(true, $(this));
+                    // For example when '5' is filled in instead of '1x5', asume it's the first season
+                    sceneSeason = forSeason;
+                    sceneEpisode = onlyEpisode[1];
+                    isValid = setInputValidInvalid(true, $(this));
                 } else {
-                	isValid = setInputValidInvalid(false, $(this));
+                    isValid = setInputValidInvalid(false, $(this));
                 }
                 // Only perform the request when there is a valid input
                 if (isValid){
-                	setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode);
+                    setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode);
                 }
             });
 
@@ -2415,14 +2415,14 @@ var SICKRAGE = {
             // Moved and rewritten this from displayShow. This changes the button when clicked for collapsing/expanding the 
             // Season to Show Episodes or Hide Episodes.
             $(function() {
-            	$('.collapse.toggle').on('hide.bs.collapse', function () {
-            		var reg = /collapseSeason-([0-9]+)/g;
-            		var result = reg.exec(this.id);
+                $('.collapse.toggle').on('hide.bs.collapse', function () {
+                    var reg = /collapseSeason-([0-9]+)/g;
+                    var result = reg.exec(this.id);
                     $('#showseason-' + result[1]).text('Show Episodes');
                 });
                 $('.collapse.toggle').on('show.bs.collapse', function () {
-                	var reg = /collapseSeason-([0-9]+)/g;
-            		var result = reg.exec(this.id);
+                    var reg = /collapseSeason-([0-9]+)/g;
+                    var result = reg.exec(this.id);
                     $('#showseason-' + result[1]).text('Hide Episodes');
                 });
             });
@@ -3272,6 +3272,115 @@ var SICKRAGE = {
         },
         popularShows: function(){
             $.initRemoteShowGrid();
+        },
+        addFromList: function(){
+
+            $('#imdbShows').loadRemoteShows(
+                '/addShows/imdbWatchlist?listid=popular',
+                'Loading imdb shows from list...',
+                'Imdb timed out, refresh page to try again'
+            );
+
+            $('#showlist').on('change', function(e) {
+                 var imdbid = e.target.value;
+                 window.history.replaceState({}, document.title, '?listid=' + imdbid);
+                 $('#imdbShows').loadRemoteShows(
+                        '/addShows/imdbWatchlist?listid=' + imdbid,
+                         'Loading imdb shows from list...',
+                         'Imdb timed out, refresh page to try again'
+                 );
+            });
+            $.initRemoteShowGrid();
+            
+            /*
+             * Add's shows by by indexer and indexer_id with a number of optional parameters
+             * The show can be added as an anime show, by providing the data attribute: data-isanime="1"
+             */
+            $(document.body).on('click', 'a[data-add-show]', function(e){
+                e.preventDefault();
+                
+                var url = $(this).attr('href');
+                var callbackId = $('.show-row[data-callback_id="' + $(this).data('indexer_id') + '"]');
+                
+                // Whe're going to add this show, let's remove the anchor and button desc, so it can't be added twice!
+                if ( $(callbackId).find('div.traktShowTitleIcons a').hasClass('disabled') ) { return; }
+                
+                $(callbackId).find('div.traktShowTitleIcons a').html('Being added').addClass('disabled');
+                
+                var anyQualArray = [];
+                var bestQualArray = [];
+                $('#anyQualities option:selected').each(function (i, d) {
+                    anyQualArray.push($(d).val());
+                });
+                $('#bestQualities option:selected').each(function (i, d) {
+                    bestQualArray.push($(d).val());
+                });
+                
+                // If we are going to add an anime, let's by default configure it as one
+                var anime = $('#anime').prop('checked');
+                var configureShowOptions = $('#configure_show_options').prop('checked');
+                if ( !configureShowOptions && $(this).data("isanime") ) {
+                    anime = true;
+                    configureShowOptions = true;
+                }
+
+                $.get(url, {
+                    'root_dir': $('#rootDirs option:selected').val(),
+                    'configure_show_options': configureShowOptions,
+                    'indexer': $(this).data('indexer'),
+                    'indexer_id': $(this).data('indexer_id'),
+                    'show_name': $(this).data('show_name'),
+                    'quality_preset': $('#qualityPreset').val(),
+                    'default_status': $('#statusSelect').val(),
+                    'any_qualities': anyQualArray.join(','),
+                    'best_qualities': bestQualArray.join(','),
+                    'default_flatten_folders': $('#flatten_folders').prop('checked'),
+                    'subtitles': $('#subtitles').prop('checked'),
+                    'anime': anime,
+                    'scene': $('#scene').prop('checked'),
+                    'default_status_after': $('#statusSelectAfter').val(),
+                });
+                return false;
+            });
+
+            $('#saveDefaultsButton').on('click', function() {
+                var anyQualArray = [];
+                var bestQualArray = [];
+                $('#anyQualities option:selected').each(function (i, d) {
+                    anyQualArray.push($(d).val());
+                });
+                $('#bestQualities option:selected').each(function (i, d) {
+                    bestQualArray.push($(d).val());
+                });
+
+                $.get(srRoot + '/config/general/saveAddShowDefaults', {
+                    defaultStatus: $('#statusSelect').val(),
+                    anyQualities: anyQualArray.join(','),
+                    bestQualities: bestQualArray.join(','),
+                    defaultFlattenFolders: $('#flatten_folders').prop('checked'),
+                    subtitles: $('#subtitles').prop('checked'),
+                    anime: $('#anime').prop('checked'),
+                    scene: $('#scene').prop('checked'),
+                    defaultStatusAfter: $('#statusSelectAfter').val(),
+                });
+
+                $(this).attr('disabled', true);
+                new PNotify({
+                    title: 'Saved Defaults',
+                    text: 'Your "add show" defaults have been set to your current selections.',
+                    shadow: false
+                });
+            });
+
+            $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function () {
+                $('#saveDefaultsButton').attr('disabled', false);
+            });
+
+            $('#qualityPreset').on('change', function() {
+                //fix issue #181 - force re-render to correct the height of the outer div
+                $('span.prev').click();
+                $('span.next').click();
+            });
         }
     }
 };
