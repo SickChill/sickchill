@@ -18,9 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-# Check needed software dependencies to nudge users to fix their setup
-
-# pylint: disable=line-too-long
 
 """
 Usage: SickBeard.py [OPTION]...
