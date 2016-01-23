@@ -55,7 +55,7 @@ from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
-from sickrage.helper.common import sanitize_filename, try_int
+from sickrage.helper.common import sanitize_filename, try_int, episode_num
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOException, ShowDirectoryNotFoundException
@@ -3179,7 +3179,7 @@ class Manage(Home, WebRoot):
             for curResult in sql_results:
                 curEpCat = curShow.getOverview(curResult["status"])
                 if curEpCat:
-                    epCats['S%02dE%02d' % (curResult['season'], curResult['episode'])] = curEpCat
+                    epCats[u'{ep}'.format(ep=episode_num(curResult['season'], curResult['episode']))] = curEpCat
                     epCounts[curEpCat] += 1
 
             showCounts[curShow.indexerid] = epCounts

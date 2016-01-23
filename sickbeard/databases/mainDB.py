@@ -27,7 +27,7 @@ import os.path
 from sickbeard import db, common, helpers, logger
 
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickrage.helper.common import dateTimeFormat
+from sickrage.helper.common import dateTimeFormat, episode_num
 from sickrage.helper.encoding import ek
 
 from sickbeard import subtitles
@@ -68,10 +68,12 @@ class MainSanityCheck(db.DBSanityCheck):
                 quality = common.Quality.assumeQuality(archivedEp['location'])
                 fixedStatus = common.Quality.compositeStatus(common.ARCHIVED, quality)
 
-            logger.log(u'Changing status from %s to %s for %s: S%02dE%02d at %s (File %s)' %
-                       (common.statusStrings[common.ARCHIVED], common.statusStrings[fixedStatus],
-                        archivedEp['showid'], archivedEp['season'], archivedEp['episode'],
-                        archivedEp['location'] if archivedEp['location'] else 'unknown location', ('NOT FOUND', 'EXISTS')[bool(existing)]))
+            logger.log(u'Changing status from {old_status} to {new_status} for {id}: {ep} at {location} (File {result})'.format
+                       (old_status=common.statusStrings[common.ARCHIVED], new_status=common.statusStrings[fixedStatus],
+                        id=archivedEp['showid'],
+                        ep=episode_num(archivedEp['season'], archivedEp['episode']),
+                        location=archivedEp['location'] if archivedEp['location'] else 'unknown location',
+                        result=('NOT FOUND', 'EXISTS')[bool(existing)]))
 
             self.connection.action("UPDATE tv_episodes SET status = %i WHERE episode_id = %i" % (fixedStatus, archivedEp['episode_id']))
 
