@@ -2324,23 +2324,42 @@ var SICKRAGE = {
                 });
             }
 
+            function setInputValidInvalid(valid, el) {
+            	if (valid) {
+            		$(el).css({'background-color': '#90EE90','color': '#FFF', 'font-weight': 'bold'}); //green
+            		return true;
+            	}
+            	else {
+            		$(el).css({'background-color': '#FF0000','color': '#FFF!important', 'font-weight': 'bold'}); //red
+            		return false;
+            	}
+            }
+            
             $('.sceneSeasonXEpisode').on('change', function() {
                 // Strip non-numeric characters
                 $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
                 var forSeason = $(this).attr('data-for-season');
                 var forEpisode = $(this).attr('data-for-episode');
                 var m = $(this).val().match(/^(\d+)x(\d+)$/i);
-                var firstSeason = $(this).val().match(/^(\d+)$/i);
+                var onlyEpisode = $(this).val().match(/^(\d+)$/i);
                 var sceneSeason = null, sceneEpisode = null;
+                var isValid = false;
                 if (m) {
                     sceneSeason = m[1];
                     sceneEpisode = m[2];
-                } else if (firstSeason) {
+                    isValid = setInputValidInvalid(true, $(this));
+                } else if (onlyEpisode) {
                 	// For example when '5' is filled in instead of '1x5', asume it's the first season
-                	sceneSeason = '1';
-                	sceneEpisode = firstSeason[1];
+                	sceneSeason = forSeason;
+                	sceneEpisode = onlyEpisode[1];
+                	isValid = setInputValidInvalid(true, $(this));
+                } else {
+                	isValid = setInputValidInvalid(false, $(this));
                 }
-                setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode);
+                // Only perform the request when there is a valid input
+                if (isValid){
+                	setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode);
+                }
             });
 
             $('.sceneAbsolute').on('change', function() {
