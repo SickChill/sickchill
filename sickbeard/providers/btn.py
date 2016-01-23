@@ -29,6 +29,7 @@ from sickbeard import classes, logger, scene_exceptions, tvcache
 from sickbeard.common import cpu_presets
 from sickbeard.helpers import sanitizeSceneName
 
+from sickrage.helper.common import episode_num
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -239,7 +240,7 @@ class BTNProvider(TorrentProvider):
             search_params['name'] = "%i" % int(ep_obj.scene_absolute_number)
         else:
             # Do a general name search for the episode, formatted like SXXEYY
-            search_params['name'] = "S%02dE%02d" % (ep_obj.scene_season, ep_obj.scene_episode)
+            search_params['name'] = u"{ep}".format(ep=episode_num(ep_obj.scene_season, ep_obj.scene_episode))
 
         # search
         if ep_obj.show.indexer == 1:

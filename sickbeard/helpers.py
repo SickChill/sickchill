@@ -52,7 +52,7 @@ from sickbeard import logger, classes
 from sickbeard.common import USER_AGENT
 from sickbeard import db
 from sickbeard.notifiers import synoindex_notifier
-from sickrage.helper.common import http_code_description, media_extensions, pretty_file_size, subtitle_extensions
+from sickrage.helper.common import http_code_description, media_extensions, pretty_file_size, subtitle_extensions, episode_num
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
@@ -704,9 +704,12 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
 
         if len(sql_results) == 1:
             absolute_number = int(sql_results[0]["absolute_number"])
-            logger.log(u"Found absolute number %s for show %s S%02dE%02d" % (absolute_number, show.name, season, episode), logger.DEBUG)
+            logger.log(u"Found absolute number {absolute} for show {show} {ep}".format
+                       (absolute=absolute_number, show=show.name,
+                        ep=episode_num(season, episode)), logger.DEBUG)
         else:
-            logger.log(u"No entries for absolute number for show %s S%02dE%02d" % (show.name, season, episode), logger.DEBUG)
+            logger.log(u"No entries for absolute number for show {show} {ep}".format
+                       (show=show.name, ep=episode_num(season, episode)), logger.DEBUG)
 
     return absolute_number
 
