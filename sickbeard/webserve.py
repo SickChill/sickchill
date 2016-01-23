@@ -3757,7 +3757,41 @@ class Config(WebRoot):
     def index(self):
         t = PageTemplate(rh=self, filename="config.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title='SickRage Configuration', header='SickRage Configuration', topmenu="config")
+        try:
+            import pwd
+            sr_user = pwd.getpwuid(os.getuid()).pw_name
+        except ImportError:
+            try:
+                import getpass
+                sr_user = getpass.getuser()
+            except StandardError:
+                sr_user = 'Unknown'
+
+        try:
+            import locale
+            sr_locale = locale.getdefaultlocale()
+        except StandardError:
+            sr_locale = 'Unknown', 'Unknown'
+
+        try:
+            import ssl
+            ssl_version = ssl.OPENSSL_VERSION
+        except StandardError:
+            ssl_version = 'Unknown'
+
+        sr_version = ''
+        if sickbeard.VERSION_NOTIFY:
+            updater = CheckVersion().updater
+            if updater:
+                updater.need_update()
+                sr_version = updater.get_cur_version()
+
+        return t.render(
+            submenu=self.ConfigMenu(), title='SickRage Configuration',
+            header='SickRage Configuration', topmenu="config",
+            sr_user=sr_user, sr_locale=sr_locale, ssl_version=ssl_version,
+            sr_version=sr_version
+        )
 
 
 @route('/config/general(/?.*)')
