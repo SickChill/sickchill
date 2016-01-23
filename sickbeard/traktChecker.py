@@ -232,7 +232,7 @@ class TraktChecker(object):
                     trakt_id = sickbeard.indexerApi(cur_episode["indexer"]).config['trakt_id']
 
                     if not self._checkInList(trakt_id, str(cur_episode["showid"]), str(cur_episode["season"]), str(cur_episode["episode"]), List='Collection'):
-                        logger.log(u"Adding Episode {show{ {ep} to collection".format
+                        logger.log(u"Adding Episode {show} {ep} to collection".format
                                    (show=cur_episode["show_name"],
                                     ep=episode_num(cur_episode["season"], cur_episode["episode"])),
                                    logger.DEBUG)
