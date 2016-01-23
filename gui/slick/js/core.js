@@ -2328,8 +2328,7 @@ var SICKRAGE = {
             	if (valid) {
             		$(el).css({'background-color': '#90EE90','color': '#FFF', 'font-weight': 'bold'}); //green
             		return true;
-            	}
-            	else {
+            	} else {
             		$(el).css({'background-color': '#FF0000','color': '#FFF!important', 'font-weight': 'bold'}); //red
             		return false;
             	}
