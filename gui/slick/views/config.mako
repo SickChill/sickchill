@@ -26,7 +26,7 @@
     % endif
     <tr><td class="infoTableHeader">Python Version:</td><td class="infoTableCell">${sys.version[:120]}</td></tr>
     <tr><td class="infoTableHeader">SSL Version:</td><td class="infoTableCell">${ssl_version}</td></tr>
-    <tr><td class="infoTableHeader" style="vertical-align: top;">Locale:</td><td class="infoTableCell">${'.'.join(sr_locale)}</td></tr>
+    <tr><td class="infoTableHeader" style="vertical-align: top;">Locale:</td><td class="infoTableCell">${'.'.join([str(loc) for loc in sr_locale)}</td></tr>
     <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
     <tr class="infoTableSeperator"><td>&nbsp;</td><td>&nbsp;</td></tr>
     <tr><td class="infoTableHeader">User:</td><td class="infoTableCell">${sr_user}</td></tr>
