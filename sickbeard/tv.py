@@ -49,7 +49,7 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import network_timezones
 from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickrage.helper.common import dateTimeFormat, remove_extension, replace_extension, sanitize_filename, try_int
+from sickrage.helper.common import dateTimeFormat, remove_extension, replace_extension, sanitize_filename, try_int, episode_num
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeDeletedException, EpisodeNotFoundException, ex
 from sickrage.helper.exceptions import MultipleEpisodesInDatabaseException, MultipleShowsInDatabaseException
@@ -246,11 +246,13 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             if len(sql_results) == 1:
                 episode = int(sql_results[0]["episode"])
                 season = int(sql_results[0]["season"])
-                logger.log(
-                    "Found episode by absolute_number %s which is S%02dE%02d" % (absolute_number, season or 0, episode or 0), logger.DEBUG)
+                logger.log(u"Found episode by absolute number {absolute} which is {ep}".format
+                           (absolute=absolute_number,
+                            ep=episode_num(season, episode)), logger.DEBUG)
             elif len(sql_results) > 1:
-                logger.log(u"Multiple entries for absolute number: " + str(
-                    absolute_number) + " in show: " + self.name + " found ", logger.ERROR)
+                logger.log(u"Multiple entries for absolute number: {absolute} in show: {name} found ".format
+                           (absolute=absolute_number, name=self.name), logger.ERROR)
+
                 return None
             else:
                 logger.log(
@@ -265,7 +267,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             if noCreate:
                 return None
 
-            # logger.log(str(self.indexerid) + u": An object for episode S%02dE%02d didn't exist in the cache, trying to create it" % (season or 0, episode or 0), logger.DEBUG)
+            # logger.log(u"{id}: An object for episode {ep} didn't exist in the cache, trying to create it".format
+            #            (id=self.indexerid, ep=episode_num(season, episode)), logger.DEBUG)
 
             if file:
                 ep = TVEpisode(self, season, episode, file)
@@ -357,7 +360,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         sql_results = main_db_con.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
 
         for epResult in sql_results:
-            logger.log(str(self.indexerid) + u": Retrieving/creating episode S%02dE%02d" % (epResult["season"] or 0, epResult["episode"] or 0), logger.DEBUG)
+            logger.log(u"{id}: Retrieving/creating episode {ep}".format(
+                    id=self.indexerid, ep=episode_num(epResult["season"], epResult["episode"])),
+                    logger.DEBUG)
             curEp = self.getEpisode(epResult["season"], epResult["episode"])
             if not curEp:
                 continue
@@ -498,10 +503,12 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     deleteEp = True
 
             if curSeason not in scannedEps:
-                logger.log(u"%s: Not curSeason in scannedEps" % curShowid, logger.DEBUG)
+                logger.log(u"{id}: Not curSeason in scannedEps".format(id=curShowid), logger.DEBUG)
                 scannedEps[curSeason] = {}
 
-            logger.log(u"%s: Loading %s S%02dE%02d from the DB" % (curShowid, curShowName, curSeason or 0, curEpisode or 0), logger.DEBUG)
+            logger.log(u"{id}: Loading {show} {ep} from the DB".format
+                       (id=curShowid, show=curShowName, ep=episode_num(curSeason, curEpisode)),
+                        logger.DEBUG)
 
             try:
                 curEp = self.getEpisode(curSeason, curEpisode)
@@ -516,11 +523,13 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 curEp.loadFromIndexer(tvapi=t, cachedSeason=cachedSeasons[curSeason])
                 scannedEps[curSeason][curEpisode] = True
             except EpisodeDeletedException:
-                logger.log(u"%s: Tried loading %s S%02dE%02d from the DB that should have been deleted, skipping it" % (curShowid, curShowName, curSeason or 0, curEpisode or 0),
+                logger.log(u"{id}: Tried loading {show} {ep} from the DB that should have been deleted, skipping it".format
+                           (id=curShowid, show=curShowName, ep=episode_num(curSeason, curEpisode)),
                            logger.DEBUG)
                 continue
 
-        logger.log(u"%s: Finished loading all episodes for %s from the DB" % (curShowName, curShowid), logger.DEBUG)
+        logger.log(u"{id}: Finished loading all episodes for {show} from the DB".format
+                   (show=curShowName, id=curShowid), logger.DEBUG)
 
         return scannedEps
 
@@ -563,7 +572,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     if not ep:
                         raise EpisodeNotFoundException
                 except EpisodeNotFoundException:
-                    logger.log(u"%s: %s object for S%02dE%02d is incomplete, skipping this episode" % (self.indexerid, sickbeard.indexerApi(self.indexer).name, season or 0, episode or 0))
+                    logger.log(u"{id}: {indexer} object for {ep} is incomplete, skipping this episode".format
+                               (id=self.indexerid, indexer=sickbeard.indexerApi(self.indexer).name, ep=episode_num(season, episode)))
                     continue
                 else:
                     try:
@@ -573,7 +583,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         continue
 
                 with ep.lock:
-                    # logger.log(u"%s: Loading info from %s for episode S%02dE%02d" % (self.indexerid, sickbeard.indexerApi(self.indexer).name, season or 0, episode or 0), logger.DEBUG)
+                    # logger.log(u"{id}: Loading info from {indexer} for episode {ep}".format
+                    #            (id=self.indexerid, indexer=sickbeard.indexerApi(self.indexer).name,
+                    #             ep=episode_num(season, episode)), logger.DEBUG)
                     ep.loadFromIndexer(season, episode, tvapi=t)
 
                     sql_l.append(ep.get_sql())
@@ -650,9 +662,12 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         for current_ep in episodes if not is_absolute else absolute_numbers:
 
             if is_absolute:
-                logger.log(u"%s: %s parsed to %s with absolute number %d" % (self.indexerid, file, self.name, current_ep), logger.DEBUG)
+                logger.log(u"{id}: {file} parsed to {name} with absolute number {absolute}".format
+                           (id=self.indexerid, file=file, name=self.name, absolute=current_ep), logger.DEBUG)
             else:
-                logger.log(u"%s: %s parsed to %s S%02dE%02d" % (self.indexerid, file, self.name, season, current_ep), logger.DEBUG)
+                logger.log(u"{id}: {file} parsed to {name} {ep}".format
+                           (id=self.indexerid, file=file, name=self.name,
+                            ep=episode_num(season, current_ep)), logger.DEBUG)
 
             checkQualityAgain = False
             same_file = False
@@ -982,10 +997,13 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED])
 
             if sql_results is None or len(sql_results) == 0:
-                logger.log(str(self.indexerid) + u": No episode found... need to implement a show status", logger.DEBUG)
-                self.nextaired = ""
+                logger.log(u"{id}: No episode found... need to implement a show status".format
+                           (id=self.indexerid), logger.DEBUG)
+                self.nextaired = u''
             else:
-                logger.log(u"%s: Found episode S%02dE%02d" % (self.indexerid, sql_results[0]["season"] or 0, sql_results[0]["episode"] or 0), logger.DEBUG)
+                logger.log(u"{id}: Found episode {ep}".format
+                           (id=self.indexerid, ep=episode_num(sql_results[0]["season"], sql_results[0]["episode"])),
+                           logger.DEBUG)
                 self.nextaired = sql_results[0]['airdate']
 
         return self.nextaired
@@ -1103,8 +1121,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                             else:
                                 new_status = sickbeard.EP_DEFAULT_DELETED_STATUS
 
-                            logger.log(u"%s: Location for S%02dE%02d doesn't exist, removing it and changing our status to %s" %
-                                       (self.indexerid, season or 0, episode or 0, statusStrings[new_status]), logger.DEBUG)
+                            logger.log(u"{id}: Location for {ep} doesn't exist, removing it and changing our status to {status}".format
+                                       (id=self.indexerid, ep=episode_num(season, episode), status=statusStrings[new_status]), logger.DEBUG)
                             curEp.status = new_status
                             curEp.subtitles = list()
                             curEp.subtitles_searchcount = 0
@@ -1228,8 +1246,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     self.qualitiesToString([quality])), logger.DEBUG)
 
         if quality not in allowed_qualities + preferred_qualities or quality is UNKNOWN:
-            logger.log(u"Don't want this quality, ignoring found result for %s S%02dE%02d with quality %s" %
-                       (self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.DEBUG)
+            logger.log(u"Don't want this quality, ignoring found result for {name} {ep} with quality {quality}".format
+                       (name=self.name, ep=episode_num(season, episode), quality=Quality.qualityStrings[quality]),
+                       logger.DEBUG)
             return False
 
         main_db_con = db.DBConnection()
@@ -1237,8 +1256,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                                  [self.indexerid, season, episode])
 
         if not sql_results or not len(sql_results):
-            logger.log(u"Unable to find a matching episode in database, ignoring found result for %s S%02dE%02d with quality %s" %
-                       (self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.DEBUG)
+            logger.log(u"Unable to find a matching episode in database, ignoring found result for {name} {ep} with quality {quality}".format
+                       (name=self.name, ep=episode_num(season, episode), quality=Quality.qualityStrings[quality]), logger.DEBUG)
             return False
 
         epStatus = int(sql_results[0]["status"])
@@ -1246,36 +1265,45 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         # if we know we don't want it then just say no
         if epStatus in Quality.ARCHIVED + [UNAIRED, SKIPPED, IGNORED] and not manualSearch:
-            logger.log(u"Existing episode status is '%s', ignoring found result for %s S%02dE%02d with quality %s" %
-                       (epStatus_text, self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.DEBUG)
+            logger.log(u"Existing episode status is '{status}', ignoring found result for {name} {ep} with quality {quality}".format
+                       (status=epStatus_text, name=self.name, ep=episode_num(season, episode),
+                        quality=Quality.qualityStrings[quality]), logger.DEBUG)
             return False
 
         _, curQuality = Quality.splitCompositeStatus(epStatus)
 
         # if it's one of these then we want it as long as it's in our allowed initial qualities
         if epStatus in (WANTED, SKIPPED, UNKNOWN):
-            logger.log(u"Existing episode status is '%s', getting found result for %s S%02dE%02d with quality %s" %
-                       (epStatus_text, self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.DEBUG)
+            logger.log(u"Existing episode status is '{status}', getting found result for {name} {ep} with quality {quality}".format
+                       (status=epStatus_text, name=self.name, ep=episode_num(season, episode),
+                        quality=Quality.qualityStrings[quality]), logger.DEBUG)
             return True
         elif manualSearch:
             if (downCurQuality and quality >= curQuality) or (not downCurQuality and quality > curQuality):
-                logger.log(
-                    u"Usually ignoring found result, but forced search allows the quality, getting found result for %s S%02dE%02d with quality %s" %
-                    (self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.DEBUG)
+                logger.log(u"Usually ignoring found result, but forced search allows the quality,"
+                           u" getting found result for {name} {ep} with quality {quality}".format
+                           (name=self.name, ep=episode_num(season, episode), quality=Quality.qualityStrings[quality]),
+                           logger.DEBUG)
                 return True
 
         # if we are re-downloading then we only want it if it's in our preferred_qualities list and better than what we have, or we only have one bestQuality and we do not have that quality yet
         if epStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER and quality in preferred_qualities and (quality > curQuality or curQuality not in preferred_qualities):
-            logger.log(u"Episode already exists with quality %s but the found result quality %s is wanted more, getting found result for %s S%02dE%02d" %
-                       (Quality.qualityStrings[curQuality], Quality.qualityStrings[quality], self.name, season or 0, episode or 0), logger.DEBUG)
+            logger.log(u"Episode already exists with quality {existing_quality} but the found result"
+                       u" quality {new_quality} is wanted more, getting found result for {name} {ep}".format
+                       (existing_quality=Quality.qualityStrings[curQuality],
+                        new_quality=Quality.qualityStrings[quality], name=self.name,
+                        ep=episode_num(season, episode)), logger.DEBUG)
             return True
         elif curQuality == Quality.UNKNOWN and manualSearch:
-            logger.log(u"Episode already exists but quality is Unknown, getting found result for %s S%02dE%02d with quality %s" %
-                       (self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.DEBUG)
+            logger.log(u"Episode already exists but quality is Unknown, getting found result for {name} {ep} with quality {quality}".format
+                       (name=self.name, ep=episode_num(season, episode), quality=Quality.qualityStrings[quality]), logger.DEBUG)
             return True
         else:
-            logger.log(u"Episode already exists with quality %s and the found result has same/lower quality, ignoring found result for %s S%02dE%02d with quality %s" %
-                       (Quality.qualityStrings[curQuality], self.name, season or 0, episode or 0, Quality.qualityStrings[quality]), logger.DEBUG)
+            logger.log(u"Episode already exists with quality {existing_quality} and the found result has same/lower quality,"
+                       u" ignoring found result for {name} {ep} with quality {new_quality}".format
+                       (existing_quality=Quality.qualityStrings[curQuality], name=self.name,
+                        ep=episode_num(season, episode), new_quality=Quality.qualityStrings[quality]),
+                       logger.DEBUG)
         return False
 
     def getOverview(self, epStatus):  # pylint: disable=too-many-return-statements, too-many-branches
@@ -1415,16 +1443,19 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
     def download_subtitles(self, force=False):
         if not ek(os.path.isfile, self.location):
-            logger.log(u"%s: Episode file doesn't exist, can't download subtitles for S%02dE%02d" %
-                       (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
+            logger.log(u"{id}: Episode file doesn't exist, can't download subtitles for {ep}".format
+                       (id=self.show.indexerid, ep=episode_num(self.season, self.episode)),
+                       logger.DEBUG)
             return
 
         if not subtitles.needs_subtitles(self.subtitles):
-            logger.log(u'Episode already has all needed subtitles, skipping  episode %dx%d of show %s' % (self.season or 0, self.episode or 0, self.show.name), logger.DEBUG)
+            logger.log(u'Episode already has all needed subtitles, skipping episode {ep} of show {show}'.format
+                       (ep=episode_num(self.season, self.episode), show=self.show.name), logger.DEBUG)
             return
 
-        logger.log(u"Checking subtitle candidates for %s S%02dE%02d (%s)"
-                   % (self.show.name, self.season or 0, self.episode or 0, os.path.basename(self.location)), logger.DEBUG)
+        logger.log(u"Checking subtitle candidates for {show} {ep} ({location})".format
+                   (show=self.show.name, ep=episode_num(self.season, self.episode),
+                    location=os.path.basename(self.location)), logger.DEBUG)
 
         subtitles_info = {'location': self.location, 'subtitles': self.subtitles, 'season': self.season,
                           'episode': self.episode, 'name': self.name, 'show_name': self.show.name,
@@ -1438,14 +1469,15 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         if new_subtitles:
             subtitle_list = ", ".join([subtitles.name_from_code(code) for code in new_subtitles])
-            logger.log(u"%s: Downloaded %s subtitles for %s S%02dE%02d" %
-                       (self.show.indexerid, subtitle_list, self.show.name, self.season or 0,
-                        self.episode or 0), logger.DEBUG)
+            logger.log(u"{id}: Downloaded {subtitles} subtitles for {show} {ep}".format
+                       (id=self.show.indexerid, subtitles=subtitle_list, show=self.show.name,
+                        ep=episode_num(self.season, self.episode)), logger.DEBUG)
 
             notifiers.notify_subtitle_download(self.prettyName(), subtitle_list)
         else:
-            logger.log(u"%s: No subtitles downloaded for %s S%02dE%02d" %
-                       (self.show.indexerid, self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
+            logger.log(u"{id}: No subtitles downloaded for {show} {ep}".format
+                       (id=self.show.indexerid, show=self.show.name,
+                        ep=episode_num(self.season, self.episode)), logger.DEBUG)
 
         return new_subtitles
 
@@ -1488,7 +1520,8 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 try:
                     self.loadFromNFO(self.location)
                 except NoNFOException:
-                    logger.log(u"%s: There was an error loading the NFO for episode S%02dE%02d" % (self.show.indexerid, season or 0, episode or 0), logger.ERROR)
+                    logger.log(u"{id}: There was an error loading the NFO for episode {ep}".format
+                               (id=self.show.indexerid, ep=episode_num(season, episode)), logger.ERROR)
 
                 # if we tried loading it from NFO and didn't find the NFO, try the Indexers
                 if not self.hasnfo:
@@ -1499,10 +1532,12 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
                     # if we failed SQL *and* NFO, Indexers then fail
                     if not result:
-                        raise EpisodeNotFoundException("Couldn't find episode S%02dE%02d" % (season or 0, episode or 0))
+                        raise EpisodeNotFoundException(u"Couldn't find episode {ep}".format(ep=episode_num(season, episode)))
 
     def loadFromDB(self, season, episode):  # pylint: disable=too-many-branches
-        # logger.log(u"%s: Loading episode details for %s S%02dE%02d from DB" % (self.show.indexerid, self.show.name, season or 0, episode or 0), logger.DEBUG)
+        # logger.log(u"{id}: Loading episode details for {name} {ep} from DB".format
+        #            (id=self.show.indexerid, name=self.show.name,
+        #             ep=episode_num(season, episode)), logger.DEBUG)
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
@@ -1511,7 +1546,9 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         if len(sql_results) > 1:
             raise MultipleEpisodesInDatabaseException("Your DB has two records for the same show somehow.")
         elif len(sql_results) == 0:
-            logger.log(u"%s: Episode S%02dE%02d not found in the database" % (self.show.indexerid, self.season or 0, self.episode or 0), logger.DEBUG)
+            logger.log(u"{id}: Episode {ep} not found in the database".format
+                       (id=self.show.indexerid, ep=episode_num(self.season, self.episode)),
+                       logger.DEBUG)
             return False
         else:
             # NAMEIT logger.log(u"AAAAA from" + str(self.season)+"x"+str(self.episode) + " -" + self.name + " to " + str(sql_results[0]["name"]))
@@ -1585,8 +1622,9 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         if episode is None:
             episode = self.episode
 
-        # logger.log(u"%s: Loading episode details for %s S%02dE%02d from %s" %
-        #            (self.show.indexerid, self.show.name, season or 0, episode or 0, sickbeard.indexerApi(self.show.indexer).name), logger.DEBUG)
+        # logger.log(u"{id}: Loading episode details for {show} {ep} from {indexer}".format
+        #            (id=self.show.indexerid, show=self.show.name, ep=episode_num(season, episode),
+        #             indexer=sickbeard.indexerApi(self.show.indexer).name), logger.DEBUG)
 
         indexer_lang = self.show.lang
 
@@ -1631,13 +1669,17 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             return
 
         if getattr(myEp, 'episodename', None) is None:
-            logger.log(u"This episode %s - S%02dE%02d has no name on %s. Setting to an empty string" % (self.show.name, season or 0, episode or 0, sickbeard.indexerApi(self.indexer).name))
+            logger.log(u"This episode {show} - {ep} has no name on {indexer}. Setting to an empty string".format
+                       (show=self.show.name, ep=episode_num(season, episode), indexer=sickbeard.indexerApi(self.indexer).name))
             setattr(myEp, 'episodename', '')
 
         if getattr(myEp, 'absolute_number', None) is None:
-            logger.log(u"%s: This episode %s - S%02dE%02d has no absolute number on %s" % (self.show.indexerid, self.show.name, season or 0, episode or 0, sickbeard.indexerApi(self.indexer).name), logger.DEBUG)
+            logger.log(u"{id}: This episode {show} - {ep} has no absolute number on {indexer}".format
+                       (id=self.show.indexerid, show=self.show.name, ep=episode_num(season, episode),
+                        indexer=sickbeard.indexerApi(self.indexer).name), logger.DEBUG)
         else:
-            logger.log(u"%s: The absolute_number for S%02dE%02d is: %s " % (self.show.indexerid, season or 0, episode or 0, myEp["absolute_number"]), logger.DEBUG)
+            logger.log(u"{id}: The absolute number for {ep} is: {absolute} ".format
+                       (id=self.show.indexerid, ep=episode_num(season, episode), absolute=myEp["absolute_number"]), logger.DEBUG)
             self.absolute_number = int(myEp["absolute_number"])
 
         self.name = getattr(myEp, 'episodename', "")
@@ -1668,7 +1710,9 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         try:
             self.airdate = datetime.date(rawAirdate[0], rawAirdate[1], rawAirdate[2])
         except (ValueError, IndexError):
-            logger.log(u"Malformed air date of %s retrieved from %s for (%s - S%02dE%02d)" % (firstaired, sickbeard.indexerApi(self.indexer).name, self.show.name, season or 0, episode or 0), logger.WARNING)
+            logger.log(u"Malformed air date of {aired} retrieved from {indexer} for ({show} - {ep})".format
+                       (aired=firstaired, indexer=sickbeard.indexerApi(self.indexer).name, show=self.show.name,
+                        ep=episode_num(season, episode)), logger.WARNING)
             # if I'm incomplete on the indexer but I once was complete then just delete myself from the DB for now
             if self.indexerid != -1:
                 self.deleteEpisode()
@@ -1677,7 +1721,8 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         # early conversion to int so that episode doesn't get marked dirty
         self.indexerid = getattr(myEp, 'id', None)
         if self.indexerid is None:
-            logger.log(u"Failed to retrieve ID from " + sickbeard.indexerApi(self.indexer).name, logger.ERROR)
+            logger.log(u"Failed to retrieve ID from {indexer}".format
+                       (indexer=sickbeard.indexerApi(self.indexer).name), logger.ERROR)
             if self.indexerid != -1:
                 self.deleteEpisode()
             return False
@@ -1688,8 +1733,9 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             return
 
         if self.location:
-            logger.log(u"%s: Setting status for S%02dE%02d based on status %s and location %s" %
-                       (self.show.indexerid, season or 0, episode or 0, statusStrings[self.status], self.location), logger.DEBUG)
+            logger.log(u"{id}: Setting status for {ep} based on status {status} and location {location}".format
+                       (id=self.show.indexerid, ep=episode_num(season, episode),
+                        status=statusStrings[self.status], location=self.location), logger.DEBUG)
 
         if not ek(os.path.isfile, self.location):
             if self.airdate >= datetime.date.today() or self.airdate == datetime.date.fromordinal(1):
@@ -1754,8 +1800,10 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 for epDetails in showXML.getiterator('episodedetails'):
                     if epDetails.findtext('season') is None or int(epDetails.findtext('season')) != self.season or \
                        epDetails.findtext('episode') is None or int(epDetails.findtext('episode')) != self.episode:
-                        logger.log(u"%s: NFO has an <episodedetails> block for a different episode - wanted S%02dE%02d but got S%02dE%02d" %
-                                   (self.show.indexerid, self.season or 0, self.episode or 0, epDetails.findtext('season') or 0, epDetails.findtext('episode') or 0), logger.DEBUG)
+                        logger.log(u"{id}: NFO has an <episodedetails> block for a different episode - wanted {ep_wanted} but got {ep_found}".format
+                                   (id=self.show.indexerid, ep_wanted=episode_num(self.season, self.episode),
+                                    ep_found=episode_num(epDetails.findtext('season'), epDetails.findtext('episode'))),
+                                   logger.DEBUG)
                         continue
 
                     if epDetails.findtext('title') is None or epDetails.findtext('aired') is None:
@@ -1845,7 +1893,8 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
     def deleteEpisode(self):
 
-        logger.log(u"Deleting %s S%02dE%02d from the DB" % (self.show.name, self.season or 0, self.episode or 0), logger.DEBUG)
+        logger.log(u"Deleting {show} {ep} from the DB".format
+                   (show=self.show.name, ep=episode_num(self.season, self.episode)), logger.DEBUG)
 
         # remove myself from the show dictionary
         if self.show.getEpisode(self.season, self.episode, noCreate=True) == self:

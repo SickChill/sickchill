@@ -22,10 +22,10 @@ import re
 from requests.utils import dict_from_cookiejar
 from urllib import urlencode
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import try_int, convert_size
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -50,7 +50,7 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
         self.proper_strings = ['PROPER', 'REPACK', 'REAL']
 
-        self.cache = GFTrackerCache(self)
+        self.cache = tvcache.TVCache(self)
 
     def _check_auth(self):
 
@@ -158,7 +158,7 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
                         except StandardError:
@@ -173,18 +173,5 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
     def seed_ratio(self):
         return self.ratio
-
-
-class GFTrackerCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Poll delay in minutes
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = GFTrackerProvider()

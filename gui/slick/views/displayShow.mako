@@ -339,16 +339,6 @@
                 <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${("Specials", "Season " + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
                 % if sickbeard.DISPLAY_ALL_SEASONS is False:
                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
-                    <script type="text/javascript">
-                        $(function() {
-                            $('#collapseSeason-${epResult['season']}').on('hide.bs.collapse', function () {
-                                $('#showseason-${epResult['season']}').text('Show Episodes');
-                            })
-                            $('#collapseSeason-${epResult['season']}').on('show.bs.collapse', function () {
-                                $('#showseason-${epResult['season']}').text('Hide Episodes');
-                            })
-                        });
-                    </script>
                 % endif
             </th>
         </tr>
@@ -379,16 +369,6 @@
                 <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${("Specials", "Season " + str(epResult["season"]))[bool(int(epResult["season"]))]}</h3>
                 % if sickbeard.DISPLAY_ALL_SEASONS is False:
                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
-                    <script type="text/javascript">
-                        $(function() {
-                            $('#collapseSeason-${epResult['season']}').on('hide.bs.collapse', function () {
-                                $('#showseason-${epResult['season']}').text('Show Episodes');
-                            })
-                            $('#collapseSeason-${epResult['season']}').on('show.bs.collapse', function () {
-                                $('#showseason-${epResult['season']}').text('Hide Episodes');
-                            })
-                        });
-                    </script>
                 % endif
             </th>
         </tr>
@@ -414,7 +394,7 @@
             % endif
     </tbody>
         % if sickbeard.DISPLAY_ALL_SEASONS is False:
-        <tbody class="collapse${("", " in")[curSeason == -1]}" id="collapseSeason-${epResult['season']}">
+        <tbody class="toggle collapse${("", " in")[curSeason == -1]}" id="collapseSeason-${epResult['season']}">
         % else:
         <tbody>
         % endif

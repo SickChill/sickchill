@@ -19,16 +19,14 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import requests
-import cookielib
+from requests.utils import dict_from_cookiejar
 from urllib import urlencode
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
-from sickrage.helper.common import try_int, convert_size
+from sickrage.helper.common import convert_size, try_int
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -36,8 +34,6 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
     def __init__(self):
 
         TorrentProvider.__init__(self, "Xthor")
-
-        self.cj = cookielib.CookieJar()
 
         self.url = 'https://xthor.bz'
         self.urls = {
@@ -52,11 +48,11 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         self.password = None
         self.freeleech = None
         self.proper_strings = ['PROPER']
-        self.cache = XthorCache(self)
+        self.cache = tvcache.TVCache(self, min_time=30)
 
     def login(self):
 
-        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
         login_params = {'username': self.username,
@@ -125,34 +121,44 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    # Catégorie, Nom du Torrent, (Download), (Bookmark), Com., Taille, Complété, Seeders, Leechers
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all('td')]
+                    def process_column_header(td):
+                        result = ''
+                        if td.a:
+                            result = td.a.get('title', td.a.get_text(strip=True))
+                        if not result:
+                            result = td.get_text(strip=True)
+                        return result
+
+                    # Catégorie, Nom du Torrent, (Download), (Bookmark), Com., Taille, Compl�t�, Seeders, Leechers
+                    labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
 
                     for row in torrent_rows[1:]:
+                        cells = row.find_all('td')
+                        if len(cells) < len(labels):
+                            continue
                         try:
-                            cells = row.find_all('td')
                             title = cells[labels.index('Nom du Torrent')].get_text(strip=True)
                             download_url = self.url + '/' + row.find("a", href=re.compile("download.php"))['href']
-                            size = convert_size(cells[labels.index('Taille')].get_text(strip=True))
+                            if not all([title, download_url]):
+                                continue
+
                             seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
-                        except (AttributeError, TypeError, KeyError, ValueError):
-                            continue
 
-                        if not all([title, download_url]):
-                            continue
+                            # Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != 'RSS':
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                continue
 
-                        # Filter unseeded torrent
-                        if seeders < self.minseed or leechers < self.minleech:
+                            size = convert_size(cells[labels.index('Taille')].get_text(strip=True))
+
+                            item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                            items.append(item)
+                        except StandardError:
                             continue
-
-                        item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
-
-                        items.append(item)
 
             # For each search mode sort all the items by seeders if available if available
             items.sort(key=lambda tup: tup[3], reverse=True)
@@ -163,18 +169,5 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
     def seed_ratio(self):
         return self.ratio
-
-
-class XthorCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        self.minTime = 30
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
-
 
 provider = XthorProvider()

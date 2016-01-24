@@ -1,5 +1,6 @@
 # coding=utf-8
-# Author: miigotu (Dustyn Gibson) <miigotu@gmail.com>
+# Author: Dustyn Gibson <miigotu@gmail.com>
+#
 # URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
@@ -18,18 +19,18 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import urllib
-import requests
+from requests.utils import dict_from_cookiejar
+from urllib import quote_plus
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 
-from sickrage.helper.common import try_int, convert_size
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "HDTorrents")
@@ -52,7 +53,7 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.categories = "&category[]=59&category[]=60&category[]=30&category[]=38"
         self.proper_strings = ['PROPER', 'REPACK']
 
-        self.cache = HDTorrentsCache(self)
+        self.cache = tvcache.TVCache(self, min_time=30)  # only poll HDTorrents every 30 minutes max
 
     def _check_auth(self):
 
@@ -62,8 +63,7 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         return True
 
     def login(self):
-
-        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
         login_params = {'uid': self.username,
@@ -92,7 +92,7 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    search_url = self.urls['search'] % (urllib.quote_plus(search_string), self.categories)
+                    search_url = self.urls['search'] % (quote_plus(search_string), self.categories)
                     logger.log(u"Search string: %s" % search_string, logger.DEBUG)
                 else:
                     search_url = self.urls['rss'] % self.categories
@@ -168,7 +168,7 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                         item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+                            logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 
@@ -181,18 +181,5 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def seed_ratio(self):
         return self.ratio
-
-
-class HDTorrentsCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll HDTorrents every 30 minutes max
-        self.minTime = 30
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = HDTorrentsProvider()

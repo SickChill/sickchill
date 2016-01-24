@@ -1,6 +1,8 @@
 # coding=utf-8
-# Author: Gonçalo (aka duramato/supergonkas) <matigonkas@outlook.com>
-# URL: https://github.com/SickRage/sickrage
+# Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
+#
+# URL: https://sickrage.github.io
+#
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -18,15 +20,18 @@
 
 import traceback
 from bs4 import BeautifulSoup
-from sickbeard import logger
-from sickbeard import tvcache
+
+from sickbeard import logger, tvcache
 from sickbeard.common import USER_AGENT
-from sickrage.helper.common import try_int, convert_size
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
+class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "LimeTorrents")
 
         self.urls = {
@@ -44,9 +49,9 @@ class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance
         self.headers.update({'User-Agent': USER_AGENT})
         self.proper_strings = ['PROPER', 'REPACK', 'REAL']
 
-        self.cache = LimeTorrentsCache(self)
+        self.cache = tvcache.TVCache(self, search_params={'RSS': ['rss']})
 
-    def search(self, search_strings, age=0, ep_obj=None): # pylint: disable=too-many-branches,too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches,too-many-locals
         results = []
         for mode in search_strings:
             items = []
@@ -111,7 +116,7 @@ class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance
 
                         item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+                            logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 
@@ -127,18 +132,5 @@ class LimeTorrentsProvider(TorrentProvider): # pylint: disable=too-many-instance
 
     def seed_ratio(self):
         return self.ratio
-
-
-class LimeTorrentsCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['rss']}
-        return {'entries': self.provider.search(search_strings)}
-
 
 provider = LimeTorrentsProvider()

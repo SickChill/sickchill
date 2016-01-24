@@ -1,5 +1,6 @@
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
+#
 # URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
@@ -17,15 +18,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from urllib import urlencode
 from requests.utils import dict_from_cookiejar
+from urllib import urlencode
 
-from sickbeard import logger
-from sickbeard import tvcache
-from sickrage.helper.common import try_int, convert_size
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
-
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+
+from sickrage.helper.common import convert_size, try_int
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -38,7 +38,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.password = None
         self.ratio = None
 
-        self.cache = DanishbitsCache(self)
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll Danishbits every 10 minutes max
 
         self.url = 'https://danishbits.org/'
         self.urls = {
@@ -149,7 +149,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
 
@@ -165,19 +165,5 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def seedRatio(self):
         return self.ratio
-
-
-class DanishbitsCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Only poll Danishbits every 10 minutes max
-        self.minTime = 10
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
-
 
 provider = DanishbitsProvider()

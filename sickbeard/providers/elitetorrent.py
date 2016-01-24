@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: CristianBB
 #
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,19 +18,19 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
 import re
 from six.moves import urllib
+import traceback
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 from sickrage.helper.common import try_int
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class elitetorrentProvider(TorrentProvider):
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "EliteTorrent")
@@ -38,7 +38,7 @@ class elitetorrentProvider(TorrentProvider):
         self.onlyspasearch = None
         self.minseed = None
         self.minleech = None
-        self.cache = elitetorrentCache(self)
+        self.cache = tvcache.TVCache(self)  # Only poll EliteTorrent every 20 minutes max
 
         self.urls = {
             'base_url': 'http://www.elitetorrent.net',
@@ -130,7 +130,7 @@ class elitetorrentProvider(TorrentProvider):
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
 
@@ -162,18 +162,5 @@ class elitetorrentProvider(TorrentProvider):
         title += '-ELITETORRENT'
 
         return title.strip()
-
-
-class elitetorrentCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
-
 
 provider = elitetorrentProvider()

@@ -74,11 +74,12 @@ class CacheDBConnection(db.DBConnection):
 
 
 class TVCache(object):
-    def __init__(self, provider):
+    def __init__(self, provider, **kwargs):
         self.provider = provider
         self.providerID = self.provider.get_id()
         self.providerDB = None
-        self.minTime = 10
+        self.minTime = kwargs.pop(u'min_time', 10)
+        self.search_params = kwargs.pop(u'search_params', dict(RSS=['']))
 
     def _getDB(self):
         # init provider database if not done already
@@ -96,7 +97,7 @@ class TVCache(object):
         return self.provider._get_title_and_url(item)
 
     def _getRSSData(self):
-        return None
+        return {u'entries': self.provider.search(self.search_params)} if self.search_params else None
 
     def _checkAuth(self, data):
         return True

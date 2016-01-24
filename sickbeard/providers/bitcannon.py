@@ -1,6 +1,7 @@
 # coding=utf-8
-# Author: miigotu <miigotu@gmail.com>
-# URL: http://github.com/SickRage/SickRage
+# Author: Dustyn Gibson <miigotu@gmail.com>
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -20,13 +21,14 @@
 import traceback
 from urllib import urlencode
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BitCannonProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "BitCannon")
@@ -39,7 +41,7 @@ class BitCannonProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.custom_url = None
         self.api_key = None
 
-        self.cache = BitCannonCache(self)
+        self.cache = tvcache.TVCache(self, search_params={'RSS': ['tv', 'anime']})
 
         self.search_params = {
             'q': '',
@@ -113,7 +115,7 @@ class BitCannonProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
 
@@ -137,18 +139,5 @@ class BitCannonProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                 return False
 
         return True
-
-
-class BitCannonCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll bitcannon every 20 minutes max
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['tv', 'anime']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = BitCannonProvider()

@@ -1,35 +1,37 @@
 # coding=utf-8
 # Author: raver2046 <raver2046@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
-import requests
 import re
+from requests.utils import dict_from_cookiejar
+import traceback
 
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 
-from sickbeard import logger
-from sickbeard import tvcache
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BlueTigersProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "BLUETIGERS")
 
         self.username = None
@@ -37,7 +39,7 @@ class BlueTigersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.ratio = None
         self.token = None
 
-        self.cache = BlueTigersCache(self)
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll BLUETIGERS every 10 minutes max
 
         self.urls = {
             'base_url': 'https://www.bluetigers.ca/',
@@ -53,7 +55,7 @@ class BlueTigersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.url = self.urls['base_url']
 
     def login(self):
-        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
         login_params = {
@@ -142,18 +144,5 @@ class BlueTigersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def seed_ratio(self):
         return self.ratio
-
-
-class BlueTigersCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Only poll BLUETIGERS every 10 minutes max
-        self.minTime = 10
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
-
 
 provider = BlueTigersProvider()

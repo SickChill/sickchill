@@ -1,6 +1,7 @@
 # coding=utf-8
-# Author: Gonçalo (aka duramato) <matigonkas@outlook.com>
-# URL: https://github.com/SickRage/SickRage
+# Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -17,8 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -26,12 +27,14 @@ from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 class StrikeProvider(TorrentProvider):
 
     def __init__(self):
+
         TorrentProvider.__init__(self, "Strike")
 
         self.public = True
         self.url = 'https://getstrike.net/'
         self.ratio = 0
-        self.cache = StrikeCache(self)
+        params = {'RSS': ['x264']}  # Use this hack for RSS search since most results will use this codec
+        self.cache = tvcache.TVCache(self, min_time=10, search_params=params)
         self.minseed, self.minleech = 2 * [None]
 
     def search(self, search_strings, age=0, ep_obj=None):
@@ -71,7 +74,7 @@ class StrikeProvider(TorrentProvider):
                         continue
 
                     if mode != 'RSS':
-                        logger.log(u"Found result: %s " % title, logger.DEBUG)
+                        logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                     item = title, download_url, size, seeders, leechers
                     items.append(item)
@@ -85,20 +88,5 @@ class StrikeProvider(TorrentProvider):
 
     def seed_ratio(self):
         return self.ratio
-
-
-class StrikeCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Cache results for 10 min
-        self.minTime = 10
-
-    def _getRSSData(self):
-
-        # Use this hacky way for RSS search since most results will use this codec
-        search_params = {'RSS': ['x264']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = StrikeProvider()

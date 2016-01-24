@@ -83,6 +83,8 @@
                 % if curStatus in [DOWNLOADED, ARCHIVED]:
                     % if hItem["provider"] != "-1":
                         <span style="vertical-align:middle;"><i>${hItem["provider"]}</i></span>
+                    % else:
+                        <span style="vertical-align:middle;"><i>Unknown</i></span>
                     % endif
                 % else:
                     % if hItem["provider"] > 0:
@@ -158,7 +160,7 @@
                             % if action["provider"] != "-1":
                                 <span style="cursor: help;" title="${ek(os.path.basename, action["resource"])}"><i>${action["provider"]}</i></span>
                             % else:
-                                <span style="cursor: help;" title="${ek(os.path.basename, action["resource"])}"></span>
+                                <span style="cursor: help;" title="${ek(os.path.basename, action["resource"])}"><i>Unknown</i></span>
                             % endif
                         % endif
                     % endfor

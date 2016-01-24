@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: seedboy
-# URL: https://github.com/seedboy
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,15 +19,17 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from sickbeard import logger
-from sickbeard import tvcache
+
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import convert_size
+
 from sickrage.helper.exceptions import AuthException, ex
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "IPTorrents")
@@ -38,7 +41,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minseed = None
         self.minleech = None
 
-        self.cache = IPTorrentsCache(self)
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
         self.urls = {'base_url': 'https://iptorrents.eu',
                      'login': 'https://iptorrents.eu/torrents/',
@@ -144,7 +147,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
 
@@ -160,19 +163,5 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def seed_ratio(self):
         return self.ratio
-
-
-class IPTorrentsCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Only poll IPTorrents every 10 minutes max
-        self.minTime = 10
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
-
 
 provider = IPTorrentsProvider()

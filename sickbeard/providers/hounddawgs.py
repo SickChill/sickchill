@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Idan Gutman
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -19,10 +20,11 @@
 
 import re
 import traceback
-from sickbeard import logger
-from sickbeard import tvcache
+
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import try_int, convert_size
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -64,7 +66,7 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             "searchtags": ''
         }
 
-        self.cache = HoundDawgsCache(self)
+        self.cache = tvcache.TVCache(self)
 
     def login(self):
 
@@ -165,7 +167,7 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
 
@@ -181,19 +183,5 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def seed_ratio(self):
         return self.ratio
-
-
-class HoundDawgsCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll HoundDawgs every 20 minutes max
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
-
 
 provider = HoundDawgsProvider()

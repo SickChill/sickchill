@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Mr_Orange
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -17,16 +18,17 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import urllib
 import re
+from urllib import urlencode
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "NyaaTorrents")
@@ -36,7 +38,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
         self.anime_only = True
         self.ratio = None
 
-        self.cache = NyaaCache(self)
+        self.cache = tvcache.TVCache(self, min_time=15)  # only poll NyaaTorrents every 15 minutes max
 
         self.urls = {'base_url': 'http://www.nyaa.se/'}
 
@@ -67,7 +69,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                 if mode != 'RSS':
                     params["term"] = search_string.encode('utf-8')
 
-                search_url = self.url + '?' + urllib.urlencode(params)
+                search_url = self.url + '?' + urlencode(params)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 summary_regex = ur"(\d+) seeder\(s\), (\d+) leecher\(s\), \d+ download\(s\) - (\d+.?\d* [KMGT]iB)(.*)"
@@ -95,7 +97,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
                     item = title, download_url, size, seeders, leechers
                     if mode != 'RSS':
-                        logger.log(u"Found result: %s " % title, logger.DEBUG)
+                        logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                     items.append(item)
 
@@ -107,17 +109,5 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
     def seed_ratio(self):
         return self.ratio
-
-
-class NyaaCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll NyaaTorrents every 15 minutes max
-        self.minTime = 15
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = NyaaProvider()

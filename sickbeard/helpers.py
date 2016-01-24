@@ -52,7 +52,7 @@ from sickbeard import logger, classes
 from sickbeard.common import USER_AGENT
 from sickbeard import db
 from sickbeard.notifiers import synoindex_notifier
-from sickrage.helper.common import http_code_description, media_extensions, pretty_file_size, subtitle_extensions
+from sickrage.helper.common import http_code_description, media_extensions, pretty_file_size, subtitle_extensions, episode_num
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
@@ -704,9 +704,12 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
 
         if len(sql_results) == 1:
             absolute_number = int(sql_results[0]["absolute_number"])
-            logger.log(u"Found absolute number %s for show %s S%02dE%02d" % (absolute_number, show.name, season, episode), logger.DEBUG)
+            logger.log(u"Found absolute number {absolute} for show {show} {ep}".format
+                       (absolute=absolute_number, show=show.name,
+                        ep=episode_num(season, episode)), logger.DEBUG)
         else:
-            logger.log(u"No entries for absolute number for show %s S%02dE%02d" % (show.name, season, episode), logger.DEBUG)
+            logger.log(u"No entries for absolute number for show {show} {ep}".format
+                       (show=show.name, ep=episode_num(season, episode)), logger.DEBUG)
 
     return absolute_number
 
@@ -1449,7 +1452,7 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
     except (SocketTimeout, TypeError) as e:
         logger.log(u"Connection timed out (sockets) accessing getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
-    except requests.exceptions.HTTPError as e:
+    except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects) as e:
         logger.log(u"HTTP error in getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
     except requests.exceptions.ConnectionError as e:
@@ -1506,7 +1509,7 @@ def download_file(url, filename, session=None, headers=None):
         remove_file_failed(filename)
         logger.log(u"Connection timed out (sockets) while loading download URL %s Error: %r" % (url, ex(e)), logger.WARNING)
         return None
-    except requests.exceptions.HTTPError as e:
+    except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects) as e:
         remove_file_failed(filename)
         logger.log(u"HTTP error %r while loading download URL %s " % (ex(e), url), logger.WARNING)
         return False
@@ -1769,6 +1772,20 @@ def getTVDBFromID(indexer_id, indexer):
     else:
         return tvdb_id
 
+def get_showname_from_indexer(indexer, indexer_id, lang='en'):
+    lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
+    if lang:
+        lINDEXER_API_PARMS['language'] = lang
+
+    logger.log(u"" + str(sickbeard.indexerApi(indexer).name) + ": " + repr(lINDEXER_API_PARMS))
+
+    t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
+    s = t[int(indexer_id)]
+    
+    if hasattr(s,'data'):
+        return s.data.get('seriesname')
+    
+    return None
 
 def is_ip_private(ip):
     priv_lo = re.compile(r"^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$")

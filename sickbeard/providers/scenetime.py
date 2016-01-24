@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Idan Gutman
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,15 +19,13 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import urllib
+from urllib import quote
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import convert_size
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
-from sickrage.helper.common import try_int
+from sickrage.helper.common import convert_size, try_int
+from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -41,7 +40,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.minseed = None
         self.minleech = None
 
-        self.cache = SceneTimeCache(self)
+        self.cache = tvcache.TVCache(self)  # only poll SceneTime every 20 minutes max
 
         self.urls = {'base_url': 'https://www.scenetime.com',
                      'login': 'https://www.scenetime.com/takelogin.php',
@@ -82,7 +81,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
-                search_url = self.urls['search'] % (urllib.quote(search_string), self.categories)
+                search_url = self.urls['search'] % (quote(search_string), self.categories)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 data = self.get_url(search_url)
@@ -135,7 +134,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
                         item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+                            logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 
@@ -148,19 +147,5 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
     def seed_ratio(self):
         return self.ratio
-
-
-class SceneTimeCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll SceneTime every 20 minutes max
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
-
 
 provider = SceneTimeProvider()

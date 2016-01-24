@@ -32,7 +32,7 @@
         <meta name="theme-color" content="#333333">
         % endif
 
-        <title>SickRage - BRANCH:[${sickbeard.BRANCH}] - ${title}</title>
+        <title>SickRage - ${title}</title>
 
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>

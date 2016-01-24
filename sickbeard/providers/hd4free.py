@@ -1,6 +1,7 @@
 # coding=utf-8
-# Author: Gonçalo (aka duramato) <matigonkas@outlook.com>
-# URL: https://github.com/SickRage/SickRage
+# Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,8 +19,9 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 from urllib import urlencode
-from sickbeard import logger
-from sickbeard import tvcache
+
+from sickbeard import logger, tvcache
+
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -27,6 +29,7 @@ from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
+
         TorrentProvider.__init__(self, "HD4Free")
 
         self.url = 'https://hd4free.xyz'
@@ -39,7 +42,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         self.minleech = None
         self.ratio = 0
 
-        self.cache = HD4FreeCache(self)
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll HD4Free every 10 minutes max
 
     def _check_auth(self):
         if self.username and self.api_key:
@@ -108,7 +111,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                         item = title, download_url, size, seeders, leechers
 
                         if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+                            logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
                     except StandardError:
@@ -123,19 +126,5 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
     def seed_ratio(self):
         return self.ratio
-
-
-class HD4FreeCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Cache results for 10 min
-        self.minTime = 10
-
-    def _getRSSData(self):
-
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = HD4FreeProvider()

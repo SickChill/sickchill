@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Giovanni Borri
 # Modified by gborri, https://github.com/gborri for TNTVillage
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -19,13 +20,12 @@
 
 import re
 import traceback
-from sickbeard.common import Quality
-from sickbeard import logger
-from sickbeard import tvcache
-from sickbeard import db
 
+from sickbeard import db, logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickbeard.common import Quality
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+
 from sickrage.helper.common import convert_size
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -58,7 +58,9 @@ category_excluded = {'Sport': 22,
 
 
 class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "TNTVillage")
 
         self._uid = None
@@ -110,7 +112,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         self.categories = "cat=29"
 
-        self.cache = TNTVillageCache(self)
+        self.cache = tvcache.TVCache(self, min_time=30)  # only poll TNTVillage every 30 minutes max
 
     def _check_auth(self):
 
@@ -386,7 +388,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                                 item = title, download_url, size, seeders, leechers
                                 if mode != 'RSS':
-                                    logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                    logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                                 items.append(item)
 
@@ -402,19 +404,5 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def seed_ratio(self):
         return self.ratio
-
-
-class TNTVillageCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll TNTVillage every 30 minutes max
-        self.minTime = 30
-
-    def _getRSSData(self):
-        search_params = {'RSS': []}
-        return {'entries': self.provider.search(search_params)}
-
 
 provider = TNTVillageProvider()

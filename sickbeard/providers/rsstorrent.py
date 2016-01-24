@@ -1,5 +1,7 @@
 # coding=utf-8
-# Author: Mr_Orange
+# # Author: Mr_Orange
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -19,13 +21,11 @@
 import io
 import os
 import re
-import requests
+from requests.utils import add_dict_to_cookiejar
 from bencode import bdecode
 
 import sickbeard
-from sickbeard import helpers
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import helpers, logger, tvcache
 
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
@@ -33,15 +33,15 @@ from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TorrentRssProvider(TorrentProvider):
+
     def __init__(self, name, url, cookies='', titleTAG='title', search_mode='eponly', search_fallback=False, enable_daily=False,
                  enable_backlog=False):
+
         TorrentProvider.__init__(self, name)
-        self.cache = TorrentRssCache(self)
 
-        self.urls = {'base_url': re.sub(r'\/$', '', url)}
-
+        self.cache = TorrentRssCache(self, min_time=15)
+        self.urls = {'base_url': re.sub(r'/$', '', url)}
         self.url = self.urls['base_url']
-
         self.ratio = None
         self.supports_backlog = False
 
@@ -168,7 +168,7 @@ class TorrentRssProvider(TorrentProvider):
                 return True, 'RSS feed Parsed correctly'
             else:
                 if self.cookies:
-                    requests.utils.add_dict_to_cookiejar(self.session.cookies,
+                    add_dict_to_cookiejar(self.session.cookies,
                                                          dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
                 torrent_file = self.get_url(url, need_bytes=True)
                 try:
@@ -202,10 +202,6 @@ class TorrentRssProvider(TorrentProvider):
 
 
 class TorrentRssCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-        self.minTime = 15
-
     def _getRSSData(self):
         logger.log(u"Cache update URL: %s" % self.provider.url, logger.DEBUG)
 
