@@ -24,7 +24,6 @@ Common interface for Quality and Status
 
 # pylint: disable=line-too-long
 
-
 import operator
 from os import path
 import platform
@@ -38,6 +37,10 @@ from hachoir_core.log import log  # pylint: disable=import-error
 from fake_useragent import settings as UA_SETTINGS, UserAgent
 from sickbeard.numdict import NumDict
 from sickrage.helper.encoding import ek
+from sickrage.helper.common import try_int
+from sickrage.tagger.episode import EpisodeTags
+from sickrage.recompiled import tags
+
 
 # If some provider has an issue with functionality of SR, other than user agents, it's best to come talk to us rather than block.
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
@@ -124,6 +127,12 @@ class Quality(object):
     FULLHDWEBDL = 1 << 6  # 64 -- 1080p web-dl
     HDBLURAY = 1 << 7  # 128
     FULLHDBLURAY = 1 << 8  # 256
+    UHD_4K_TV = 1 << 9  # 512 -- 2160p aka 4K UHD aka UHD-1
+    UHD_4K_WEBDL = 1 << 10  # 1024
+    UHD_4K_BLURAY = 1 << 11  # 2048
+    UHD_8K_TV = 1 << 12  # 4096 -- 4320p aka 8K UHD aka UHD-2
+    UHD_8K_WEBDL = 1 << 13  # 8192
+    UHD_8K_BLURAY = 1 << 14  # 16384
     ANYHDTV = HDTV | FULLHDTV  # 20
     ANYWEBDL = HDWEBDL | FULLHDWEBDL  # 96
     ANYBLURAY = HDBLURAY | FULLHDBLURAY  # 384
@@ -143,7 +152,13 @@ class Quality(object):
         HDWEBDL: "720p WEB-DL",
         FULLHDWEBDL: "1080p WEB-DL",
         HDBLURAY: "720p BluRay",
-        FULLHDBLURAY: "1080p BluRay"
+        FULLHDBLURAY: "1080p BluRay",
+        UHD_4K_TV: "4K UHD TV",
+        UHD_8K_TV: "8K UHD TV",
+        UHD_4K_WEBDL: "4K UHD WEB-DL",
+        UHD_8K_WEBDL: "8K UHD WEB-DL",
+        UHD_4K_BLURAY: "4K UHD BluRay",
+        UHD_8K_BLURAY: "8K UHD BluRay",
     })
 
     sceneQualityStrings = NumDict({
@@ -158,7 +173,13 @@ class Quality(object):
         HDWEBDL: "720p WEB-DL",
         FULLHDWEBDL: "1080p WEB-DL",
         HDBLURAY: "720p BluRay",
-        FULLHDBLURAY: "1080p BluRay"
+        FULLHDBLURAY: "1080p BluRay",
+        UHD_4K_TV: "4K UHD TV",
+        UHD_8K_TV: "8K UHD TV",
+        UHD_4K_WEBDL: "4K UHD WEB-DL",
+        UHD_8K_WEBDL: "8K UHD WEB-DL",
+        UHD_4K_BLURAY: "4K UHD BluRay",
+        UHD_8K_BLURAY: "8K UHD BluRay",
     })
 
     combinedQualityStrings = NumDict({
@@ -180,6 +201,12 @@ class Quality(object):
         FULLHDWEBDL: "HD1080p",
         HDBLURAY: "HD720p",
         FULLHDBLURAY: "HD1080p",
+        UHD_4K_TV: "UHD-4K",
+        UHD_8K_TV: "UHD-8K",
+        UHD_4K_WEBDL: "UHD-4K",
+        UHD_8K_WEBDL: "UHD-8K",
+        UHD_4K_BLURAY: "UHD-4K",
+        UHD_8K_BLURAY: "UHD-8K",
         ANYHDTV: "any-hd",
         ANYWEBDL: "any-hd",
         ANYBLURAY: "any-hd"
@@ -212,13 +239,13 @@ class Quality(object):
         return to_return
 
     @staticmethod
-    def combineQualities(any_qualities, best_qualities):
+    def combineQualities(allowed_qualities, prefferred_qualities):
         any_quality = 0
         best_quality = 0
-        if any_qualities:
-            any_quality = reduce(operator.or_, any_qualities)
-        if best_qualities:
-            best_quality = reduce(operator.or_, best_qualities)
+        if allowed_qualities:
+            any_quality = reduce(operator.or_, allowed_qualities)
+        if prefferred_qualities:
+            best_quality = reduce(operator.or_, prefferred_qualities)
         return any_quality | (best_quality << 16)
 
     @staticmethod
@@ -260,7 +287,8 @@ class Quality(object):
         return Quality.UNKNOWN
 
     @staticmethod
-    def sceneQuality(name, anime=False):  # pylint: disable=too-many-branches
+    # TODO: Remove this method and sceneQuality after the new scene_quality has been validated.
+    def old_scene_quality(name, anime=False):  # pylint: disable=too-many-branches
         """
         Return The quality from the scene episode File
 
@@ -321,6 +349,112 @@ class Quality(object):
             ret = Quality.FULLHDBLURAY
 
         return ret
+
+    @staticmethod
+    def scene_quality(name, anime=False):  # pylint: disable=too-many-branches
+        """
+        Return The quality from the scene episode File
+
+        :param name: Episode filename to analyse
+        :param anime: Boolean to indicate if the show we're resolving is Anime
+        :return: Quality
+        """
+
+        if not name:
+            return Quality.UNKNOWN
+        else:
+            name = ek(path.basename, name)
+
+        result = None
+        ep = EpisodeTags(name)
+
+        if anime:
+            sd_options = tags.anime_sd.search(name)
+            hd_options = tags.anime_hd.search(name)
+            full_hd = tags.anime_fullhd.search(name)
+
+            # BluRay
+            if ep.bluray and (full_hd or hd_options):
+                result = Quality.FULLHDBLURAY if full_hd else Quality.HDBLURAY
+            # HD TV
+            elif not ep.bluray and (full_hd or hd_options):
+                result = Quality.FULLHDTV if full_hd else Quality.HDTV
+            # SD DVD
+            elif ep.dvd:
+                result = Quality.SDDVD
+            # SD TV
+            elif sd_options:
+                result = Quality.SDTV
+
+            return Quality.UNKNOWN if result is None else result
+
+        # Is it UHD?
+        if ep.vres in [2160, 4320] and ep.scan == u'p':
+            # BluRay
+            full_res = (ep.vres == 4320)
+            if ep.avc and ep.bluray:
+                result = Quality.UHD_4K_BLURAY if not full_res else Quality.UHD_8K_BLURAY
+            # WEB-DL
+            elif (ep.avc and ep.itunes) or ep.web:
+                result = Quality.UHD_4K_WEBDL if not full_res else Quality.UHD_8K_WEBDL
+            # HDTV
+            elif ep.avc and ep.tv == u'hd':
+                result = Quality.UHD_4K_TV if not full_res else Quality.UHD_8K_TV
+
+        # Is it HD?
+        elif ep.vres in [1080, 720]:
+            if ep.scan == u'p':
+                # BluRay
+                full_res = (ep.vres == 1080)
+                if ep.avc and (ep.bluray or ep.hddvd):
+                    result = Quality.FULLHDBLURAY if full_res else Quality.HDBLURAY
+                # WEB-DL
+                elif (ep.avc and ep.itunes) or ep.web:
+                    result = Quality.FULLHDWEBDL if full_res else Quality.HDWEBDL
+                # HDTV
+                elif ep.avc and ep.tv == u'hd':
+                    if not all([ep.vres == 1080, ep.raw, ep.avc_non_free]):
+                        result = Quality.FULLHDTV if full_res else Quality.HDTV
+                    else:
+                        result = Quality.RAWHDTV
+                elif all([ep.vres == 720, ep.tv == u'hd', ep.mpeg]):
+                    result = Quality.RAWHDTV
+            elif (ep.res == u'1080i') and ep.tv == u'hd':
+                if ep.mpeg or (ep.raw and ep.avc_non_free):
+                    result = Quality.RAWHDTV
+        elif ep.hrws:
+            result = Quality.HDTV
+
+        # Is it SD?
+        elif ep.xvid or ep.avc:
+            # SD DVD
+            if ep.dvd or ep.bluray:
+                result = Quality.SDDVD
+            # SDTV
+            elif ep.res == u'480p' or any([ep.tv, ep.sat, ep.web]):
+                result = Quality.SDTV
+
+        return Quality.UNKNOWN if result is None else result
+
+    @staticmethod
+    # TODO: Remove this method and old_scene_quality after the new scene_quality has been validated.
+    def sceneQuality(name, anime=False):
+        """
+        Validation for new scene_quality.
+
+        :param name: Episode filename to analyse
+        :param anime: Boolean to indicate if the show we're resolving is Anime
+        :return: Quality
+        """
+        # use the new scene_quality to determine quality
+        result = Quality.scene_quality(name, anime)
+
+        # if its a quality known by old_scene_quality assert they match
+        if result <= Quality.FULLHDBLURAY or result == Quality.UNKNOWN:
+            old = Quality.old_scene_quality(name, anime)
+            assert old == result, 'Old quality does not match new: %s != %s : %s' % (Quality.qualityStrings[old], Quality.qualityStrings[result], name)
+
+        return result
 
     @staticmethod
     def assumeQuality(name):
@@ -389,11 +523,15 @@ class Quality(object):
         webdl = re.search(r"web.?dl|web(rip|mux|hd)", base_filename, re.I) is not None
 
         ret = Quality.UNKNOWN
-        if height > 1000:
+        if 3240 < height:
+            ret = ((Quality.UHD_8K_TV, Quality.UHD_8K_BLURAY)[bluray], Quality.UHD_8K_WEBDL)[webdl]
+        if 1620 < height <= 3240:
+            ret = ((Quality.UHD_4K_TV, Quality.UHD_4K_BLURAY)[bluray], Quality.UHD_4K_WEBDL)[webdl]
+        elif 800 < height <= 1620:
             ret = ((Quality.FULLHDTV, Quality.FULLHDBLURAY)[bluray], Quality.FULLHDWEBDL)[webdl]
-        elif 680 < height < 800:
+        elif 680 < height <= 800:
             ret = ((Quality.HDTV, Quality.HDBLURAY)[bluray], Quality.HDWEBDL)[webdl]
-        elif height < 680:
+        elif height <= 680:
             ret = (Quality.SDTV, Quality.SDDVD)[re.search(r'dvd|b[rd]rip|blue?-?ray', base_filename, re.I) is not None]
 
         return ret
@@ -516,21 +654,32 @@ Quality.ARCHIVED = [Quality.compositeStatus(ARCHIVED, x) for x in Quality.qualit
 
 HD720p = Quality.combineQualities([Quality.HDTV, Quality.HDWEBDL, Quality.HDBLURAY], [])
 HD1080p = Quality.combineQualities([Quality.FULLHDTV, Quality.FULLHDWEBDL, Quality.FULLHDBLURAY], [])
+UHD_4K = Quality.combineQualities([Quality.UHD_4K_TV, Quality.UHD_4K_WEBDL, Quality.UHD_4K_BLURAY], [])
+UHD_8K = Quality.combineQualities([Quality.UHD_8K_TV, Quality.UHD_8K_WEBDL, Quality.UHD_8K_BLURAY], [])
 
 SD = Quality.combineQualities([Quality.SDTV, Quality.SDDVD], [])
 HD = Quality.combineQualities([HD720p, HD1080p], [])
-ANY = Quality.combineQualities([SD, HD], [])
+UHD = Quality.combineQualities([UHD_4K, UHD_8K], [])
+ANY = Quality.combineQualities([SD, HD, UHD], [])
 
 # legacy template, cant remove due to reference in mainDB upgrade?
 BEST = Quality.combineQualities([Quality.SDTV, Quality.HDTV, Quality.HDWEBDL], [Quality.HDTV])
 
-qualityPresets = (SD, HD, HD720p, HD1080p, ANY)
+qualityPresets = (
+    SD,
+    HD, HD720p, HD1080p,
+    UHD, UHD_4K, UHD_8K,
+    ANY,
+)
 qualityPresetStrings = NumDict({
     SD: "SD",
     HD: "HD",
     HD720p: "HD720p",
     HD1080p: "HD1080p",
-    ANY: "Any"
+    UHD: "UHD",
+    UHD_4K: "UHD-4K",
+    UHD_8K: "UHD-8K",
+    ANY: "Any",
 })
 
 
