@@ -2647,7 +2647,7 @@ class HomeAddShows(Home):
                 logger.log(u"Unable to to find tvdb ID to add %s" % show_name)
                 ui.notifications.error(
                     "Unable to add %s" % show_name,
-                    "Could not add %s.  We were unable to locate the tvdb id at this time." % showName
+                    "Could not add %s.  We were unable to locate the tvdb id at this time." % show_name
                 )
                 return
 
