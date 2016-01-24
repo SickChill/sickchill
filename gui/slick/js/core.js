@@ -1,6 +1,8 @@
 // @TODO Move these into common.ini when possible,
 //       currently we can't do that as browser.js and a few others need it before this is loaded
 var srRoot = getMeta('srRoot'),
+    srDefaultPage = getMeta('srDefaultPage'),
+    srPID = getMeta('srPID'),
     themeSpinner = getMeta('themeSpinner'),
     anonURL = getMeta('anonURL'),
     topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />', // jshint ignore:line
@@ -2406,6 +2408,32 @@ var SICKRAGE = {
                 widgets: ['saveSort', 'zebra'],
                 sortList: [[3,0], [4,0], [2,1]]
             });
+        },
+        restart: function(){
+            var currentPid = srPID;
+            var checkIsAlive = setInterval(function(){
+                $.get(srRoot + '/home/is_alive/', function(data) {
+                    if (data.msg.toLowerCase() === 'nope') {
+                        // if it's still initializing then just wait and try again
+                        $('#restart_message').show();
+                    } else {
+                        // if this is before we've even shut down then just try again later
+                        if (currentPid === '' || data.msg === currentPid) {
+                            $('#shut_down_loading').hide();
+                            $('#shut_down_success').show();
+                            currentPid = data.msg;
+                        } else {
+                            clearInterval(checkIsAlive);
+                            $('#restart_loading').hide();
+                            $('#restart_success').show();
+                            $('#refresh_message').show();
+                            setTimeout(function(){
+                                window.location = srRoot + '/' + srDefaultPage + '/';
+                            }, 5000);
+                        }
+                    }
+                }, 'jsonp');
+            }, 100);
         }
     },
     manage: {
