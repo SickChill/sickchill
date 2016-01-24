@@ -329,7 +329,7 @@ class Quality(object):
 
             return ret
 
-        if check_name([r"480p|web.?dl|web(rip|mux|hd)|[sph]d.?tv|dsr|tv(rip|mux)|satrip", r"xvid|divx|[xh].?26[45]"], all) and not check_name([r"(720|1080)[pi]"], all) and not check_name([r"hr.ws.pdtv.[xh].?26[45]"], any):
+        if check_name([r"480p|web.?dl|web(rip|mux|hd)|[sph]d.?tv|dsr|tv(rip|mux)|satrip", r"xvid|divx|[xh].?26[45]"], all) and not check_name([r"(720|1080)[pi]"], all) and not check_name([r"hr.ws.pdtv.[xh].?26[45]", r"dvd(rip|mux)|b[rd](rip|mux)|blue?-?ray"], any):
             ret = Quality.SDTV
         elif check_name([r"dvd(rip|mux)|b[rd](rip|mux)|blue?-?ray", r"xvid|divx|[xh].?26[45]"], all) and not check_name([r"(720|1080)[pi]"], all) and not check_name([r"hr.ws.pdtv.[xh].?26[45]"], any):
             ret = Quality.SDDVD
@@ -671,6 +671,7 @@ qualityPresets = (
     UHD, UHD_4K, UHD_8K,
     ANY,
 )
+
 qualityPresetStrings = NumDict({
     SD: "SD",
     HD: "HD",
