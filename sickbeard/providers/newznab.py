@@ -253,13 +253,14 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 "t": "tvsearch",
                 "limit": 100,
                 "offset": 0,
-                "cat": self.catIDs.strip(', ') or '5030,5040'
+                "cat": self.catIDs.strip(', ') or '5030,5040',
+                'maxage': (4, sickbeard.USENET_RETENTION)[mode != 'RSS']
             }
+
             if self.needs_auth and self.key:
                 search_params['apikey'] = self.key
 
             if mode != 'RSS':
-                age = (datetime.datetime.now() - datetime.datetime.combine(ep_obj.airdate, datetime.datetime.min.time())).days + 1
                 search_params['tvdbid'] = ep_obj.show.indexerid
 
                 if ep_obj.show.air_by_date or ep_obj.show.sports:
@@ -269,23 +270,15 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 else:
                     search_params['season'] = ep_obj.scene_season
                     search_params['ep'] = ep_obj.scene_episode
-            else:
-                age = 4
 
-            search_params['maxage'] = min(age, sickbeard.USENET_RETENTION)
-
-            if mode == 'Season':
-                search_params.pop('ep', '')
+                if mode == 'Season':
+                    search_params.pop('ep', '')
 
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
-
-                # search_params['q'] = search_string
-                # if mode == 'RSS':
-                #     search_params.pop('q', None)
 
                 search_url = posixpath.join(self.url, 'api?') + urlencode(search_params)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
