@@ -239,13 +239,13 @@ class Quality(object):
         return to_return
 
     @staticmethod
-    def combineQualities(allowed_qualities, prefferred_qualities):
+    def combineQualities(allowed_qualities, preferred_qualities):
         any_quality = 0
         best_quality = 0
         if allowed_qualities:
             any_quality = reduce(operator.or_, allowed_qualities)
-        if prefferred_qualities:
-            best_quality = reduce(operator.or_, prefferred_qualities)
+        if preferred_qualities:
+            best_quality = reduce(operator.or_, preferred_qualities)
         return any_quality | (best_quality << 16)
 
     @staticmethod
@@ -253,16 +253,16 @@ class Quality(object):
         if quality is None:
             quality = Quality.NONE
         allowed_qualities = []
-        prefferred_qualities = []
+        preferred_qualities = []
         for cur_qual in Quality.qualityStrings:
             if cur_qual is None:
                 cur_qual = Quality.NONE
             if cur_qual & quality:
                 allowed_qualities.append(cur_qual)
             if cur_qual << 16 & quality:
-                prefferred_qualities.append(cur_qual)
+                preferred_qualities.append(cur_qual)
 
-        return sorted(allowed_qualities), sorted(prefferred_qualities)
+        return sorted(allowed_qualities), sorted(preferred_qualities)
 
     @staticmethod
     def nameQuality(name, anime=False):
