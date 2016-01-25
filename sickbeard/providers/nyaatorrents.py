@@ -63,7 +63,6 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                 params = {
                     "page": 'rss',
                     "cats": '1_0',  # All anime
-                    "sort": 2,     # Sort Descending By Seeders
                     "order": 1
                 }
                 if mode != 'RSS':
