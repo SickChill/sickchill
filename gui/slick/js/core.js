@@ -2939,6 +2939,100 @@ var SICKRAGE = {
                     }
                 });
             };
+            
+            /*
+             * Add's shows by by indexer and indexer_id with a number of optional parameters
+             * The show can be added as an anime show, by providing the data attribute: data-isanime="1"
+             */
+            $.initAddShowById = function(){
+                $(document.body).on('click', 'a[data-add-show]', function(e){
+                    e.preventDefault();
+                    
+                    var url = $(this).attr('href');
+                    // Whe're going to add this show, let's remove the anchor and button desc, so it can't be added twice!
+                    if ( $(this).attr('disabled') === 'disabled' ) { return false; }
+                    
+                    // For now only used for the parameter
+                    var showId = $(this).attr('data-show-id');
+
+                    $(this).html('Being Added').attr('disabled', 'disabled');
+                    
+                    var anyQualArray = [];
+                    var bestQualArray = [];
+                    $('#anyQualities option:selected').each(function (i, d) {
+                        anyQualArray.push($(d).val());
+                    });
+                    $('#bestQualities option:selected').each(function (i, d) {
+                        bestQualArray.push($(d).val());
+                    });
+                    
+                    // If we are going to add an anime, let's by default configure it as one
+                    var anime = $('#anime').prop('checked');
+                    var configureShowOptions = $('#configure_show_options').prop('checked');
+                    if ( !configureShowOptions && $(this).data("isanime") ) {
+                        anime = true;
+                        configureShowOptions = true;
+                    }
+
+                    $.get(url, {
+                        'root_dir': $('#rootDirs option:selected').val(),
+                        'configure_show_options': configureShowOptions,
+                        'indexer': $(this).attr('data-indexer'),
+                        'indexer_id': showId,
+                        'show_name': $(this).attr('data-show-name'),
+                        'quality_preset': $('#qualityPreset').val(),
+                        'default_status': $('#statusSelect').val(),
+                        'any_qualities': anyQualArray.join(','),
+                        'best_qualities': bestQualArray.join(','),
+                        'default_flatten_folders': $('#flatten_folders').prop('checked'),
+                        'subtitles': $('#subtitles').prop('checked'),
+                        'anime': anime,
+                        'scene': $('#scene').prop('checked'),
+                        'default_status_after': $('#statusSelectAfter').val(),
+                    });
+                    return false;
+                });
+
+                $('#saveDefaultsButton').on('click', function() {
+                    var anyQualArray = [];
+                    var bestQualArray = [];
+                    $('#anyQualities option:selected').each(function (i, d) {
+                        anyQualArray.push($(d).val());
+                    });
+                    $('#bestQualities option:selected').each(function (i, d) {
+                        bestQualArray.push($(d).val());
+                    });
+
+                    $.get(srRoot + '/config/general/saveAddShowDefaults', {
+                        defaultStatus: $('#statusSelect').val(),
+                        anyQualities: anyQualArray.join(','),
+                        bestQualities: bestQualArray.join(','),
+                        defaultFlattenFolders: $('#flatten_folders').prop('checked'),
+                        subtitles: $('#subtitles').prop('checked'),
+                        anime: $('#anime').prop('checked'),
+                        scene: $('#scene').prop('checked'),
+                        defaultStatusAfter: $('#statusSelectAfter').val(),
+                    });
+
+                    $(this).attr('disabled', true);
+                    new PNotify({
+                        title: 'Saved Defaults',
+                        text: 'Your "add show" defaults have been set to your current selections.',
+                        shadow: false
+                    });
+                });
+
+                $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function () {
+                    $('#saveDefaultsButton').attr('disabled', false);
+                });
+
+                $('#qualityPreset').on('change', function() {
+                    //fix issue #181 - force re-render to correct the height of the outer div
+                    $('span.prev').click();
+                    $('span.next').click();
+                });
+            };
+            
         },
         index: function() {
 
@@ -3253,28 +3347,12 @@ var SICKRAGE = {
                 'Trakt timed out, refresh page to try again'
             );
         },
-        trendingShows: function(){
-            $('#trendingShows').loadRemoteShows(
-                '/addShows/getTrendingShows/?traktList=' + $('#traktList').val(),
-                'Loading trending shows...',
-                'Trakt timed out, refresh page to try again'
-            );
-
-            $('#traktlistselection').on('change', function(e) {
-                var traktList = e.target.value;
-                window.history.replaceState({}, document.title, '?traktList=' + traktList);
-                $('#trendingShows').loadRemoteShows(
-                    '/addShows/getTrendingShows/?traktList=' + traktList,
-                    'Loading trending shows...',
-                    'Trakt timed out, refresh page to try again'
-                );
-            });
-        },
-        popularShows: function(){
+        addFromAnidb: function(){
+            $.initAddShowById();
             $.initRemoteShowGrid();
         },
-        addFromList: function(){
-
+        addFromImdb: function(){
+            // Load shows for the IMDB lists
             $('#imdbShows').loadRemoteShows(
                 '/addShows/imdbWatchlist?listid=popular',
                 'Loading imdb shows from list...',
@@ -3290,97 +3368,30 @@ var SICKRAGE = {
                          'Imdb timed out, refresh page to try again'
                  );
             });
-            $.initRemoteShowGrid();
             
-            /*
-             * Add's shows by by indexer and indexer_id with a number of optional parameters
-             * The show can be added as an anime show, by providing the data attribute: data-isanime="1"
-             */
-            $(document.body).on('click', 'a[data-add-show]', function(e){
-                e.preventDefault();
-                
-                var url = $(this).attr('href');
-                var callbackId = $('.show-row[data-callback_id="' + $(this).data('indexer_id') + '"]');
-                
-                // Whe're going to add this show, let's remove the anchor and button desc, so it can't be added twice!
-                if ( $(callbackId).find('div.traktShowTitleIcons a').hasClass('disabled') ) { return; }
-                
-                $(callbackId).find('div.traktShowTitleIcons a').html('Being added').addClass('disabled');
-                
-                var anyQualArray = [];
-                var bestQualArray = [];
-                $('#anyQualities option:selected').each(function (i, d) {
-                    anyQualArray.push($(d).val());
-                });
-                $('#bestQualities option:selected').each(function (i, d) {
-                    bestQualArray.push($(d).val());
-                });
-                
-                // If we are going to add an anime, let's by default configure it as one
-                var anime = $('#anime').prop('checked');
-                var configureShowOptions = $('#configure_show_options').prop('checked');
-                if ( !configureShowOptions && $(this).data("isanime") ) {
-                    anime = true;
-                    configureShowOptions = true;
-                }
+            $.initAddShowById();
+            $.initRemoteShowGrid();
+        },
+        addFromTrakt: function(){
+            // Load shows for the trakt lists
+            $('#trendingShows').loadRemoteShows(
+                '/addShows/getTrendingShows/?traktList=' + $('#traktList').val(),
+                'Loading trending shows...',
+                'Trakt timed out, refresh page to try again'
+            );
 
-                $.get(url, {
-                    'root_dir': $('#rootDirs option:selected').val(),
-                    'configure_show_options': configureShowOptions,
-                    'indexer': $(this).data('indexer'),
-                    'indexer_id': $(this).data('indexer_id'),
-                    'show_name': $(this).data('show_name'),
-                    'quality_preset': $('#qualityPreset').val(),
-                    'default_status': $('#statusSelect').val(),
-                    'any_qualities': anyQualArray.join(','),
-                    'best_qualities': bestQualArray.join(','),
-                    'default_flatten_folders': $('#flatten_folders').prop('checked'),
-                    'subtitles': $('#subtitles').prop('checked'),
-                    'anime': anime,
-                    'scene': $('#scene').prop('checked'),
-                    'default_status_after': $('#statusSelectAfter').val(),
-                });
-                return false;
+            $('#traktlistselection').on('change', function(e) {
+                var traktList = e.target.value;
+                window.history.replaceState({}, document.title, '?traktList=' + traktList);
+                $('#trendingShows').loadRemoteShows(
+                    '/addShows/getTrendingShows/?traktList=' + traktList,
+                    'Loading trending shows...',
+                    'Trakt timed out, refresh page to try again'
+                );
             });
-
-            $('#saveDefaultsButton').on('click', function() {
-                var anyQualArray = [];
-                var bestQualArray = [];
-                $('#anyQualities option:selected').each(function (i, d) {
-                    anyQualArray.push($(d).val());
-                });
-                $('#bestQualities option:selected').each(function (i, d) {
-                    bestQualArray.push($(d).val());
-                });
-
-                $.get(srRoot + '/config/general/saveAddShowDefaults', {
-                    defaultStatus: $('#statusSelect').val(),
-                    anyQualities: anyQualArray.join(','),
-                    bestQualities: bestQualArray.join(','),
-                    defaultFlattenFolders: $('#flatten_folders').prop('checked'),
-                    subtitles: $('#subtitles').prop('checked'),
-                    anime: $('#anime').prop('checked'),
-                    scene: $('#scene').prop('checked'),
-                    defaultStatusAfter: $('#statusSelectAfter').val(),
-                });
-
-                $(this).attr('disabled', true);
-                new PNotify({
-                    title: 'Saved Defaults',
-                    text: 'Your "add show" defaults have been set to your current selections.',
-                    shadow: false
-                });
-            });
-
-            $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function () {
-                $('#saveDefaultsButton').attr('disabled', false);
-            });
-
-            $('#qualityPreset').on('change', function() {
-                //fix issue #181 - force re-render to correct the height of the outer div
-                $('span.prev').click();
-                $('span.next').click();
-            });
+            
+            $.initAddShowById();
+            $.initRemoteShowGrid();
         }
     }
 };

@@ -84,23 +84,29 @@
             <p>${imdb_exception}</p>
         </div>
     % else:
-        % for cur_result in anime:
+        % for cur_show in anime:
+        
+        	% if not cur_show.tvdbid:
+        		<% continue %>
+        	% else:
+        		<% show_id = cur_show.tvdbid %>
+        	% endif
 
-            % if cur_result.ratings:
-                <% cur_rating = cur_result.ratings['temporary']['rating'] %>
-                <% cur_votes = cur_result.ratings['temporary']['count'] %>
+            % if cur_show.ratings:
+                <% cur_rating = cur_show.ratings['temporary']['rating'] %>
+                <% cur_votes = cur_show.ratings['temporary']['count'] %>
             % else:
                 <% cur_rating = '0' %>
                 <% cur_votes = '0' %>
             % endif
             
-            <% show_title = cur_result.titles['x-jat'][0].title %>
+            <% show_title = cur_show.titles['x-jat'][0].title %>
 
-            <div class="show-row" data-callback_id="${cur_result.tvdbid}" data-name="${show_title}" data-rating="${cur_rating}" data-votes="${cur_votes}">
+            <div class="show-row" data-show-id="${show_id}" data-name="${show_title}" data-rating="${cur_rating}" data-votes="${cur_votes}">
                 <div class="traktContainer">
                     <div class="trakt-image">
-                        <a class="trakt-image" href="${anon_url(cur_result.url)}" target="_blank">
-                            <img alt="" class="trakt-image" src="${srRoot}/cache/${cur_result.image_path}" height="273px" width="186px" />
+                        <a class="trakt-image" href="${anon_url(cur_show.url)}" target="_blank">
+                            <img alt="" class="trakt-image" src="${srRoot}/cache/${cur_show.image_path}" height="273px" width="186px" />
                         </a>
                     </div>
 
@@ -112,10 +118,10 @@
                         <p>${int(float(cur_rating)*10)}% <img src="${srRoot}/images/heart.png"></p>
                         <i>${cur_votes} votes</i>
                         <div class="traktShowTitleIcons">
-	                        % if cur_result.tvdbid in current_shows:
-	                            <a href="${srRoot}/home/displayShow?show=${cur_result.tvdbid}" class="btn btn-xs">In List</a>
+	                        % if show_id in current_shows:
+	                            <a href="${srRoot}/home/displayShow?show=${show_id}" data-show-id="${show_id}" class="btn btn-xs">In List</a>
 	                        % else:
-	                            <a href="${srRoot}/addShows/addShowByID" class="btn btn-xs" data-isanime="1" data-indexer="TVDB" data-indexer_id="${cur_result.tvdbid}" data-show_name="${show_title | u}" data-add-show>Add Show</a>
+	                            <a href="${srRoot}/addShows/addShowByID" class="btn btn-xs" data-isanime="1" data-indexer="TVDB" data-show-id="${show_id}" data-show-name="${show_title | u}" data-add-show>Add Show</a>
 	                       	% endif
                     	</div>
                     </div>
