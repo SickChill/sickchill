@@ -593,6 +593,25 @@ config*.mako
     width: 16px;
 }
 
+
+.icon16-github {
+    background-position: 0 0;
+}
+
+.icon16-mirc {
+    background-position: -20px 0;
+}
+
+.icon16-sb {
+    background-position: -40px 0;
+}
+.icon16-web {
+    background-position: -60px 0;
+}
+.icon16-win {
+    background-position: -80px 0;
+}
+
 /* =======================================================================
 config_postProcessing.mako
 ========================================================================== */
