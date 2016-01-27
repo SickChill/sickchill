@@ -18,8 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+import re
 import traceback
 from bs4 import BeautifulSoup
+import sickbeard
 
 from sickbeard import logger, tvcache
 from sickbeard.common import USER_AGENT
@@ -83,7 +85,17 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     for item in entries:
                         try:
                             title = item.title.text
+                            # Use the itorrents link limetorrents provides,
+                            # unless it is not itorrents or we are not using blackhole
+                            # because we want to use magnets if connecting direct to client
+                            # so that proxies work.
                             download_url = item.enclosure['url']
+                            if sickbeard.TORRENT_METHOD != "blackhole" or 'itorrents' not in download_url:
+                                download_url = item.enclosure['url']
+                                #http://itorrents.org/torrent/C7203982B6F000393B1CE3A013504E5F87A46A7F.torrent?title=The-Night-of-the-Generals-(1967)[BRRip-1080p-x264-by-alE13-DTS-AC3][Lektor-i-Napisy-PL-Eng][Eng]
+                                #Keep the hash a separate string for when its needed for failed
+                                torrent_hash = re.match(r"(.*)([A-F0-9]{40})(.*)", download_url, re.IGNORECASE).group(2)
+                                download_url = "magnet:?xt=urn:btih:" + torrent_hash + "&dn=" + title + self._custom_trackers
 
                             if not (title and download_url):
                                 continue
