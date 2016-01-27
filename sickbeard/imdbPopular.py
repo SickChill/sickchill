@@ -1,6 +1,7 @@
 # coding=utf-8
 import re
 import os
+import posixpath
 import requests
 from bs4 import BeautifulSoup
 from datetime import date
@@ -46,7 +47,7 @@ class imdbPopular(object):
             if image_td:
                 image = image_td.find("img")
                 show['image_url_large'] = self.change_size(image['src'], 3)
-                show['image_path'] = ek(os.path.join, 'images', 'imdb_popular', ek(os.path.basename, show['image_url_large']))
+                show['image_path'] = ek(posixpath.join, 'images', 'imdb_popular', ek(os.path.basename, show['image_url_large']))
 
                 self.cache_image(show['image_url_large'])
 
