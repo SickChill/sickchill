@@ -1146,8 +1146,23 @@ class AddMinorVersion(AlterTVShowsFieldTypes):
     def execute(self):
         backupDatabase(self.checkDBVersion())
 
-        logger.log(u"Add minor version numbers to database")
+        logger.log(u"Adding minor version numbers to database")
         self.addColumn(b'db_version', b'db_minor_version')
+
+        self.inc_minor_version()
+
+        logger.log('Updated to: %d.%d' % self.connection.version)
+
+
+class AddHashTvEpisodes(AddMinorVersion):
+    def test(self):
+        return self.checkDBVersion() >= 42 and self.hasColumn(b'tv_episodes', b'hash')
+
+    def execute(self):
+        backupDatabase(self.checkDBVersion())
+
+        logger.log(u"Adding tv_episodes.hash to database")
+        self.addColumn(b'tv_episodes', b'hash', 'TEXT', '')
 
         self.inc_minor_version()
 

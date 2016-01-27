@@ -278,6 +278,9 @@ class SickRage(object):
         if not ek(os.access, sickbeard.DATA_DIR, os.W_OK):
             raise SystemExit('Data directory must be writeable: %s' % sickbeard.DATA_DIR)
 
+        # Rename sickrage.db to sickbeard.db
+        self.rename_db()
+
         # Make sure we can write to the config file
         if not ek(os.access, sickbeard.CONFIG_FILE, os.W_OK):
             if ek(os.path.isfile, sickbeard.CONFIG_FILE):
@@ -456,6 +459,17 @@ class SickRage(object):
         return True
 
     @staticmethod
+    def rename_db():
+        """
+        move sickrage.db to sickbeard.db
+        """
+        old = sickbeard.db.dbFilename(filename="sickrage.db")
+        new = sickbeard.db.dbFilename()
+        if os.path.exists(old) and not os.path.exists(new):
+            logger.log('Renaming {} to {}'.format(old, new), logger.DEBUG)  # pylint: disable=no-member
+            os.rename(old, new)
+
+    @staticmethod
     def load_shows_from_db():
         """
         Populates the showList with shows from the database
@@ -486,15 +500,16 @@ class SickRage(object):
         :return:
         """
         try:
-            files_list = ['sickbeard.db', 'config.ini', 'failed.db', 'cache.db']
+            files_list = ['sickrage.db', 'sickbeard.db', 'config.ini', 'failed.db', 'cache.db']
 
             for filename in files_list:
                 src_file = ek(os.path.join, src_dir, filename)
-                dst_file = ek(os.path.join, dst_dir, filename)
-                bak_file = ek(os.path.join, dst_dir, '%s.bak-%s' % (filename, datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
-                if ek(os.path.isfile, dst_file):
-                    shutil.move(dst_file, bak_file)
-                shutil.move(src_file, dst_file)
+                if os.path.exists(src_file):
+                    dst_file = ek(os.path.join, dst_dir, filename).replace('sickrage.db', 'sickbeard.db')
+                    bak_file = ek(os.path.join, dst_dir, '%s.bak-%s' % (filename, datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
+                    if ek(os.path.isfile, dst_file):
+                        shutil.move(dst_file, bak_file)
+                    shutil.move(src_file, dst_file)
             return True
         except Exception:  # pylint: disable=broad-except
             return False
