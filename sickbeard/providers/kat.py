@@ -110,7 +110,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                             # so that proxies work.
                             download_url = item.enclosure['url']
                             if sickbeard.TORRENT_METHOD != "blackhole" or 'torcache' not in download_url:
-                                download_url = item.find('torrent:magneturi').next.replace('CDATA', '').strip('[]')
+                                download_url = item.find('torrent:magneturi').next.replace('CDATA', '').strip('[]') + self._custom_trackers
 
                             if not (title and download_url):
                                 continue
