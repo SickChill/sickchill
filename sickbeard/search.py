@@ -469,11 +469,11 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
     threading.currentThread().name = origThreadName
 
     for curProvider in providers:
+        threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
+
         if curProvider.anime_only and not show.is_anime:
             logger.log(u"" + str(show.name) + " is not an anime, skipping", logger.DEBUG)
             continue
-
-        threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
         foundResults[curProvider.name] = {}
 
@@ -576,6 +576,9 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                     for season in set([x.season for x in episodes]):
                         epObjs.append(show.getEpisode(season, curEpNum))
                 bestSeasonResult.episodes = epObjs
+                
+                # Remove provider from thread name before return results
+                threading.currentThread().name = origThreadName
 
                 return [bestSeasonResult]
 
@@ -718,4 +721,6 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
         logger.log(u"No NZB/Torrent providers found or enabled in the sickrage config for backlog searches. Please check your settings.",
                    logger.WARNING)
 
+    # Remove provider from thread name before return results
+    threading.currentThread().name = origThreadName
     return finalResults
