@@ -91,8 +91,23 @@ class ProperFinder(object):
             except AuthException as e:
                 logger.log(u"Authentication error: " + ex(e), logger.DEBUG)
                 continue
+            except (SocketTimeout, TypeError) as e:
+                logger.log(u"Connection timed out (sockets) while searching " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                continue
+            except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects) as e:
+                logger.log(u"HTTP error while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                continue
+            except requests.exceptions.ConnectionError as e:
+                logger.log(u"Connection error while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                continue
+            except requests.exceptions.Timeout as e:
+                logger.log(u"Connection timed out while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                continue
+            except requests.exceptions.ContentDecodingError:
+                logger.log(u"Content-Encoding was gzip, but content was not compressed while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                continue
             except Exception as e:
-                logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                logger.log(u"Unknown exception while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
                 continue
 

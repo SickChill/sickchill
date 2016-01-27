@@ -1450,24 +1450,24 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
             return None
 
     except (SocketTimeout, TypeError) as e:
-        logger.log(u"Connection timed out (sockets) accessing getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
+        logger.log(u"Connection timed out (sockets) accessing getURL %s Error: %r" % (url, ex(e)), logger.DEBUG)
         return None
     except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects) as e:
-        logger.log(u"HTTP error in getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
+        logger.log(u"HTTP error in getURL %s Error: %r" % (url, ex(e)), logger.DEBUG)
         return None
     except requests.exceptions.ConnectionError as e:
-        logger.log(u"Connection error to getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
+        logger.log(u"Connection error to getURL %s Error: %r" % (url, ex(e)), logger.DEBUG)
         return None
     except requests.exceptions.Timeout as e:
-        logger.log(u"Connection timed out accessing getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
+        logger.log(u"Connection timed out accessing getURL %s Error: %r" % (url, ex(e)), logger.DEBUG)
         return None
     except requests.exceptions.ContentDecodingError:
         logger.log(u"Content-Encoding was gzip, but content was not compressed. getURL: %s" % url, logger.DEBUG)
         logger.log(traceback.format_exc(), logger.DEBUG)
         return None
     except Exception as e:
-        logger.log(u"Unknown exception in getURL %s Error: %r" % (url, ex(e)), logger.WARNING)
-        logger.log(traceback.format_exc(), logger.WARNING)
+        logger.log(u"Unknown exception in getURL %s Error: %r" % (url, ex(e)), logger.ERROR)
+        logger.log(traceback.format_exc(), logger.DEBUG)
         return None
 
     return (resp.text, resp.content)[need_bytes] if not json else resp.json()
@@ -1527,7 +1527,8 @@ def download_file(url, filename, session=None, headers=None):
         return False
     except Exception:
         remove_file_failed(filename)
-        logger.log(u"Unknown exception while loading download URL %s : %r" % (url, traceback.format_exc()), logger.WARNING)
+        logger.log(u"Unknown exception while loading download URL %s : %r" % (url, traceback.format_exc()), logger.ERROR)
+        logger.log(traceback.format_exc(), logger.DEBUG)
         return False
 
     return True
