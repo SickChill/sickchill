@@ -589,7 +589,7 @@ config*.mako
 }
 
 [class^="icon16-"], [class*=" icon16-"] {
-    background-image: url("../images/glyphicons-config-white.png");
+    background-image: url("../images/glyphicons-config.png");
     background-position: -40px 0;
     background-repeat: no-repeat;
     display: inline-block;
@@ -605,17 +605,17 @@ config*.mako
 }
 
 .icon16-mirc {
-    background-position: -20px 0;
+    background-position: -24px 0;
 }
 
 .icon16-sb {
-    background-position: -40px 0;
+    background-position: -52px 0;
 }
 .icon16-web {
-    background-position: -60px 0;
+    background-position: -78px 0;
 }
 .icon16-win {
-    background-position: -80px 0;
+    background-position: -104px 0;
 }
 
 /* =======================================================================
