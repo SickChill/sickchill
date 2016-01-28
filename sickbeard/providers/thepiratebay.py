@@ -47,7 +47,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.url = 'https://thepiratebay.se/'
         self.urls = {
             'search': self.url + 's/',
-            'rss': self.url + 'browse/205'
+            'rss': self.url + 'browse/200'
         }
 
         self.custom_url = None
