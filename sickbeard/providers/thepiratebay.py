@@ -109,7 +109,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             cells = result.find_all('td')
 
                             title = result.find(class_='detName').get_text(strip=True)
-                            download_url = result.find(title="Download this torrent using magnet")['href']
+                            download_url = result.find(title="Download this torrent using magnet")['href'] + self._custom_trackers
                             if not all([title, download_url]):
                                 continue
 
