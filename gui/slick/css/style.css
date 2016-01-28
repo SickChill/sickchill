@@ -1832,6 +1832,14 @@ span.HD1080p {
     background-color: #2672B6;
 }
 
+span.UHD-4K {
+    background-color: #7500FF;
+}
+
+span.UHD-8K {
+    background-color: #410077;
+}
+
 span.RawHD {
     background-color: #cd7300;
 }

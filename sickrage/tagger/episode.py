@@ -178,7 +178,7 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        return u'' if self.avc[0].lower() != 'x' else self.avc
+        return u'' if not self.avc.lower().startswith('x') else self.avc
 
     @property
     def avc_non_free(self):
@@ -188,7 +188,7 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        return u'' if self.avc[0].lower() != 'h' else self.avc
+        return u'' if not self.avc.lower().startswith('h') else self.avc
 
     @property
     def mpeg(self):
