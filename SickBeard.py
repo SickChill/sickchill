@@ -312,12 +312,13 @@ class SickRage(object):
         # Build from the DB to start with
         self.load_shows_from_db()
 
-        logger.log('Starting SickRage [%s] from \'%s\'' % (sickbeard.BRANCH, sickbeard.CONFIG_FILE))
+        logger.log('Starting SickRage [{branch}] using \'{config}\''.format
+                   (branch=sickbeard.BRANCH, config=sickbeard.CONFIG_FILE))
 
         self.clear_cache()
 
         if self.forced_port:
-            logger.log('Forcing web server to port %s' % self.forced_port)
+            logger.log('Forcing web server to port {port}'.format(port=self.forced_port))
             self.start_port = self.forced_port
         else:
             self.start_port = sickbeard.WEB_PORT
@@ -389,8 +390,9 @@ class SickRage(object):
             pid = os.fork()  # @UndefinedVariable - only available in UNIX
             if pid != 0:
                 os._exit(0)
-        except OSError as error_message:
-            sys.stderr.write('fork #1 failed: %d (%s)\n' % (error_message.errno, error_message.strerror))
+        except OSError as error:
+            sys.stderr.write('fork #1 failed: {error_num} (error_message)\n'.format
+                             (error_num=error.errno, error_message=error.strerror))
             sys.exit(1)
 
         os.setsid()  # @UndefinedVariable - only available in UNIX
@@ -407,20 +409,22 @@ class SickRage(object):
             pid = os.fork()  # @UndefinedVariable - only available in UNIX
             if pid != 0:
                 os._exit(0)
-        except OSError as error_message:
-            sys.stderr.write('fork #2 failed: %d (%s)\n' % (error_message.errno, error_message.strerror))
+        except OSError as error:
+            sys.stderr.write('fork #2 failed: Error {error_num}: (error_message)\n'.format
+                             (error_num=error.errno, error_message=error.strerror))
             sys.exit(1)
 
         # Write pid
         if self.create_pid:
             pid = os.getpid()
-            logger.log('Writing PID: %s to %s' % (pid, self.pid_file))
+            logger.log('Writing PID: {pid} to {filename}'.format(pid=pid, filename=self.pid_file))
 
             try:
                 with io.open(self.pid_file, 'w') as f_pid:
                     f_pid.write('%s\n' % pid)
-            except EnvironmentError as error_message:
-                logger.log_error_and_exit('Unable to write PID file: %s Error: %s [%s]' % (self.pid_file, error_message.strerror, error_message.errno))
+            except EnvironmentError as error:
+                logger.log_error_and_exit('Unable to write PID file: {filename} Error {error_num}: (error_message)'.format
+                                          (filename=self.pid_file, error_num=error.errno, error_message=error.strerror))
 
         # Redirect all output
         sys.stdout.flush()
@@ -467,9 +471,9 @@ class SickRage(object):
                 cur_show = TVShow(sql_show[b'indexer'], sql_show[b'indexer_id'])
                 cur_show.nextEpisode()
                 sickbeard.showList.append(cur_show)
-            except Exception as error_msg:  # pylint: disable=broad-except
-                logger.log('There was an error creating the show in %s: %s' %  # pylint: disable=no-member
-                           (sql_show[b'location'], str(error_msg).decode()), logger.ERROR)
+            except Exception as error:  # pylint: disable=broad-except
+                logger.log('There was an error creating the show in {location}: Error {error_num}: (error_message)'.format  # pylint: disable=no-member
+                           (location=sql_show[b'location'], error_num=error.errorno, error_message=error.strerror), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)  # pylint: disable=no-member
 
     @staticmethod
@@ -536,7 +540,7 @@ class SickRage(object):
                     popen_list += sickbeard.MY_ARGS
                     if '--nolaunch' not in popen_list:
                         popen_list += ['--nolaunch']
-                    logger.log('Restarting SickRage with %s' % popen_list)  # pylint: disable=no-member
+                    logger.log('Restarting SickRage with {options}'.format(popen_list))  # pylint: disable=no-member
                     # shutdown the logger to make sure it's released the logfile BEFORE it restarts SR.
                     logger.shutdown()  # pylint: disable=no-member
                     subprocess.Popen(popen_list, cwd=os.getcwd())
