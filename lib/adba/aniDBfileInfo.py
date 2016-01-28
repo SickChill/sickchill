@@ -87,6 +87,9 @@ def download_file(url, filename):
     except Exception:
         _remove_file_failed(filename)
         return False
+    except requests.exceptions.RequestException, e:
+        _remove_file_failed(filename)
+        return False
 
     return True
 
