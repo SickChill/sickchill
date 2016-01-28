@@ -48,9 +48,9 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
 from sickbeard.webapi import function_mapper
 
 from sickbeard.imdbPopular import imdb_popular
-from helpers import get_showname_from_indexer
-from lib.anidbhttp import anidbquery
-from lib.anidbhttp.query import QUERY_HOT
+from sickbeard.helpers import get_showname_from_indexer
+from anidbhttp import anidbquery
+from anidbhttp.query import QUERY_HOT
 
 from dateutil import tz
 from unrar2 import RarFile
@@ -112,7 +112,7 @@ def get_lookup():
         use_strict = sickbeard.BRANCH and sickbeard.BRANCH != 'master'
         mako_lookup = TemplateLookup(directories=[mako_path],
                                      module_directory=mako_cache,
-                                    #  format_exceptions=True,
+                                     #  format_exceptions=True,
                                      strict_undefined=use_strict,
                                      filesystem_checks=True)
     return mako_lookup
@@ -173,6 +173,7 @@ class PageTemplate(MakoTemplate):
             kwargs['header'] = 'Mako Error'
             kwargs['backtrace'] = RichTraceback()
             return get_lookup().get_template('500.mako').render_unicode(*args, **kwargs)
+
 
 class BaseHandler(RequestHandler):
     startTime = 0.
@@ -1154,7 +1155,7 @@ class Home(WebRoot):
         t = PageTemplate(rh=self, filename="restart.mako")
 
         return t.render(title="Home", header="Restarting SickRage", topmenu="system",
-            controller="home", action="restart")
+                        controller="home", action="restart")
 
     def updateCheck(self, pid=None):
         if str(pid) != str(sickbeard.PID):
@@ -1183,7 +1184,7 @@ class Home(WebRoot):
 
                 t = PageTemplate(rh=self, filename="restart.mako")
                 return t.render(title="Home", header="Restarting SickRage", topmenu="home",
-                    controller="home", action="restart")
+                                controller="home", action="restart")
             else:
                 return self._genericMessage("Update Failed",
                                             "Update wasn't successful, not restarting. Check your log for more information.")
@@ -1936,8 +1937,10 @@ class Home(WebRoot):
             if not ep_result:
                 logger.log(u"Unable to find an episode for " + curEp + ", skipping", logger.WARNING)
                 continue
-            related_eps_result = main_db_con.select("SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?",
-                                             [ep_result[0]["location"], epInfo[1]])
+            related_eps_result = main_db_con.select(
+                "SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?",
+                [ep_result[0]["location"], epInfo[1]]
+            )
 
             root_ep_obj = show_obj.getEpisode(epInfo[0], epInfo[1])
             root_ep_obj.relatedEps = []
@@ -1984,15 +1987,16 @@ class Home(WebRoot):
                 return results
 
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
-                results.append({'show': searchThread.show.indexerid,
-                                'episode': searchThread.segment.episode,
-                                'episodeindexid': searchThread.segment.indexerid,
-                                'season': searchThread.segment.season,
-                                'searchstatus': searchstatus,
-                                'status': statusStrings[searchThread.segment.status],
-                                'quality': self.getQualityClass(searchThread.segment),
-                                'overview': Overview.overviewStrings[showObj.getOverview(searchThread.segment.status)]
-                                })
+                results.append({
+                    'show': searchThread.show.indexerid,
+                    'episode': searchThread.segment.episode,
+                    'episodeindexid': searchThread.segment.indexerid,
+                    'season': searchThread.segment.season,
+                    'searchstatus': searchstatus,
+                    'status': statusStrings[searchThread.segment.status],
+                    'quality': self.getQualityClass(searchThread.segment),
+                    'overview': Overview.overviewStrings[showObj.getOverview(searchThread.segment.status)]
+                })
             else:
                 for epObj in searchThread.segment:
                     results.append({'show': epObj.show.indexerid,
@@ -2619,7 +2623,7 @@ class HomeAddShows(Home):
                         popular_shows=popular_shows, imdb_exception=e,
                         topmenu="home",
                         controller="addShows", action="popularShows")
-        
+
     def anidbPopular(self):
         """
         Fetches data from IMDB to show a list of popular shows.
@@ -2629,13 +2633,13 @@ class HomeAddShows(Home):
 
         try:
             all_anime = anidbquery.query(QUERY_HOT)
-            mapped_anime = [ anime for anime in all_anime if anime.tvdbid ]
+            mapped_anime = [anime for anime in all_anime if anime.tvdbid]
         except Exception as e:
             # print traceback.fox1rmat_exc()
             mapped_anime = None
 
         return t.render(title="Anidb Popular Anime", header="Anidb Popular Anime",
-                        anime=mapped_anime, imdb_exception=e, whitelist=[], 
+                        anime=mapped_anime, imdb_exception=e, whitelist=[],
                         blacklist=[], groups=[], topmenu="home", enable_anime_options=True,
                         controller="addShows", action="addFromList")
 
@@ -2658,11 +2662,14 @@ class HomeAddShows(Home):
                         header='Existing Show', topmenu="home",
                         controller="addShows", action="addExistingShow")
 
-    def addShowByID(self, indexer_id, show_name, indexer="TVDB", which_series=None, indexer_lang=None, root_dir=None, default_status=None,
-        quality_preset=None, any_qualities=None, best_qualities=None, flatten_folders=None, subtitles=None,
-        full_show_path=None, other_shows=None, skip_show=None, provided_indexer=None, anime=None,
-        scene=None, blacklist=None, whitelist=None, default_status_after=None, default_flatten_folders=None,
-        configure_show_options=None):
+    def addShowByID(self, indexer_id, show_name, indexer="TVDB", which_series=None,
+                    indexer_lang=None, root_dir=None, default_status=None,
+                    quality_preset=None, any_qualities=None, best_qualities=None,
+                    flatten_folders=None, subtitles=None, full_show_path=None,
+                    other_shows=None, skip_show=None, provided_indexer=None,
+                    anime=None, scene=None, blacklist=None, whitelist=None,
+                    default_status_after=None, default_flatten_folders=None,
+                    configure_show_options=None):
 
         if indexer != "TVDB":
             tvdb_id = helpers.getTVDBFromID(indexer_id, indexer.upper())
@@ -2678,10 +2685,10 @@ class HomeAddShows(Home):
 
         if Show.find(sickbeard.showList, int(indexer_id)):
             return
-        
+
         # Sanitize the paramater anyQualities and bestQualities. As these would normally be passed as lists
         if any_qualities:
-            any_qualities = any_qualities.split(',')  
+            any_qualities = any_qualities.split(',')
         else:
             any_qualities = []
 
@@ -2689,44 +2696,47 @@ class HomeAddShows(Home):
             best_qualities = best_qualities.split(',')
         else:
             best_qualities = []
-        
+
         # If configure_show_options is enabled let's use the provided settings
         configure_show_options = config.checkbox_to_value(configure_show_options)
-        
+
         if configure_show_options:
             # prepare the inputs for passing along
             scene = config.checkbox_to_value(scene)
             anime = config.checkbox_to_value(anime)
             flatten_folders = config.checkbox_to_value(flatten_folders)
             subtitles = config.checkbox_to_value(subtitles)
-            
+
             if whitelist:
                 whitelist = short_group_names(whitelist)
             if blacklist:
                 blacklist = short_group_names(blacklist)
-                
+
             if not any_qualities:
                 any_qualities = []
+
             if not best_qualities or try_int(quality_preset, None):
                 best_qualities = []
+
             if not isinstance(any_qualities, list):
                 any_qualities = [any_qualities]
+
             if not isinstance(best_qualities, list):
-                bestQualities = [best_qualities]
+                best_qualities = [best_qualities]
+
             quality = Quality.combineQualities([int(q) for q in any_qualities], [int(q) for q in best_qualities])
-    
+
             location = root_dir
-                
+
         else:
-            default_status=sickbeard.STATUS_DEFAULT
-            quality=sickbeard.QUALITY_DEFAULT
-            flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT
-            subtitles=sickbeard.SUBTITLES_DEFAULT
-            anime=sickbeard.ANIME_DEFAULT
-            scene=sickbeard.SCENE_DEFAULT
-            default_status_after=sickbeard.STATUS_DEFAULT_AFTER
-            
-            
+            default_status = sickbeard.STATUS_DEFAULT
+            quality = sickbeard.QUALITY_DEFAULT
+            flatten_folders = sickbeard.FLATTEN_FOLDERS_DEFAULT
+            subtitles = sickbeard.SUBTITLES_DEFAULT
+            anime = sickbeard.ANIME_DEFAULT
+            scene = sickbeard.SCENE_DEFAULT
+            default_status_after = sickbeard.STATUS_DEFAULT_AFTER
+
             if sickbeard.ROOT_DIRS:
                 root_dirs = sickbeard.ROOT_DIRS.split('|')
                 location = root_dirs[int(root_dirs[0]) + 1]
@@ -2739,12 +2749,12 @@ class HomeAddShows(Home):
 
         show_name = get_showname_from_indexer(1, indexer_id)
         show_dir = None
-        
+
         # add the show
-        sickbeard.showQueueScheduler.action.addShow(1, int(indexer_id), show_dir, int(default_status), quality, flatten_folders, 
-                                                    indexer_lang, subtitles, anime, scene, None, blacklist, whitelist, 
+        sickbeard.showQueueScheduler.action.addShow(1, int(indexer_id), show_dir, int(default_status), quality, flatten_folders,
+                                                    indexer_lang, subtitles, anime, scene, None, blacklist, whitelist,
                                                     int(default_status_after), root_dir=location)
-        
+
         ui.notifications.message('Show added', 'Adding the specified show {0}'.format(show_name))
 
         # done adding show
@@ -4930,7 +4940,7 @@ class ConfigNotifications(Config):
         sickbeard.PLEX_SERVER_TOKEN = config.clean_host(plex_server_token)
         sickbeard.PLEX_SERVER_USERNAME = plex_server_username
         sickbeard.PLEX_SERVER_PASSWORD = plex_server_password
-        sickbeard.USE_PLEX_CLIENT = config.checkbox_to_value(use_plex_server)
+        sickbeard.USE_PLEX_CLIENT = config.checkbox_to_value(use_plex_client)
         sickbeard.PLEX_CLIENT_USERNAME = plex_client_username
         sickbeard.PLEX_CLIENT_PASSWORD = plex_client_password
         sickbeard.PLEX_SERVER_HTTPS = config.checkbox_to_value(plex_server_https)
