@@ -14,9 +14,9 @@
 % endif
 
 <div id="config-content">
-<table class="infoTable" cellspacing="1" border="0" cellpadding="0" width="100%">
+<table class="infoTable" cellspacing="1" border="0" cellpadding="0" width="145%">
     % if sr_version:
-    <tr><td class="infoTableHeader" style="vertical-align: top;">SickRage Version:</td>
+    <tr><td class="infoTableHeader" style="vertical-align: top;"><i class="icon16new-sickrage"></i> SickRage Version:</td>
         <td class="infoTableCell">
         Branch: <a href="${anon_url('https://github.com/SickRage/SickRage/tree/%s' % sickbeard.BRANCH)}">${sickbeard.BRANCH}</a><br>
         Commit: <a href="${anon_url('https://github.com/SickRage/SickRage/commit/%s' % sickbeard.CUR_COMMIT_HASH)}">${sickbeard.CUR_COMMIT_HASH}</a><br>
@@ -24,22 +24,22 @@
         </td>
     </tr>
     % endif
-    <tr><td class="infoTableHeader">Python Version:</td><td class="infoTableCell">${sys.version[:120]}</td></tr>
-    <tr><td class="infoTableHeader">SSL Version:</td><td class="infoTableCell">${ssl_version}</td></tr>
-    <tr><td class="infoTableHeader" style="vertical-align: top;">Locale:</td><td class="infoTableCell">${'.'.join([str(loc) for loc in sr_locale])}</td></tr>
+    <tr><td class="infoTableHeader"><i class="icon16new-python"></i> Python Version:</td><td class="infoTableCell">${sys.version[:120]}</td></tr>
+    <tr><td class="infoTableHeader"><i class="icon16new-ssl"></i> SSL Version:</td><td class="infoTableCell">${ssl_version}</td></tr>
+    <tr><td class="infoTableHeader" style="vertical-align: top;"><i class="icon16new-locale"></i> Locale:</td><td class="infoTableCell">${'.'.join([str(loc) for loc in sr_locale])}</td></tr>
     <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
     <tr class="infoTableSeperator"><td>&nbsp;</td><td>&nbsp;</td></tr>
-    <tr><td class="infoTableHeader">User:</td><td class="infoTableCell">${sr_user}</td></tr>
-    <tr><td class="infoTableHeader">Program Directory:</td><td class="infoTableCell">${sickbeard.PROG_DIR}</td></tr>
-    <tr><td class="infoTableHeader">Configuration File:</td><td class="infoTableCell">${sickbeard.CONFIG_FILE}</td></tr>
-    <tr><td class="infoTableHeader">Database:</td><td class="infoTableCell">${db.dbFilename()}</td></tr>
-    <tr><td class="infoTableHeader">Cache Directory:</td><td class="infoTableCell">${sickbeard.CACHE_DIR}</td></tr>
-    <tr><td class="infoTableHeader">Log Directory:</td><td class="infoTableCell">${sickbeard.LOG_DIR}</td></tr>
+    <tr><td class="infoTableHeader"><i class="icon16new-user"></i> User:</td><td class="infoTableCell">${sr_user}</td></tr>
+    <tr><td class="infoTableHeader"><i class="icon16new-dir"></i> Program Path:</td><td class="infoTableCell">${sickbeard.PROG_DIR}</td></tr>
+    <tr><td class="infoTableHeader"><i class="icon16new-config"></i> Config File:</td><td class="infoTableCell">${sickbeard.CONFIG_FILE}</td></tr>
+    <tr><td class="infoTableHeader"><i class="icon16new-db"></i> Database:</td><td class="infoTableCell">${db.dbFilename()}</td></tr>
+    <tr><td class="infoTableHeader"><i class="icon16new-cache"></i> Cache Directory:</td><td class="infoTableCell">${sickbeard.CACHE_DIR}</td></tr>
+    <tr><td class="infoTableHeader"><i class="icon16new-log"></i> Log Directory:</td><td class="infoTableCell">${sickbeard.LOG_DIR}</td></tr>
     % if sickbeard.MY_ARGS:
-    <tr><td class="infoTableHeader">Arguments:</td><td class="infoTableCell">${sickbeard.MY_ARGS}</td></tr>
+    <tr><td class="infoTableHeader"><i class="icon16new-arguments"></i> Arguments:</td><td class="infoTableCell">${sickbeard.MY_ARGS}</td></tr>
     % endif
     % if sickbeard.WEB_ROOT:
-    <tr><td class="infoTableHeader">Web Root:</td><td class="infoTableCell">${sickbeard.WEB_ROOT}</td></tr>
+    <tr><td class="infoTableHeader"><i class="icon16new-folder"></i> Web Root:</td><td class="infoTableCell">${sickbeard.WEB_ROOT}</td></tr>
     % endif
     <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
     <tr class="infoTableSeperator"><td>&nbsp;</td><td>&nbsp;</td></tr>
