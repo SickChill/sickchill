@@ -42,7 +42,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.minseed = None
         self.minleech = None
 
-        self.cache = tvcache.TVCache(self, min_time=1)  # only poll ThePirateBay every 30 minutes max
+        self.cache = tvcache.TVCache(self, min_time=30)  # only poll ThePirateBay every 30 minutes max
 
         self.url = 'https://thepiratebay.se/'
         self.urls = {
