@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 __all__ = [
     'utorrent',
     'transmission',
@@ -44,11 +46,12 @@ def getClientModule(name):
     name = name.lower()
     prefix = "sickbeard.clients."
 
-    return __import__(prefix + name + '_client', fromlist=__all__)
+    return __import__('{prefix}{name}_client'.format
+                      (prefix=prefix, name=name), fromlist=__all__)
 
 
 def getClientIstance(name):
     module = getClientModule(name)
-    className = module.api.__class__.__name__
+    class_name = module.api.__class__.__name__
 
-    return getattr(module, className)
+    return getattr(module, class_name)
