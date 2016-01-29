@@ -61,7 +61,11 @@ import time
 import traceback
 
 codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else None)
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib')))
+ROOT_PATH = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(1, os.path.join(ROOT_PATH, 'lib'))
+VENV_DIR = os.path.join(ROOT_PATH, 'venv')
+assert os.path.isdir(VENV_DIR), 'Install the venv. RTFM.'
+sys.path.insert(1, os.path.join(VENV_DIR, 'lib', 'python2.7', 'site-packages'))
 
 if sys.version_info < (2, 7):
     print('Sorry, requires Python 2.7.x')

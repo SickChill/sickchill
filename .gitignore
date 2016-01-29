@@ -70,3 +70,7 @@ lib/unrar2/UnRAR.exe
 ######################
 .coverage
 htmlcov
+
+# Python #
+######################
+venv
