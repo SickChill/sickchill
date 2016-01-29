@@ -1232,7 +1232,7 @@ class Home(WebRoot):
 
         main_db_con = db.DBConnection()
         seasonResults = main_db_con.select(
-            "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC",
+            "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? and season is not Null ORDER BY season DESC",
             [showObj.indexerid]
         )
 
