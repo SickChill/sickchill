@@ -1466,8 +1466,11 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
         logger.log(traceback.format_exc(), logger.DEBUG)
         return None
     except Exception as e:
-        logger.log(u"Unknown exception in getURL %s Error: %r" % (url, ex(e)), logger.ERROR)
-        logger.log(traceback.format_exc(), logger.DEBUG)
+        if e.errno != errno.ECONNRESET:
+            logger.log(u"Unknown exception in getURL %s Error: %r" % (url, ex(e)), logger.ERROR)
+            logger.log(traceback.format_exc(), logger.DEBUG)
+        else:
+            logger.log(u"Connection reseted by peer accessing getURL %s Error: %r" % (url, ex(e)), logger.DEBUG)
         return None
 
     return (resp.text, resp.content)[need_bytes] if not json else resp.json()

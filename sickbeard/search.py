@@ -498,23 +498,26 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
                 break
             except (SocketTimeout, TypeError) as e:
-                logger.log(u"Connection timed out (sockets) while searching " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                logger.log(u"Connection timed out (sockets) while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
                 break
             except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects) as e:
-                logger.log(u"HTTP error while searching " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                logger.log(u"HTTP error while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
                 break
             except requests.exceptions.ConnectionError as e:
-                logger.log(u"Connection error while searching " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                logger.log(u"Connection error while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
                 break
             except requests.exceptions.Timeout as e:
-                logger.log(u"Connection timed out while searching " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                logger.log(u"Connection timed out while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
                 break
             except requests.exceptions.ContentDecodingError:
-                logger.log(u"Content-Encoding was gzip, but content was not compressed while searching " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                logger.log(u"Content-Encoding was gzip, but content was not compressed while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
                 break
             except Exception as e:
-                logger.log(u"Unknown exception while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
-                logger.log(traceback.format_exc(), logger.DEBUG)
+                if e.errno != errno.ECONNRESET:
+                    logger.log(u"Unknown exception while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.ERROR)
+                    logger.log(traceback.format_exc(), logger.DEBUG)
+                else:
+                    logger.log(u"Connection reseted by peer while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
                 break
 
             didSearch = True

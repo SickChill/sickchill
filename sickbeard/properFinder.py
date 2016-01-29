@@ -92,7 +92,7 @@ class ProperFinder(object):
                 logger.log(u"Authentication error: " + ex(e), logger.DEBUG)
                 continue
             except (SocketTimeout, TypeError) as e:
-                logger.log(u"Connection timed out (sockets) while searching " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                logger.log(u"Connection timed out (sockets) while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
                 continue
             except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects) as e:
                 logger.log(u"HTTP error while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
@@ -107,8 +107,11 @@ class ProperFinder(object):
                 logger.log(u"Content-Encoding was gzip, but content was not compressed while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
                 continue
             except Exception as e:
-                logger.log(u"Unknown exception while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
-                logger.log(traceback.format_exc(), logger.DEBUG)
+                if e.errno != errno.ECONNRESET:
+                    logger.log(u"Unknown exception while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
+                    logger.log(traceback.format_exc(), logger.DEBUG)
+                else:
+                    logger.log(u"Connection reseted by peer accessing getURL %s Error: %r" % (url, ex(e)), logger.DEBUG)
                 continue
 
             # if they haven't been added by a different provider than add the proper to the list
