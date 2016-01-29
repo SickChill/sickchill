@@ -1,0 +1,15 @@
+# Multiple input strings having same expected results can be chained.
+# Use - marker to check inputs that should not match results.
+? +tvu.org.ru
+? -tvu.unsafe.ru
+: website: tvu.org.ru
+
+? +www.nimp.na
+? -somewww.nimp.na
+? -www.nimp.nawouak
+? -nimp.na
+: website: www.nimp.na
+
+? +wawa.co.uk
+? -wawa.uk
+: website: wawa.co.uk
