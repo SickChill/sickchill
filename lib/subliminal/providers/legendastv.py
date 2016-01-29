@@ -51,7 +51,7 @@ class LegendasTvSubtitle(Subtitle):
         matches = super(LegendasTvSubtitle, self).get_matches(video, hearing_impaired=hearing_impaired)
 
         # The best available information about a subtitle is its name. Using guessit to parse it.
-        guess = self.guess if self.guess else guessit(self.name, {'type': self.type})
+        guess = self.guess if self.guess else guessit(self.name)
         matches |= guess_matches(video, guess)
 
         # imdb_id match used only for movies
@@ -121,13 +121,13 @@ class LegendasTvProvider(Provider):
           - ``year`` should match, unless they're not defined and expected and actual ``title``s are the same
         If the expected dictionary represents an episode:
           - ``type`` should match
-          - ``series`` should match
+          - ``title`` should match
           - ``eason`` should match
-          - ``episodeNumber`` should match, unless ``ignore_episode`` is True
+          - ``episode`` should match, unless ``ignore_episode`` is True
 
         :param expected: dictionary that contains the expected values
         :param actual: dictionary that contains the actual values
-        :param ignore_episode: True if should ignore episodeNumber matching. Default: False
+        :param ignore_episode: True if should ignore episode matching. Default: False
         :return: True if actual matches expected
         :rtype: bool
         """
@@ -144,11 +144,11 @@ class LegendasTvProvider(Provider):
                     return False
 
         elif expected.get('type') == 'episode':
-            if not self.name_matches(expected.get('series'), actual.get('series')):
+            if not self.name_matches(expected.get('title'), actual.get('title')):
                 return False
             if expected.get('season') != actual.get('season'):
                 return False
-            if not ignore_episode and expected.get('episodeNumber') != actual.get('episodeNumber'):
+            if not ignore_episode and expected.get('episode') != actual.get('episode'):
                 return False
 
         return True
@@ -176,19 +176,20 @@ class LegendasTvProvider(Provider):
         """
         Returns shows or movies information by querying `/legenda/sugestao` page.
         Since the result is a list of suggestions (movies, tv shows, etc), additional filtering is required.
-        Type (movies or series), name, year and/or season are used to filter out bad suggestions.
+        Type (movies or episodes), name, year and/or season are used to filter out bad suggestions.
 
-        :param params: dictionary containing the input parameters (title, series, season, episodeNumber, year)
+        :param params: dictionary containing the input parameters (title, season, episode, year)
         :return: shows or movies information
         :rtype: : ``list`` of ``dict``
         """
 
         candidates = []
 
-        keyword = params.get('title') if params.get('type') == 'movie' else params.get('series')
+        keyword = params.get('title')
         logger.info('Searching titles using the keyword %s', keyword)
         try:
             r = self.session.get('%s/legenda/sugestao/%s' % (self.server_url, keyword), timeout=TIMEOUT)
+            logger.error('Could not search for %s. key: %s' % (self.server_url, keyword))
             r.raise_for_status()
             results = r.json()
         except Exception as e:
@@ -362,7 +363,7 @@ class LegendasTvProvider(Provider):
 
                     # Using the candidate name to filter out bad candidates
                     # (wrong type, wrong episode, wrong season or even wrong title)
-                    guess = guess_file_info(candidate_name + '.mkv', type=title.get('type'))
+                    guess = guessit(candidate_name)
                     if not self.matches(params, guess, ignore_episode=multiple_episodes):
                         continue
 
@@ -378,7 +379,7 @@ class LegendasTvProvider(Provider):
                         # therefore this filtering is necessary) and some subtitles are in a relative folder inside the
                         # zip/rar file, therefore \ should be replaced by / in order to guess it properly
                         base_name = os.path.splitext(name)[0].replace('\\', '/')
-                        guess = guess_file_info(base_name + '.mkv', type=title.get('type'))
+                        guess = guessit(base_name)
                         if not self.matches(params, guess):
                             continue
 
@@ -409,8 +410,8 @@ class LegendasTvProvider(Provider):
         :rtype : ``list`` of ``LegendasTvSubtitles``
         """
         if isinstance(video, Episode):
-            params = {'type': 'episode', 'series': video.series, 'season': video.season,
-                      'episodeNumber': video.episode, 'year': video.year}
+            params = {'type': 'episode', 'title': video.series, 'season': video.season,
+                      'episode': video.episode, 'year': video.year}
         elif isinstance(video, Movie):
             params = {'type': 'movie', 'title': video.title, 'year': video.year}
 
