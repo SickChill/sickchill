@@ -38,11 +38,11 @@
     % endif
 
     % if totalQualSnatched > 0:
-    <span class="listing-key snatched">Snatched (Low Quality): <b>${totalQualSnatched}</b></span>
+    <span class="listing-key snatched">Snatched (Allowed): <b>${totalQualSnatched}</b></span>
     % endif
 
     % if totalQual > 0:
-    <span class="listing-key qual">Low Quality: <b>${totalQual}</b></span>
+    <span class="listing-key qual">Allowed: <b>${totalQual}</b></span>
     % endif
 </div><br>
 
@@ -69,11 +69,11 @@ Jump to Show:
                 % endif
 
                 % if showQualSnatched(curShow) and showCounts[curShow.indexerid][Overview.SNATCHED] > 0:
-                    <span class="listing-key snatched">Snatched (Low Quality): <b>${showCounts[curShow.indexerid][Overview.SNATCHED]}</b></span>
+                    <span class="listing-key snatched">Snatched (Allowed): <b>${showCounts[curShow.indexerid][Overview.SNATCHED]}</b></span>
                 % endif
 
                 % if showCounts[curShow.indexerid][Overview.QUAL] > 0:
-                <span class="listing-key qual">Low Quality: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>
+                <span class="listing-key qual">Allowed: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>
                 % endif
 
                 <a class="btn btn-inline forceBacklog" href="${srRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> Force Backlog</a>
@@ -98,12 +98,20 @@ Jump to Show:
                 ${curResult["name"]}
             </td>
             <td>
-            <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
-            % if int(curResult['airdate']) > 1:
-                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
-            % else:
-                Never
-            % endif
+                <% epResult = curResult %>
+                <% show = curShow %>
+                % if int(epResult['airdate']) != 1:
+                    ## Lets do this exactly like ComingEpisodes and History
+                    ## Avoid issues with dateutil's _isdst on Windows but still provide air dates
+                    <% airDate = datetime.datetime.fromordinal(epResult['airdate']) %>
+                    % if airDate.year >= 1970 or show.network:
+                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
+                    % endif
+                    <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
+                % else:
+                    Never
+                % endif
+            </td>
             </td>
         </tr>
     % endfor
