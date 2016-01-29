@@ -1232,7 +1232,7 @@ class Home(WebRoot):
 
         main_db_con = db.DBConnection()
         seasonResults = main_db_con.select(
-            "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC",
+            "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? and season IS NOT NULL ORDER BY season DESC",
             [showObj.indexerid]
         )
 
@@ -3206,7 +3206,7 @@ class Manage(Home, WebRoot):
             epCats = {}
 
             sql_results = main_db_con.select(
-                "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
+                "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.season IS NOT NULL AND tv_episodes.showid in (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
                 [curShow.indexerid])
 
             for curResult in sql_results:
