@@ -1,0 +1,25 @@
+# Multiple input strings having same expected results can be chained.
+# Use - marker to check inputs that should not match results.
+? Director's cut
+? Edition Director's cut
+: edition: Director's cut
+
+? Collector
+? Collector Edition
+? Edition Collector
+: edition: Collector Edition
+
+? Special Edition
+? Edition Special
+? -Special
+: edition: Special Edition
+
+? Criterion Edition
+? Edition Criterion
+? -Criterion
+: edition: Criterion Edition
+
+? Deluxe
+? Deluxe Edition
+? Edition Deluxe
+: edition: Deluxe Edition

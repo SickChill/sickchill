@@ -6,7 +6,7 @@ import io
 
 from babelfish import Language, language_converters
 from datetime import datetime
-from guessit import guess_file_info
+from guessit import guessit
 import rarfile
 from requests import Session
 from zipfile import ZipFile, is_zipfile
@@ -51,7 +51,7 @@ class LegendasTvSubtitle(Subtitle):
         matches = super(LegendasTvSubtitle, self).get_matches(video, hearing_impaired=hearing_impaired)
 
         # The best available information about a subtitle is its name. Using guessit to parse it.
-        guess = self.guess if self.guess else guess_file_info(self.name + '.mkv', type=self.type)
+        guess = self.guess if self.guess else guessit(self.name, {'type': self.type})
         matches |= guess_matches(video, guess)
 
         # imdb_id match used only for movies

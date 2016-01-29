@@ -1,0 +1,83 @@
+# Multiple input strings having same expected results can be chained.
+# Use $ marker to check inputs that should not match results.
+
+
+? +MP3
+? +lame
+? +lame3.12
+? +lame3.100
+: audio_codec: MP3
+
+? +DolbyDigital
+? +DD
+? +Dolby Digital
+: audio_codec: DolbyDigital
+
+? +DolbyAtmos
+? +Dolby Atmos
+? +Atmos
+? -Atmosphere
+: audio_codec: DolbyAtmos
+
+? +AAC
+: audio_codec: AAC
+
+? +AC3
+: audio_codec: AC3
+
+? +Flac
+: audio_codec: FLAC
+
+? +DTS
+: audio_codec: DTS
+
+? +True-HD
+? +trueHD
+: audio_codec: TrueHD
+
+? +DTS-HD
+: audio_codec: DTS
+  audio_profile: HD
+
+? +DTS-HDma
+: audio_codec: DTS
+  audio_profile: HDMA
+
+? +AC3-hq
+: audio_codec: AC3
+  audio_profile: HQ
+
+? +AAC-HE
+: audio_codec: AAC
+  audio_profile: HE
+
+? +AAC-LC
+: audio_codec: AAC
+  audio_profile: LC
+
+? +AAC2.0
+: audio_codec: AAC
+  audio_channels: '2.0'
+
+? +7.1
+? +7ch
+? +8ch
+: audio_channels: '7.1'
+
+? +5.1
+? +5ch
+? +6ch
+: audio_channels: '5.1'
+
+? +2ch
+? +2.0
+? +stereo
+: audio_channels: '2.0'
+
+? +1ch
+? +mono
+: audio_channels: '1.0'
+
+? DD5.1
+: audio_codec: DolbyDigital
+  audio_channels: '5.1'
