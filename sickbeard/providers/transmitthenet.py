@@ -20,6 +20,7 @@
 import re
 import traceback
 from urllib import urlencode
+from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -60,6 +61,8 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
         return True
 
     def login(self):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
+            return True
 
         login_params = {
             'username': self.username,
@@ -137,7 +140,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                             title = temp_anchor['data-src'].rsplit('.', 1)[0]
                             if not title:
                                 title = torrent_row.find('a', onmouseout='return nd();').string
-                                title = title.replace("[", "").replace("]", "").replace("/ ", "")
+                                title = title.replace("[", "").replace("]", "").replace("/ ", "") if title else ''
 
                             torrent_size = temp_anchor['data-filesize']
                             size = convert_size(torrent_size) or -1
