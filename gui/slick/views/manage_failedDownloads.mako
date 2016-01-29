@@ -60,7 +60,7 @@
         <img src="${srRoot}/images/providers/missing.png" width="16" height="16" alt="missing provider" title="missing provider"/>
     % endif
     </td>
-    <td align="center"><input type="checkbox" class="removeCheck" id="remove-${hItem["release"]}" /></td>
+    <td align="center"><input type="checkbox" class="removeCheck" id="remove-${hItem["release"] | u}" /></td>
   </tr>
 % endfor
   </tbody>
