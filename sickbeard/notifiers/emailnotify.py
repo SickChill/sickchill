@@ -88,7 +88,7 @@ class EmailNotifier(object):
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.log(u"Snatch notification sent to [%s] for '%s'" % (to, ep_name), logger.DEBUG)
                 else:
-                    logger.log(u"Snatch notification ERROR: %s" % self.last_err, logger.ERROR)
+                    logger.log(u"Snatch notification error: %s" % self.last_err, logger.WARNING)
 
     def notify_download(self, ep_name, title="Completed:"):
         """
@@ -127,7 +127,7 @@ class EmailNotifier(object):
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.log(u"Download notification sent to [%s] for '%s'" % (to, ep_name), logger.DEBUG)
                 else:
-                    logger.log(u"Download notification ERROR: %s" % self.last_err, logger.ERROR)
+                    logger.log(u"Download notification error: %s" % self.last_err, logger.WARNING)
 
     def notify_subtitle_download(self, ep_name, lang, title="Downloaded subtitle:"):
         """
@@ -165,7 +165,7 @@ class EmailNotifier(object):
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.log(u"Download notification sent to [%s] for '%s'" % (to, ep_name), logger.DEBUG)
                 else:
-                    logger.log(u"Download notification ERROR: %s" % self.last_err, logger.ERROR)
+                    logger.log(u"Download notification error: %s" % self.last_err, logger.WARNING)
 
     def notify_git_update(self, new_version="??"):
         pass
@@ -208,8 +208,9 @@ class EmailNotifier(object):
         try:
             srv = smtplib.SMTP(host, int(port))
         except Exception as e:
-            logger.log(u"Exception generated while sending e-mail: " + str(e), logger.ERROR)
+            logger.log(u"Exception generated while sending e-mail: " + str(e), logger.WARNING)
             logger.log(traceback.format_exc(), logger.DEBUG)
+            self.last_err = '%s' % e
             return False
 
         if smtpDebug:
