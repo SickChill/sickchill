@@ -62,6 +62,7 @@ class NapiProjektProvider(Provider):
     server_url = 'http://napiprojekt.pl/unit_napisy/dl.php'
 
     def initialize(self):
+        self.session = Session()
         self.session.headers = {'User-Agent': 'Subliminal/%s' % get_version(__version__)}
 
     def terminate(self):
