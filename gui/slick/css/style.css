@@ -1572,7 +1572,7 @@ select .selected {
 }
 
 [class^="icon16-"], [class*=" icon16-"] {
-    background-image: url("../images/glyphicons-config.png");
+    background-image: url("../images/icon-sprites-colored.png");
     background-position: -40px 0;
     background-repeat: no-repeat;
     display: inline-block;
