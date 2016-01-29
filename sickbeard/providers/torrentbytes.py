@@ -20,6 +20,7 @@
 
 import re
 import traceback
+from requests.utils import dict_from_cookiejar
 from urllib import quote
 
 from sickbeard import logger, tvcache
@@ -59,6 +60,8 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.cache = tvcache.TVCache(self)
 
     def login(self):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
+            return True
 
         login_params = {'username': self.username,
                         'password': self.password,

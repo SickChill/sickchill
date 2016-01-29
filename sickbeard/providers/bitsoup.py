@@ -20,6 +20,7 @@
 
 import re
 import traceback
+from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -63,6 +64,8 @@ class BitSoupProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         return True
 
     def login(self):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
+            return True
 
         login_params = {
             'username': self.username,
