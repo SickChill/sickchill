@@ -743,7 +743,7 @@ class ConfigMigrator(object):
             ep_quality = '%QN'
             abd_string = '%A-D'
 
-        if abd:
+        if abd and abd_string:
             ep_string = abd_string
         else:
             ep_string = naming_ep_type[ep_type]
@@ -751,18 +751,18 @@ class ConfigMigrator(object):
         finalName = ""
 
         # start with the show name
-        if use_show_name:
+        if use_show_name and show_name:
             finalName += show_name + naming_sep_type[sep_type]
 
         # add the season/ep stuff
         finalName += ep_string
 
         # add the episode name
-        if use_ep_name:
+        if use_ep_name and ep_name:
             finalName += naming_sep_type[sep_type] + ep_name
 
         # add the quality
-        if use_quality:
+        if use_quality and ep_quality:
             finalName += naming_sep_type[sep_type] + ep_quality
 
         if use_periods:
