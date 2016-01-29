@@ -4,6 +4,7 @@
     from sickbeard import db
     from sickbeard.helpers import anon_url
     import sys
+    import platform
 %>
 
 <%block name="content">
@@ -24,6 +25,7 @@
         </td>
     </tr>
     % endif
+    <tr><td class="infoTableHeader"><i class="icon16-win"></i> Operating System:</td><td class="infoTableCell">${platform.platform()}</td></tr>
     <tr><td class="infoTableHeader"><i class="icon16new-python"></i> Python Version:</td><td class="infoTableCell">${sys.version[:120]}</td></tr>
     <tr><td class="infoTableHeader"><i class="icon16new-ssl"></i> SSL Version:</td><td class="infoTableCell">${ssl_version}</td></tr>
     <tr><td class="infoTableHeader" style="vertical-align: top;"><i class="icon16new-locale"></i> Locale:</td><td class="infoTableCell">${'.'.join([str(loc) for loc in sr_locale])}</td></tr>
