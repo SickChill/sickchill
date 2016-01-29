@@ -209,7 +209,7 @@ class EmailNotifier(object):
             srv = smtplib.SMTP(host, int(port))
         except Exception as e:
             logger.log(u"Exception generated while sending e-mail: " + str(e), logger.WARNING)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            #logger.log(traceback.format_exc(), logger.DEBUG)
             self.last_err = '%s' % e
             return False
 
