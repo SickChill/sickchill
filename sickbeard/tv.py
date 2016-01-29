@@ -1133,11 +1133,13 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         curEp.release_name = ''
 
                         sql_l.append(curEp.get_sql())
-            else:
-                # the file exists, set its modify file stamp
-                if sickbeard.AIRDATE_EPISODES:
-                    with curEp.lock:
-                        curEp.airdateModifyStamp()
+
+            # Disable update in each show refresh. Taking too long with large libraries
+            #else:
+            #    # the file exists, set its modify file stamp
+            #    if sickbeard.AIRDATE_EPISODES:
+            #        with curEp.lock:
+            #            curEp.airdateModifyStamp()
 
         if sql_l:
             main_db_con = db.DBConnection()
