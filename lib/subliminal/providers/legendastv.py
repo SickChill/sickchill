@@ -189,7 +189,6 @@ class LegendasTvProvider(Provider):
         logger.info('Searching titles using the keyword %s', keyword)
         try:
             r = self.session.get('%s/legenda/sugestao/%s' % (self.server_url, keyword), timeout=TIMEOUT)
-            logger.error('Could not search for %s. key: %s' % (self.server_url, keyword))
             r.raise_for_status()
             results = r.json()
         except Exception as e:
