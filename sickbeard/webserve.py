@@ -4171,19 +4171,21 @@ class ConfigPostProcessing(Config):
                         header='Post Processing', topmenu='config',
                         controller="config", action="postProcessing")
 
-    def savePostProcessing(self, naming_pattern=None, naming_multi_ep=None,
-                           kodi_data=None, kodi_12plus_data=None,
+    def savePostProcessing(self, kodi_data=None, kodi_12plus_data=None,
                            mediabrowser_data=None, sony_ps3_data=None,
                            wdtv_data=None, tivo_data=None, mede8er_data=None,
                            keep_processed_dir=None, process_method=None,
                            del_rar_contents=None, process_automatically=None,
                            no_delete=None, rename_episodes=None, airdate_episodes=None,
-                           file_timestamp_timezone=None, unpack=None, move_associated_files=None,
-                           sync_files=None, postpone_if_sync_files=None, postpone_if_no_subs=None, nfo_rename=None,
-                           allowed_extensions=None, tv_download_dir=None, naming_custom_abd=None, naming_anime=None,
+                           file_timestamp_timezone=None, unpack=None,
+                           move_associated_files=None, sync_files=None,
+                           postpone_if_sync_files=None, postpone_if_no_subs=None,
+                           allowed_extensions=None, tv_download_dir=None,
                            create_missing_show_dirs=None, add_shows_wo_dir=None,
+                           extra_scripts=None, nfo_rename=None,
+                           naming_pattern=None, naming_multi_ep=None,
+                           naming_custom_abd=None, naming_anime=None,
                            naming_abd_pattern=None, naming_strip_year=None,
-                           use_failed_downloads=None, delete_failed=None, extra_scripts=None,
                            naming_custom_sports=None, naming_sports_pattern=None,
                            naming_custom_anime=None, naming_anime_pattern=None,
                            naming_anime_multi_ep=None, autopostprocesser_frequency=None):
@@ -4226,8 +4228,6 @@ class ConfigPostProcessing(Config):
         sickbeard.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)
         sickbeard.NAMING_CUSTOM_ANIME = config.checkbox_to_value(naming_custom_anime)
         sickbeard.NAMING_STRIP_YEAR = config.checkbox_to_value(naming_strip_year)
-        sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
-        sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
         sickbeard.NFO_RENAME = config.checkbox_to_value(nfo_rename)
 
         sickbeard.METADATA_KODI = kodi_data
