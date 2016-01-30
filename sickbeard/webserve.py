@@ -2516,7 +2516,7 @@ class HomeAddShows(Home):
 
         t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
         return t.render(title=page_title, header=page_title, enable_anime_options=False,
-                        traktList=traktList, controller="addShows", action="trendingShows")
+                        traktList=traktList, controller="addShows", action="addFromTrakt")
 
     def getTrendingShows(self, traktList=None):
         """
@@ -2621,8 +2621,8 @@ class HomeAddShows(Home):
 
         return t.render(title="Popular Shows", header="Popular Shows",
                         popular_shows=popular_shows, imdb_exception=e,
-                        topmenu="home",
-                        controller="addShows", action="popularShows")
+                        topmenu="home", enable_anime_options=False,
+                        controller="addShows", action="addFromImdb")
 
     def anidbPopular(self):
         """
@@ -2641,7 +2641,7 @@ class HomeAddShows(Home):
         return t.render(title="Anidb Popular Anime", header="Anidb Popular Anime",
                         anime=mapped_anime, imdb_exception=e, whitelist=[],
                         blacklist=[], groups=[], topmenu="home", enable_anime_options=True,
-                        controller="addShows", action="addFromList")
+                        controller="addShows", action="addFromAnidb")
 
     def addShowToBlacklist(self, indexer_id):
         # URL parameters

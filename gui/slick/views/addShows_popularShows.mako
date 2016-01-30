@@ -3,6 +3,12 @@
     from sickbeard.helpers import anon_url
     import sickbeard
 %>
+<%block name="scripts">
+    <script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
+% if enable_anime_options:
+    <script type="text/javascript" src="${srRoot}/js/blackwhite.js?${sbPID}"></script>
+% endif
+</%block>
 <%block name="metas">
 <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 </%block>
@@ -14,6 +20,37 @@
 % endif
 
 <div id="tabs">
+    <fieldset class="component-group-list">
+		<div class="field-pair">
+			<label class="clearfix" for="content_configure_show_options">
+				<span class="component-title">Configure Show Options</span>
+				<span class="component-desc">
+					<input type="checkbox" class="enabler" name="configure_show_options" id="configure_show_options" />
+					<p>If you don't want to use the default show options, you can change them here! Leaving it as it is, the show will be added as an anime anyhow.</p>
+				</span>
+			</label>
+		</div>
+		<div id="content_configure_show_options">
+			<div class="field-pair">
+
+				<label class="clearfix" for="configure_show_options">
+				<ul>
+			        <li><a href="#tabs-1">Manage Directories</a></li>
+			        <li><a href="#tabs-2">Customize Options</a></li>
+			    </ul>
+			    <div id="tabs-1" class="existingtabs">
+			        <%include file="/inc_rootDirs.mako"/>
+			        <br/>
+			    </div>
+			    <div id="tabs-2" class="existingtabs">
+			        <%include file="/inc_addShowOptions.mako"/>
+			    </div>
+			    </label>
+
+			</div>
+		</div>	<!-- /content_configure_show_options //-->
+	</fieldset>
+    
     <span>Sort By:</span>
     <select id="showsort" class="form-control form-control-inline input-sm">
         <option value="name">Name</option>
@@ -42,36 +79,44 @@
             <p>${imdb_exception}</p>
         </div>
     % else:
-        % for cur_result in popular_shows:
-            % if cur_result['imdb_tt'] in imdb_tt:
-                <% continue %>
-            % endif
+        % for cur_show in popular_shows:
+            % if not cur_show['imdb_tt']:
+        		<% continue %>
+		   	% else:
+		   		<% show_id = cur_show['imdb_tt'] %>
+		   	% endif
 
-            % if 'rating' in cur_result and cur_result['rating']:
-                <% cur_rating = cur_result['rating'] %>
-                <% cur_votes = cur_result['votes'] %>
+            % if 'rating' in cur_show and cur_show['rating']:
+                <% cur_rating = cur_show['rating'] %>
+                <% cur_votes = cur_show['votes'] %>
             % else:
                 <% cur_rating = '0' %>
                 <% cur_votes = '0' %>
             % endif
+            
+            <% show_title = cur_show['name'] %>
 
-            <div class="trakt_show" data-name="${cur_result['name']}" data-rating="${cur_rating}" data-votes="${cur_votes}">
+            <div class="show_row" data-show-id="${show_id}" data-name="${cur_show['name']}" data-rating="${cur_rating}" data-votes="${cur_votes}">
                 <div class="traktContainer">
                     <div class="trakt-image">
-                        <a class="trakt-image" href="${anon_url(cur_result['imdb_url'])}" target="_blank">
-                            <img alt="" class="trakt-image" src="${srRoot}/cache/${cur_result['image_path']}" height="273px" width="186px" />
+                        <a class="trakt-image" href="${anon_url(cur_show['imdb_url'])}" target="_blank">
+                            <img alt="" class="trakt-image" src="${srRoot}/cache/${cur_show['image_path']}" height="273px" width="186px" />
                         </a>
                     </div>
 
                     <div class="show-title">
-                        ${(cur_result['name'], '<span>&nbsp;</span>')['' == cur_result['name']]}
+                        ${(show_title, '<span>&nbsp;</span>')['' == show_title]}
                     </div>
 
                     <div class="clearfix">
                         <p>${int(float(cur_rating)*10)}% <img src="${srRoot}/images/heart.png"></p>
                         <i>${cur_votes} votes</i>
                         <div class="traktShowTitleIcons">
-                            <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_result['imdb_tt']}&amp;show_name=${cur_result['name'] | u}&amp;indexer=IMDB" class="btn btn-xs" data-no-redirect>Add Show</a>
+                            % if show_id in imdb_tt:
+                            	<a href="${srRoot}/home/displayShow?show=${show_id}" class="btn btn-xs" data-show-id="${show_id}" disabled="disabled" data-add-show>In List</a>
+                            % else:
+                        		<a href="${srRoot}/addShows/addShowByID" data-isanime="0" data-indexer="IMDB" data-show-id="${show_id}" data-show-name="${show_title | u}" class="btn btn-xs" data-add-show>Add Show</a>
+                        	% endif
                         </div>
                     </div>
                 </div>
