@@ -144,14 +144,8 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                     episode_num(subtitles_info['season'], subtitles_info['episode'], numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
-    try:
-        subtitles_path = get_subtitles_path(subtitles_info['location']).encode(sickbeard.SYS_ENCODING)
-        video_path = subtitles_info['location'].encode(sickbeard.SYS_ENCODING)
-    except UnicodeEncodeError as error:
-        logger.log(u'An error occurred while encoding \'{}\' with your current locale. '
-                   'Rename the file or try a different locale. Error: {}'.format
-                   (subtitles_info['location'], ex(error)), logger.WARNING)
-        return existing_subtitles, None
+    subtitles_path = get_subtitles_path(subtitles_info['location'])
+    video_path = subtitles_info['location']
     user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
 
     video = get_video(video_path, subtitles_path=subtitles_path)
@@ -211,7 +205,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                                                               None if not sickbeard.SUBTITLES_MULTI else
                                                               subtitle.language)
         if subtitles_path is not None:
-            subtitle_path = ek(os.path.join, subtitles_path, ek(os.path.split, subtitle_path)[1])
+            subtitle_path = os.path.join(subtitles_path, os.path.split(subtitle_path)[1])
 
         sickbeard.helpers.chmodAsParent(subtitle_path)
         sickbeard.helpers.fixSetGroupID(subtitle_path)
@@ -238,14 +232,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
 
 
 def refresh_subtitles(episode_info, existing_subtitles):
-    try:
-        video = get_video(episode_info['location'].encode(sickbeard.SYS_ENCODING))
-    except UnicodeEncodeError as error:
-        logger.log(u'An error occurred while encoding \'{}\' with your current locale. '
-                   'Rename the file or try a different locale. Error: {}'.format
-                   (episode_info['location'], ex(error)), logger.WARNING)
-        return existing_subtitles, None
-
+    video = get_video(episode_info['location'])
     if not video:
         logger.log(u'Exception caught in subliminal.scan_video, subtitles couldn\'t be refreshed', logger.DEBUG)
         return existing_subtitles, None
@@ -261,13 +248,7 @@ def refresh_subtitles(episode_info, existing_subtitles):
 
 def get_video(video_path, subtitles_path=None):
     if not subtitles_path:
-        try:
-            subtitles_path = get_subtitles_path(video_path).encode(sickbeard.SYS_ENCODING)
-        except UnicodeEncodeError as error:
-            logger.log(u'An error occurred while encoding \'{}\' with your current locale. '
-                       'Rename the file or try a different locale. Error: {}'.format
-                       (video_path, ex(error)), logger.WARNING)
-            return None
+        subtitles_path = get_subtitles_path(video_path)
 
     try:
         if not sickbeard.EMBEDDED_SUBTITLES_ALL and video_path.endswith('.mkv'):
@@ -283,17 +264,22 @@ def get_video(video_path, subtitles_path=None):
 
 
 def get_subtitles_path(video_path):
-    if ek(os.path.isabs, sickbeard.SUBTITLES_DIR):
-        new_subtitles_path = sickbeard.SUBTITLES_DIR
+    if os.path.isabs(sickbeard.SUBTITLES_DIR):
+        try:
+            # sickbeard.SUBTITLES_DIR is not unicode, try to decode for now
+            new_subtitles_path = sickbeard.SUBTITLES_DIR.decode(sickbeard.SYS_ENCODING)
+        except UnicodeDecodeError:
+            # Fallback to UTF-8. This will almost never happen, but just in case
+            new_subtitles_path = sickbeard.SUBTITLES_DIR.decode('utf-8')
     elif sickbeard.SUBTITLES_DIR:
-        new_subtitles_path = ek(os.path.join, ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR)
+        new_subtitles_path = os.path.join(os.path.dirname(video_path), sickbeard.SUBTITLES_DIR)
         dir_exists = sickbeard.helpers.makeDir(new_subtitles_path)
         if not dir_exists:
             logger.log(u'Unable to create subtitles folder {}'.format(new_subtitles_path), logger.ERROR)
         else:
             sickbeard.helpers.chmodAsParent(new_subtitles_path)
     else:
-        new_subtitles_path = ek(os.path.join, ek(os.path.dirname, video_path))
+        new_subtitles_path = os.path.dirname(video_path)
 
     return new_subtitles_path
 
