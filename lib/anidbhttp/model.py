@@ -1,11 +1,10 @@
-import os
 import posixpath
-from sickrage.helper.encoding import ek
-import sickbeard
-from sickbeard import helpers
 import requests
+import logging
 
 __all__ = ["Anime", "Category", "Title", "Episode", "Tag"]
+log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
 
 
 class Entity(object):
@@ -166,16 +165,14 @@ class Anime(Entity, Titled, Typed, Described):
         """
         self._tags.append(tag)
 
-    def set_picture(self, picture):
+    def set_picture(self, image_path):
         """
         Set the cover picture of this anime
 
         :param picture: the image filename
         """
-        self._picture = picture
-        self.cache_image("http://img7.anidb.net/pics/anime/{0}".format(picture))
-        self._image_path = ek(posixpath.join, 'images', 'anidb', ek(os.path.basename, self._picture))
-
+        self._image_path = image_path
+    
     def set_tvdbid(self):
         """
         Tries to get the thtvdb id from the anime-list.xml
@@ -184,23 +181,12 @@ class Anime(Entity, Titled, Typed, Described):
         No params required.
         """
         from adba.aniDBtvDBmaper import TvDBMap
-        self._tvdbid = TvDBMap().get_tvdb_for_anidb(self.id) if self.id else None
-
-    def cache_image(self, image_url):
-        """
-        Store cache of image in cache dir
-        :param image_url: Source URL
-        """
-        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'anidb'))
-
-        if not ek(os.path.exists, path):
-            ek(os.makedirs, path)
-
-        full_path = ek(os.path.join, path, ek(os.path.basename, image_url))
-
-        if not ek(os.path.isfile, full_path):
-            helpers.download_file(image_url, full_path, session=self.session)
-
+        try:
+            self._tvdbid = TvDBMap().get_tvdb_for_anidb(self.id) if self.id else None
+        except:
+            self._tvdbid = None
+            log.debug("Couldn't map aid [{0}] to tvdbid ".format(self.id))
+        
     @property
     def episodecount(self):
         """The episodecount property"""
