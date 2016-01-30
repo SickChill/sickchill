@@ -4,9 +4,11 @@ from sickrage.helper.encoding import ek
 import sickbeard
 from sickbeard import helpers
 import requests
+import logging
 
 __all__ = ["Anime", "Category", "Title", "Episode", "Tag"]
-
+log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
 
 class Entity(object):
     def __init__(self, id):
@@ -184,7 +186,11 @@ class Anime(Entity, Titled, Typed, Described):
         No params required.
         """
         from adba.aniDBtvDBmaper import TvDBMap
-        self._tvdbid = TvDBMap().get_tvdb_for_anidb(self.id) if self.id else None
+        try:
+            self._tvdbid = TvDBMap().get_tvdb_for_anidb(self.id) if self.id else None
+        except Exception:
+            self._tvdbid = None
+            log.debug("Couldn't map aid [{0}] to tvdbid ".format(self.id))
 
     def cache_image(self, image_url):
         """
