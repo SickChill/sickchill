@@ -4183,7 +4183,7 @@ class ConfigPostProcessing(Config):
                            allowed_extensions=None, tv_download_dir=None, naming_custom_abd=None, naming_anime=None,
                            create_missing_show_dirs=None, add_shows_wo_dir=None,
                            naming_abd_pattern=None, naming_strip_year=None,
-                           use_failed_downloads=None, delete_failed=None, extra_scripts=None,
+                           extra_scripts=None,
                            naming_custom_sports=None, naming_sports_pattern=None,
                            naming_custom_anime=None, naming_anime_pattern=None,
                            naming_anime_multi_ep=None, autopostprocesser_frequency=None):
@@ -4226,8 +4226,6 @@ class ConfigPostProcessing(Config):
         sickbeard.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)
         sickbeard.NAMING_CUSTOM_ANIME = config.checkbox_to_value(naming_custom_anime)
         sickbeard.NAMING_STRIP_YEAR = config.checkbox_to_value(naming_strip_year)
-        sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
-        sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
         sickbeard.NFO_RENAME = config.checkbox_to_value(nfo_rename)
 
         sickbeard.METADATA_KODI = kodi_data
