@@ -588,8 +588,8 @@ config*.mako
     background-color: #222 !important;
 }
 
-[class^="icon16-"], [class*=" icon16-"] {
-    background-image: url("../images/icon-sprites-colored.png");
+[class^="icon16-config-"], [class*=" icon16-config-"] {
+    background-image: url("../images/16x_sprite_colored_help-info.png");
     background-position: -40px 0;
     background-repeat: no-repeat;
     display: inline-block;
@@ -599,71 +599,56 @@ config*.mako
     width: 16px;
 }
 
-
-.icon16-github {
+.icon16-config-sickrage {
     background-position: 0 0;
 }
-
-.icon16-mirc {
-    background-position: -24px 0;
-}
-
-.icon16-sickrage {
-    background-position: -52px 0;
-}
-.icon16-web {
-    background-position: -78px 0;
-}
-.icon16-win {
-    background-position: -104px 0;
-}
-
-[class^="icon16new-"], [class*=" icon16new-"] {
-    background-image: url("../images/info-icons.png");
-    background-position: -40px 0;
-    background-repeat: no-repeat;
-    display: inline-block;
-    height: 16px;
-    line-height: 16px;
-    vertical-align: text-top;
-    width: 16px;
-}
-
-.icon16new-sickrage {
-    background-position: 0 0;
-}
-.icon16new-version {
+.icon16-config-version {
     background-position: -17px 0;
 }
-.icon16new-python {
+.icon16-config-python {
     background-position: -37px 0;
 }
-.icon16new-ssl {
+.icon16-config-ssl {
     background-position: -56px 0;
 }
-.icon16new-locale {
+.icon16-config-locale {
     background-position: -73px 0;
 }
-.icon16new-user {
+.icon16-config-user {
     background-position: -91px 0;
 }
-.icon16new-dir {
+.icon16-config-dir {
     background-position: -111px 0;
 }
-.icon16new-config {
+.icon16-config-config {
     background-position: -129px 0;
 }
-.icon16new-db {
+.icon16-config-db {
     background-position: -147px 0;
 }
-.icon16new-cache {
+.icon16-config-cache {
     background-position: -166px 0;
 }
-.icon16new-log {
+.icon16-config-log {
     background-position: -182px 0;
 }
-.icon16new-arguments {
+.icon16-config-arguments {
     background-position: -204px 0;
+}
+.icon16-config-github {
+    background-position: -224px 0;
+}
+.icon16-config-mirc {
+    background-position: -243px 0;
+}
+.icon16-config-web {
+    background-position: -262px 0;
+}
+.icon16-config-os {
+    background-position: -280px 0;
+}
+.icon16-config-wiki {
+    background-position: -299px 0;
 }
 
 /* =======================================================================
