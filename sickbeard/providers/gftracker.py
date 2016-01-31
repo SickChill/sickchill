@@ -69,7 +69,7 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         }
 
         # Initialize session with a GET to have cookies
-        initialize = self.get_url(self.url, timeout=30)  # pylint: disable=unused-variable
+        self.get_url(self.url, timeout=30)  # pylint: disable=unused-variable
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
 
         if not response:
