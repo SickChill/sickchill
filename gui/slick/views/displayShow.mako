@@ -252,8 +252,8 @@
         <div style="padding-bottom: 5px;">
             <% total_snatched = epCounts[Overview.SNATCHED] + epCounts[Overview.SNATCHED_PROPER] + epCounts[Overview.SNATCHED_BEST] %>
             <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> Wanted: <b>${epCounts[Overview.WANTED]}</b></span></label>
-            <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> Low Quality: <b>${epCounts[Overview.QUAL]}</b></span></label>
-            <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> Downloaded: <b>${epCounts[Overview.GOOD]}</b></span></label>
+            <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> Allowed: <b>${epCounts[Overview.QUAL]}</b></span></label>
+            <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> Preferred: <b>${epCounts[Overview.GOOD]}</b></span></label>
             <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> Skipped: <b>${epCounts[Overview.SKIPPED]}</b></span></label>
             <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> Snatched: <b>${total_snatched}</b></span></label>
         </div>

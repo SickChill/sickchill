@@ -24,7 +24,9 @@ import datetime
 import operator
 import threading
 import traceback
-
+import errno
+from socket import timeout as SocketTimeout
+from requests import exceptions as requests_exceptions
 import sickbeard
 
 from sickbeard import db
@@ -37,11 +39,11 @@ from sickrage.show.History import History
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 
-class ProperFinder(object):
+class ProperFinder(object):  # pylint: disable=too-few-public-methods
     def __init__(self):
         self.amActive = False
 
-    def run(self, force=False):
+    def run(self, force=False):  # pylint: disable=unused-argument
         """
         Start looking for new propers
 
@@ -70,7 +72,7 @@ class ProperFinder(object):
 
         self.amActive = False
 
-    def _getProperList(self):
+    def _getProperList(self):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         """
         Walk providers for propers
         """
@@ -91,9 +93,27 @@ class ProperFinder(object):
             except AuthException as e:
                 logger.log(u"Authentication error: " + ex(e), logger.DEBUG)
                 continue
+            except (SocketTimeout, TypeError) as e:
+                logger.log(u"Connection timed out (sockets) while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                continue
+            except (requests_exceptions.HTTPError, requests_exceptions.TooManyRedirects) as e:
+                logger.log(u"HTTP error while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                continue
+            except requests_exceptions.ConnectionError as e:
+                logger.log(u"Connection error while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                continue
+            except requests_exceptions.Timeout as e:
+                logger.log(u"Connection timed out while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                continue
+            except requests_exceptions.ContentDecodingError:
+                logger.log(u"Content-Encoding was gzip, but content was not compressed while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
+                continue
             except Exception as e:
-                logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
-                logger.log(traceback.format_exc(), logger.DEBUG)
+                if e.errno != errno.ECONNRESET:
+                    logger.log(u"Unknown exception while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
+                    logger.log(traceback.format_exc(), logger.DEBUG)
+                else:
+                    logger.log(u"Connection reseted by peer accessing {}".format(curProvider.name), logger.DEBUG)
                 continue
 
             # if they haven't been added by a different provider than add the proper to the list
@@ -170,7 +190,7 @@ class ProperFinder(object):
             # check if we actually want this proper (if it's the right quality)
             main_db_con = db.DBConnection()
             sql_results = main_db_con.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-                                     [bestResult.indexerid, bestResult.season, bestResult.episode])
+                                             [bestResult.indexerid, bestResult.season, bestResult.episode])
             if not sql_results:
                 continue
 
@@ -263,10 +283,12 @@ class ProperFinder(object):
                 snatchEpisode(result, SNATCHED_PROPER)
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
-    def _genericName(self, name):
+    @staticmethod
+    def _genericName(name):
         return name.replace(".", " ").replace("-", " ").replace("_", " ").lower()
 
-    def _set_lastProperSearch(self, when):
+    @staticmethod
+    def _set_lastProperSearch(when):
         """
         Record last propersearch in DB
 
@@ -280,11 +302,12 @@ class ProperFinder(object):
 
         if len(sql_results) == 0:
             main_db_con.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)",
-                        [0, 0, str(when)])
+                               [0, 0, str(when)])
         else:
             main_db_con.action("UPDATE info SET last_proper_search=" + str(when))
 
-    def _get_lastProperSearch(self):
+    @staticmethod
+    def _get_lastProperSearch():
         """
         Find last propersearch from DB
         """

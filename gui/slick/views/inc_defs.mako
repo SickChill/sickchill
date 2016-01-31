@@ -24,11 +24,13 @@
 
     sum_iquality = quality & 0xFFFF
     sum_pquality = quality >> 16
-    set_hdtv = set([Quality.HDTV, Quality.RAWHDTV, Quality.FULLHDTV])
-    set_webdl = set([Quality.HDWEBDL, Quality.FULLHDWEBDL])
-    set_bluray = set([Quality.HDBLURAY, Quality.FULLHDBLURAY])
-    set_1080p = set([Quality.FULLHDTV, Quality.FULLHDWEBDL, Quality.FULLHDBLURAY])
-    set_720p = set([Quality.HDTV, Quality.RAWHDTV, Quality.HDWEBDL, Quality.HDBLURAY])
+    set_hdtv = {Quality.HDTV, Quality.RAWHDTV, Quality.FULLHDTV}
+    set_webdl = {Quality.HDWEBDL, Quality.FULLHDWEBDL, Quality.UHD_4K_WEBDL, Quality.UHD_8K_WEBDL}
+    set_bluray = {Quality.HDBLURAY, Quality.FULLHDBLURAY, Quality.UHD_4K_BLURAY, Quality.UHD_8K_BLURAY}
+    set_1080p = {Quality.FULLHDTV, Quality.FULLHDWEBDL, Quality.FULLHDBLURAY}
+    set_720p = {Quality.HDTV, Quality.RAWHDTV, Quality.HDWEBDL, Quality.HDBLURAY}
+    set_uhd_4k = {Quality.UHD_4K_TV, Quality.UHD_4K_BLURAY, Quality.UHD_4K_WEBDL}
+    set_uhd_8k = {Quality.UHD_8K_TV, Quality.UHD_8K_BLURAY, Quality.UHD_8K_WEBDL}
 
     # If initial and preferred qualities are the same, show pill as initial quality
     if sum_iquality == sum_pquality:
@@ -63,6 +65,14 @@
     elif set(iquality).issubset(set_720p)and set(pquality).issubset(set_720p):
         cssClass = Quality.cssClassStrings[Quality.HDBLURAY]
         qualityString = '720p'
+    # Check if all resolutions are 4K UHD
+    elif set(iquality).issubset(set_uhd_4k)and set(pquality).issubset(set_uhd_4k):
+        cssClass = Quality.cssClassStrings[Quality.HDBLURAY]
+        qualityString = '4K-UHD'
+    # Check if all resolutions are 8K UHD
+    elif set(iquality).issubset(set_uhd_8k)and set(pquality).issubset(set_uhd_8k):
+        cssClass = Quality.cssClassStrings[Quality.HDBLURAY]
+        qualityString = '8K-UHD'
     else:
         cssClass = "Custom"
         qualityString = "Custom"

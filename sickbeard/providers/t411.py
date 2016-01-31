@@ -24,7 +24,7 @@ import traceback
 
 from sickbeard import logger, tvcache
 from sickbeard.common import USER_AGENT
-
+from sickrage.helper.common import try_int
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -115,7 +115,7 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                             continue
 
                         for torrent in torrents:
-                            if mode == 'RSS' and int(torrent['category']) not in self.subcategories:
+                            if mode == 'RSS' and 'category' in torrent and try_int(torrent['category'], 0) not in self.subcategories:
                                 continue
 
                             try:
@@ -125,11 +125,10 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                                 if not all([title, download_url]):
                                     continue
 
-                                seeders = int(torrent['seeders'])
-                                leechers = int(torrent['leechers'])
+                                seeders = try_int(torrent['seeders'])
+                                leechers = try_int(torrent['leechers'])
                                 verified = bool(torrent['isVerified'])
                                 torrent_size = torrent['size']
-                                size = convert_size(torrent_size) or -1
 
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
@@ -141,6 +140,7 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                                     logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                                     continue
 
+                                size = convert_size(torrent_size) or -1
                                 item = title, download_url, size, seeders, leechers
                                 if mode != 'RSS':
                                     logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)

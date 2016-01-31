@@ -58,7 +58,8 @@ class QualityStringTests(unittest.TestCase):
                   "Test.Show.S01E02 WEB-DL H 264-GROUP",
                   "Test.Show.S01E02_WEB-DL_H_264-GROUP",
                   "Test.Show.S01E02.WEB-DL.AAC2.0.H264-GROUP", ],
-        'sd_dvd': ["Test.Show.S01E02.DVDRiP.XViD-GROUP",
+        'sd_dvd': ["Test.Show.S01E02.480P.DVDrip.HEVC.X265",
+                   "Test.Show.S01E02.DVDRiP.XViD-GROUP",
                    "Test.Show.S01E02.DVDRiP.DiVX-GROUP",
                    "Test.Show.S01E02.DVDRiP.x264-GROUP",
                    "Test.Show.S01E02.DVDRip.WS.XViD-GROUP",
@@ -97,7 +98,9 @@ class QualityStringTests(unittest.TestCase):
                       "Test.Show.S01E02.720p.HDDVD.x264-GROUP", ],
         'full_hd_bluray': ["Test.Show.S01E02.1080p.BluRay.x264-GROUP",
                            "Test.Show.S01E02.1080p.HDDVD.x264-GROUP", ],
-        'unknown': ["Test.Show.S01E02-SiCKBEARD", ],
+        'unknown': ["Test.Show.S01E02-SiCKBEARD",
+                    "Test.Show.S01E01-20.1080i.[Mux.-.1080i.-.H264.-.Ac3.].HDTVMux.GROUP",
+                    ],
     }
 
     def test_sd_tv(self):

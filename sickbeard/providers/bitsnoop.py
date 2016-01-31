@@ -62,8 +62,11 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 try:
-                    url = (self.urls['rss'], self.urls['search'] + search_string + '/s/d/1/?fmt=rss')[mode != 'RSS']
-                    data = self.get_url(url)
+                    search_url = (self.urls['rss'], self.urls['search'] + search_string + '/s/d/1/?fmt=rss')[mode != 'RSS']
+
+                    logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+
+                    data = self.get_url(search_url)
                     if not data:
                         logger.log(u"No data returned from provider", logger.DEBUG)
                         continue

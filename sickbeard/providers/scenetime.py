@@ -20,6 +20,7 @@
 
 import re
 from urllib import quote
+from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -53,6 +54,8 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.categories = "&c2=1&c43=13&c9=1&c63=1&c77=1&c79=1&c100=1&c101=1"
 
     def login(self):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
+            return True
 
         login_params = {'username': self.username,
                         'password': self.password}

@@ -93,7 +93,7 @@ class pyTivoNotifier(object):
         request = Request(requestUrl)
 
         try:
-            response = urlopen(request)  # @UnusedVariable
+            urlopen(request)
         except HTTPError as e:
             if hasattr(e, 'reason'):
                 logger.log(u"pyTivo notification: Error, failed to reach a server - " + e.reason, logger.ERROR)
