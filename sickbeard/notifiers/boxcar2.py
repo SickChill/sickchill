@@ -26,7 +26,7 @@ import urllib2
 import sickbeard
 
 from sickbeard import logger
-from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT
+from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT
 from sickrage.helper.exceptions import ex
 
 API_URL = "https://new.boxcar.io/api/notifications"
@@ -106,8 +106,8 @@ class Boxcar2Notifier(object):
 
     def notify_login(self, ipaddress=""):
         if sickbeard.USE_BOXCAR2:
-            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
-            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            update_text = notifyStrings[NOTIFY_LOGIN_TEXT]
+            title = notifyStrings[NOTIFY_LOGIN]
             self._notifyBoxcar2(title, update_text.format(ipaddress))
 
     def _notifyBoxcar2(self, title, message, accesstoken=None):

@@ -20,6 +20,7 @@
 
 import re
 import traceback
+from requests.utils import dict_from_cookiejar
 
 from sickbeard import db, logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -122,6 +123,8 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         return True
 
     def login(self):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
+            return True
 
         login_params = {'UserName': self.username,
                         'PassWord': self.password,

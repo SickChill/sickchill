@@ -66,6 +66,8 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         return True
 
     def login(self):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
+            return True
 
         if 'pass' in dict_from_cookiejar(self.session.cookies):
             return True

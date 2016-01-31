@@ -360,9 +360,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         sql_results = main_db_con.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
 
         for epResult in sql_results:
-            logger.log(u"{id}: Retrieving/creating episode {ep}".format(
-                    id=self.indexerid, ep=episode_num(epResult["season"], epResult["episode"])),
-                    logger.DEBUG)
+            logger.log(u"{id}: Retrieving/creating episode {ep}".format
+                       (id=self.indexerid, ep=episode_num(epResult["season"], epResult["episode"])),
+                       logger.DEBUG)
             curEp = self.getEpisode(epResult["season"], epResult["episode"])
             if not curEp:
                 continue
@@ -508,7 +508,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
             logger.log(u"{id}: Loading {show} {ep} from the DB".format
                        (id=curShowid, show=curShowName, ep=episode_num(curSeason, curEpisode)),
-                        logger.DEBUG)
+                       logger.DEBUG)
 
             try:
                 curEp = self.getEpisode(curSeason, curEpisode)
@@ -623,91 +623,71 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         return fanart_result or poster_result or banner_result or season_posters_result or season_banners_result or season_all_poster_result or season_all_banner_result
 
     # make a TVEpisode object from a media file
-    def makeEpFromFile(self, file):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def makeEpFromFile(self, filepath):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
 
-        if not ek(os.path.isfile, file):
-            logger.log(str(self.indexerid) + u": That isn't even a real file dude... " + file)
+        if not ek(os.path.isfile, filepath):
+            logger.log(u"{}: That isn't even a real file dude... {}".format
+                       (self.indexerid, filepath))
             return None
 
-        logger.log(str(self.indexerid) + u": Creating episode object from " + file, logger.DEBUG)
+        logger.log(u"{}: Creating episode object from {}".format
+                   (self.indexerid, filepath), logger.DEBUG)
 
         try:
-            myParser = NameParser(showObj=self, tryIndexers=True)
-            parse_result = myParser.parse(file)
+            myParser = NameParser(showObj=self, tryIndexers=True, parse_method=('normal', 'anime')[self.is_anime])
+            parse_result = myParser.parse(filepath)
         except InvalidNameException:
-            logger.log(u"Unable to parse the filename " + file + " into a valid episode", logger.DEBUG)
+            logger.log(u"{}: Unable to parse the file {} into a valid episode".format
+                       (self.indexerid, filepath), logger.DEBUG)
             return None
         except InvalidShowException:
-            logger.log(u"Unable to parse the filename " + file + " into a valid show", logger.DEBUG)
+            logger.log(u"{}: Unable to parse the file {} into a valid show".format
+                       (self.indexerid, filepath), logger.DEBUG)
+            return None
+
+        episodes = [ep for ep in parse_result.episode_numbers if ep is not None]
+        if not episodes:
+            logger.log(u"{}: parse_result: {}".format(self.indexerid, parse_result))
+            logger.log(u"{}: No episode number found in {}, ignoring it".format
+                       (self.indexerid, filepath), logger.WARNING)
             return None
 
         # for now lets assume that any episode in the show dir belongs to that show
-        season = parse_result.season_number
-        episodes = [ep for ep in parse_result.episode_numbers if ep is not None]
-        absolute_numbers = [ep for ep in parse_result.ab_episode_numbers if ep is not None]
-
-        is_absolute = len(absolute_numbers) > 0
-
-        if season is None and not is_absolute:
-            season = 1
-
-        if not episodes + absolute_numbers:
-            logger.log(u"parse_result: " + str(parse_result))
-            logger.log(u"No episode number found in " + file + ", ignoring it", logger.WARNING)
-            return None
-
+        season = parse_result.season_number if parse_result.season_number is not None else 1
         rootEp = None
 
         sql_l = []
-        for current_ep in episodes if not is_absolute else absolute_numbers:
-
-            if is_absolute:
-                logger.log(u"{id}: {file} parsed to {name} with absolute number {absolute}".format
-                           (id=self.indexerid, file=file, name=self.name, absolute=current_ep), logger.DEBUG)
-            else:
-                logger.log(u"{id}: {file} parsed to {name} {ep}".format
-                           (id=self.indexerid, file=file, name=self.name,
-                            ep=episode_num(season, current_ep)), logger.DEBUG)
+        for current_ep in episodes:
+            logger.log(u"{}: {} parsed to {} {}".format
+                       (self.indexerid, filepath, self.name, episode_num(season, current_ep)), logger.DEBUG)
 
             checkQualityAgain = False
             same_file = False
 
-            if is_absolute:
-                curEp = self.getEpisode(absolute_number=current_ep)
-            else:
-                curEp = self.getEpisode(season, current_ep)
-
+            curEp = self.getEpisode(season, current_ep)
             if not curEp:
                 try:
-                    if is_absolute:
-                        curEp = self.getEpisode(absolute_number=current_ep, file=file)
-                    else:
-                        curEp = self.getEpisode(season, current_ep, file)
-
+                    curEp = self.getEpisode(season, current_ep, filepath)
                     if not curEp:
                         raise EpisodeNotFoundException
                 except EpisodeNotFoundException:
-                    logger.log(str(self.indexerid) + u": Unable to figure out what this file is, skipping",
-                               logger.ERROR)
+                    logger.log(u"{}: Unable to figure out what this file is, skipping {}".format
+                               (self.indexerid, filepath), logger.ERROR)
                     continue
 
             else:
                 # if there is a new file associated with this ep then re-check the quality
-                if curEp.location and ek(os.path.normpath, curEp.location) != ek(os.path.normpath, file):
+                if not curEp.location or ek(os.path.normpath, curEp.location) != ek(os.path.normpath, filepath):
                     logger.log(
-                        u"The old episode had a different file associated with it, I will re-check the quality based on the new filename " + file,
-                        logger.DEBUG)
+                        u"{}: The old episode had a different file associated with it, re-checking the quality using the new filename {}".format
+                        (self.indexerid, filepath), logger.DEBUG)
                     checkQualityAgain = True
 
                 with curEp.lock:
                     old_size = curEp.file_size
-                    curEp.location = file
+                    curEp.location = filepath
                     # if the sizes are the same then it's probably the same file
-                    if old_size and curEp.file_size == old_size:
-                        same_file = True
-                    else:
-                        same_file = False
-
+                    same_file = old_size and curEp.file_size == old_size
                     curEp.checkForMetaFiles()
 
             if rootEp is None:
@@ -724,34 +704,32 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
             # if they replace a file on me I'll make some attempt at re-checking the quality unless I know it's the same file
             if checkQualityAgain and not same_file:
-                newQuality = Quality.nameQuality(file, self.is_anime)
-                logger.log(u"Since this file has been renamed, I checked " + file + " and found quality " +
-                           Quality.qualityStrings[newQuality], logger.DEBUG)
+                newQuality = Quality.nameQuality(filepath, self.is_anime)
+                logger.log(u"{}: Since this file has been renamed, I checked {} and found quality {}".format
+                           (self.indexerid, filepath, Quality.qualityStrings[newQuality]), logger.DEBUG)
                 if newQuality != Quality.UNKNOWN:
                     with curEp.lock:
                         curEp.status = Quality.compositeStatus(DOWNLOADED, newQuality)
 
             # check for status/quality changes as long as it's a new file
-            elif not same_file and sickbeard.helpers.isMediaFile(file) and curEp.status not in Quality.DOWNLOADED + Quality.ARCHIVED + [IGNORED]:
+            elif not same_file and sickbeard.helpers.isMediaFile(filepath) and curEp.status not in Quality.DOWNLOADED + Quality.ARCHIVED + [IGNORED]:
                 oldStatus, oldQuality = Quality.splitCompositeStatus(curEp.status)
-                newQuality = Quality.nameQuality(file, self.is_anime)
+                newQuality = Quality.nameQuality(filepath, self.is_anime)
                 if newQuality == Quality.UNKNOWN:
-                    newQuality = Quality.assumeQuality(file)
+                    newQuality = Quality.assumeQuality(filepath)
 
                 newStatus = None
 
                 # if it was snatched and now exists then set the status correctly
                 if oldStatus == SNATCHED and oldQuality <= newQuality:
-                    logger.log(u"STATUS: this ep used to be snatched with quality " + Quality.qualityStrings[oldQuality] +
-                               u" but a file exists with quality " + Quality.qualityStrings[newQuality] +
-                               u" so I'm setting the status to DOWNLOADED", logger.DEBUG)
+                    logger.log(u"{}: This ep used to be snatched with quality {} but a file exists with quality {} so I'm setting the status to DOWNLOADED".format
+                               (self.indexerid, Quality.qualityStrings[oldQuality], Quality.qualityStrings[newQuality]), logger.DEBUG)
                     newStatus = DOWNLOADED
 
                 # if it was snatched proper and we found a higher quality one then allow the status change
                 elif oldStatus == SNATCHED_PROPER and oldQuality < newQuality:
-                    logger.log(u"STATUS: this ep used to be snatched proper with quality " + Quality.qualityStrings[oldQuality] +
-                               u" but a file exists with quality " + Quality.qualityStrings[newQuality] +
-                               u" so I'm setting the status to DOWNLOADED", logger.DEBUG)
+                    logger.log(u"{}: This ep used to be snatched proper with quality {} but a file exists with quality {} so I'm setting the status to DOWNLOADED".format
+                               (self.indexerid, Quality.qualityStrings[oldQuality], Quality.qualityStrings[newQuality]), logger.DEBUG)
                     newStatus = DOWNLOADED
 
                 elif oldStatus not in (SNATCHED, SNATCHED_PROPER):
@@ -759,8 +737,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
                 if newStatus is not None:
                     with curEp.lock:
-                        logger.log(u"STATUS: we have an associated file, so setting the status from %s to DOWNLOADED/%s" % (curEp.status, Quality.statusFromName(file, anime=self.is_anime)),
-                                   logger.DEBUG)
+                        logger.log(u"{}: We have an associated file, so setting the status from {} to DOWNLOADED/{}".format
+                                   (self.indexerid, curEp.status, Quality.statusFromName(filepath, anime=self.is_anime)), logger.DEBUG)
                         curEp.status = Quality.compositeStatus(newStatus, newQuality)
 
             with curEp.lock:
@@ -1133,11 +1111,13 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         curEp.release_name = ''
 
                         sql_l.append(curEp.get_sql())
-            else:
-                # the file exists, set its modify file stamp
-                if sickbeard.AIRDATE_EPISODES:
-                    with curEp.lock:
-                        curEp.airdateModifyStamp()
+
+            # Disable update in each show refresh. Taking too long with large libraries
+            # else:
+            #     # the file exists, set its modify file stamp
+            #     if sickbeard.AIRDATE_EPISODES:
+            #         with curEp.lock:
+            #             curEp.airdateModifyStamp()
 
         if sql_l:
             main_db_con = db.DBConnection()
@@ -1253,7 +1233,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-                                 [self.indexerid, season, episode])
+                                         [self.indexerid, season, episode])
 
         if not sql_results or not len(sql_results):
             logger.log(u"Unable to find a matching episode in database, ignoring found result for {name} {ep} with quality {quality}".format
@@ -1541,7 +1521,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-                                 [self.show.indexerid, season, episode])
+                                         [self.show.indexerid, season, episode])
 
         if len(sql_results) > 1:
             raise MultipleEpisodesInDatabaseException("Your DB has two records for the same show somehow.")

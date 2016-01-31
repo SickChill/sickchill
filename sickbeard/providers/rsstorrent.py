@@ -32,10 +32,11 @@ from sickrage.helper.exceptions import ex
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TorrentRssProvider(TorrentProvider):
+class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, name, url, cookies='', titleTAG='title', search_mode='eponly', search_fallback=False, enable_daily=False,
-                 enable_backlog=False):
+    def __init__(self, name, url, cookies='',  # pylint: disable=too-many-arguments
+                 titleTAG='title', search_mode='eponly', search_fallback=False,
+                 enable_daily=False, enable_backlog=False):
 
         TorrentProvider.__init__(self, name)
 
@@ -52,7 +53,7 @@ class TorrentRssProvider(TorrentProvider):
         self.cookies = cookies
         self.titleTAG = titleTAG
 
-    def configStr(self):
+    def configStr(self):  # pylint: disable=too-many-arguments
         return "%s|%s|%s|%s|%d|%s|%d|%d|%d" % (
             self.name or '',
             self.url or '',
@@ -142,7 +143,7 @@ class TorrentRssProvider(TorrentProvider):
 
         return new_provider
 
-    def validateRSS(self):
+    def validateRSS(self):  # pylint: disable=too-many-return-statements
 
         try:
             if self.cookies:
@@ -168,14 +169,13 @@ class TorrentRssProvider(TorrentProvider):
                 return True, 'RSS feed Parsed correctly'
             else:
                 if self.cookies:
-                    add_dict_to_cookiejar(self.session.cookies,
-                                                         dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
+                    add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
                 torrent_file = self.get_url(url, need_bytes=True)
                 try:
                     bdecode(torrent_file)
                 except Exception as e:
                     self.dumpHTML(torrent_file)
-                    return False, 'Torrent link is not a valid torrent file: ' + ex(e)
+                    return False, 'Torrent link is not a valid torrent file: {}'.format(ex(e))
 
             return True, 'RSS feed Parsed correctly'
 

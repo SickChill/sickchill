@@ -29,7 +29,6 @@ except ImportError:
     import xml.etree.ElementTree as ETree
 
 from sickbeard import logger, classes, helpers
-from sickbeard.common import Quality
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import ex
@@ -63,7 +62,7 @@ def get_season_nzbs(name, url_data, season):
 
     nzb_element = show_xml.getroot()
 
-    scene_name_match = re.search(regex_string['scene_name'] % season, filename, re.I)
+    scene_name_match = re.search(regex_string['scene_name'] % season, name, re.I)
     if scene_name_match:
         show_name = scene_name_match.groups()[0]
     else:  # Make sure we aren't missing valid results after changing name_parser and the quality detection

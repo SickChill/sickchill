@@ -21,6 +21,7 @@
 import re
 import time
 from urllib import quote
+from requests.utils import dict_from_cookiejar
 
 import sickbeard
 from sickbeard import logger, tvcache
@@ -62,6 +63,8 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         }
 
     def login(self):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
+            return True
 
         login_params = {
             'username': self.username,

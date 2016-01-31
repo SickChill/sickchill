@@ -201,7 +201,6 @@ class newpctProvider(TorrentProvider):
 
         return False
 
-
     @staticmethod
     def _processTitle(title):
         # Remove "Mas informacion sobre " literal from title

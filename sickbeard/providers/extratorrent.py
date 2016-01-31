@@ -63,8 +63,11 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string})
-                url = self.urls['rss'] if not self.custom_url else self.urls['rss'].replace(self.urls['index'], self.custom_url)
-                data = self.get_url(url, params=self.search_params)
+                search_url = self.urls['rss'] if not self.custom_url else self.urls['rss'].replace(self.urls['index'], self.custom_url)
+
+                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+
+                data = self.get_url(search_url, params=self.search_params)
                 if not data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue

@@ -25,11 +25,6 @@ inc_top.mako
     background-image: url("../images/menu/menu-icons-white.png");
 }
 
-[class^="icon16-"],
-[class*=" icon16-"] {
-    background-image: url("../images/glyphicons-config.png");
-}
-
 .ui-autocomplete-loading {
     background: white url("../images/loading16.gif") right center no-repeat;
 }
@@ -741,6 +736,12 @@ div.buttontext p {
 
 .icon-addexistingshow {
     background-image: url("../images/addshows/add-existing32-black.png");
+    width: 32px;
+    height: 32px;
+}
+
+.icon-addanimelatesthotshow {
+    background-image: url("../images/addshows/add-anime32-black.png");
     width: 32px;
     height: 32px;
 }
@@ -1571,7 +1572,7 @@ select .selected {
 }
 
 [class^="icon16-"], [class*=" icon16-"] {
-    background-image: url("../images/glyphicons-config-black.png");
+    background-image: url("../images/icon-sprites-colored.png");
     background-position: -40px 0;
     background-repeat: no-repeat;
     display: inline-block;
@@ -1585,16 +1586,64 @@ select .selected {
     background-position: 0 0;
 }
 .icon16-mirc {
-    background-position: -20px 0;
+    background-position: -24px 0;
 }
-.icon16-sb {
-    background-position: -40px 0;
+.icon16-sickrage {
+    background-position: -52px 0;
 }
 .icon16-web {
-    background-position: -60px 0;
+    background-position: -78px 0;
 }
 .icon16-win {
-    background-position: -80px 0;
+    background-position: -104px 0;
+}
+
+[class^="icon16new-"], [class*=" icon16new-"] {
+    background-image: url("../images/info-icons.png");
+    background-position: -40px 0;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 16px;
+    line-height: 16px;
+    vertical-align: text-top;
+    width: 16px;
+}
+
+.icon16new-sickrage {
+    background-position: 0 0;
+}
+.icon16new-version {
+    background-position: -17px 0;
+}
+.icon16new-python {
+    background-position: -37px 0;
+}
+.icon16new-ssl {
+    background-position: -56px 0;
+}
+.icon16new-locale {
+    background-position: -73px 0;
+}
+.icon16new-user {
+    background-position: -91px 0;
+}
+.icon16new-dir {
+    background-position: -111px 0;
+}
+.icon16new-config {
+    background-position: -129px 0;
+}
+.icon16new-db {
+    background-position: -147px 0;
+}
+.icon16new-cache {
+    background-position: -166px 0;
+}
+.icon16new-log {
+    background-position: -182px 0;
+}
+.icon16new-arguments {
+    background-position: -204px 0;
 }
 
 /* =======================================================================
@@ -1824,6 +1873,14 @@ span.HD720p {
 
 span.HD1080p {
     background-color: #2672B6;
+}
+
+span.UHD-4K {
+    background-color: #7500FF;
+}
+
+span.UHD-8K {
+    background-color: #410077;
 }
 
 span.RawHD {

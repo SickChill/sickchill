@@ -1,12 +1,14 @@
-import re
 import os
+import posixpath
 from sickrage.helper.encoding import ek
 import sickbeard
 from sickbeard import helpers
 import requests
-from sickbeard.helpers import anon_url
+import logging
 
 __all__ = ["Anime", "Category", "Title", "Episode", "Tag"]
+log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
 
 class Entity(object):
     def __init__(self, id):
@@ -21,6 +23,7 @@ class Entity(object):
     @id.setter
     def id(self, value):
         self._id = value
+
 
 class Titled(object):
     """
@@ -42,6 +45,7 @@ class Titled(object):
         else:
             self.titles[title.lang] = [title]
 
+
 class Typed(object):
     """
     Base class for all classes with a `type` attribute
@@ -58,12 +62,13 @@ class Typed(object):
     def type(self, value):
         self._type = value
 
+
 class Named(object):
     """
     Base class for all classes with a `name` attribute
     """
     def __init__(self):
-        self.name = None
+        self._name = None
 
     @property
     def name(self):
@@ -73,6 +78,7 @@ class Named(object):
     @name.setter
     def name(self, value):
         self._name = value
+
 
 class Described(object):
     """
@@ -89,6 +95,7 @@ class Described(object):
     @description.setter
     def description(self, value):
         self._description = value
+
 
 class Anime(Entity, Titled, Typed, Described):
     """
@@ -111,14 +118,10 @@ class Anime(Entity, Titled, Typed, Described):
         self._image_path = None
         self._url = "https://anidb.net/perl-bin/animedb.pl?show=anime&aid={0}".format(self.id)
         self._ratings = {
-                    "permanent":
-                    { "count": None, "rating": None},
-                    "temporary":
-                    { "count": None, "rating": None},
-                    "review":
-                    { "count": None, "rating": None}
-                }
-
+            "permanent": {"count": None, "rating": None},
+            "temporary": {"count": None, "rating": None},
+            "review": {"count": None, "rating": None}
+        }
 
     def add_category(self, category):
         """
@@ -164,7 +167,7 @@ class Anime(Entity, Titled, Typed, Described):
         :param tag: A :class:`anidb.model.Tag`
         """
         self._tags.append(tag)
-    
+
     def set_picture(self, picture):
         """
         Set the cover picture of this anime
@@ -173,8 +176,8 @@ class Anime(Entity, Titled, Typed, Described):
         """
         self._picture = picture
         self.cache_image("http://img7.anidb.net/pics/anime/{0}".format(picture))
-        self._image_path = ek(os.path.join, 'images', 'anidb', ek(os.path.basename, self._picture))
-    
+        self._image_path = ek(posixpath.join, 'images', 'anidb', ek(os.path.basename, self._picture))
+
     def set_tvdbid(self):
         """
         Tries to get the thtvdb id from the anime-list.xml
@@ -183,8 +186,12 @@ class Anime(Entity, Titled, Typed, Described):
         No params required.
         """
         from adba.aniDBtvDBmaper import TvDBMap
-        self._tvdbid = TvDBMap().get_tvdb_for_anidb(self.id) if self.id else None
-        
+        try:
+            self._tvdbid = TvDBMap().get_tvdb_for_anidb(self.id) if self.id else None
+        except Exception:
+            self._tvdbid = None
+            log.debug("Couldn't map aid [{0}] to tvdbid ".format(self.id))
+
     def cache_image(self, image_url):
         """
         Store cache of image in cache dir
@@ -199,7 +206,7 @@ class Anime(Entity, Titled, Typed, Described):
 
         if not ek(os.path.isfile, full_path):
             helpers.download_file(image_url, full_path, session=self.session)
-        
+
     @property
     def episodecount(self):
         """The episodecount property"""
@@ -246,26 +253,27 @@ class Anime(Entity, Titled, Typed, Described):
     def tags(self):
         """The tags property"""
         return self._tags
-    
+
     @property
     def picture(self):
         """The Picture property"""
         return self._picture
-    
+
     @property
     def image_path(self):
         """The image_path property"""
         return self._image_path
-    
+
     @property
     def url(self):
         """The url property"""
         return self._url
-    
+
     @property
     def tvdbid(self):
         """The tvdbid mapped property"""
         return self._tvdbid
+
 
 class Episode(Entity, Titled):
     """
@@ -281,7 +289,6 @@ class Episode(Entity, Titled):
 
     def set_rating(self, votes, rating):
         self._rating = (int(votes), float(rating))
-
 
     @property
     def epno(self):
@@ -309,6 +316,7 @@ class Episode(Entity, Titled):
     @length.setter
     def length(self, value):
         self._length = value
+
 
 class Category(Entity, Named, Described):
     """
@@ -353,6 +361,7 @@ class Category(Entity, Named, Described):
     @parentid.setter
     def parentid(self, value):
         self._parentid = value
+
 
 class Title(Typed):
     def __init__(self, lang, type=None, title=None, exact=False):
@@ -399,6 +408,7 @@ class Title(Typed):
     @exact.setter
     def exact(self, value):
         self._exact = value
+
 
 class Tag(Entity, Named, Described):
     def __init__(self, id):

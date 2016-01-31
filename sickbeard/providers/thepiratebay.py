@@ -47,7 +47,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.url = 'https://thepiratebay.se/'
         self.urls = {
             'search': self.url + 's/',
-            'rss': self.url + 'tv/latest'
+            'rss': self.url + 'browse/200'
         }
 
         self.custom_url = None
@@ -75,7 +75,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                 search_params['q'] = search_string.strip()
 
-                search_url = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(search_params)
+                search_url = self.urls['search'] + '?' + urlencode(search_params) if mode != 'RSS' else self.urls['rss']
                 if self.custom_url:
                     search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/'))  # Must use posixpath
 
@@ -109,7 +109,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             cells = result.find_all('td')
 
                             title = result.find(class_='detName').get_text(strip=True)
-                            download_url = result.find(title="Download this torrent using magnet")['href']
+                            download_url = result.find(title="Download this torrent using magnet")['href'] + self._custom_trackers
                             if not all([title, download_url]):
                                 continue
 

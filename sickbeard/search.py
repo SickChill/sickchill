@@ -20,9 +20,12 @@
 
 import os
 import re
+import errno
 import threading
 import datetime
 import traceback
+import requests
+from socket import timeout as SocketTimeout
 
 import sickbeard
 
@@ -88,7 +91,7 @@ def _downloadResult(result):
     return newResult
 
 
-def snatchEpisode(result, endStatus=SNATCHED):
+def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branches, too-many-statements
     """
     Contains the internal logic necessary to actually "snatch" a result that
     has been found.
@@ -169,8 +172,8 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
         if curEpObj.status not in Quality.DOWNLOADED:
             try:
-                notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN') + " from " + result.provider.name)
-            except:
+                notifiers.notify_snatch("{} from {}".format(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'), result.provider.name))  # pylint: disable=protected-access
+            except Exception:
                 # Without this, when notification fail, it crashes the snatch thread and SR will
                 # keep snatching until notification is sent
                 logger.log(u"Failed to send snatch notification", logger.DEBUG)
@@ -191,7 +194,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
     return True
 
 
-def pickBestResult(results, show):
+def pickBestResult(results, show):  # pylint: disable=too-many-branches
     """
     Find the best result out of a list of search results for a show
 
@@ -316,7 +319,7 @@ def isFirstBestMatch(result):
 
     show_obj = result.episodes[0].show
 
-    any_qualities, best_qualities = Quality.splitQuality(show_obj.quality)
+    _, best_qualities = Quality.splitQuality(show_obj.quality)
 
     return result.quality in best_qualities if best_qualities else False
 
@@ -441,7 +444,7 @@ def searchForNeededEpisodes():
     return foundResults.values()
 
 
-def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
+def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     """
     Walk providers for information on shows
 
@@ -469,11 +472,11 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
     threading.currentThread().name = origThreadName
 
     for curProvider in providers:
+        threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
+
         if curProvider.anime_only and not show.is_anime:
             logger.log(u"" + str(show.name) + " is not an anime, skipping", logger.DEBUG)
             continue
-
-        threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
         foundResults[curProvider.name] = {}
 
@@ -497,9 +500,27 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
             except AuthException as e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
                 break
+            except (SocketTimeout, TypeError) as e:
+                logger.log(u"Connection timed out (sockets) while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
+                break
+            except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects) as e:
+                logger.log(u"HTTP error while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
+                break
+            except requests.exceptions.ConnectionError as e:
+                logger.log(u"Connection error while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
+                break
+            except requests.exceptions.Timeout as e:
+                logger.log(u"Connection timed out while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
+                break
+            except requests.exceptions.ContentDecodingError:
+                logger.log(u"Content-Encoding was gzip, but content was not compressed while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
+                break
             except Exception as e:
-                logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
-                logger.log(traceback.format_exc(), logger.DEBUG)
+                if e.errno != errno.ECONNRESET:
+                    logger.log(u"Unknown exception while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.ERROR)
+                    logger.log(traceback.format_exc(), logger.DEBUG)
+                else:
+                    logger.log(u"Connection reseted by peer while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
                 break
 
             didSearch = True
@@ -553,7 +574,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
             main_db_con = db.DBConnection()
             allEps = [int(x["episode"])
                       for x in main_db_con.select("SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ','.join(searchedSeasons) + " ) )",
-                                           [show.indexerid])]
+                                                  [show.indexerid])]
 
             logger.log(u"Executed query: [SELECT episode FROM tv_episodes WHERE showid = %s AND season in  %s]" % (show.indexerid, ','.join(searchedSeasons)))
             logger.log(u"Episode list: " + str(allEps), logger.DEBUG)
@@ -576,6 +597,9 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                     for season in set([x.season for x in episodes]):
                         epObjs.append(show.getEpisode(season, curEpNum))
                 bestSeasonResult.episodes = epObjs
+
+                # Remove provider from thread name before return results
+                threading.currentThread().name = origThreadName
 
                 return [bestSeasonResult]
 
@@ -718,4 +742,6 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
         logger.log(u"No NZB/Torrent providers found or enabled in the sickrage config for backlog searches. Please check your settings.",
                    logger.WARNING)
 
+    # Remove provider from thread name before return results
+    threading.currentThread().name = origThreadName
     return finalResults

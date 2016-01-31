@@ -103,10 +103,10 @@ class BTDiggProvider(TorrentProvider):
                             continue
 
                         # Filter unseeded torrent (Unsupported)
-                        #if seeders < self.minseed or leechers < self.minleech:
-                        #    if mode != 'RSS':
-                        #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                        #    continue
+                        # if seeders < self.minseed or leechers < self.minleech:
+                        #     if mode != 'RSS':
+                        #         logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                        #     continue
 
                         item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
@@ -118,7 +118,7 @@ class BTDiggProvider(TorrentProvider):
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
             # For each search mode sort all the items by seeders if available
-            #items.sort(key=lambda tup: tup[3], reverse=True)
+            # items.sort(key=lambda tup: tup[3], reverse=True)
 
             results += items
 
