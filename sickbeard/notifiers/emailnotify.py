@@ -24,7 +24,7 @@
 ##############################################################################
 
 import smtplib
-import traceback
+# import traceback
 import ast
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -43,7 +43,7 @@ class EmailNotifier(object):
     def __init__(self):
         self.last_err = None
 
-    def test_notify(self, host, port, smtp_from, use_tls, user, pwd, to):
+    def test_notify(self, host, port, smtp_from, use_tls, user, pwd, to):  # pylint: disable=too-many-arguments
         msg = MIMEText('This is a test message from SickRage.  If you\'re reading this, the test succeeded.')
         msg['Subject'] = 'SickRage: Test Message'
         msg['From'] = smtp_from
@@ -51,7 +51,7 @@ class EmailNotifier(object):
         msg['Date'] = formatdate(localtime=True)
         return self._sendmail(host, port, smtp_from, use_tls, user, pwd, [to], msg, True)
 
-    def notify_snatch(self, ep_name, title="Snatched:"):
+    def notify_snatch(self, ep_name, title="Snatched:"):  # pylint: disable=unused-argument
         """
         Send a notification that an episode was snatched
 
@@ -69,15 +69,19 @@ class EmailNotifier(object):
                 try:
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
-                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>SickRage Notification - Snatched</h3>\n<p>Show: <b>" + re.search(
-                            "(.+?) -.+", ep_name).group(1) + "</b></p>\n<p>Episode: <b>" + re.search(
-                            ".+ - (.+?-.+) -.+", ep_name).group(
-                            1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
+                        "<body style='font-family:Helvetica, Arial, sans-serif;'>"
+                        "<h3>SickRage Notification - Snatched</h3>\n"
+                        "<p>Show: <b>{}</b></p>\n<p>Episode: <b>{}</b></p>\n\n"
+                        "<footer style='margin-top: 2.5em; padding: .7em 0; "
+                        "color: #777; border-top: #BBB solid 1px;'>"
+                        "Powered by SickRage.</footer></body>".format
+                        (show, re.search(".+ - (.+?-.+) -.+", ep_name).group(1)),
                         'html'))
-                except:
+
+                except Exception:
                     try:
                         msg = MIMEText(ep_name)
-                    except:
+                    except Exception:
                         msg = MIMEText("Episode Snatched")
 
                 msg['Subject'] = 'Snatched: ' + ep_name
@@ -90,7 +94,7 @@ class EmailNotifier(object):
                 else:
                     logger.log(u"Snatch notification error: %s" % self.last_err, logger.WARNING)
 
-    def notify_download(self, ep_name, title="Completed:"):
+    def notify_download(self, ep_name, title="Completed:"):  # pylint: disable=unused-argument
         """
         Send a notification that an episode was downloaded
 
@@ -108,15 +112,19 @@ class EmailNotifier(object):
                 try:
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
-                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>SickRage Notification - Downloaded</h3>\n<p>Show: <b>" + re.search(
-                            "(.+?) -.+", ep_name).group(1) + "</b></p>\n<p>Episode: <b>" + re.search(
-                            ".+ - (.+?-.+) -.+", ep_name).group(
-                            1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
+                        "<body style='font-family:Helvetica, Arial, sans-serif;'>"
+                        "<h3>SickRage Notification - Downloaded</h3>\n"
+                        "<p>Show: <b>{}</b></p>\n<p>Episode: <b>{}</b></p>\n\n"
+                        "<footer style='margin-top: 2.5em; padding: .7em 0; "
+                        "color: #777; border-top: #BBB solid 1px;'>"
+                        "Powered by SickRage.</footer></body>".format
+                        (show, re.search(".+ - (.+?-.+) -.+", ep_name).group(1)),
                         'html'))
-                except:
+
+                except Exception:
                     try:
                         msg = MIMEText(ep_name)
-                    except:
+                    except Exception:
                         msg = MIMEText('Episode Downloaded')
 
                 msg['Subject'] = 'Downloaded: ' + ep_name
@@ -129,7 +137,7 @@ class EmailNotifier(object):
                 else:
                     logger.log(u"Download notification error: %s" % self.last_err, logger.WARNING)
 
-    def notify_subtitle_download(self, ep_name, lang, title="Downloaded subtitle:"):
+    def notify_subtitle_download(self, ep_name, lang, title="Downloaded subtitle:"):  # pylint: disable=unused-argument
         """
         Send a notification that an subtitle was downloaded
 
@@ -147,15 +155,19 @@ class EmailNotifier(object):
                 try:
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
-                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>SickRage Notification - Subtitle Downloaded</h3>\n<p>Show: <b>" + re.search(
-                            "(.+?) -.+", ep_name).group(1) + "</b></p>\n<p>Episode: <b>" + re.search(
-                            ".+ - (.+?-.+) -.+", ep_name).group(
-                            1) + "</b></p>\n<p>Language: <b>" + lang + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
+                        "<body style='font-family:Helvetica, Arial, sans-serif;'>"
+                        "<h3>SickRage Notification - Subtitle Downloaded</h3>\n"
+                        "<p>Show: <b>{}</b></p>\n<p>Episode: <b>{}</b></p>\n"
+                        "<p>Language: <b>{}</b></p>\n\n"
+                        "<footer style='margin-top: 2.5em; padding: .7em 0; "
+                        "color: #777; border-top: #BBB solid 1px;'>"
+                        "Powered by SickRage.</footer></body>".format
+                        (show, re.search(".+ - (.+?-.+) -.+", ep_name).group(1), lang),
                         'html'))
-                except:
+                except Exception:
                     try:
                         msg = MIMEText(ep_name + ": " + lang)
-                    except:
+                    except Exception:
                         msg = MIMEText("Episode Subtitle Downloaded")
 
                 msg['Subject'] = lang + ' Subtitle Downloaded: ' + ep_name
@@ -173,7 +185,8 @@ class EmailNotifier(object):
     def notify_login(self, ipaddress=""):
         pass
 
-    def _generate_recipients(self, show):
+    @staticmethod
+    def _generate_recipients(show):  # pylint: disable=too-many-branches
         addrs = []
         main_db_con = db.DBConnection()
 
@@ -202,14 +215,14 @@ class EmailNotifier(object):
         logger.log(u'Notification recipients: %s' % addrs, logger.DEBUG)
         return addrs
 
-    def _sendmail(self, host, port, smtp_from, use_tls, user, pwd, to, msg, smtpDebug=False):
+    def _sendmail(self, host, port, smtp_from, use_tls, user, pwd, to, msg, smtpDebug=False):  # pylint: disable=too-many-arguments
         logger.log(u'HOST: %s; PORT: %s; FROM: %s, TLS: %s, USER: %s, PWD: %s, TO: %s' % (
             host, port, smtp_from, use_tls, user, pwd, to), logger.DEBUG)
         try:
             srv = smtplib.SMTP(host, int(port))
         except Exception as e:
             logger.log(u"Exception generated while sending e-mail: " + str(e), logger.WARNING)
-            #logger.log(traceback.format_exc(), logger.DEBUG)
+            # logger.log(traceback.format_exc(), logger.DEBUG)
             self.last_err = '%s' % e
             return False
 
@@ -234,7 +247,8 @@ class EmailNotifier(object):
             self.last_err = '%s' % e
             return False
 
-    def _parseEp(self, ep_name):
+    @staticmethod
+    def _parseEp(ep_name):
         ep_name = ss(ep_name)
 
         sep = " - "
