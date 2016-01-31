@@ -64,58 +64,48 @@
         <option value="asc">Asc</option>
         <option value="desc" selected="true" >Desc</option>
     </select>
-    
-    <!-- For future additional lists <span style="margin-left:12px">Select List:</span>
-    <select id="showlist" class="form-control form-control-inline input-sm">
-    	<option value="popular">Hot Anime</option>
-	</select> -->
 </div>
-
-
-<% current_shows = [show.indexerid for show in sickbeard.showList if show.indexerid] %>
 
 <br>
 <div id="popularShows">
     <div id="container">
-    % if not anime:
+    % if not recommended_shows:
         <div class="trakt_show" style="width:100%; margin-top:20px">
             <p class="red-text">Fetching of AniDB Data failed. Are you online?
             <strong>Exception:</strong>
             <p>${imdb_exception}</p>
         </div>
     % else:
-        % for cur_result in anime:
+        % for cur_result in recommended_shows:
 
-            % if cur_result.ratings:
-                <% cur_rating = cur_result.ratings['temporary']['rating'] %>
-                <% cur_votes = cur_result.ratings['temporary']['count'] %>
-            % else:
-                <% cur_rating = '0' %>
-                <% cur_votes = '0' %>
+            % if cur_result.rating:
+                <% cur_rating = cur_result.rating %>
             % endif
             
-            <% show_title = cur_result.titles['x-jat'][0].title %>
+            % if cur_result.votes:
+                <% cur_votes = cur_result.votes %>
+            % endif
 
-            <div class="show-row" data-callback_id="${cur_result.tvdbid}" data-name="${show_title}" data-rating="${cur_rating}" data-votes="${cur_votes}">
+            <div class="show-row" data-callback_id="${cur_result.indexer_id}" data-name="${cur_result.title}" data-rating="${cur_rating}" data-votes="${cur_votes}">
                 <div class="traktContainer">
                     <div class="trakt-image">
-                        <a class="trakt-image" href="${anon_url(cur_result.url)}" target="_blank">
-                            <img alt="" class="trakt-image" src="${srRoot}/cache/${cur_result.image_path}" height="273px" width="186px" />
+                        <a class="trakt-image" href="${anon_url(cur_result.image_href)}" target="_blank">
+                            <img alt="" class="trakt-image" src="${srRoot}/cache/${cur_result.image_src}" height="273px" width="186px" />
                         </a>
                     </div>
 
                     <div class="show-title">
-                        ${show_title}
+                        ${cur_result.title}
                     </div>
 
                     <div class="clearfix">
                         <p>${int(float(cur_rating)*10)}% <img src="${srRoot}/images/heart.png"></p>
                         <i>${cur_votes} votes</i>
                         <div class="traktShowTitleIcons">
-	                        % if cur_result.tvdbid in current_shows:
-	                            <a href="${srRoot}/home/displayShow?show=${cur_result.tvdbid}" class="btn btn-xs">In List</a>
+	                        % if cur_result.show_in_list:
+	                            <a href="${srRoot}/home/displayShow?show=${cur_result.indexer_id}" class="btn btn-xs">In List</a>
 	                        % else:
-	                            <a href="${srRoot}/addShows/addShowByID" class="btn btn-xs" data-isanime="1" data-indexer="TVDB" data-indexer_id="${cur_result.tvdbid}" data-show_name="${show_title | u}" data-add-show>Add Show</a>
+	                            <a href="${srRoot}/addShows/addShowByID" class="btn btn-xs" data-isanime="1" data-indexer="TVDB" data-indexer_id="${cur_result.indexer_id}" data-show_name="${cur_result.title | u}" data-add-show>Add Show</a>
 	                       	% endif
                     	</div>
                     </div>
