@@ -48,13 +48,13 @@ class PushalotNotifier(object):
             self._sendPushalot(pushalot_authorizationtoken=None,
                                event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
                                message=ep_name + ": " + lang)
-                               
+
     def notify_git_update(self, new_version="??"):
         if sickbeard.USE_PUSHALOT:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._sendPushalot(pushalot_authorizationtoken=None,
-                               event=title, 
+                               event=title,
                                message=update_text + new_version)
 
     def notify_login(self, ipaddress=""):
@@ -62,7 +62,7 @@ class PushalotNotifier(object):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._sendPushalot(pushalot_authorizationtoken=None,
-                               event=title, 
+                               event=title,
                                message=update_text.format(ipaddress))
 
     def _sendPushalot(self, pushalot_authorizationtoken=None, event=None, message=None, force=False):
