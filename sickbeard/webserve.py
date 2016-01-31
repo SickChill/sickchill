@@ -47,7 +47,7 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
     get_scene_absolute_numbering
 from sickbeard.webapi import function_mapper
 
-from sickbeard.imdbPopular import imdb_popular
+from sickrage.show.recommendations.imdb import imdb_popular
 from sickbeard.helpers import get_showname_from_indexer
 from anidbhttp import anidbquery
 from anidbhttp.query import QUERY_HOT
