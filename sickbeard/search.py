@@ -46,7 +46,6 @@ from sickrage.helper.exceptions import AuthException, ex
 from sickrage.providers.GenericProvider import GenericProvider
 
 
-
 def _downloadResult(result):
     """
     Downloads a result to the appropriate black hole folder.
@@ -92,7 +91,7 @@ def _downloadResult(result):
     return newResult
 
 
-def snatchEpisode(result, endStatus=SNATCHED):
+def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branches, too-many-statements
     """
     Contains the internal logic necessary to actually "snatch" a result that
     has been found.
@@ -173,8 +172,8 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
         if curEpObj.status not in Quality.DOWNLOADED:
             try:
-                notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN') + " from " + result.provider.name)
-            except:
+                notifiers.notify_snatch("{} from {}".format(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'), result.provider.name))  # pylint: disable=protected-access
+            except Exception:
                 # Without this, when notification fail, it crashes the snatch thread and SR will
                 # keep snatching until notification is sent
                 logger.log(u"Failed to send snatch notification", logger.DEBUG)
@@ -195,7 +194,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
     return True
 
 
-def pickBestResult(results, show):
+def pickBestResult(results, show):  # pylint: disable=too-many-branches
     """
     Find the best result out of a list of search results for a show
 
@@ -320,7 +319,7 @@ def isFirstBestMatch(result):
 
     show_obj = result.episodes[0].show
 
-    any_qualities, best_qualities = Quality.splitQuality(show_obj.quality)
+    _, best_qualities = Quality.splitQuality(show_obj.quality)
 
     return result.quality in best_qualities if best_qualities else False
 
@@ -445,7 +444,7 @@ def searchForNeededEpisodes():
     return foundResults.values()
 
 
-def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
+def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     """
     Walk providers for information on shows
 
@@ -575,7 +574,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
             main_db_con = db.DBConnection()
             allEps = [int(x["episode"])
                       for x in main_db_con.select("SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ','.join(searchedSeasons) + " ) )",
-                                           [show.indexerid])]
+                                                  [show.indexerid])]
 
             logger.log(u"Executed query: [SELECT episode FROM tv_episodes WHERE showid = %s AND season in  %s]" % (show.indexerid, ','.join(searchedSeasons)))
             logger.log(u"Episode list: " + str(allEps), logger.DEBUG)
@@ -598,7 +597,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                     for season in set([x.season for x in episodes]):
                         epObjs.append(show.getEpisode(season, curEpNum))
                 bestSeasonResult.episodes = epObjs
-                
+
                 # Remove provider from thread name before return results
                 threading.currentThread().name = origThreadName
 

@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# pylint: disable=too-many-lines
 
 import glob
 import fnmatch
@@ -47,7 +48,7 @@ import adba
 from sickbeard.helpers import verify_freespace
 
 
-class PostProcessor(object):
+class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
     """
     A class which will process a media file according to the post processing settings in the config.
     """
@@ -148,7 +149,8 @@ class PostProcessor(object):
                       logger.DEBUG)
             return PostProcessor.DOESNT_EXIST
 
-    def list_associated_files(self, file_path, base_name_only=False, subtitles_only=False, subfolders=False):  # pylint: disable=unused-argument
+    def list_associated_files(self, file_path, base_name_only=False,  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+                              subtitles_only=False, subfolders=False):  # pylint: disable=unused-argument
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
 
@@ -302,8 +304,9 @@ class PostProcessor(object):
                 # do the library update for synoindex
                 notifiers.synoindex_notifier.deleteFile(cur_file)
 
-    def _combined_file_operation(self, file_path, new_path, new_base_name, associated_files=False, action=None,
-                                 subtitles=False):
+    def _combined_file_operation(self, file_path, new_path,  # pylint: disable=too-many-arguments, too-many-locals, too-many-branches
+                                 new_base_name, associated_files=False,
+                                 action=None, subtitles=False):
         """
         Performs a generic operation (move or copy) on a file. Can rename the file as well as change its location,
         and optionally move associated files too.
@@ -378,7 +381,7 @@ class PostProcessor(object):
 
             action(cur_file_path, new_file_path)
 
-    def _move(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
+    def _move(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):  # pylint: disable=too-many-arguments
         """
         Move file and set proper permissions
 
@@ -401,7 +404,7 @@ class PostProcessor(object):
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_move,
                                       subtitles=subtitles)
 
-    def _copy(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
+    def _copy(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):  # pylint: disable=too-many-arguments
         """
         Copy file and set proper permissions
 
@@ -424,7 +427,7 @@ class PostProcessor(object):
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_copy,
                                       subtitles=subtitles)
 
-    def _hardlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
+    def _hardlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):  # pylint: disable=too-many-arguments
         """
         Hardlink file and set proper permissions
 
@@ -446,7 +449,7 @@ class PostProcessor(object):
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_hard_link, subtitles=subtitles)
 
-    def _moveAndSymlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
+    def _moveAndSymlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):  # pylint: disable=too-many-arguments
         """
         Move file, symlink source location back to destination, and set proper permissions
 
@@ -516,8 +519,8 @@ class PostProcessor(object):
             to_return = (show, season, [], quality, version)
 
             qual_str = common.Quality.qualityStrings[quality] if quality is not None else quality
-            self._log("Found result in history for %s - Season: %s - Quality: %s - Version: %s"
-                % (show.name if show else "UNDEFINED", season, qual_str, version), logger.DEBUG)
+            self._log("Found result in history for {} - Season: {} - Quality: {} - Version: {}".format
+                      (show.name if show else "UNDEFINED", season, qual_str, version), logger.DEBUG)
 
             return to_return
 
@@ -591,7 +594,8 @@ class PostProcessor(object):
         self._finalize(parse_result)
         return to_return
 
-    def _build_anidb_episode(self, connection, filePath):
+    @staticmethod
+    def _build_anidb_episode(connection, filePath):
         """
         Look up anidb properties for an episode
 
@@ -621,7 +625,7 @@ class PostProcessor(object):
             except Exception as e:
                 self._log(u"exception msg: " + str(e))
 
-    def _find_info(self):
+    def _find_info(self):  # pylint: disable=too-many-locals, too-many-branches
         """
         For a given file try to find the showid, season, and episode.
 
@@ -858,7 +862,7 @@ class PostProcessor(object):
             except Exception as e:
                 self._log(u"Unable to run extra_script: " + ex(e))
 
-    def _is_priority(self, ep_obj, new_ep_quality):
+    def _is_priority(self, ep_obj, new_ep_quality):  # pylint: disable=too-many-return-statements
         """
         Determines if the episode is a priority download or not (if it is expected). Episodes which are expected
         (snatched) or larger than the existing episode are priority, others are not.
@@ -903,7 +907,7 @@ class PostProcessor(object):
 
         return False
 
-    def process(self):
+    def process(self):  # pylint: disable=too-many-return-statements, too-many-locals, too-many-branches, too-many-statements
         """
         Post-process a given file
 
@@ -1172,7 +1176,6 @@ class PostProcessor(object):
             ep_obj.createMetaFiles()
         except Exception:
             logger.log(u"Could not create/update meta files. Continuing with postProcessing...")
-
 
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group, new_ep_version)

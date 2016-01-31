@@ -62,7 +62,6 @@ import shutil
 import shutil_custom
 
 import xml.etree.ElementTree as ET
-import json
 
 shutil.copyfile = shutil_custom.copyfile_custom
 
@@ -1776,6 +1775,7 @@ def getTVDBFromID(indexer_id, indexer):
     else:
         return tvdb_id
 
+
 def get_showname_from_indexer(indexer, indexer_id, lang='en'):
     lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
     if lang:
@@ -1785,10 +1785,10 @@ def get_showname_from_indexer(indexer, indexer_id, lang='en'):
 
     t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
     s = t[int(indexer_id)]
-    
+
     if hasattr(s,'data'):
         return s.data.get('seriesname')
-    
+
     return None
 
 def is_ip_private(ip):

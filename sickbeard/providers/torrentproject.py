@@ -28,7 +28,7 @@ from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TorrentProjectProvider(TorrentProvider):
+class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
@@ -44,7 +44,7 @@ class TorrentProjectProvider(TorrentProvider):
         self.minleech = None
         self.cache = tvcache.TVCache(self, search_params={'RSS': ['0day']})
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
         for mode in search_strings:  # Mode = RSS, Season, Episode
             items = []
@@ -55,7 +55,7 @@ class TorrentProjectProvider(TorrentProvider):
 
                 search_url = self.urls['api'] + "?s=%s&out=json&filter=2101&num=150" % quote_plus(search_string.encode('utf-8'))
                 if self.custom_url:
-                    search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/')) # Must use posixpath
+                    search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/'))  # Must use posixpath
 
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
                 torrents = self.get_url(search_url, json=True)
@@ -85,7 +85,7 @@ class TorrentProjectProvider(TorrentProvider):
                         logger.log(u"Torrent has less than 10 seeds getting dyn trackers: " + title, logger.DEBUG)
                         trackerUrl = self.urls['api'] + "" + t_hash + "/trackers_json"
                         if self.custom_url:
-                            search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/')) # Must use posixpath
+                            search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/'))  # Must use posixpath
                         jdata = self.get_url(trackerUrl, json=True)
                         assert jdata != "maintenance"
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])

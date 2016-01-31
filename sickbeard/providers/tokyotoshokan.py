@@ -85,7 +85,7 @@ class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instan
 
                     a = 1 if len(torrent_rows[0].find_all('td')) < 2 else 0
 
-                    for top, bot in zip(torrent_rows[a::2], torrent_rows[a+1::2]):
+                    for top, bot in zip(torrent_rows[a::2], torrent_rows[a + 1::2]):
                         try:
                             desc_top = top.find('td', class_='desc-top')
                             title = desc_top.get_text(strip=True)

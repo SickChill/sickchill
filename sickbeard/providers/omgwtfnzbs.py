@@ -18,11 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
 from urllib import urlencode
 
 import sickbeard
-from sickbeard import classes, logger, tvcache
+from sickbeard import logger, tvcache
 
 from sickrage.helper.common import try_int
 from sickrage.providers.nzb.NZBProvider import NZBProvider
