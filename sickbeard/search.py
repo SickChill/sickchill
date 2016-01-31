@@ -23,6 +23,8 @@ import re
 import threading
 import datetime
 import traceback
+import requests
+from socket import timeout as SocketTimeout
 
 import sickbeard
 
@@ -41,6 +43,7 @@ from sickbeard import common
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.providers.GenericProvider import GenericProvider
+
 
 
 def _downloadResult(result):
