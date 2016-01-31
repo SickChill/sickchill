@@ -55,7 +55,7 @@ class imdbPopular(object):
 
             if td:
                 show['name'] = td.find("a").contents[0]
-                show['imdb_url'] = "http://www.imdb.com" + td.find("a")["href"]
+                show['imdb_url'] = "http://akas.imdb.com" + td.find("a")["href"]
                 show['imdb_tt'] = show['imdb_url'][-10:][0:9]
                 show['year'] = td.find("span", {"class": "year_type"}).contents[0].split(" ")[0][1:]
 
@@ -89,7 +89,7 @@ class imdbPopular(object):
 
     @staticmethod
     def change_size(image_url, factor=3):
-        match = re.search("^(.*)V1._(.{2})(.*?)_(.{2})(.*?),(.*?),(.*?),(.*?)_.jpg$", image_url)
+        match = re.search(r"^(.*)V1._(.{2})(.*?)_(.{2})(.*?),(.*?),(.*?),(.*?)_.jpg$", image_url)
 
         if match:
             matches = match.groups()
