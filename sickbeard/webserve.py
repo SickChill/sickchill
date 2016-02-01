@@ -48,9 +48,7 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
 from sickbeard.webapi import function_mapper
 
 from sickbeard.imdbPopular import imdb_popular
-from sickbeard.helpers import get_showname_from_indexer
-from anidbhttp import anidbquery
-from anidbhttp.query import QUERY_HOT
+from helpers import get_showname_from_indexer
 
 from dateutil import tz
 from unrar2 import RarFile
@@ -2623,25 +2621,6 @@ class HomeAddShows(Home):
                         popular_shows=popular_shows, imdb_exception=e,
                         topmenu="home",
                         controller="addShows", action="popularShows")
-
-    def anidbPopular(self):
-        """
-        Fetches data from IMDB to show a list of popular shows.
-        """
-        t = PageTemplate(rh=self, filename="addShows_anidbPopular.mako")
-        e = None
-
-        try:
-            all_anime = anidbquery.query(QUERY_HOT)
-            mapped_anime = [anime for anime in all_anime if anime.tvdbid]
-        except Exception as e:
-            # print traceback.fox1rmat_exc()
-            mapped_anime = None
-
-        return t.render(title="Anidb Popular Anime", header="Anidb Popular Anime",
-                        anime=mapped_anime, imdb_exception=e, whitelist=[],
-                        blacklist=[], groups=[], topmenu="home", enable_anime_options=True,
-                        controller="addShows", action="addFromList")
 
     def addShowToBlacklist(self, indexer_id):
         # URL parameters
