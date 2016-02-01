@@ -8,7 +8,7 @@ inc_top.mako
 }
 
 #contentWrapper {
-/*	background: url("../images/bg.png") repeat 0 0 transparent; */
+/*  background: url("../images/bg.png") repeat 0 0 transparent; */
 }
 
 [class^="icon-"],
@@ -154,18 +154,16 @@ inc_top.mako
 }
 
 .ui-tabs {
-    padding: 0px;
+    padding: 0;
     background: none;
-    border-width: 0px;
+    border-width: 0;
 }
 
 .ui-tabs .ui-tabs-nav {
-    padding-left: 0px;
+    padding-left: 0;
     background: transparent;
-    border-width: 0px 0px 0px 0px;
-    -moz-border-radius: 0px;
-    -webkit-border-radius: 0px;
-    border-radius: 0px;
+    border-width: 0 0 0 0;
+    border-radius: 0;
 }
 
 .ui-tabs .ui-tabs-panel {
@@ -206,7 +204,7 @@ inc_top.mako
     margin-left: auto;
     margin-right: auto;
     margin-top: 50px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 [class^="menu-icon-"], [class*=" menu-icon-"] {
@@ -232,83 +230,83 @@ inc_top.mako
 }
 
 .menu-icon-addshow {
-    background-position: 0px 0px;
+    background-position: 0 0;
 }
 
 .menu-icon-anime {
-    background-position: -21px 0px;
+    background-position: -21px 0;
 }
 
 .menu-icon-backlog-view {
-    background-position: -42px 0px;
+    background-position: -42px 0;
 }
 
 .menu-icon-backlog {
-    background-position: -63px 0px;
+    background-position: -63px 0;
 }
 
 .menu-icon-bittorrent {
-    background-position: -84px 0px;
+    background-position: -84px 0;
 }
 
 .menu-icon-config-index {
-    background-position: -105px 0px;
+    background-position: -105px 0;
 }
 
 .menu-icon-config {
-    background-position: -126px 0px;
+    background-position: -126px 0;
 }
 
 .menu-icon-failed-download {
-    background-position: -147px 0px;
+    background-position: -147px 0;
 }
 
 .menu-icon-home {
-    background-position: -168px 0px;
+    background-position: -168px 0;
 }
 
 .menu-icon-manage {
-    background-position: -189px 0px;
+    background-position: -189px 0;
 }
 
 .menu-icon-manage-searches {
-    background-position: -210px 0px;
+    background-position: -210px 0;
 }
 
 .menu-icon-poster {
-    background-position: -231px 0px;
+    background-position: -231px 0;
 }
 
 .menu-icon-postprocess {
-    background-position: -252px 0px;
+    background-position: -252px 0;
 }
 
 .menu-icon-restart {
-    background-position: -273px 0px;
+    background-position: -273px 0;
 }
 
 .menu-icon-shutdown {
-    background-position: -294px 0px;
+    background-position: -294px 0;
 }
 
 .menu-icon-update {
-    background-position: -315px 0px;
+    background-position: -315px 0;
 }
 
 .menu-icon-viewlog-errors {
-    background-position: -336px 0px;
+    background-position: -336px 0;
 }
 
 .menu-icon-viewlog {
-    background-position: -357px 0px;
+    background-position: -357px 0;
 }
 
 .menu-icon-kodi {
-    background-position: -378px 0px;
+    background-position: -378px 0;
 }
 
 .menu-icon-help {
-    background-position: -399px 0px;
+    background-position: -399px 0;
 }
 
 [class^="submenu-icon-"], [class*=" submenu-icon-"] {
@@ -318,27 +316,27 @@ inc_top.mako
 }
 
 .submenu-icon-anime {
-    background-position: -21px 0px;
+    background-position: -21px 0;
 }
 
 .submenu-icon-bittorrent {
-    background-position: -84px 0px;
+    background-position: -84px 0;
 }
 
 .submenu-icon-failed-download {
-    background-position: -147px 0px;
+    background-position: -147px 0;
 }
 
 .submenu-icon-restart {
-    background-position: -273px 0px;
+    background-position: -273px 0;
 }
 
 .submenu-icon-shutdown {
-    background-position: -294px 0px;
+    background-position: -294px 0;
 }
 
 .submenu-icon-kodi {
-    background-position: -378px 0px;
+    background-position: -378px 0;
 }
 
 /* =======================================================================
@@ -427,52 +425,37 @@ home.mako
 }
 
 .progress-100 {
-    background-image: -moz-linear-gradient(#395f07, #2a4705) !important;
     background-image: linear-gradient(#395f07, #2a4705) !important;
     background-image: -webkit-linear-gradient(#395f07, #2a4705) !important;
     background-image: -o-linear-gradient(#395f07, #2a4705) !important;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
     border-radius: 3px;
 }
 
 .progress-80 {
-    background-image: -moz-linear-gradient(#a6cf41, #5b990d) !important;
     background-image: linear-gradient(#a6cf41, #5b990d) !important;
     background-image: -webkit-linear-gradient(#a6cf41, #5b990d) !important;
     background-image: -o-linear-gradient(#a6cf41, #5b990d) !important;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
     border-radius: 3px;
 }
 
 .progress-60 {
-    background-image: -moz-linear-gradient(#fad440, #f2a70d) !important;
     background-image: linear-gradient(#fad440, #f2a70d) !important;
     background-image: -webkit-linear-gradient(#fad440, #f2a70d) !important;
     background-image: -o-linear-gradient(#fad440, #f2a70d) !important;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
     border-radius: 3px;
 }
 
 .progress-40 {
-    background-image: -moz-linear-gradient(#fab543, #f2700d) !important;
     background-image: linear-gradient(#fab543, #f2700d) !important;
     background-image: -webkit-linear-gradient(#fab543, #f2700d) !important;
     background-image: -o-linear-gradient(#fab543, #f2700d) !important;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
     border-radius: 3px;
 }
 
 .progress-20 {
-    background-image: -moz-linear-gradient(#da5945, #b11a10) !important;
     background-image: linear-gradient(#da5945, #b11a10) !important;
     background-image: -webkit-linear-gradient(#da5945, #b11a10) !important;
     background-image: -o-linear-gradient(#da5945, #b11a10) !important;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
     border-radius: 3px;
 }
 
@@ -502,7 +485,7 @@ span.show-option {
     background-color: #F3F3F3;
     border: 5px solid #F3F3F3;
     overflow: hidden;
-    box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.31);
+    box-shadow: 1px 1px 3px 0 rgba(0, 0, 0, 0.31);
 }
 
 .show-details {
@@ -521,26 +504,26 @@ span.show-option {
 }
 
 .show-container .ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br {
-    border-bottom-right-radius: 0px;
+    border-bottom-right-radius: 0;
 }
 
 .show-container .ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl {
-    border-bottom-left-radius: 0px;
+    border-bottom-left-radius: 0;
 }
 
 .show-container .ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr {
-    border-top-right-radius: 0px;
+    border-top-right-radius: 0;
 }
 
 .show-container .ui-corner-all, .ui-corner-top, .ui-corner-left, .ui-corner-tl {
-    border-top-left-radius: 0px;
+    border-top-left-radius: 0;
 }
 
 .show-container .ui-widget-content {
     border-top: 1px solid #111;
     border-bottom: 1px solid #111;
-    border-left: 0px;
-    border-right: 0px;
+    border-left: 0;
+    border-right: 0;
 }
 .ui-progressbar .ui-progressbar-value {
     height:20px
@@ -552,7 +535,7 @@ span.show-option {
 .show-container .progress-40,
 .show-container .progress-60,
 .show-container .progress-80 {
-    border-radius: 0px;
+    border-radius: 0;
     height: 7px
 }
 
@@ -561,7 +544,7 @@ span.show-option {
     overflow: hidden;
     white-space: nowrap;
     font-size: 11px;
-    margin: 4px 4px 0px 4px;
+    margin: 4px 4px 0 4px;
 }
 
 .show-title:after {
@@ -573,9 +556,6 @@ span.show-option {
     top: 0;
     right: 0;
     background-image: -webkit-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: -moz-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: -ms-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: -o-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
     background-image: linear-gradient(to left, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
 }
 
@@ -584,7 +564,7 @@ span.show-option {
     overflow: hidden;
     white-space: nowrap;
     font-size: 11px;
-    margin: 0px 4px 4px 4px;
+    margin: 0 4px 4px 4px;
     color: #949494;
 }
 
@@ -597,9 +577,6 @@ span.show-option {
     top: 0;
     right: 0;
     background-image: -webkit-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: -moz-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: -ms-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: -o-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
     background-image: linear-gradient(to left, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
 }
 
@@ -831,7 +808,7 @@ home_trendingShows.mako
     white-space: nowrap;
     font-size: 12px;
     overflow: hidden;
-/*	text-shadow: 1px 1px 0px #000;*/
+/*  text-shadow: 1px 1px 0 #000;*/
     padding-left: 4px;
     margin: 0;
 }
@@ -887,8 +864,11 @@ displayShow.mako
 #nextShow,
 #topcontrol {
     -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
-    filter: gray;
+    filter: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter"><feColorMatrix type="matrix" color-interpolation-filters="sRGB" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0" /></filter></svg>#filter');
+    -webkit-filter: grayscale(100%);
+            filter: grayscale(100%);
+    -webkit-filter: gray;
+            filter: gray;
     filter: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' height='0'><filter id='greyscale'><feColorMatrix type='matrix' values='0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0' /></filter></svg>#greyscale");
 }
 
@@ -952,7 +932,7 @@ ul.tags li {
     border: 1px solid #111;
     color: #FFF;
     font: 14px/18px "Open Sans", "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
-    text-shadow: 0px 1px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 1px rgba(0, 0, 0, 0.8);
     float: left;
 }
 
@@ -1070,6 +1050,7 @@ span.snatched b {
     position: relative;
     top: 2px;
     opacity: 0.4;
+    filter: alpha(opacity=40);
 }
 
 .displayShowTable {
@@ -1286,7 +1267,7 @@ h2.day, h2.network {
     letter-spacing: 1px;
     color: #FFF;
     text-align: center;
-    text-shadow: -1px -1px 0px rgba(0, 0, 0, 0.3);
+    text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
     background-color: #333;
 }
 
@@ -1295,7 +1276,7 @@ h2.day, h2.network {
     clear: both;
     border: 1px solid #ccc;
     margin: auto;
-    padding: 0px;
+    padding: 0;
     text-align: left;
     width: 750px;
     border-radius: 5px;
@@ -1371,6 +1352,7 @@ h2.day, h2.network {
 
 .ep_summaryTriggerNone {
     opacity: 0.4;
+    filter: alpha(opacity=40);
     vertical-align: middle;
 }
 
@@ -1457,7 +1439,7 @@ config*.mako
 }
 
 #config div.field-pair {
-    padding: 12px 0px;
+    padding: 12px 0;
 }
 
 #config div.field-pair select,
@@ -1548,7 +1530,7 @@ select .selected {
 
 #provider_order_list input,
 #service_order_list input {
-    margin: 0px 2px;
+    margin: 0 2px;
 }
 
 #config .tip_scale label span.component-title {
@@ -1740,7 +1722,7 @@ div.metadataDiv .disabled {
 
 .notifier-icon {
     float: left;
-    margin: 6px 4px 0px 0px;
+    margin: 6px 4px 0 0;
 }
 
 .warning {
@@ -1777,7 +1759,7 @@ td.tableright {
     text-align: left;
     vertical-align: middle;
     width: 225px;
-    padding: 6px 0px;
+    padding: 6px 0;
 }
 
 .optionWrapper div.selectChoices {
@@ -1827,25 +1809,22 @@ span.path {
 span.quality {
     font: 12px/13px "Open Sans", verdana, sans-serif;
     background-image:-webkit-linear-gradient(top, rgba(255,255,255,0.08),rgba(255,255,255,0) 50%,rgba(0,0,0,0) 50%,rgba(0,0,0,0.25));
-    background-image:-moz-linear-gradient(top, rgba(255,255,255,0.08),rgba(255,255,255,0) 50%,rgba(0,0,0,0) 50%,rgba(0,0,0,0.25));
-    background-image:-o-linear-gradient(top, rgba(255,255,255,0.08),rgba(255,255,255,0) 50%,rgba(0,0,0,0) 50%,rgba(0,0,0,0.25));
+    background-image:-webkit-linear-gradient(top, rgba(255,255,255,0.08), rgba(255,255,255,0) 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.25));
     background-image:linear-gradient(to bottom, rgba(255,255,255,0.08),rgba(255,255,255,0) 50%,rgba(0,0,0,0) 50%,rgba(0,0,0,0.25));
-    -webkit-box-shadow:inset 0 1px rgba(255,255,255,0.1),inset 0 -1px 3px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(255,255,255,0.08),0 1px 2px rgba(0,0,0,0.15);
     box-shadow:inset 0 1px rgba(255,255,255,0.1),inset 0 -1px 3px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(255,255,255,0.08),0 1px 2px rgba(0,0,0,0.15);
-    text-shadow: 0px 1px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 1px rgba(0, 0, 0, 0.8);
     color: #FFFFFF;
     display: inline-block;
     padding: 2px 4px;
     text-align: center;
     vertical-align: baseline;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
     border-radius: 4px;
     white-space: nowrap;
 }
 
 span.any-hd {
     background-color: #2672b6;
+    background: -webkit-repeating-linear-gradient(135deg, #2672b6, #2672b6 10px, #5b990d 10px, #5b990d 20px);
     background: repeating-linear-gradient(
         -45deg,
         #2672b6,
@@ -1963,7 +1942,7 @@ div.blackwhitelist{
 }
 
 div.blackwhitelist input {
-    margin: 5px 0px;
+    margin: 5px 0;
 }
 
 div.blackwhitelist.pool select{
@@ -1980,7 +1959,7 @@ div.blackwhitelist span {
 }
 
 div.blackwhitelist.anidb, div.blackwhitelist.manual {
-    margin: 7px 0px;
+    margin: 7px 0;
 }
 
 /* =======================================================================
@@ -1999,12 +1978,12 @@ html * {
 }
 
 input[type="checkbox"] {
-    margin: 2px 0px 0px;
+    margin: 2px 0 0;
     line-height: normal;
 }
 
 input[type="radio"] {
-    margin: 2px 0px 0px;
+    margin: 2px 0 0;
     line-height: normal;
 }
 
@@ -2019,7 +1998,7 @@ input, textarea, select, .uneditable-input {
 }
 
 .navbar-brand {
-    padding: 0px;
+    padding: 0;
 }
 
 /* navbar styling */
@@ -2153,7 +2132,7 @@ fieldset[disabled] .navbar-default .btn-link:focus {
 .dropdown-menu {
     background-color: #F5F1E4;
     border: 1px solid rgba(0, 0, 0, 0.15);
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.176);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);
 }
 
 .form-control {
@@ -2182,10 +2161,8 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     cursor: pointer;
     background-color: #f5f5f5;
     *background-color: #e6e6e6;
-    background-image: -ms-linear-gradient(top, #ffffff, #e6e6e6);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
     background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
-    background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
     background-image: linear-gradient(top, #ffffff, #e6e6e6);
     background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
     background-repeat: repeat-x;
@@ -2194,14 +2171,12 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
     border-color: #e6e6e6 #e6e6e6 #bfbfbf;
     border-bottom-color: #b3b3b3;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
     border-radius: 4px;
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
+            filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+            filter: progid:dximagetransform.microsoft.gradient(enabled=false);
     *zoom: 1;
-    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
@@ -2230,9 +2205,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     *background-color: #d9d9d9;
     background-position: 0 -15px;
     -webkit-transition: background-position 0.1s linear;
-    -moz-transition: background-position 0.1s linear;
-    -ms-transition: background-position 0.1s linear;
-    -o-transition: background-position 0.1s linear;
     transition: background-position 0.1s linear;
 }
 
@@ -2248,8 +2220,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     background-color: #d9d9d9 \9;
     background-image: none;
     outline: 0;
-    -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
-    -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
@@ -2260,8 +2230,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     background-image: none;
     opacity: 0.65;
     filter: alpha(opacity=65);
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
     box-shadow: none;
 }
 
@@ -2269,8 +2237,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     padding: 9px 14px;
     font-size: 15px;
     line-height: normal;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
     border-radius: 5px;
 }
 
@@ -2322,17 +2288,16 @@ fieldset[disabled] .navbar-default .btn-link:focus {
 .btn-primary {
     background-color: #0074cc;
     *background-color: #0055cc;
-    background-image: -ms-linear-gradient(top, #0088cc, #0055cc);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0055cc));
     background-image: -webkit-linear-gradient(top, #0088cc, #0055cc);
-    background-image: -o-linear-gradient(top, #0088cc, #0055cc);
-    background-image: -moz-linear-gradient(top, #0088cc, #0055cc);
     background-image: linear-gradient(top, #0088cc, #0055cc);
     background-repeat: repeat-x;
     border-color: #0055cc #0055cc #003580;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#0088cc', endColorstr='#0055cc', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(startColorstr='#0088cc', endColorstr='#0055cc', GradientType=0);
+            filter: progid:dximagetransform.microsoft.gradient(startColorstr='#0088cc', endColorstr='#0055cc', GradientType=0);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+            filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .btn-primary:hover,
@@ -2352,17 +2317,16 @@ fieldset[disabled] .navbar-default .btn-link:focus {
 .btn-warning {
     background-color: #faa732;
     *background-color: #f89406;
-    background-image: -ms-linear-gradient(top, #fbb450, #f89406);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fbb450), to(#f89406));
     background-image: -webkit-linear-gradient(top, #fbb450, #f89406);
-    background-image: -o-linear-gradient(top, #fbb450, #f89406);
-    background-image: -moz-linear-gradient(top, #fbb450, #f89406);
     background-image: linear-gradient(top, #fbb450, #f89406);
     background-repeat: repeat-x;
     border-color: #f89406 #f89406 #ad6704;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fbb450', endColorstr='#f89406', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fbb450', endColorstr='#f89406', GradientType=0);
+            filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fbb450', endColorstr='#f89406', GradientType=0);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+            filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .btn-warning:hover,
@@ -2382,17 +2346,16 @@ fieldset[disabled] .navbar-default .btn-link:focus {
 .btn-danger {
     background-color: #da4f49;
     *background-color: #bd362f;
-    background-image: -ms-linear-gradient(top, #ee5f5b, #bd362f);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b), to(#bd362f));
     background-image: -webkit-linear-gradient(top, #ee5f5b, #bd362f);
-    background-image: -o-linear-gradient(top, #ee5f5b, #bd362f);
-    background-image: -moz-linear-gradient(top, #ee5f5b, #bd362f);
     background-image: linear-gradient(top, #ee5f5b, #bd362f);
     background-repeat: repeat-x;
     border-color: #bd362f #bd362f #802420;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ee5f5b', endColorstr='#bd362f', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ee5f5b', endColorstr='#bd362f', GradientType=0);
+            filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ee5f5b', endColorstr='#bd362f', GradientType=0);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+            filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .btn-danger:hover,
@@ -2412,17 +2375,16 @@ fieldset[disabled] .navbar-default .btn-link:focus {
 .btn-success {
     background-color: #5bb75b;
     *background-color: #51a351;
-    background-image: -ms-linear-gradient(top, #62c462, #51a351);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#62c462), to(#51a351));
     background-image: -webkit-linear-gradient(top, #62c462, #51a351);
-    background-image: -o-linear-gradient(top, #62c462, #51a351);
-    background-image: -moz-linear-gradient(top, #62c462, #51a351);
     background-image: linear-gradient(top, #62c462, #51a351);
     background-repeat: repeat-x;
     border-color: #51a351 #51a351 #387038;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#62c462', endColorstr='#51a351', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(startColorstr='#62c462', endColorstr='#51a351', GradientType=0);
+            filter: progid:dximagetransform.microsoft.gradient(startColorstr='#62c462', endColorstr='#51a351', GradientType=0);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+            filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .btn-success:hover,
@@ -2442,17 +2404,16 @@ fieldset[disabled] .navbar-default .btn-link:focus {
 .btn-info {
     background-color: #49afcd;
     *background-color: #2f96b4;
-    background-image: -ms-linear-gradient(top, #5bc0de, #2f96b4);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5bc0de), to(#2f96b4));
     background-image: -webkit-linear-gradient(top, #5bc0de, #2f96b4);
-    background-image: -o-linear-gradient(top, #5bc0de, #2f96b4);
-    background-image: -moz-linear-gradient(top, #5bc0de, #2f96b4);
     background-image: linear-gradient(top, #5bc0de, #2f96b4);
     background-repeat: repeat-x;
     border-color: #2f96b4 #2f96b4 #1f6377;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#5bc0de', endColorstr='#2f96b4', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(startColorstr='#5bc0de', endColorstr='#2f96b4', GradientType=0);
+            filter: progid:dximagetransform.microsoft.gradient(startColorstr='#5bc0de', endColorstr='#2f96b4', GradientType=0);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+            filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .btn-info:hover,
@@ -2472,17 +2433,16 @@ fieldset[disabled] .navbar-default .btn-link:focus {
 .btn-inverse {
     background-color: #414141;
     *background-color: #222222;
-    background-image: -ms-linear-gradient(top, #555555, #222222);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#555555), to(#222222));
     background-image: -webkit-linear-gradient(top, #555555, #222222);
-    background-image: -o-linear-gradient(top, #555555, #222222);
-    background-image: -moz-linear-gradient(top, #555555, #222222);
     background-image: linear-gradient(top, #555555, #222222);
     background-repeat: repeat-x;
     border-color: #222222 #222222 #000000;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#555555', endColorstr='#222222', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(startColorstr='#555555', endColorstr='#222222', GradientType=0);
+            filter: progid:dximagetransform.microsoft.gradient(startColorstr='#555555', endColorstr='#222222', GradientType=0);
+    -webkit-filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+            filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .btn-inverse:hover,
@@ -2595,7 +2555,7 @@ fieldset.sectionwrap {
 
 legend.legendStep {
     color: #57442b;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 div.stepsguide {
@@ -2643,9 +2603,7 @@ div.formpaginate .prev, div.formpaginate .next {
     cursor: hand;
     cursor: pointer;
     background: #57442b;
-    -webkit-border-radius: 6px;
-        -moz-border-radius: 6px;
-            border-radius: 6px;
+    border-radius: 6px;
 }
 
 .stepDiv {
@@ -2789,9 +2747,7 @@ thead.tablesorter-stickyHeader {
 .tablesorter input.tablesorter-filter {
     width: 98%;
     height: auto;
-    -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-            box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .tablesorter tr.tablesorter-filter-row,
@@ -2996,7 +2952,7 @@ jquery.confirm.css
     top: 50%;
     margin: -130px 0 0 -230px;
     border: 1px solid #111;
-    box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.175);
+    box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.175);
 }
 
 #confirmBox h1,
@@ -3010,13 +2966,13 @@ jquery.confirm.css
     color: #fff;
     margin: 0;
     font-size: 22px;
-    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.75);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
 }
 
 #confirmBox p {
     padding-top: 20px;
     color: #000;
-    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.75);
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
 }
 
 #confirmButtons {
@@ -3031,19 +2987,15 @@ jquery.confirm.css
     display: inline-block;
     color: #fff;
     text-align:center;
-    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.75);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
     background-clip: padding-box;
     border: 1px solid #111;
     border-radius: 3px;
     cursor: pointer;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
     background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.08),rgba(255,255,255,0) 50%,rgba(0,0,0,0) 51%,rgba(0,0,0,0.25));
-    background-image: -moz-linear-gradient(top, rgba(255,255,255,0.08),rgba(255,255,255,0) 50%,rgba(0,0,0,0) 51%,rgba(0,0,0,0.25));
-    background-image: -o-linear-gradient(top, rgba(255,255,255,0.08),rgba(255,255,255,0) 50%,rgba(0,0,0,0) 51%,rgba(0,0,0,0.25));
+    background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.08), rgba(255,255,255,0) 50%, rgba(0,0,0,0) 51%, rgba(0,0,0,0.25));
     background-image: linear-gradient(to bottom, rgba(255,255,255,0.08),rgba(255,255,255,0) 50%,rgba(0,0,0,0) 51%,rgba(0,0,0,0.25));
-    -webkit-box-shadow: inset 0 1px rgba(255,255,255,0.1),inset 0 -1px 3px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(255,255,255,0.08),0 1px 2px rgba(0,0,0,0.15);
     box-shadow: inset 0 1px rgba(255,255,255,0.1),inset 0 -1px 3px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(255,255,255,0.08),0 1px 2px rgba(0,0,0,0.15);
 }
 
@@ -3178,6 +3130,7 @@ IMDB Popular
 .popularShow .year{
     font-style:italic;
     opacity:0.7;
+    filter: alpha(opacity=70);
 }
 
 .popularShow .coverImage{
