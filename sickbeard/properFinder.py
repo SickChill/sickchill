@@ -109,11 +109,11 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                 logger.log(u"Content-Encoding was gzip, but content was not compressed while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
                 continue
             except Exception as e:
-                if e.errno != errno.ECONNRESET:
+                if hasattr(e, 'errno') and e.errno == errno.ECONNRESET:
+                    logger.log(u"Connection reseted by peer accessing {}".format(curProvider.name), logger.DEBUG)
+                else:
                     logger.log(u"Unknown exception while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
                     logger.log(traceback.format_exc(), logger.DEBUG)
-                else:
-                    logger.log(u"Connection reseted by peer accessing {}".format(curProvider.name), logger.DEBUG)
                 continue
 
             # if they haven't been added by a different provider than add the proper to the list
