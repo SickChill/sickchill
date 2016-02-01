@@ -32,6 +32,7 @@ from sickbeard import logger
 from sickbeard import db
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
+from sickbeard.scene_exceptions import xem_session
 
 
 def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=True):
@@ -189,7 +190,8 @@ def get_indexer_absolute_numbering(indexer_id, indexer, sceneAbsoluteNumber, fal
         return sceneAbsoluteNumber
 
 
-def set_scene_numbering(indexer_id, indexer, season=None, episode=None, absolute_number=None, sceneSeason=None,
+def set_scene_numbering(indexer_id, indexer, season=None, episode=None,  # pylint:disable=too-many-arguments
+                        absolute_number=None, sceneSeason=None,
                         sceneEpisode=None, sceneAbsolute=None):
     """
     Set scene numbering for a season/episode.
@@ -469,7 +471,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
     main_db_con = db.DBConnection()
     rows = main_db_con.select("SELECT last_refreshed FROM xem_refresh WHERE indexer = ? and indexer_id = ?",
-                       [indexer, indexer_id])
+                              [indexer, indexer_id])
     if rows:
         lastRefresh = int(rows[0]['last_refreshed'])
         refresh = int(time.mktime(datetime.datetime.today().timetuple())) > lastRefresh + MAX_REFRESH_AGE_SECS
@@ -482,14 +484,14 @@ def xem_refresh(indexer_id, indexer, force=False):
             logger.DEBUG)
 
         # mark refreshed
-        main_db_con.upsert("xem_refresh",
-                    {'indexer': indexer,
-                     'last_refreshed': int(time.mktime(datetime.datetime.today().timetuple()))},
-                    {'indexer_id': indexer_id})
+        main_db_con.upsert(
+            "xem_refresh",
+            {'indexer': indexer,
+             'last_refreshed': int(time.mktime(datetime.datetime.today().timetuple()))},
+            {'indexer_id': indexer_id}
+        )
 
         try:
-            from .scene_exceptions import xem_session
-
             # XEM MAP URL
             url = "http://thexem.de/map/havemap?origin=%s" % sickbeard.indexerApi(indexer).config['xem_origin']
             parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, json=True)
@@ -509,24 +511,18 @@ def xem_refresh(indexer_id, indexer, force=False):
                 if 'scene' in entry:
                     cl.append([
                         "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
-                        [entry['scene']['season'],
-                         entry['scene']['episode'],
-                         entry['scene']['absolute'],
-                         indexer_id,
+                        [entry['scene']['season'], entry['scene']['episode'],
+                         entry['scene']['absolute'], indexer_id,
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
-                         ]
+                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']]
                     ])
                 if 'scene_2' in entry:  # for doubles
                     cl.append([
                         "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
-                        [entry['scene_2']['season'],
-                         entry['scene_2']['episode'],
-                         entry['scene_2']['absolute'],
-                         indexer_id,
+                        [entry['scene_2']['season'], entry['scene_2']['episode'],
+                         entry['scene_2']['absolute'], indexer_id,
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
-                         ]
+                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']]
                     ])
 
             if len(cl) > 0:
@@ -540,7 +536,7 @@ def xem_refresh(indexer_id, indexer, force=False):
             logger.log(traceback.format_exc(), logger.DEBUG)
 
 
-def fix_xem_numbering(indexer_id, indexer):
+def fix_xem_numbering(indexer_id, indexer):  # pylint:disable=too-many-locals, too-many-branches, too-many-statements
     """
     Returns a dict of (season, episode) : (sceneSeason, sceneEpisode) mappings
     for an entire show.  Both the keys and values of the dict are tuples.
@@ -622,44 +618,28 @@ def fix_xem_numbering(indexer_id, indexer):
         if update_absolute_number:
             cl.append([
                 "UPDATE tv_episodes SET absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
-                [absolute_number,
-                 indexer_id,
-                 season,
-                 episode
-                 ]
+                [absolute_number, indexer_id, season, episode]
             ])
             update_absolute_number = False
 
         if update_scene_season:
             cl.append([
                 "UPDATE tv_episodes SET scene_season = ? WHERE showid = ? AND season = ? AND episode = ?",
-                [scene_season,
-                 indexer_id,
-                 season,
-                 episode
-                 ]
+                [scene_season, indexer_id, season, episode]
             ])
             update_scene_season = False
 
         if update_scene_episode:
             cl.append([
                 "UPDATE tv_episodes SET scene_episode = ? WHERE showid = ? AND season = ? AND episode = ?",
-                [scene_episode,
-                 indexer_id,
-                 season,
-                 episode
-                 ]
+                [scene_episode, indexer_id, season, episode]
             ])
             update_scene_episode = False
 
         if update_scene_absolute_number:
             cl.append([
                 "UPDATE tv_episodes SET scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
-                [scene_absolute_number,
-                 indexer_id,
-                 season,
-                 episode
-                 ]
+                [scene_absolute_number, indexer_id, season, episode]
             ])
             update_scene_absolute_number = False
 

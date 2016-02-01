@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# pylint:disable=too-many-lines
 
 import os
 import io
@@ -185,10 +186,7 @@ def isMediaFile(filename):
         if re.search('extras?$', sepFile[0], re.I):
             return False
 
-        if sepFile[2].lower() in media_extensions:
-            return True
-        else:
-            return False
+        return sepFile[2].lower() in media_extensions
     except TypeError as error:  # Not a string
         logger.log('Invalid filename. Filename must be a string. %s' % error, logger.DEBUG)  # pylint: disable=no-member
         return False
@@ -1416,7 +1414,8 @@ def _setUpSession(session, headers):
     return session
 
 
-def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=None, json=False, need_bytes=False):
+def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too-many-arguments, too-many-return-statements, too-many-branches
+           timeout=30, session=None, json=False, need_bytes=False):
     """
     Returns a byte-string retrieved from the url provider.
     """
@@ -1475,7 +1474,7 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
     return (resp.text, resp.content)[need_bytes] if not json else resp.json()
 
 
-def download_file(url, filename, session=None, headers=None):
+def download_file(url, filename, session=None, headers=None):  # pylint:disable=too-many-return-statements
     """
     Downloads a file specified
 
@@ -1733,7 +1732,7 @@ def getDiskSpaceUsage(diskPath=None):
         return False
 
 
-def getTVDBFromID(indexer_id, indexer):
+def getTVDBFromID(indexer_id, indexer):  # pylint:disable=too-many-return-statements
 
     session = requests.Session()
     tvdb_id = ''
@@ -1786,10 +1785,11 @@ def get_showname_from_indexer(indexer, indexer_id, lang='en'):
     t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
     s = t[int(indexer_id)]
 
-    if hasattr(s,'data'):
+    if hasattr(s, 'data'):
         return s.data.get('seriesname')
 
     return None
+
 
 def is_ip_private(ip):
     priv_lo = re.compile(r"^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
