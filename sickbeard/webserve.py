@@ -784,7 +784,7 @@ class Home(WebRoot):
 
         host = config.clean_url(host)
 
-        connection, accesMsg = sab.getSabAccesMethod(host, username, password, apikey)
+        connection, accesMsg = sab.getSabAccesMethod(host)
         if connection:
             authed, authMsg = sab.testAuthentication(host, username, password, apikey)  # @UnusedVariable
             if authed:

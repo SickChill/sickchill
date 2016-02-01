@@ -36,10 +36,9 @@ from github import Github
 
 from sickbeard import metadata
 from sickbeard import providers
-from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
-    naming_ep_type
+from sickbeard.config import CheckSection, check_setting_int, check_setting_str, ConfigMigrator
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, auto_postprocessor, \
-    subtitles, traktChecker, numdict
+    subtitles, traktChecker
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import scheduler
@@ -50,8 +49,7 @@ from sickbeard import naming
 from sickbeard import dailysearcher
 from sickbeard.indexers import indexer_api
 from sickbeard.indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, \
-    indexer_error, indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, \
-    indexerExcepts
+    indexer_error, indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort
 from sickbeard.common import SD
 from sickbeard.common import SKIPPED
 from sickbeard.common import WANTED
