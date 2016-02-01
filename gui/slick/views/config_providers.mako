@@ -85,6 +85,8 @@ $('#config-components').tabs();
                                 <a href="${anon_url(curURL)}" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="${srRoot}/images/providers/${curProvider.image_name()}" alt="${curProvider.name}" title="${curProvider.name}" width="16" height="16" style="vertical-align:middle;"/></a>
                                 <span style="vertical-align:middle;">${curProvider.name}</span>
                                 ${('*', '')[bool(curProvider.supports_backlog)]}
+                                <!-- Add the name of provider that isnt working here -->
+                                ${('', '!')[curProvider.name == '']}
                                 <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
                                 <span class="ui-icon ${('ui-icon-locked','ui-icon-unlocked')[bool(curProvider.public)]} pull-right" style="vertical-align:middle;"></span>
                             </li>
