@@ -29,7 +29,7 @@ def path():
             ret.append((0, len(input_string)))
         else:
             indices = list(find_all(input_string, '/'))
-            indices += list(find_all(input_string, r'\\'))
+            indices += list(find_all(input_string, '\\'))
             indices += [-1, len(input_string)]
 
             indices.sort()

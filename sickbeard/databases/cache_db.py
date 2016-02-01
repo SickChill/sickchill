@@ -85,7 +85,7 @@ class AddSceneExceptionsSeasons(AddLastSearch):
         self.addColumn("scene_exceptions", "season", "NUMERIC", -1)
 
 
-class AddSceneExceptionsCustom(AddSceneExceptionsSeasons):
+class AddSceneExceptionsCustom(AddSceneExceptionsSeasons):  # pylint:disable=too-many-ancestors
     def test(self):
         return self.hasColumn("scene_exceptions", "custom")
 
@@ -93,7 +93,7 @@ class AddSceneExceptionsCustom(AddSceneExceptionsSeasons):
         self.addColumn("scene_exceptions", "custom", "NUMERIC", 0)
 
 
-class AddSceneExceptionsRefresh(AddSceneExceptionsCustom):
+class AddSceneExceptionsRefresh(AddSceneExceptionsCustom):  # pylint:disable=too-many-ancestors
     def test(self):
         return self.hasTable("scene_exceptions_refresh")
 
@@ -101,7 +101,8 @@ class AddSceneExceptionsRefresh(AddSceneExceptionsCustom):
         self.connection.action(
             "CREATE TABLE scene_exceptions_refresh (list TEXT PRIMARY KEY, last_refreshed INTEGER);")
 
-class ConvertSceneExeptionsToIndexerScheme(AddSceneExceptionsRefresh):
+
+class ConvertSceneExeptionsToIndexerScheme(AddSceneExceptionsRefresh):  # pylint:disable=too-many-ancestors
     def test(self):
         return self.hasColumn("scene_exceptions", "indexer_id")
 
@@ -112,7 +113,8 @@ class ConvertSceneExeptionsToIndexerScheme(AddSceneExceptionsRefresh):
         self.connection.action("INSERT INTO scene_exceptions SELECT exception_id, tvdb_id as indexer_id, show_name, season, custom FROM tmp_scene_exceptions;")
         self.connection.action("DROP TABLE tmp_scene_exceptions;")
 
-class ConvertSceneNamesToIndexerScheme(AddSceneExceptionsRefresh):
+
+class ConvertSceneNamesToIndexerScheme(AddSceneExceptionsRefresh):  # pylint:disable=too-many-ancestors
     def test(self):
         return self.hasColumn("scene_names", "indexer_id")
 
