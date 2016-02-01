@@ -61,7 +61,6 @@ $('#config-components').tabs();
 
                         <div>
                             <p class="note">* Provider does not support backlog searches at this time.</p>
-                            <p class="note">! Provider is <b>NOT WORKING</b>.</p>
                         </div>
                     </div>
 
