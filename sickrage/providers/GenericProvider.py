@@ -122,7 +122,6 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         for episode in episodes:
             cache_result = self.cache.searchCache(episode, manualSearch=manual_search,
                                                   downCurQuality=download_current_quality)
-
             if cache_result:
                 if episode.episode not in results:
                     results[episode.episode] = cache_result

@@ -315,7 +315,7 @@ class TVCache(object):
         cache_db_con = self._getDB()
         if not episode:
             sql_results = cache_db_con.select("SELECT * FROM [" + self.providerID + "]")
-        elif isinstance(episode, list):
+        elif not isinstance(episode, list):
             sql_results = cache_db_con.select(
                 "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?",
                 [episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"])
