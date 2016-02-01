@@ -1571,6 +1571,10 @@ select .selected {
     border-top: 1px dotted #666666;
 }
 
+.infoTableHeader {
+    vertical-align: top;
+}
+
 [class^="icon16-config-"], [class*=" icon16-config-"] {
     background-image: url("../images/16x_sprite_colored_help-info.png");
     background-position: -40px 0;

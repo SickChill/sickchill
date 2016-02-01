@@ -588,6 +588,10 @@ config*.mako
     background-color: #222 !important;
 }
 
+.infoTableHeader {
+    vertical-align: top;
+}
+
 [class^="icon16-config-"], [class*=" icon16-config-"] {
     background-image: url("../images/16x_sprite_colored_help-info.png");
     background-position: -40px 0;
