@@ -3,53 +3,38 @@ home.mako
 ========================================================================== */
 
 .progress-100 {
-	background-image: -moz-linear-gradient(#a6cf41, #5b990d) !important;
-	background-image: linear-gradient(#a6cf41, #5b990d) !important;
-	background-image: -webkit-linear-gradient(#a6cf41, #5b990d) !important;
-	background-image: -o-linear-gradient(#a6cf41, #5b990d) !important;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+    background-image: linear-gradient(#a6cf41, #5b990d) !important;
+    background-image: -webkit-linear-gradient(#a6cf41, #5b990d) !important;
+    background-image: -o-linear-gradient(#a6cf41, #5b990d) !important;
+    border-radius: 3px;
 }
 
 .progress-80 {
-	background-image: -moz-linear-gradient(#e1ff97, #9db269) !important;
-	background-image: linear-gradient(#e1ff97, #9db269) !important;
-	background-image: -webkit-linear-gradient(#e1ff97, #9db269) !important;
-	background-image: -o-linear-gradient(#e1ff97, #9db269) !important;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+    background-image: linear-gradient(#e1ff97, #9db269) !important;
+    background-image: -webkit-linear-gradient(#e1ff97, #9db269) !important;
+    background-image: -o-linear-gradient(#e1ff97, #9db269) !important;
+    border-radius: 3px;
 }
 
 .progress-60 {
-	background-image: -moz-linear-gradient(#fad440, #f2a70d) !important;
-	background-image: linear-gradient(#fad440, #f2a70d) !important;
-	background-image: -webkit-linear-gradient(#fad440, #f2a70d) !important;
-	background-image: -o-linear-gradient(#fad440, #f2a70d) !important;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+    background-image: linear-gradient(#fad440, #f2a70d) !important;
+    background-image: -webkit-linear-gradient(#fad440, #f2a70d) !important;
+    background-image: -o-linear-gradient(#fad440, #f2a70d) !important;
+    border-radius: 3px;
 }
 
 .progress-40 {
-	background-image: -moz-linear-gradient(#fab543, #f2700d) !important;
-	background-image: linear-gradient(#fab543, #f2700d) !important;
-	background-image: -webkit-linear-gradient(#fab543, #f2700d) !important;
-	background-image: -o-linear-gradient(#fab543, #f2700d) !important;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+    background-image: linear-gradient(#fab543, #f2700d) !important;
+    background-image: -webkit-linear-gradient(#fab543, #f2700d) !important;
+    background-image: -o-linear-gradient(#fab543, #f2700d) !important;
+    border-radius: 3px;
 }
 
 .progress-20 {
-	background-image: -moz-linear-gradient(#da5945, #b11a10) !important;
-	background-image: linear-gradient(#da5945, #b11a10) !important;
-	background-image: -webkit-linear-gradient(#da5945, #b11a10) !important;
-	background-image: -o-linear-gradient(#da5945, #b11a10) !important;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+    background-image: linear-gradient(#da5945, #b11a10) !important;
+    background-image: -webkit-linear-gradient(#da5945, #b11a10) !important;
+    background-image: -o-linear-gradient(#da5945, #b11a10) !important;
+    border-radius: 3px;
 }
 
 /* =======================================================================
@@ -57,11 +42,11 @@ displayShow.mako
 ========================================================================== */
 
 .displayShowTable th.row-seasonheader {
-	border: none !important;
-	background-color: #fff !important;
-	color: #000 !important;
-	padding-top: 15px !important;
-	text-align: left !important;
+    border: none !important;
+    background-color: #fff !important;
+    color: #000 !important;
+    padding-top: 15px !important;
+    text-align: left !important;
 }
 
 /* =======================================================================
@@ -69,7 +54,7 @@ testRename.mako
 ========================================================================== */
 
 tr.seasonheader {
-	color: #000 !important;
+    color: #000 !important;
 }
 
 /* =======================================================================
