@@ -11,19 +11,10 @@ inc_top.mako
 /*	background: url("../images/bg.png") repeat 0 0 transparent; */
 }
 
-[class^="icon-"],
-[class*=" icon-"] {
-    background-image: url("../images/glyphicons-halflings.png");
-}
-
 .icon-white {
     background-image: url("../images/glyphicons-halflings-white.png");
 }
 
-.dropdown-menu li > a:hover > [class^="menu-icon-"],
-.dropdown-menu li > a:hover > [class*=" menu-icon-"] {
-    background-image: url("../images/menu/menu-icons-white.png");
-}
 
 .ui-autocomplete-loading {
     background: white url("../images/loading16.gif") right center no-repeat;
@@ -210,25 +201,13 @@ inc_top.mako
 }
 
 [class^="menu-icon-"], [class*=" menu-icon-"] {
-    background: url("../images/menu/menu-icons-black.png");
+    background: url("../images/menu/16x_sprite_colored_menu_icons.png");
     height: 16px;
     width: 16px;
     display: inline-block;
     position: relative;
     top: 2px;
     float: left;
-}
-
-@media(max-width:767px){
-    [class^="menu-icon-"], [class*=" menu-icon-"] {
-        background: url("../images/menu/menu-icons-white.png");
-        height: 16px;
-        width: 16px;
-        display: inline-block;
-        position: relative;
-        top: 2px;
-        float: left;
-    }
 }
 
 .menu-icon-addshow {
@@ -311,34 +290,64 @@ inc_top.mako
     background-position: -399px 0px;
 }
 
-[class^="submenu-icon-"], [class*=" submenu-icon-"] {
-    background: url("../images/menu/menu-icons-black.png");
-    height: 16px;
-    width: 16px;
+.menu-icon-info {
+    background-position: -418px 0px;
 }
 
-.submenu-icon-anime {
-    background-position: -21px 0px;
+.menu-icon-error {
+    background-position: -436px 0px;
 }
 
-.submenu-icon-bittorrent {
-    background-position: -84px 0px;
+.menu-icon-news {
+    background-position: -456px 0px;
 }
 
-.submenu-icon-failed-download {
-    background-position: -147px 0px;
+.menu-icon-irc {
+    background-position: -478px 0px;
 }
 
-.submenu-icon-restart {
-    background-position: -273px 0px;
+.menu-icon-changelog {
+    background-position: -495px 0px;
 }
 
-.submenu-icon-shutdown {
-    background-position: -294px 0px;
+.menu-icon-support {
+    background-position: -516px 0px;
 }
 
-.submenu-icon-kodi {
-    background-position: -378px 0px;
+.menu-icon-plex {
+    background-position: -536px 0px;
+}
+
+.menu-icon-backup {
+    background-position: -556px 0px;
+}
+
+.menu-icon-provider {
+    background-position: -576px 0px;
+}
+
+.menu-icon-notification {
+    background-position: -597px 0px;
+}
+
+.menu-icon-emby {
+    background-position: -614px 0px;
+}
+
+.menu-icon-blackhole {
+    background-position: -632px 0px;
+}
+
+.menu-icon-schedule {
+    background-position: -653px 0px;
+}
+
+.menu-icon-manage2 {
+    background-position: -673px 0px;
+}
+
+.menu-icon-history {
+    background-position: -695px 0px;
 }
 
 /* =======================================================================
@@ -716,28 +725,34 @@ div.buttontext p {
     font-size: 13px;
 }
 
-.icon-addnewshow {
-    background-image: url("../images/addshows/add-new32-black.png");
-    width: 32px;
+[class^="add-list-icon-"], [class*=" add-list-icon-"] {
+    background: url("../images/32x_sprite_colored_add_lists.png");
     height: 32px;
+    width: 32px;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+    float: left;
 }
 
-.icon-addtrendingshow {
-    background-image: url("../images/addshows/add-trending32-black.png");
-    width: 32px;
-    height: 32px;
+.add-list-icon-addnewshow {
+    background-position: 0px 0px;
 }
 
-.icon-addrecommendedshow {
-    background-image: url("../images/addshows/add-trakt32-black.png");
-    width: 32px;
-    height: 32px;
+.add-list-icon-addtrakt {
+    background-position: -37px 0px;
 }
 
-.icon-addexistingshow {
-    background-image: url("../images/addshows/add-existing32-black.png");
-    width: 32px;
-    height: 32px;
+.add-list-icon-addimdb {
+    background-position: -76px 0px;
+}
+
+.add-list-icon-addexistingshow {
+    background-position: -113px 0px;
+}
+
+.add-list-icon-addanime {
+    background-position: -150px 0px;
 }
 
 /* =======================================================================
@@ -1732,6 +1747,100 @@ div.metadataDiv .disabled {
 .warning {
     border-color: #F89406;
     background: url("../images/warning16.png") no-repeat right 5px center #fff;
+}
+
+[class^="icon-notifiers-"], [class*=" icon-notifiers-"] {
+    background: url("../images/32x_sprite_colored_notifiers.png");
+    height: 32px;
+    width: 32px;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+    float: left;
+}
+
+.icon-notifiers-kodi {
+    background-position: 0px 0px;
+}
+
+.icon-notifiers-plex {
+    background-position: -35px 0px;
+}
+
+.icon-notifiers-plexth {
+    background-position: -69px 0px;
+}
+
+.icon-notifiers-emby {
+    background-position: -104px 0px;
+}
+
+.icon-notifiers-nmj {
+    background-position: -136px 0px;
+}
+
+.icon-notifiers-syno1 {
+    background-position: -168px 0px;
+}
+
+.icon-notifiers-syno2 {
+    background-position: -202px 0px;
+}
+
+.icon-notifiers-pytivo {
+    background-position: -237px 0px;
+}
+
+.icon-notifiers-growl {
+    background-position: -272px 0px;
+}
+
+.icon-notifiers-prowl {
+    background-position: -308px 0px;
+}
+
+.icon-notifiers-libnotify {
+    background-position: -345px 0px;
+}
+
+.icon-notifiers-pushover {
+    background-position: -377px 0px;
+}
+
+.icon-notifiers-boxcar2 {
+    background-position: -414px 0px;
+}
+
+.icon-notifiers-nma {
+    background-position: -450px 0px;
+}
+
+.icon-notifiers-pushalot {
+    background-position: -486px 0px;
+}
+
+.icon-notifiers-pushbullet {
+    background-position: -521px 0px;
+}
+
+.icon-notifiers-freemobile {
+    background-position: -551px 0px;
+}
+
+.icon-notifiers-telegram {
+    background-position: -587px 0px;
+}
+
+.icon-notifiers-twitter {
+    background-position: -624px 0px;
+}
+
+.icon-notifiers-trakt {
+    background-position: -659px 0px;
+}
+
+.icon-notifiers-email {
+    background-position: -695px 0px;
 }
 
 /* =======================================================================
