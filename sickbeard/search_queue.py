@@ -176,7 +176,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
             logger.log(u"Beginning manual search for: [" + self.segment.prettyName() + "]")
             self.started = True
 
-            searchResult = search.searchProviders(self.show, [self.segment], True, self.downCurQuality)
+            searchResult = search.searchProviders(self.show, self.segment, True, self.downCurQuality)
 
             if searchResult:
                 # just use the first result for now
@@ -219,7 +219,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
         if not self.show.paused:
             try:
                 logger.log(u"Beginning backlog search for: [" + self.show.name + "]")
-                searchResult = search.searchProviders(self.show, [self.segment], False)
+                searchResult = search.searchProviders(self.show, self.segment, False)
 
                 if searchResult:
                     for result in searchResult:
@@ -269,7 +269,7 @@ class FailedQueueItem(generic_queue.QueueItem):
 
             # If it is wanted, self.downCurQuality doesnt matter
             # if it isnt wanted, we need to make sure to not overwrite the existing ep that we reverted to!
-            searchResult = search.searchProviders(self.show, [self.segment], True, False)
+            searchResult = search.searchProviders(self.show, self.segment, True, False)
 
             if searchResult:
                 for result in searchResult:
