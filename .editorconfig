@@ -2,9 +2,11 @@
 root = true
 
 # Unix-style newlines with a newline ending every file
+# and trailing whitespace removed
 [*]
 end_of_line = lf
 insert_final_newline = true
+trim_trailing_whitespace = true
 
 # Matches multiple files with brace expansion notation
 # Set default charset
