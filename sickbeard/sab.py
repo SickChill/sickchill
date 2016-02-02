@@ -38,7 +38,7 @@ from sickbeard import logger
 from sickrage.helper.exceptions import ex
 
 
-def sendNZB(nzb):
+def sendNZB(nzb):  # pylint:disable=too-many-return-statements, too-many-branches, too-many-statements
     """
     Sends an NZB to SABnzbd via the API.
 
@@ -78,12 +78,12 @@ def sendNZB(nzb):
     if nzb.resultType == "nzb":
         # for newzbin results send the ID to sab specifically
         if nzb.provider.get_id() == 'newzbin':
-            id = nzb.provider.getIDFromURL(nzb.url)
-            if not id:
+            nzb_id = nzb.provider.getIDFromURL(nzb.url)
+            if not nzb_id:
                 logger.log(u"Unable to send NZB to sab, can't find ID in URL " + str(nzb.url), logger.ERROR)
                 return False
             params['mode'] = 'addid'
-            params['name'] = id
+            params['name'] = nzb_id
         else:
             params['mode'] = 'addurl'
             params['name'] = nzb.url
@@ -212,7 +212,7 @@ def _sabURLOpenSimple(url):
         return True, f
 
 
-def getSabAccesMethod(host=None, username=None, password=None, apikey=None):
+def getSabAccesMethod(host=None):
     """
     Find out how we should connect to SAB
 
@@ -268,4 +268,3 @@ def testAuthentication(host=None, username=None, password=None, apikey=None):
         return False, sabText
 
     return True, "Success"
-
