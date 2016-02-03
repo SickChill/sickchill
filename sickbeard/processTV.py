@@ -264,19 +264,19 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 else:
                     process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result)
 
-                # Delete all file not needed and avoid deleting files if Manual PostProcessing
-                if not(process_method == u"move" and result.result) or (proc_type == u"manual" and not delete_on):
-                    continue
+                    # Delete all file not needed and avoid deleting files if Manual PostProcessing
+                    if not(process_method == u"move" and result.result) or (proc_type == u"manual" and not delete_on):
+                        continue
 
-                delete_folder(ek(os.path.join, processPath, u'@eaDir'))
-                delete_files(processPath, notwantedFiles, result)
+                    delete_folder(ek(os.path.join, processPath, u'@eaDir'))
+                    delete_files(processPath, notwantedFiles, result)
 
-                if all([not sickbeard.NO_DELETE or proc_type == u"manual",
-                        process_method == u"move",
-                        ek(os.path.normpath, processPath) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]):
+                    if all([not sickbeard.NO_DELETE or proc_type == u"manual",
+                            process_method == u"move",
+                            ek(os.path.normpath, processPath) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]):
 
-                    if delete_folder(processPath, check_empty=True):
-                        result.output += logHelper(u"Deleted folder: %s" % processPath, logger.DEBUG)
+                        if delete_folder(processPath, check_empty=True):
+                            result.output += logHelper(u"Deleted folder: %s" % processPath, logger.DEBUG)
 
             else:
                 result.output += logHelper(u"Found temporary sync files: %s in path: %s" % (SyncFiles, processPath))
