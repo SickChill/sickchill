@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
-
 import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
@@ -83,7 +81,7 @@ class rTorrentAPI(GenericClient):
             return True
 
         except Exception:
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.log('Error while sending torrent: {}'.format(ex(e)), logger.WARNING)
             return False
 
     def _add_torrent_file(self, result):
@@ -125,7 +123,7 @@ class rTorrentAPI(GenericClient):
             return True
 
         except Exception:
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.log('Error while sending torrent: {}'.format(ex(e)), logger.WARNING)
             return False
 
     def _set_torrent_ratio(self, name):
