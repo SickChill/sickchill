@@ -19,6 +19,7 @@
 
 import sickbeard
 from sickbeard import logger
+from sickbeard import ex
 from sickbeard.clients.generic import GenericClient
 from rtorrent import RTorrent
 
