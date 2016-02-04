@@ -817,6 +817,7 @@ ul#rootDirStaticList li {
     margin: 2px;
     list-style: none outside none;
     cursor: pointer;
+    color: green;
     background: url('../css/lib/images/ui-bg_highlight-soft_75_efefef_1x100.png') repeat-x scroll 50% 50% #EFEFEF;
 }
 
