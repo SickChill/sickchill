@@ -73,8 +73,8 @@
 
                     <div class="component-group-desc">
                         <img class="icon-notifiers-look" title="look" />
-						<h3>Look and Feel</h3>
-						<p>How should the anime functions show and behave.</p>
+                        <h3>Look and Feel</h3>
+                        <p>How should the anime functions show and behave.</p>
                    </div>
                     <fieldset class="component-group-list">
                         <div class="field-pair">

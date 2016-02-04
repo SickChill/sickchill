@@ -196,9 +196,9 @@
                     <div class="component-group-desc">
                         <h3>NZB Search</h3>
                         <p>How to handle NZB search results.</p>
-						<img class="add-client-icon-sabnzb" /> 
-						<img class="add-client-icon-blackhole" />
-						<img class="add-client-icon-nzbget" />
+                        <img class="add-client-icon-sabnzb" />
+                        <img class="add-client-icon-blackhole" />
+                        <img class="add-client-icon-nzbget" />
                     </div>
 
                     <fieldset class="component-group-list">
@@ -447,14 +447,14 @@
                     <div class="component-group-desc">
                         <h3>Torrent Search</h3>
                         <p>How to handle Torrent search results.</p>
-						<img class="add-client-icon-blackhole" /> 
-						<img class="add-client-icon-utorrent" />
-						<img class="add-client-icon-transmission" />
-						<img class="add-client-icon-deluge" /> 
-						<img class="add-client-icon-synology" />
-						<img class="add-client-icon-rtorrent" />
-						<img class="add-client-icon-qbittorrent" />
-						<img class="add-client-icon-mldonkey" />
+                        <img class="add-client-icon-blackhole" />
+                        <img class="add-client-icon-utorrent" />
+                        <img class="add-client-icon-transmission" />
+                        <img class="add-client-icon-deluge" />
+                        <img class="add-client-icon-synology" />
+                        <img class="add-client-icon-rtorrent" />
+                        <img class="add-client-icon-qbittorrent" />
+                        <img class="add-client-icon-mldonkey" />
                     </div>
 
                     <fieldset class="component-group-list">
