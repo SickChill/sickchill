@@ -1685,6 +1685,10 @@ select .selected {
     background-position: -106px 0px;
 }
 
+.add-client-icon-deluged {
+    background-position: -106px 0px;
+}
+
 .add-client-icon-qbittorrent {
     background-position: -138px 0px;
 }
@@ -1693,7 +1697,7 @@ select .selected {
     background-position: -172px 0px;
 }
 
-.add-client-icon-synology {
+.add-client-icon-download-station {
     background-position: -205px 0px;
 }
 
@@ -1709,7 +1713,7 @@ select .selected {
     background-position: -311px 0px;
 }
 
-.add-client-icon-mldonkey {
+.add-client-icon-mlnet {
     background-position: -344px 0px;
 }
 

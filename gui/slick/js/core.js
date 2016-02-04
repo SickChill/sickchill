@@ -1569,6 +1569,11 @@ var SICKRAGE = {
                     testSABnzbdResult = '#testSABnzbd_result',
                     nzbgetSettings = '#nzbget_settings';
 
+                $('#nzb_method_icon').removeClass (function (index, css) {
+                    return (css.match (/(^|\s)add-client-icon-\S+/g) || []).join(' ');
+                });
+                $('#nzb_method_icon').addClass('add-client-icon-' + selectedProvider.replace('_', '-'));
+
                 $(blackholeSettings).hide();
                 $(sabnzbdSettings).hide();
                 $(testSABnzbd).hide();
@@ -1597,6 +1602,11 @@ var SICKRAGE = {
                     client = '',
                     optionPanel = '#options_torrent_blackhole',
                     rpcurl = ' RPC URL';
+
+                $('#torrent_method_icon').removeClass (function (index, css) {
+                    return (css.match (/(^|\s)add-client-icon-\S+/g) || []).join(' ');
+                });
+                $('#torrent_method_icon').addClass('add-client-icon-' + selectedProvider.replace('_', '-'));
 
                 if (selectedProvider.toLowerCase() !== 'blackhole') {
                     $('#label_warning_deluge').hide();
