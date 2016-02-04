@@ -173,6 +173,11 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
 
     try:
         subtitles_list = pool.list_subtitles(video, languages)
+
+        for provider in providers:
+            if provider in pool.discarded_providers:
+                logger.log(u'Could not search in {} provider. Discarding for now'.format(provider), logger.DEBUG)
+
         if not subtitles_list:
             logger.log(u'No subtitles found for {} {}'.format
                        (subtitles_info['show_name'], episode_num(subtitles_info['season'], subtitles_info['episode']) or
@@ -345,7 +350,7 @@ class SubtitlesFinder(object):
                     if u'_UNPACK' not in root and (not video_files or root == sickbeard.TV_DOWNLOAD_DIR):
                         logger.log(u'Found rar files in post-process folder: {}'.format(rar_files), logger.DEBUG)
                         result = processTV.ProcessResult()
-                        rar_content = processTV.unRAR(root, rar_files, True, result)
+                        rar_content = processTV.unRAR(root, rar_files, False, result)
                 elif rar_files and not sickbeard.UNPACK:
                     logger.log(u'Unpack is disabled. Skipping: {}'.format(rar_files), logger.WARNING)    
 
@@ -365,6 +370,10 @@ class SubtitlesFinder(object):
                             video = subliminal.scan_video(os.path.join(root, video_filename),
                                                           subtitles=False, embedded_subtitles=False)
                             subtitles_list = pool.list_subtitles(video, languages)
+                            
+                            for provider in providers:
+                                if provider in pool.discarded_providers:
+                                    logger.log(u'Could not search in {} provider. Discarding for now'.format(provider), logger.DEBUG)
 
                             if not subtitles_list:
                                 logger.log(u'No subtitles found for {}'.format
