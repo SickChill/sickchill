@@ -14,7 +14,7 @@
                 </span>
             </label>
         </div>
-        
+
         % if sickbeard.USE_SUBTITLES:
         <br><div class="field-pair">
             <label for="subtitles" class="clearfix">
