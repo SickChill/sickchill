@@ -17,7 +17,7 @@ before_install:
   - npm update
   - npm install -g grunt-cli
   - npm install -g bower
-  - cd .build && npm install && bower install && cd ..
+  - cd .build && npm install --quiet && bower install && cd ..
 
 install:
     - pip install coveralls nose rednose
