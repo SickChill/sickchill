@@ -33,8 +33,6 @@ class BitCannonProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
         TorrentProvider.__init__(self, "BitCannon")
 
-        self.public = True
-
         self.minseed = None
         self.minleech = None
         self.ratio = 0
