@@ -350,6 +350,18 @@ inc_top.mako
     background-position: -695px 0px;
 }
 
+.menu-icon-trash {
+    background-position: -711px 0px;
+}
+
+.menu-icon-cut {
+    background-position: -727px 0px;
+}
+
+.menu-icon-select {
+    background-position: -742px 0px;
+}
+
 /* =======================================================================
 inc_bottom.mako
 ========================================================================== */
@@ -1670,7 +1682,7 @@ select .selected {
 }
 
 .add-client-icon-deluge {
-    background-position: -108px 0px;
+    background-position: -106px 0px;
 }
 
 .add-client-icon-qbittorrent {
@@ -1911,6 +1923,14 @@ div.metadataDiv .disabled {
 
 .icon-notifiers-email {
     background-position: -695px 0px;
+}
+
+.icon-notifiers-anime {
+    background-position: -733px 0px;
+}
+
+.icon-notifiers-look {
+    background-position: -769px 0px;
 }
 
 /* =======================================================================
