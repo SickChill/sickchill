@@ -350,6 +350,18 @@ inc_top.mako
     background-position: -695px 0px;
 }
 
+.menu-icon-trash {
+    background-position: -711px 0px;
+}
+
+.menu-icon-cut {
+    background-position: -727px 0px;
+}
+
+.menu-icon-select {
+    background-position: -742px 0px;
+}
+
 /* =======================================================================
 inc_bottom.mako
 ========================================================================== */
@@ -1647,6 +1659,76 @@ select .selected {
     background-position: -299px 0;
 }
 
+[class^="add-client-icon-"], [class*=" add-client-icon-"] {
+    background: url("../images/32x_sprite_colored_clients.png");
+    height: 32px;
+    width: 32px;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+    float: left;
+}
+
+.add-client-icon-sabnzbd {
+    background-position: 0px 0px;
+}
+
+.add-client-icon-nzbget {
+    background-position: -34px 0px;
+}
+
+.add-client-icon-blackhole {
+    background-position: -71px 0px;
+}
+
+.add-client-icon-deluge {
+    background-position: -106px 0px;
+}
+
+.add-client-icon-qbittorrent {
+    background-position: -138px 0px;
+}
+
+.add-client-icon-rtorrent {
+    background-position: -172px 0px;
+}
+
+.add-client-icon-synology {
+    background-position: -205px 0px;
+}
+
+.add-client-icon-transmission {
+    background-position: -241px 0px;
+}
+
+.add-client-icon-utorrent {
+    background-position: -273px 0px;
+}
+
+.add-client-icon-spotnet {
+    background-position: -311px 0px;
+}
+
+.add-client-icon-mldonkey {
+    background-position: -344px 0px;
+}
+
+.add-client-icon-rss {
+    background-position: -380px 0px;
+}
+
+.add-client-icon-folder {
+    background-position: -416px 0px;
+}
+
+.add-client-icon-ftp {
+    background-position: -452px 0px;
+}
+
+.add-client-icon-irc {
+    background-position: -488px 0px;
+}
+
 /* =======================================================================
 config_postProcessing.mako
 ========================================================================== */
@@ -1820,7 +1902,7 @@ div.metadataDiv .disabled {
 }
 
 .icon-notifiers-pushbullet {
-    background-position: -521px 0px;
+    background-position: -519px 0px;
 }
 
 .icon-notifiers-freemobile {
@@ -1841,6 +1923,14 @@ div.metadataDiv .disabled {
 
 .icon-notifiers-email {
     background-position: -695px 0px;
+}
+
+.icon-notifiers-anime {
+    background-position: -733px 0px;
+}
+
+.icon-notifiers-look {
+    background-position: -769px 0px;
 }
 
 /* =======================================================================
