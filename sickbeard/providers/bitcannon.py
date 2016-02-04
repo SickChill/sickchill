@@ -56,13 +56,16 @@ class BitCannonProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         #      {'RSS': ['tv', 'anime']}
         results = []
 
+        if not self.api_key:
+            logger.log(u"Invalid api key. Check your settings", logger.WARNING)
+            return results
+
         # select the correct category (TODO:  Add more categories?)
         anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False
         self.search_params['category'] = ('tv', 'anime')[anime]
 
-        # Set API Key (if applicable)
-        if self.api_key:
-            self.search_params['apiKey'] = self.api_key
+        # Set API Key
+        self.search_params['apiKey'] = self.api_key
 
         for mode in search_strings:
             items = []
