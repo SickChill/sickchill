@@ -52,6 +52,9 @@ $(document).ready(function(){
         });
     };
 
+    var newznabProviders = [];
+    var torrentRssProviders = [];
+
     $.fn.addProvider = function (id, name, url, key, cat, isDefault, showProvider) {
         url = $.trim(url);
         if (!url) {
@@ -335,9 +338,6 @@ $(document).ready(function(){
 
         $(this).showHideProviders();
     };
-
-    var newznabProviders = [];
-    var torrentRssProviders = [];
 
     $(this).on('change', '.newznab_key', function(){
         var providerId = $(this).attr('id');
