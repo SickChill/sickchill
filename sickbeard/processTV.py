@@ -185,6 +185,10 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     # Don't post process if files are still being synced and option is activated
     postpone = SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES
 
+    # Warn user if 'postpone if no subs' is enabled. Will debug possible user issues with PP
+    if sickbeard.POSTPONE_IF_NO_SUBS:
+        result.output += logHelper(u"Feature 'postpone postprocessing if no subtitle available' is enabled", logger.INFO)
+
     if not postpone:
         result.output += logHelper(u"PostProcessing Path: %s" % path, logger.INFO)
         result.output += logHelper(u"PostProcessing Dirs: %s" % str(dirs), logger.DEBUG)
