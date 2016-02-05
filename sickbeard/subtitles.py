@@ -247,7 +247,7 @@ def get_video(video_path, subtitles_path=None):
         # Encode paths to UTF-8 to ensure subliminal support.
         video_path = video_path.encode('utf-8')
         subtitles_path = subtitles_path.encode('utf-8')
-    except UnicodeDecodeError:
+    except UnicodeEncodeError:
         # Fallback to system encoding. This should never happen.
         video_path = video_path.encode(sickbeard.SYS_ENCODING)
         subtitles_path = subtitles_path.encode(sickbeard.SYS_ENCODING)
@@ -282,7 +282,7 @@ def get_subtitles_path(video_path):
     try:
         # Encode path to UTF-8 to ensure subliminal support.
         new_subtitles_path = new_subtitles_path.encode('utf-8')
-    except UnicodeDecodeError:
+    except UnicodeEncodeError:
         # Fallback to system encoding. This should never happen.
         new_subtitles_path = new_subtitles_path.encode(sickbeard.SYS_ENCODING)
 
@@ -334,13 +334,7 @@ class SubtitlesFinder(object):
         run_post_process = False
         # Check if PP folder is set
         if sickbeard.TV_DOWNLOAD_DIR and os.path.isdir(sickbeard.TV_DOWNLOAD_DIR):
-            try:
-                # sickbeard.TV_DOWNLOAD_DIR is not unicode, try to decode for now
-                tv_dir_path = sickbeard.TV_DOWNLOAD_DIR.decode(sickbeard.SYS_ENCODING)
-            except UnicodeDecodeError:
-                # Fallback to UTF-8. This will almost never happen, but just in case
-                tv_dir_path = sickbeard.TV_DOWNLOAD_DIR.decode('utf-8')
-            for root, _, files in os.walk(tv_dir_path, topdown=False):
+            for root, _, files in os.walk(sickbeard.TV_DOWNLOAD_DIR, topdown=False):
                 for video_filename in sorted(files):
                     try:
                         # Remove non release groups from video file. Needed to match subtitles
