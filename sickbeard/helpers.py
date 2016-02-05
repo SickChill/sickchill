@@ -57,7 +57,7 @@ from sickrage.helper.common import http_code_description, media_extensions, pret
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
-# from cachecontrol import CacheControl, caches
+from cachecontrol import CacheControl
 from itertools import izip, cycle
 
 import shutil
@@ -1380,9 +1380,7 @@ def _setUpSession(session, headers):
     """
 
     # request session
-    # Lets try without caching sessions to disk for awhile
-    # cache_dir = sickbeard.CACHE_DIR or _getTempDir()
-    # session = CacheControl(sess=session, cache=caches.FileCache(ek(os.path.join, cache_dir, 'sessions'), use_dir_lock=True), cache_etags=False)
+    session = CacheControl(sess=session, cache_etags=True)
 
     # request session clear residual referer
     # pylint: disable=superfluous-parens
