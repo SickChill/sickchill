@@ -402,7 +402,7 @@ class SubtitlesFinder(object):
                                        (os.path.join(root, video_filename), ex(error)))
             if run_post_process:
                 logger.log(u'Starting post-process with default settings now that we found subtitles')
-                processTV.processDir(tv_dir_path)
+                processTV.processDir(sickbeard.TV_DOWNLOAD_DIR)
 
     def run(self, force=False):  # pylint: disable=too-many-branches, too-many-statements
 
