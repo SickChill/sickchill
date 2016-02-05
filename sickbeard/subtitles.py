@@ -152,7 +152,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                    'Rename the file or try a different locale. Error: {}'.format
                    (subtitles_info['location'], ex(error)), logger.WARNING)
         return existing_subtitles, None
-    user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
+    user_score = 367 if sickbeard.SUBTITLES_PERFECT_MATCH else 352
 
     video = get_video(video_path, subtitles_path=subtitles_path)
     if not video:
@@ -361,7 +361,7 @@ class SubtitlesFinder(object):
 
                             logger.log(u'Found subtitle(s) canditate(s) for {}'.format(video_filename), logger.INFO)
                             hearing_impaired = sickbeard.SUBTITLES_HEARING_IMPAIRED
-                            user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
+                            user_score = 367 if sickbeard.SUBTITLES_PERFECT_MATCH else 352
                             found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
                                                                            hearing_impaired=hearing_impaired,
                                                                            min_score=user_score,
