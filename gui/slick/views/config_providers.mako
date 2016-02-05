@@ -177,18 +177,6 @@ $('#config-components').tabs();
                         </div>
                         % endif
 
-                        % if hasattr(curNewznabProvider, 'search_fallback'):
-                        <div class="field-pair">
-                            <label for="${curNewznabProvider.get_id()}_search_fallback">
-                                <span class="component-title">Season search fallback</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="${curNewznabProvider.get_id()}_search_fallback" id="${curNewznabProvider.get_id()}_search_fallback" ${('', 'checked="checked"')[bool(curNewznabProvider.search_fallback)]}/>
-                                    <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
-                                </span>
-                            </label>
-                        </div>
-                        % endif
-
                         % if hasattr(curNewznabProvider, 'search_mode'):
                         <div class="field-pair">
                             <label>
@@ -207,6 +195,18 @@ $('#config-components').tabs();
                                 <span class="component-title"></span>
                                 <span class="component-desc">
                                     <input type="radio" name="${curNewznabProvider.get_id()}_search_mode" id="${curNewznabProvider.get_id()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="eponly"]}/>episodes only.
+                                </span>
+                            </label>
+                        </div>
+                        % endif
+
+                        % if hasattr(curNewznabProvider, 'search_fallback'):
+                        <div class="field-pair">
+                            <label for="${curNewznabProvider.get_id()}_search_fallback">
+                                <span class="component-title">Enable fallback</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" name="${curNewznabProvider.get_id()}_search_fallback" id="${curNewznabProvider.get_id()}_search_fallback" ${('', 'checked="checked"')[bool(curNewznabProvider.search_fallback)]}/>
+                                    <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
                         </div>
