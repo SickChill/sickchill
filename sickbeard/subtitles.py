@@ -180,13 +180,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
             return existing_subtitles, None
 
         for subtitle in subtitles_list:
-            try:
-                matches = subtitle.get_matches(video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
-            except ValueError as error:
-                logger.log(u'An error occurred while getting a subtitle match for: {}. Error: {}'.format
-                           (video.name, ex(error)), logger.WARNING)
-                continue
-            score = subliminal.subtitle.compute_score(matches, video)
+            score = subliminal.score.compute_score(subtitle, video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
             logger.log(u'[{}] Subtitle score for {} is: {} (min={})'.format
                        (subtitle.provider_name, subtitle.id, score, user_score), logger.DEBUG)
 
@@ -374,13 +368,7 @@ class SubtitlesFinder(object):
                                                                            only_one=not sickbeard.SUBTITLES_MULTI)
 
                             for subtitle in subtitles_list:
-                                try:
-                                    matches = subtitle.get_matches(video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
-                                except ValueError as error:
-                                    logger.log(u'An error occurred while getting a subtitle match for: {}. Error: {}'.format
-                                               (video.name, ex(error)), logger.WARNING)
-                                    continue
-                                score = subliminal.subtitle.compute_score(matches, video)
+                                score = subliminal.score.compute_score(subtitle, video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
                                 logger.log(u'[{}] Subtitle score for {} is: {} (min={})'.format
                                            (subtitle.provider_name, subtitle.id, score, user_score), logger.DEBUG)
 
