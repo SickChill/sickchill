@@ -383,7 +383,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
             result.output += logHelper(u"Trying to parse folder name as fallback", logger.DEBUG)
             pass
         except InvalidShowException as e:
-            result.output += logHelper(u"Invalid show exception. Error: {}".format(e), logger.DEBUG)
+            result.output += logHelper(u"Invalid show exception. Error: {}".format(e), logger.WARNING)
             result.output += logHelper(u"Trying to parse folder name as fallback", logger.DEBUG)
             pass
 
@@ -395,7 +395,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
             result.output += logHelper(u"{} : Invalid name exception (folder)".format(dirName), logger.DEBUG)
             pass
         except InvalidShowException as e:
-            result.output += logHelper(u"Invalid show exception (folder). Error: {}".format(e), logger.DEBUG)
+            result.output += logHelper(u"Invalid show exception (folder). Error: {}".format(e), logger.WARNING)
             pass
 
     if sickbeard.UNPACK:
