@@ -120,6 +120,9 @@ class Pattern(object):
         :return:
         :rtype:
         """
+        if len(match) < 0 or match.value == "":
+            return False
+
         if yield_parent or self.format_all:
             match.formatter = self.formatters.get(match.name,
                                                   self.formatters.get('__parent__', self._default_formatter))
@@ -139,6 +142,9 @@ class Pattern(object):
         :return:
         :rtype:
         """
+        if len(child) < 0 or child.value == "":
+            return False
+
         if yield_children or self.format_all:
             child.formatter = self.formatters.get(child.name,
                                                   self.formatters.get('__children__', self._default_formatter))
