@@ -3,9 +3,11 @@
 # pylint: disable=no-self-use, pointless-statement, missing-docstring, invalid-name
 
 import os
+
+import pytest
 import six
 
-from ..api import guessit, properties
+from ..api import guessit, properties, GuessitException
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
@@ -33,3 +35,11 @@ def test_unicode():
 def test_properties():
     props = properties()
     assert 'video_codec' in props.keys()
+
+
+def test_exception():
+    with pytest.raises(GuessitException) as excinfo:
+        guessit(object())
+    assert "An internal error has occured in guessit" in str(excinfo.value)
+    assert "Guessit Exception Report" in str(excinfo.value)
+    assert "Please report at https://github.com/guessit-io/guessit/issues" in str(excinfo.value)
