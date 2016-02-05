@@ -57,6 +57,7 @@ from sickrage.helper.common import http_code_description, media_extensions, pret
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
+# from cachecontrol import CacheControl, caches
 from itertools import izip, cycle
 
 import shutil
@@ -606,7 +607,7 @@ def chmodAsParent(childPath):
     if childPath_mode == childMode:
         return
 
-    childPath_owner = childPathStat.st_uid
+    childPath_owner = childPathStat.st_uid  # pylint: disable=no-member
     user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
     if user_id != 0 and user_id != childPath_owner:
@@ -646,7 +647,7 @@ def fixSetGroupID(childPath):
         if childGID == parentGID:
             return
 
-        childPath_owner = childStat.st_uid
+        childPath_owner = childStat.st_uid  # pylint: disable=no-member
         user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
         if user_id != 0 and user_id != childPath_owner:
@@ -1611,7 +1612,7 @@ def verify_freespace(src, dest, oldfile=None):
     if hasattr(os, 'statvfs'):  # POSIX
         def disk_usage(path):
             st = ek(os.statvfs, path)
-            free = st.f_bavail * st.f_frsize
+            free = st.f_bavail * st.f_frsize  # pylint: disable=no-member
             return free
 
     elif os.name == 'nt':       # Windows
@@ -1727,7 +1728,7 @@ def getDiskSpaceUsage(diskPath=None):
             return pretty_file_size(free_bytes.value)
         else:
             st = ek(os.statvfs, diskPath)
-            return pretty_file_size(st.f_bavail * st.f_frsize)
+            return pretty_file_size(st.f_bavail * st.f_frsize)  # pylint: disable=no-member
     else:
         return False
 
