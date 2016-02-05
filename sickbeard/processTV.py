@@ -378,14 +378,24 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
         try:
             NameParser().parse(video, cache_result=False)
             return True
-        except (InvalidNameException, InvalidShowException):
+        except InvalidNameException:
+            result.output += logHelper(u"{} : Invalid name exception".format(video), logger.DEBUG)
+            result.output += logHelper(u"Trying to parse folder name as fallback", logger.DEBUG)
+            pass
+        except InvalidShowException as e:
+            result.output += logHelper(u"Invalid show exception. Error: {}".format(e), logger.DEBUG)
+            result.output += logHelper(u"Trying to parse folder name as fallback", logger.DEBUG)
             pass
 
     for proc_dir in allDirs:
         try:
             NameParser().parse(proc_dir, cache_result=False)
             return True
-        except (InvalidNameException, InvalidShowException):
+        except InvalidNameException:
+            result.output += logHelper(u"{} : Invalid name exception (folder)".format(dirName), logger.DEBUG)
+            pass
+        except InvalidShowException as e:
+            result.output += logHelper(u"Invalid show exception (folder). Error: {}".format(e), logger.DEBUG)
             pass
 
     if sickbeard.UNPACK:
@@ -396,7 +406,11 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
             try:
                 NameParser().parse(packed, cache_result=False)
                 return True
-            except (InvalidNameException, InvalidShowException):
+            except InvalidNameException:
+                result.output += logHelper(u"{} : Invalid name exception".format(packed), logger.DEBUG)
+                pass
+            except InvalidShowException as e:
+                result.output += logHelper(u"{} : Invalid show exception. Error: {}".format(packed, e), logger.DEBUG)
                 pass
 
     result.output += logHelper(u"%s : No processable items found in folder" % dirName, logger.DEBUG)
