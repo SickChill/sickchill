@@ -182,35 +182,37 @@ $('#config-components').tabs();
                             <label for="${curNewznabProvider.get_id()}_search_fallback">
                                 <span class="component-title">Season search fallback</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNewznabProvider.get_id()}_search_fallback" id="${curNewznabProvider.get_id()}_search_fallback" ${('', 'checked="checked"')[bool(curNewznabProvider.search_fallback)]}/>
+                                    <input type="checkbox" name="${curNewznabProvider.get_id()}_search_fallback" id="${curNewznabProvider.get_id()}_search_fallback" class="enabler" ${('', 'checked="checked"')[bool(curNewznabProvider.search_fallback)]}/>
                                     <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
                         </div>
                         % endif
-
-                        % if hasattr(curNewznabProvider, 'search_mode'):
-                        <div class="field-pair">
-                            <label>
-                                <span class="component-title">Season search mode</span>
-                                <span class="component-desc">
-                                    <p>when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes.</p>
-                                </span>
-                            </label>
-                            <label>
-                                <span class="component-title"></span>
-                                <span class="component-desc">
-                                    <input type="radio" name="${curNewznabProvider.get_id()}_search_mode" id="${curNewznabProvider.get_id()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="sponly"]}/>season packs only.
-                                </span>
-                            </label>
-                            <label>
-                                <span class="component-title"></span>
-                                <span class="component-desc">
-                                    <input type="radio" name="${curNewznabProvider.get_id()}_search_mode" id="${curNewznabProvider.get_id()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="eponly"]}/>episodes only.
-                                </span>
-                            </label>
+						
+                        <div id="content_${curNewznabProvider.get_id()}_search_fallback">
+	                        % if hasattr(curNewznabProvider, 'search_mode'):
+	                        <div class="field-pair">
+	                            <label>
+	                                <span class="component-title">Season search mode</span>
+	                                <span class="component-desc">
+	                                    <p>when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes.</p>
+	                                </span>
+	                            </label>
+	                            <label>
+	                                <span class="component-title"></span>
+	                                <span class="component-desc">
+	                                    <input type="radio" name="${curNewznabProvider.get_id()}_search_mode" id="${curNewznabProvider.get_id()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="sponly"]}/>season packs only.
+	                                </span>
+	                            </label>
+	                            <label>
+	                                <span class="component-title"></span>
+	                                <span class="component-desc">
+	                                    <input type="radio" name="${curNewznabProvider.get_id()}_search_mode" id="${curNewznabProvider.get_id()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="eponly"]}/>episodes only.
+	                                </span>
+	                            </label>
+	                        </div>
+	                        % endif
                         </div>
-                        % endif
 
                     </div>
                     % endfor
@@ -269,35 +271,37 @@ $('#config-components').tabs();
                             <label for="${curNzbProvider.get_id()}_search_fallback">
                                 <span class="component-title">Season search fallback</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNzbProvider.get_id()}_search_fallback" id="${curNzbProvider.get_id()}_search_fallback" ${('', 'checked="checked"')[bool(curNzbProvider.search_fallback)]}/>
+                                    <input type="checkbox" name="${curNzbProvider.get_id()}_search_fallback" id="${curNzbProvider.get_id()}_search_fallback" class="enabler" ${('', 'checked="checked"')[bool(curNzbProvider.search_fallback)]}/>
                                     <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
                         </div>
                         % endif
 
-                        % if hasattr(curNzbProvider, 'search_mode'):
-                        <div class="field-pair">
-                            <label>
-                                <span class="component-title">Season search mode</span>
-                                <span class="component-desc">
-                                    <p>when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes.</p>
-                                </span>
-                            </label>
-                            <label>
-                                <span class="component-title"></span>
-                                <span class="component-desc">
-                                    <input type="radio" name="${curNzbProvider.get_id()}_search_mode" id="${curNzbProvider.get_id()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="sponly"]}/>season packs only.
-                                </span>
-                            </label>
-                            <label>
-                                <span class="component-title"></span>
-                                <span class="component-desc">
-                                    <input type="radio" name="${curNzbProvider.get_id()}_search_mode" id="${curNzbProvider.get_id()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="eponly"]}/>episodes only.
-                                </span>
-                            </label>
+                        <div id="content_${curNzbProvider.get_id()}_search_fallback">
+                            % if hasattr(curNzbProvider, 'search_mode'):
+	                        <div class="field-pair">
+	                            <label>
+	                                <span class="component-title">Season search mode</span>
+	                                <span class="component-desc">
+	                                    <p>when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes.</p>
+	                                </span>
+	                            </label>
+	                            <label>
+	                                <span class="component-title"></span>
+	                                <span class="component-desc">
+	                                    <input type="radio" name="${curNzbProvider.get_id()}_search_mode" id="${curNzbProvider.get_id()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="sponly"]}/>season packs only.
+	                                </span>
+	                            </label>
+	                            <label>
+	                                <span class="component-title"></span>
+	                                <span class="component-desc">
+	                                    <input type="radio" name="${curNzbProvider.get_id()}_search_mode" id="${curNzbProvider.get_id()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="eponly"]}/>episodes only.
+	                                </span>
+	                            </label>
+	                        </div>
+	                        % endif
                         </div>
-                        % endif
 
                     </div>
                     % endfor
@@ -542,35 +546,37 @@ $('#config-components').tabs();
                             <label for="${curTorrentProvider.get_id()}_search_fallback">
                                 <span class="component-title">Season search fallback</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.get_id()}_search_fallback" id="${curTorrentProvider.get_id()}_search_fallback" ${('', 'checked="checked"')[bool(curTorrentProvider.search_fallback)]}/>
+                                    <input type="checkbox" name="${curTorrentProvider.get_id()}_search_fallback" id="${curTorrentProvider.get_id()}_search_fallback" class="enabler" ${('', 'checked="checked"')[bool(curTorrentProvider.search_fallback)]}/>
                                     <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
                         </div>
                         % endif
 
-                        % if hasattr(curTorrentProvider, 'search_mode'):
-                        <div class="field-pair">
-                            <label>
-                                <span class="component-title">Season search mode</span>
-                                <span class="component-desc">
-                                    <p>when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes.</p>
-                                </span>
-                            </label>
-                            <label>
-                                <span class="component-title"></span>
-                                <span class="component-desc">
-                                    <input type="radio" name="${curTorrentProvider.get_id()}_search_mode" id="${curTorrentProvider.get_id()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="sponly"]}/>season packs only.
-                                </span>
-                            </label>
-                            <label>
-                                <span class="component-title"></span>
-                                <span class="component-desc">
-                                    <input type="radio" name="${curTorrentProvider.get_id()}_search_mode" id="${curTorrentProvider.get_id()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="eponly"]}/>episodes only.
-                                </span>
-                            </label>
+                        <div id="content_${curTorrentProvider.get_id()}_search_fallback">
+	                        % if hasattr(curTorrentProvider, 'search_mode'):
+	                        <div class="field-pair">
+	                            <label>
+	                                <span class="component-title">Season search mode</span>
+	                                <span class="component-desc">
+	                                    <p>when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes.</p>
+	                                </span>
+	                            </label>
+	                            <label>
+	                                <span class="component-title"></span>
+	                                <span class="component-desc">
+	                                    <input type="radio" name="${curTorrentProvider.get_id()}_search_mode" id="${curTorrentProvider.get_id()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="sponly"]}/>season packs only.
+	                                </span>
+	                            </label>
+	                            <label>
+	                                <span class="component-title"></span>
+	                                <span class="component-desc">
+	                                    <input type="radio" name="${curTorrentProvider.get_id()}_search_mode" id="${curTorrentProvider.get_id()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="eponly"]}/>episodes only.
+	                                </span>
+	                            </label>
+	                        </div>
+	                        % endif
                         </div>
-                        % endif
 
                         % if hasattr(curTorrentProvider, 'cat') and curTorrentProvider.get_id() == 'tntvillage':
                         <div class="field-pair">
