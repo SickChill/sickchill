@@ -1695,7 +1695,7 @@ def isFileLocked(checkfile, writeLockCheck=False):
     if not ek(os.path.exists, checkfile):
         return True
     try:
-        f = io.open(checkfile, 'rb')
+        f = io.open(checkfile.encode('utf-8'), 'rb')
         f.close()
     except IOError:
         return True
