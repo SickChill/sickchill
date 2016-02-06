@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io/
-# Git: https://github.com/SickRage/SickRage.git
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -17,20 +17,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+
+import datetime
 import re
 import sys
-
-import sickbeard
-
 import urllib
-import datetime
+
 from dateutil import parser
 
+import sickbeard
 from sickbeard.common import USER_AGENT, Quality
+
 from sickrage.helper.common import dateFormat, dateTimeFormat
 
 
-class SickBeardURLopener(urllib.FancyURLopener):
+class SickBeardURLopener(urllib.FancyURLopener, object):
     version = USER_AGENT
 
 
@@ -57,6 +58,9 @@ class AuthURLOpener(SickBeardURLopener):
         """
         Override this function and instead of prompting just give the
         username/password that were provided when the class was instantiated.
+
+        :param host:
+        :param realm:
         """
 
         # if this is the first try then provide a username/password
@@ -66,7 +70,7 @@ class AuthURLOpener(SickBeardURLopener):
 
         # if we've tried before then return blank which cancels the request
         else:
-            return '', ''
+            return u'', u''
 
     # this is pretty much just a hack for convenience
     def openit(self, url):
@@ -86,7 +90,7 @@ class SearchResult(object):
         self.show = None
 
         # URL to the NZB/torrent file
-        self.url = ""
+        self.url = u''
 
         # used by some providers to store extra info associated with the result
         self.extraInfo = []
@@ -98,13 +102,13 @@ class SearchResult(object):
         self.quality = Quality.UNKNOWN
 
         # release name
-        self.name = ""
+        self.name = u''
 
         # size of the release (-1 = n/a)
         self.size = -1
 
         # release group
-        self.release_group = ""
+        self.release_group = u''
 
         # version
         self.version = -1
@@ -115,31 +119,31 @@ class SearchResult(object):
         # content
         self.content = None
 
-        self.resultType = ''
+        self.resultType = u''
 
     def __str__(self):
 
         if self.provider is None:
-            return "Invalid provider, unable to print self"
+            return u'Invalid provider, unable to print self'
 
-        myString = self.provider.name + " @ " + self.url + "\n"
-        myString += "Extra Info:\n"
+        my_string = u'{provider} @ {url}\n'.format(provider=self.provider.name, url=self.url)
+        my_string += u'Extra Info:\n'
         for extra in self.extraInfo:
-            myString += "  " + extra + "\n"
+            my_string += u' {info}\n'.format(info=extra)
 
-        myString += "Episodes:\n"
+        my_string += u'Episodes:\n'
         for ep in self.episodes:
-            myString += "  " + str(ep) + "\n"
+            my_string += u' {episode}\n'.format(episode=ep)
 
-        myString += "Quality: " + Quality.qualityStrings[self.quality] + "\n"
-        myString += "Name: " + self.name + "\n"
-        myString += "Size: " + str(self.size) + "\n"
-        myString += "Release Group: " + str(self.release_group) + "\n"
+        my_string += u'Quality: {quality}\n'.format(quality=Quality.qualityStrings[self.quality])
+        my_string += u'Name: {name}\n'.format(name=self.name)
+        my_string += u'Size: {size}\n'.format(size=self.size)
+        my_string += u'Release Group: {group}\n'.format(group=self.release_group)
 
-        return myString
+        return my_string
 
     def fileName(self):
-        return self.episodes[0].prettyName() + "." + self.resultType
+        return u'{name}.{type}'.format(name=self.episodes[0].prettyName(), type=self.resultType)
 
 
 class NZBSearchResult(SearchResult):
@@ -148,7 +152,7 @@ class NZBSearchResult(SearchResult):
     """
     def __init__(self, episodes):
         super(NZBSearchResult, self).__init__(episodes)
-        self.resultType = "nzb"
+        self.resultType = u'nzb'
 
 
 class NZBDataSearchResult(SearchResult):
@@ -157,7 +161,7 @@ class NZBDataSearchResult(SearchResult):
     """
     def __init__(self, episodes):
         super(NZBDataSearchResult, self).__init__(episodes)
-        self.resultType = "nzbdata"
+        self.resultType = u'nzbdata'
 
 
 class TorrentSearchResult(SearchResult):
@@ -166,14 +170,16 @@ class TorrentSearchResult(SearchResult):
     """
     def __init__(self, episodes):
         super(TorrentSearchResult, self).__init__(episodes)
-        self.resultType = "torrent"
+        self.resultType = u'torrent'
 
 
 class AllShowsListUI(object):
     """
-    This class is for indexer api. Instead of prompting with a UI to pick the
-    desired result out of a list of shows it tries to be smart about it
-    based on what shows are in SB.
+    This class is for indexer api.
+
+    Instead of prompting with a UI to pick the desired result out of a
+    list of shows it tries to be smart about it based on what shows
+    are in SickRage.
     """
 
     def __init__(self, config, log=None):
@@ -181,42 +187,44 @@ class AllShowsListUI(object):
         self.log = log
 
     def selectSeries(self, allSeries):
-        searchResults = []
-        seriesnames = []
+        search_results = []
+        series_names = []
 
         # get all available shows
         if allSeries:
             if 'searchterm' in self.config:
-                searchterm = self.config['searchterm']
+                search_term = self.config['searchterm']
                 # try to pick a show that's in my show list
                 for curShow in allSeries:
-                    if curShow in searchResults:
+                    if curShow in search_results:
                         continue
 
                     if 'seriesname' in curShow:
-                        seriesnames.append(curShow['seriesname'])
+                        series_names.append(curShow['seriesname'])
                     if 'aliasnames' in curShow:
-                        seriesnames.extend(curShow['aliasnames'].split('|'))
+                        series_names.extend(curShow['aliasnames'].split('|'))
 
-                    for name in seriesnames:
-                        if searchterm.lower() in name.lower():
+                    for name in series_names:
+                        if search_term.lower() in name.lower():
                             if 'firstaired' not in curShow:
                                 curShow['firstaired'] = str(datetime.date.fromordinal(1))
                                 curShow['firstaired'] = re.sub("([-]0{2})+", "", curShow['firstaired'])
-                                fixDate = parser.parse(curShow['firstaired'], fuzzy=True).date()
-                                curShow['firstaired'] = fixDate.strftime(dateFormat)
+                                fix_date = parser.parse(curShow['firstaired'], fuzzy=True).date()
+                                curShow['firstaired'] = fix_date.strftime(dateFormat)
 
-                            if curShow not in searchResults:
-                                searchResults += [curShow]
+                            if curShow not in search_results:
+                                search_results += [curShow]
 
-        return searchResults
+        return search_results
 
 
 class ShowListUI(object):
     """
-    This class is for tvdb-api. Instead of prompting with a UI to pick the
-    desired result out of a list of shows it tries to be smart about it
-    based on what shows are in SickRage.
+    This class is for tvdb-api.
+
+    Instead of prompting with a UI to pick the desired result out of a
+    list of shows it tries to be smart about it based on what shows
+    are in SickRage.
     """
 
     def __init__(self, config, log=None):
@@ -226,9 +234,9 @@ class ShowListUI(object):
     def selectSeries(self, allSeries):
         try:
             # try to pick a show that's in my show list
-            showIDList = [int(x.indexerid) for x in sickbeard.showList]
+            show_id_list = [int(x.indexerid) for x in sickbeard.showList]
             for curShow in allSeries:
-                if int(curShow['id']) in showIDList:
+                if int(curShow['id']) in show_id_list:
                     return curShow
         except Exception:
             pass
@@ -256,8 +264,9 @@ class Proper(object):
         self.scene_episode = -1
 
     def __str__(self):
-        return str(self.date) + " " + self.name + " " + str(self.season) + "x" + str(self.episode) + " of " + str(
-            self.indexerid) + " from " + str(sickbeard.indexerApi(self.indexer).name)
+        return u'{date} {name} {season}x{episode} of {series_id} from {indexer}'.format(
+            date=self.date, name=self.name, season=self.season, episode=self.episode,
+            series_id=self.indexerid, indexer=sickbeard.indexerApi(self.indexer).name)
 
 
 class ErrorViewer(object):
