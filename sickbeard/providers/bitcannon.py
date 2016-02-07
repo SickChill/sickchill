@@ -18,22 +18,20 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
 from urllib import urlencode
+from urlparse import urljoin
 
 from sickbeard import logger, tvcache
 
-from sickrage.helper.common import convert_size
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class BitCannonProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class BitCannonProvider(TorrentProvider):
 
     def __init__(self):
 
         TorrentProvider.__init__(self, "BitCannon")
-
-        self.public = True
 
         self.minseed = None
         self.minleech = None
@@ -43,84 +41,73 @@ class BitCannonProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
         self.cache = tvcache.TVCache(self, search_params={'RSS': ['tv', 'anime']})
 
-        self.search_params = {
-            'q': '',
-            'category': 'tv',
-            'apiKey': ''
-        }
-
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-statements, too-many-locals
-        # search_strings comes in one of these formats:
-        #      {'Episode': ['Italian Works S05E10']}
-        #      {'Season': ['Italian Works S05']}
-        #      {'RSS': ['tv', 'anime']}
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals
         results = []
 
-        # select the correct category (TODO:  Add more categories?)
-        anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False
-        self.search_params['category'] = ('tv', 'anime')[anime]
+        url = self.make_url()
+        if not url:
+            return results
 
-        # Set API Key (if applicable)
+        search_params = {}
+
+        anime = ep_obj and ep_obj.show and ep_obj.show.anime
+        search_params['category'] = ('tv', 'anime')[bool(anime)]
+
         if self.api_key:
-            self.search_params['apiKey'] = self.api_key
+            search_params['apiKey'] = self.api_key
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
-
-                self.search_params['q'] = search_string.encode('utf-8') if mode != 'RSS' else ''
+                search_params['q'] = search_string.encode('utf-8')
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s" % search_string, logger.DEBUG)
+                    logger.log(u"Search string: {}".format(search_string), logger.DEBUG)
 
-                try:
-                    url = "http://localhost:3000/"    # a default
-                    if self.custom_url is not None:
-                        if not self.custom_url.endswith('/'):
-                            self.custom_url += '/'
-                        url = self.custom_url
-                    search_url = url + "api/search?" + urlencode(self.search_params)
-                    logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-                    parsed_json = self.get_url(search_url, json=True)
+                search_url = urljoin(url, "api/search")
+                logger.log(u"Search URL: {}?{}".format
+                           (search_url, urlencode(search_params)), logger.DEBUG)
 
-                    if not parsed_json:
-                        logger.log(u"No data returned from provider", logger.DEBUG)
-                        continue
+                parsed_json = self.get_url(search_url, params=search_params, json=True)
+                if not parsed_json:
+                    logger.log(u"No data returned from provider", logger.DEBUG)
+                    continue
 
-                    if self._check_auth_from_data(parsed_json):
-                        try:
-                            found_torrents = parsed_json['torrents']
-                        except Exception:
-                            found_torrents = {}
+                if not self._check_auth_from_data(parsed_json):
+                    return results
 
-                        for result in found_torrents:
-                            try:
-                                title = result.get('title', '')
-                                info_hash = result.get('infoHash', '')
-                                swarm = result.get('swarm', None)
-                                if swarm is not None:
-                                    seeders = int(swarm.get('seeders', 0))
-                                    leechers = int(swarm.get('leechers', 0))
-                                torrent_size = result.get('size', 0)
-                                size = convert_size(torrent_size) or -1
-                                download_url = "magnet:?xt=urn:btih:" + info_hash
+                for result in parsed_json.pop('torrents', {}):
+                    try:
+                        title = result.pop('title', '')
 
-                            except (AttributeError, TypeError, KeyError, ValueError):
-                                continue
+                        info_hash = result.pop('infoHash', '')
+                        download_url = "magnet:?xt=urn:btih:" + info_hash
+                        if not all([title, download_url, info_hash]):
+                            continue
 
-                            if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                continue
+                        swarm = result.pop('swarm', None)
+                        if swarm:
+                            seeders = try_int(swarm.pop('seeders', 0))
+                            leechers = try_int(swarm.pop('leechers', 0))
+                        else:
+                            seeders = leechers = 0
 
-                            item = title, download_url, size, seeders, leechers
+                        if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Discarding torrent because it doesn't meet the "
+                                           "minimum seeders or leechers: {} (S:{} L:{})".format
+                                           (title, seeders, leechers), logger.DEBUG)
+                            continue
 
-                            items.append(item)
+                        size = convert_size(result.pop('size', -1)) or -1
+                        item = title, download_url, size, seeders, leechers
+                        if mode != 'RSS':
+                            logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                                       (title, seeders, leechers), logger.DEBUG)
 
-                except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
+                        items.append(item)
+                    except (AttributeError, TypeError, KeyError, ValueError):
+                        continue
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
@@ -131,12 +118,27 @@ class BitCannonProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
     def seed_ratio(self):
         return self.ratio
 
+    def make_url(self):
+        url = 'http://localhost:3000/'
+        if self.custom_url:
+            if not self.custom_url.lower().startswith('http'):
+                logger.log(u"Invalid custom url set for BitCannon, please check your settings", logger.WARNING)
+                return ''
+
+            url = self.custom_url
+            if not url.endswith('/'):
+                url += '/'
+
+        return url
+
     @staticmethod
     def _check_auth_from_data(data):
-        if data and hasattr(data, 'status') and hasattr(data, 'message'):
-            if data and data['status'] == 401 and data['message'] == 'Invalid API key':
-                logger.log(u"Invalid api key. Check your settings", logger.WARNING)
-                return False
+        if not all([isinstance(data, dict),
+                    data.pop('status', 200) != 401,
+                    data.pop('message', '') != 'Invalid API key']):
+
+            logger.log(u"Invalid api key. Check your settings", logger.WARNING)
+            return False
 
         return True
 

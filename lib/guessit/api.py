@@ -8,12 +8,37 @@ try:
 except ImportError:  # pragma: no-cover
     from ordereddict import OrderedDict  # pylint:disable=import-error
 
+import traceback
+
 import six
 
 from rebulk.introspector import introspect
 
 from .rules import rebulk_builder
 from .options import parse_options
+from .__version__ import __version__
+
+
+class GuessitException(Exception):
+    """
+    Exception raised when guessit fails to perform a guess because of an internal error.
+    """
+    def __init__(self, string, options):
+        super(GuessitException, self).__init__("An internal error has occured in guessit.\n"
+                                               "===================== Guessit Exception Report =====================\n"
+                                               "version=%s\n"
+                                               "string=%s\n"
+                                               "options=%s\n"
+                                               "--------------------------------------------------------------------\n"
+                                               "%s"
+                                               "--------------------------------------------------------------------\n"
+                                               "Please report at "
+                                               "https://github.com/guessit-io/guessit/issues.\n"
+                                               "====================================================================" %
+                                               (__version__, str(string), str(options), traceback.format_exc()))
+
+        self.string = string
+        self.options = options
 
 
 def guessit(string, options=None):
@@ -64,25 +89,28 @@ class GuessItApi(object):
         :return:
         :rtype:
         """
-        options = parse_options(options)
-        result_decode = False
-        result_encode = False
-        if six.PY2 and isinstance(string, six.text_type):
-            string = string.encode("utf-8")
-            result_decode = True
-        if six.PY3 and isinstance(string, six.binary_type):
-            string = string.decode('ascii')
-            result_encode = True
-        matches = self.rebulk.matches(string, options)
-        if result_decode:
-            for match in matches:
-                if isinstance(match.value, six.binary_type):
-                    match.value = match.value.decode("utf-8")
-        if result_encode:
-            for match in matches:
-                if isinstance(match.value, six.text_type):
-                    match.value = match.value.encode("ascii")
-        return matches.to_dict(options.get('advanced', False), options.get('implicit', False))
+        try:
+            options = parse_options(options)
+            result_decode = False
+            result_encode = False
+            if six.PY2 and isinstance(string, six.text_type):
+                string = string.encode("utf-8")
+                result_decode = True
+            if six.PY3 and isinstance(string, six.binary_type):
+                string = string.decode('ascii')
+                result_encode = True
+            matches = self.rebulk.matches(string, options)
+            if result_decode:
+                for match in matches:
+                    if isinstance(match.value, six.binary_type):
+                        match.value = match.value.decode("utf-8")
+            if result_encode:
+                for match in matches:
+                    if isinstance(match.value, six.text_type):
+                        match.value = match.value.encode("ascii")
+            return matches.to_dict(options.get('advanced', False), options.get('implicit', False))
+        except:
+            raise GuessitException(string, options)
 
     def properties(self, options=None):
         """

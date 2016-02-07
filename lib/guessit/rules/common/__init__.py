@@ -3,9 +3,12 @@
 """
 Common module
 """
-seps = r' [](){}+*|=§-_~#/\.,;:'  # list of tags/words separators
+import re
+
+seps = r' [](){}+*|=-_~#/\\.,;:'  # list of tags/words separators
+seps_no_fs = seps.replace('/', '').replace('\\', '')
 
 title_seps = r'-+/\|'  # separators for title
 
-dash = (r'-', r'[\W_]')  # abbreviation used by many rebulk objects.
-alt_dash = (r'@', r'[\W_]')  # abbreviation used by many rebulk objects.
+dash = (r'-', r'['+re.escape(seps_no_fs)+']')  # abbreviation used by many rebulk objects.
+alt_dash = (r'@', r'['+re.escape(seps_no_fs)+']')  # abbreviation used by many rebulk objects.

@@ -113,7 +113,7 @@ def main(args=None):  # pylint:disable=too-many-branches
         print('+                   GuessIt ' + __version__ + (28 - len(__version__)) * ' ' + '+')
         print('+-------------------------------------------------------+')
         print('|      Please report any bug or feature request at      |')
-        print('|       https://github.com/wackou/guessit/issues.       |')
+        print('|     https://github.com/guessit-io/guessit/issues.     |')
         print('+-------------------------------------------------------+')
         help_required = False
 

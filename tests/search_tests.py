@@ -64,7 +64,7 @@ def generator(cur_data, cur_name, cur_provider):
     :return:
     """
 
-    def do_test():
+    def do_test(self):
         """
         Test to perform
         """

@@ -152,7 +152,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                    'Rename the file or try a different locale. Error: {}'.format
                    (subtitles_info['location'], ex(error)), logger.WARNING)
         return existing_subtitles, None
-    user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
+    user_score = 367 if sickbeard.SUBTITLES_PERFECT_MATCH else 352
 
     video = get_video(video_path, subtitles_path=subtitles_path)
     if not video:
@@ -180,13 +180,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
             return existing_subtitles, None
 
         for subtitle in subtitles_list:
-            try:
-                matches = subtitle.get_matches(video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
-            except ValueError as error:
-                logger.log(u'An error occurred while getting a subtitle match for: {}. Error: {}'.format
-                           (video.name, ex(error)), logger.WARNING)
-                continue
-            score = subliminal.subtitle.compute_score(matches, video)
+            score = subliminal.score.compute_score(subtitle, video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
             logger.log(u'[{}] Subtitle score for {} is: {} (min={})'.format
                        (subtitle.provider_name, subtitle.id, score, user_score), logger.DEBUG)
 
@@ -367,20 +361,14 @@ class SubtitlesFinder(object):
 
                             logger.log(u'Found subtitle(s) canditate(s) for {}'.format(video_filename), logger.INFO)
                             hearing_impaired = sickbeard.SUBTITLES_HEARING_IMPAIRED
-                            user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
+                            user_score = 367 if sickbeard.SUBTITLES_PERFECT_MATCH else 352
                             found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
                                                                            hearing_impaired=hearing_impaired,
                                                                            min_score=user_score,
                                                                            only_one=not sickbeard.SUBTITLES_MULTI)
 
                             for subtitle in subtitles_list:
-                                try:
-                                    matches = subtitle.get_matches(video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
-                                except ValueError as error:
-                                    logger.log(u'An error occurred while getting a subtitle match for: {}. Error: {}'.format
-                                               (video.name, ex(error)), logger.WARNING)
-                                    continue
-                                score = subliminal.subtitle.compute_score(matches, video)
+                                score = subliminal.score.compute_score(subtitle, video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
                                 logger.log(u'[{}] Subtitle score for {} is: {} (min={})'.format
                                            (subtitle.provider_name, subtitle.id, score, user_score), logger.DEBUG)
 

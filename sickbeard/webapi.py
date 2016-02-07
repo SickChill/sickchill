@@ -171,7 +171,7 @@ class ApiHandler(RequestHandler):
                   (result_type_map[RESULT_ERROR], ex(e))
         return out
 
-    def call_dispatcher(self, args, kwargs):
+    def call_dispatcher(self, args, kwargs):  # pylint:disable=too-many-branches
         """ calls the appropriate CMD class
             looks for a cmd in args and kwargs
             or calls the TVDBShorthandWrapper when the first args element is a number
@@ -232,7 +232,8 @@ class ApiHandler(RequestHandler):
 
         return out_dict
 
-    def filter_params(self, cmd, args, kwargs):
+    @staticmethod
+    def filter_params(cmd, args, kwargs):
         """ return only params kwargs that are for cmd
             and rename them to a clean version (remove "<cmd>_")
             args are shared across all commands
@@ -2479,10 +2480,10 @@ class CMD_ShowSeasonList(ApiCall):
         main_db_con = db.DBConnection(row_type="dict")
         if self.sort == "asc":
             sql_results = main_db_con.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season ASC",
-                                       [self.indexerid])
+                                             [self.indexerid])
         else:
             sql_results = main_db_con.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC",
-                                       [self.indexerid])
+                                             [self.indexerid])
         season_list = []  # a list with all season numbers
         for row in sql_results:
             season_list.append(int(row["season"]))
@@ -2682,7 +2683,7 @@ class CMD_ShowStats(ApiCall):
 
         main_db_con = db.DBConnection(row_type="dict")
         sql_results = main_db_con.select("SELECT status, season FROM tv_episodes WHERE season != 0 AND showid = ?",
-                                   [self.indexerid])
+                                         [self.indexerid])
         # the main loop that goes through all episodes
         for row in sql_results:
             status, quality = Quality.splitCompositeStatus(int(row["status"]))
@@ -2793,7 +2794,7 @@ class CMD_Shows(ApiCall):
         for curShow in sickbeard.showList:
             # If self.paused is None: show all, 0: show un-paused, 1: show paused
             if self.paused is not None and self.paused != curShow.paused:
-                    continue
+                continue
 
             indexer_show = helpers.mapIndexersToShow(curShow)
 

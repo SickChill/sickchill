@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# pylint:disable=too-many-lines
 
 import os
 import io
@@ -56,6 +57,7 @@ from sickrage.helper.common import http_code_description, media_extensions, pret
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
+from cachecontrol import CacheControl
 from itertools import izip, cycle
 
 import shutil
@@ -185,10 +187,7 @@ def isMediaFile(filename):
         if re.search('extras?$', sepFile[0], re.I):
             return False
 
-        if sepFile[2].lower() in media_extensions:
-            return True
-        else:
-            return False
+        return sepFile[2].lower() in media_extensions
     except TypeError as error:  # Not a string
         logger.log('Invalid filename. Filename must be a string. %s' % error, logger.DEBUG)  # pylint: disable=no-member
         return False
@@ -608,7 +607,7 @@ def chmodAsParent(childPath):
     if childPath_mode == childMode:
         return
 
-    childPath_owner = childPathStat.st_uid
+    childPath_owner = childPathStat.st_uid  # pylint: disable=no-member
     user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
     if user_id != 0 and user_id != childPath_owner:
@@ -648,7 +647,7 @@ def fixSetGroupID(childPath):
         if childGID == parentGID:
             return
 
-        childPath_owner = childStat.st_uid
+        childPath_owner = childStat.st_uid  # pylint: disable=no-member
         user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
         if user_id != 0 and user_id != childPath_owner:
@@ -1381,9 +1380,7 @@ def _setUpSession(session, headers):
     """
 
     # request session
-    # Lets try without caching sessions to disk for awhile
-    # cache_dir = sickbeard.CACHE_DIR or _getTempDir()
-    # session = CacheControl(sess=session, cache=caches.FileCache(ek(os.path.join, cache_dir, 'sessions'), use_dir_lock=True), cache_etags=False)
+    session = CacheControl(sess=session, cache_etags=True)
 
     # request session clear residual referer
     # pylint: disable=superfluous-parens
@@ -1416,7 +1413,8 @@ def _setUpSession(session, headers):
     return session
 
 
-def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=None, json=False, need_bytes=False):
+def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too-many-arguments, too-many-return-statements, too-many-branches
+           timeout=30, session=None, json=False, need_bytes=False):
     """
     Returns a byte-string retrieved from the url provider.
     """
@@ -1465,17 +1463,17 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
         logger.log(traceback.format_exc(), logger.DEBUG)
         return None
     except Exception as e:
-        if e.errno != errno.ECONNRESET:
+        if hasattr(e, 'errno') and e.errno == errno.ECONNRESET:
+            logger.log(u"Connection reseted by peer accessing getURL %s Error: %r" % (url, ex(e)), logger.DEBUG)
+        else:
             logger.log(u"Unknown exception in getURL %s Error: %r" % (url, ex(e)), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
-        else:
-            logger.log(u"Connection reseted by peer accessing getURL %s Error: %r" % (url, ex(e)), logger.DEBUG)
         return None
 
     return (resp.text, resp.content)[need_bytes] if not json else resp.json()
 
 
-def download_file(url, filename, session=None, headers=None):
+def download_file(url, filename, session=None, headers=None):  # pylint:disable=too-many-return-statements
     """
     Downloads a file specified
 
@@ -1612,7 +1610,7 @@ def verify_freespace(src, dest, oldfile=None):
     if hasattr(os, 'statvfs'):  # POSIX
         def disk_usage(path):
             st = ek(os.statvfs, path)
-            free = st.f_bavail * st.f_frsize
+            free = st.f_bavail * st.f_frsize  # pylint: disable=no-member
             return free
 
     elif os.name == 'nt':       # Windows
@@ -1697,7 +1695,7 @@ def isFileLocked(checkfile, writeLockCheck=False):
     if not ek(os.path.exists, checkfile):
         return True
     try:
-        f = io.open(checkfile, 'rb')
+        f = ek(io.open, checkfile, 'rb')
         f.close()
     except IOError:
         return True
@@ -1728,12 +1726,12 @@ def getDiskSpaceUsage(diskPath=None):
             return pretty_file_size(free_bytes.value)
         else:
             st = ek(os.statvfs, diskPath)
-            return pretty_file_size(st.f_bavail * st.f_frsize)
+            return pretty_file_size(st.f_bavail * st.f_frsize)  # pylint: disable=no-member
     else:
         return False
 
 
-def getTVDBFromID(indexer_id, indexer):
+def getTVDBFromID(indexer_id, indexer):  # pylint:disable=too-many-return-statements
 
     session = requests.Session()
     tvdb_id = ''
@@ -1786,10 +1784,11 @@ def get_showname_from_indexer(indexer, indexer_id, lang='en'):
     t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
     s = t[int(indexer_id)]
 
-    if hasattr(s,'data'):
+    if hasattr(s, 'data'):
         return s.data.get('seriesname')
 
     return None
+
 
 def is_ip_private(ip):
     priv_lo = re.compile(r"^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$")

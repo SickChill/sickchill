@@ -149,31 +149,6 @@ $(document).ready(function () {
             $("#manualSearchModalFailed").modal('show');
         });
 
-        $('.epSearch').click(function(event){
-            event.preventDefault();
-
-            // Check if we have disabled the click
-            if ($(this).prop('enableClick') === '0') { return false; }
-
-            selectedEpisode = $(this);
-
-            if ($(this).parent().parent().children(".col-status").children(".quality").length) {
-                $("#manualSearchModalQuality").modal('show');
-            } else {
-                manualSearch();
-            }
-        });
-
-        $('#manualSearchModalFailed .btn').click(function(){
-            failedDownload = ($(this).text().toLowerCase() === 'yes');
-            $("#manualSearchModalQuality").modal('show');
-        });
-
-        $('#manualSearchModalQuality .btn').click(function(){
-            qualityDownload = ($(this).text().toLowerCase() === 'yes');
-            manualSearch();
-        });
-
         function manualSearch(){
             var imageName, imageResult, htmlContent;
 
@@ -230,5 +205,30 @@ $(document).ready(function () {
             // don't follow the link
             return false;
         }
+
+        $('.epSearch').click(function(event){
+            event.preventDefault();
+
+            // Check if we have disabled the click
+            if ($(this).prop('enableClick') === '0') { return false; }
+
+            selectedEpisode = $(this);
+
+            if ($(this).parent().parent().children(".col-status").children(".quality").length) {
+                $("#manualSearchModalQuality").modal('show');
+            } else {
+                manualSearch();
+            }
+        });
+
+        $('#manualSearchModalFailed .btn').click(function(){
+            failedDownload = ($(this).text().toLowerCase() === 'yes');
+            $("#manualSearchModalQuality").modal('show');
+        });
+
+        $('#manualSearchModalQuality .btn').click(function(){
+            qualityDownload = ($(this).text().toLowerCase() === 'yes');
+            manualSearch();
+        });
     };
 })();

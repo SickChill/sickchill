@@ -19,8 +19,8 @@
 
 import re
 import traceback
-from urllib import urlencode
 from requests.utils import dict_from_cookiejar
+from urllib import urlencode
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -34,23 +34,30 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "TransmitTheNet")
 
-        self.urls = {
-            'base_url': 'https://transmithe.net/',
-            'login': 'https://transmithe.net/login.php',
-            'search': 'https://transmithe.net/torrents.php',
-        }
-
-        self.url = self.urls['base_url']
-
+        # Credentials
         self.username = None
         self.password = None
+
+        # Torrent Stats
         self.ratio = None
         self.minseed = None
         self.minleech = None
         self.freeleech = None
 
+        # URLs
+        self.url = 'https://transmithe.net/'
+        self.urls = {
+            'login': 'https://transmithe.net/login.php',
+            'search': 'https://transmithe.net/torrents.php',
+            'base_url': self.url,
+        }
+
+        # Proper Strings
+
+        # Cache
         self.cache = tvcache.TVCache(self)
 
     def _check_auth(self):
@@ -120,6 +127,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                             continue
 
                         torrent_rows = torrent_table.findAll('tr', {'class': 'torrent'})
+
                         # Continue only if one Release is found
                         if not torrent_rows:
                             logger.log(u"Data returned from %s does not contain any torrents" % self.name, logger.DEBUG)
@@ -142,34 +150,35 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                                 title = torrent_row.find('a', onmouseout='return nd();').string
                                 title = title.replace("[", "").replace("]", "").replace("/ ", "") if title else ''
 
-                            torrent_size = temp_anchor['data-filesize']
-                            size = convert_size(torrent_size) or -1
-
                             temp_anchor = torrent_row.find('span', class_='time').parent.find_next_sibling()
-                            seeders = try_int(temp_anchor.text.strip())
-                            leechers = try_int(temp_anchor.find_next_sibling().text.strip())
-
                             if not all([title, download_url]):
                                 continue
+
+                            seeders = try_int(temp_anchor.text.strip())
+                            leechers = try_int(temp_anchor.find_next_sibling().text.strip())
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u"Discarding torrent because it doesn't meet the"
+                                               u" minimum seeders or leechers: {} (S:{} L:{})".format
+                                               (title, seeders, leechers), logger.DEBUG)
                                 continue
+
+                            torrent_size = temp_anchor['data-filesize']
+                            size = convert_size(torrent_size) or -1
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                                           (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
-
                 except Exception:
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders
             items.sort(key=lambda tup: tup[3], reverse=True)
-
             results += items
 
         return results
