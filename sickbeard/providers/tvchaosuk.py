@@ -1,4 +1,7 @@
 # coding=utf-8
+#
+# URL: https://sickrage.github.io
+#
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -26,9 +29,23 @@ from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
+        # Provider Init
         TorrentProvider.__init__(self, 'TvChaosUK')
 
+        # Credentials
+        self.username = None
+        self.password = None
+
+        # Torrent Stats
+        self.ratio = None
+        self.minseed = None
+        self.minleech = None
+        self.freeleech = None
+
+        # URLs
         self.url = 'https://tvchaosuk.com/'
         self.urls = {
             'login': self.url + 'takelogin.php',
@@ -36,13 +53,9 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             'search': self.url + 'browse.php'
         }
 
-        self.username = None
-        self.password = None
-        self.ratio = None
-        self.minseed = None
-        self.minleech = None
-        self.freeleech = None
+        # Proper Strings
 
+        # Cache
         self.cache = tvcache.TVCache(self)
 
     def _check_auth(self):
@@ -81,6 +94,7 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         if not self.login():
             return results
 
+        # Search Params
         search_params = {
             'do': 'search',
             'search_type': 't_name',
@@ -89,9 +103,13 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             'submit': 'search'
         }
 
+        # Units
+        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
         for mode in search_strings:
             items = []
             logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
+
             for search_string in search_strings[mode]:
 
                 if mode == 'Season':
@@ -129,10 +147,12 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
                             seeders = try_int(torrent.find(title='Seeders').get_text(strip=True))
                             leechers = try_int(torrent.find(title='Leechers').get_text(strip=True))
+
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the"
-                                               "minimum seeders or leechers: {} (S:{} L:{})".format
+                                               u" minimum seeders or leechers: {} (S:{} L:{})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
@@ -151,20 +171,19 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                             title = re.sub(ur'\s+', ur' ', title)
 
                             torrent_size = torrent.find_all('td')[labels.index('Size')].get_text(strip=True)
-                            size = convert_size(torrent_size) or -1
+                            size = convert_size(torrent_size, units=units) or -1
+
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
                                 logger.log(u"Found result: {} with {} seeders and {} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
-
-                        except Exception:
+                        except StandardError:
                             continue
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
-
             results += items
 
         return results

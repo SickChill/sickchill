@@ -3,7 +3,7 @@
 #
 # URL: https://sickrage.github.io
 #
-#  This file is part of SickRage.
+# This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,35 +31,38 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "TorrentDay")
 
-        self._uid = None
-        self._hash = None
+        # Credentials
         self.username = None
         self.password = None
+        self._uid = None
+        self._hash = None
+
+        # Torrent Stats
         self.ratio = None
-        self.freeleech = False
         self.minseed = None
         self.minleech = None
+        self.freeleech = False
 
-        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
-
+        # URLs
+        self.url = 'https://classic.torrentday.com'
         self.urls = {
-            'base_url': 'https://classic.torrentday.com',
+            'base_url': self.url,
             'login': 'https://classic.torrentday.com/torrents/',
             'search': 'https://classic.torrentday.com/V3/API/API.php',
             'download': 'https://classic.torrentday.com/download.php/%s/%s'
         }
 
-        self.url = self.urls['base_url']
-
         self.cookies = None
-
         self.categories = {'Season': {'c14': 1}, 'Episode': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1},
                            'RSS': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c14': 1}}
 
-    def login(self):
+        # Cache
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
+    def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
@@ -133,13 +136,12 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                     title = re.sub(r"\[.*\=.*\].*\[/.*\]", "", torrent['name']) if torrent['name'] else None
                     download_url = self.urls['download'] % (torrent['id'], torrent['fname']) if torrent['id'] and torrent['fname'] else None
-                    seeders = int(torrent['seed']) if torrent['seed'] else 1
-                    leechers = int(torrent['leech']) if torrent['leech'] else 0
-                    torrent_size = torrent['size']
-                    size = convert_size(torrent_size) or -1
 
                     if not all([title, download_url]):
                         continue
+
+                    seeders = int(torrent['seed']) if torrent['seed'] else 1
+                    leechers = int(torrent['leech']) if torrent['leech'] else 0
 
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
@@ -147,15 +149,19 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
+                    torrent_size = torrent['size']
+                    size = convert_size(torrent_size) or -1
+
                     item = title, download_url, size, seeders, leechers
+
                     if mode != 'RSS':
-                        logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                        logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                                   (title, seeders, leechers), logger.DEBUG)
 
                     items.append(item)
 
-            # For each search mode sort all the items by seeders if available if available
+            # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
-
             results += items
 
         return results
