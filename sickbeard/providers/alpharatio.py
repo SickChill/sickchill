@@ -33,22 +33,30 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "AlphaRatio")
 
+        # Credentials
         self.username = None
         self.password = None
+
+        # Torrent Stats
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.freeleech = None
 
-        self.url = 'http://alpharatio.cc/'
+        # URLs
+        self.url = 'http://alpharatio.cc'
         self.urls = {
-            'login': self.url + 'login.php',
-            'search': self.url + 'torrents.php',
+            'login': self.url + '/login.php',
+            'search': self.url + '/torrents.php',
         }
 
+        # Proper Strings
         self.proper_strings = ['PROPER', 'REPACK']
 
+        # Cache
         self.cache = tvcache.TVCache(self)
 
     def login(self):
@@ -79,6 +87,7 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         if not self.login():
             return results
 
+        # Search Params
         search_params = {
             'searchstr': '',
             'filter_cat[1]': 1,
@@ -88,9 +97,21 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             'filter_cat[5]': 1
         }
 
+        # Units
+        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
+        def process_column_header(td):
+            result = ''
+            if td.a and td.a.img:
+                result = td.a.img.get('title', td.a.get_text(strip=True))
+            if not result:
+                result = td.get_text(strip=True)
+            return result
+
         for mode in search_strings:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
@@ -108,18 +129,10 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     torrent_table = html.find('table', id='torrent_table')
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                    # Continue only if one Release is found
+                    # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
-
-                    def process_column_header(td):
-                        result = ''
-                        if td.a and td.a.img:
-                            result = td.a.img.get('title', td.a.get_text(strip=True))
-                        if not result:
-                            result = td.get_text(strip=True)
-                        return result
 
                     # '', '', 'Name /Year', 'Files', 'Time', 'Size', 'Snatches', 'Seeders', 'Leechers'
                     labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
@@ -138,13 +151,15 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                             seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
+
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             torrent_size = cells[labels.index('Size')].get_text(strip=True)
-                            size = convert_size(torrent_size) or -1
+                            size = convert_size(torrent_size, units=units) or -1
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':

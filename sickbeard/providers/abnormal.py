@@ -33,22 +33,30 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "ABNormal")
 
+        # Credentials
         self.username = None
         self.password = None
+
+        # Torrent Stats
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.freeleech = None
 
+        # URLs
         self.url = 'https://abnormal.ws'
         self.urls = {
             'login': self.url + '/login.php',
             'search': self.url + '/torrents.php?'
         }
 
+        # Proper Strings
         self.proper_strings = ['PROPER']
 
+        # Cache
         self.cache = tvcache.TVCache(self, min_time=30)
 
     def login(self):
@@ -76,6 +84,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         if not self.login():
             return results
 
+        # Search Params
         search_params = {
             'cat[]': ['TV|SD|VOSTFR', 'TV|HD|VOSTFR', 'TV|SD|VF', 'TV|HD|VF', 'TV|PACK|FR', 'TV|PACK|VOSTFR', 'TV|EMISSIONS', 'ANIME'],
             # Sorting: by time. Available parameters: ReleaseName, Seeders, Leechers, Snatched, Size
@@ -84,9 +93,13 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
             'way': 'DESC'
         }
 
+        # Units
+        units = ['O', 'KO', 'MO', 'GO', 'TO', 'PO']
+
         for mode in search_strings:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
@@ -108,7 +121,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                     torrent_table = html.find("table", class_="torrent_table cats")
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                    # Continue only if one Release is found
+                    # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
@@ -116,6 +129,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                     # Catégorie, Release, Date, DL, Size, C, S, L
                     labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all('td')]
 
+                    # Skip column headers
                     for result in torrent_rows[1:]:
                         cells = result.find_all('td')
                         if len(cells) < len(labels):
@@ -129,15 +143,15 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                             seeders = try_int(cells[labels.index('S')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('L')].get_text(strip=True))
+
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            torrent_size = cells[labels.index('Size')].get_text(strip=True)
-                            french_units = ['O', 'KO', 'MO', 'GO', 'TO', 'PO']
-                            size = convert_size(torrent_size, units=french_units) or -1
+                            torrent_size = cells[labels.index('Size')].get_text()
+                            size = convert_size(torrent_size, units=units) or -1
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':

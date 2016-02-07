@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# coding=utf-8
 # Author: adaur <adaur.underground@gmail.com>
 # Rewrite: Dustyn Gibson (miigotu) <miigotu@gmail.com>
 # URL: https://sickrage.github.io
@@ -33,42 +33,52 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "Xthor")
 
+        # Credentials
+        self.username = None
+        self.password = None
+
+        # Torrent Stats
+        self.ratio = None
+        self.minseed = None
+        self.minleech = None
+        self.freeleech = None
+
+        # URLs
         self.url = 'https://xthor.bz'
         self.urls = {
             'login': self.url + '/takelogin.php',
             'search': self.url + '/browse.php?'
         }
 
-        self.ratio = None
-        self.minseed = None
-        self.minleech = None
-        self.username = None
-        self.password = None
-        self.freeleech = None
+        # Proper Strings
         self.proper_strings = ['PROPER']
+
+        # Cache
         self.cache = tvcache.TVCache(self, min_time=30)
 
     def login(self):
-
         if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        login_params = {'username': self.username,
-                        'password': self.password,
-                        'submitme': 'X'}
+        login_params = {
+            'username': self.username,
+            'password': self.password,
+            'submitme': 'X'
+        }
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
 
-        if re.search('donate.php', response):
-            return True
-        else:
+        if not re.search('donate.php', response):
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
+
+        return True
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
@@ -76,14 +86,16 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             return results
 
         """
-            Séries / Pack TV 13
-            Séries / TV FR 14
-            Séries / HD FR 15
-            Séries / TV VOSTFR 16
-            Séries / HD VOSTFR 17
-            Mangas (Anime) 32
-            Sport 34
+        Séries / Pack TV 13
+        Séries / TV FR 14
+        Séries / HD FR 15
+        Séries / TV VOSTFR 16
+        Séries / HD VOSTFR 17
+        Mangas (Anime) 32
+        Sport 34
         """
+
+        # Search Params
         search_params = {
             'only_free': try_int(self.freeleech),
             'searchin': 'title',
@@ -93,21 +105,36 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             'c16': 1, 'c17': 1, 'c32': 1
         }
 
+        # Units
+        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
+        def process_column_header(td):
+            result = ''
+            if td.a:
+                result = td.a.get('title', td.a.get_text(strip=True))
+            if not result:
+                result = td.get_text(strip=True)
+            return result
+
         for mode in search_strings:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
 
             # Sorting: 1: Name, 3: Comments, 5: Size, 6: Completed, 7: Seeders, 8: Leechers (4: Time ?)
             search_params['sort'] = (7, 4)[mode == 'RSS']
+
             for search_string in search_strings[mode]:
+
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 search_params['search'] = search_string
                 search_url = self.urls['search'] + urlencode(search_params)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+
                 data = self.get_url(search_url)
                 if not data:
+                    logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
@@ -121,21 +148,15 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    def process_column_header(td):
-                        result = ''
-                        if td.a:
-                            result = td.a.get('title', td.a.get_text(strip=True))
-                        if not result:
-                            result = td.get_text(strip=True)
-                        return result
-
                     # Catégorie, Nom du Torrent, (Download), (Bookmark), Com., Taille, Compl�t�, Seeders, Leechers
                     labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
 
+                    # Skip column headers
                     for row in torrent_rows[1:]:
                         cells = row.find_all('td')
                         if len(cells) < len(labels):
                             continue
+
                         try:
                             title = cells[labels.index('Nom du Torrent')].get_text(strip=True)
                             download_url = self.url + '/' + row.find("a", href=re.compile("download.php"))['href']
@@ -148,21 +169,26 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u"Discarding torrent because it doesn't meet the"
+                                               u" minimum seeders or leechers: {} (S:{} L:{})".format
+                                               (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            size = convert_size(cells[labels.index('Taille')].get_text(strip=True))
+                            torrent_size = cells[labels.index('Taille')].get_text()
+                            size = convert_size(torrent_size, units=units) or -1
 
                             item = title, download_url, size, seeders, leechers
+
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                                           (title, seeders, leechers), logger.DEBUG)
+
                             items.append(item)
                         except StandardError:
                             continue
 
-            # For each search mode sort all the items by seeders if available if available
+            # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
-
             results += items
 
         return results
