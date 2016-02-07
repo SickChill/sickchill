@@ -19,8 +19,9 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+
+from requests.compat import urlencode
 from requests.utils import dict_from_cookiejar
-from urllib import urlencode
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -66,8 +67,8 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         login_params = {
             'username': self.username,
             'password': self.password,
+            'login': 'submit',
             'remember_me': 'on',
-            'login': 'submit'
         }
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
@@ -118,11 +119,13 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 search_params['searchstr'] = search_string
+
                 search_url = self.urls['search'] + '?' + urlencode(search_params)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 data = self.get_url(search_url)
                 if not data:
+                    logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
@@ -155,7 +158,9 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u"Discarding torrent because it doesn't meet the"
+                                               u" minimum seeders or leechers: {} (S:{} L:{})".format
+                                               (title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             torrent_size = cells[labels.index('Size')].get_text(strip=True)
@@ -163,7 +168,8 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                                           (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
                         except StandardError:

@@ -19,8 +19,10 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+
+from requests.compat import urlencode
 from requests.utils import dict_from_cookiejar
-from urllib import urlencode
+
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -66,8 +68,8 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         login_params = {
             'username': self.username.encode('utf-8'),
             'password': self.password.encode('utf-8'),
+            'login': 'submit',
             'remember_me': 'on',
-            'login': 'submit'
         }
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
@@ -164,7 +166,6 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             size = convert_size(torrent_size, units=units) or -1
 
                             item = title, download_url, size, seeders, leechers
-
                             if mode != 'RSS':
                                 logger.log(u"Found result: {} with {} seeders and {} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
