@@ -428,11 +428,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             ep_file_name = ek(os.path.splitext, ep_file_name)[0]
 
             try:
-                parse_result = None
-                np = NameParser(False, showObj=self, tryIndexers=True)
-                parse_result = np.parse(ep_file_name)
+                parse_result = NameParser(False, showObj=self, tryIndexers=True).parse(ep_file_name)
             except (InvalidNameException, InvalidShowException):
-                pass
+                parse_result = None
 
             if ' ' not in ep_file_name and parse_result and parse_result.release_group:
                 logger.log(
@@ -634,15 +632,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                    (self.indexerid, filepath), logger.DEBUG)
 
         try:
-            myParser = NameParser(showObj=self, tryIndexers=True, parse_method=('normal', 'anime')[self.is_anime])
-            parse_result = myParser.parse(filepath)
-        except InvalidNameException:
-            logger.log(u"{}: Unable to parse the file {} into a valid episode".format
-                       (self.indexerid, filepath), logger.DEBUG)
-            return None
-        except InvalidShowException:
-            logger.log(u"{}: Unable to parse the file {} into a valid show".format
-                       (self.indexerid, filepath), logger.DEBUG)
+            parse_result = NameParser(showObj=self, tryIndexers=True, parse_method=('normal', 'anime')[self.is_anime]).parse(filepath)
+        except (InvalidNameException, InvalidShowException) as error:
+            logger.log(u"{}: {}".format(self.indexerid, error), logger.DEBUG)
             return None
 
         episodes = [ep for ep in parse_result.episode_numbers if ep is not None]
@@ -2104,10 +2096,9 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 return ''
 
             try:
-                np = NameParser(name, showObj=show, naming_pattern=True)
-                parse_result = np.parse(name)
+                parse_result = NameParser(name, showObj=show, naming_pattern=True).parse(name)
             except (InvalidNameException, InvalidShowException) as e:
-                logger.log(u"Unable to get parse release_group: " + ex(e), logger.DEBUG)
+                logger.log(u"Unable to get parse release_group: {}".format(e), logger.DEBUG)
                 return ''
 
             if not parse_result.release_group:

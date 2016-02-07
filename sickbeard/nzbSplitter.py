@@ -152,17 +152,14 @@ def split_result(obj):
     """
     url_data = helpers.getURL(obj.url, session=requests.Session(), need_bytes=True)
     if url_data is None:
-        logger.log(u"Unable to load url " + obj.url + ", can't download season NZB", logger.ERROR)  # pylint: disable=no-member
+        logger.log(u"Unable to load url " + obj.url + ", can't download season NZB", logger.ERROR)
         return []
 
     # parse the season ep name
     try:
         parsed_obj = NameParser(False, showObj=obj.show).parse(obj.name)
-    except InvalidNameException:
-        logger.log(u"Unable to parse the filename " + obj.name + " into a valid episode", logger.DEBUG)  # pylint: disable=no-member
-        return []
-    except InvalidShowException:
-        logger.log(u"Unable to parse the filename " + obj.name + " into a valid show", logger.DEBUG)  # pylint: disable=no-member
+    except (InvalidNameException, InvalidShowException) as error:
+        logger.log(u"{}".format(error), logger.DEBUG)
         return []
 
     # bust it up
@@ -182,11 +179,8 @@ def split_result(obj):
         # parse the name
         try:
             parsed_obj = NameParser(False, showObj=obj.show).parse(new_nzb)
-        except InvalidNameException:
-            logger.log(u"Unable to parse the filename " + new_nzb + " into a valid episode", logger.DEBUG)  # pylint: disable=no-member
-            return []
-        except InvalidShowException:
-            logger.log(u"Unable to parse the filename " + new_nzb + " into a valid show", logger.DEBUG)  # pylint: disable=no-member
+        except (InvalidNameException, InvalidShowException) as error:
+            logger.log(u"{}".format(error), logger.DEBUG)
             return []
 
         # make sure the result is sane

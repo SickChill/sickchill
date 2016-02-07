@@ -108,7 +108,7 @@ class newpctProvider(TorrentProvider):
                             continue
 
                         torrent_table = torrent_tbody.findAll('tr')
-                        if not len(torrent_table):
+                        if not torrent_table:
                             logger.log(u"Torrent table does not have any rows", logger.DEBUG)
                             continue
 
