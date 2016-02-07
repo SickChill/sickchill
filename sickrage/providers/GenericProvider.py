@@ -185,8 +185,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             (title, url) = self._get_title_and_url(item)
 
             try:
-                parser = NameParser(parse_method=('normal', 'anime')[show.is_anime])
-                parse_result = parser.parse(title)
+                parse_result = NameParser(parse_method=('normal', 'anime')[show.is_anime]).parse(title)
             except (InvalidNameException, InvalidShowException) as error:
                 logger.log(u"{}".format(error), logger.DEBUG)
                 continue

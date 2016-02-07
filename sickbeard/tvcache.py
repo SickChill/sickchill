@@ -254,8 +254,7 @@ class TVCache(object):
                 showObj = Show.find(sickbeard.showList, indexer_id)
 
             try:
-                myParser = NameParser(showObj=showObj)
-                parse_result = myParser.parse(name)
+                parse_result = NameParser(showObj=showObj).parse(name)
             except (InvalidNameException, InvalidShowException) as error:
                 logger.log(u"{}".format(error), logger.DEBUG)
                 return None
