@@ -486,7 +486,7 @@ def already_postprocessed(dirName, videofile, force, result):  # pylint: disable
     # But we need to make sure we check the history of the episode we're going to PP, and not others
     try:  # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
         parse_result = NameParser(dirName, tryIndexers=True).parse(dirName)
-    except Exception:  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
+    except (InvalidNameException, InvalidShowException):  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
         parse_result = False
 
     search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same
