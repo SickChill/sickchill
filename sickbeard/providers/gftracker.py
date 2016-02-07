@@ -19,8 +19,9 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+
+from requests.compat import urlencode
 from requests.utils import dict_from_cookiejar
-from urllib import urlencode
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -34,22 +35,30 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "GFTracker")
 
+        # Credentials
         self.username = None
         self.password = None
+
+        # Torrent Stats
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.freeleech = None
 
-        self.url = 'https://www.thegft.org/'
+        # URLs
+        self.url = 'https://www.thegft.org'
         self.urls = {
-            'login': self.url + 'loginsite.php',
-            'search': self.url + 'browse.php',
+            'login': self.url + '/loginsite.php',
+            'search': self.url + '/browse.php',
         }
 
+        # Proper Strings
         self.proper_strings = ['PROPER', 'REPACK', 'REAL']
 
+        # Cache
         self.cache = tvcache.TVCache(self)
 
     def _check_auth(self):
@@ -65,13 +74,12 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
         login_params = {
             'username': self.username,
-            'password': self.password
+            'password': self.password,
         }
 
         # Initialize session with a GET to have cookies
         self.get_url(self.url, timeout=30)  # pylint: disable=unused-variable
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
-
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -88,6 +96,7 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             return results
 
         # https://www.thegft.org/browse.php?view=0&c26=1&c37=1&c19=1&c47=1&c17=1&c4=1&search=arrow
+        # Search Params
         search_params = {
             'view': 0,  # BROWSE
             'c4': 1,  # TV/XVID
@@ -99,10 +108,23 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             'search': '',
         }
 
+        # Units
+        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
+        def process_column_header(td):
+            result = ''
+            if td.a and td.a.img:
+                result = td.a.img.get('title', td.a.get_text(strip=True))
+            if not result:
+                result = td.get_text(strip=True)
+            return result
+
         for mode in search_strings:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+
             for search_string in search_strings[mode]:
+
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
@@ -111,32 +133,25 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                 search_url = "%s?%s" % (self.urls['search'], urlencode(search_params))
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                # Returns top 30 results by default, expandable in user profile
                 data = self.get_url(search_url)
                 if not data:
+                    logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
                     torrent_table = html.find('div', id='torrentBrowse')
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                    # Continue only if at least one release is found
+                    # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    def process_column_header(td):
-                        result = ''
-                        if td.a and td.a.img:
-                            result = td.a.img.get('title', td.a.get_text(strip=True))
-                        if not result:
-                            result = td.get_text(strip=True)
-                        return result
-
                     labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
 
-                    # Skip colheader
+                    # Skip column headers
                     for result in torrent_rows[1:]:
+
                         try:
                             cells = result.find_all('td')
 
@@ -148,17 +163,22 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                             peers = cells[labels.index('S/L')].get_text(strip=True).split('/', 1)
                             seeders = try_int(peers[0])
                             leechers = try_int(peers[1])
+
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u"Discarding torrent because it doesn't meet the"
+                                               u" minimum seeders or leechers: {} (S:{} L:{})".format
+                                               (title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             torrent_size = cells[labels.index('Size/Snatched')].get_text(strip=True).split('/', 1)[0]
-                            size = convert_size(torrent_size) or -1
+                            size = convert_size(torrent_size, units=units) or -1
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                                           (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
                         except StandardError:
@@ -166,7 +186,6 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
-
             results += items
 
         return results
