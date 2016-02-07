@@ -15,7 +15,7 @@
 % endif
 
 <div id="config-content">
-<table class="infoTable" cellspacing="1" border="0" cellpadding="0" width="145%">
+<table class="infoTable" cellspacing="1" border="0" cellpadding="0" width="100%">
     % if sr_version:
     <tr><td class="infoTableHeader" style="vertical-align: top;"><i class="icon16-config-sickrage"></i> SickRage Info:</td>
         <td class="infoTableCell">
