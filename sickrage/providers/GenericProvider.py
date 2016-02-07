@@ -187,11 +187,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             try:
                 parser = NameParser(parse_method=('normal', 'anime')[show.is_anime])
                 parse_result = parser.parse(title)
-            except InvalidNameException:
-                logger.log(u'Unable to parse the filename %s into a valid episode' % title, logger.DEBUG)
-                continue
-            except InvalidShowException:
-                logger.log(u'Unable to parse the filename %s into a valid show' % title, logger.DEBUG)
+            except (InvalidNameException, InvalidShowException) as error:
+                logger.log(u"{}".format(error), logger.DEBUG)
                 continue
 
             show_object = parse_result.show

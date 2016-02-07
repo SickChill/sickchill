@@ -634,15 +634,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                    (self.indexerid, filepath), logger.DEBUG)
 
         try:
-            myParser = NameParser(showObj=self, tryIndexers=True, parse_method=('normal', 'anime')[self.is_anime])
-            parse_result = myParser.parse(filepath)
-        except InvalidNameException:
-            logger.log(u"{}: Unable to parse the file {} into a valid episode".format
-                       (self.indexerid, filepath), logger.DEBUG)
-            return None
-        except InvalidShowException:
-            logger.log(u"{}: Unable to parse the file {} into a valid show".format
-                       (self.indexerid, filepath), logger.DEBUG)
+            parse_result = NameParser(showObj=self, tryIndexers=True, parse_method=('normal', 'anime')[self.is_anime]).parse(filepath)
+        except (InvalidNameException, InvalidShowException) as error:
+            logger.log(u"{}: {}".format(self.indexerid, error), logger.DEBUG)
             return None
 
         episodes = [ep for ep in parse_result.episode_numbers if ep is not None]

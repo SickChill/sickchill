@@ -55,20 +55,17 @@ class FailedProcessor(object):
         try:
             parser = NameParser(False)
             parsed = parser.parse(releaseName)
-        except InvalidNameException:
-            self._log(u"Error: release name is invalid: " + releaseName, logger.DEBUG)
-            raise FailedPostProcessingFailedException()
-        except InvalidShowException:
-            self._log(u"Error: unable to parse release name " + releaseName + " into a valid show", logger.DEBUG)
+        except (InvalidNameException, InvalidShowException) as error:
+            self._log(u"{}".format(error), logger.DEBUG)
             raise FailedPostProcessingFailedException()
 
-        logger.log(u"name_parser info: ", logger.DEBUG)
-        logger.log(u" - " + str(parsed.series_name), logger.DEBUG)
-        logger.log(u" - " + str(parsed.season_number), logger.DEBUG)
-        logger.log(u" - " + str(parsed.episode_numbers), logger.DEBUG)
-        logger.log(u" - " + str(parsed.extra_info), logger.DEBUG)
-        logger.log(u" - " + str(parsed.release_group), logger.DEBUG)
-        logger.log(u" - " + str(parsed.air_date), logger.DEBUG)
+        self._log(u"name_parser info: ", logger.DEBUG)
+        self._log(u" - " + str(parsed.series_name), logger.DEBUG)
+        self._log(u" - " + str(parsed.season_number), logger.DEBUG)
+        self._log(u" - " + str(parsed.episode_numbers), logger.DEBUG)
+        self._log(u" - " + str(parsed.extra_info), logger.DEBUG)
+        self._log(u" - " + str(parsed.release_group), logger.DEBUG)
+        self._log(u" - " + str(parsed.air_date), logger.DEBUG)
 
         for episode in parsed.episode_numbers:
             segment = parsed.show.getEpisode(parsed.season_number, episode)

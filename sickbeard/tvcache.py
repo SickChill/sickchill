@@ -256,11 +256,8 @@ class TVCache(object):
             try:
                 myParser = NameParser(showObj=showObj)
                 parse_result = myParser.parse(name)
-            except InvalidNameException:
-                logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
-                return None
-            except InvalidShowException:
-                logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.DEBUG)
+            except (InvalidNameException, InvalidShowException) as error:
+                logger.log(u"{}".format(error), logger.DEBUG)
                 return None
 
             if not parse_result or not parse_result.series_name:
