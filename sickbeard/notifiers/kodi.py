@@ -475,7 +475,7 @@ class KODINotifier(object):
                 return False
 
             # lookup tv-show path if we don't already know it
-            if not len(path):
+            if not path:
                 pathCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":{"tvshowid":%d, "properties": ["file"]},"id":1}' % tvshowid
                 pathResponse = self._send_to_kodi_json(pathCommand, host)
 
@@ -483,7 +483,7 @@ class KODINotifier(object):
 
             logger.log(u"Received Show: " + showName + " with ID: " + str(tvshowid) + " Path: " + path, logger.DEBUG)
 
-            if not len(path):
+            if not path:
                 logger.log(u"No valid path found for " + showName + " with ID: " + str(tvshowid) + " on " + host, logger.WARNING)
                 return False
 

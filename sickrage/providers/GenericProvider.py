@@ -111,7 +111,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         return [Proper(x['name'], x['url'], datetime.fromtimestamp(x['time']), self.show) for x in results]
 
-    def find_search_results(self, show, episodes, search_mode, manual_search=False, download_current_quality=False):  # pylint: disable=too-many-branches,too-many-arguments,too-many-locals,too-many-statements
+    def find_search_results(self, show, episodes, search_mode,  # pylint: disable=too-many-branches,too-many-arguments,too-many-locals,too-many-statements
+                            manual_search=False, download_current_quality=False):
         self._check_auth()
         self.show = show
 
@@ -198,32 +199,30 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
             if not (show_object.air_by_date or show_object.sports):
                 if search_mode == 'sponly':
-                    if len(parse_result.episode_numbers):
+                    if parse_result.episode_numbers:
                         logger.log(
                             u'This is supposed to be a season pack search but the result %s is not a valid season pack, skipping it' % title,
                             logger.DEBUG
                         )
                         add_cache_entry = True
+                    elif not [ep for ep in episodes if parse_result.season_number == (ep.season, ep.scene_season)[ep.show.is_scene]]:
+                        logger.log(
+                            u'This season result %s is for a season we are not searching for, skipping it' % title,
+                            logger.DEBUG
+                        )
+                        add_cache_entry = True
 
-                    if len(parse_result.episode_numbers) and (
-                            parse_result.season_number not in set([ep.season for ep in episodes]) or
-                            not [ep for ep in episodes if ep.scene_episode in parse_result.episode_numbers]):
-                        logger.log(
-                            u'The result %s doesn\'t seem to be a valid episode that we are trying to snatch, ignoring' % title,
-                            logger.DEBUG)
-                        add_cache_entry = True
                 else:
-                    if not len(parse_result.episode_numbers) and parse_result.season_number and not [ep for ep in
-                                                                                                     episodes if
-                                                                                                     ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers]:
+                    if not all([
+                        # pylint: disable=bad-continuation
+                        parse_result.season_number is not None,
+                        parse_result.episode_numbers,
+                        [ep for ep in episodes if (ep.season, ep.scene_season)[ep.show.is_scene] ==
+                         parse_result.season_number and (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers]
+                    ]):
+
                         logger.log(
-                            u'The result %s doesn\'t seem to be a valid season that we are trying to snatch, ignoring' % title,
-                            logger.DEBUG)
-                        add_cache_entry = True
-                    elif len(parse_result.episode_numbers) and not [ep for ep in episodes if
-                                                                    ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers]:
-                        logger.log(
-                            u'The result %s doesn\'t seem to be a valid episode that we are trying to snatch, ignoring' % title,
+                            u'The result %s doesn\'t seem to match an episode that we are currently trying to snatch, skipping it' % title,
                             logger.DEBUG)
                         add_cache_entry = True
 

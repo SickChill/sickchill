@@ -272,7 +272,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             for cur_error in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
                 try:
                     title_error = ss(str(cur_error.title))
-                    if not len(title_error) or title_error == 'None':
+                    if not title_error or title_error == 'None':
                         title_error = re.match(r'^[A-Z0-9\-\[\] :]+::\s*(.*)(?: \[[\w]{7}\])$', ss(cur_error.message)).group(1)
 
                     if len(title_error) > 1000:
