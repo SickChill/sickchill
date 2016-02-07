@@ -510,8 +510,7 @@ class ParseResult(object):  # pylint: disable=too-many-instance-attributes
         self.version = version
 
     def __eq__(self, other):
-        return all([
-            other,
+        return other and all([
             self.series_name == other.series_name,
             self.season_number == other.season_number,
             self.episode_numbers == other.episode_numbers,
