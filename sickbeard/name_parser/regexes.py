@@ -32,7 +32,7 @@ normal_regexes = [
      e(?P<extra_ep_num>\d+))+                    # E03/etc and separator
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
+     -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
     ('fov_repeat',
      # Show.Name.1x02.1x03.Source.Quality.Etc-Group
@@ -45,7 +45,7 @@ normal_regexes = [
      (?P<extra_ep_num>\d+))+                     # 03/etc and separator
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
+     -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
     ('standard',
      # Show.Name.S01E02.Source.Quality.Etc-Group
@@ -60,20 +60,20 @@ normal_regexes = [
      e(?P<ep_num>\d+)\)?                         # E02 and separator
      (([. _-]*e|-)                               # linking e/- char
      (?P<extra_ep_num>(?!(1080|720|480)[pi])\d+)(\))?)*   # additional E03/etc
-     ([. _-]+((?P<extra_info>.+?)                 # Source_Quality_Etc-
+     ([. _,-]+((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?)?$              # Group
+     -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?)?$              # Group
      '''),
     ('newpct',
      # American Horror Story - Temporada 4 HDTV x264[Cap.408_409]SPANISH AUDIO -NEWPCT
      # American Horror Story - Temporada 4 [HDTV][Cap.408][Espanol Castellano]
      # American Horror Story - Temporada 4 HDTV x264[Cap.408]SPANISH AUDIO –NEWPCT)
      r'''
-     (?P<series_name>.+?).-.+\d{1,2}[ ,\.]       # Show name: American Horror Story
+     (?P<series_name>.+?).-.+\d{1,2}[ ,.]       # Show name: American Horror Story
      (?P<extra_info>.+)\[Cap\.                   # Quality: HDTV x264, [HDTV], HDTV x264
      (?P<season_num>\d{1,2})                     # Season Number: 4
      (?P<ep_num>\d{2})                           # Episode Number: 08
-     ((_\d{1,2}(?P<extra_ep_num>\d{2}))|.*])     # Episode number2: 09
+     ((_\d{1,2}(?P<extra_ep_num>\d{2}))|.*\])     # Episode number2: 09
      '''),
     ('fov',
      # Show_Name.1x02.Source_Quality_Etc-Group
@@ -90,7 +90,7 @@ normal_regexes = [
      \d+))*                                      # additional x03/etc
      [\]. _-]*((?P<extra_info>.+?)               # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
+     -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
     ('scene_date_format',
      # Show.Name.2010.11.23.Source.Quality.Etc-Group
@@ -100,7 +100,7 @@ normal_regexes = [
      (?P<air_date>(\d+[. _-]\d+[. _-]\d+)|(\d+\w+[. _-]\w+[. _-]\d+))
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
+     -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
     ('scene_sports_format',
      # Show.Name.100.Event.2010.11.23.Source.Quality.Etc-Group
@@ -111,7 +111,7 @@ normal_regexes = [
      ((?P<series_num>\d{1,3})[. _-]+)?
      (?P<air_date>(\d+[. _-]\d+[. _-]\d+)|(\d+\w+[. _-]\w+[. _-]\d+))[. _-]+
      ((?P<extra_info>.+?)((?<![. _-])
-     (?<!WEB)-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$
+     (?<!WEB)-(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$
      '''),
     ('stupid',
      # tpz-abc102
@@ -139,7 +139,7 @@ normal_regexes = [
      (?P<season_num>\d+)[. _-]*                  # S01 and optional separator
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
+     -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
     ('no_season_multi_ep',
      # Show.Name.E02-03
@@ -152,7 +152,7 @@ normal_regexes = [
      (?P<extra_ep_num>(?!(1080|720|480)[pi])(\d+|(?<!e)[ivx]+))[. _-])            # second ep num
      ([. _-]*(?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
+     -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
     ('no_season_general',
      # Show.Name.E23.Test
@@ -168,7 +168,7 @@ normal_regexes = [
      (\d+|((?<!e)[ivx]+(?=[. _-]))))[. _-])*            # second ep num
      ([. _-]*(?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
+     -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
     ('bare',
      # Show.Name.102.Source.Quality.Etc-Group
@@ -177,7 +177,7 @@ normal_regexes = [
      (?P<season_num>\d{1,2})                     # 1
      (?P<ep_num>\d{2})                           # 02 and separator
      ([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+) # Source_Quality_Etc-
-     (-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$                # Group
+     (-(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$                # Group
      '''),
     ('no_season',
      # Show Name - 01 - Ep Name
@@ -190,7 +190,7 @@ normal_regexes = [
      (\s*(?:of)?\s*\d{1,3})?                         # of joiner (with or without spaces) and series total ep
      [. _-]+((?P<extra_info>.+?)                     # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                            # Make sure this is really the release group
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$  # Group
+     -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$  # Group
      '''),
 ]
 
@@ -327,7 +327,7 @@ anime_regexes = [
      (?P<extra_ep_num>(?!(1080|720|480)[pi])\d+)(\))?)*   # additional E03/etc
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
+     -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
     ('anime_and_normal',
      # Bleach - s16e03-04 - 313-314
