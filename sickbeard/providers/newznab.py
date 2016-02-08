@@ -274,10 +274,10 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+                    logger.log(u"Search string: {}".format(search_string.decode(errors='replace')), logger.DEBUG)
 
                 search_url = posixpath.join(self.url, 'api?') + urlencode(search_params)
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+                logger.log(u"Search URL: {}".format(search_url.decode(errors='replace')), logger.DEBUG)
 
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 data = self.get_url(search_url)

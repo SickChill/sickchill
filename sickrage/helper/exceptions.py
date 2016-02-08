@@ -45,7 +45,12 @@ def ex(e):
                 if not message:
                     message = fixed_arg
                 else:
-                    message = '%s : %s' % (message, fixed_arg)
+                    try:
+                        message = u'{} : {}'.format(message, fixed_arg)
+                    except UnicodeError:
+                        message = u'{} : {}'.format(
+                            unicode(message, errors='replace'),
+                            unicode(fixed_arg, errors='replace'))
 
     return message
 
