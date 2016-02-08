@@ -378,15 +378,15 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
         try:
             NameParser().parse(video, cache_result=False)
             return True
-        except (InvalidNameException, InvalidShowException):
-            pass
+        except (InvalidNameException, InvalidShowException) as error:
+            result.output += logHelper(u"{}".format(error), logger.DEBUG)
 
     for proc_dir in allDirs:
         try:
             NameParser().parse(proc_dir, cache_result=False)
             return True
-        except (InvalidNameException, InvalidShowException):
-            pass
+        except (InvalidNameException, InvalidShowException) as error:
+            result.output += logHelper(u"{}".format(error), logger.DEBUG)
 
     if sickbeard.UNPACK:
         # Search for packed release
@@ -396,8 +396,8 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
             try:
                 NameParser().parse(packed, cache_result=False)
                 return True
-            except (InvalidNameException, InvalidShowException):
-                pass
+            except (InvalidNameException, InvalidShowException) as error:
+                result.output += logHelper(u"{}".format(error), logger.DEBUG)
 
     result.output += logHelper(u"%s : No processable items found in folder" % dirName, logger.DEBUG)
     return False
