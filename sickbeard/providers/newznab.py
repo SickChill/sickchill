@@ -46,9 +46,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
         NZBProvider.__init__(self, name)
 
-        self.urls = {'base_url': url}
-        self.url = self.urls['base_url']
-
+        self.url = url
         self.key = key
 
         self.search_mode = search_mode
@@ -286,6 +284,24 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 if not data:
                     break
 
+                if 'tvdbid' in search_params:
+                    with BS4Parser(data, 'html5lib') as html:
+                        if not self._checkAuthFromData(html):
+                            break
+
+                        if not html.find_all('item'):
+                            search_params.pop('ep', '')
+                            search_params.pop('season', '')
+                            search_params.pop('tvdbid', '')
+                            search_params['q'] = search_string
+                            search_url = posixpath.join(self.url, 'api?') + urlencode(search_params)
+                            logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+
+                            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+                            data = self.get_url(search_url)
+                            if not data:
+                                break
+
                 with BS4Parser(data, 'html5lib') as html:
                     if not self._checkAuthFromData(html):
                         break
@@ -321,7 +337,8 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
                 # Since we arent using the search string,
                 # break out of the search string loop
-                break
+                if 'tvdbid' in search_params:
+                    break
 
             if torznab:
                 results.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
