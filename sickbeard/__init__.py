@@ -16,6 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# pylint: disable=too-many-lines
 
 import webbrowser
 import datetime
@@ -549,7 +550,12 @@ DELETE_FAILED = False
 EXTRA_SCRIPTS = []
 
 IGNORE_WORDS = "german,french,core2hd,dutch,swedish,reenc,MrLss"
-TRACKERS_LIST = "udp://coppersurfer.tk:6969/announce,udp://open.demonii.com:1337,udp://exodus.desync.com:6969,udp://9.rarbg.me:2710/announce,udp://glotorrents.pw:6969/announce,udp://tracker.openbittorrent.com:80/announce,udp://9.rarbg.to:2710/announce"
+
+TRACKERS_LIST = "udp://coppersurfer.tk:6969/announce,udp://open.demonii.com:1337,"
+TRACKERS_LIST += "udp://exodus.desync.com:6969,udp://9.rarbg.me:2710/announce,"
+TRACKERS_LIST += "udp://glotorrents.pw:6969/announce,udp://tracker.openbittorrent.com:80/announce,"
+TRACKERS_LIST += "udp://9.rarbg.to:2710/announce"
+
 REQUIRE_WORDS = ""
 IGNORED_SUBS_LIST = "dk,fin,heb,kor,nor,nordic,pl,swe"
 SYNC_FILES = "!sync,lftp-pget-status,part,bts,!qb"
@@ -581,9 +587,9 @@ def get_backlog_cycle_time():
     return max([cycletime, 720])
 
 
-def initialize(consoleLogging=True):
+def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     with INIT_LOCK:
-
+        # pylint: disable=global-statement
         global BRANCH, GIT_RESET, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, ACTUAL_LOG_DIR, LOG_DIR, LOG_NR, LOG_SIZE, WEB_PORT, WEB_LOG, ENCRYPTION_VERSION, ENCRYPTION_SECRET, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, WEB_COOKIE_SECRET, WEB_USE_GZIP, API_KEY, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, \
             HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, RANDOMIZE_PROVIDERS, CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, SAB_FORCED, TORRENT_METHOD, NOTIFY_ON_LOGIN, \
             SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, SAB_CATEGORY_BACKLOG, SAB_CATEGORY_ANIME, SAB_CATEGORY_ANIME_BACKLOG, SAB_HOST, \
@@ -595,7 +601,7 @@ def initialize(consoleLogging=True):
             USE_PLEX_SERVER, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
             PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, \
             USE_EMBY, EMBY_HOST, EMBY_APIKEY, \
-            showUpdateScheduler, __INITIALIZED__, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, showList, \
+            showUpdateScheduler, __INITIALIZED__, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, \
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, \
@@ -687,15 +693,19 @@ def initialize(consoleLogging=True):
         # init logging
         logger.init_logging(console_logging=consoleLogging, file_logging=fileLogging, debug_logging=DEBUG, database_logging=DBDEBUG)
 
-        # github api
         try:
-            if not (GIT_USERNAME and GIT_PASSWORD):
-                gh = Github(user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
-            else:
+            if GIT_USERNAME and GIT_PASSWORD:
                 gh = Github(login_or_token=GIT_USERNAME, password=GIT_PASSWORD, user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
-        except Exception as e:
+        except Exception as error:
+            logger.log(u'Unable to setup GitHub properly with your github login. Please check your credentials. Error: {}'.format(error), logger.WARNING)
             gh = None
-            logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: %s' % str(e), logger.WARNING)
+
+        if not gh:
+            try:
+                gh = Github(user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
+            except Exception as error:
+                logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: {}'.format(error), logger.WARNING)
+                gh = None
 
         # git reset on update
         GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 1))
@@ -1471,7 +1481,7 @@ def initialize(consoleLogging=True):
 
 
 def start():
-    global started
+    global started  # pylint: disable=global-statement
 
     with INIT_LOCK:
         if __INITIALIZED__:
@@ -1542,7 +1552,7 @@ def start():
 
 
 def halt():
-    global __INITIALIZED__, started
+    global __INITIALIZED__, started  # pylint: disable=global-statement
 
     with INIT_LOCK:
 
@@ -1605,7 +1615,7 @@ def saveAll():
     save_config()
 
 
-def save_config():
+def save_config():  # pylint: disable=too-many-statements, too-many-branches
     new_config = ConfigObj()
     new_config.filename = CONFIG_FILE
 
