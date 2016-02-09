@@ -110,7 +110,8 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                               logger.DEBUG)
 
                     categories = ['2', '7', '35']
                     categories += ['26', '32'] if mode == 'Episode' else ['27']

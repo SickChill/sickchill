@@ -60,7 +60,8 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                               logger.DEBUG)
 
                 self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string})
                 search_url = self.urls['rss'] if not self.custom_url else self.urls['rss'].replace(self.urls['index'], self.custom_url)
