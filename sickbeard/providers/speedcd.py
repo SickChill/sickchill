@@ -19,8 +19,9 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+
+from requests.compat import urlencode
 from requests.utils import dict_from_cookiejar
-from urllib import urlencode
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -33,23 +34,30 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "Speedcd")
 
+        # Credentials
         self.username = None
         self.password = None
+
+        # Torrent Stats
         self.ratio = None
-        self.freeleech = False
         self.minseed = None
         self.minleech = None
+        self.freeleech = False
 
-        self.url = 'https://speed.cd/'
+        # URLs
+        self.url = 'https://speed.cd'
         self.urls = {
-            'login': self.url + 'take.login.php',
-            'search': self.url + 'browse.php',
+            'login': self.url + '/take.login.php',
+            'search': self.url + '/browse.php',
         }
 
+        # Proper Strings
         self.proper_strings = ['PROPER', 'REPACK']
 
+        # Cache
         self.cache = tvcache.TVCache(self)
 
     def login(self):
@@ -58,7 +66,7 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         login_params = {
             'username': self.username,
-            'password': self.password
+            'password': self.password,
         }
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
@@ -78,6 +86,7 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
             return results
 
         # http://speed.cd/browse.php?c49=1&c50=1&c52=1&c41=1&c55=1&c2=1&c30=1&freeleech=on&search=arrow&d=on
+        # Search Params
         search_params = {
             'c2': 1,  # TV/Episodes
             'c30': 1,  # Anime
@@ -88,13 +97,29 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
             'c55': 1,  # TV/Kids
             'search': '',
         }
+
+        # Units
+        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
+        def process_column_header(td):
+            result = ''
+            if td.a and td.a.img:
+                result = td.a.img.get('alt', td.a.get_text(strip=True))
+            if td.img and not result:
+                result = td.img.get('alt', '')
+            if not result:
+                result = td.get_text(strip=True)
+            return result
+
         if self.freeleech:
             search_params['freeleech'] = 'on'
 
         for mode in search_strings:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+
             for search_string in search_strings[mode]:
+
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
@@ -103,7 +128,6 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                 search_url = "%s?%s" % (self.urls['search'], urlencode(search_params))
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                # returns top 15 results by default, expandable in user profile to 100
                 data = self.get_url(search_url)
                 if not data:
                     continue
@@ -112,24 +136,14 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                     torrent_table = html.find('div', class_='boxContent').find('table')
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                    # Continue only if one Release is found
+                    # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    def process_column_header(td):
-                        result = ''
-                        if td.a and td.a.img:
-                            result = td.a.img.get('alt', td.a.get_text(strip=True))
-                        if td.img and not result:
-                            result = td.img.get('alt', '')
-                        if not result:
-                            result = td.get_text(strip=True)
-                        return result
-
                     labels = [process_column_header(label) for label in torrent_rows[0].find_all('th')]
 
-                    # skip colheader
+                    # Skip column headers
                     for result in torrent_rows[1:]:
                         try:
                             cells = result.find_all('td')
@@ -141,6 +155,8 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
                             seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
+
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -149,7 +165,7 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                             torrent_size = cells[labels.index('Size')].get_text()
                             # TODO: Make convert_size work with 123.12GB
                             torrent_size = torrent_size[:-2] + ' ' + torrent_size[-2:]
-                            size = convert_size(torrent_size) or -1
+                            size = convert_size(torrent_size, units=units) or -1
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':

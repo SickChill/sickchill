@@ -19,8 +19,9 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+
+from requests.compat import urlencode
 from requests.utils import dict_from_cookiejar
-from urllib import urlencode
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -33,22 +34,30 @@ class PhxBitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "PhxBit")
 
+        # Credentials
         self.username = None
         self.password = None
+
+        # Torrent Stats
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.freeleech = None
 
+        # URLs
         self.url = 'https://phxbit.com'
         self.urls = {
             'login': self.url + '/connect.php',
             'search': self.url + '/sphinx.php?'
         }
 
+        # Proper Strings
         self.proper_strings = ['PROPER']
 
+        # Cache
         self.cache = tvcache.TVCache(self, min_time=30)
 
     def login(self):
@@ -76,15 +85,28 @@ class PhxBitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
         if not self.login():
             return results
 
+        # Search Params
         search_params = {
             'order': 'desc',
             'sort': 'normal',
             'group': 'series'
         }
 
+        # Units
+        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
+        def process_column_header(td):
+            result = ''
+            if td.img:
+                result = td.img.get('alt', '')
+            if not result:
+                result = td.get_text(strip=True)
+            return result
+
         for mode in search_strings:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
@@ -93,6 +115,7 @@ class PhxBitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
                 search_params['q'] = search_string
+
                 search_url = self.urls['search'] + urlencode(search_params)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
@@ -104,18 +127,10 @@ class PhxBitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
                     torrent_table = html.find("table")
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                    # Continue only if one Release is found
+                    # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
-
-                    def process_column_header(td):
-                        result = ''
-                        if td.img:
-                            result = td.img.get('alt', '')
-                        if not result:
-                            result = td.get_text(strip=True)
-                        return result
 
                     # Catégorie, Nom,  DL, Com, Taille, C, Seed, Leech,	Share
                     labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
@@ -134,6 +149,7 @@ class PhxBitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
 
                             seeders = try_int(cells[labels.index('Seed')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('Leech')].get_text(strip=True))
+
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
@@ -141,7 +157,7 @@ class PhxBitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
                                 continue
 
                             torrent_size = cells[labels.index('Taille')].get_text(strip=True)
-                            size = convert_size(torrent_size) or -1
+                            size = convert_size(torrent_size, units=units) or -1
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':

@@ -576,8 +576,11 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         name = helpers.remove_non_release_groups(remove_extension(name))
 
         # parse the name to break it into show name, season, and episode
-        np = NameParser(True, tryIndexers=True)
-        parse_result = np.parse(name)
+        try:
+            parse_result = NameParser(True, tryIndexers=True).parse(name)
+        except (InvalidNameException, InvalidShowException) as error:
+            logger.log(u"{}".format(error), logger.DEBUG)
+            return to_return
 
         # show object
         show = parse_result.show
@@ -659,9 +662,9 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         for cur_attempt in attempt_list:
 
             try:
-                (cur_show, cur_season, cur_episodes, cur_quality, cur_version) = cur_attempt()
-            except (InvalidNameException, InvalidShowException) as e:
-                logger.log(u"Unable to parse, skipping: " + ex(e), logger.DEBUG)
+                cur_show, cur_season, cur_episodes, cur_quality, cur_version = cur_attempt()
+            except (InvalidNameException, InvalidShowException) as error:
+                logger.log(u"{}".format(error), logger.DEBUG)
                 continue
 
             if not cur_show:

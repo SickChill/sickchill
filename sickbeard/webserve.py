@@ -4918,10 +4918,13 @@ class ConfigNotifications(Config):
         sickbeard.PLEX_SERVER_HOST = config.clean_hosts(plex_server_host)
         sickbeard.PLEX_SERVER_TOKEN = config.clean_host(plex_server_token)
         sickbeard.PLEX_SERVER_USERNAME = plex_server_username
-        sickbeard.PLEX_SERVER_PASSWORD = plex_server_password
+        if plex_server_password != '*' * len(sickbeard.PLEX_SERVER_PASSWORD):
+            sickbeard.PLEX_SERVER_PASSWORD = plex_server_password
+
         sickbeard.USE_PLEX_CLIENT = config.checkbox_to_value(use_plex_client)
         sickbeard.PLEX_CLIENT_USERNAME = plex_client_username
-        sickbeard.PLEX_CLIENT_PASSWORD = plex_client_password
+        if plex_client_password != '*' * len(sickbeard.PLEX_CLIENT_PASSWORD):
+            sickbeard.PLEX_CLIENT_PASSWORD = plex_client_password
         sickbeard.PLEX_SERVER_HTTPS = config.checkbox_to_value(plex_server_https)
 
         sickbeard.USE_EMBY = config.checkbox_to_value(use_emby)

@@ -20,7 +20,7 @@
 
                 <div id="animedb-settings" class="tab-pane active component-group">
                     <div class="component-group-desc">
-                        <img class="icon-notifiers-anime" title="AniDB" />
+                        <span class="icon-notifiers-anime" title="AniDB"></span>
                         <h3><a href="${anon_url('http://anidb.info')}" onclick="window.open(this.href, '_blank'); return false;">AniDB</a></h3>
                         <p>AniDB is non-profit database of anime information that is freely open to the public</p>
                     </div>
@@ -72,7 +72,7 @@
                 <div id="anime-look-feel" class="tab-pane component-group">
 
                     <div class="component-group-desc">
-                        <img class="icon-notifiers-look" title="look" />
+                        <span class="icon-notifiers-look" title="look"></span>
                         <h3>Look and Feel</h3>
                         <p>How should the anime functions show and behave.</p>
                    </div>

@@ -137,13 +137,9 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
         for curProper in sortedPropers:
 
             try:
-                myParser = NameParser(False)
-                parse_result = myParser.parse(curProper.name)
-            except InvalidNameException:
-                logger.log(u"Unable to parse the filename " + curProper.name + " into a valid episode", logger.DEBUG)
-                continue
-            except InvalidShowException:
-                logger.log(u"Unable to parse the filename " + curProper.name + " into a valid show", logger.DEBUG)
+                parse_result = NameParser(False).parse(curProper.name)
+            except (InvalidNameException, InvalidShowException) as error:
+                logger.log(u"{}".format(error), logger.DEBUG)
                 continue
 
             if not parse_result.series_name:

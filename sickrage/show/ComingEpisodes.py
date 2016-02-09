@@ -65,7 +65,7 @@ class ComingEpisodes(object):
 
         db = DBConnection()
         fields_to_select = ', '.join(
-            ['airdate', 'airs', 'description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id', 'name', 'network',
+            ['airdate', 'airs', 'e.description as description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id', 'name', 'network',
              'paused', 'quality', 'runtime', 'season', 'show_name', 'showid', 's.status']
         )
         results = db.select(
