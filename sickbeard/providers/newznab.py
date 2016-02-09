@@ -250,7 +250,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 "limit": 100,
                 "offset": 0,
                 "cat": self.catIDs.strip(', ') or '5030,5040',
-                'maxage': (4, sickbeard.USENET_RETENTION)[mode != 'RSS']
+                'maxage': sickbeard.USENET_RETENTION
             }
 
             if self.needs_auth and self.key:
@@ -274,8 +274,10 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')), logger.DEBUG)
+
+                    if 'tvdbid' not in search_params:
+                        search_params['q'] = search_string
 
                 search_url = posixpath.join(self.url, 'api?') + urlencode(search_params)
                 logger.log(u"Search URL: {url}".format(url=search_url), logger.DEBUG)

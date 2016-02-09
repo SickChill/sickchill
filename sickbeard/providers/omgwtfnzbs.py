@@ -105,7 +105,8 @@ class OmgwtfnzbsProvider(NZBProvider):
                 search_params['search'] = search_string
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                               logger.DEBUG)
 
                 logger.log(u"Search URL: %s" % self.urls['api'] + '?' + urlencode(search_params), logger.DEBUG)
 
