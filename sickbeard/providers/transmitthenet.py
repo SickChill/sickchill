@@ -166,7 +166,8 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            torrent_size = temp_anchor['data-filesize']
+                            cells = torrent_row.find_all('td')
+                            torrent_size = cells[5].text.strip()
                             size = convert_size(torrent_size) or -1
 
                             item = title, download_url, size, seeders, leechers
