@@ -87,7 +87,8 @@ class newpctProvider(TorrentProvider):
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                               logger.DEBUG)
 
                 self.search_params['q'] = search_string.strip() if mode != 'RSS' else ''
                 self.search_params['bus_de_'] = 'All' if mode != 'RSS' else 'hoy'
