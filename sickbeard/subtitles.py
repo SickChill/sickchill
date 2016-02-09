@@ -472,7 +472,13 @@ class SubtitlesFinder(object):
             return
 
         for ep_to_sub in sql_results:
-            if not os.path.isfile(ep_to_sub['location']):
+            try:
+                # Encode path to UTF-8.
+                subtitle_path = ep_to_sub['location'].encode('utf-8')
+            except UnicodeEncodeError:
+                # Fallback to system encoding. This should never happen.
+                subtitle_path = ep_to_sub['location'].encode(sickbeard.SYS_ENCODING)
+            if not os.path.isfile(subtitle_path):
                 logger.log(u'Episode file does not exist, cannot download subtitles for {} {}'.format
                            (ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
                             episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute')), logger.DEBUG)
