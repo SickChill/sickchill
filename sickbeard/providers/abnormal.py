@@ -114,11 +114,10 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    if mode != 'RSS':
-                        torrent_table = html.find("table", class_="torrent_table cats")
-                    else:
-                        torrent_table = html.find("table", class_="torrent_table cats no_grouping")
-                    torrent_table = html.find("table", class_="torrent_table cats")
+                    torrent_table = html.find("table", class_=re.compile("torrent_table cats"))
+                    if not torrent_table:
+                        continue
+
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
                     # Continue only if at least one Release is found
