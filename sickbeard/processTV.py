@@ -185,15 +185,22 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     # Don't post process if files are still being synced and option is activated
     postpone = SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES
 
+    # Warn user if 'postpone if no subs' is enabled. Will debug possible user issues with PP
+    if sickbeard.POSTPONE_IF_NO_SUBS:
+        result.output += logHelper(u"Feature 'postpone postprocessing if no subtitle available' is enabled", logger.INFO)
+
     if not postpone:
         result.output += logHelper(u"PostProcessing Path: %s" % path, logger.INFO)
         result.output += logHelper(u"PostProcessing Dirs: %s" % str(dirs), logger.DEBUG)
 
-        rarFiles = [x for x in files if helpers.isRarFile(x)]
-        rarContent = unRAR(path, rarFiles, force, result)
-        files += rarContent
         videoFiles = [x for x in files if helpers.isMediaFile(x)]
-        videoInRar = [x for x in rarContent if helpers.isMediaFile(x)]
+        rarFiles = [x for x in files if helpers.isRarFile(x)]
+        rarContent = ""
+        if rarFiles and not (sickbeard.POSTPONE_IF_NO_SUBS and videoFiles):
+            # Unpack only if video file was not already extracted by 'postpone if no subs' feature
+            rarContent = unRAR(path, rarFiles, force, result)
+            files += rarContent
+        videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else ''
 
         result.output += logHelper(u"PostProcessing Files: %s" % files, logger.DEBUG)
         result.output += logHelper(u"PostProcessing VideoFiles: %s" % videoFiles, logger.DEBUG)
@@ -241,11 +248,15 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
             postpone = SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES
 
             if not postpone:
-                rarFiles = [x for x in fileList if helpers.isRarFile(x)]
-                rarContent = unRAR(processPath, rarFiles, force, result)
-                fileList = set(fileList + rarContent)
                 videoFiles = [x for x in fileList if helpers.isMediaFile(x)]
-                videoInRar = [x for x in rarContent if helpers.isMediaFile(x)]
+                rarFiles = [x for x in fileList if helpers.isRarFile(x)]
+                rarContent = ""
+                if rarFiles and not (sickbeard.POSTPONE_IF_NO_SUBS and videoFiles):
+                    # Unpack only if video file was not already extracted by 'postpone if no subs' feature
+                    rarContent = unRAR(processPath, rarFiles, force, result)
+                    fileList = set(fileList + rarContent)
+
+                videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else ''
                 notwantedFiles = [x for x in fileList if x not in videoFiles]
                 if notwantedFiles:
                     result.output += logHelper(u"Found unwanted files: %s" % notwantedFiles, logger.DEBUG)
@@ -367,15 +378,15 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
         try:
             NameParser().parse(video, cache_result=False)
             return True
-        except (InvalidNameException, InvalidShowException):
-            pass
+        except (InvalidNameException, InvalidShowException) as error:
+            result.output += logHelper(u"{}".format(error), logger.DEBUG)
 
     for proc_dir in allDirs:
         try:
             NameParser().parse(proc_dir, cache_result=False)
             return True
-        except (InvalidNameException, InvalidShowException):
-            pass
+        except (InvalidNameException, InvalidShowException) as error:
+            result.output += logHelper(u"{}".format(error), logger.DEBUG)
 
     if sickbeard.UNPACK:
         # Search for packed release
@@ -385,8 +396,8 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
             try:
                 NameParser().parse(packed, cache_result=False)
                 return True
-            except (InvalidNameException, InvalidShowException):
-                pass
+            except (InvalidNameException, InvalidShowException) as error:
+                result.output += logHelper(u"{}".format(error), logger.DEBUG)
 
     result.output += logHelper(u"%s : No processable items found in folder" % dirName, logger.DEBUG)
     return False
@@ -484,10 +495,9 @@ def already_postprocessed(dirName, videofile, force, result):  # pylint: disable
 
     # Needed if we have downloaded the same episode @ different quality
     # But we need to make sure we check the history of the episode we're going to PP, and not others
-    np = NameParser(dirName, tryIndexers=True)
     try:  # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
-        parse_result = np.parse(dirName)
-    except Exception:  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
+        parse_result = NameParser(dirName, tryIndexers=True).parse(dirName)
+    except (InvalidNameException, InvalidShowException):  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
         parse_result = False
 
     search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same

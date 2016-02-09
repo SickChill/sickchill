@@ -109,11 +109,11 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                 logger.log(u"Content-Encoding was gzip, but content was not compressed while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
                 continue
             except Exception as e:
-                if e.errno != errno.ECONNRESET:
+                if hasattr(e, 'errno') and e.errno == errno.ECONNRESET:
+                    logger.log(u"Connection reseted by peer accessing {}".format(curProvider.name), logger.DEBUG)
+                else:
                     logger.log(u"Unknown exception while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
                     logger.log(traceback.format_exc(), logger.DEBUG)
-                else:
-                    logger.log(u"Connection reseted by peer accessing {}".format(curProvider.name), logger.DEBUG)
                 continue
 
             # if they haven't been added by a different provider than add the proper to the list
@@ -137,13 +137,9 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
         for curProper in sortedPropers:
 
             try:
-                myParser = NameParser(False)
-                parse_result = myParser.parse(curProper.name)
-            except InvalidNameException:
-                logger.log(u"Unable to parse the filename " + curProper.name + " into a valid episode", logger.DEBUG)
-                continue
-            except InvalidShowException:
-                logger.log(u"Unable to parse the filename " + curProper.name + " into a valid show", logger.DEBUG)
+                parse_result = NameParser(False).parse(curProper.name)
+            except (InvalidNameException, InvalidShowException) as error:
+                logger.log(u"{}".format(error), logger.DEBUG)
                 continue
 
             if not parse_result.series_name:

@@ -72,12 +72,13 @@ def filterBadReleases(name, parse=True):
     try:
         if parse:
             NameParser().parse(name)
-    except InvalidNameException:
-        logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
+    except InvalidNameException as error:
+        logger.log(u"{}".format(error), logger.DEBUG)
         return False
     except InvalidShowException:
         pass
-    #    logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.DEBUG)
+    # except InvalidShowException as error:
+    #    logger.log(u"{}".format(error), logger.DEBUG)
     #    return False
 
     # if any of the bad strings are in the name then say no

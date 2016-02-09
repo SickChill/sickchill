@@ -65,9 +65,11 @@ def setLastRefresh(exList):
     :param exList: exception list to set refresh time
     """
     cache_db_con = db.DBConnection('cache.db')
-    cache_db_con.upsert("scene_exceptions_refresh",
-                {'last_refreshed': int(time.mktime(datetime.datetime.today().timetuple()))},
-                {'list': exList})
+    cache_db_con.upsert(
+        "scene_exceptions_refresh",
+        {'last_refreshed': int(time.mktime(datetime.datetime.today().timetuple()))},
+        {'list': exList}
+    )
 
 
 def get_scene_exceptions(indexer_id, season=-1):
@@ -80,9 +82,9 @@ def get_scene_exceptions(indexer_id, season=-1):
     if indexer_id not in exceptionsCache or season not in exceptionsCache[indexer_id]:
         cache_db_con = db.DBConnection('cache.db')
         exceptions = cache_db_con.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?",
-                                 [indexer_id, season])
+                                         [indexer_id, season])
         if exceptions:
-            exceptionsList = list(set([cur_exception["show_name"] for cur_exception in exceptions]))
+            exceptionsList = list({cur_exception["show_name"] for cur_exception in exceptions})
 
             if indexer_id not in exceptionsCache:
                 exceptionsCache[indexer_id] = {}
@@ -126,9 +128,9 @@ def get_scene_seasons(indexer_id):
     if indexer_id not in exceptionsSeasonCache:
         cache_db_con = db.DBConnection('cache.db')
         sql_results = cache_db_con.select("SELECT DISTINCT(season) as season FROM scene_exceptions WHERE indexer_id = ?",
-                                 [indexer_id])
+                                          [indexer_id])
         if sql_results:
-            exceptionsSeasonList = list(set([int(x["season"]) for x in sql_results]))
+            exceptionsSeasonList = list({int(x["season"]) for x in sql_results})
 
             if indexer_id not in exceptionsSeasonCache:
                 exceptionsSeasonCache[indexer_id] = {}
@@ -179,7 +181,7 @@ def get_scene_exception_by_name_multiple(show_name):
     return [(None, None)]
 
 
-def retrieve_exceptions():
+def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
     """
     Looks up the exceptions on github, parses them into a dict, and inserts them into the
     scene_exceptions table in cache.db. Also clears the scene name cache.
@@ -279,7 +281,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
 
     for cur_exception in scene_exceptions:
         cache_db_con.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
-                    [indexer_id, cur_exception, season])
+                            [indexer_id, cur_exception, season])
 
 
 def _anidb_exceptions_fetcher():

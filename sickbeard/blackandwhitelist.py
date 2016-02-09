@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Dennis Lutter <lad1337@gmail.com>
-# URL: https://sickrage.github.io/
-# Git: https://github.com/SickRage/SickRage.git
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -10,7 +10,7 @@
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -18,9 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from adba.aniDBerrors import AniDBCommandTimeoutError
+
 import sickbeard
 from sickbeard import db, logger, helpers
-from adba.aniDBerrors import AniDBCommandTimeoutError
 
 
 class BlackAndWhiteList(object):
@@ -37,9 +38,9 @@ class BlackAndWhiteList(object):
         """
         Builds black and whitelist
         """
-        logger.log(u'Building black and white list for ' + str(self.show_id), logger.DEBUG)
-        self.blacklist = self._load_list('blacklist')
-        self.whitelist = self._load_list('whitelist')
+        logger.log(u'Building black and white list for {id}'.format(id=self.show_id), logger.DEBUG)
+        self.blacklist = self._load_list(b'blacklist')
+        self.whitelist = self._load_list(b'whitelist')
 
     def _add_keywords(self, table, values):
         """
@@ -58,10 +59,10 @@ class BlackAndWhiteList(object):
 
         :param values: Complete list of keywords to be set as blacklist
         """
-        self._del_all_keywords('blacklist')
-        self._add_keywords('blacklist', values)
+        self._del_all_keywords(b'blacklist')
+        self._add_keywords(b'blacklist', values)
         self.blacklist = values
-        logger.log(u'Blacklist set to: %s' % self.blacklist, logger.DEBUG)
+        logger.log(u'Blacklist set to: {blacklist}'.format(blacklist=self.blacklist), logger.DEBUG)
 
     def set_white_keywords(self, values):
         """
@@ -69,10 +70,10 @@ class BlackAndWhiteList(object):
 
         :param values: Complete list of keywords to be set as whitelist
         """
-        self._del_all_keywords('whitelist')
-        self._add_keywords('whitelist', values)
+        self._del_all_keywords(b'whitelist')
+        self._add_keywords(b'whitelist', values)
         self.whitelist = values
-        logger.log(u'Whitelist set to: %s' % self.whitelist, logger.DEBUG)
+        logger.log(u'Whitelist set to: {whitelist}'.format(whitelist=self.whitelist), logger.DEBUG)
 
     def _del_all_keywords(self, table):
         """
@@ -97,9 +98,10 @@ class BlackAndWhiteList(object):
             return []
         groups = []
         for result in sql_results:
-            groups.append(result["keyword"])
+            groups.append(result[b'keyword'])
 
-        logger.log(u'BWL: ' + str(self.show_id) + ' loaded keywords from ' + table + ': ' + str(groups), logger.DEBUG)
+        logger.log(u'BWL: {id} loaded keywords from {table}: {groups}'.format
+                   (id=self.show_id, table=table, groups=groups), logger.DEBUG)
 
         return groups
 
@@ -113,7 +115,7 @@ class BlackAndWhiteList(object):
 
         if self.whitelist or self.blacklist:
             if not result.release_group:
-                logger.log('Failed to detect release group, invalid result', logger.DEBUG)
+                logger.log(u'Failed to detect release group, invalid result', logger.DEBUG)
                 return False
 
             if result.release_group.lower() in [x.lower() for x in self.whitelist]:
@@ -127,14 +129,15 @@ class BlackAndWhiteList(object):
             else:
                 black_result = True
 
-            logger.log(u'Whitelist check passed: %s. Blacklist check passed: %s' % (white_result, black_result), logger.DEBUG)
+            logger.log(u'Whitelist check passed: {white}. Blacklist check passed: {black}'.format
+                       (white=white_result, black=black_result), logger.DEBUG)
 
             if white_result and black_result:
                 return True
             else:
                 return False
         else:
-            logger.log(u'No Whitelist and  Blacklist defined, check passed.', logger.DEBUG)
+            logger.log(u'No Whitelist and Blacklist defined, check passed.', logger.DEBUG)
             return True
 
 
@@ -149,23 +152,23 @@ def short_group_names(groups):
     :param groups: list of groups to find short group names for
     :return: list of shortened group names
     """
-    groups = groups.split(",")
-    shortGroupList = []
+    groups = groups.split(',')
+    short_group_list = []
     if helpers.set_up_anidb_connection():
         for groupName in groups:
             try:
                 group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
             except AniDBCommandTimeoutError:
-                logger.log(u"Timeout while loading group from AniDB. Trying next group", logger.DEBUG)
+                logger.log(u'Timeout while loading group from AniDB. Trying next group', logger.DEBUG)
             except Exception:
-                logger.log(u"Failed while loading group from AniDB. Trying next group", logger.DEBUG)
+                logger.log(u'Failed while loading group from AniDB. Trying next group', logger.DEBUG)
             else:
                 for line in group.datalines:
-                    if line["shortname"]:
-                        shortGroupList.append(line["shortname"])
+                    if line[b'shortname']:
+                        short_group_list.append(line[b'shortname'])
                     else:
-                        if groupName not in shortGroupList:
-                            shortGroupList.append(groupName)
+                        if groupName not in short_group_list:
+                            short_group_list.append(groupName)
     else:
-        shortGroupList = groups
-    return shortGroupList
+        short_group_list = groups
+    return short_group_list

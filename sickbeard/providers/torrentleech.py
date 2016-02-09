@@ -19,8 +19,10 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+
+from requests.compat import urlencode
 from requests.utils import dict_from_cookiejar
-from urllib import urlencode
+
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -33,22 +35,30 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "TorrentLeech")
 
+        # Credentials
         self.username = None
         self.password = None
+
+        # Torrent Stats
         self.ratio = None
         self.minseed = None
         self.minleech = None
+        self.freeleech = None
 
+        # URLs
         self.url = 'https://torrentleech.org'
         self.urls = {
             'login': self.url + '/user/account/login/',
             'search': self.url + '/torrents/browse',
         }
 
+        # Proper Strings
         self.proper_strings = ['PROPER', 'REPACK']
 
+        # Cache
         self.cache = tvcache.TVCache(self)
 
     def login(self):
@@ -58,8 +68,8 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         login_params = {
             'username': self.username.encode('utf-8'),
             'password': self.password.encode('utf-8'),
+            'login': 'submit',
             'remember_me': 'on',
-            'login': 'submit'
         }
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
@@ -81,10 +91,24 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         # TV, Episodes, BoxSets, Episodes HD, Animation, Anime, Cartoons
         # 2,26,27,32,7,34,35
 
+
+        # Units
+        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
+        def process_column_header(td):
+            result = ''
+            if td.a:
+                result = td.a.get('title')
+            if not result:
+                result = td.get_text(strip=True)
+            return result
+
         for mode in search_strings:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+
             for search_string in search_strings[mode]:
+
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
@@ -103,9 +127,9 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                 search_url = "%s?%s" % (self.urls['search'], urlencode(search_params))
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                # returns top 15 results by default, expandable in user profile to 100
                 data = self.get_url(search_url)
                 if not data:
+                    logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
@@ -117,16 +141,9 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    def process_column_header(td):
-                        result = ''
-                        if td.a:
-                            result = td.a.get('title')
-                        if not result:
-                            result = td.get_text(strip=True)
-                        return result
-
                     labels = [process_column_header(label) for label in torrent_rows[0].find_all('th')]
 
+                    # Skip column headers
                     for result in torrent_rows[1:]:
                         try:
                             title = result.find('td', class_='name').find('a').get_text(strip=True)
@@ -136,17 +153,22 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                             seeders = try_int(result.find('td', class_='seeders').get_text(strip=True))
                             leechers = try_int(result.find('td', class_='leechers').get_text(strip=True))
+
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u"Discarding torrent because it doesn't meet the"
+                                               u" minimum seeders or leechers: {} (S:{} L:{})".format
+                                               (title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             torrent_size = result.find_all('td')[labels.index('Size')].get_text()
-                            size = convert_size(torrent_size) or -1
+                            size = convert_size(torrent_size, units=units) or -1
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                                           (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
                         except StandardError:
@@ -154,7 +176,6 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
-
             results += items
 
         return results

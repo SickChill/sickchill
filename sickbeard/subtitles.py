@@ -33,7 +33,7 @@ from sickbeard import history
 from sickbeard import db
 from sickbeard import processTV
 from sickbeard.common import Quality
-from sickbeard.helpers import remove_non_release_groups, isMediaFile
+from sickbeard.helpers import remove_non_release_groups, isMediaFile, isRarFile
 from sickrage.helper.common import episode_num, dateTimeFormat
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
@@ -152,7 +152,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                    'Rename the file or try a different locale. Error: {}'.format
                    (subtitles_info['location'], ex(error)), logger.WARNING)
         return existing_subtitles, None
-    user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
+    user_score = 367 if sickbeard.SUBTITLES_PERFECT_MATCH else 352
 
     video = get_video(video_path, subtitles_path=subtitles_path)
     if not video:
@@ -173,6 +173,11 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
 
     try:
         subtitles_list = pool.list_subtitles(video, languages)
+
+        for provider in providers:
+            if provider in pool.discarded_providers:
+                logger.log(u'Could not search in {} provider. Discarding for now'.format(provider), logger.DEBUG)
+
         if not subtitles_list:
             logger.log(u'No subtitles found for {} {}'.format
                        (subtitles_info['show_name'], episode_num(subtitles_info['season'], subtitles_info['episode']) or
@@ -180,13 +185,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
             return existing_subtitles, None
 
         for subtitle in subtitles_list:
-            try:
-                matches = subtitle.get_matches(video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
-            except ValueError as error:
-                logger.log(u'An error occurred while getting a subtitle match for: {}. Error: {}'.format
-                           (video.name, ex(error)), logger.WARNING)
-                continue
-            score = subliminal.subtitle.compute_score(matches, video)
+            score = subliminal.score.compute_score(subtitle, video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
             logger.log(u'[{}] Subtitle score for {} is: {} (min={})'.format
                        (subtitle.provider_name, subtitle.id, score, user_score), logger.DEBUG)
 
@@ -343,6 +342,18 @@ class SubtitlesFinder(object):
         run_post_process = False
         # Check if PP folder is set
         if sickbeard.TV_DOWNLOAD_DIR and ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
+
+            for root, _, files in ek(os.walk, sickbeard.TV_DOWNLOAD_DIR, topdown=False):
+                rar_files = [x for x in files if isRarFile(x)]
+                if rar_files and sickbeard.UNPACK:
+                    video_files = [x for x in files if isMediaFile(x)]
+                    if u'_UNPACK' not in root and (not video_files or root == sickbeard.TV_DOWNLOAD_DIR):
+                        logger.log(u'Found rar files in post-process folder: {}'.format(rar_files), logger.DEBUG)
+                        result = processTV.ProcessResult()
+                        rar_content = processTV.unRAR(root, rar_files, False, result)
+                elif rar_files and not sickbeard.UNPACK:
+                    logger.log(u'Unpack is disabled. Skipping: {}'.format(rar_files), logger.WARNING)    
+
             for root, _, files in ek(os.walk, sickbeard.TV_DOWNLOAD_DIR, topdown=False):
                 for video_filename in sorted(files):
                     try:
@@ -359,6 +370,10 @@ class SubtitlesFinder(object):
                             video = subliminal.scan_video(os.path.join(root, video_filename),
                                                           subtitles=False, embedded_subtitles=False)
                             subtitles_list = pool.list_subtitles(video, languages)
+                            
+                            for provider in providers:
+                                if provider in pool.discarded_providers:
+                                    logger.log(u'Could not search in {} provider. Discarding for now'.format(provider), logger.DEBUG)
 
                             if not subtitles_list:
                                 logger.log(u'No subtitles found for {}'.format
@@ -367,20 +382,14 @@ class SubtitlesFinder(object):
 
                             logger.log(u'Found subtitle(s) canditate(s) for {}'.format(video_filename), logger.INFO)
                             hearing_impaired = sickbeard.SUBTITLES_HEARING_IMPAIRED
-                            user_score = 132 if sickbeard.SUBTITLES_PERFECT_MATCH else 111
+                            user_score = 367 if sickbeard.SUBTITLES_PERFECT_MATCH else 352
                             found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
                                                                            hearing_impaired=hearing_impaired,
                                                                            min_score=user_score,
                                                                            only_one=not sickbeard.SUBTITLES_MULTI)
 
                             for subtitle in subtitles_list:
-                                try:
-                                    matches = subtitle.get_matches(video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
-                                except ValueError as error:
-                                    logger.log(u'An error occurred while getting a subtitle match for: {}. Error: {}'.format
-                                               (video.name, ex(error)), logger.WARNING)
-                                    continue
-                                score = subliminal.subtitle.compute_score(matches, video)
+                                score = subliminal.score.compute_score(subtitle, video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
                                 logger.log(u'[{}] Subtitle score for {} is: {} (min={})'.format
                                            (subtitle.provider_name, subtitle.id, score, user_score), logger.DEBUG)
 

@@ -20,7 +20,7 @@
 
                 <div id="animedb-settings" class="tab-pane active component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="${srRoot}/images/anidb24.png" alt="AniDB" title="AniDB" width="24" height="24" />
+                        <span class="icon-notifiers-anime" title="AniDB"></span>
                         <h3><a href="${anon_url('http://anidb.info')}" onclick="window.open(this.href, '_blank'); return false;">AniDB</a></h3>
                         <p>AniDB is non-profit database of anime information that is freely open to the public</p>
                     </div>
@@ -72,8 +72,10 @@
                 <div id="anime-look-feel" class="tab-pane component-group">
 
                     <div class="component-group-desc">
+                        <span class="icon-notifiers-look" title="look"></span>
                         <h3>Look and Feel</h3>
-                    </div>
+                        <p>How should the anime functions show and behave.</p>
+                   </div>
                     <fieldset class="component-group-list">
                         <div class="field-pair">
                             <input type="checkbox" class="enabler" name="split_home" id="split_home" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME)]}/>

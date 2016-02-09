@@ -18,8 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from requests.compat import urlencode
 from requests.utils import dict_from_cookiejar
-from urllib import urlencode
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -32,34 +32,41 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "Danishbits")
 
+        # Credentials
         self.username = None
         self.password = None
+
+        # Torrent Stats
         self.ratio = None
-
-        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll Danishbits every 10 minutes max
-
-        self.url = 'https://danishbits.org/'
-        self.urls = {
-            'login': self.url + 'login.php',
-            'search': self.url + 'torrents.php',
-        }
-
         self.minseed = 0
         self.minleech = 0
         self.freeleech = True
+
+        # URLs
+        self.url = 'https://danishbits.org'
+        self.urls = {
+            'login': self.url + '/login.php',
+            'search': self.url + '/torrents.php',
+        }
+
+        # Proper Strings
+
+        # Cache
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll Danishbits every 10 minutes max
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
         login_params = {
-            'langlang': '',
             'username': self.username.encode('utf-8'),
             'password': self.password.encode('utf-8'),
             'keeplogged': 1,
-            'login': 'Login'
+            'langlang': '',
+            'login': 'Login',
         }
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
@@ -75,21 +82,35 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches,too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
         if not self.login():
             return results
 
+        # Search Params
         search_params = {
             'action': 'newbrowse',
             'group': 3,
             'search': '',
         }
 
+        # Units
+        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
+        def process_column_header(td):
+            result = ''
+            if td.img:
+                result = td.img.get('title')
+            if not result:
+                result = td.get_text(strip=True)
+            return result.encode('utf-8')
+
         for mode in search_strings:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+
             for search_string in search_strings[mode]:
+
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
@@ -98,9 +119,9 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 search_url = "%s?%s" % (self.urls['search'], urlencode(search_params))
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                # returns top 15 results by default, expandable in user profile to 100
                 data = self.get_url(search_url)
                 if not data:
+                    logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
@@ -112,19 +133,13 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    def process_column_header(td):
-                        result = ''
-                        if td.img:
-                            result = td.img.get('title')
-                        if not result:
-                            result = td.get_text(strip=True)
-                        return result.encode('utf-8')
-
                     # Literal:     Navn, Størrelse, Kommentarer, Tilføjet, Snatches, Seeders, Leechers
                     # Translation: Name, Size,      Comments,    Added,    Snatches, Seeders, Leechers
                     labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
 
+                    # Skip column headers
                     for result in torrent_rows[1:]:
+
                         try:
                             title = result.find(class_='croptorrenttext').get_text(strip=True)
                             download_url = self.url + result.find(title="Direkte download link")['href']
@@ -135,9 +150,13 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                             seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
+
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u"Discarding torrent because it doesn't meet the"
+                                               u" minimum seeders or leechers: {} (S:{} L:{})".format
+                                               (title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             freeleech = result.find(class_='freeleech')
@@ -145,25 +164,24 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 continue
 
                             torrent_size = cells[labels.index('Størrelse')].contents[0]
-                            size = convert_size(torrent_size) or -1
+                            size = convert_size(torrent_size, units=units) or -1
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                                           (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
-
                         except StandardError:
                             continue
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
-
             results += items
 
         return results
 
-    def seedRatio(self):
+    def seed_ratio(self):
         return self.ratio
 
 provider = DanishbitsProvider()

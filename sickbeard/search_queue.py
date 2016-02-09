@@ -137,7 +137,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
             logger.log(u"Beginning daily search for new episodes")
             foundResults = search.searchForNeededEpisodes()
 
-            if not len(foundResults):
+            if not foundResults:
                 logger.log(u"No needed episodes found")
             else:
                 for result in foundResults:

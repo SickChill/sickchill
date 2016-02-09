@@ -50,7 +50,7 @@ class CommonTests(unittest.TestCase):
             '12.3': None,
             '-123': None,
             '-12.3': None,
-            '300': None,
+            '300': 'Multiple Choices',
             0: None,
             123: None,
             12.3: None,
@@ -69,7 +69,7 @@ class CommonTests(unittest.TestCase):
             u'12.3': None,
             u'-123': None,
             u'-12.3': None,
-            u'300': None,
+            u'300': 'Multiple Choices',
         }
 
         for test in test_cases, unicode_test_cases:
@@ -444,7 +444,7 @@ class CommonTests(unittest.TestCase):
         self.assertEqual(convert_size('1 B', units=oops), None)
         self.assertEqual(convert_size('1 Mb', units=oops), None)
         self.assertEqual(convert_size('1 MB', units=oops), None)
-        
+
     def test_episode_num(self):
         # Standard numbering
         self.assertEqual(episode_num(0, 1), 'S00E01')  # Seasons start at 0 for specials

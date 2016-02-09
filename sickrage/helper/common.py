@@ -127,18 +127,12 @@ def http_code_description(http_code):
     :return: The description of the provided ``http_code``
     """
 
-    if http_code in http_status_code:
-        description = http_status_code[http_code]
+    description = http_status_code.get(try_int(http_code), None)
 
-        if isinstance(description, list):
-            return '(%s)' % ', '.join(description)
+    if isinstance(description, list):
+        return '(%s)' % ', '.join(description)
 
-        return description
-
-    # TODO Restore logger import
-    # logger.log('Unknown HTTP status code %s. Please submit an issue' % http_code, logger.ERROR)
-
-    return None
+    return description
 
 
 def is_sync_file(filename):
@@ -332,4 +326,3 @@ def episode_num(season=None, episode=None, **kwargs):
     elif numbering == 'absolute':
         if not (season and episode) and (season or episode):
             return '{0:0>3}'.format(season or episode)
-

@@ -9,10 +9,14 @@ branches:
   except:
     - master
 
+env:
+  - TRAVIS_NODE_VERSION="5.0.0"
+
 before_install:
+  - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
   - npm install -g grunt-cli
   - npm install -g bower
-  - cd .build && npm install && bower install && cd ..
+  - cd .build && npm install --quiet && bower install && cd ..
 
 install:
     - pip install coveralls nose rednose

@@ -117,3 +117,9 @@
 ? A very special episode
 : options: -t episode
   episode_details: Special
+
+? 12 Monkeys\Season 01\Episode 05\12 Monkeys - S01E05 - The Night Room.mkv
+: container: mkv
+  title: 12 Monkeys
+  episode: 5
+  season: 1

@@ -196,6 +196,7 @@
                     <div class="component-group-desc">
                         <h3>NZB Search</h3>
                         <p>How to handle NZB search results.</p>
+                        <div id="nzb_method_icon" class="add-client-icon-${sickbeard.NZB_METHOD}"></div>
                     </div>
 
                     <fieldset class="component-group-list">
@@ -444,6 +445,7 @@
                     <div class="component-group-desc">
                         <h3>Torrent Search</h3>
                         <p>How to handle Torrent search results.</p>
+                        <div id="torrent_method_icon" class="add-client-icon-${sickbeard.TORRENT_METHOD}"></div>
                     </div>
 
                     <fieldset class="component-group-list">

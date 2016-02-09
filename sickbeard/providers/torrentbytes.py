@@ -34,29 +34,36 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "TorrentBytes")
 
+        # Credentials
         self.username = None
         self.password = None
+
+        # Torrent Stats
         self.ratio = None
         self.minseed = None
         self.minleech = None
         self.freeleech = False
 
+        # URLs
+        self.url = 'https://www.torrentbytes.net'
         self.urls = {
-            'base_url': 'https://www.torrentbytes.net',
+            'base_url': self.url,
             'login': 'https://www.torrentbytes.net/takelogin.php',
             'detail': 'https://www.torrentbytes.net/details.php?id=%s',
             'search': 'https://www.torrentbytes.net/browse.php?search=%s%s',
             'download': 'https://www.torrentbytes.net/download.php?id=%s&name=%s'
         }
 
-        self.url = self.urls['base_url']
-
+        # Categories
         self.categories = "&c41=1&c33=1&c38=1&c32=1&c37=1"
 
+        # Proper Strings
         self.proper_strings = ['PROPER', 'REPACK']
 
+        # Cache
         self.cache = tvcache.TVCache(self)
 
     def login(self):
@@ -96,6 +103,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                 data = self.get_url(search_url)
                 if not data:
+                    logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 try:
@@ -154,8 +162,10 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             size = convert_size(torrent_size) or -1
 
                             item = title, download_url, size, seeders, leechers
+
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                                           (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
 
@@ -164,7 +174,6 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
-
             results += items
 
         return results

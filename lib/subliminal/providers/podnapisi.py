@@ -41,14 +41,17 @@ class PodnapisiSubtitle(Subtitle):
     def id(self):
         return self.pid
 
-    def get_matches(self, video, hearing_impaired=False):
-        matches = super(PodnapisiSubtitle, self).get_matches(video, hearing_impaired=hearing_impaired)
+    def get_matches(self, video):
+        matches = set()
 
         # episode
         if isinstance(video, Episode):
             # series
             if video.series and sanitized_string_equal(self.title, video.series):
                 matches.add('series')
+            # year
+            if video.year == self.year:
+                matches.add('year')
             # season
             if video.season and self.season == video.season:
                 matches.add('season')
@@ -63,12 +66,12 @@ class PodnapisiSubtitle(Subtitle):
             # title
             if video.title and sanitized_string_equal(self.title, video.title):
                 matches.add('title')
+            # year
+            if video.year and self.year == video.year:
+                matches.add('year')
             # guess
             for release in self.releases:
                 matches |= guess_matches(video, guessit(release, {'type': 'movie'}))
-        # year
-        if video.year and self.year == video.year:
-            matches.add('year')
 
         return matches
 

@@ -32,16 +32,26 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "TorrentProject")
 
+        # Credentials
         self.public = True
+
+        # Torrent Stats
         self.ratio = 0
+        self.minseed = None
+        self.minleech = None
+
+        # URLs
         self.urls = {'api': u'https://torrentproject.se/', }
         self.url = self.urls['api']
         self.custom_url = None
         self.headers.update({'User-Agent': USER_AGENT})
-        self.minseed = None
-        self.minleech = None
+
+        # Proper Strings
+
+        # Cache
         self.cache = tvcache.TVCache(self, search_params={'RSS': ['0day']})
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
@@ -49,7 +59,9 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
         for mode in search_strings:  # Mode = RSS, Season, Episode
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+
             for search_string in search_strings[mode]:
+
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
@@ -98,13 +110,13 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
                     item = title, download_url, size, seeders, leechers
 
                     if mode != 'RSS':
-                        logger.log(u"Found result: %s" % title, logger.DEBUG)
+                        logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                                   (title, seeders, leechers), logger.DEBUG)
 
                     items.append(item)
 
-            # For each search mode sort all the items by seeders
+            # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
-
             results += items
 
         return results

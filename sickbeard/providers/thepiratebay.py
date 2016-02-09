@@ -18,9 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import posixpath  # Must use posixpath
 import re
-from urllib import urlencode
+
+from requests.compat import urlencode, urljoin
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -33,24 +33,31 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "ThePirateBay")
 
+        # Credentials
         self.public = True
 
+        # Torrent Stats
         self.ratio = None
-        self.confirmed = True
         self.minseed = None
         self.minleech = None
+        self.freeleech = None
+        self.confirmed = True
 
-        self.cache = tvcache.TVCache(self, min_time=30)  # only poll ThePirateBay every 30 minutes max
-
-        self.url = 'https://thepiratebay.se/'
+        # URLs
+        self.url = 'https://thepiratebay.se'
         self.urls = {
-            'search': self.url + 's/',
-            'rss': self.url + 'browse/200'
+            'rss': self.url + '/browse/200',
+            'search': self.url + '/s/',
         }
-
         self.custom_url = None
+
+        # Proper Strings
+
+        # Cache
+        self.cache = tvcache.TVCache(self, min_time=30)  # only poll ThePirateBay every 30 minutes max
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
@@ -66,10 +73,23 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             'category': 200
         }
 
+        # Units
+        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
+        def process_column_header(th):
+            result = ''
+            if th.a:
+                result = th.a.get_text(strip=True)
+            if not result:
+                result = th.get_text(strip=True)
+            return result
+
         for mode in search_strings:
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+
             for search_string in search_strings[mode]:
+
                 if mode != 'RSS':
                     logger.log(u"Search string: %s " % search_string, logger.DEBUG)
 
@@ -77,7 +97,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                 search_url = self.urls['search'] + '?' + urlencode(search_params) if mode != 'RSS' else self.urls['rss']
                 if self.custom_url:
-                    search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/'))  # Must use posixpath
+                    search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
@@ -90,20 +110,14 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     torrent_table = html.find('table', id='searchResult')
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                    # Continue only if one Release is found
+                    # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    def process_column_header(th):
-                        result = ''
-                        if th.a:
-                            result = th.a.get_text(strip=True)
-                        if not result:
-                            result = th.get_text(strip=True)
-                        return result
-
                     labels = [process_column_header(label) for label in torrent_rows[0].find_all('th')]
+
+                    # Skip column headers
                     for result in torrent_rows[1:]:
                         try:
                             cells = result.find_all('td')
@@ -115,6 +129,8 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                             seeders = try_int(cells[labels.index('SE')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('LE')].get_text(strip=True))
+
+                            # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
@@ -129,7 +145,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             # Convert size after all possible skip scenarios
                             torrent_size = cells[labels.index('Name')].find(class_='detDesc').get_text(strip=True).split(', ')[1]
                             torrent_size = re.sub(r'Size ([\d.]+).+([KMGT]iB)', r'\1 \2', torrent_size)
-                            size = convert_size(torrent_size) or -1
+                            size = convert_size(torrent_size, units=units) or -1
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
@@ -141,7 +157,6 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
-
             results += items
 
         return results

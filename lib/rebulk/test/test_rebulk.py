@@ -146,6 +146,18 @@ def test_rebulk_no_default():
     assert matches[2].value == "brown"
 
 
+def test_rebulk_empty_match():
+    input_string = "The quick brown fox jumps over the lazy dog"
+
+    matches = Rebulk(default_rules=False).string("quick").string("own").regex("br(.*?)own", children=True)\
+        .matches(input_string)
+
+    assert len(matches) == 2
+
+    assert matches[0].value == "quick"
+    assert matches[1].value == "own"
+
+
 def test_rebulk_tags_names():
     rebulk = Rebulk()
 

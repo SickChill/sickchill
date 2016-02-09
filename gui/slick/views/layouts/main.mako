@@ -139,15 +139,15 @@
                                 <li><a href="${srRoot}/manage/"><i class="menu-icon-manage"></i>&nbsp;Mass Update</a></li>
                                 <li><a href="${srRoot}/manage/backlogOverview/"><i class="menu-icon-backlog-view"></i>&nbsp;Backlog Overview</a></li>
                                 <li><a href="${srRoot}/manage/manageSearches/"><i class="menu-icon-manage-searches"></i>&nbsp;Manage Searches</a></li>
-                                <li><a href="${srRoot}/manage/episodeStatuses/"><i class="menu-icon-backlog"></i>&nbsp;Episode Status Management</a></li>
+                                <li><a href="${srRoot}/manage/episodeStatuses/"><i class="menu-icon-manage2"></i>&nbsp;Episode Status Management</a></li>
                             % if sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_SERVER_HOST != "":
-                                <li><a href="${srRoot}/home/updatePLEX/"><i class="menu-icon-backlog-view"></i>&nbsp;Update PLEX</a></li>
+                                <li><a href="${srRoot}/home/updatePLEX/"><i class="menu-icon-plex"></i>&nbsp;Update PLEX</a></li>
                             % endif
                             % if sickbeard.USE_KODI and sickbeard.KODI_HOST != "":
                                 <li><a href="${srRoot}/home/updateKODI/"><i class="menu-icon-kodi"></i>&nbsp;Update KODI</a></li>
                             % endif
                             % if sickbeard.USE_EMBY and sickbeard.EMBY_HOST != "" and sickbeard.EMBY_APIKEY != "":
-                                <li><a href="${srRoot}/home/updateEMBY/"><i class="menu-icon-backlog-view"></i>&nbsp;Update Emby</a></li>
+                                <li><a href="${srRoot}/home/updateEMBY/"><i class="menu-icon-emby"></i>&nbsp;Update Emby</a></li>
                             % endif
                             % if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https' or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
                                 <li><a href="${srRoot}/manage/manageTorrents/"><i class="menu-icon-bittorrent"></i>&nbsp;Manage Torrents</a></li>
@@ -169,13 +169,13 @@
                             <ul class="dropdown-menu">
                                 <li><a href="${srRoot}/config/"><i class="menu-icon-help"></i>&nbsp;Help &amp; Info</a></li>
                                 <li><a href="${srRoot}/config/general/"><i class="menu-icon-config"></i>&nbsp;General</a></li>
-                                <li><a href="${srRoot}/config/backuprestore/"><i class="menu-icon-config"></i>&nbsp;Backup &amp; Restore</a></li>
-                                <li><a href="${srRoot}/config/search/"><i class="menu-icon-config"></i>&nbsp;Search Settings</a></li>
-                                <li><a href="${srRoot}/config/providers/"><i class="menu-icon-config"></i>&nbsp;Search Providers</a></li>
-                                <li><a href="${srRoot}/config/subtitles/"><i class="menu-icon-config"></i>&nbsp;Subtitles Settings</a></li>
-                                <li><a href="${srRoot}/config/postProcessing/"><i class="menu-icon-config"></i>&nbsp;Post Processing</a></li>
-                                <li><a href="${srRoot}/config/notifications/"><i class="menu-icon-config"></i>&nbsp;Notifications</a></li>
-                                <li><a href="${srRoot}/config/anime/"><i class="menu-icon-config"></i>&nbsp;Anime</a></li>
+                                <li><a href="${srRoot}/config/backuprestore/"><i class="menu-icon-backup"></i>&nbsp;Backup &amp; Restore</a></li>
+                                <li><a href="${srRoot}/config/search/"><i class="menu-icon-manage-searches"></i>&nbsp;Search Settings</a></li>
+                                <li><a href="${srRoot}/config/providers/"><i class="menu-icon-provider"></i>&nbsp;Search Providers</a></li>
+                                <li><a href="${srRoot}/config/subtitles/"><i class="menu-icon-backlog"></i>&nbsp;Subtitles Settings</a></li>
+                                <li><a href="${srRoot}/config/postProcessing/"><i class="menu-icon-postprocess"></i>&nbsp;Post Processing</a></li>
+                                <li><a href="${srRoot}/config/notifications/"><i class="menu-icon-notification"></i>&nbsp;Notifications</a></li>
+                                <li><a href="${srRoot}/config/anime/"><i class="menu-icon-anime"></i>&nbsp;Anime</a></li>
                             </ul>
                             <div style="clear:both;"></div>
                         </li>
@@ -204,13 +204,13 @@
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="${srRoot}/news/"><i class="menu-icon-help"></i>&nbsp;News${newsBadge}</a></li>
-                                <li><a href="${srRoot}/IRC/"><i class="menu-icon-help"></i>&nbsp;IRC</a></li>
-                                <li><a href="${srRoot}/changes/"><i class="menu-icon-help"></i>&nbsp;Changelog</a></li>
-                                <li><a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="menu-icon-help"></i>&nbsp;Support SickRage</a></li>
+                                <li><a href="${srRoot}/news/"><i class="menu-icon-news"></i>&nbsp;News${newsBadge}</a></li>
+                                <li><a href="${srRoot}/IRC/"><i class="menu-icon-irc"></i>&nbsp;IRC</a></li>
+                                <li><a href="${srRoot}/changes/"><i class="menu-icon-changelog"></i>&nbsp;Changelog</a></li>
+                                <li><a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="menu-icon-support"></i>&nbsp;Support SickRage</a></li>
                                 <li role="separator" class="divider"></li>
                                 %if numErrors:
-                                    <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Errors <span class="badge btn-danger">${numErrors}</span></a></li>
+                                    <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-error"></i>&nbsp;View Errors <span class="badge btn-danger">${numErrors}</span></a></li>
                                 %endif
                                 %if numWarnings:
                                     <li><a href="${srRoot}/errorlogs/?level=${sickbeard.logger.WARNING}"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Warnings <span class="badge btn-warning">${numWarnings}</span></a></li>
@@ -224,7 +224,7 @@
                                     <li><a href="${srRoot}/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;Logout</a></li>
                                 % endif
                                 <li role="separator" class="divider"></li>
-                                <li><a href="${srRoot}/home/status/"><i class="menu-icon-help"></i>&nbsp;Server Status</a></li>
+                                <li><a href="${srRoot}/home/status/"><i class="menu-icon-info"></i>&nbsp;Server Status</a></li>
                             </ul>
                             <div style="clear:both;"></div>
                         </li>

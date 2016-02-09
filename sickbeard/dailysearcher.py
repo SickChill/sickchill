@@ -30,12 +30,12 @@ from sickrage.show.Show import Show
 from sickrage.helper.exceptions import MultipleShowObjectsException
 
 
-class DailySearcher(object):
+class DailySearcher(object):  # pylint:disable=too-few-public-methods
     def __init__(self):
         self.lock = threading.Lock()
         self.amActive = False
 
-    def run(self, force=False):
+    def run(self, force=False):  # pylint:disable=too-many-branches
         """
         Runs the daily searcher, queuing selected episodes for search
 
@@ -45,7 +45,7 @@ class DailySearcher(object):
             return
 
         self.amActive = True
-
+        _ = force
         logger.log(u"Searching for new released episodes ...")
 
         if not network_timezones.network_dict:
@@ -60,7 +60,7 @@ class DailySearcher(object):
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND (airdate <= ? and airdate > 1)",
-                                 [common.UNAIRED, curDate])
+                                         [common.UNAIRED, curDate])
 
         sql_l = []
         show = None

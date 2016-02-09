@@ -38,7 +38,7 @@ def prepareFailedName(release):
     if fixed.endswith(".nzb"):
         fixed = fixed.rpartition(".")[0]
 
-    fixed = re.sub("[\.\-\+\ ]", "_", fixed)
+    fixed = re.sub(r"[\.\-\+\ ]", "_", fixed)
     fixed = ss(fixed)
 
     return fixed
@@ -122,7 +122,7 @@ def revertEpisode(epObj):
     """Restore the episodes of a failed download to their original state"""
     failed_db_con = db.DBConnection('failed.db')
     sql_results = failed_db_con.select("SELECT episode, old_status FROM history WHERE showid=? AND season=?",
-                              [epObj.show.indexerid, epObj.season])
+                                       [epObj.show.indexerid, epObj.season])
 
     history_eps = dict([(res["episode"], res) for res in sql_results])
 
@@ -202,7 +202,7 @@ def deleteLoggedSnatch(release, size, provider):
 
     failed_db_con = db.DBConnection('failed.db')
     failed_db_con.action("DELETE FROM history WHERE release=? AND size=? AND provider=?",
-                [release, size, provider])
+                         [release, size, provider])
 
 
 def trimHistory():
@@ -223,14 +223,15 @@ def findRelease(epObj):
 
     # Clear old snatches for this release if any exist
     failed_db_con = db.DBConnection('failed.db')
-    failed_db_con.action("DELETE FROM history WHERE showid=" + str(epObj.show.indexerid) + " AND season=" + str(
-        epObj.season) + " AND episode=" + str(
-        epObj.episode) + " AND date < (SELECT max(date) FROM history WHERE showid=" + str(
-        epObj.show.indexerid) + " AND season=" + str(epObj.season) + " AND episode=" + str(epObj.episode) + ")")
+    # failed_db_con.action(
+    #     "DELETE FROM history WHERE showid = {0} AND season = {1} AND episode = {2}"
+    #     " AND date < (SELECT max(date) FROM history WHERE showid = {0} AND season = {1} AND episode = {2})".format
+    #     (epObj.show.indexerid, epObj.season, epObj.episode)
+    # )
 
     # Search for release in snatch history
     results = failed_db_con.select("SELECT release, provider, date FROM history WHERE showid=? AND season=? AND episode=?",
-                          [epObj.show.indexerid, epObj.season, epObj.episode])
+                                   [epObj.show.indexerid, epObj.season, epObj.episode])
 
     for result in results:
         release = str(result["release"])

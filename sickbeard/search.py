@@ -516,11 +516,11 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
                 logger.log(u"Content-Encoding was gzip, but content was not compressed while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
                 break
             except Exception as e:
-                if e.errno != errno.ECONNRESET:
+                if hasattr(e, 'errno') and e.errno == errno.ECONNRESET:
+                    logger.log(u"Connection reseted by peer while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
+                else:
                     logger.log(u"Unknown exception while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.ERROR)
                     logger.log(traceback.format_exc(), logger.DEBUG)
-                else:
-                    logger.log(u"Connection reseted by peer while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
                 break
 
             didSearch = True
@@ -545,7 +545,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
                 search_mode = 'sponly'
 
         # skip to next provider if we have no results to process
-        if not len(foundResults[curProvider.name]):
+        if not foundResults[curProvider.name]:
             continue
 
         # pick the best season NZB
@@ -707,7 +707,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
             if curEp in (MULTI_EP_RESULT, SEASON_RESULT):
                 continue
 
-            if not len(foundResults[curProvider.name][curEp]) > 0:
+            if not foundResults[curProvider.name][curEp]:
                 continue
 
             # if all results were rejected move on to the next episode
