@@ -144,14 +144,8 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                     episode_num(subtitles_info['season'], subtitles_info['episode'], numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
-    try:
-        subtitles_path = get_subtitles_path(subtitles_info['location']).encode(sickbeard.SYS_ENCODING)
-        video_path = subtitles_info['location'].encode(sickbeard.SYS_ENCODING)
-    except UnicodeEncodeError as error:
-        logger.log(u'An error occurred while encoding \'{}\' with your current locale. '
-                   'Rename the file or try a different locale. Error: {}'.format
-                   (subtitles_info['location'], ex(error)), logger.WARNING)
-        return existing_subtitles, None
+    subtitles_path = get_subtitles_path(subtitles_info['location'])
+    video_path = subtitles_info['location']
     user_score = 367 if sickbeard.SUBTITLES_PERFECT_MATCH else 352
 
     video = get_video(video_path, subtitles_path=subtitles_path)
@@ -237,14 +231,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
 
 
 def refresh_subtitles(episode_info, existing_subtitles):
-    try:
-        video = get_video(episode_info['location'].encode(sickbeard.SYS_ENCODING))
-    except UnicodeEncodeError as error:
-        logger.log(u'An error occurred while encoding \'{}\' with your current locale. '
-                   'Rename the file or try a different locale. Error: {}'.format
-                   (episode_info['location'], ex(error)), logger.WARNING)
-        return existing_subtitles, None
-
+    video = get_video(episode_info['location'])
     if not video:
         logger.log(u'Exception caught in subliminal.scan_video, subtitles couldn\'t be refreshed', logger.DEBUG)
         return existing_subtitles, None
@@ -260,13 +247,16 @@ def refresh_subtitles(episode_info, existing_subtitles):
 
 def get_video(video_path, subtitles_path=None):
     if not subtitles_path:
-        try:
-            subtitles_path = get_subtitles_path(video_path).encode(sickbeard.SYS_ENCODING)
-        except UnicodeEncodeError as error:
-            logger.log(u'An error occurred while encoding \'{}\' with your current locale. '
-                       'Rename the file or try a different locale. Error: {}'.format
-                       (video_path, ex(error)), logger.WARNING)
-            return None
+        subtitles_path = get_subtitles_path(video_path)
+
+    try:
+        # Encode paths to UTF-8 to ensure subliminal support.
+        video_path = video_path.encode('utf-8')
+        subtitles_path = subtitles_path.encode('utf-8')
+    except UnicodeEncodeError:
+        # Fallback to system encoding. This should never happen.
+        video_path = video_path.encode(sickbeard.SYS_ENCODING)
+        subtitles_path = subtitles_path.encode(sickbeard.SYS_ENCODING)
 
     try:
         if not sickbeard.EMBEDDED_SUBTITLES_ALL and video_path.endswith('.mkv'):
@@ -293,6 +283,13 @@ def get_subtitles_path(video_path):
             sickbeard.helpers.chmodAsParent(new_subtitles_path)
     else:
         new_subtitles_path = ek(os.path.join, ek(os.path.dirname, video_path))
+
+    try:
+        # Encode path to UTF-8 to ensure subliminal support.
+        new_subtitles_path = new_subtitles_path.encode('utf-8')
+    except UnicodeEncodeError:
+        # Fallback to system encoding. This should never happen.
+        new_subtitles_path = new_subtitles_path.encode(sickbeard.SYS_ENCODING)
 
     return new_subtitles_path
 
