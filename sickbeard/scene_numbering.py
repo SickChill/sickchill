@@ -516,6 +516,12 @@ def xem_refresh(indexer_id, indexer, force=False):
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']]
                     ])
+                    cl.append([
+                        "UPDATE tv_episodes SET absolute_number = ? WHERE showid = ? AND season = ? AND episode = ? AND absolute_number = 0",
+                        [entry[sickbeard.indexerApi(indexer).config['xem_origin']]['absolute'], indexer_id,
+                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
+                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']]
+                    ])
                 if 'scene_2' in entry:  # for doubles
                     cl.append([
                         "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
