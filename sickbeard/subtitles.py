@@ -35,7 +35,6 @@ from sickbeard import processTV
 from sickbeard.common import Quality
 from sickbeard.helpers import remove_non_release_groups, isMediaFile, isRarFile
 from sickrage.helper.common import episode_num, dateTimeFormat
-from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
 
@@ -144,14 +143,8 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                     episode_num(subtitles_info['season'], subtitles_info['episode'], numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
-    try:
-        subtitles_path = get_subtitles_path(subtitles_info['location']).encode(sickbeard.SYS_ENCODING)
-        video_path = subtitles_info['location'].encode(sickbeard.SYS_ENCODING)
-    except UnicodeEncodeError as error:
-        logger.log(u'An error occurred while encoding \'{}\' with your current locale. '
-                   'Rename the file or try a different locale. Error: {}'.format
-                   (subtitles_info['location'], ex(error)), logger.WARNING)
-        return existing_subtitles, None
+    subtitles_path = get_subtitles_path(subtitles_info['location'])
+    video_path = subtitles_info['location']
     user_score = 367 if sickbeard.SUBTITLES_PERFECT_MATCH else 352
 
     video = get_video(video_path, subtitles_path=subtitles_path)
@@ -210,7 +203,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                                                               None if not sickbeard.SUBTITLES_MULTI else
                                                               subtitle.language)
         if subtitles_path is not None:
-            subtitle_path = ek(os.path.join, subtitles_path, ek(os.path.split, subtitle_path)[1])
+            subtitle_path = os.path.join(subtitles_path, os.path.split(subtitle_path)[1])
 
         sickbeard.helpers.chmodAsParent(subtitle_path)
         sickbeard.helpers.fixSetGroupID(subtitle_path)
@@ -237,14 +230,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
 
 
 def refresh_subtitles(episode_info, existing_subtitles):
-    try:
-        video = get_video(episode_info['location'].encode(sickbeard.SYS_ENCODING))
-    except UnicodeEncodeError as error:
-        logger.log(u'An error occurred while encoding \'{}\' with your current locale. '
-                   'Rename the file or try a different locale. Error: {}'.format
-                   (episode_info['location'], ex(error)), logger.WARNING)
-        return existing_subtitles, None
-
+    video = get_video(episode_info['location'])
     if not video:
         logger.log(u'Exception caught in subliminal.scan_video, subtitles couldn\'t be refreshed', logger.DEBUG)
         return existing_subtitles, None
@@ -260,13 +246,16 @@ def refresh_subtitles(episode_info, existing_subtitles):
 
 def get_video(video_path, subtitles_path=None):
     if not subtitles_path:
-        try:
-            subtitles_path = get_subtitles_path(video_path).encode(sickbeard.SYS_ENCODING)
-        except UnicodeEncodeError as error:
-            logger.log(u'An error occurred while encoding \'{}\' with your current locale. '
-                       'Rename the file or try a different locale. Error: {}'.format
-                       (video_path, ex(error)), logger.WARNING)
-            return None
+        subtitles_path = get_subtitles_path(video_path)
+
+    try:
+        # Encode paths to UTF-8 to ensure subliminal support.
+        video_path = video_path.encode('utf-8')
+        subtitles_path = subtitles_path.encode('utf-8')
+    except UnicodeEncodeError:
+        # Fallback to system encoding. This should never happen.
+        video_path = video_path.encode(sickbeard.SYS_ENCODING)
+        subtitles_path = subtitles_path.encode(sickbeard.SYS_ENCODING)
 
     try:
         if not sickbeard.EMBEDDED_SUBTITLES_ALL and video_path.endswith('.mkv'):
@@ -275,24 +264,32 @@ def get_video(video_path, subtitles_path=None):
         else:
             video = subliminal.scan_video(video_path, subtitles=True, embedded_subtitles=False,
                                           subtitles_dir=subtitles_path)
-    except Exception:
+    except Exception as error:
+        logger.log(u'Exception: {}'.format(error), logger.DEBUG)
         return None
 
     return video
 
 
 def get_subtitles_path(video_path):
-    if ek(os.path.isabs, sickbeard.SUBTITLES_DIR):
+    if os.path.isabs(sickbeard.SUBTITLES_DIR):
         new_subtitles_path = sickbeard.SUBTITLES_DIR
     elif sickbeard.SUBTITLES_DIR:
-        new_subtitles_path = ek(os.path.join, ek(os.path.dirname, video_path), sickbeard.SUBTITLES_DIR)
+        new_subtitles_path = os.path.join(os.path.dirname(video_path), sickbeard.SUBTITLES_DIR)
         dir_exists = sickbeard.helpers.makeDir(new_subtitles_path)
         if not dir_exists:
             logger.log(u'Unable to create subtitles folder {}'.format(new_subtitles_path), logger.ERROR)
         else:
             sickbeard.helpers.chmodAsParent(new_subtitles_path)
     else:
-        new_subtitles_path = ek(os.path.join, ek(os.path.dirname, video_path))
+        new_subtitles_path = os.path.dirname(video_path)
+
+    try:
+        # Encode path to UTF-8 to ensure subliminal support.
+        new_subtitles_path = new_subtitles_path.encode('utf-8')
+    except UnicodeEncodeError:
+        # Fallback to system encoding. This should never happen.
+        new_subtitles_path = new_subtitles_path.encode(sickbeard.SYS_ENCODING)
 
     return new_subtitles_path
 
@@ -341,20 +338,20 @@ class SubtitlesFinder(object):
 
         run_post_process = False
         # Check if PP folder is set
-        if sickbeard.TV_DOWNLOAD_DIR and ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
+        if sickbeard.TV_DOWNLOAD_DIR and os.path.isdir(sickbeard.TV_DOWNLOAD_DIR):
 
-            for root, _, files in ek(os.walk, sickbeard.TV_DOWNLOAD_DIR, topdown=False):
+            for root, _, files in os.walk(sickbeard.TV_DOWNLOAD_DIR, topdown=False):
                 rar_files = [x for x in files if isRarFile(x)]
                 if rar_files and sickbeard.UNPACK:
                     video_files = [x for x in files if isMediaFile(x)]
                     if u'_UNPACK' not in root and (not video_files or root == sickbeard.TV_DOWNLOAD_DIR):
                         logger.log(u'Found rar files in post-process folder: {}'.format(rar_files), logger.DEBUG)
                         result = processTV.ProcessResult()
-                        rar_content = processTV.unRAR(root, rar_files, False, result)
+                        processTV.unRAR(root, rar_files, False, result)
                 elif rar_files and not sickbeard.UNPACK:
-                    logger.log(u'Unpack is disabled. Skipping: {}'.format(rar_files), logger.WARNING)    
+                    logger.log(u'Unpack is disabled. Skipping: {}'.format(rar_files), logger.WARNING)
 
-            for root, _, files in ek(os.walk, sickbeard.TV_DOWNLOAD_DIR, topdown=False):
+            for root, _, files in os.walk(sickbeard.TV_DOWNLOAD_DIR, topdown=False):
                 for video_filename in sorted(files):
                     try:
                         # Remove non release groups from video file. Needed to match subtitles
@@ -370,14 +367,14 @@ class SubtitlesFinder(object):
                             video = subliminal.scan_video(os.path.join(root, video_filename),
                                                           subtitles=False, embedded_subtitles=False)
                             subtitles_list = pool.list_subtitles(video, languages)
-                            
+
                             for provider in providers:
                                 if provider in pool.discarded_providers:
                                     logger.log(u'Could not search in {} provider. Discarding for now'.format(provider), logger.DEBUG)
 
                             if not subtitles_list:
                                 logger.log(u'No subtitles found for {}'.format
-                                           (ek(os.path.join, root, video_filename)), logger.DEBUG)
+                                           (os.path.join(root, video_filename)), logger.DEBUG)
                                 continue
 
                             logger.log(u'Found subtitle(s) canditate(s) for {}'.format(video_filename), logger.INFO)
@@ -406,7 +403,7 @@ class SubtitlesFinder(object):
                                                                                       None if subtitles_multi else
                                                                                       subtitle.language)
                                 if root is not None:
-                                    subtitle_path = ek(os.path.join, root, ek(os.path.split, subtitle_path)[1])
+                                    subtitle_path = os.path.join(root, os.path.split(subtitle_path)[1])
                                 sickbeard.helpers.chmodAsParent(subtitle_path)
                                 sickbeard.helpers.fixSetGroupID(subtitle_path)
 
@@ -475,7 +472,13 @@ class SubtitlesFinder(object):
             return
 
         for ep_to_sub in sql_results:
-            if not ek(os.path.isfile, ep_to_sub['location']):
+            try:
+                # Encode path to system encoding.
+                subtitle_path = ep_to_sub['location'].encode(sickbeard.SYS_ENCODING)
+            except UnicodeEncodeError:
+                # Fallback to UTF-8.
+                subtitle_path = ep_to_sub['location'].encode('utf-8')
+            if not os.path.isfile(subtitle_path):
                 logger.log(u'Episode file does not exist, cannot download subtitles for {} {}'.format
                            (ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
                             episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute')), logger.DEBUG)
@@ -551,7 +554,7 @@ def run_subs_extra_scripts(episode_object, subtitle, video, single=False):
 
     for script_name in sickbeard.SUBTITLES_EXTRA_SCRIPTS:
         script_cmd = [piece for piece in re.split("( |\\\".*?\\\"|'.*?')", script_name) if piece.strip()]
-        script_cmd[0] = ek(os.path.abspath, script_cmd[0])
+        script_cmd[0] = os.path.abspath(script_cmd[0])
         logger.log(u'Absolute path to script: {}'.format(script_cmd[0]), logger.DEBUG)
 
         subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, None if single else subtitle.language)

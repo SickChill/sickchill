@@ -111,10 +111,10 @@ def allPossibleShowNames(show, season=-1):
     Returns: a list of all the possible show names
     """
 
-    showNames = get_scene_exceptions(show.indexerid, season=season)[:]
+    showNames = get_scene_exceptions(show.indexerid, season=season)
     if not showNames:  # if we dont have any season specific exceptions fallback to generic exceptions
         season = -1
-        showNames = get_scene_exceptions(show.indexerid, season=season)[:]
+        showNames = get_scene_exceptions(show.indexerid, season=season)
 
     if season in [-1, 1]:
         showNames.append(show.name)

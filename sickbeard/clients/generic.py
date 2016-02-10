@@ -176,7 +176,7 @@ class GenericClient(object):
 
         if not self.auth:
             if not self._get_auth():
-                logger.log(self.name + u': Authentication Failed', logger.ERROR)
+                logger.log(self.name + u': Authentication Failed', logger.WARNING)
                 return r_code
 
         try:
