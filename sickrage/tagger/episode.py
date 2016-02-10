@@ -133,7 +133,7 @@ class EpisodeTags(object):
         return None if not match else match.group()
 
     @property
-    def dvd(self):
+    def dvdrip(self):
         """
         The dvd tag found in the name
 
@@ -142,6 +142,17 @@ class EpisodeTags(object):
         attr = 'dvd'
         match = self._get_match_obj(attr)
         return '' if not match else match.group('rip')
+
+    @property
+    def dvd(self):
+        """
+        The dvd tag found in the name
+
+        :returns: an empty string if not found
+        """
+        attr = 'dvd'
+        match = self._get_match_obj(attr)
+        return '' if not (match or self.hddvd) else match.group()
 
     @property
     def tv(self):
