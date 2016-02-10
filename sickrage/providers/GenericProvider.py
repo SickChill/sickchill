@@ -388,7 +388,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             'Episode': []
         }
 
-        for show_name in set(allPossibleShowNames(episode.show)):
+        for show_name in set(allPossibleShowNames(episode.show, season=episode.scene_season)):
             episode_string = show_name + ' '
 
             if episode.show.air_by_date:
@@ -417,7 +417,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             'Season': []
         }
 
-        for show_name in set(allPossibleShowNames(self.show)):
+        for show_name in set(allPossibleShowNames(episode.show, season=episode.scene_season)):
             episode_string = show_name + ' '
 
             if episode.show.air_by_date or episode.show.sports:
