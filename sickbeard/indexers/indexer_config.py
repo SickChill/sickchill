@@ -30,7 +30,7 @@ indexerConfig = {
         'trakt_id': 'tvdb_id',
         'xem_origin': 'tvdb',
         'icon': 'thetvdb16.png',
-        'scene_loc': 'http://sickrage.github.io/sb_tvdb_scene_exceptions/exceptions.txt',
+        'scene_loc': 'http://sickrage.github.io/scene_exceptions/scene_exceptions.json',
         'show_url': 'http://thetvdb.com/?tab=series&id=',
         'base_url': 'http://thetvdb.com/api/%(apikey)s/series/'
     }
