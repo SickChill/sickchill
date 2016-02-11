@@ -13,9 +13,9 @@ from requests import Session
 from zipfile import ZipFile, is_zipfile
 
 from . import ParserBeautifulSoup, Provider
-from ..cache import region, SHOW_EXPIRATION_TIME
+from ..cache import region, EPISODE_EXPIRATION_TIME, SHOW_EXPIRATION_TIME
 from ..exceptions import AuthenticationError, ConfigurationError
-from ..subtitle import Subtitle, fix_line_ending, guess_matches, sanitized_string_equal
+from ..subtitle import Subtitle, fix_line_ending, guess_matches, sanitize
 from ..video import Episode, Movie, SUBTITLE_EXTENSIONS
 
 TIMEOUT = 10
@@ -48,14 +48,11 @@ class LegendasTvSubtitle(Subtitle):
     def id(self):
         return '%s-%s' % (self.subtitle_id, self.name.lower())
 
-    def get_matches(self, video):
+    def get_matches(self, video, hearing_impaired=False):
         matches = set()
 
         # The best available information about a subtitle is its name. Using guessit to parse it.
         guess = guessit(self.name, {'type': self.type})
-        # Cleaning release_group: foo[bar] -> foo
-        if guess.get('release_group'):
-            guess['release_group'] = re.sub('\[\w+\]', '', guess['release_group'])
         matches |= guess_matches(video, guess)
 
         # imdb_id match used only for movies
@@ -69,7 +66,6 @@ class LegendasTvProvider(Provider):
     languages = {Language.fromlegendastv(l) for l in language_converters['legendastv'].codes}
     video_types = (Episode, Movie)
     server_url = 'http://legendas.tv'
-    word_split_re = re.compile('(\w+)', re.IGNORECASE)
 
     def __init__(self, username=None, password=None):
         if username is not None and password is None or username is None and password is not None:
@@ -112,42 +108,46 @@ class LegendasTvProvider(Provider):
     def matches(self, actual_properties, expected_title, expected_season=None, expected_episode=None,
                 expected_year=None, ignore_episode=False):
         """
-        Matches two dictionaries (expected and actual). The dictionary keys follow the guessit properties names.
-        If the expected dictionary represents a movie:
-          - ``type`` should match
-          - ``title`` should match
-          - ``year`` should match, unless they're not defined and expected and actual ``title``s are the same
-        If the expected dictionary represents an episode:
-          - ``type`` should match
-          - ``series`` should match
-          - ``season`` should match
-          - ``episode`` should match, unless ``ignore_episode`` is True
+        Matches the `actual_properties` against the expected parameters. The `actual_properties` keys follow the
+        guessit properties names.
+        For movies:
+          - `type` should match
+          - `title` should match
+          - `year` should match, unless they're not defined and expected and actual `title`s are equal
+        For episodes:
+          - `type` should match
+          - `series` should match
+          - `season` should match
+          - `episode` should match, unless `ignore_episode` is True
 
-        :param actual_properties: dictionary that contains the actual values
-        :param expected_title: the expected movie/series title
-        :param expected_season: the expected series season number
-        :param expected_episode: the expected series episode number
-        :param expected_year: the expected movie/series year
-        :param ignore_episode: True if should ignore episode matching. Default: False
-        :return: True if actual matches expected
+        :param dict actual_properties: dictionary that contains the actual values following guessit property names.
+        :param str expected_title: the expected movie/series title.
+        :param int expected_season: the expected series season number.
+        :param int expected_episode: the expected series episode number.
+        :param int expected_year: the expected movie/series year.
+        :param bool ignore_episode: `True` if episode matching should be ignored. Default: `False`.
+        :return: Whether actual matches expected.
         :rtype: bool
+
         """
         expected_type = 'episode' if expected_season else 'movie'
         if expected_type != actual_properties.get('type'):
             return False
 
+        s_actual_title = sanitize(actual_properties.get('title'))
+        s_expected_title = sanitize(expected_title)
+
+        if not s_actual_title or not s_expected_title or s_expected_title not in s_actual_title:
+            return False
+
         if expected_type == 'movie':
-            if not sanitized_string_equal(expected_title, actual_properties.get('title'), allow_partial=True):
-                return False
             if expected_year != actual_properties.get('year'):
                 if expected_year and actual_properties.get('year'):
                     return False
-                if not sanitized_string_equal(expected_title, actual_properties.get('title')):
+                if s_expected_title != s_actual_title:
                     return False
 
         elif expected_type == 'episode':
-            if not sanitized_string_equal(expected_title, actual_properties.get('title'), allow_partial=True):
-                return False
             if expected_season != actual_properties.get('season'):
                 return False
             if not ignore_episode and expected_episode != actual_properties.get('episode'):
@@ -158,20 +158,20 @@ class LegendasTvProvider(Provider):
     @region.cache_on_arguments(expiration_time=SHOW_EXPIRATION_TIME)
     def search_candidates(self, title, season, episode, year):
         """
-        Returns shows or movies information by querying `/legenda/sugestao` page.
-        Since the result is a list of suggestions (movies, tv shows, etc), additional filtering is required.
-        Type (movies or series), name, year and/or season are used to filter out bad suggestions.
+        Returns candidates for shows or movies by querying `/legenda/sugestao` page.
+        Since the result is a list of candidates (movies, series, etc) an additional filtering is required.
+        The properties type, name, year and season are used to filter out bad suggestions.
 
-        :param title: the movie/series title
-        :param season: the series season number
-        :param episode: the series episode number
-        :param year: the movie/series year
-        :return: shows or movies information
-        :rtype: : ``list`` of ``dict``
+        :param str title: the movie/series title.
+        :param int season: the series season number.
+        :param int episode: the series episode number.
+        :param int year: the movie/series year.
+        :return: the candidates for shows or movies.
+        :rtype: list of dict
+
         """
-
-        keyword = title
-        logger.info('Searching titles using the keyword %s', keyword)
+        keyword = sanitize(title)
+        logger.info('Searching candidates using the keyword %s', keyword)
         r = self.session.get('%s/legenda/sugestao/%s' % (self.server_url, keyword), timeout=TIMEOUT)
         r.raise_for_status()
 
@@ -226,7 +226,7 @@ class LegendasTvProvider(Provider):
 
         results = json.loads(r.text)
 
-        # type, title, series, season, year follow guessit properties names
+        # type, title, series, season, year: should follow guessit properties names
         mapping = dict(
             id='id_filme',
             type='tipo',
@@ -238,7 +238,7 @@ class LegendasTvProvider(Provider):
             imdb_id='id_imdb'
         )
 
-        # movie and episode values follow guessit type values
+        # movie, episode: should follow guessit type values
         type_map = {
             'M': 'movie',
             'S': 'episode',
@@ -246,7 +246,7 @@ class LegendasTvProvider(Provider):
         }
 
         # Regex to extract the season number. e.g.: 3\u00aa Temporada, 1a Temporada, 2nd Season
-        season_re = re.compile('.*? - (\d{1,2}).*?((emporada)|(Season))', re.IGNORECASE)
+        season_re = re.compile('.*? - (\d{1,2}).*?((emporada)|(season))', re.IGNORECASE)
 
         # Regex to extract the IMDB id. e.g.: tt02342
         imdb_re = re.compile('t{0,2}(\d+)')
@@ -274,25 +274,26 @@ class LegendasTvProvider(Provider):
                             ignore_episode=True):
                 candidates.append(dict(item))
 
-        logger.debug('Titles found: %s', candidates)
+        logger.debug('Candidates found: %s', candidates)
         return candidates
 
     def query(self, language, title, season=None, episode=None, year=None):
         """
         Returns a list of subtitles based on the input parameters.
-          - 1st step: initial lookup for the movie/show information (see ``search_candidates``)
-          - 2nd step: list all candidates all movies/shows from previous step
+          - 1st step: initial lookup for the movie/show information (see `search_candidates`)
+          - 2nd step: list all candidates to movies/shows from previous step
           - 3rd step: reject candidates that doesn't match the input parameters (wrong season, wrong episode, etc...)
-          - 4th step: download all subtitles to inspect the 'release name',
-           since each candidate might refer to several subtitles
+          - 4th step: download all subtitles to inspect the 'release name'
+          - 5th step: creates a subtitle for each release
 
         :param language: the requested language
-        :param title: the movie/series title
-        :param season: the series season number
-        :param episode: the series episode number
-        :param year: the movie/series year
+        :param str title: the movie/series title
+        :param int season: the series season number
+        :param int episode: the series episode number
+        :param int year: the movie/series year
         :return: a list of subtitles that matches the query parameters
-        :rtype: ``list`` of ``LegendasTvSubtitle``
+        :rtype: `list` of :class:`~subliminal.providers.LegendasTvSubtitle`
+
         """
         candidates = self.search_candidates(title, season, episode, year)
 
@@ -359,8 +360,8 @@ class LegendasTvProvider(Provider):
 
                     # Unfortunately, the only possible way to know the release names of a specific candidate is to
                     # download the compressed file (rar/zip) and list the file names.
-                    content = self.download_content(subtitle_id, timestamp)
-                    subtitle_names = self.get_subtitle_names(content)
+                    handler = LegendasTvArchiveHandler(self)
+                    subtitle_names = handler.get_subtitle_names(subtitle_id, timestamp)
 
                     if not subtitle_names:
                         continue
@@ -373,7 +374,7 @@ class LegendasTvProvider(Provider):
                                             expected_episode=episode, expected_year=year):
                             continue
 
-                        subtitle = LegendasTvSubtitle(language, page_link, subtitle_id, name, content,
+                        subtitle = LegendasTvSubtitle(language, page_link, subtitle_id, name, handler.binary_content,
                                                       imdb_id=candidate.get('imdb_id'), type=candidate.get('type'),
                                                       season=candidate.get('season'), year=candidate.get('year'),
                                                       no_downloads=no_downloads, rating=rating, featured=featured,
@@ -397,7 +398,8 @@ class LegendasTvProvider(Provider):
         :param video:
         :param languages: the requested languages
         :return: a list of subtitles for the requested video and languages
-        :rtype : ``list`` of ``LegendasTvSubtitles``
+        :rtype : `list` of :class:`~subliminal.providers.LegendasTvSubtitle`
+
         """
         season = episode = None
         if isinstance(video, Episode):
@@ -412,11 +414,12 @@ class LegendasTvProvider(Provider):
 
     def get_subtitle_names(self, content):
         """
-        Returns all subtitle names for a specific subtitle_id. Only subtitle names are returned.
+        Returns all subtitle names for the given rar/zip binary content.
 
         :param content: the downloaded binary content (rar/zip)
         :return: list of subtitle names
-        :rtype: ``list`` of ``string``
+        :rtype: `list` of `string`
+
         """
         return self._uncompress(
             content,
@@ -429,9 +432,10 @@ class LegendasTvProvider(Provider):
         and its contents is returned.
 
         :param content: the downloaded binary content (rar/zip)
-        :param subtitle_name: the filename to be extracted
+        :param str subtitle_name: the filename to be extracted
         :return: the subtitle content
-        :rtype : ``string``
+        :rtype : `string`
+
         """
         return self._uncompress(content, lambda cf, name: fix_line_ending(cf.read(name)), subtitle_name)
 
@@ -448,16 +452,38 @@ class LegendasTvProvider(Provider):
         cache when the compressed file is updated (it's a common practice in legendas.tv to update the archive with new
         subtitles)
 
-        :param subtitle_id: the id used to download the compressed file
-        :param timestamp: represents the last update timestamp of the file
+        :param str subtitle_id: the id used to download the compressed file
+        :param str timestamp: represents the last update timestamp of the file
         :return: the downloaded file
-        :rtype : ``bytes``
+        :rtype : `bytearray`
+
         """
-        logger.debug('Downloading subtitle_id %s. Last update on %s' % (subtitle_id, timestamp))
+        logger.debug('Downloading subtitle_id %s. Last update on %s', subtitle_id, timestamp)
         r = self.session.get('%s/downloadarquivo/%s' % (self.server_url, subtitle_id), timeout=TIMEOUT)
         r.raise_for_status()
 
         return r.content
 
     def download_subtitle(self, subtitle):
-        subtitle.content = self.extract_subtitle(subtitle.binary_content, subtitle.name)
+        bc = subtitle.binary_content if subtitle.binary_content else \
+            self.download_content(subtitle.subtitle_id, subtitle.timestamp)
+
+        subtitle.content = self.extract_subtitle(bc, subtitle.name)
+
+
+# Using a handler in order to be able to cache the subtitle names and keep the downloaded content
+# 1st execution downloads all candidates and cache the subtitle names
+# Sub-sequential executions retrieves the cached names and downloads the content only for the selected subtitle
+# In a common scenario:
+#   1st execution downloads 15 files
+#   Sub-sequential executions download 1 file
+class LegendasTvArchiveHandler:
+
+    def __init__(self, provider, binary_content=None):
+        self.provider = provider
+        self.binary_content = binary_content
+
+    @region.cache_on_arguments(expiration_time=EPISODE_EXPIRATION_TIME)
+    def get_subtitle_names(self, subtitle_id, timestamp):
+        self.binary_content = self.provider.download_content(subtitle_id, timestamp)
+        return self.provider.get_subtitle_names(self.binary_content)
