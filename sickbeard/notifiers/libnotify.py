@@ -60,7 +60,7 @@ def diagnose():
     return u"<p>Error: Unable to send notification."
 
 
-class LibnotifyNotifier(object):
+class Notifier(object):
     def __init__(self):
         self.Notify = None
         self.gobject = None
@@ -130,6 +130,3 @@ class LibnotifyNotifier(object):
             return n.show()
         except self.gobject.GError:
             return False
-
-
-notifier = LibnotifyNotifier

@@ -32,7 +32,7 @@ from sickbeard.helpers import getURL
 from sickrage.helper.exceptions import ex
 
 
-class PLEXNotifier(object):
+class Notifier(object):
     def __init__(self):
         self.headers = {
             'X-Plex-Device-Name': 'SickRage',
@@ -232,5 +232,3 @@ class PLEXNotifier(object):
             logger.log(u'PLEX: Error fetching credentials from from plex.tv for user {}: {}'.format(username, error), logger.DEBUG)
 
         return 'X-Plex-Token' in self.headers
-
-notifier = PLEXNotifier

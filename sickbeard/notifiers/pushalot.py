@@ -28,7 +28,7 @@ import sickbeard
 from sickbeard import logger, common
 
 
-class PushalotNotifier(object):
+class Notifier(object):
     def test_notify(self, pushalot_authorizationtoken):
         return self._sendPushalot(pushalot_authorizationtoken, event="Test",
                                   message="Testing Pushalot settings from SickRage", force=True)
@@ -103,6 +103,3 @@ class PushalotNotifier(object):
         else:
             logger.log(u"Pushalot notification failed.", logger.ERROR)
             return False
-
-
-notifier = PushalotNotifier
