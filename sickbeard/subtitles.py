@@ -145,7 +145,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
 
     subtitles_path = get_subtitles_path(subtitles_info['location'])
     video_path = subtitles_info['location']
-    user_score = 367 if sickbeard.SUBTITLES_PERFECT_MATCH else 352
+    user_score = 213 if sickbeard.SUBTITLES_PERFECT_MATCH else 204
 
     video = get_video(video_path, subtitles_path=subtitles_path)
     if not video:
@@ -295,8 +295,7 @@ def get_subtitles_path(video_path):
 
 
 def get_subtitles(video):
-    """Return a sorted list of detected subtitles for the given video file"""
-
+    """Return a sorted list of detected subtitles for the given video file."""
     result_list = []
 
     if not video.subtitle_languages:
@@ -310,10 +309,11 @@ def get_subtitles(video):
 
 
 class SubtitlesFinder(object):
+    """The SubtitlesFinder will be executed every hour but will not necessarly search and download subtitles.
+
+    Only if the defined rule is true.
     """
-    The SubtitlesFinder will be executed every hour but will not necessarly search
-    and download subtitles. Only if the defined rule is true
-    """
+
     def __init__(self):
         self.amActive = False
 
@@ -379,7 +379,7 @@ class SubtitlesFinder(object):
 
                             logger.log(u'Found subtitle(s) canditate(s) for {}'.format(video_filename), logger.INFO)
                             hearing_impaired = sickbeard.SUBTITLES_HEARING_IMPAIRED
-                            user_score = 367 if sickbeard.SUBTITLES_PERFECT_MATCH else 352
+                            user_score = 213 if sickbeard.SUBTITLES_PERFECT_MATCH else 204
                             found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
                                                                            hearing_impaired=hearing_impaired,
                                                                            min_score=user_score,
