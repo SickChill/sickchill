@@ -83,14 +83,13 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         results = []
         if not self.login():
             return results
 
         # TV, Episodes, BoxSets, Episodes HD, Animation, Anime, Cartoons
         # 2,26,27,32,7,34,35
-
 
         # Units
         units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']

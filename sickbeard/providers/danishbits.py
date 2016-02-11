@@ -46,10 +46,10 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.freeleech = True
 
         # URLs
-        self.url = 'https://danishbits.org'
+        self.url = 'https://danishbits.org/'
         self.urls = {
-            'login': self.url + '/login.php',
-            'search': self.url + '/torrents.php',
+            'login': self.url + 'login.php',
+            'search': self.url + 'torrents.php',
         }
 
         # Proper Strings

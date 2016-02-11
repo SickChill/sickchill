@@ -59,7 +59,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         # Cache
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll ThePirateBay every 30 minutes max
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branche, too-many-statements
         results = []
         """
         205 = SD, 208 = HD, 200 = All Videos
