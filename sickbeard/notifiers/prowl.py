@@ -40,7 +40,7 @@ from sickbeard import logger, common, db
 from sickrage.helper.encoding import ss
 
 
-class ProwlNotifier(object):
+class Notifier(object):
     def test_notify(self, prowl_api, prowl_priority):
         return self._send_prowl(prowl_api, prowl_priority, event="Test", message="Testing Prowl settings from SickRage", force=True)
 
@@ -176,5 +176,3 @@ class ProwlNotifier(object):
         titles.sort(key=len, reverse=True)
         logger.log("TITLES: %s" % titles, logger.DEBUG)
         return titles
-
-notifier = ProwlNotifier

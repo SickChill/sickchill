@@ -32,7 +32,7 @@ from sickrage.helper.exceptions import ex
 API_URL = "https://api.pushover.net/1/messages.json"
 
 
-class PushoverNotifier(object):
+class Notifier(object):
     def __init__(self):
         pass
 
@@ -178,6 +178,3 @@ class PushoverNotifier(object):
         logger.log(u"Sending notification for " + message, logger.DEBUG)
 
         return self._sendPushover(message, title, sound=sound, userKey=userKey, apiKey=apiKey)
-
-
-notifier = PushoverNotifier
