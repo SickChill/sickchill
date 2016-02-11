@@ -50,9 +50,9 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.url = 'https://classic.torrentday.com'
         self.urls = {
             'base_url': self.url,
-            'login': 'https://classic.torrentday.com/torrents/',
-            'search': 'https://classic.torrentday.com/V3/API/API.php',
-            'download': 'https://classic.torrentday.com/download.php/%s/%s'
+            'login': self.url + '/torrents/',
+            'search': self.url + '/V3/API/API.php',
+            'download': self.url + '/download.php/%s/%s'
         }
 
         self.cookies = None
