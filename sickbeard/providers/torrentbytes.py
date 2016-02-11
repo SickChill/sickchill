@@ -51,7 +51,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.url = 'https://www.torrentbytes.net'
         self.urls = {
             'base_url': self.url,
-            'login': self.url + 'https://www.torrentbytes.net/takelogin.php',
+            'login': self.url + '/takelogin.php',
             'detail': self.url + '/details.php?id=%s',
             'search': self.url + '/browse.php?search=%s%s',
             'download': self.url + '/download.php?id=%s&name=%s'
