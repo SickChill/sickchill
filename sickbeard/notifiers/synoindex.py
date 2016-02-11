@@ -28,7 +28,7 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
 
-class synoIndexNotifier(object):
+class Notifier(object):
     def notify_snatch(self, ep_name):
         pass
 
@@ -88,6 +88,3 @@ class synoIndexNotifier(object):
                 logger.log(u"Script result: " + str(out), logger.DEBUG)
             except OSError as e:
                 logger.log(u"Unable to run synoindex: " + ex(e), logger.ERROR)
-
-
-notifier = synoIndexNotifier

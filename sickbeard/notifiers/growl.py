@@ -26,7 +26,7 @@ from sickrage.helper.exceptions import ex
 from libgrowl import gntp
 
 
-class GrowlNotifier(object):
+class Notifier(object):
     sr_logo_url = 'https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
 
     def test_notify(self, host, password):
@@ -194,6 +194,3 @@ class GrowlNotifier(object):
         except Exception as e:
             logger.log(u"GROWL: Unable to send growl to " + opts['host'] + ":" + str(opts['port']) + " - " + ex(e), logger.WARNING)
             return False
-
-
-notifier = GrowlNotifier

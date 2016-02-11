@@ -28,7 +28,7 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
 
-class synologyNotifier(object):
+class Notifier(object):
     def notify_snatch(self, ep_name):
         if sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH:
             self._send_synologyNotifier(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
@@ -64,6 +64,3 @@ class synologyNotifier(object):
             logger.log(u"Script result: " + str(out), logger.DEBUG)
         except OSError as e:
             logger.log(u"Unable to run synodsmnotify: " + ex(e))
-
-
-notifier = synologyNotifier

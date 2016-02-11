@@ -33,7 +33,7 @@ import oauth2 as oauth
 import pythontwitter as twitter
 
 
-class TwitterNotifier(object):
+class Notifier(object):
     consumer_key = "vHHtcB6WzpWDG6KYlBMr8g"
     consumer_secret = "zMqq5CB3f8cWKiRO2KzWPTlBanYmV0VYxSXZ0Pxds0E"
 
@@ -172,5 +172,3 @@ class TwitterNotifier(object):
             return self._send_dm(prefix + ": " + message)
         else:
             return self._send_tweet(prefix + ": " + message)
-
-notifier = TwitterNotifier
