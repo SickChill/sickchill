@@ -48,10 +48,10 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         self.freeleech = False
 
         # URLs
-        self.url = 'https://speed.cd'
+        self.url = 'https://speed.cd/'
         self.urls = {
-            'login': self.url + '/take.login.php',
-            'search': self.url + '/browse.php',
+            'login': self.url + 'take.login.php',
+            'search': self.url + 'browse.php',
         }
 
         # Proper Strings

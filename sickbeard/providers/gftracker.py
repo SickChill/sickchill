@@ -49,10 +49,10 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.freeleech = None
 
         # URLs
-        self.url = 'https://www.thegft.org'
+        self.url = 'https://www.thegft.org/'
         self.urls = {
-            'login': self.url + '/loginsite.php',
-            'search': self.url + '/browse.php',
+            'login': self.url + 'loginsite.php',
+            'search': self.url + 'browse.php',
         }
 
         # Proper Strings
