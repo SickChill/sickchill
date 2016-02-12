@@ -530,7 +530,7 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
     :param process_method: auto/manual
     :param force: Postprocess currently postprocessing file
     :param is_priority: Boolean, is this a priority download
-    :param ignore_subs: Boolean, if should ignore releases without subtitles
+    :param ignore_subs: Boolean, if true ignore releases without associated subtitles
     :param result: Previous results
     """
 
@@ -546,7 +546,7 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
             processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority, ignore_subs)
 
             # This feature prevents PP for files that do not have subtitle associated with the video file
-            if sickbeard.POSTPONE_IF_NO_SUBS and not ignore_subs:
+            if sickbeard.POSTPONE_IF_NO_SUBS and subtitles_enabled(cur_video_file) and not ignore_subs:
                 associatedFiles = processor.list_associated_files(cur_video_file_path, subtitles_only=True)
                 if not [associatedFile for associatedFile in associatedFiles if associatedFile[-3:] in subtitle_extensions]:
                     result.output += logHelper(u"No subtitles associated. Postponing the post-process of this file: %s" % cur_video_file, logger.DEBUG)
@@ -626,3 +626,18 @@ def process_failed(dirName, nzbName, result):
         else:
             result.output += logHelper(u"Failed Download Processing failed: (%s, %s): %s" %
                                        (nzbName, dirName, process_fail_message), logger.WARNING)
+
+def subtitles_enabled(video):
+    try:
+        parse_result = NameParser().parse(video, cache_result=True)
+    except (InvalidNameException, InvalidShowException):
+        logger.log(u'Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {}'.format(video), logger.WARNING)
+        return False
+
+    if parse_result.show.indexerid:
+        main_db_con = db.DBConnection()
+        sql_results = main_db_con.select("SELECT subtitles FROM tv_shows WHERE indexer_id = ? LIMIT 1", [parse_result.show.indexerid])
+        return bool(sql_results[0]["subtitles"]) if sql_results else False
+    else:
+        logger.log(u'Empty indexer ID for: {}'.format(video), logger.WARNING)
+        return False
