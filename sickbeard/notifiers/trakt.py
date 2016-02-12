@@ -26,7 +26,7 @@ from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException, traktServerBusy, traktAuthException
 
 
-class TraktNotifier(object):
+class Notifier(object):
     """
     A "notifier" for trakt.tv which keeps track of what has and hasn't been added to your library.
     """
@@ -239,5 +239,3 @@ class TraktNotifier(object):
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
             return "Test notice failed to Trakt: %s" % ex(e)
-
-notifier = TraktNotifier

@@ -32,7 +32,7 @@ from sickbeard.common import notifyStrings, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE
 from sickrage.helper.common import http_status_code
 
 
-class TelegramNotifier(object):
+class Notifier(object):
     """
     Use Telegram to send notifications
 
@@ -166,6 +166,3 @@ class TelegramNotifier(object):
         logger.log('Sending a Telegram message for %s' % message, logger.DEBUG)
 
         return self._send_telegram_msg(title, message, id, api_key)
-
-
-notifier = TelegramNotifier

@@ -93,7 +93,7 @@ def get_scene_exceptions(indexer_id, season=-1):
     if season == 1:  # if we where looking for season 1 we can add generic names
         exceptionsList += get_scene_exceptions(indexer_id, season=-1)
 
-    return exceptionsList
+    return list({exception for exception in exceptionsList})
 
 
 def get_all_scene_exceptions(indexer_id):

@@ -1,7 +1,7 @@
 # coding=utf-8
 
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# Author: Dustyn Gibson <miigotu@gmail.com>
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,24 +18,29 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import urllib
-import urllib2
-import base64
 import re
-
-import sickbeard
-
-from sickbeard import logger
-from sickbeard import common
-from sickrage.helper.exceptions import ex
-
+import requests
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
     import xml.etree.ElementTree as etree
 
+import sickbeard
+from sickbeard import logger, common
+from sickbeard.helpers import getURL
 
-class PLEXNotifier(object):
+from sickrage.helper.exceptions import ex
+
+
+class Notifier(object):
+    def __init__(self):
+        self.headers = {
+            'X-Plex-Device-Name': 'SickRage',
+            'X-Plex-Product': 'SickRage Notifier',
+            'X-Plex-Client-Identifier': sickbeard.common.USER_AGENT,
+            'X-Plex-Version': '2016.02.10'
+        }
+        self.session = requests.Session()
 
     @staticmethod
     def _notify_pht(message, title='SickRage', host=None, username=None, password=None, force=False):  # pylint: disable=too-many-arguments
@@ -59,13 +64,9 @@ class PLEXNotifier(object):
         if not sickbeard.USE_PLEX_CLIENT and not force:
             return False
 
-        # fill in omitted parameters
-        if not host:
-            host = sickbeard.PLEX_CLIENT_HOST
-        if not username:
-            username = sickbeard.PLEX_CLIENT_USERNAME
-        if not password:
-            password = sickbeard.PLEX_CLIENT_PASSWORD
+        host = host or sickbeard.PLEX_CLIENT_HOST
+        username = username or sickbeard.PLEX_CLIENT_USERNAME
+        password = password or sickbeard.PLEX_CLIENT_PASSWORD
 
         return sickbeard.notifiers.kodi_notifier._notify_kodi(message, title=title, host=host, username=username, password=password, force=force, dest_app="PLEX")  # pylint: disable=protected-access
 
@@ -86,26 +87,31 @@ class PLEXNotifier(object):
             self._notify_pht(ep_name + ': ' + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
     def notify_git_update(self, new_version='??'):
-        if sickbeard.USE_PLEX_SERVER:
+        if sickbeard.NOTIFY_ON_UPDATE:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             if update_text and title and new_version:
                 self._notify_pht(update_text + new_version, title)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_PLEX_SERVER:
+        if sickbeard.NOTIFY_ON_LOGIN:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
-            self._notify_pht(update_text.format(ipaddress), title)
+            if update_text and title and ipaddress:
+                self._notify_pht(update_text.format(ipaddress), title)
 
     def test_notify_pht(self, host, username, password):
-        return self._notify_pht('This is a test notification from SickRage', 'Test Notification', host, username, password, force=True)
+        return self._notify_pht('This is a test notification from SickRage',
+                                'Test Notification', host, username, password, force=True)
 
     def test_notify_pms(self, host, username, password, plex_server_token):
-        return self.update_library(host=host, username=username, password=password, plex_server_token=plex_server_token, force=False)
+        return self.update_library(host=host, username=username, password=password,
+                                   plex_server_token=plex_server_token, force=True)
 
-    @staticmethod
-    def update_library(ep_obj=None, host=None, username=None, password=None, plex_server_token=None, force=True):  # pylint: disable=too-many-arguments, too-many-locals, too-many-statements, too-many-branches
+    def update_library(self, ep_obj=None, host=None,  # pylint: disable=too-many-arguments, too-many-locals, too-many-statements, too-many-branches
+                       username=None, password=None,
+                       plex_server_token=None, force=False):
+
         """Handles updating the Plex Media Server host via HTTP API
 
         Plex Media Server currently only supports updating the whole video library and not a specific path.
@@ -115,112 +121,126 @@ class PLEXNotifier(object):
 
         """
 
-        if sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_UPDATE_LIBRARY:
+        if not (sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_UPDATE_LIBRARY) and not force:
+            return None
 
-            if not host:
-                if not sickbeard.PLEX_SERVER_HOST:
-                    logger.log(u'PLEX: No Plex Media Server host specified, check your settings', logger.DEBUG)
-                    return False
-                host = sickbeard.PLEX_SERVER_HOST
+        host = host or sickbeard.PLEX_SERVER_HOST
+        if not host:
+            logger.log(u'PLEX: No Plex Media Server host specified, check your settings', logger.DEBUG)
+            return False
 
-            if not username:
-                username = sickbeard.PLEX_SERVER_USERNAME
+        if not self.get_token(username, password, plex_server_token):
+            return False
 
-            if not password:
-                password = sickbeard.PLEX_SERVER_PASSWORD
+        file_location = '' if not ep_obj else ep_obj.location
+        host_list = {x.strip() for x in host.split(',') if x.strip()}
+        hosts_all = hosts_match = {}
+        hosts_failed = set()
 
-            if not plex_server_token:
-                plex_server_token = sickbeard.PLEX_SERVER_TOKEN
+        for cur_host in host_list:
 
-            # if username and password were provided, fetch the auth token from plex.tv
-            token_arg = ''
-            if plex_server_token:
-                token_arg = '?X-Plex-Token=' + plex_server_token
-            elif username and password:
-                logger.log(u'PLEX: fetching plex.tv credentials for user: ' + username, logger.DEBUG)
-                req = urllib2.Request('https://plex.tv/users/sign_in.xml', data='')
-                authheader = 'Basic %s' % base64.encodestring('%s:%s' % (username, password))[:-1]
-                req.add_header('Authorization', authheader)
-                req.add_header('X-Plex-Device-Name', 'SickRage')
-                req.add_header('X-Plex-Product', 'SickRage Notifier')
-                req.add_header('X-Plex-Client-Identifier', sickbeard.common.USER_AGENT)
-                req.add_header('X-Plex-Version', '1.0')
-
-                try:
-                    response = urllib2.urlopen(req)
-                    auth_tree = etree.parse(response)
-                    token = auth_tree.findall('.//authentication-token')[0].text
-                    token_arg = '?X-Plex-Token=' + token
-
-                except urllib2.URLError as e:
-                    logger.log(u'PLEX: Error fetching credentials from from plex.tv for user %s: %s' % (username, ex(e)), logger.DEBUG)
-
-                except (ValueError, IndexError) as e:
-                    logger.log(u'PLEX: Error parsing plex.tv response: ' + ex(e), logger.DEBUG)
-
-            file_location = '' if None is ep_obj else ep_obj.location
-            host_list = [x.strip() for x in host.split(',') if x.strip()]
-            hosts_all = {}
-            hosts_match = {}
-            hosts_failed = []
-            for cur_host in host_list:
-
-                url = 'http%s://%s/library/sections%s' % (('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host, token_arg)
-                try:
-                    xml_tree = etree.parse(urllib.urlopen(url))
-                    media_container = xml_tree.getroot()
-                except IOError as e:
-                    logger.log(u'PLEX: Error while trying to contact Plex Media Server: ' + ex(e), logger.WARNING)
-                    hosts_failed.append(cur_host)
-                    continue
-                except Exception as e:
-                    if 'invalid token' in str(e):
-                        logger.log(u'PLEX: Please set TOKEN in Plex settings: ', logger.ERROR)
-                    else:
-                        logger.log(u'PLEX: Error while trying to contact Plex Media Server: ' + ex(e), logger.ERROR)
+            url = 'http{}://{}/library/sections'.format(('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host)
+            try:
+                xml_response = getURL(url, headers=self.headers, session=self.session)
+                if not xml_response:
+                    logger.log(u'PLEX: Error while trying to contact Plex Media Server: {}'.format
+                               (cur_host), logger.WARNING)
+                    hosts_failed.add(cur_host)
                     continue
 
-                sections = media_container.findall('.//Directory')
-                if not sections:
-                    logger.log(u'PLEX: Plex Media Server not running on: ' + cur_host, logger.DEBUG)
-                    hosts_failed.append(cur_host)
-                    continue
+                media_container = etree.fromstring(xml_response)
+            except IOError as error:
+                logger.log(u'PLEX: Error while trying to contact Plex Media Server: {}'.format
+                           (ex(error)), logger.WARNING)
+                hosts_failed.add(cur_host)
+                continue
+            except Exception as error:
+                if 'invalid token' in str(error):
+                    logger.log(u'PLEX: Please set TOKEN in Plex settings: ', logger.WARNING)
+                else:
+                    logger.log(u'PLEX: Error while trying to contact Plex Media Server: {}'.format
+                               (ex(error)), logger.WARNING)
+                hosts_failed.add(cur_host)
+                continue
 
-                for section in sections:
-                    if 'show' == section.attrib['type']:
+            sections = media_container.findall('.//Directory')
+            if not sections:
+                logger.log(u'PLEX: Plex Media Server not running on: {}'.format
+                           (cur_host), logger.DEBUG)
+                hosts_failed.add(cur_host)
+                continue
 
-                        keyed_host = [(str(section.attrib['key']), cur_host)]
-                        hosts_all.update(keyed_host)
-                        if not file_location:
-                            continue
+            for section in sections:
+                if 'show' == section.attrib['type']:
 
-                        for section_location in section.findall('.//Location'):
-                            section_path = re.sub(r'[/\\]+', '/', section_location.attrib['path'].lower())
-                            section_path = re.sub(r'^(.{,2})[/\\]', '', section_path)
-                            location_path = re.sub(r'[/\\]+', '/', file_location.lower())
-                            location_path = re.sub(r'^(.{,2})[/\\]', '', location_path)
+                    keyed_host = [(str(section.attrib['key']), cur_host)]
+                    hosts_all.update(keyed_host)
+                    if not file_location:
+                        continue
 
-                            if section_path in location_path:
-                                hosts_match.update(keyed_host)
+                    for section_location in section.findall('.//Location'):
+                        section_path = re.sub(r'[/\\]+', '/', section_location.attrib['path'].lower())
+                        section_path = re.sub(r'^(.{,2})[/\\]', '', section_path)
+                        location_path = re.sub(r'[/\\]+', '/', file_location.lower())
+                        location_path = re.sub(r'^(.{,2})[/\\]', '', location_path)
 
-            hosts_try = (hosts_all.copy(), hosts_match.copy())[bool(hosts_match)]
-            host_list = []
-            for section_key, cur_host in hosts_try.iteritems():
+                        if section_path in location_path:
+                            hosts_match.update(keyed_host)
 
-                url = 'http%s://%s/library/sections/%s/refresh%s' % (('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host, section_key, token_arg)
-                try:
-                    if force:
-                        urllib.urlopen(url)
-                    host_list.append(cur_host)
-                except Exception as e:
-                    logger.log(u'PLEX: Error updating library section for Plex Media Server: ' + ex(e), logger.WARNING)
-                    hosts_failed.append(cur_host)
-
-            if hosts_match:
-                logger.log(u'PLEX: Updating hosts where TV section paths match the downloaded show: ' + ', '.join(set(host_list)), logger.DEBUG)
-            else:
-                logger.log(u'PLEX: Updating all hosts with TV sections: ' + ', '.join(set(host_list)), logger.DEBUG)
-
+        if force:
             return (', '.join(set(hosts_failed)), None)[not len(hosts_failed)]
 
-notifier = PLEXNotifier
+        if hosts_match:
+            logger.log(u'PLEX: Updating hosts where TV section paths match the downloaded show: ' + ', '.join(set(hosts_match)), logger.DEBUG)
+        else:
+            logger.log(u'PLEX: Updating all hosts with TV sections: ' + ', '.join(set(hosts_all)), logger.DEBUG)
+
+        hosts_try = (hosts_match.copy(), hosts_all.copy())[not len(hosts_match)]
+        for section_key, cur_host in hosts_try.iteritems():
+
+            url = 'http{}://{}/library/sections/{}/refresh'.format(('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host, section_key)
+            try:
+                getURL(url, headers=self.headers, session=self.session)
+            except Exception as error:
+                logger.log(u'PLEX: Error updating library section for Plex Media Server: {}'.format
+                           (ex(error)), logger.WARNING)
+                hosts_failed.add(cur_host)
+
+        return (', '.join(set(hosts_failed)), None)[not len(hosts_failed)]
+
+    def get_token(self, username=None, password=None, plex_server_token=None):
+        username = username or sickbeard.PLEX_SERVER_USERNAME
+        password = password or sickbeard.PLEX_SERVER_PASSWORD
+        plex_server_token = plex_server_token or sickbeard.PLEX_SERVER_TOKEN
+
+        if plex_server_token:
+            self.headers['X-Plex-Token'] = plex_server_token
+
+        if 'X-Plex-Token' in self.headers:
+            return True
+
+        if not (username and password):
+            return False
+
+        logger.log(u'PLEX: fetching plex.tv credentials for user: ' + username, logger.DEBUG)
+
+        params = {
+            'user[login]': username,
+            'user[password]': password
+        }
+
+        try:
+            response = getURL('https://plex.tv/users/sign_in.json',
+                              post_data=params,
+                              headers=self.headers,
+                              session=self.session,
+                              json=True)
+
+            self.headers['X-Plex-Token'] = response['user']['authentication_token']
+
+        except Exception as error:
+            self.headers.pop('X-Plex-Token', '')
+            logger.log(u'PLEX: Error fetching credentials from from plex.tv for user {}: {}'.format
+                       (username, error), logger.DEBUG)
+
+        return 'X-Plex-Token' in self.headers

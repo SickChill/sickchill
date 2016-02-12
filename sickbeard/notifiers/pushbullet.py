@@ -34,7 +34,7 @@ from sickbeard.common import NOTIFY_LOGIN_TEXT
 from sickbeard.common import NOTIFY_SUBTITLE_DOWNLOAD
 
 
-class PushbulletNotifier(object):
+class Notifier(object):
     session = requests.Session()
     TEST_EVENT = 'Test'
 
@@ -117,6 +117,3 @@ class PushbulletNotifier(object):
 
         logger.log(u"Pushbullet notifications sent.", logger.DEBUG)
         return (True, response.text)[event is self.TEST_EVENT or event is None]
-
-
-notifier = PushbulletNotifier
