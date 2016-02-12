@@ -101,10 +101,12 @@ class Notifier(object):
                 self._notify_pht(update_text.format(ipaddress), title)
 
     def test_notify_pht(self, host, username, password):
-        return self._notify_pht('This is a test notification from SickRage', 'Test Notification', host, username, password, force=True)
+        return self._notify_pht('This is a test notification from SickRage',
+                                'Test Notification', host, username, password, force=True)
 
     def test_notify_pms(self, host, username, password, plex_server_token):
-        return self.update_library(host=host, username=username, password=password, plex_server_token=plex_server_token, force=True)
+        return self.update_library(host=host, username=username, password=password,
+                                   plex_server_token=plex_server_token, force=True)
 
     def update_library(self, ep_obj=None, host=None,  # pylint: disable=too-many-arguments, too-many-locals, too-many-statements, too-many-branches
                        username=None, password=None,
@@ -140,23 +142,32 @@ class Notifier(object):
             url = 'http{}://{}/library/sections'.format(('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host)
             try:
                 xml_response = getURL(url, headers=self.headers, session=self.session)
-                xml_tree = etree.parse(xml_response)
+                if not xml_response:
+                    logger.log(u'PLEX: Error while trying to contact Plex Media Server: {}'.format
+                               (cur_host), logger.WARNING)
+                    hosts_failed.add(cur_host)
+                    continue
+
+                xml_tree = etree.fromstring(xml_response)
                 media_container = xml_tree.getroot()
-            except IOError as e:
-                logger.log(u'PLEX: Error while trying to contact Plex Media Server: ' + ex(e), logger.WARNING)
+            except IOError as error:
+                logger.log(u'PLEX: Error while trying to contact Plex Media Server: {}'.format
+                           (ex(error)), logger.WARNING)
                 hosts_failed.add(cur_host)
                 continue
-            except Exception as e:
-                if 'invalid token' in str(e):
+            except Exception as error:
+                if 'invalid token' in str(error):
                     logger.log(u'PLEX: Please set TOKEN in Plex settings: ', logger.WARNING)
                 else:
-                    logger.log(u'PLEX: Error while trying to contact Plex Media Server: ' + ex(e), logger.ERROR)
+                    logger.log(u'PLEX: Error while trying to contact Plex Media Server: {}'.format
+                               (ex(error)), logger.WARNING)
                 hosts_failed.add(cur_host)
                 continue
 
             sections = media_container.findall('.//Directory')
             if not sections:
-                logger.log(u'PLEX: Plex Media Server not running on: ' + cur_host, logger.DEBUG)
+                logger.log(u'PLEX: Plex Media Server not running on: {}'.format
+                           (cur_host), logger.DEBUG)
                 hosts_failed.add(cur_host)
                 continue
 
@@ -192,7 +203,8 @@ class Notifier(object):
             try:
                 getURL(url, headers=self.headers, session=self.session)
             except Exception as error:
-                logger.log(u'PLEX: Error updating library section for Plex Media Server: {}'.format(ex(error)), logger.WARNING)
+                logger.log(u'PLEX: Error updating library section for Plex Media Server: {}'.format
+                           (ex(error)), logger.WARNING)
                 hosts_failed.add(cur_host)
 
         return (', '.join(set(hosts_failed)), None)[not len(hosts_failed)]
@@ -229,6 +241,7 @@ class Notifier(object):
 
         except Exception as error:
             self.headers.pop('X-Plex-Token', '')
-            logger.log(u'PLEX: Error fetching credentials from from plex.tv for user {}: {}'.format(username, error), logger.DEBUG)
+            logger.log(u'PLEX: Error fetching credentials from from plex.tv for user {}: {}'.format
+                       (username, error), logger.DEBUG)
 
         return 'X-Plex-Token' in self.headers
