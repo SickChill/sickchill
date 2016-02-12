@@ -18,17 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import re
+import adba
 import time
-import threading
 import datetime
+import requests
+import threading
 
 import sickbeard
-import adba
-from sickbeard import helpers
-from sickbeard import logger
-from sickbeard import db
-import requests
+from sickbeard import db, helpers, logger
+from sickbeard.indexers.indexer_config import INDEXER_TVDB
 
 exception_dict = {}
 anidb_exception_dict = {}
@@ -95,7 +93,7 @@ def get_scene_exceptions(indexer_id, season=-1):
     if season == 1:  # if we where looking for season 1 we can add generic names
         exceptionsList += get_scene_exceptions(indexer_id, season=-1)
 
-    return exceptionsList
+    return list({exception for exception in exceptionsList})
 
 
 def get_all_scene_exceptions(indexer_id):
@@ -167,13 +165,15 @@ def get_scene_exception_by_name_multiple(show_name):
 
         cur_exception_name = cur_exception["show_name"]
         cur_indexer_id = int(cur_exception["indexer_id"])
-        cur_season = int(cur_exception["season"])
 
         if show_name.lower() in (
                 cur_exception_name.lower(),
                 sickbeard.helpers.sanitizeSceneName(cur_exception_name).lower().replace('.', ' ')):
-            logger.log(u"Scene exception lookup got indexer id " + str(cur_indexer_id) + u", using that", logger.DEBUG)
-            out.append((cur_indexer_id, cur_season))
+
+            logger.log(u"Scene exception lookup got indexer id {}, using that".format
+                       (cur_indexer_id), logger.DEBUG)
+
+            out.append((cur_indexer_id, int(cur_exception["season"])))
 
     if out:
         return out
@@ -187,46 +187,42 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
     scene_exceptions table in cache.db. Also clears the scene name cache.
     """
 
+    do_refresh = False
     for indexer in sickbeard.indexerApi().indexers:
         if shouldRefresh(sickbeard.indexerApi(indexer).name):
-            logger.log(u"Checking for scene exception updates for " + sickbeard.indexerApi(indexer).name + "")
+            do_refresh = True
 
-            loc = sickbeard.indexerApi(indexer).config['scene_loc']
-            try:
-                data = helpers.getURL(loc, session=sickbeard.indexerApi(indexer).session)
-            except Exception:
-                continue
+    if do_refresh:
+        loc = sickbeard.indexerApi(INDEXER_TVDB).config['scene_loc']
+        logger.log(u"Checking for scene exception updates from {}".format(loc))
 
-            if data is None:
-                # When data is None, trouble connecting to github, or reading file failed
-                logger.log(u"Check scene exceptions update failed. Unable to update from: " + loc, logger.DEBUG)
-                continue
+        try:
+            jdata = helpers.getURL(loc, session=sickbeard.indexerApi(INDEXER_TVDB).session, json=True)
+        except Exception:
+            jdata = None
 
-            setLastRefresh(sickbeard.indexerApi(indexer).name)
-
-            # each exception is on one line with the format indexer_id: 'show name 1', 'show name 2', etc
-            for cur_line in data.splitlines():
-                indexer_id, _, aliases = cur_line.partition(':')  # @UnusedVariable
-
-                if not aliases:
+        if not jdata:
+            # When jdata is None, trouble connecting to github, or reading file failed
+            logger.log(u"Check scene exceptions update failed. Unable to update from {}".format(loc), logger.DEBUG)
+        else:
+            for indexer in sickbeard.indexerApi().indexers:
+                try:
+                    setLastRefresh(sickbeard.indexerApi(indexer).name)
+                    for indexer_id in jdata[sickbeard.indexerApi(indexer).config['xem_origin']]:
+                        alias_list = [
+                            {scene_exception: int(scene_season)}
+                            for scene_season in jdata[sickbeard.indexerApi(indexer).config['xem_origin']][indexer_id]
+                            for scene_exception in jdata[sickbeard.indexerApi(indexer).config['xem_origin']][indexer_id][scene_season]
+                        ]
+                        exception_dict[indexer_id] = alias_list
+                except Exception:
                     continue
-
-                indexer_id = int(indexer_id)
-
-                # regex out the list of shows, taking \' into account
-                # alias_list = [re.sub(r'\\(.)', r'\1', x) for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
-                alias_list = [{re.sub(r'\\(.)', r'\1', x): -1} for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
-                exception_dict[indexer_id] = alias_list
-                del alias_list
-
-            # cleanup
-            del data
 
     # XEM scene exceptions
     _xem_exceptions_fetcher()
     for xem_ex in xem_exception_dict:
         if xem_ex in exception_dict:
-            exception_dict[xem_ex] = exception_dict[xem_ex] + xem_exception_dict[xem_ex]
+            exception_dict[xem_ex] += exception_dict[xem_ex]
         else:
             exception_dict[xem_ex] = xem_exception_dict[xem_ex]
 
@@ -234,7 +230,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
     _anidb_exceptions_fetcher()
     for anidb_ex in anidb_exception_dict:
         if anidb_ex in exception_dict:
-            exception_dict[anidb_ex] = exception_dict[anidb_ex] + anidb_exception_dict[anidb_ex]
+            exception_dict[anidb_ex] += anidb_exception_dict[anidb_ex]
         else:
             exception_dict[anidb_ex] = anidb_exception_dict[anidb_ex]
 
@@ -256,8 +252,6 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
     if queries:
         cache_db_con.mass_action(queries)
         logger.log(u"Updated scene exceptions", logger.DEBUG)
-    # else:
-    #     logger.log(u"No scene exceptions update needed", logger.DEBUG)
 
     # cleanup
     exception_dict.clear()
@@ -307,15 +301,15 @@ xem_session = requests.Session()
 def _xem_exceptions_fetcher():
     if shouldRefresh('xem'):
         for indexer in sickbeard.indexerApi().indexers:
-            logger.log(u"Checking for XEM scene exception updates for " + sickbeard.indexerApi(indexer).name)
+            logger.log(u"Checking for XEM scene exception updates for {}".format
+                       (sickbeard.indexerApi(indexer).name))
 
-            url = "http://thexem.de/map/allNames?origin=%s&seasonNumbers=1" % sickbeard.indexerApi(indexer).config[
-                'xem_origin']
+            url = "http://thexem.de/map/allNames?origin={}&seasonNumbers=1".format(sickbeard.indexerApi(indexer).config['xem_origin'])
 
             parsedJSON = helpers.getURL(url, session=xem_session, timeout=90, json=True)
             if not parsedJSON:
-                logger.log(u"Check scene exceptions update failed for " + sickbeard.indexerApi(
-                    indexer).name + ", Unable to get URL: " + url, logger.DEBUG)
+                logger.log(u"Check scene exceptions update failed for {}, Unable to get URL: {}".format
+                           (sickbeard.indexerApi(indexer).name, url), logger.DEBUG)
                 continue
 
             if parsedJSON['result'] == 'failure':
@@ -324,9 +318,9 @@ def _xem_exceptions_fetcher():
             for indexerid, names in parsedJSON['data'].iteritems():
                 try:
                     xem_exception_dict[int(indexerid)] = names
-                except Exception as e:
-                    logger.log(u"XEM: Rejected entry: indexerid:{0}; names:{1}".format(indexerid, names), logger.WARNING)
-                    logger.log(u"XEM: Rejected entry error message:{0}".format(str(e)), logger.DEBUG)
+                except Exception as error:
+                    logger.log(u"XEM: Rejected entry: indexerid:{}; names:{}".format(indexerid, names), logger.WARNING)
+                    logger.log(u"XEM: Rejected entry error message:{}".format(error), logger.DEBUG)
 
         setLastRefresh('xem')
 

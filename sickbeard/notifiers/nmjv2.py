@@ -32,7 +32,7 @@ except ImportError:
     import xml.etree.ElementTree as etree
 
 
-class NMJv2Notifier(object):
+class Notifier(object):
     def notify_snatch(self, ep_name):  # pylint: disable=unused-argument
         return False
         # Not implemented: Start the scanner when snatched does not make any sense
@@ -179,6 +179,3 @@ class NMJv2Notifier(object):
         logger.log(u"Sending scan command for NMJ ", logger.DEBUG)
 
         return self._sendNMJ(host)
-
-
-notifier = NMJv2Notifier

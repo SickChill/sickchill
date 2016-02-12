@@ -48,10 +48,10 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.freeleech = None
 
         # URLs
-        self.url = 'http://alpharatio.cc'
+        self.url = 'http://alpharatio.cc/'
         self.urls = {
-            'login': self.url + '/login.php',
-            'search': self.url + '/torrents.php',
+            'login': self.url + 'login.php',
+            'search': self.url + 'torrents.php',
         }
 
         # Proper Strings

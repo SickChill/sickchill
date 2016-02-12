@@ -52,7 +52,6 @@ from socket import timeout as SocketTimeout
 from sickbeard import logger, classes
 from sickbeard.common import USER_AGENT
 from sickbeard import db
-from sickbeard.notifiers import synoindex_notifier
 from sickrage.helper.common import http_code_description, media_extensions, pretty_file_size, subtitle_extensions, episode_num
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
@@ -250,7 +249,7 @@ def makeDir(path):
         try:
             ek(os.makedirs, path)
             # do the library update for synoindex
-            synoindex_notifier.addFolder(path)
+            sickbeard.notifiers.synoindex_notifier.addFolder(path)
         except OSError:
             return False
     return True
@@ -470,7 +469,7 @@ def make_dirs(path):
                     # use normpath to remove end separator, otherwise checks permissions against itself
                     chmodAsParent(ek(os.path.normpath, sofar))
                     # do the library update for synoindex
-                    synoindex_notifier.addFolder(sofar)
+                    sickbeard.notifiers.synoindex_notifier.addFolder(sofar)
                 except (OSError, IOError) as e:
                     logger.log(u"Failed creating %s : %r" % (sofar, ex(e)), logger.ERROR)
                     return False
@@ -550,7 +549,7 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
                 # need shutil.rmtree when ignore_items is really implemented
                 ek(os.rmdir, check_empty_dir)
                 # do the library update for synoindex
-                synoindex_notifier.deleteFolder(check_empty_dir)
+                sickbeard.notifiers.synoindex_notifier.deleteFolder(check_empty_dir)
             except OSError as e:
                 logger.log(u"Unable to delete %s. Error: %r" % (check_empty_dir, repr(e)), logger.WARNING)
                 break
@@ -1696,7 +1695,7 @@ def isFileLocked(checkfile, writeLockCheck=False):
         return True
     try:
         f = ek(io.open, checkfile, 'rb')
-        f.close()
+        f.close()  # pylint: disable=no-member
     except IOError:
         return True
 

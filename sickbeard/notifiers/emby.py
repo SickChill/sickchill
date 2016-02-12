@@ -32,7 +32,7 @@ except ImportError:
     import simplejson as json
 
 
-class EMBYNotifier(object):
+class Notifier(object):
 
     def _notify_emby(self, message, host=None, emby_apikey=None):
         """Handles notifying Emby host via HTTP API
@@ -119,5 +119,3 @@ class EMBYNotifier(object):
             except (urllib2.URLError, IOError) as e:
                 logger.log(u'EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
                 return False
-
-notifier = EMBYNotifier

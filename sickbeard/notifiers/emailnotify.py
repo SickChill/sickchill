@@ -39,7 +39,7 @@ from sickbeard import db
 from sickrage.helper.encoding import ss
 
 
-class EmailNotifier(object):
+class Notifier(object):
     def __init__(self):
         self.last_err = None
 
@@ -256,6 +256,3 @@ class EmailNotifier(object):
         titles.sort(key=len, reverse=True)
         logger.log(u"TITLES: %s" % titles, logger.DEBUG)
         return titles
-
-
-notifier = EmailNotifier

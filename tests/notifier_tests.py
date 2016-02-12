@@ -40,8 +40,8 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from sickbeard import db
 from sickbeard.tv import TVEpisode, TVShow
 from sickbeard.webserve import Home
-from sickbeard.notifiers.emailnotify import EmailNotifier
-from sickbeard.notifiers.prowl import ProwlNotifier
+from sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
+from sickbeard.notifiers.prowl import Notifier as ProwlNotifier
 from sickrage.helper.encoding import ss
 import tests.test_lib as test
 

@@ -1241,6 +1241,37 @@ class CMD_Logs(ApiCall):
         return _responds(RESULT_SUCCESS, final_data)
 
 
+class CMD_LogsClear(ApiCall):
+    _help = {
+        "desc": "Clear the logs",
+        "optionalParameters": {
+            "level": {"desc": "The level of logs to clear"},
+        },
+    }
+
+    def __init__(self, args, kwargs):
+        # required
+        # optional
+        self.level, args = self.check_params(args, kwargs, "level", "warning", False, "string", ["warning", "error"])
+        # super, missing, help
+        ApiCall.__init__(self, args, kwargs)
+
+    def run(self):
+        """ Clear the logs """
+        if self.level == "error":
+            msg = "Error logs cleared"
+
+            classes.ErrorViewer.clear()
+        elif self.level == "warning":
+            msg = "Warning logs cleared"
+
+            classes.WarningViewer.clear()
+        else:
+            return _responds(RESULT_FAILURE, msg="Unknown log level: %s" % self.level)
+
+        return _responds(RESULT_SUCCESS, msg=msg)
+
+
 class CMD_PostProcess(ApiCall):
     _help = {
         "desc": "Manually post-process the files in the download folder",
@@ -2872,6 +2903,7 @@ function_mapper = {
     "failed": CMD_Failed,
     "backlog": CMD_Backlog,
     "logs": CMD_Logs,
+    "logs.clear": CMD_LogsClear,
     "sb": CMD_SickBeard,
     "postprocess": CMD_PostProcess,
     "sb.addrootdir": CMD_SickBeardAddRootDir,
