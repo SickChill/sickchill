@@ -90,7 +90,8 @@ def get_scene_exceptions(indexer_id, season=-1):
     else:
         exceptionsList = exceptionsCache[indexer_id][season]
 
-    if season == 1:  # if we where looking for season 1 we can add generic names
+    # Add generic exceptions regardless of the season if there is no exception for season
+    if season != -1 and not exceptionsList:
         exceptionsList += get_scene_exceptions(indexer_id, season=-1)
 
     return list({exception for exception in exceptionsList})
