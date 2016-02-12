@@ -1104,13 +1104,6 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
                         sql_l.append(curEp.get_sql())
 
-            # Disable update in each show refresh. Taking too long with large libraries
-            # else:
-            #     # the file exists, set its modify file stamp
-            #     if sickbeard.AIRDATE_EPISODES:
-            #         with curEp.lock:
-            #             curEp.airdateModifyStamp()
-
         if sql_l:
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
@@ -2527,8 +2520,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         Note: Also called from postProcessor
 
         """
-
-        if not self.show.airs and self.show.network:
+        if not self.show.airs and self.show.network and sickbeard.AIRDATE_EPISODES:
             return
 
         airdate_ordinal = self.airdate.toordinal()
