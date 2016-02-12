@@ -200,6 +200,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
             # Unpack only if video file was not already extracted by 'postpone if no subs' feature
             rarContent = unRAR(path, rarFiles, force, result)
             files += rarContent
+            videoFiles += [x for x in rarContent if helpers.isMediaFile(x)]
         videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else ''
 
         result.output += logHelper(u"PostProcessing Files: %s" % files, logger.DEBUG)
@@ -255,6 +256,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                     # Unpack only if video file was not already extracted by 'postpone if no subs' feature
                     rarContent = unRAR(processPath, rarFiles, force, result)
                     fileList = set(fileList + rarContent)
+                    videoFiles += [x for x in rarContent if helpers.isMediaFile(x)]
 
                 videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else ''
                 notwantedFiles = [x for x in fileList if x not in videoFiles]
