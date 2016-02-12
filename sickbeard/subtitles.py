@@ -145,6 +145,14 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
 
     subtitles_path = get_subtitles_path(subtitles_info['location'])
     video_path = subtitles_info['location']
+    
+    # Perfect match = hash score - hearing impaired score - resolution score (subtitle for 720p its the same for 1080p)
+    # Perfect match = 215 -1 -1 = 213
+    # No-perfect match = hash score - hearing impaired score - resolution score - release_group score
+    # No-perfect match = 215 -1 -1 -9 = 204
+    # From latest subliminal code:
+    # episode_scores = {'hash': 215, 'series': 108, 'year': 54, 'season': 18, 'episode': 18, 'release_group': 9,
+    #                   'format': 4, 'audio_codec': 2, 'resolution': 1, 'hearing_impaired': 1, 'video_codec': 1}
     user_score = 213 if sickbeard.SUBTITLES_PERFECT_MATCH else 204
 
     video = get_video(video_path, subtitles_path=subtitles_path)
