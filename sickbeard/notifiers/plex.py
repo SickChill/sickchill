@@ -148,8 +148,7 @@ class Notifier(object):
                     hosts_failed.add(cur_host)
                     continue
 
-                xml_tree = etree.fromstring(xml_response)
-                media_container = xml_tree.getroot()
+                media_container = etree.fromstring(xml_response)
             except IOError as error:
                 logger.log(u'PLEX: Error while trying to contact Plex Media Server: {}'.format
                            (ex(error)), logger.WARNING)
