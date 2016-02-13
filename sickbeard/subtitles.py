@@ -109,7 +109,6 @@ def needs_subtitles(subtitles):
     return 'und' not in subtitles
 
 
-# Hack around this for now.
 def from_code(language):
     language = language.strip()
     if language and language in language_converters['opensubtitles'].codes:
@@ -135,7 +134,6 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                     episode_num(subtitles_info['season'], subtitles_info['episode'], numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
-    # Check if we really need subtitles
     languages = get_needed_languages(existing_subtitles)
     if not languages:
         logger.log(u'No subtitles needed for {} {}'.format
@@ -145,11 +143,11 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
 
     subtitles_path = get_subtitles_path(subtitles_info['location'])
     video_path = subtitles_info['location']
-    
-    # Perfect match = hash score - hearing impaired score - resolution score (subtitle for 720p its the same for 1080p)
-    # Perfect match = 215 -1 -1 = 213
-    # No-perfect match = series + year + season + episode
-    # No-perfect match = 108 + 54 + 18 + 18 = 198
+
+    # Perfect match = hash score - hearing impaired score - resolution score (subtitle for 720p is the same as for 1080p)
+    # Perfect match = 215 - 1 - 1 = 213
+    # Non-perfect match = series + year + season + episode
+    # Non-perfect match = 108 + 54 + 18 + 18 = 198
     # From latest subliminal code:
     # episode_scores = {'hash': 215, 'series': 108, 'year': 54, 'season': 18, 'episode': 18, 'release_group': 9,
     #                   'format': 4, 'audio_codec': 2, 'resolution': 1, 'hearing_impaired': 1, 'video_codec': 1}
@@ -349,9 +347,9 @@ class SubtitlesFinder(object):
         if sickbeard.TV_DOWNLOAD_DIR and os.path.isdir(sickbeard.TV_DOWNLOAD_DIR):
 
             for root, _, files in os.walk(sickbeard.TV_DOWNLOAD_DIR, topdown=False):
-                rar_files = [x for x in files if isRarFile(x)]
+                rar_files = [file for file in files if isRarFile(file)]
                 if rar_files and sickbeard.UNPACK:
-                    video_files = [x for x in files if isMediaFile(x)]
+                    video_files = [file for file in files if isMediaFile(file)]
                     if u'_UNPACK' not in root and (not video_files or root == sickbeard.TV_DOWNLOAD_DIR):
                         logger.log(u'Found rar files in post-process folder: {}'.format(rar_files), logger.DEBUG)
                         result = processTV.ProcessResult()
@@ -428,13 +426,12 @@ class SubtitlesFinder(object):
                 processTV.processDir(sickbeard.TV_DOWNLOAD_DIR)
 
     def run(self, force=False):  # pylint: disable=too-many-branches, too-many-statements
-
         if not sickbeard.USE_SUBTITLES:
             return
 
         if len(sickbeard.subtitles.enabled_service_list()) < 1:
             logger.log(u'Not enough services selected. At least 1 service is required to '
-                       'search subtitles in the background', logger.WARNING)
+                       u'search subtitles in the background', logger.WARNING)
             return
 
         self.amActive = True
@@ -559,7 +556,6 @@ class SubtitlesFinder(object):
 
 
 def run_subs_extra_scripts(episode_object, subtitle, video, single=False):
-
     for script_name in sickbeard.SUBTITLES_EXTRA_SCRIPTS:
         script_cmd = [piece for piece in re.split("( |\\\".*?\\\"|'.*?')", script_name) if piece.strip()]
         script_cmd[0] = os.path.abspath(script_cmd[0])
