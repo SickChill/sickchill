@@ -91,7 +91,7 @@ class CensoredFormatter(logging.Formatter, object):
             msg = msg.replace(value, len(value) * '*')
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
-        msg = re.sub(r'([&?]r|[&?]apikey|[&?]api_key)=[^&]*([&\w]?)', r'\1=**********\2', msg, re.I)
+        msg = re.sub(r'([&?]r|[&?]apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)', r'\1=**********\2', msg, re.I)
         return msg
 
 
