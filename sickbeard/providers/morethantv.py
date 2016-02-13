@@ -29,6 +29,7 @@ from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.exceptions import AuthException
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickbeard.show_name_helpers import allPossibleShowNames
 
 
 class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -104,6 +105,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             'order_way': 'desc',
             'action': 'basic',
             'searchsubmit': 1,
+            'group_results': 0,
             'searchstr': ''
         }
 
@@ -122,8 +124,12 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             items = []
             logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
 
-            for search_string in search_strings[mode]:
+            if str(mode) in ('Season', 'RSS'):
+                search_params['group_results'] = 1
+            else:
+                search_params['group_results'] = 0
 
+            for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
                                logger.DEBUG)
@@ -149,6 +155,10 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                     labels = [process_column_header(label) for label in torrent_rows[0].find_all('td')]
 
+                    season = -1
+                    show_name = ''
+                    release_type = ''
+
                     # Skip column headers
                     for result in torrent_rows[1:]:
                         try:
@@ -156,14 +166,65 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             if result.find('img', alt='Nuked'):
                                 continue
 
-                            title = result.find('a', title='View torrent').get_text(strip=True)
-                            download_url = self.url + result.find('span', title='Download').parent['href']
-                            if not all([title, download_url]):
+                            # Check if a grouped release follows
+                            if 'group' in result['class']:
+                                title_group = result.find('a', title='View torrent group').get_text(strip=True)
+                                if not title_group or 'Season ' not in title_group:
+                                    season = -1
+                                    show_name = ''
+                                    release_type = ''
+                                    continue
+                                # Grab the season's number
+                                season = try_int(title_group.strip('Season '), -1)
+
+                                # Check if this is the season we are looking for
+                                if 'Season %d' % season not in search_string and mode != 'RSS':
+                                    season = -1
+                                    show_name = ''
+                                    release_type = ''
+                                    continue
+
+                                # Grab the show name
+                                show_name = result.find('div', {'class' : 'tp-showname'}).get_text(strip=True)
                                 continue
 
-                            cells = result.find_all('td')
-                            seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
-                            leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
+                            # Check if this torrent belongs to a group
+                            elif 'group_torrent' in result['class']:
+                                #Check if this is a sub-group
+                                if 'edition' in result['class']:
+                                    #Grab relase type (HDTV, Web-DL, BluRay)
+                                    release_type = result.find('td', {'colspan' : '9'}).get_text(strip=True).split(' ')[3]
+                                    continue
+
+                                # Check if the group that the torrent belongs to is valid
+                                if season == 0 or show_name == '' or release_type == '':
+                                    continue
+
+                                #Grab resolution and codec
+                                resolution_codec = result.find('td', {'colspan' : '3'}).get_text(strip=True)
+                                resolution = ''
+                                codec = resolution_codec.split(' ')[0][1:]
+                                if resolution_codec.split(' ')[2] != 'SD':
+                                    resolution = resolution_codec.split(' ')[2]
+
+                                season_str = 'S%02d' % season
+
+                                #Generate the actual title for SickRage
+                                title = '%s.%s.%s.%s.%s' % (show_name, season_str, resolution, release_type, codec)
+                                download_url = self.url + result.find('span', title='Download').parent['href']
+
+                                cells = result.find_all('td')
+                                seeders = try_int(cells[-2].get_text(strip=True))
+                                leechers = try_int(cells[-1].get_text(strip=True))
+                            else:
+                                title = result.find('a', title='View torrent').get_text(strip=True)
+                                download_url = self.url + result.find('span', title='Download').parent['href']
+                                cells = result.find_all('td')
+                                seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
+                                leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
+
+                            if not all([title, download_url]):
+                                continue
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
@@ -190,6 +251,18 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             results += items
 
         return results
+
+    #Get search string in compatible 'Season x' mode
+    def _get_season_search_strings(self, episode):
+        search_string = super(MoreThanTVProvider, self)._get_season_search_strings(episode)
+
+        if not any([episode.show.air_by_date, episode.show.sports, episode.show.anime]):
+            for show_name in set(allPossibleShowNames(self.show)):
+                episode_string = show_name + ' '
+                episode_string += 'Season %d' % int(episode.scene_season)
+                search_string[0]['Season'].append(episode_string.encode('utf-8').strip())
+
+        return search_string
 
     def seed_ratio(self):
         return self.ratio
