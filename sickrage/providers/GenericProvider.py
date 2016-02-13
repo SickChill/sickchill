@@ -342,9 +342,14 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         return result
 
-    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False):  # pylint: disable=too-many-arguments,
-        return getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
-                      session=self.session, json=json, need_bytes=need_bytes)
+    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False, response=False, **kwargs):  # pylint: disable=too-many-arguments,
+        # get the response object so we can extract the requested url
+        resp = getURL(url, post_data, params, self.headers, timeout, self.session, json, need_bytes, returns='response')
+
+        # log the URL, will cause double logging until all duplicate log messages are removed from providers
+        logger.log(u'URL: {url}'.format(url=resp.request.url), logger.DEBUG)
+
+        return resp.json() if json else resp.content if need_bytes else resp.text if 'returns' not in kwargs else resp
 
     def image_name(self):
         return self.get_id() + '.png'
