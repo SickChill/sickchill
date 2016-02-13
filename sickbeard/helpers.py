@@ -19,6 +19,7 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint:disable=too-many-lines
 
+import warnings
 import os
 import io
 import ctypes
@@ -1413,11 +1414,27 @@ def _setUpSession(session, headers):
 
 
 def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too-many-arguments, too-many-return-statements, too-many-branches
-           timeout=30, session=None, json=False, need_bytes=False):
+           timeout=30, session=None, json=False, need_bytes=False, **kwargs):
     """
     Returns a byte-string retrieved from the url provider.
     """
 
+    # TODO: make raw response the default once the the current args are fully deprecated
+    default = None
+    if json:
+        message = u'getURL argument json will be deprecated in the near future use returns=\'json\' instead.'
+        default = u'json'
+    elif need_bytes:
+        message = u'getURL argument need_bytes will be deprecated in the near future use returns=\'content\' instead.'
+        default = u'content'
+    elif u'returns' not in kwargs:
+        default = u'text'
+        message = u'getURL default return type may change in the near future use returns=\'text\' instead.'
+    if default is not None:
+        warnings.warn(message, PendingDeprecationWarning, stacklevel=2)
+        logger.log(u'getURL continuing with deprecated arguments.')
+
+    response_type = kwargs.pop(u'returns', default)
     session = _setUpSession(session, headers)
 
     if params and isinstance(params, (list, dict)):
@@ -1469,7 +1486,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
             logger.log(traceback.format_exc(), logger.DEBUG)
         return None
 
-    return (resp.text, resp.content)[need_bytes] if not json else resp.json()
+    return resp if response_type == u'response' or response_type is None else resp.json() if response_type == u'json' else getattr(resp, response_type, resp)
 
 
 def download_file(url, filename, session=None, headers=None):  # pylint:disable=too-many-return-statements
