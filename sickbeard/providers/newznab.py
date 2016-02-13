@@ -21,7 +21,7 @@
 import os
 import posixpath  # Must use posixpath
 import time
-from urllib import urlencode
+from requests.compat import urlencode
 
 import sickbeard
 from sickbeard import logger, tvcache

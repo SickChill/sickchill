@@ -20,7 +20,7 @@
 import re
 import traceback
 from requests.utils import dict_from_cookiejar
-from urllib import urlencode
+from requests.compat import urlencode
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser

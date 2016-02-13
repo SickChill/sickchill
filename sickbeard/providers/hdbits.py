@@ -18,7 +18,7 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-from urllib import urlencode
+from requests.compat import urlencode
 
 from sickbeard import classes, logger, tvcache
 
