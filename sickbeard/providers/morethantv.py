@@ -197,7 +197,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                     continue
 
                                 # Check if the group that the torrent belongs to is valid
-                                if season == 0 or show_name == '' or release_type == '':
+                                if season == -1 or show_name == '' or release_type == '':
                                     continue
 
                                 #Grab resolution and codec
@@ -210,7 +210,10 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 season_str = 'S%02d' % season
 
                                 #Generate the actual title for SickRage
-                                title = '%s.%s.%s.%s.%s' % (show_name, season_str, resolution, release_type, codec)
+                                if resolution != '':
+                                    title = '%s.%s.%s.%s.%s' % (show_name, season_str, resolution, release_type, codec)
+                                else:
+                                    title = '%s.%s.%s.%s' % (show_name, season_str, release_type, codec)
                                 download_url = self.url + result.find('span', title='Download').parent['href']
 
                                 cells = result.find_all('td')
