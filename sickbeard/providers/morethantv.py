@@ -204,8 +204,9 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 resolution_codec = result.find('td', {'colspan' : '3'}).get_text(strip=True)
                                 resolution = ''
                                 codec = resolution_codec.split(' ')[0][1:]
-                                if resolution_codec.split(' ')[2] != 'SD':
-                                    resolution = resolution_codec.split(' ')[2]
+                                quality = resolution_codec.split(' ')[2]
+                                if quality != 'SD':
+                                    resolution = quality
 
                                 season_str = 'S%02d' % season
 
