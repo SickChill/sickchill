@@ -1432,7 +1432,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
         message = u'getURL default return type may change in the near future use returns=\'text\' instead.'
     if default is not None:
         warnings.warn(message, PendingDeprecationWarning, stacklevel=2)
-        logger.log(u'getURL continuing with deprecated arguments.')
+        logger.log(u'getURL continuing with deprecated arguments.', logger.DEBUG)
 
     response_type = kwargs.pop(u'returns', default)
     session = _setUpSession(session, headers)
