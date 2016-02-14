@@ -98,7 +98,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
         for mode in search_strings:
             items = []
-            logger.log(u'Search Mode: %s' % mode, logger.DEBUG)
+            logger.log(u'Search Mode: {mode}'.format(mode=mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
 
@@ -108,7 +108,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                 search_params['search'] = search_string
                 search_url = self.urls['search'] + urlencode(search_params, doseq=True)
-                logger.log(u'Search URL: %s' % search_url, logger.DEBUG)
+                logger.log(u'Search URL: {url}'.format(url=search_url), logger.DEBUG)
 
                 data = self.get_url(search_url)
                 if not data:
@@ -147,7 +147,8 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u'Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u'Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {name} (S:{seeds} L:{leeches})'.format
+                                               (name=title, seeds=seeders, leeches=leechers), logger.DEBUG)
                                 continue
 
                             torrent_size = cells[labels.index('Size')].get_text()
@@ -155,7 +156,8 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u'Found result: %s with %s seeders and %s leechers' % (title, seeders, leechers), logger.DEBUG)
+                                logger.log(u'Found result: {name} with {seeds} seeders and {leeches} leechers'.format
+                                           (name=title, seeds=seeders, leeches=leechers), logger.DEBUG)
 
                             items.append(item)
                         except StandardError:
