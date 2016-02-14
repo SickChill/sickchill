@@ -347,9 +347,11 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         resp = getURL(url, post_data, params, self.headers, timeout, self.session, json, need_bytes, returns='response')
 
         # log the URL, will cause double logging until all duplicate log messages are removed from providers
-        logger.log(u'URL: {url}'.format(url=resp.request.url), logger.DEBUG)
-
-        return resp.json() if json else resp.content if need_bytes else resp.text if 'returns' not in kwargs else resp
+        if resp:
+            logger.log(u'URL: {url}'.format(url=resp.request.url), logger.DEBUG)
+            return resp.json() if json else resp.content if need_bytes else resp.text if 'returns' not in kwargs else resp
+        else:
+            return resp
 
     def image_name(self):
         return self.get_id() + '.png'
