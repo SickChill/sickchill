@@ -52,7 +52,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         self.url = 'https://abnormal.ws'
         self.urls = {
             'login': urljoin(self.url, '/login.php'),
-            'search': urljoin(self.url, '/torrents.php?'),
+            'search': urljoin(self.url, '/torrents.php'),
         }
 
         # Proper Strings
@@ -109,10 +109,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                                logger.DEBUG)
 
                 search_params['search'] = search_string
-                search_url = urljoin(self.urls['search'], urlencode(search_params, doseq=True))
-                logger.log('Search URL: {url}'.format(url=search_url), logger.DEBUG)
-
-                data = self.get_url(search_url)
+                data = self.get_url(self.urls['search'], params=search_params)
                 if not data:
                     continue
 
