@@ -72,7 +72,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
 
                 self.search_params['q'] = search_string.encode('utf-8') if mode != 'RSS' else ''
