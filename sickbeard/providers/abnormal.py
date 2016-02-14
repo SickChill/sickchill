@@ -46,7 +46,6 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         self.ratio = None
         self.minseed = None
         self.minleech = None
-        self.freeleech = None
 
         # URLs
         self.url = "https://abnormal.ws"
