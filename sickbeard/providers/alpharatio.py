@@ -18,9 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
 import re
 
-from requests.compat import urlencode
+from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
@@ -48,10 +49,10 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.freeleech = None
 
         # URLs
-        self.url = 'http://alpharatio.cc/'
+        self.url = 'http://alpharatio.cc'
         self.urls = {
-            'login': self.url + 'login.php',
-            'search': self.url + 'torrents.php',
+            'login': urljoin(self.url, 'login.php'),
+            'search': urljoin(self.url, 'torrents.php'),
         }
 
         # Proper Strings
@@ -71,14 +72,14 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             'remember_me': 'on',
         }
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30, response='text')
         if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
+            logger.log("Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('Invalid Username/password', response) \
                 or re.search('<title>Login :: AlphaRatio.cc</title>', response):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
@@ -111,28 +112,26 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log("Search Mode: %s" % mode, logger.DEBUG)
 
             for search_string in search_strings[mode]:
-
                 if mode != 'RSS':
-                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {search}".format
+                               (search=search_string.decode('utf-8')), logger.DEBUG)
 
                 search_params['searchstr'] = search_string
-
-                search_url = self.urls['search'] + '?' + urlencode(search_params)
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-
-                data = self.get_url(search_url)
+                search_url = self.urls['search']
+                data = self.get_url(search_url, params=search_params, response='text')
                 if not data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
                     torrent_table = html.find('table', id='torrent_table')
-                    torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+                    if not torrent_table:
+                        continue
 
+                    torrent_rows = torrent_table.find_all('tr') if torrent_table else []
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
@@ -149,7 +148,7 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                         try:
                             title = cells[labels.index('Name /Year')].find('a', dir='ltr').get_text(strip=True)
-                            download_url = self.url + cells[labels.index('Name /Year')].find('a', title='Download')['href']
+                            download_url = urljoin(self.url, cells[labels.index('Name /Year')].find('a', title='Download')['href'])
                             if not all([title, download_url]):
                                 continue
 
