@@ -1473,9 +1473,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                                                     threadName="TRAKTCHECKER",
                                                     silent=not USE_TRAKT)
 
+        update_interval = datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY)
         subtitlesFinderScheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
-                                                       cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),
+                                                       cycleTime=update_interval,
                                                        threadName="FINDSUBTITLES",
+                                                       run_delay=update_interval,
                                                        silent=not USE_SUBTITLES)
 
         __INITIALIZED__ = True
