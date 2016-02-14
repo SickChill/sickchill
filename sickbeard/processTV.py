@@ -530,8 +530,8 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
     :param process_method: auto/manual
     :param force: Postprocess currently postprocessing file
     :param is_priority: Boolean, is this a priority download
-    :param ignore_subs: Boolean, if true ignore releases without associated subtitles
     :param result: Previous results
+    :param ignore_subs: Boolean, if true ignore releases without associated subtitles
     """
 
     processor = None
@@ -546,7 +546,7 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
             processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority, ignore_subs)
 
             # This feature prevents PP for files that do not have subtitle associated with the video file
-            if sickbeard.POSTPONE_IF_NO_SUBS and subtitles_enabled(cur_video_file) and not ignore_subs:
+            if sickbeard.POSTPONE_IF_NO_SUBS and not ignore_subs and subtitles_enabled(cur_video_file):
                 associatedFiles = processor.list_associated_files(cur_video_file_path, subtitles_only=True)
                 if not [associatedFile for associatedFile in associatedFiles if associatedFile[-3:] in subtitle_extensions]:
                     result.output += logHelper(u"No subtitles associated. Postponing the post-process of this file: %s" % cur_video_file, logger.DEBUG)
@@ -628,6 +628,12 @@ def process_failed(dirName, nzbName, result):
                                        (nzbName, dirName, process_fail_message), logger.WARNING)
 
 def subtitles_enabled(video):
+    """
+    Parse video filename to a show to check if it has subtitle enabled
+
+    :param video: video filename to be parsed
+    """
+
     try:
         parse_result = NameParser().parse(video, cache_result=True)
     except (InvalidNameException, InvalidShowException):
