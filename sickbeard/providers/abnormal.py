@@ -21,7 +21,7 @@
 from __future__ import unicode_literals
 
 import re
-from requests.compat import urlencode, urljoin
+from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
