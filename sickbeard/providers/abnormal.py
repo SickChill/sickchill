@@ -21,7 +21,7 @@
 from __future__ import unicode_literals
 
 import re
-from requests.compat import urlencode
+from requests.compat import urlencode, urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
@@ -51,8 +51,8 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         # URLs
         self.url = 'https://abnormal.ws'
         self.urls = {
-            'login': self.url + '/login.php',
-            'search': self.url + '/torrents.php?'
+            'login': urljoin(self.url, '/login.php'),
+            'search': urljoin(self.url, '/torrents.php?'),
         }
 
         # Proper Strings
@@ -109,7 +109,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                                logger.DEBUG)
 
                 search_params['search'] = search_string
-                search_url = self.urls['search'] + urlencode(search_params, doseq=True)
+                search_url = urljoin(self.urls['search'], urlencode(search_params, doseq=True))
                 logger.log('Search URL: {url}'.format(url=search_url), logger.DEBUG)
 
                 data = self.get_url(search_url)
@@ -139,7 +139,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                         try:
                             title = cells[labels.index('Release')].get_text(strip=True)
-                            download_url = self.url + '/' + cells[labels.index('DL')].find('a', class_='tooltip')['href']
+                            download_url = urljoin(self.url, cells[labels.index('DL')].find('a', class_='tooltip')['href'])
                             if not all([title, download_url]):
                                 continue
 
