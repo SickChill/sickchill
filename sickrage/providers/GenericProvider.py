@@ -332,7 +332,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
     def get_quality(self, item, anime=False):
         (title, _) = self._get_title_and_url(item)
-        quality = Quality.sceneQuality(title, anime)
+        quality = Quality.scene_quality(title, anime)
 
         return quality
 
