@@ -126,7 +126,7 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
                 search_params['search'] = search_string

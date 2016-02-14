@@ -308,7 +308,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         search_url = self.urls['search_page'].format(z, self.categories)
 
                     if mode != 'RSS':
-                        logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                        logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
                     logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
