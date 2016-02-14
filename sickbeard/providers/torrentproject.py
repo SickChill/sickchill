@@ -58,7 +58,7 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
         results = []
         for mode in search_strings:  # Mode = RSS, Season, Episode
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
 
