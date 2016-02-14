@@ -19,7 +19,7 @@
 
 import posixpath  # Must use posixpath
 import traceback
-from urllib import urlencode
+from requests.compat import urlencode
 from bs4 import BeautifulSoup
 
 import sickbeard

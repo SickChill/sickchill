@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from urllib import urlencode
+from requests.compat import urlencode
 from urlparse import urljoin
 
 from sickbeard import logger, tvcache

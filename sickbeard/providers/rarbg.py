@@ -20,7 +20,7 @@
 
 import datetime
 import time
-from urllib import urlencode
+from requests.compat import urlencode
 
 from sickbeard import logger, tvcache
 from sickbeard.indexers.indexer_config import INDEXER_TVDB

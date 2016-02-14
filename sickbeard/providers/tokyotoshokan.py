@@ -19,7 +19,7 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from urllib import urlencode
+from requests.compat import urlencode
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
