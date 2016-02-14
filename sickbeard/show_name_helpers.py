@@ -116,8 +116,7 @@ def allPossibleShowNames(show, season=-1):
         season = -1
         showNames = get_scene_exceptions(show.indexerid, season=season)
 
-    if season in [-1, 1]:
-        showNames.append(show.name)
+    showNames.append(show.name)
 
     if not show.is_anime:
         newShowNames = []
@@ -141,7 +140,7 @@ def allPossibleShowNames(show, season=-1):
 
         showNames += newShowNames
 
-    return showNames
+    return set(showNames)
 
 
 def determineReleaseName(dir_name=None, nzb_name=None):
