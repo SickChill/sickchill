@@ -34,7 +34,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "ABNormal")
+        TorrentProvider.__init__(self, 'ABNormal')
 
         # Credentials
         self.username = None
@@ -70,11 +70,11 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
+            logger.log(u'Unable to connect to provider', logger.WARNING)
             return False
 
         if not re.search('torrents.php', response):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log(u'Invalid username or password. Check your settings', logger.WARNING)
             return False
 
         return True
@@ -98,24 +98,24 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log(u'Search Mode: %s' % mode, logger.DEBUG)
 
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                    logger.log(u'Search string: {search}'.format(search=search_string.decode('utf-8')),
                                logger.DEBUG)
 
                 search_params['search'] = search_string
                 search_url = self.urls['search'] + urlencode(search_params, doseq=True)
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+                logger.log(u'Search URL: %s' % search_url, logger.DEBUG)
 
                 data = self.get_url(search_url)
                 if not data:
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    torrent_table = html.find("table", class_=re.compile("torrent_table cats"))
+                    torrent_table = html.find('table', class_=re.compile('torrent_table cats'))
                     if not torrent_table:
                         continue
 
@@ -123,7 +123,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
-                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        logger.log(u'Data returned from provider does not contain any torrents', logger.DEBUG)
                         continue
 
                     # Catégorie, Release, Date, DL, Size, C, S, L
@@ -147,7 +147,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u'Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             torrent_size = cells[labels.index('Size')].get_text()
@@ -155,7 +155,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                                logger.log(u'Found result: %s with %s seeders and %s leechers' % (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
                         except StandardError:
