@@ -198,7 +198,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
         logger.log(u"Checking for scene exception updates from {}".format(loc))
 
         try:
-            jdata = helpers.getURL(loc, session=sickbeard.indexerApi(INDEXER_TVDB).session, json=True)
+            jdata = helpers.getURL(loc, session=sickbeard.indexerApi(INDEXER_TVDB).session, returns='json')
         except Exception:
             jdata = None
 
@@ -307,7 +307,7 @@ def _xem_exceptions_fetcher():
 
             url = "http://thexem.de/map/allNames?origin={}&seasonNumbers=1".format(sickbeard.indexerApi(indexer).config['xem_origin'])
 
-            parsedJSON = helpers.getURL(url, session=xem_session, timeout=90, json=True)
+            parsedJSON = helpers.getURL(url, session=xem_session, timeout=90, returns='json')
             if not parsedJSON:
                 logger.log(u"Check scene exceptions update failed for {}, Unable to get URL: {}".format
                            (sickbeard.indexerApi(indexer).name, url), logger.DEBUG)

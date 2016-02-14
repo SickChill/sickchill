@@ -1432,7 +1432,6 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
         message = u'getURL default return type may change in the near future use returns=\'text\' instead.'
     if default is not None:
         warnings.warn(message, PendingDeprecationWarning, stacklevel=2)
-        logger.log(u'getURL continuing with deprecated arguments.', logger.DEBUG)
 
     response_type = kwargs.pop(u'returns', default)
     session = _setUpSession(session, headers)
@@ -1753,7 +1752,7 @@ def getTVDBFromID(indexer_id, indexer):  # pylint:disable=too-many-return-statem
     tvdb_id = ''
     if indexer == 'IMDB':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=%s" % indexer_id
-        data = getURL(url, session=session, need_bytes=True)
+        data = getURL(url, session=session, returns='content')
         if data is None:
             return tvdb_id
         try:
@@ -1767,7 +1766,7 @@ def getTVDBFromID(indexer_id, indexer):  # pylint:disable=too-many-return-statem
         return tvdb_id
     elif indexer == 'ZAP2IT':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it=%s" % indexer_id
-        data = getURL(url, session=session, need_bytes=True)
+        data = getURL(url, session=session, returns='content')
         if data is None:
             return tvdb_id
         try:
@@ -1781,7 +1780,7 @@ def getTVDBFromID(indexer_id, indexer):  # pylint:disable=too-many-return-statem
         return tvdb_id
     elif indexer == 'TVMAZE':
         url = "http://api.tvmaze.com/shows/%s" % indexer_id
-        data = getURL(url, session=session, json=True)
+        data = getURL(url, session=session, returns='json')
         if data is None:
             return tvdb_id
         tvdb_id = data['externals']['thetvdb']
