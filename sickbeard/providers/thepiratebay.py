@@ -45,7 +45,6 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.ratio = None
         self.minseed = None
         self.minleech = None
-        self.freeleech = None
         self.confirmed = True
 
         # URLs
