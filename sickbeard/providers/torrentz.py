@@ -46,7 +46,6 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         self.minseed = None
         self.minleech = None
 
-
         # URLs
         self.url = 'https://torrentz.eu/'
         self.urls = {
@@ -110,7 +109,8 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format
+                                               (title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             items.append((title, download_url, size, seeders, leechers))
