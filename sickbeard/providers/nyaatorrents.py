@@ -68,7 +68,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                     "order": 1
                 }
                 if mode != 'RSS':
-                    params["term"] = search_string.encode('utf-8')
+                    params["term"] = search_string
 
                 search_url = self.url + '?' + urlencode(params)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)

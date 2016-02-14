@@ -66,7 +66,7 @@ class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instan
                                logger.DEBUG)
 
                 search_params = {
-                    "terms": search_string.encode('utf-8'),
+                    "terms": search_string,
                     "type": 1,  # get anime types
                 }
 

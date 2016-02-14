@@ -73,7 +73,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
                 if mode != 'RSS':
                     logger.log(u"Search string: " + search_string.strip(), logger.DEBUG)
-                    search_params['search'] = search_string.encode('utf-8')
+                    search_params['search'] = search_string
                 else:
                     search_params.pop('search', '')
 

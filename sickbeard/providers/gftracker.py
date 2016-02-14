@@ -46,7 +46,6 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.ratio = None
         self.minseed = None
         self.minleech = None
-        self.freeleech = None
 
         # URLs
         self.url = 'https://www.thegft.org/'

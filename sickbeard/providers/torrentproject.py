@@ -66,7 +66,7 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
                     logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
-                search_url = self.urls['api'] + "?s=%s&out=json&filter=2101&num=150" % quote_plus(search_string.encode('utf-8'))
+                search_url = self.urls['api'] + "?s=%s&out=json&filter=2101&num=150" % quote_plus(search_string)
                 if self.custom_url:
                     search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/'))  # Must use posixpath
 
