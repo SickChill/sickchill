@@ -115,10 +115,8 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                 with BS4Parser(data, "html5lib") as html:
                     torrent_table = html.find("table", class_=re.compile("torrent_table cats"))
-                    if not torrent_table:
-                        continue
-
                     torrent_rows = torrent_table.find_all("tr") if torrent_table else []
+
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
                         logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
