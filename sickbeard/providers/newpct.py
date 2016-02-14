@@ -161,8 +161,7 @@ class newpctProvider(TorrentProvider):
         the URL to get torrent file
         """
         if need_bytes:
-            data = helpers.getURL(url, post_data=None, params=None, headers=self.headers, timeout=timeout,
-                                  session=self.session, json=json, need_bytes=False)
+            data = helpers.getURL(url, headers=self.headers, timeout=timeout, session=self.session, returns='json')
             url = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
 
         return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,

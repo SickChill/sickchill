@@ -78,7 +78,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
 
         # url = 'http://thetvdb.com/api/Updates.php?type=series&time=%s' % last_update
         url = 'http://thetvdb.com/api/%s/updates/%s' % (sickbeard.indexerApi(INDEXER_TVDB).api_params['apikey'], update_file)
-        data = helpers.getURL(url, session=self.session)
+        data = helpers.getURL(url, session=self.session, returns='text')
         if not data:
             logger.log(u"Could not get the recently updated show data from %s. Retrying later. Url was: %s" % (sickbeard.indexerApi(INDEXER_TVDB).name, url))
             self.amActive = False
