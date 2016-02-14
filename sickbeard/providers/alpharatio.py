@@ -46,7 +46,6 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.ratio = None
         self.minseed = None
         self.minleech = None
-        self.freeleech = None
 
         # URLs
         self.url = "http://alpharatio.cc"

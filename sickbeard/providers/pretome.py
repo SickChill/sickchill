@@ -97,7 +97,7 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                     logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
-                search_url = self.urls['search'] % (quote(search_string.encode('utf-8')), self.categories)
+                search_url = self.urls['search'] % (quote(search_string), self.categories)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
                 data = self.get_url(search_url)

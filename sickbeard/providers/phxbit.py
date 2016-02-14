@@ -45,7 +45,6 @@ class PhxBitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
         self.ratio = None
         self.minseed = None
         self.minleech = None
-        self.freeleech = None
 
         # URLs
         self.url = 'https://phxbit.com'
