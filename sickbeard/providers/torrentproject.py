@@ -63,7 +63,7 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
                 search_url = self.urls['api'] + "?s=%s&out=json&filter=2101&num=150" % quote_plus(search_string.encode('utf-8'))
