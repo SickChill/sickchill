@@ -55,16 +55,12 @@ $(document).ready(function(){
     var newznabProviders = [];
     var torrentRssProviders = [];
 
-    $.fn.addProvider = function (id, name, url, key, cat, isDefault, showProvider, isEnabled) {
+    $.fn.addProvider = function (id, name, url, key, cat, isDefault, showProvider) {
         url = $.trim(url);
         if (!url) {
             return;
         }
-        
-        if (!isEnabled) {
-            return;
-        }
-        
+
         if (!/^https?:\/\//i.test(url)) {
             url = "http://" + url;
         }
