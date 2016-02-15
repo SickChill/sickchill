@@ -1334,18 +1334,10 @@ def touchFile(fname, atime=None):
     :return: True on success, False on failure
     """
 
-    if atime is not None:
-        try:
-            with file(fname, 'a'):
-                os.utime(fname, (atime, atime))
-                return True
-        except Exception as e:
-            if e.errno == errno.ENOSYS:
-                logger.log(u"File air date stamping not available on your OS. Please disable setting", logger.DEBUG)
-            elif e.errno == errno.EACCES:
-                logger.log(u"File air date stamping failed(Permission denied). Check permissions for file: %s" % fname, logger.ERROR)
-            else:
-                logger.log(u"File air date stamping failed. The error is: %r" % ex(e), logger.ERROR)
+    if atime and fname:
+        with file(fname, 'a'):
+            os.utime(fname, (atime, atime))
+            return True
 
     return False
 
