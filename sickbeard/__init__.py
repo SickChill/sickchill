@@ -682,7 +682,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
         LOG_DIR = ek(os.path.normpath, ek(os.path.join, DATA_DIR, ACTUAL_LOG_DIR))
         LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5)  # Default to 5 backup file (sickrage.log.x)
-        LOG_SIZE = check_setting_int(CFG, 'General', 'log_size', 1)  # Default to max 1MB per logfile
+        LOG_SIZE = check_setting_int(CFG, 'General', 'log_size', 1) / 10  # Default to max 1MB per logfile
         if LOG_SIZE > 100:
             LOG_SIZE = 1
         fileLogging = True
@@ -1634,7 +1634,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
     new_config['General']['encryption_secret'] = ENCRYPTION_SECRET
     new_config['General']['log_dir'] = ACTUAL_LOG_DIR if ACTUAL_LOG_DIR else 'Logs'
     new_config['General']['log_nr'] = int(LOG_NR)
-    new_config['General']['log_size'] = int(LOG_SIZE)
+    new_config['General']['log_size'] = int(LOG_SIZE * 10)
     new_config['General']['socket_timeout'] = SOCKET_TIMEOUT
     new_config['General']['web_port'] = WEB_PORT
     new_config['General']['web_host'] = WEB_HOST
