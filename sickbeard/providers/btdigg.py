@@ -20,8 +20,6 @@
 
 from __future__ import unicode_literals
 
-from requests.compat import urljoin
-
 from sickbeard import logger, tvcache
 
 from sickrage.helper.common import convert_size
@@ -37,7 +35,7 @@ class BTDiggProvider(TorrentProvider):
         self.public = True
         self.ratio = 0
         self.url = "https://btdigg.org"
-        self.urls = {"api": urljoin(self.url, "api/private-341ada3245790954/s02")}
+        self.urls = {"api": "https://api.btdigg.org/api/private-341ada3245790954/s02"}
 
         self.proper_strings = ["PROPER", "REPACK"]
 
