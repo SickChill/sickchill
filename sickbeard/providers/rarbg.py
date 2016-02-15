@@ -96,7 +96,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
             if mode == 'RSS':
                 search_params['sort'] = 'last'
                 search_params['mode'] = 'list'
@@ -115,7 +115,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     search_params['search_string'] = search_string
-                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
                 logger.log(u"Search URL: %s" % self.url_api + '?' + urlencode(search_params), logger.DEBUG)

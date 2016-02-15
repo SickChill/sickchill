@@ -342,16 +342,18 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         return result
 
-    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False, response=False, **kwargs):  # pylint: disable=too-many-arguments,
-        # get the response object so we can extract the requested url
-        resp = getURL(url, post_data, params, self.headers, timeout, self.session, json, need_bytes, returns='response')
+    @staticmethod
+    def get_url_hook(response, **kwargs):
+        _ = kwargs
+        logger.log(u'{} URL: {} [Status: {}]'.format
+                   (response.request.method, response.request.url, response.status_code), logger.DEBUG)
 
-        # log the URL, will cause double logging until all duplicate log messages are removed from providers
-        if resp:
-            logger.log(u'URL: {url}'.format(url=resp.request.url), logger.DEBUG)
-            return resp.json() if json else resp.content if need_bytes else resp.text if 'returns' not in kwargs else resp
-        else:
-            return resp
+        if response.request.method == 'POST':
+            logger.log(u'With post data: {}'.format(response.request.body), logger.DEBUG)
+
+    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False, **kwargs):  # pylint: disable=too-many-arguments,
+        kwargs['hooks'] = {'response': self.get_url_hook}
+        return getURL(url, post_data, params, self.headers, timeout, self.session, json, need_bytes, **kwargs)
 
     def image_name(self):
         return self.get_id() + '.png'

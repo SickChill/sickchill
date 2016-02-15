@@ -1426,6 +1426,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
         warnings.warn(message, PendingDeprecationWarning, stacklevel=2)
 
     response_type = kwargs.pop(u'returns', default)
+    hooks = kwargs.pop(u'hooks', None)
     session = _setUpSession(session, headers)
 
     if params and isinstance(params, (list, dict)):
@@ -1444,9 +1445,9 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
                         post_data[param] = post_data[param].encode('utf-8')
 
             session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
-            resp = session.post(url, data=post_data, timeout=timeout, allow_redirects=True, verify=session.verify)
+            resp = session.post(url, data=post_data, timeout=timeout, allow_redirects=True, verify=session.verify, hooks=hooks)
         else:
-            resp = session.get(url, timeout=timeout, allow_redirects=True, verify=session.verify)
+            resp = session.get(url, timeout=timeout, allow_redirects=True, verify=session.verify, hooks=hooks)
 
         if not resp.ok:
             logger.log(u"Requested getURL %s returned status code is %s: %s"
