@@ -1168,10 +1168,11 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
 
-        try:
-            cur_ep.airdateModifyStamp()
-        except ValueError:
-            logger.log(u"Could not change file timestamp. Continuing with postProcessing...")
+        if sickbeard.AIRDATE_EPISODES:
+            try:
+                cur_ep.airdateModifyStamp()
+            except ValueError:
+                logger.log(u"Could not change file timestamp. Continuing with postProcessing...")
 
         # generate nfo/tbn
         try:
