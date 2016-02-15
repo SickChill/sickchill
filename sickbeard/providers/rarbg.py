@@ -18,9 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import datetime
 import time
-from requests.compat import urlencode
 
 from sickbeard import logger, tvcache
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
@@ -45,10 +46,10 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         self.token_expires = None
 
         # Spec: https://torrentapi.org/apidocs_v2.txt
-        self.url = u'https://rarbg.com'
-        self.url_api = u'http://torrentapi.org/pubapi_v2.php'
+        self.url = "https://rarbg.com"
+        self.urls = {"api": "http://torrentapi.org/pubapi_v2.php"}
 
-        self.proper_strings = ['{{PROPER|REPACK}}']
+        self.proper_strings = ["{{PROPER|REPACK}}"]
 
         self.cache = tvcache.TVCache(self, min_time=10)  # only poll RARBG every 10 minutes max
 
@@ -57,17 +58,17 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             return True
 
         login_params = {
-            'get_token': 'get_token',
-            'format': 'json',
-            'app_id': 'sickrage2'
+            "get_token": "get_token",
+            "format": "json",
+            "app_id": "sickrage2"
         }
 
-        response = self.get_url(self.url_api, params=login_params, timeout=30, json=True)
+        response = self.get_url(self.urls["api"], params=login_params, timeout=30, returns="json")
         if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
+            logger.log("Unable to connect to provider", logger.WARNING)
             return False
 
-        self.token = response.get('token')
+        self.token = response.get("token", None)
         self.token_expires = datetime.datetime.now() + datetime.timedelta(minutes=14) if self.token else None
         return self.token is not None
 
@@ -77,14 +78,14 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             return results
 
         search_params = {
-            'app_id': 'sickrage2',
-            'category': 'tv',
-            'min_seeders': try_int(self.minseed),
-            'min_leechers': try_int(self.minleech),
-            'limit': 100,
-            'format': 'json_extended',
-            'ranked': try_int(self.ranked),
-            'token': self.token,
+            "app_id": "sickrage2",
+            "category": "tv",
+            "min_seeders": try_int(self.minseed),
+            "min_leechers": try_int(self.minleech),
+            "limit": 100,
+            "format": "json_extended",
+            "ranked": try_int(self.ranked),
+            "token": self.token,
         }
 
         if ep_obj is not None:
@@ -96,52 +97,60 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
-            if mode == 'RSS':
-                search_params['sort'] = 'last'
-                search_params['mode'] = 'list'
-                search_params.pop('search_string', None)
-                search_params.pop('search_tvdb', None)
+            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
+            if mode == "RSS":
+                search_params["sort"] = "last"
+                search_params["mode"] = "list"
+                search_params.pop("search_string", None)
+                search_params.pop("search_tvdb", None)
             else:
 
-                search_params['sort'] = self.sorting if self.sorting else 'seeders'
-                search_params['mode'] = 'search'
+                search_params["sort"] = self.sorting if self.sorting else "seeders"
+                search_params["mode"] = "search"
 
                 if ep_indexer == INDEXER_TVDB and ep_indexerid:
-                    search_params['search_tvdb'] = ep_indexerid
+                    search_params["search_tvdb"] = ep_indexerid
                 else:
-                    search_params.pop('search_tvdb', None)
+                    search_params.pop("search_tvdb", None)
 
             for search_string in search_strings[mode]:
-                if mode != 'RSS':
-                    search_params['search_string'] = search_string
-                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
+                if mode != "RSS":
+                    search_params["search_string"] = search_string
+                    logger.log("Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
-                logger.log(u"Search URL: %s" % self.url_api + '?' + urlencode(search_params), logger.DEBUG)
-                data = self.get_url(self.url_api, params=search_params, json=True)
-                if not all([isinstance(data, dict), data.get('torrent_results')]):
-                    logger.log(u"No data returned from provider", logger.DEBUG)
+                data = self.get_url(self.urls["api"], params=search_params, returns="json")
+                if not all([isinstance(data, dict), data.get("torrent_results")]):
+                    logger.log("No data returned from provider", logger.DEBUG)
                     continue
 
-                for item in data.get('torrent_results', []):
+                for item in data.get("torrent_results", []):
                     try:
-                        title = item.get('title')
-                        download_url = item.get('download')
-                        seeders = item.get('seeders', 0)
-                        leechers = item.get('leechers', 0)
-                        size = convert_size(item.get('size', -1)) or -1
-                    except Exception:
-                        logger.log(u"Skipping invalid result. JSON item: %s" % item, logger.DEBUG)
-                        continue
+                        title = item.pop("title", "")
+                        download_url = item.pop("download", "")
+                        if not all([title, download_url]):
+                            continue
 
-                    if not all([title, download_url]):
-                        continue
+                        seeders = item.pop("seeders", 0)
+                        leechers = item.pop("leechers", 0)
+                        if seeders < self.minseed or leechers < self.minleech:
+                            if mode != "RSS":
+                                logger.log("Discarding torrent because it doesn't meet the"
+                                           " minimum seeders or leechers: {} (S:{} L:{})".format
+                                           (title, seeders, leechers), logger.DEBUG)
+                            continue
 
-                    item = title, download_url, size, seeders, leechers
-                    if mode != 'RSS':
-                        logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
-                    items.append(item)
+                        torrent_size = item.pop("size", -1)
+                        size = convert_size(torrent_size) or -1
+
+                        item = title, download_url, size, seeders, leechers
+                        if mode != "RSS":
+                            logger.log("Found result: {} with {} seeders and {} leechers".format
+                                       (title, seeders, leechers), logger.DEBUG)
+
+                        items.append(item)
+                    except StandardError:
+                        continue
 
                 time.sleep(10)
 

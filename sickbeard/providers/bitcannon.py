@@ -70,7 +70,7 @@ class BitCannonProvider(TorrentProvider):
                     logger.log("Search string: {}".format(search_string), logger.DEBUG)
 
                 search_url = urljoin(url, "api/search")
-                parsed_json = self.get_url(search_url, params=search_params, json=True, response="text")
+                parsed_json = self.get_url(search_url, params=search_params, json=True, returns="text")
                 if not parsed_json:
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue

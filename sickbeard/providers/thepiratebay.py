@@ -102,9 +102,9 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     logger.log("Search string: {search}".format
                                (search=search_string.decode("utf-8")), logger.DEBUG)
 
-                    data = self.get_url(search_url, params=search_params, response="text")
+                    data = self.get_url(search_url, params=search_params, returns="text")
                 else:
-                    data = self.get_url(search_url, response="text")
+                    data = self.get_url(search_url, returns="text")
 
                 if not data:
                     logger.log("URL did not return data, maybe try a custom url, or a different one", logger.DEBUG)

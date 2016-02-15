@@ -71,7 +71,7 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             "remember_me": "on",
         }
 
-        response = self.get_url(self.urls["login"], post_data=login_params, timeout=30, response="text")
+        response = self.get_url(self.urls["login"], post_data=login_params, timeout=30, returns="text")
         if not response:
             logger.log("Unable to connect to provider", logger.WARNING)
             return False
@@ -120,7 +120,7 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 search_params["searchstr"] = search_string
                 search_url = self.urls["search"]
-                data = self.get_url(search_url, params=search_params, response="text")
+                data = self.get_url(search_url, params=search_params, returns="text")
                 if not data:
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue

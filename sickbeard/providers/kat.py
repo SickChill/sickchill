@@ -81,7 +81,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
-                data = self.get_url(search_url, params=search_params, response="text")
+                data = self.get_url(search_url, params=search_params, returns="text")
                 if not data:
                     logger.log("URL did not return data, maybe try a custom url, or a different one", logger.DEBUG)
                     continue

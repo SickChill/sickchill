@@ -69,7 +69,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                         "password": self.password,
                         "login": "Log in!"}
 
-        response = self.get_url(self.urls["login"], post_data=login_params, timeout=30, response="text")
+        response = self.get_url(self.urls["login"], post_data=login_params, timeout=30, returns="text")
         if not response:
             logger.log("Unable to connect to provider", logger.WARNING)
             return False
@@ -99,7 +99,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                logger.DEBUG)
 
                 search_params["search"] = search_string
-                data = self.get_url(self.urls["search"], params=search_params, response="text")
+                data = self.get_url(self.urls["search"], params=search_params, returns="text")
                 if not data:
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue
