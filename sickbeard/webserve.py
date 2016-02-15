@@ -48,7 +48,7 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
 from sickbeard.webapi import function_mapper
 
 from sickbeard.imdbPopular import imdb_popular
-from helpers import get_showname_from_indexer
+from sickbeard.helpers import get_showname_from_indexer
 
 from dateutil import tz
 from unrar2 import RarFile
@@ -530,7 +530,7 @@ class WebRoot(WebHandler):
 
 
 class CalendarHandler(BaseHandler):
-    def get(self, *args, **kwargs):
+    def get(self):
         if sickbeard.CALENDAR_UNPROTECTED:
             self.write(self.calendar())
         else:
@@ -557,9 +557,12 @@ class CalendarHandler(BaseHandler):
         ical += 'X-WR-CALDESC:SickRage\r\n'
         ical += 'PRODID://Sick-Beard Upcoming Episodes//\r\n'
 
+        future_weeks = try_int(self.get_argument('future', 52), 52)
+        past_weeks = try_int(self.get_argument('past', 52), 52)
+
         # Limit dates
-        past_date = (datetime.date.today() + datetime.timedelta(weeks=-52)).toordinal()
-        future_date = (datetime.date.today() + datetime.timedelta(weeks=52)).toordinal()
+        past_date = (datetime.date.today() + datetime.timedelta(weeks=-past_weeks)).toordinal()
+        future_date = (datetime.date.today() + datetime.timedelta(weeks=future_weeks)).toordinal()
 
         # Get all the shows that are not paused and are currently on air (from kjoconnor Fork)
         main_db_con = db.DBConnection()
