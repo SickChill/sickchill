@@ -23,7 +23,9 @@ from __future__ import unicode_literals
 import datetime
 import time
 
+import sickbeard
 from sickbeard import logger, tvcache
+from sickbeard.common import cpu_presets
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
 
 from sickrage.helper.common import convert_size, try_int
@@ -72,7 +74,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         self.token_expires = datetime.datetime.now() + datetime.timedelta(minutes=14) if self.token else None
         return self.token is not None
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
         if not self.login():
             return results
@@ -104,7 +106,6 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                 search_params.pop("search_string", None)
                 search_params.pop("search_tvdb", None)
             else:
-
                 search_params["sort"] = self.sorting if self.sorting else "seeders"
                 search_params["mode"] = "search"
 
@@ -119,20 +120,31 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                     logger.log("Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 data = self.get_url(self.urls["api"], params=search_params, returns="json")
-                if not all([isinstance(data, dict), data.get("torrent_results")]):
+                if not isinstance(data, dict):
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue
 
-                for item in data.get("torrent_results", []):
+                error = data.get("error")
+                if error:
+                    logger.log(error)
+                    continue
+
+                torrent_results = data.get("torrent_results")
+                if not torrent_results:
+                    logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                    continue
+
+                for item in torrent_results:
                     try:
-                        title = item.pop("title", "")
-                        download_url = item.pop("download", "")
+                        title = item.pop("title")
+                        download_url = item.pop("download")
                         if not all([title, download_url]):
                             continue
 
-                        seeders = item.pop("seeders", 0)
-                        leechers = item.pop("leechers", 0)
+                        seeders = item.pop("seeders")
+                        leechers = item.pop("leechers")
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != "RSS":
                                 logger.log("Discarding torrent because it doesn't meet the"
@@ -151,8 +163,6 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                         items.append(item)
                     except StandardError:
                         continue
-
-                time.sleep(10)
 
             # For each search mode sort all the items by seeders
             items.sort(key=lambda tup: tup[3], reverse=True)
