@@ -345,7 +345,9 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     @staticmethod
     def get_url_hook(response, **kwargs):
         _ = kwargs
-        logger.log(u'URL: {} [Status: {}]'.format(response.request.url, response.status_code), logger.DEBUG)
+        logger.log(u'{} URL: {} [Status: {}]'.format
+                   (response.request.method, response.request.url, response.status_code), logger.DEBUG)
+
         if response.request.method == 'POST':
             logger.log(u'With post data: {}'.format(response.request.body), logger.DEBUG)
 
