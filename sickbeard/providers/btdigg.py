@@ -18,8 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
-from requests.compat import urlencode
+from __future__ import unicode_literals
+
+from requests.compat import urljoin
 
 from sickbeard import logger, tvcache
 
@@ -35,92 +36,69 @@ class BTDiggProvider(TorrentProvider):
 
         self.public = True
         self.ratio = 0
-        self.urls = {'url': u'https://btdigg.org/',
-                     'api': u'https://api.btdigg.org/api/private-341ada3245790954/s02'}
+        self.url = "https://btdigg.org"
+        self.urls = {"api": urljoin(self.url, "api/private-341ada3245790954/s02")}
 
-        self.proper_strings = ['PROPER', 'REPACK']
-
-        self.url = self.urls['url']
-
-        # # Unsupported
-        # self.minseed = 1
-        # self.minleech = 0
+        self.proper_strings = ["PROPER", "REPACK"]
 
         # Use this hacky way for RSS search since most results will use this codecs
-        params = {'RSS': ['x264', 'x264.HDTV', '720.HDTV.x264']}
+        cache_params = {"RSS": ["x264", "x264.HDTV", "720.HDTV.x264"]}
+
         # Only poll BTDigg every 30 minutes max, since BTDigg takes some time to crawl
-        self.cache = tvcache.TVCache(self, min_time=30, search_params=params)
+        self.cache = tvcache.TVCache(self, min_time=30, search_params=cache_params)
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
-        search_params = {'p': 0}
-
+        search_params = {"p": 0}
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
-                search_params['q'] = search_string
-
-                if mode != 'RSS':
-                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
+                search_params["q"] = search_string
+                if mode != "RSS":
+                    search_params["order"] = 0
+                    logger.log("Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
-                    search_params['order'] = '0'
                 else:
-                    search_params['order'] = '2'
+                    search_params["order"] = 2
 
-                search_url = self.urls['api'] + '?' + urlencode(search_params)
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-
-                jdata = self.get_url(search_url, json=True)
+                jdata = self.get_url(self.urls["api"], params=search_params, returns="json")
                 if not jdata:
-                    logger.log(u"No data returned to be parsed!!!", logger.DEBUG)
+                    logger.log("Provider did not return data", logger.DEBUG)
                     continue
 
-                try:
-
-                    for torrent in jdata:
-                        if not torrent['name']:
-                            logger.log(u"Ignoring result since it has no name", logger.DEBUG)
+                for torrent in jdata:
+                    try:
+                        title = torrent.pop("name", "")
+                        download_url = torrent.pop("magnet") + self._custom_trackers if torrent["magnet"] else None
+                        if not all([title, download_url]):
                             continue
 
-                        if torrent['ff']:
-                            logger.log(u"Ignoring result for %s since it's a fake (level = %s)" % (torrent['name'], torrent['ff']), logger.DEBUG)
+                        if float(torrent.pop("ff")):
+                            logger.log("Ignoring result for {} since it's been reported as fake (level = {})".format
+                                       (title, torrent["ff"]), logger.DEBUG)
                             continue
 
-                        if not torrent['files']:
-                            logger.log(u"Ignoring result for %s without files" % torrent['name'], logger.DEBUG)
+                        if not int(torrent.pop("files")):
+                            logger.log("Ignoring result for {} because it has no files".format
+                                       (title), logger.DEBUG)
                             continue
-
-                        download_url = torrent['magnet'] + self._custom_trackers if torrent['magnet'] else None
 
                         # Provider doesn't provide seeders/leechers
                         seeders = 1
                         leechers = 0
-                        title = torrent['name']
-                        torrent_size = torrent['size']
+
+                        torrent_size = torrent.pop("size")
                         size = convert_size(torrent_size) or -1
 
-                        if not all([title, download_url]):
-                            continue
-
-                        # Filter unseeded torrent (Unsupported)
-                        # if seeders < self.minseed or leechers < self.minleech:
-                        #     if mode != 'RSS':
-                        #         logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format
-                        #                    (title, seeders, leechers), logger.DEBUG)
-                        #     continue
-
                         item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
+                        if mode != "RSS":
+                            logger.log("Found result: %s " % title, logger.DEBUG)
 
                         items.append(item)
 
-                except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
-
-            # For each search mode sort all the items by seeders if available
-            # items.sort(key=lambda tup: tup[3], reverse=True)
+                    except StandardError:
+                        continue
 
             results += items
 
