@@ -62,7 +62,7 @@ class BTDiggProvider(TorrentProvider):
                 else:
                     search_params["order"] = 2
 
-                jdata = self.get_url(self.urls["api"], params=search_params, response="json")
+                jdata = self.get_url(self.urls["api"], params=search_params, returns="json")
                 if not jdata:
                     logger.log("Provider did not return data", logger.DEBUG)
                     continue
