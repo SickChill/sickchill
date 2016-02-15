@@ -37,7 +37,7 @@ from github import Github
 
 from sickbeard import metadata
 from sickbeard import providers
-from sickbeard.config import CheckSection, check_setting_int, check_setting_str, ConfigMigrator
+from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, auto_postprocessor, \
     subtitles, traktChecker
 from sickbeard import db
@@ -149,7 +149,7 @@ started = False
 ACTUAL_LOG_DIR = None
 LOG_DIR = None
 LOG_NR = 5
-LOG_SIZE = 1
+LOG_SIZE = 10.0
 
 SOCKET_TIMEOUT = None
 
@@ -682,10 +682,12 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
         LOG_DIR = ek(os.path.normpath, ek(os.path.join, DATA_DIR, ACTUAL_LOG_DIR))
         LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5)  # Default to 5 backup file (sickrage.log.x)
-        LOG_SIZE = check_setting_int(CFG, 'General', 'log_size', 1)  # Default to max 1MB per logfile
+        LOG_SIZE = check_setting_float(CFG, 'General', 'log_size', 10.0)  # Default to max 10MB per logfile
+
         if LOG_SIZE > 100:
-            LOG_SIZE = 1
+            LOG_SIZE = 10.0
         fileLogging = True
+
         if not helpers.makeDir(LOG_DIR):
             sys.stderr.write("!!! No log folder, logging to screen only!\n")
             fileLogging = False
@@ -1634,7 +1636,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
     new_config['General']['encryption_secret'] = ENCRYPTION_SECRET
     new_config['General']['log_dir'] = ACTUAL_LOG_DIR if ACTUAL_LOG_DIR else 'Logs'
     new_config['General']['log_nr'] = int(LOG_NR)
-    new_config['General']['log_size'] = int(LOG_SIZE)
+    new_config['General']['log_size'] = float(LOG_SIZE)
     new_config['General']['socket_timeout'] = SOCKET_TIMEOUT
     new_config['General']['web_port'] = WEB_PORT
     new_config['General']['web_host'] = WEB_HOST
