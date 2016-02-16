@@ -18,8 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import re
-from requests.compat import urlencode
 
 from sickbeard import logger, tvcache
 
@@ -31,77 +32,79 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "NyaaTorrents")
+        TorrentProvider.__init__(self, 'NyaaTorrents')
 
         self.public = True
         self.supports_absolute_numbering = True
         self.anime_only = True
         self.ratio = None
 
-        self.cache = tvcache.TVCache(self, min_time=15)  # only poll NyaaTorrents every 15 minutes max
-
-        self.urls = {'base_url': 'http://www.nyaa.se/'}
-
-        self.url = self.urls['base_url']
+        self.url = 'http://www.nyaa.se'
 
         self.minseed = 0
         self.minleech = 0
         self.confirmed = False
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
+        self.regex = re.compile(r'(\d+) seeder\(s\), (\d+) leecher\(s\), \d+ download\(s\) - (\d+.?\d* [KMGT]iB)(.*)', re.DOTALL)
+
+        self.cache = tvcache.TVCache(self, min_time=20)  # only poll NyaaTorrents every 20 minutes max
+
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
         if self.show and not self.show.is_anime:
             return results
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log(u'Search Mode: {}'.format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
+                    logger.log(u'Search string: {}'.format(search_string.decode('utf-8')),
                                logger.DEBUG)
 
-                params = {
-                    "page": 'rss',
-                    "cats": '1_0',  # All anime
-                    "sort": 2,     # Sort Descending By Seeders
-                    "order": 1
+                search_params = {
+                    'page': 'rss',
+                    'cats': '1_0',  # All anime
+                    'sort': 2,  # Sort Descending By Seeders
+                    'order': 1
                 }
                 if mode != 'RSS':
-                    params["term"] = search_string
-
-                search_url = self.url + '?' + urlencode(params)
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-
-                summary_regex = ur"(\d+) seeder\(s\), (\d+) leecher\(s\), \d+ download\(s\) - (\d+.?\d* [KMGT]iB)(.*)"
-                s = re.compile(summary_regex, re.DOTALL)
+                    search_params['term'] = search_string
 
                 results = []
-                for curItem in self.cache.getRSSFeed(search_url)['entries'] or []:
-                    title = curItem['title']
-                    download_url = curItem['link']
-                    if not all([title, download_url]):
-                        continue
+                data = self.cache.getRSSFeed(self.url, params=search_params)['entries']
+                if not data:
+                    logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
 
-                    seeders, leechers, torrent_size, verified = s.findall(curItem['summary'])[0]
-                    size = convert_size(torrent_size) or -1
+                for curItem in data:
+                    try:
+                        title = curItem['title']
+                        download_url = curItem['link']
+                        if not all([title, download_url]):
+                            continue
 
-                    # Filter unseeded torrent
-                    if seeders < self.minseed or leechers < self.minleech:
+                        seeders, leechers, torrent_size, verified = self.regex.find(curItem['summary'])
+
+                        if seeders < self.minseed or leechers < self.minleech:
+                            if mode != 'RSS':
+                                logger.log('Discarding torrent because it doesn\'t meet the'
+                                           ' minimum seeders or leechers: {} (S:{} L:{})'.format
+                                           (title, seeders, leechers), logger.DEBUG)
+                            continue
+
+                        if self.confirmed and not verified and mode != 'RSS':
+                            logger.log('Found result {} but that doesn\'t seem like a verified result so I\'m ignoring it'.format(title), logger.DEBUG)
+                            continue
+
+                        size = convert_size(torrent_size) or -1
+                        item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
-                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format
+                            logger.log('Found result: {} with {} seeders and {} leechers'.format
                                        (title, seeders, leechers), logger.DEBUG)
+
+                        items.append(item)
+                    except StandardError:
                         continue
-
-                    if self.confirmed and not verified and mode != 'RSS':
-                        logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
-                        continue
-
-                    item = title, download_url, size, seeders, leechers
-                    if mode != 'RSS':
-                        logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
-
-                    items.append(item)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)
