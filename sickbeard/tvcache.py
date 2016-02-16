@@ -20,14 +20,12 @@
 import time
 import datetime
 import itertools
-import urllib2
 
 import sickbeard
 from sickbeard import db
 from sickbeard import logger
 from sickbeard.rssfeeds import getFeed
 from sickbeard import show_name_helpers
-from sickrage.helper.encoding import ss
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.show.Show import Show
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
@@ -134,21 +132,7 @@ class TVCache(object):
             logger.log(u"Error while searching " + self.provider.name + ", skipping: " + repr(e), logger.DEBUG)
 
     def getRSSFeed(self, url):
-        handlers = []
-
-        if sickbeard.PROXY_SETTING:
-            logger.log(u"Using global proxy for url: " + url, logger.DEBUG)
-            scheme, address = urllib2.splittype(sickbeard.PROXY_SETTING)
-            address = sickbeard.PROXY_SETTING if scheme else 'http://' + sickbeard.PROXY_SETTING
-            handlers = [urllib2.ProxyHandler({'http': address, 'https': address})]
-            self.provider.headers.update({'Referer': address})
-        elif 'Referer' in self.provider.headers:
-            self.provider.headers.pop('Referer')
-
-        return getFeed(
-            url,
-            request_headers=self.provider.headers,
-            handlers=handlers)
+        return getFeed(url, request_hook=self.provider.get_url)
 
     @staticmethod
     def _translateTitle(title):
@@ -276,7 +260,7 @@ class TVCache(object):
             # get quality of release
             quality = parse_result.quality
 
-            name = ss(name)
+            assert isinstance(name, unicode)
 
             # get release group
             release_group = parse_result.release_group

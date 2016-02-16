@@ -21,7 +21,7 @@
 import os
 import sickbeard
 
-from urllib import urlencode
+from requests.compat import urlencode
 from urllib2 import Request, urlopen, HTTPError
 
 from sickbeard import logger

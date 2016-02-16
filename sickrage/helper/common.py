@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import re
 import sickbeard
+from fnmatch import fnmatch
 
 dateFormat = '%Y-%m-%d'
 dateTimeFormat = '%Y-%m-%d %H:%M:%S'
@@ -135,7 +136,9 @@ def is_sync_file(filename):
     if isinstance(filename, (str, unicode)):
         extension = filename.rpartition('.')[2].lower()
 
-        return extension in sickbeard.SYNC_FILES.split(',') or filename.startswith('.syncthing')
+        return extension in sickbeard.SYNC_FILES.split(',') or \
+            filename.startswith('.syncthing') or \
+            any(fnmatch(filename, match) for match in sickbeard.SYNC_FILES.split(','))
 
     return False
 

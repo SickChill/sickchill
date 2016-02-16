@@ -9,7 +9,7 @@ Classes:
         combineQualities
         splitQuality
         nameQuality
-        sceneQuality
+        scene_quality
         assumeQuality
         qualityFromFileMeta
         compositeStatus
@@ -243,6 +243,40 @@ class QualityStringTests(unittest.TestCase):
                 else:
                     self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
 
+    def test_anime(self):
+        """
+        Test Anime against nameQuality
+        """
+        test_cases = {
+            'sd_dvd': [
+                '[DeadFish].Shingeki.no.Kyojin.-.01.-.OVA.[DVD][480p][AAC].mp4',
+            ],
+            'full_hd_bluray': [
+                '[Hatsuyuki-Kaitou]_Shingeki_no_Kyojin_-_Special_02_[BD_1080p][10bit][FLAC][4D908801].mkv',
+            ],
+        }
+        test_quality = {
+            'sd_tv': common.Quality.SDTV,
+            'sd_dvd': common.Quality.SDDVD,
+            'raw_hd_tv': common.Quality.RAWHDTV,
+            'hd_tv': common.Quality.HDTV,
+            'hd_web_dl': common.Quality.HDWEBDL,
+            'hd_bluray': common.Quality.HDBLURAY,
+            'full_hd_tv': common.Quality.FULLHDTV,
+            'full_hd_web_dl': common.Quality.FULLHDWEBDL,
+            'full_hd_bluray': common.Quality.FULLHDBLURAY,
+            'unknown': common.Quality.UNKNOWN,
+        }
+        for cur_test, expected_qual in test_quality.items():
+            for qual, tests in test_cases.items():
+                for name in tests:
+                    if qual == cur_test:
+                        self.assertEqual(expected_qual, common.Quality.nameQuality(name, anime=True),
+                                         (qual, name, expected_qual, common.Quality.nameQuality(name, anime=True)))
+                    else:
+                        self.assertNotEqual(expected_qual, common.Quality.nameQuality(name, anime=True),
+                                            (qual, name, expected_qual, common.Quality.nameQuality(name, anime=True)))
+
 
 class QualityTests(unittest.TestCase):
     """
@@ -304,7 +338,7 @@ class QualityTests(unittest.TestCase):
     @unittest.skip('Not yet implemented')
     def test_scene_quality(self):
         """
-        Test sceneQuality
+        Test scene_quality
         """
         pass
 

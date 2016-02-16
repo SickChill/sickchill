@@ -22,7 +22,7 @@
 
 import socket
 from httplib import HTTPSConnection, HTTPException
-from urllib import urlencode
+from requests.compat import urlencode
 
 try:
     # this only exists in 2.6

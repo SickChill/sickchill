@@ -268,7 +268,7 @@ class Quality(object):
     def nameQuality(name, anime=False):
         """
         Return The quality from an episode File renamed by SickRage
-        If no quality is achieved it will try sceneQuality regex
+        If no quality is achieved it will try scene_quality regex
 
         :param name: to parse
         :param anime: Boolean to indicate if the show we're resolving is Anime
@@ -276,7 +276,7 @@ class Quality(object):
         """
 
         # Try Scene names first
-        quality = Quality.sceneQuality(name, anime)
+        quality = Quality.scene_quality(name, anime)
         if quality != Quality.UNKNOWN:
             return quality
 
@@ -285,70 +285,6 @@ class Quality(object):
             return quality
 
         return Quality.UNKNOWN
-
-    @staticmethod
-    # TODO: Remove this method and sceneQuality after the new scene_quality has been validated.
-    def old_scene_quality(name, anime=False):  # pylint: disable=too-many-branches
-        """
-        Return The quality from the scene episode File
-
-        :param name: Episode filename to analyse
-        :param anime: Boolean to indicate if the show we're resolving is Anime
-        :return: Quality prefix
-        """
-
-        ret = Quality.UNKNOWN
-        if not name:
-            return ret
-
-        name = ek(path.basename, name)
-
-        check_name = lambda regex_list, func: func([re.search(regex, name, re.I) for regex in regex_list])
-
-        if anime:
-            dvd_options = check_name([r"dvd", r"dvdrip"], any)
-            bluray_options = check_name([r"BD", r"blue?-?ray"], any)
-            sd_options = check_name([r"360p", r"480p", r"848x480", r"XviD"], any)
-            hd_options = check_name([r"720p", r"1280x720", r"960x720"], any)
-            full_hd = check_name([r"1080p", r"1920x1080"], any)
-
-            if sd_options and not bluray_options and not dvd_options:
-                ret = Quality.SDTV
-            elif dvd_options:
-                ret = Quality.SDDVD
-            elif hd_options and not bluray_options and not full_hd:
-                ret = Quality.HDTV
-            elif full_hd and not bluray_options and not hd_options:
-                ret = Quality.FULLHDTV
-            elif hd_options and not bluray_options and not full_hd:
-                ret = Quality.HDWEBDL
-            elif bluray_options and hd_options and not full_hd:
-                ret = Quality.HDBLURAY
-            elif bluray_options and full_hd and not hd_options:
-                ret = Quality.FULLHDBLURAY
-
-            return ret
-
-        if check_name([r"480p|web.?dl|web(rip|mux|hd)|[sph]d.?tv|dsr|tv(rip|mux)|satrip", r"xvid|divx|[xh].?26[45]"], all) and not check_name([r"(720|1080)[pi]"], all) and not check_name([r"hr.ws.pdtv.[xh].?26[45]", r"dvd(rip|mux)|b[rd](rip|mux)|blue?-?ray"], any):
-            ret = Quality.SDTV
-        elif check_name([r"dvd(rip|mux)|b[rd](rip|mux)|blue?-?ray", r"xvid|divx|[xh].?26[45]"], all) and not check_name([r"(720|1080)[pi]"], all) and not check_name([r"hr.ws.pdtv.[xh].?26[45]"], any):
-            ret = Quality.SDDVD
-        elif check_name([r"720p", r"hd.?tv", r"[xh].?26[45]"], all) or check_name([r"hr.ws.pdtv.[xh].?26[45]"], any) and not check_name([r"1080[pi]"], all):
-            ret = Quality.HDTV
-        elif check_name([r"720p|1080i", r"hd.?tv", r"mpeg-?2"], all) or check_name([r"1080[pi].hdtv", r"h.?26[45]"], all):
-            ret = Quality.RAWHDTV
-        elif check_name([r"1080p", r"hd.?tv", r"[xh].?26[45]"], all):
-            ret = Quality.FULLHDTV
-        elif check_name([r"720p", r"web.?dl|web(rip|mux|hd)"], all) or check_name([r"720p", r"itunes", r"[xh].?26[45]"], all):
-            ret = Quality.HDWEBDL
-        elif check_name([r"1080p", r"web.?dl|web(rip|mux|hd)"], all) or check_name([r"1080p", r"itunes", r"[xh].?26[45]"], all):
-            ret = Quality.FULLHDWEBDL
-        elif check_name([r"720p", r"blue?-?ray|hddvd|b[rd](rip|mux)", r"[xh].?26[45]"], all):
-            ret = Quality.HDBLURAY
-        elif check_name([r"1080p", r"blue?-?ray|hddvd|b[rd](rip|mux)", r"[xh].?26[45]"], all):
-            ret = Quality.FULLHDBLURAY
-
-        return ret
 
     @staticmethod
     def scene_quality(name, anime=False):  # pylint: disable=too-many-branches
@@ -436,26 +372,6 @@ class Quality(object):
                 result = Quality.SDTV
 
         return Quality.UNKNOWN if result is None else result
-
-    @staticmethod
-    # TODO: Remove this method and old_scene_quality after the new scene_quality has been validated.
-    def sceneQuality(name, anime=False):
-        """
-        Validation for new scene_quality.
-
-        :param name: Episode filename to analyse
-        :param anime: Boolean to indicate if the show we're resolving is Anime
-        :return: Quality
-        """
-        # use the new scene_quality to determine quality
-        result = Quality.scene_quality(name, anime)
-
-        # if its a quality known by old_scene_quality assert they match
-        if result <= Quality.FULLHDBLURAY or result == Quality.UNKNOWN:
-            old = Quality.old_scene_quality(name, anime)
-            assert old == result, 'Old quality does not match new: %s != %s : %s' % (Quality.qualityStrings[old], Quality.qualityStrings[result], name)
-
-        return result
 
     @staticmethod
     def assumeQuality(name):

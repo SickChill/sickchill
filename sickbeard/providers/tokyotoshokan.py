@@ -19,7 +19,7 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from urllib import urlencode
+from requests.compat import urlencode
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -59,14 +59,14 @@ class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instan
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
                 search_params = {
-                    "terms": search_string.encode('utf-8'),
+                    "terms": search_string,
                     "type": 1,  # get anime types
                 }
 
@@ -108,7 +108,8 @@ class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instan
                         # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format
+                                           (title, seeders, leechers), logger.DEBUG)
                             continue
 
                         item = title, download_url, size, seeders, leechers

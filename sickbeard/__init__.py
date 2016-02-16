@@ -37,7 +37,7 @@ from github import Github
 
 from sickbeard import metadata
 from sickbeard import providers
-from sickbeard.config import CheckSection, check_setting_int, check_setting_str, ConfigMigrator
+from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, auto_postprocessor, \
     subtitles, traktChecker
 from sickbeard import db
@@ -149,7 +149,7 @@ started = False
 ACTUAL_LOG_DIR = None
 LOG_DIR = None
 LOG_NR = 5
-LOG_SIZE = 1
+LOG_SIZE = 10.0
 
 SOCKET_TIMEOUT = None
 
@@ -351,6 +351,8 @@ PLEX_SERVER_TOKEN = None
 PLEX_CLIENT_HOST = None
 PLEX_SERVER_USERNAME = None
 PLEX_SERVER_PASSWORD = None
+PLEX_SERVER_NO_AUTH = False
+
 USE_PLEX_CLIENT = False
 PLEX_CLIENT_USERNAME = None
 PLEX_CLIENT_PASSWORD = None
@@ -598,7 +600,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_KODI, KODI_ALWAYS_ON, KODI_NOTIFY_ONSNATCH, KODI_NOTIFY_ONDOWNLOAD, KODI_NOTIFY_ONSUBTITLEDOWNLOAD, KODI_UPDATE_FULL, KODI_UPDATE_ONLYFIRST, \
             KODI_UPDATE_LIBRARY, KODI_HOST, KODI_USERNAME, KODI_PASSWORD, BACKLOG_FREQUENCY, \
             USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, TRAKT_SYNC_WATCHLIST, TRAKT_REMOVE_SHOW_FROM_SICKRAGE, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, TRAKT_USE_RECOMMENDED, TRAKT_SYNC, TRAKT_SYNC_REMOVE, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_TIMEOUT, TRAKT_BLACKLIST_NAME, \
-            USE_PLEX_SERVER, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
+            USE_PLEX_SERVER, PLEX_SERVER_NO_AUTH, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
             PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, \
             USE_EMBY, EMBY_HOST, EMBY_APIKEY, \
             showUpdateScheduler, __INITIALIZED__, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, \
@@ -682,10 +684,12 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
         LOG_DIR = ek(os.path.normpath, ek(os.path.join, DATA_DIR, ACTUAL_LOG_DIR))
         LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5)  # Default to 5 backup file (sickrage.log.x)
-        LOG_SIZE = check_setting_int(CFG, 'General', 'log_size', 1)  # Default to max 1MB per logfile
+        LOG_SIZE = check_setting_float(CFG, 'General', 'log_size', 10.0)  # Default to max 10MB per logfile
+
         if LOG_SIZE > 100:
-            LOG_SIZE = 1
+            LOG_SIZE = 10.0
         fileLogging = True
+
         if not helpers.makeDir(LOG_DIR):
             sys.stderr.write("!!! No log folder, logging to screen only!\n")
             fileLogging = False
@@ -1019,6 +1023,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         PLEX_CLIENT_USERNAME = check_setting_str(CFG, 'Plex', 'plex_client_username', '', censor_log=True)
         PLEX_CLIENT_PASSWORD = check_setting_str(CFG, 'Plex', 'plex_client_password', '', censor_log=True)
         PLEX_SERVER_HTTPS = bool(check_setting_int(CFG, 'Plex', 'plex_server_https', 0))
+        PLEX_SERVER_NO_AUTH = bool(check_setting_int(CFG, 'Plex', 'plex_server_no_auth', 0))
 
         USE_EMBY = bool(check_setting_int(CFG, 'Emby', 'use_emby', 0))
         EMBY_HOST = check_setting_str(CFG, 'Emby', 'emby_host', '')
@@ -1471,9 +1476,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                                                     threadName="TRAKTCHECKER",
                                                     silent=not USE_TRAKT)
 
+        update_interval = datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY)
         subtitlesFinderScheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
-                                                       cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),
+                                                       cycleTime=update_interval,
                                                        threadName="FINDSUBTITLES",
+                                                       run_delay=update_interval,
                                                        silent=not USE_SUBTITLES)
 
         __INITIALIZED__ = True
@@ -1634,7 +1641,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
     new_config['General']['encryption_secret'] = ENCRYPTION_SECRET
     new_config['General']['log_dir'] = ACTUAL_LOG_DIR if ACTUAL_LOG_DIR else 'Logs'
     new_config['General']['log_nr'] = int(LOG_NR)
-    new_config['General']['log_size'] = int(LOG_SIZE)
+    new_config['General']['log_size'] = float(LOG_SIZE)
     new_config['General']['socket_timeout'] = SOCKET_TIMEOUT
     new_config['General']['web_port'] = WEB_PORT
     new_config['General']['web_host'] = WEB_HOST
@@ -1927,6 +1934,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
     new_config['Plex']['plex_client_host'] = PLEX_CLIENT_HOST
     new_config['Plex']['plex_server_username'] = PLEX_SERVER_USERNAME
     new_config['Plex']['plex_server_password'] = helpers.encrypt(PLEX_SERVER_PASSWORD, ENCRYPTION_VERSION)
+    new_config['Plex']['plex_server_no_auth'] = int(PLEX_SERVER_NO_AUTH)
 
     new_config['Plex']['use_plex_client'] = int(USE_PLEX_CLIENT)
     new_config['Plex']['plex_client_username'] = PLEX_CLIENT_USERNAME

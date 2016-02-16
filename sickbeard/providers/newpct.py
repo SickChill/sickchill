@@ -78,7 +78,7 @@ class newpctProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
 
             # Only search if user conditions are true
             if self.onlyspasearch and lang_info != 'es' and mode != 'RSS':
@@ -87,7 +87,7 @@ class newpctProvider(TorrentProvider):
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
                 self.search_params['q'] = search_string.strip() if mode != 'RSS' else ''
@@ -136,7 +136,7 @@ class newpctProvider(TorrentProvider):
                             # Filter unseeded torrent (Unsupported)
                             # if seeders < self.minseed or leechers < self.minleech:
                             #     if mode != 'RSS':
-                            #         logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            #         logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format(title, seeders, leechers), logger.DEBUG)
                             #     continue
 
                             item = title, download_url, size, seeders, leechers
@@ -161,8 +161,7 @@ class newpctProvider(TorrentProvider):
         the URL to get torrent file
         """
         if need_bytes:
-            data = helpers.getURL(url, post_data=None, params=None, headers=self.headers, timeout=timeout,
-                                  session=self.session, json=json, need_bytes=False)
+            data = helpers.getURL(url, headers=self.headers, timeout=timeout, session=self.session, returns='json')
             url = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
 
         return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,

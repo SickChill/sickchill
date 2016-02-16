@@ -494,14 +494,14 @@ def xem_refresh(indexer_id, indexer, force=False):
         try:
             # XEM MAP URL
             url = "http://thexem.de/map/havemap?origin=%s" % sickbeard.indexerApi(indexer).config['xem_origin']
-            parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, json=True)
+            parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
             if not parsedJSON or 'result' not in parsedJSON or 'success' not in parsedJSON['result'] or 'data' not in parsedJSON or str(indexer_id) not in parsedJSON['data']:
                 return
 
             # XEM API URL
             url = "http://thexem.de/map/all?id=%s&origin=%s&destination=scene" % (indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'])
 
-            parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, json=True)
+            parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
             if not parsedJSON or 'result' not in parsedJSON or 'success' not in parsedJSON['result']:
                 logger.log(u'No XEM data for show "%s on %s"' % (indexer_id, sickbeard.indexerApi(indexer).name,), logger.INFO)
                 return

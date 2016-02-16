@@ -103,7 +103,7 @@
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">comma seperated list of extensions SickRage ignores when Post Processing</span>
+                                <span class="component-desc">comma seperated list of extensions or filename globs SickRage ignores when Post Processing</span>
                             </label>
                         </div>
                         <div class="field-pair">

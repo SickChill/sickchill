@@ -46,7 +46,6 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.ratio = None
         self.minseed = None
         self.minleech = None
-        self.freeleech = None
 
         # URLs
         self.url = 'https://www.thegft.org/'
@@ -121,12 +120,12 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
                 search_params['search'] = search_string

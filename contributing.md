@@ -43,11 +43,17 @@ If the above steps fail and you are sure its a bug, issues are tracked in the [S
 
 ### Code
 
+**ALWAYS follow SickRage [Coding Standards](https://github.com/SickRage/sickrage.github.io/wiki/SickRage-Coding-Standards)**
+
+Review regularly as they are subject to change and submissions will not be accepted until they meet our guidelines.
+
 **NEVER write your patches to the master branch** - it gets messy (I say this from experience!)
 
-**ALWAYS USE A "TOPIC" BRANCH!** Personally I like the `branch-feature_name` format that way its easy to identify the branch and feature at a glance. Also please make note of any issue number in the pull commit so we know what you are solving (it helps with cleaning up the related items later).
+**ALWAYS USE A "TOPIC" BRANCH!**
 
+Personally I like the `branch-feature_name` format that way its easy to identify the branch and feature at a glance. Also please make note of any issue number in the pull commit so we know what you are solving (it helps with cleaning up the related items later).
 
+#### Reporting
 Please follow these guidelines before reporting a bug:
 
 1. **Update to the latest version** &mdash; Check if you can reproduce the issue with the latest version from the `develop` branch.
@@ -136,15 +142,4 @@ Please follow this process; it's the best way to get your work included in the p
 
 ## Code guidelines
 
-### HTML
-- Use tags and elements appropriate for an HTML5 doctype (e.g. self-closing tags).
-- Use [WAI-ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attributes in documentation examples to promote accessibility.
-- DO NOT user any CDNs for any Javascript, CSS or font files.
-
-### JS
-- All non library files should pass full lint tests using [JSHint](http://jshint.com/) and the .jshintrc file in the .build directory. We suggest using [atom.io's js linter](https://atom.io/packages/linter-jshint) or something similar to lint on the fly.
-- Use bower components for third-party Javascript when possible, if there's no bower package then it must go in the `lib` directory.
-- If the Javascript is not a library then it must be placed in the core.js and then be minified using Grunt as listed below.
-- 4 spaces (no tabs)
-- Code should be readable since it all gets minified before shipping.
-- Make sure to run `cd .build && npm install && bower install && grunt` before commiting any javascript to the repo.
+Read and follow the [SickRage Coding Standards](https://github.com/SickRage/sickrage.github.io/wiki/SickRage-Coding-Standards).  Review these regularly as they are subject to change and code will not be accepted if it does not adhere to the standards.

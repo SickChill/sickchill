@@ -332,7 +332,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
     def get_quality(self, item, anime=False):
         (title, _) = self._get_title_and_url(item)
-        quality = Quality.sceneQuality(title, anime)
+        quality = Quality.scene_quality(title, anime)
 
         return quality
 
@@ -342,9 +342,18 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         return result
 
-    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False):  # pylint: disable=too-many-arguments,
-        return getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
-                      session=self.session, json=json, need_bytes=need_bytes)
+    @staticmethod
+    def get_url_hook(response, **kwargs):
+        _ = kwargs
+        logger.log(u'{} URL: {} [Status: {}]'.format
+                   (response.request.method, response.request.url, response.status_code), logger.DEBUG)
+
+        if response.request.method == 'POST':
+            logger.log(u'With post data: {}'.format(response.request.body), logger.DEBUG)
+
+    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False, **kwargs):  # pylint: disable=too-many-arguments,
+        kwargs['hooks'] = {'response': self.get_url_hook}
+        return getURL(url, post_data, params, self.headers, timeout, self.session, json, need_bytes, **kwargs)
 
     def image_name(self):
         return self.get_id() + '.png'
