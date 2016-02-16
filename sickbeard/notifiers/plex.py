@@ -220,7 +220,7 @@ class Notifier(object):
             return True
 
         if not (username and password):
-            return False
+            return sickbeard.PLEX_SERVER_NO_AUTH
 
         logger.log(u'PLEX: fetching plex.tv credentials for user: ' + username, logger.DEBUG)
 
