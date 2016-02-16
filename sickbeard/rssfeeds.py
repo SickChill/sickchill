@@ -1,18 +1,18 @@
 # coding=utf-8
-import re
-import urlparse
 from feedparser.api import parse
+
 from sickbeard import logger
+
 from sickrage.helper.exceptions import ex
 
 
-def getFeed(url, request_headers=None, handlers=None):
-    parsed = list(urlparse.urlparse(url))
-    parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-
+def getFeed(url, request_hook=None):
     try:
-        feed = parse(url, False, False, request_headers, handlers=handlers)
+        data = request_hook(url, returns='text', timeout=30)
+        if not data:
+            raise
 
+        feed = parse(data, response_headers={'content-type': 'application/xml'})
         if feed:
             if 'entries' in feed:
                 return feed
@@ -21,7 +21,7 @@ def getFeed(url, request_headers=None, handlers=None):
                 err_desc = feed.feed['error']['description']
                 logger.log(u'RSS ERROR:[%s] CODE:[%s]' % (err_desc, err_code), logger.DEBUG)
         else:
-            logger.log(u'RSS error loading url: ' + url, logger.DEBUG)
+            logger.log(u'RSS error loading data: ' + url, logger.DEBUG)
 
     except Exception as e:
         logger.log(u'RSS error: ' + ex(e), logger.DEBUG)
