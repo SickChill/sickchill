@@ -5090,9 +5090,10 @@ class ConfigSubtitles(Config):
                         controller="config", action="subtitles")
 
     def saveSubtitles(self, use_subtitles=None, subtitles_plugins=None, subtitles_languages=None, subtitles_dir=None, subtitles_perfect_match=None,
-                      service_order=None, subtitles_history=None, subtitles_finder_frequency=None, subtitles_download_in_pp=None,
+                      service_order=None, subtitles_history=None, subtitles_finder_frequency=None,
                       subtitles_multi=None, embedded_subtitles_all=None, subtitles_extra_scripts=None, subtitles_hearing_impaired=None,
-                      addic7ed_user=None, addic7ed_pass=None, legendastv_user=None, legendastv_pass=None, opensubtitles_user=None, opensubtitles_pass=None):
+                      addic7ed_user=None, addic7ed_pass=None, legendastv_user=None, legendastv_pass=None, opensubtitles_user=None, opensubtitles_pass=None,
+                      subtitles_download_in_pp=None, subtitles_keep_only_wanted=None):
 
         results = []
 
@@ -5107,6 +5108,7 @@ class ConfigSubtitles(Config):
         sickbeard.SUBTITLES_HEARING_IMPAIRED = config.checkbox_to_value(subtitles_hearing_impaired)
         sickbeard.SUBTITLES_MULTI = config.checkbox_to_value(subtitles_multi)
         sickbeard.SUBTITLES_DOWNLOAD_IN_PP = config.checkbox_to_value(subtitles_download_in_pp)
+        sickbeard.SUBTITLES_KEEP_ONLY_WANTED = config.checkbox_to_value(subtitles_keep_only_wanted)
         sickbeard.SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in subtitles_extra_scripts.split('|') if x.strip()]
 
         # Subtitles services
