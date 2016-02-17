@@ -20,35 +20,16 @@
 
 
 """
-Usage: SickBeard.py [OPTION]...
-
-Options:
-  -h,  --help            Prints this message
-  -q,  --quiet           Disables logging to console
-       --nolaunch        Suppress launching web browser on startup
-
-  -d,  --daemon          Run as double forked daemon (with --quiet --nolaunch)
-                         On Windows and MAC, this option is ignored but still
-                         applies --quiet --nolaunch
-       --pidfile=[FILE]  Combined with --daemon creates a pid file
-
-  -p,  --port=[PORT]     Override default/configured port to listen on
-       --datadir=[PATH]  Override folder (full path) as location for
-                         storing database, config file, cache, and log files
-                         Default SickRage directory
-       --config=[FILE]   Override config filename for loading configuration
-                         Default config.ini in SickRage directory or
-                         location specified with --datadir
-       --noresize        Prevent resizing of the banner/posters even if PIL
-                         is installed
+Automatic Video Library Manager for TV Shows. It watches for new episodes of
+your favorite shows, and when they are posted it does its magic.
 """
 
 from __future__ import unicode_literals
 from __future__ import print_function
 
+import argparse
 import codecs
 import datetime
-import getopt
 import io
 import locale
 import os
@@ -76,7 +57,8 @@ if sys.version_info >= (2, 7, 9):
 import shutil_custom  # pylint: disable=import-error
 shutil.copyfile = shutil_custom.copyfile_custom
 
-# Do this before importing sickbeard, to prevent locked files and incorrect import
+# Do this before importing sickbeard, to prevent locked files and incorrect
+# import
 OLD_TORNADO = os.path.abspath(os.path.join(os.path.dirname(__file__), 'tornado'))
 if os.path.isdir(OLD_TORNADO):
     shutil.move(OLD_TORNADO, OLD_TORNADO + '_kill')
@@ -96,6 +78,40 @@ THROWAWAY = datetime.datetime.strptime('20110101', '%Y%m%d')
 
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
+
+
+def parse_arguments():
+    """
+    Parse CLI arguments
+
+    @return: arguments namespace
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-q', '--quiet', action='store_true',
+                        help='disables logging to console')
+    parser.add_argument('--nolaunch', action='store_true',
+                        help='suppress launching web browser on startup')
+
+    if sys.platform in ['win32', 'darwin']:
+        parser.add_argument('-d', '--daemon', action='store_true',
+                            help='running as daemon is not supported on your '
+                                 'platform. it is substituted with: --quiet '
+                                 '--nolaunch')
+    else:
+        parser.add_argument('-d', '--daemon', action='store_true',
+                            help='run as daemon (includes options --quiet '
+                                 '--nolaunch)')
+    parser.add_argument('--pidfile', help='combined with --daemon creates a '
+                                          'pidfile (full path)')
+    parser.add_argument('-p', '--port', type=int, help='port to listen on')
+    parser.add_argument('--datadir', help='folder full path to store database, '
+                                          'configfile, cache and logfiles')
+    parser.add_argument('--config', help='config file full path to load '
+                                         'configuration from')
+    parser.add_argument('--noresize', action='store_true',
+                        help='prevent resizing of the banner/posters even if '
+                             'PIL is installed')
+    return parser.parse_args()
 
 
 class SickRage(object):
@@ -137,16 +153,49 @@ class SickRage(object):
         except Exception:  # pylint: disable=broad-except
             logger.log('Unable to remove the cache/mako directory!', logger.WARNING)  # pylint: disable=no-member
 
-    @staticmethod
-    def help_message():
+    def setup_from_command_line(self):
         """
-        Print help message for commandline options
+        Use CLI argparsing to setup behavior
         """
-        help_msg = __doc__
-        help_msg = help_msg.replace('SickBeard.py', sickbeard.MY_FULLNAME)
-        help_msg = help_msg.replace('SickRage directory', sickbeard.PROG_DIR)
+        args = parse_arguments()
+        self.console_logging = not args.quiet
+        self.no_launch = args.nolaunch
+        sickbeard.NO_RESIZE = args.noresize
 
-        return help_msg
+        if args.port:
+            self.forced_port = args.port
+
+        if sys.platform in ['win32', 'darwin'] and args.daemon:
+            logger.log('running as real daemon is not supported. on your'
+                       ' platform, it is substituted with: --quiet --nolaunch')
+            self.console_logging = False
+            self.no_launch = args.nolaunch = True
+            self.run_as_daemon = args.daemon = False
+
+        if args.daemon:
+            self.run_as_daemon = True
+            self.console_logging = False
+            self.no_launch = True
+
+            if args.pidfile:
+                self.create_pid = True
+                self.pid_file = args.pidfile
+                if ek(os.path.exists, self.pid_file):
+                    sys.exit('PID file: {} already exists. '
+                             'Exiting.'.format(self.pid_file))
+
+                pid_dir = ek(os.path.dirname, self.pid_file)
+                if not ek(os.access, pid_dir, os.F_OK):
+                    sys.exit('PID dir: %s doesn\'t exist. Exiting.' % pid_dir)
+                if not ek(os.access, pid_dir, os.W_OK):
+                    sys.exit('PID dir: %s must be writable (write permissions).'
+                             ' Exiting.' % pid_dir)
+
+        if args.config:
+            sickbeard.CONFIG_FILE = ek(os.path.abspath, args.config)
+
+        if args.datadir:
+            sickbeard.DATA_DIR = ek(os.path.abspath, args.datadir)
 
     def start(self):  # pylint: disable=too-many-branches,too-many-statements
         """
@@ -175,7 +224,8 @@ class SickRage(object):
             reload(sys)
 
         try:
-            # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
+            # On non-unicode builds this will raise an AttributeError,
+            # if encoding type is not valid it throws a LookupError
             sys.setdefaultencoding(sickbeard.SYS_ENCODING)  # pylint: disable=no-member
         except (AttributeError, LookupError):
             sys.exit('Sorry, you MUST add the SickRage folder to the PYTHONPATH environment variable\n'
@@ -187,85 +237,9 @@ class SickRage(object):
         # Rename the main thread
         threading.currentThread().name = 'MAIN'
 
-        try:
-            opts, _ = getopt.getopt(
-                sys.argv[1:], 'hqdp::',
-                ['help', 'quiet', 'nolaunch', 'daemon', 'pidfile=', 'port=', 'datadir=', 'config=', 'noresize']
-            )
-        except getopt.GetoptError:
-            sys.exit(self.help_message())
-
-        for option, value in opts:
-            # Prints help message
-            if option in ('-h', '--help'):
-                sys.exit(self.help_message())
-
-            # For now we'll just silence the logging
-            if option in ('-q', '--quiet'):
-                self.console_logging = False
-
-            # Suppress launching web browser
-            # Needed for OSes without default browser assigned
-            # Prevent duplicate browser window when restarting in the app
-            if option in ('--nolaunch',):
-                self.no_launch = True
-
-            # Override default/configured port
-            if option in ('-p', '--port'):
-                try:
-                    self.forced_port = int(value)
-                except ValueError:
-                    sys.exit('Port: %s is not a number. Exiting.' % value)
-
-            # Run as a double forked daemon
-            if option in ('-d', '--daemon'):
-                self.run_as_daemon = True
-                # When running as daemon disable console_logging and don't start browser
-                self.console_logging = False
-                self.no_launch = True
-
-                if sys.platform == 'win32' or sys.platform == 'darwin':
-                    self.run_as_daemon = False
-
-            # Write a pid file if requested
-            if option in ('--pidfile',):
-                self.create_pid = True
-                self.pid_file = str(value)
-
-                # If the pid file already exists, SickRage may still be running, so exit
-                if ek(os.path.exists, self.pid_file):
-                    sys.exit('PID file: %s already exists. Exiting.' % self.pid_file)
-
-            # Specify folder to load the config file from
-            if option in ('--config',):
-                sickbeard.CONFIG_FILE = ek(os.path.abspath, value)
-
-            # Specify folder to use as the data directory
-            if option in ('--datadir',):
-                sickbeard.DATA_DIR = ek(os.path.abspath, value)
-
-            # Prevent resizing of the banner/posters even if PIL is installed
-            if option in ('--noresize',):
-                sickbeard.NO_RESIZE = True
-
-        # The pid file is only useful in daemon mode, make sure we can write the file properly
-        if self.create_pid:
-            if self.run_as_daemon:
-                pid_dir = ek(os.path.dirname, self.pid_file)
-                if not ek(os.access, pid_dir, os.F_OK):
-                    sys.exit('PID dir: %s doesn\'t exist. Exiting.' % pid_dir)
-                if not ek(os.access, pid_dir, os.W_OK):
-                    sys.exit('PID dir: %s must be writable (write permissions). Exiting.' % pid_dir)
-
-            else:
-                if self.console_logging:
-                    sys.stdout.write('Not running in daemon mode. PID file creation disabled.\n')
-
-                self.create_pid = False
-
-        # If they don't specify a config file then put it in the data dir
         if not sickbeard.CONFIG_FILE:
-            sickbeard.CONFIG_FILE = ek(os.path.join, sickbeard.DATA_DIR, 'config.ini')
+            sickbeard.CONFIG_FILE = ek(os.path.join, sickbeard.DATA_DIR,
+                                       'config.ini')
 
         # Make sure that we can create the data dir
         if not ek(os.access, sickbeard.DATA_DIR, os.F_OK):
@@ -329,7 +303,8 @@ class SickRage(object):
             self.log_dir = None
 
         # sickbeard.WEB_HOST is available as a configuration value in various
-        # places but is not configurable. It is supported here for historic reasons.
+        # places but is not configurable. It is supported here for historic
+        # reasons.
         if sickbeard.WEB_HOST and sickbeard.WEB_HOST != '0.0.0.0':
             self.web_host = sickbeard.WEB_HOST
         else:
@@ -367,7 +342,8 @@ class SickRage(object):
         if sickbeard.USE_FAILED_DOWNLOADS:
             failed_history.trimHistory()
 
-        # # Check for metadata indexer updates for shows (Disabled until we use api)
+        # # Check for metadata indexer updates for shows
+        # (Disabled until we use api)
         # sickbeard.showUpdateScheduler.forceRun()
 
         # Launch browser
@@ -545,11 +521,11 @@ class SickRage(object):
                     logger.shutdown()  # pylint: disable=no-member
                     subprocess.Popen(popen_list, cwd=os.getcwd())
 
-        # Make sure the logger has stopped, just in case
+        # Make sure the logger has stopped
         logger.shutdown()  # pylint: disable=no-member
-        os._exit(0)  # pylint: disable=protected-access
 
 
 if __name__ == '__main__':
-    # start SickRage
-    SickRage().start()
+    s = SickRage()
+    s.setup_from_command_line()
+    s.start()
