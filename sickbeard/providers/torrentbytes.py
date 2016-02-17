@@ -106,8 +106,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                 with BS4Parser(data, "html5lib") as html:
                     # Continue only if one Release is found
-                    empty = html.find("Nothing found!")
-                    if empty:
+                    if html.find('h2', text='Nothing found!'):
                         logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
