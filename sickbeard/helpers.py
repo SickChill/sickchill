@@ -344,11 +344,23 @@ def copyFile(srcFile, destFile):
     :param destFile: Path of destination file
     """
 
-    ek(shutil.copyfile, srcFile, destFile)
     try:
-        ek(shutil.copymode, srcFile, destFile)
-    except OSError:
-        pass
+        from shutil import SpecialFileError, Error
+    except ImportError:
+        from shutil import Error
+        SpecialFileError = Error
+
+    try:
+        ek(shutil.copyfile, srcFile, destFile)
+    except (SpecialFileError, Error) as error:
+        logger.log(error, logger.WARNING)
+    except Exception as error:
+        logger.log(error, logger.ERROR)
+    else:
+        try:
+            ek(shutil.copymode, srcFile, destFile)
+        except OSError:
+            pass
 
 
 def moveFile(srcFile, destFile):
