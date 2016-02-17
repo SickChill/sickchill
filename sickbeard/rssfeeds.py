@@ -6,9 +6,9 @@ from sickbeard import logger
 from sickrage.helper.exceptions import ex
 
 
-def getFeed(url, request_hook=None):
+def getFeed(url, params=None, request_hook=None):
     try:
-        data = request_hook(url, returns='text', timeout=30)
+        data = request_hook(url, params=params, returns='text', timeout=30)
         if not data:
             raise
 

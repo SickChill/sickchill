@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from requests.compat import urlencode
+from __future__ import unicode_literals
 
 import sickbeard
 from sickbeard import logger, tvcache
@@ -29,7 +29,7 @@ from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 class OmgwtfnzbsProvider(NZBProvider):
     def __init__(self):
-        NZBProvider.__init__(self, "omgwtfnzbs")
+        NZBProvider.__init__(self, 'OMGWTFNZBs')
 
         self.username = None
         self.api_key = None
@@ -47,14 +47,14 @@ class OmgwtfnzbsProvider(NZBProvider):
     def _check_auth(self):
 
         if not self.username or not self.api_key:
-            logger.log(u"Invalid api key. Check your settings", logger.WARNING)
+            logger.log('Invalid api key. Check your settings', logger.WARNING)
             return False
 
         return True
 
     def _checkAuthFromData(self, parsed_data, is_XML=True):
 
-        if parsed_data is None:
+        if not parsed_data:
             return self._check_auth()
 
         if is_XML:
@@ -65,13 +65,13 @@ class OmgwtfnzbsProvider(NZBProvider):
                 description_text = parsed_data.get('notice')
 
                 if 'information is incorrect' in parsed_data.get('notice'):
-                    logger.log(u"Invalid api key. Check your settings", logger.WARNING)
+                    logger.log('Invalid api key. Check your settings', logger.WARNING)
 
                 elif '0 results matched your terms' in parsed_data.get('notice'):
                     return True
 
                 else:
-                    logger.log(u"Unknown error: %s" % description_text, logger.DEBUG)
+                    logger.log('Unknown error: %s' % description_text, logger.DEBUG)
                     return False
 
             return True
@@ -94,33 +94,30 @@ class OmgwtfnzbsProvider(NZBProvider):
             'catid': '19,20',  # SD,HD
             'retention': sickbeard.USENET_RETENTION,
         }
-        if age or not search_params['retention']:
-            search_params['retention'] = age
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log('Search Mode: {}'.format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
-
                 search_params['search'] = search_string
-
                 if mode != 'RSS':
-                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
+                    logger.log('Search string: {}'.format(search_string.decode('utf-8')),
                                logger.DEBUG)
 
-                logger.log(u"Search URL: %s" % self.urls['api'] + '?' + urlencode(search_params), logger.DEBUG)
-
-                data = self.get_url(self.urls['api'], params=search_params, json=True)
+                data = self.get_url(self.urls['api'], params=search_params, returns='json')
                 if not data:
+                    logger.log('No data returned from provider', logger.DEBUG)
                     continue
 
                 if not self._checkAuthFromData(data, is_XML=False):
                     continue
 
                 for item in data:
-                    if 'release' in item and 'getnzb' in item:
-                        logger.log(u"Found result: %s " % item.get('title'), logger.DEBUG)
-                        items.append(item)
+                    if not self._get_title_and_url(item):
+                        continue
+
+                    logger.log('Found result: {}'.format(item.get('title')), logger.DEBUG)
+                    items.append(item)
 
             results += items
 
@@ -129,17 +126,8 @@ class OmgwtfnzbsProvider(NZBProvider):
 
 class OmgwtfnzbsCache(tvcache.TVCache):
     def _get_title_and_url(self, item):
-        """
-        Retrieves the title and URL data from the item XML node
-
-        item: An elementtree.ElementTree element representing the <item> tag of the RSS feed
-
-        Returns: A tuple containing two strings representing title and URL respectively
-        """
-
         title = item.get('title')
         if title:
-            title = u'' + title
             title = title.replace(' ', '.')
 
         url = item.get('link')
@@ -155,9 +143,6 @@ class OmgwtfnzbsCache(tvcache.TVCache):
             'eng': 1,
             'catid': '19,20'  # SD,HD
         }
-
-        rss_url = self.provider.urls['rss'] + '?' + urlencode(search_params)
-        logger.log(u"Cache update URL: %s" % rss_url, logger.DEBUG)
-        return self.getRSSFeed(rss_url)
+        return self.getRSSFeed(self.provider.urls['rss'], params=search_params)
 
 provider = OmgwtfnzbsProvider()
