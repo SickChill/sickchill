@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
+from requests.compat import urljoin
+
 from sickbeard import logger, tvcache
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -27,7 +31,7 @@ class ShazbatProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "Shazbat.tv")
+        TorrentProvider.__init__(self, 'Shazbat.tv')
 
         self.supports_backlog = False
 
@@ -35,15 +39,19 @@ class ShazbatProvider(TorrentProvider):
         self.ratio = None
         self.options = None
 
-        self.cache = ShazbatCache(self, min_time=15)  # only poll Shazbat feed every 15 minutes max
+        self.cache = ShazbatCache(self, min_time=20)
 
-        self.urls = {'base_url': u'http://www.shazbat.tv/',
-                     'website': u'http://www.shazbat.tv/login', }
-        self.url = self.urls['website']
+        self.url = 'http://www.shazbat.tv'
+        self.urls = {
+            'login': urljoin(self.url, 'login'),
+            'rss_recent': urljoin(self.url, 'rss/recent'),
+            # 'rss_queue': urljoin(self.url, 'rss/download_queue'),
+            # 'rss_followed': urljoin(self.url, 'rss/followed')
+        }
 
     def _check_auth(self):
         if not self.passkey:
-            raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
+            raise AuthException('Your authentication credentials are missing, check your config.')
 
         return True
 
@@ -51,7 +59,7 @@ class ShazbatProvider(TorrentProvider):
         if not self.passkey:
             self._check_auth()
         elif not (data['entries'] and data['feed']):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log('Invalid username or password. Check your settings', logger.WARNING)
 
         return True
 
@@ -61,12 +69,16 @@ class ShazbatProvider(TorrentProvider):
 
 class ShazbatCache(tvcache.TVCache):
     def _getRSSData(self):
-        rss_url = self.provider.urls['base_url'] + 'rss/recent?passkey=' + provider.passkey + '&fname=true'
-        logger.log(u"Cache update URL: %s" % rss_url, logger.DEBUG)
+        params = {
+            'passkey': self.provider.passkey,
+            'fname': 'true',
+            'limit': 100,
+            'duration': '2 hours'
+        }
 
-        return self.getRSSFeed(rss_url)
+        return self.getRSSFeed(self.provider.urls['rss_recent'], params=params)
 
     def _checkAuth(self, data):
-        return self.provider._checkAuthFromData(data)
+        return self.provider._checkAuthFromData(data)  # pylint: disable=protected-access
 
 provider = ShazbatProvider()
