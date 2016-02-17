@@ -290,7 +290,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                         if LOGGING_LEVELS[level] == ERROR:
                             paste_data = ''.join(log_data[i:i + 50])
                             if paste_data:
-                                gist = git.get_user().create_gist(True, {'sickrage.log': InputFileContent(paste_data)})
+                                gist = git.get_user().create_gist(False, {'sickrage.log': InputFileContent(paste_data)})
                             break
                     else:
                         gist = 'No ERROR found'
