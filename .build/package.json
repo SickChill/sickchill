@@ -31,8 +31,5 @@
     "load-grunt-tasks": "^3.3.0",
     "mocha": "^2.4.5",
     "snyk": "^1.9.1"
-  },
-  "dependencies": {
-    "grunt-bower-concat": "^1.0.0"
   }
 }
