@@ -18,9 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+from requests.compat import urljoin
 import re
-from six.moves import urllib
-import traceback
 
 from sickbeard import helpers
 from sickbeard import logger, tvcache
@@ -34,34 +34,32 @@ class newpctProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "Newpct")
+        TorrentProvider.__init__(self, 'Newpct')
 
         self.onlyspasearch = None
-        self.cache = tvcache.TVCache(self, min_time=10)
 
-        # Unsupported
-        # self.minseed = None
-        # self.minleech = None
+        self.url = 'http://www.newpct.com'
+        self.urls = {'search': urljoin(self.url, 'index.php')}
 
-        self.urls = {
-            'base_url': 'http://www.newpct.com',
-            'search': 'http://www.newpct.com/index.php'
-        }
+        self.cache = tvcache.TVCache(self, min_time=20)
 
-        self.url = self.urls['base_url']
-
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         """
         Search query:
         http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=All&idioma_=1&bus_de_=All
 
         q => Show name
-        category_ = Category "Shows" (767)
+        category_ = Category 'Shows' (767)
         idioma_ = Language Spanish (1)
         bus_de_ = Date from (All, hoy)
 
         """
+        results = []
 
-        self.search_params = {
+        # Only search if user conditions are true
+        lang_info = '' if not ep_obj or not ep_obj.show else ep_obj.show.lang
+
+        search_params = {
             'l': 'doSearch',
             'q': '',
             'category_': 'All',
@@ -69,103 +67,79 @@ class newpctProvider(TorrentProvider):
             'bus_de_': 'All'
         }
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
-
-        results = []
-
-        # Only search if user conditions are true
-        lang_info = '' if not ep_obj or not ep_obj.show else ep_obj.show.lang
-
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log('Search Mode: {}'.format(mode), logger.DEBUG)
 
             # Only search if user conditions are true
             if self.onlyspasearch and lang_info != 'es' and mode != 'RSS':
-                logger.log(u"Show info is not spanish, skipping provider search", logger.DEBUG)
+                logger.log('Show info is not spanish, skipping provider search', logger.DEBUG)
                 continue
+
+            search_params['bus_de_'] = 'All' if mode != 'RSS' else 'hoy'
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
+                    logger.log('Search string: {}'.format(search_string.decode('utf-8')),
                                logger.DEBUG)
 
-                self.search_params['q'] = search_string.strip() if mode != 'RSS' else ''
-                self.search_params['bus_de_'] = 'All' if mode != 'RSS' else 'hoy'
+                search_params['q'] = search_string
 
-                search_url = self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params)
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-
-                data = self.get_url(search_url, timeout=30)
+                data = self.get_url(self.urls['search'], params=search_params, timeout=30, returns='text')
                 if not data:
                     continue
 
-                try:
-                    with BS4Parser(data, 'html5lib') as html:
-                        torrent_tbody = html.find('tbody')
+                with BS4Parser(data, 'html5lib') as html:
+                    torrent_table = html.find('table', id='categoryTable')
+                    torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                        if torrent_tbody is None:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
-                            continue
+                    # Continue only if at least one Release is found
+                    if len(torrent_rows) < 3:  # Headers + 1 Torrent + Pagination
+                        logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
+                        continue
 
-                        torrent_table = torrent_tbody.findAll('tr')
-                        if not torrent_table:
-                            logger.log(u"Torrent table does not have any rows", logger.DEBUG)
-                            continue
+                    # 'Fecha', 'Título', 'Tamaño', ''
+                    # Date, Title, Size
+                    labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all('th')]
+                    for row in torrent_rows[1:-1]:
+                        try:
+                            cells = row.find_all('td')
 
-                        for row in torrent_table[:-1]:
-                            try:
-                                torrent_row = row.findAll('a')[0]
-
-                                download_url = torrent_row.get('href', '')
-
-                                title = self._processTitle(torrent_row.get('title', ''))
-
-                                # Provider does not provide seeders/leechers
-                                seeders = 1
-                                leechers = 0
-                                torrent_size = row.findAll('td')[2].text
-
-                                size = convert_size(torrent_size) or -1
-                            except (AttributeError, TypeError):
-                                continue
-
+                            torrent_row = row.find('a')
+                            title = self._processTitle(torrent_row.get('title', ''))
+                            download_url = torrent_row.get('href', '')
                             if not all([title, download_url]):
                                 continue
 
-                            # Filter unseeded torrent (Unsupported)
-                            # if seeders < self.minseed or leechers < self.minleech:
-                            #     if mode != 'RSS':
-                            #         logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format(title, seeders, leechers), logger.DEBUG)
-                            #     continue
+                            # Provider does not provide seeders/leechers
+                            seeders = 1
+                            leechers = 0
+                            torrent_size = cells[labels.index('Tamaño')].get_text(strip=True)
 
+                            size = convert_size(torrent_size) or -1
                             item = title, download_url, size, seeders, leechers
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log('Found result: {}'.format(title), logger.DEBUG)
 
                             items.append(item)
-
-                except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
-
-            # For each search mode sort all the items by seeders if available (Unsupported)
-            # items.sort(key=lambda tup: tup[3], reverse=True)
+                        except (AttributeError, TypeError):
+                            continue
 
             results += items
 
         return results
 
-    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False):  # pylint: disable=too-many-arguments
+    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False, **kwargs):  # pylint: disable=too-many-arguments
         """
         need_bytes=True when trying access to torrent info (For calling torrent client). Previously we must parse
         the URL to get torrent file
         """
         if need_bytes:
-            data = helpers.getURL(url, headers=self.headers, timeout=timeout, session=self.session, returns='json')
+            data = super(newpctProvider, self).get_url(url, post_data=post_data, params=params, timeout=timeout, json=json, kwargs=kwargs)
             url = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
 
-        return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
-                              session=self.session, json=json, need_bytes=need_bytes)
+        return super(newpctProvider, self).get_url(url, post_data=post_data, params=params, timeout=timeout,
+                                                   json=json, need_bytes=need_bytes, kwargs=kwargs)
 
     def download_result(self, result):
         """
@@ -186,24 +160,24 @@ class newpctProvider(TorrentProvider):
             if url_torrent.startswith('http'):
                 self.headers.update({'Referer': '/'.join(url_torrent.split('/')[:3]) + '/'})
 
-            logger.log(u"Downloading a result from " + self.name + " at " + url)
+            logger.log('Downloading a result from {}'.format(url))
 
             if helpers.download_file(url_torrent, filename, session=self.session, headers=self.headers):
                 if self._verify_download(filename):
-                    logger.log(u"Saved result to " + filename, logger.INFO)
+                    logger.log('Saved result to {}'.format(filename), logger.INFO)
                     return True
                 else:
-                    logger.log(u"Could not download %s" % url, logger.WARNING)
+                    logger.log('Could not download {}'.format(url), logger.WARNING)
                     helpers.remove_file_failed(filename)
 
         if len(urls):
-            logger.log(u"Failed to download any results", logger.WARNING)
+            logger.log('Failed to download any results', logger.WARNING)
 
         return False
 
     @staticmethod
     def _processTitle(title):
-        # Remove "Mas informacion sobre " literal from title
+        # Remove 'Mas informacion sobre ' literal from title
         title = title[22:]
 
         # Quality - Use re module to avoid case sensitive problems with replace
