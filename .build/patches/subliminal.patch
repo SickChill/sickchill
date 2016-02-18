@@ -1,0 +1,151 @@
+diff --git a/sublimnal/api.py b/subliminal/api.py
+index 13c614f..6fe3368 100644
+--- a/sublimnal/api.py
++++ b/subliminal/api.py
+@@ -7,6 +7,7 @@ import os.path
+ import socket
+ 
+ from babelfish import Language
++from pkg_resources import EntryPoint
+ import requests
+ from stevedore import EnabledExtensionManager, ExtensionManager
+ 
+@@ -14,7 +15,30 @@ from .subtitle import compute_score, get_subtitle_path
+ 
+ logger = logging.getLogger(__name__)
+ 
+-provider_manager = ExtensionManager('subliminal.providers')
++
++class InternalExtensionManager(ExtensionManager):
++    """Add support for internal entry points to the :class:`~stevedore.extension.Extensionmanager`
++    Internal entry points are useful for libraries that ship their own plugins but still keep the entry point open.
++    All other parameters are passed onwards to the :class:`~stevedore.extension.Extensionmanager` constructor.
++    :param internal_entry_points: the internal providers
++    :type internal_entry_points: list of :class:`~pkg_resources.EntryPoint`
++    """
++    def __init__(self, namespace, internal_entry_points, **kwargs):
++        self.internal_entry_points = list(internal_entry_points)
++        super(InternalExtensionManager, self).__init__(namespace, **kwargs)
++
++    def _find_entry_points(self, namespace):
++        return self.internal_entry_points + super(InternalExtensionManager, self)._find_entry_points(namespace)
++
++
++provider_manager = InternalExtensionManager('subliminal.providers', [EntryPoint.parse(ep) for ep in (
++    'addic7ed = subliminal.providers.addic7ed:Addic7edProvider',
++    'napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider',
++    'opensubtitles = subliminal.providers.opensubtitles:OpenSubtitlesProvider',
++    'podnapisi = subliminal.providers.podnapisi:PodnapisiProvider',
++    'thesubdb = subliminal.providers.thesubdb:TheSubDBProvider',
++    'tvsubtitles = subliminal.providers.tvsubtitles:TVsubtitlesProvider'
++)])
+ 
+ 
+ class ProviderPool(object):
+diff --git a/subliminal/compat.py b/subliminal/compat.py
+new file mode 100644
+index 0000000..28bd3e8
+--- /dev/null
++++ b/subliminal/compat.py
+@@ -0,0 +1,21 @@
++# -*- coding: utf-8 -*-
++import sys
++import socket
++
++
++if sys.version_info[0] == 2:
++    from xmlrpclib import ServerProxy, Transport
++    from httplib import HTTPConnection
++elif sys.version_info[0] == 3:
++    from xmlrpc.client import ServerProxy, Transport
++    from http.client import HTTPConnection
++
++
++class TimeoutTransport(Transport, object):
++    def __init__(self, timeout=socket._GLOBAL_DEFAULT_TIMEOUT, *args, **kwargs):
++        super(TimeoutTransport, self).__init__(*args, **kwargs)
++        self.timeout = timeout
++
++    def make_connection(self, host):
++        h = HTTPConnection(host, timeout=self.timeout)
++        return h
+diff --git a/subliminal/converters/podnapisi.py b/subliminal/converters/podnapisi.py
+new file mode 100644
+index 0000000..d73cb1c
+--- /dev/null
++++ b/subliminal/converters/podnapisi.py
+@@ -0,0 +1,32 @@
++# -*- coding: utf-8 -*-
++from __future__ import unicode_literals
++from babelfish import LanguageReverseConverter, LanguageConvertError, LanguageReverseError
++
++
++class PodnapisiConverter(LanguageReverseConverter):
++    def __init__(self):
++        self.from_podnapisi = {2: ('eng',), 28: ('spa',), 26: ('pol',), 36: ('srp',), 1: ('slv',), 38: ('hrv',),
++                               9: ('ita',), 8: ('fra',), 48: ('por', 'BR'), 23: ('nld',), 12: ('ara',), 13: ('ron',),
++                               33: ('bul',), 32: ('por',), 16: ('ell',), 15: ('hun',), 31: ('fin',), 30: ('tur',),
++                               7: ('ces',), 25: ('swe',), 27: ('rus',), 24: ('dan',), 22: ('heb',), 51: ('vie',),
++                               52: ('fas',), 5: ('deu',), 14: ('spa', 'AR'), 54: ('ind',), 47: ('srp', None, 'Cyrl'),
++                               3: ('nor',), 20: ('est',), 10: ('bos',), 17: ('zho',), 37: ('slk',), 35: ('mkd',),
++                               11: ('jpn',), 4: ('kor',), 29: ('sqi',), 6: ('isl',), 19: ('lit',), 46: ('ukr',),
++                               44: ('tha',), 53: ('cat',), 56: ('sin',), 21: ('lav',), 40: ('cmn',), 55: ('msa',),
++                               42: ('hin',), 50: ('bel',)}
++        self.to_podnapisi = {v: k for k, v in self.from_podnapisi.items()}
++        self.codes = set(self.from_podnapisi.keys())
++
++    def convert(self, alpha3, country=None, script=None):
++        if (alpha3,) in self.to_podnapisi:
++            return self.to_podnapisi[(alpha3,)]
++        if (alpha3, country) in self.to_podnapisi:
++            return self.to_podnapisi[(alpha3, country)]
++        if (alpha3, country, script) in self.to_podnapisi:
++            return self.to_podnapisi[(alpha3, country, script)]
++        raise LanguageConvertError(alpha3, country, script)
++
++    def reverse(self, podnapisi):
++        if podnapisi not in self.from_podnapisi:
++            raise LanguageReverseError(podnapisi)
++        return self.from_podnapisi[podnapisi]
+diff --git a/sublimnal/providers/addic7ed.py b/subliminal/providers/addic7ed.py
+index edaa728..3edfe35 100644
+--- a/sublimnal/providers/addic7ed.py
++++ b/subliminal/providers/addic7ed.py
+@@ -2,7 +2,7 @@
+ import logging
+ import re
+ 
+-from babelfish import Language
++from babelfish import Language, language_converters
+ from requests import Session
+ 
+ from . import ParserBeautifulSoup, Provider, get_version
+@@ -13,6 +13,7 @@ from ..subtitle import Subtitle, fix_line_ending, guess_matches, guess_propertie
+ from ..video import Episode
+ 
+ logger = logging.getLogger(__name__)
++language_converters.register('addic7ed = subliminal.converters.addic7ed:Addic7edConverter')
+ 
+ series_year_re = re.compile('^(?P<series>[ \w]+)(?: \((?P<year>\d{4})\))?$')
+ 
+diff --git a/sublimnal/providers/tvsubtitles.py b/subliminal/providers/tvsubtitles.py
+index e63cd43..06fd878 100644
+--- a/sublimnal/providers/tvsubtitles.py
++++ b/subliminal/providers/tvsubtitles.py
+@@ -4,7 +4,7 @@ import logging
+ import re
+ from zipfile import ZipFile
+ 
+-from babelfish import Language
++from babelfish import Language, language_converters
+ from requests import Session
+ 
+ from . import ParserBeautifulSoup, Provider, get_version
+@@ -15,6 +15,7 @@ from ..subtitle import Subtitle, fix_line_ending, guess_matches, guess_propertie
+ from ..video import Episode
+ 
+ logger = logging.getLogger(__name__)
++language_converters.register('tvsubtitles = subliminal.converters.tvsubtitles:TVsubtitlesConverter')
+ 
+ link_re = re.compile('^(?P<series>.+?)(?: \(?\d{4}\)?| \((?:US|UK)\))? \((?P<first_year>\d{4})-\d{4}\)$')
+ episode_id_re = re.compile('^episode-\d+\.html$')
