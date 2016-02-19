@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import io
 import os
 import re
@@ -54,16 +56,16 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.titleTAG = titleTAG
 
     def configStr(self):  # pylint: disable=too-many-arguments
-        return "%s|%s|%s|%s|%d|%s|%d|%d|%d" % (
+        return '{}|{}|{}|{}|{}|{}|{}|{}|{}'.format(
             self.name or '',
             self.url or '',
             self.cookies or '',
             self.titleTAG or '',
-            self.enabled,
+            int(self.enabled),
             self.search_mode or '',
-            self.search_fallback,
-            self.enable_daily,
-            self.enable_backlog
+            int(self.search_fallback),
+            int(self.enable_daily),
+            int(self.enable_backlog)
         )
 
     @staticmethod
@@ -90,11 +92,11 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         title = item.get(self.titleTAG, '').replace(' ', '.')
 
-        attempt_list = [lambda: item.get('torrent_magneturi'),
-
-                        lambda: item.enclosures[0].href,
-
-                        lambda: item.get('link')]
+        attempt_list = [
+            lambda: item.get('torrent_magneturi'),
+            lambda: item.enclosures[0].href,
+            lambda: item.get('link')
+        ]
 
         url = None
         for cur_attempt in attempt_list:
@@ -132,7 +134,7 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 name = values[0]
                 url = values[1]
         except ValueError:
-            logger.log(u'Skipping RSS Torrent provider string: \'%s\', incorrect format' % config, logger.ERROR)
+            logger.log('Skipping RSS Torrent provider string: {}, incorrect format'.format(config), logger.ERROR)
             return None
 
         new_provider = TorrentRssProvider(
@@ -147,17 +149,18 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         try:
             if self.cookies:
-                cookie_validator = re.compile(r"^(\w+=\w+)(;\w+=\w+)*$")
+                cookie_validator = re.compile(r'^(\w+=\w+)(;\w+=\w+)*$')
                 if not cookie_validator.match(self.cookies):
-                    return False, 'Cookie is not correctly formatted: ' + self.cookies
+                    return False, 'Cookie is not correctly formatted: {}'.format(self.cookies)
+                add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
 
             # pylint: disable=protected-access
             # Access to a protected member of a client class
             data = self.cache._getRSSData()['entries']
             if not data:
-                return False, 'No items found in the RSS feed ' + self.url
+                return False, 'No items found in the RSS feed {}'.format(self.url)
 
-            (title, url) = self._get_title_and_url(data[0])
+            title, url = self._get_title_and_url(data[0])
 
             if not title:
                 return False, 'Unable to get title from first item'
@@ -168,19 +171,17 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             if url.startswith('magnet:') and re.search(r'urn:btih:([\w]{32,40})', url):
                 return True, 'RSS feed Parsed correctly'
             else:
-                if self.cookies:
-                    add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
                 torrent_file = self.get_url(url, need_bytes=True)
                 try:
                     bdecode(torrent_file)
-                except Exception as e:
+                except Exception as error:
                     self.dumpHTML(torrent_file)
-                    return False, 'Torrent link is not a valid torrent file: {}'.format(ex(e))
+                    return False, 'Torrent link is not a valid torrent file: {}'.format(ex(error))
 
             return True, 'RSS feed Parsed correctly'
 
-        except Exception as e:
-            return False, 'Error when trying to load RSS: ' + ex(e)
+        except Exception as error:
+            return False, 'Error when trying to load RSS: {}'.format(ex(error))
 
     @staticmethod
     def dumpHTML(data):
@@ -191,10 +192,11 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             fileOut.write(data)
             fileOut.close()
             helpers.chmodAsParent(dumpName)
-        except IOError as e:
-            logger.log(u"Unable to save the file: %s " % repr(e), logger.ERROR)
+        except IOError as error:
+            logger.log('Unable to save the file: {}'.format(ex(error)), logger.ERROR)
             return False
-        logger.log(u"Saved custom_torrent html dump %s " % dumpName, logger.INFO)
+
+        logger.log('Saved custom_torrent html dump {} '.format(dumpName), logger.INFO)
         return True
 
     def seed_ratio(self):
@@ -203,8 +205,6 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
 class TorrentRssCache(tvcache.TVCache):
     def _getRSSData(self):
-        logger.log(u"Cache update URL: %s" % self.provider.url, logger.DEBUG)
-
         if self.provider.cookies:
             add_dict_to_cookiejar(self.provider.session.cookies, dict(x.rsplit('=', 1) for x in self.provider.cookies.split(';')))
 
