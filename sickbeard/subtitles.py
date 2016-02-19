@@ -34,7 +34,7 @@ from sickbeard import db
 from sickbeard import processTV
 from sickbeard.common import Quality
 from sickbeard.helpers import remove_non_release_groups, isMediaFile, isRarFile
-from sickrage.helper.common import episode_num, dateTimeFormat, subtitle_extensions
+from sickrage.helper.common import episode_num, dateTimeFormat
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
 
@@ -109,6 +109,7 @@ def needs_subtitles(subtitles):
     return 'und' not in subtitles
 
 
+# Hack around this for now.
 def from_code(language):
     language = language.strip()
     if language and language in language_converters['opensubtitles'].codes:
@@ -134,6 +135,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                     episode_num(subtitles_info['season'], subtitles_info['episode'], numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
+    # Check if we really need subtitles
     languages = get_needed_languages(existing_subtitles)
     if not languages:
         logger.log(u'No subtitles needed for {} {}'.format
@@ -143,11 +145,11 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
 
     subtitles_path = get_subtitles_path(subtitles_info['location'])
     video_path = subtitles_info['location']
-
-    # Perfect match = hash score - hearing impaired score - resolution score (subtitle for 720p is the same as for 1080p)
-    # Perfect match = 215 - 1 - 1 = 213
-    # Non-perfect match = series + year + season + episode
-    # Non-perfect match = 108 + 54 + 18 + 18 = 198
+    
+    # Perfect match = hash score - hearing impaired score - resolution score (subtitle for 720p its the same for 1080p)
+    # Perfect match = 215 -1 -1 = 213
+    # No-perfect match = series + year + season + episode
+    # No-perfect match = 108 + 54 + 18 + 18 = 198
     # From latest subliminal code:
     # episode_scores = {'hash': 215, 'series': 108, 'year': 54, 'season': 18, 'episode': 18, 'release_group': 9,
     #                   'format': 4, 'audio_codec': 2, 'resolution': 1, 'hearing_impaired': 1, 'video_codec': 1}
@@ -324,7 +326,7 @@ class SubtitlesFinder(object):
         self.amActive = False
 
     @staticmethod
-    def subtitles_download_in_pp():  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def subtitles_download_in_pp():  # pylint: disable=too-many-locals, too-many-branches
         logger.log(u'Checking for needed subtitles in Post-Process folder', logger.INFO)
 
         providers = enabled_service_list()
@@ -342,17 +344,14 @@ class SubtitlesFinder(object):
         if not languages:
             return
 
-        # Dict of language exceptions to use with subliminal
-        language_exceptions = {'pt-br':'pob'}
-
         run_post_process = False
         # Check if PP folder is set
         if sickbeard.TV_DOWNLOAD_DIR and os.path.isdir(sickbeard.TV_DOWNLOAD_DIR):
 
             for root, _, files in os.walk(sickbeard.TV_DOWNLOAD_DIR, topdown=False):
-                rar_files = [rar_file for rar_file in files if isRarFile(rar_file)]
+                rar_files = [x for x in files if isRarFile(x)]
                 if rar_files and sickbeard.UNPACK:
-                    video_files = [video_file for video_file in files if isMediaFile(video_file)]
+                    video_files = [x for x in files if isMediaFile(x)]
                     if u'_UNPACK' not in root and (not video_files or root == sickbeard.TV_DOWNLOAD_DIR):
                         logger.log(u'Found rar files in post-process folder: {}'.format(rar_files), logger.DEBUG)
                         result = processTV.ProcessResult()
@@ -361,35 +360,19 @@ class SubtitlesFinder(object):
                     logger.log(u'Unpack is disabled. Skipping: {}'.format(rar_files), logger.WARNING)
 
             for root, _, files in os.walk(sickbeard.TV_DOWNLOAD_DIR, topdown=False):
-                for filename in sorted(files):
+                for video_filename in sorted(files):
                     try:
                         # Remove non release groups from video file. Needed to match subtitles
-                        new_filename = remove_non_release_groups(filename)
-                        if new_filename != filename:
-                            os.rename(filename, new_filename)
-                            filename = new_filename
+                        new_video_filename = remove_non_release_groups(video_filename)
+                        if new_video_filename != video_filename:
+                            os.rename(video_filename, new_video_filename)
+                            video_filename = new_video_filename
                     except Exception as error:
                         logger.log(u'Couldn\'t remove non release groups from video file. Error: {}'.format
                                    (ex(error)), logger.DEBUG)
-
-                    # Delete unwanted subtitles before downloading new ones
-                    if sickbeard.SUBTITLES_MULTI and sickbeard.SUBTITLES_KEEP_ONLY_WANTED and filename.rpartition('.')[2] in subtitle_extensions:
-                        subtitle_language = filename.rsplit('.', 2)[1]
-                        if len(subtitle_language) == 2 and subtitle_language in language_converters['opensubtitles'].codes:
-                            subtitle_language = Language.fromcode(subtitle_language, 'alpha2').opensubtitles
-                        subtitle_language = language_exceptions.get(subtitle_language, subtitle_language) if subtitle_language.lower() in language_exceptions else subtitle_language
-                        if subtitle_language not in language_converters['opensubtitles'].codes:
-                            subtitle_language = "unknown"
-                        if subtitle_language not in sickbeard.SUBTITLES_LANGUAGES:
-                            try:
-                                os.remove(os.path.join(root, filename))
-                                logger.log(u"Deleted \'{}\' because we don\'t want subtitle language \'{}\'. We only want \'{}\' language(s)".format(filename, subtitle_language, ', '.join(sickbeard.SUBTITLES_LANGUAGES)), logger.DEBUG)
-                            except Exception as error:
-                                logger.log(u'Couldn\'t delete subtitle: {}. Error: {}'.format(filename, ex(error)), logger.DEBUG)
-
-                    if isMediaFile(filename) and processTV.subtitles_enabled(filename):
+                    if isMediaFile(video_filename):
                         try:
-                            video = subliminal.scan_video(os.path.join(root, filename),
+                            video = subliminal.scan_video(os.path.join(root, video_filename),
                                                           subtitles=False, embedded_subtitles=False)
                             subtitles_list = pool.list_subtitles(video, languages)
 
@@ -399,10 +382,10 @@ class SubtitlesFinder(object):
 
                             if not subtitles_list:
                                 logger.log(u'No subtitles found for {}'.format
-                                           (os.path.join(root, filename)), logger.DEBUG)
+                                           (os.path.join(root, video_filename)), logger.DEBUG)
                                 continue
 
-                            logger.log(u'Found subtitle(s) canditate(s) for {}'.format(filename), logger.INFO)
+                            logger.log(u'Found subtitle(s) canditate(s) for {}'.format(video_filename), logger.INFO)
                             hearing_impaired = sickbeard.SUBTITLES_HEARING_IMPAIRED
                             user_score = 213 if sickbeard.SUBTITLES_PERFECT_MATCH else 198
                             found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
@@ -418,8 +401,8 @@ class SubtitlesFinder(object):
                             downloaded_languages = set()
                             for subtitle in found_subtitles:
                                 logger.log(u'Found subtitle for {} in {} provider with language {}'.format
-                                           (os.path.join(root, filename), subtitle.provider_name,
-                                            subtitle.language.opensubtitles), logger.INFO)
+                                           (os.path.join(root, video_filename), subtitle.provider_name,
+                                            subtitle.language.opensubtitles), logger.DEBUG)
                                 subliminal.save_subtitles(video, found_subtitles, directory=root,
                                                           single=not sickbeard.SUBTITLES_MULTI)
 
@@ -439,12 +422,13 @@ class SubtitlesFinder(object):
                                 run_post_process = True
                         except Exception as error:
                             logger.log(u'Error occurred when downloading subtitles for: {}. Error: {}'.format
-                                       (os.path.join(root, filename), ex(error)))
+                                       (os.path.join(root, video_filename), ex(error)))
             if run_post_process:
                 logger.log(u'Starting post-process with default settings now that we found subtitles')
                 processTV.processDir(sickbeard.TV_DOWNLOAD_DIR)
 
-    def run(self, force=False):  # pylint: disable=too-many-branches, too-many-statements, too-many-locals
+    def run(self, force=False):  # pylint: disable=too-many-branches, too-many-statements
+
         if not sickbeard.USE_SUBTITLES:
             return
 
@@ -575,6 +559,7 @@ class SubtitlesFinder(object):
 
 
 def run_subs_extra_scripts(episode_object, subtitle, video, single=False):
+
     for script_name in sickbeard.SUBTITLES_EXTRA_SCRIPTS:
         script_cmd = [piece for piece in re.split("( |\\\".*?\\\"|'.*?')", script_name) if piece.strip()]
         script_cmd[0] = os.path.abspath(script_cmd[0])

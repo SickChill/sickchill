@@ -2257,7 +2257,7 @@ class HomePostProcess(Home):
     # TODO: PR to NZBtoMedia so that we can rename dir to proc_dir, and type to proc_type. Using names of builtins as var names is bad
     # pylint: disable=redefined-builtin
     def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
-                       is_priority=None, delete_on="0", failed="0", type="auto", ignore_subs=None, *args, **kwargs):
+                       is_priority=None, delete_on="0", failed="0", type="auto", *args, **kwargs):
 
         def argToBool(argument):
             if isinstance(argument, basestring):
@@ -2279,7 +2279,7 @@ class HomePostProcess(Home):
 
             result = processTV.processDir(
                 ss(dir), nzbName, process_method=process_method, force=argToBool(force),
-                is_priority=argToBool(is_priority), delete_on=argToBool(delete_on), failed=argToBool(failed), proc_type=type, ignore_subs=argToBool(ignore_subs)
+                is_priority=argToBool(is_priority), delete_on=argToBool(delete_on), failed=argToBool(failed), proc_type=type
             )
 
             if quiet is not None and int(quiet) == 1:
@@ -5090,10 +5090,9 @@ class ConfigSubtitles(Config):
                         controller="config", action="subtitles")
 
     def saveSubtitles(self, use_subtitles=None, subtitles_plugins=None, subtitles_languages=None, subtitles_dir=None, subtitles_perfect_match=None,
-                      service_order=None, subtitles_history=None, subtitles_finder_frequency=None,
+                      service_order=None, subtitles_history=None, subtitles_finder_frequency=None, subtitles_download_in_pp=None,
                       subtitles_multi=None, embedded_subtitles_all=None, subtitles_extra_scripts=None, subtitles_hearing_impaired=None,
-                      addic7ed_user=None, addic7ed_pass=None, legendastv_user=None, legendastv_pass=None, opensubtitles_user=None, opensubtitles_pass=None,
-                      subtitles_download_in_pp=None, subtitles_keep_only_wanted=None):
+                      addic7ed_user=None, addic7ed_pass=None, legendastv_user=None, legendastv_pass=None, opensubtitles_user=None, opensubtitles_pass=None):
 
         results = []
 
@@ -5106,9 +5105,8 @@ class ConfigSubtitles(Config):
         sickbeard.SUBTITLES_HISTORY = config.checkbox_to_value(subtitles_history)
         sickbeard.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)
         sickbeard.SUBTITLES_HEARING_IMPAIRED = config.checkbox_to_value(subtitles_hearing_impaired)
-        sickbeard.SUBTITLES_MULTI = 1 if len(sickbeard.SUBTITLES_LANGUAGES) > 1 else config.checkbox_to_value(subtitles_multi)
+        sickbeard.SUBTITLES_MULTI = config.checkbox_to_value(subtitles_multi)
         sickbeard.SUBTITLES_DOWNLOAD_IN_PP = config.checkbox_to_value(subtitles_download_in_pp)
-        sickbeard.SUBTITLES_KEEP_ONLY_WANTED = config.checkbox_to_value(subtitles_keep_only_wanted)
         sickbeard.SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in subtitles_extra_scripts.split('|') if x.strip()]
 
         # Subtitles services
