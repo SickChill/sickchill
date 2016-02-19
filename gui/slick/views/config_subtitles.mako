@@ -147,6 +147,17 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                 </div>
                                 <div class="field-pair">
                                         <label>
+                                        <span class="component-title">Pre Scripts</span>
+                                           <input type="text" name="subtitles_pre_scripts" value="${'|'.join(sickbeard.SUBTITLES_PRE_SCRIPTS)}" class="form-control input-sm input350" autocapitalize="off" />
+                                        </label>
+                                        <label>
+                                        <span class="component-desc">
+                                            <p>Show's media filename is passed as argument for the pre scripts. Pre-scripts are executed before trying to find subtitles from usual sources.</p>
+                                        </span>
+                                        </label>
+                                </div>
+                                <div class="field-pair">
+                                        <label>
                                         <span class="component-title">Extra Scripts</span>
                                            <input type="text" name="subtitles_extra_scripts" value="${'|'.join(sickbeard.SUBTITLES_EXTRA_SCRIPTS)}" class="form-control input-sm input350" autocapitalize="off" />
                                         </label>
