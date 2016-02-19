@@ -60,7 +60,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
     IGNORED_FILESTRINGS = [".AppleDouble", ".DS_Store"]
 
-    def __init__(self, file_path, nzb_name=None, process_method=None, is_priority=None):
+    def __init__(self, file_path, nzb_name=None, process_method=None, is_priority=None, ignore_subs=None):
         """
         Creates a new post processor with the given file path and optionally an NZB name.
 
@@ -93,6 +93,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         self.is_proper = False
 
         self.is_priority = is_priority
+
+        self.ignore_subs = ignore_subs
 
         self.log = ''
 

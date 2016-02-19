@@ -143,7 +143,7 @@ def logHelper(logMessage, logLevel=logger.INFO):
 
 
 # pylint: disable=too-many-arguments,too-many-branches,too-many-statements,too-many-locals
-def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, proc_type="auto"):
+def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, proc_type="auto", ignore_subs=None):
     """
     Scans through the files in dirName and processes whatever media files it finds
 
@@ -216,18 +216,18 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
         # Don't Link media when the media is extracted from a rar in the same path
         if process_method in (u'hardlink', u'symlink') and videoInRar:
-            process_media(path, videoInRar, nzbName, u'move', force, is_priority, result)
+            process_media(path, videoInRar, nzbName, u'move', force, is_priority, result, ignore_subs)
             delete_files(path, rarContent, result)
             for video in set(videoFiles) - set(videoInRar):
-                process_media(path, [video], nzbName, process_method, force, is_priority, result)
+                process_media(path, [video], nzbName, process_method, force, is_priority, result, ignore_subs)
         elif sickbeard.DELRARCONTENTS and videoInRar:
-            process_media(path, videoInRar, nzbName, process_method, force, is_priority, result)
+            process_media(path, videoInRar, nzbName, process_method, force, is_priority, result, ignore_subs)
             delete_files(path, rarContent, result, True)
             for video in set(videoFiles) - set(videoInRar):
-                process_media(path, [video], nzbName, process_method, force, is_priority, result)
+                process_media(path, [video], nzbName, process_method, force, is_priority, result, ignore_subs)
         else:
             for video in videoFiles:
-                process_media(path, [video], nzbName, process_method, force, is_priority, result)
+                process_media(path, [video], nzbName, process_method, force, is_priority, result, ignore_subs)
 
     else:
         result.output += logHelper(u"Found temporary sync files: %s in path: %s" % (SyncFiles, path))
@@ -265,17 +265,17 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
                 # Don't Link media when the media is extracted from a rar in the same path
                 if process_method in (u'hardlink', u'symlink') and videoInRar:
-                    process_media(processPath, videoInRar, nzbName, u'move', force, is_priority, result)
+                    process_media(processPath, videoInRar, nzbName, u'move', force, is_priority, result, ignore_subs)
                     process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force,
-                                  is_priority, result)
+                                  is_priority, result, ignore_subs)
                     delete_files(processPath, rarContent, result)
                 elif sickbeard.DELRARCONTENTS and videoInRar:
-                    process_media(processPath, videoInRar, nzbName, process_method, force, is_priority, result)
+                    process_media(processPath, videoInRar, nzbName, process_method, force, is_priority, result, ignore_subs)
                     process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force,
-                                  is_priority, result)
+                                  is_priority, result, ignore_subs)
                     delete_files(processPath, rarContent, result, True)
                 else:
-                    process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result)
+                    process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result, ignore_subs)
 
                     # Delete all file not needed and avoid deleting files if Manual PostProcessing
                     if not(process_method == u"move" and result.result) or (proc_type == u"manual" and not delete_on):
@@ -520,7 +520,7 @@ def already_postprocessed(dirName, videofile, force, result):  # pylint: disable
     return False
 
 
-def process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result):  # pylint: disable=too-many-arguments
+def process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result, ignore_subs):  # pylint: disable=too-many-arguments
     """
     Postprocess mediafiles
 
@@ -531,6 +531,7 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
     :param force: Postprocess currently postprocessing file
     :param is_priority: Boolean, is this a priority download
     :param result: Previous results
+    :param ignore_subs: Boolean, if true ignore releases without associated subtitles
     """
 
     processor = None
@@ -542,10 +543,10 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
             continue
 
         try:
-            processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority)
+            processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority, ignore_subs)
 
             # This feature prevents PP for files that do not have subtitle associated with the video file
-            if sickbeard.POSTPONE_IF_NO_SUBS:
+            if sickbeard.POSTPONE_IF_NO_SUBS and not ignore_subs and subtitles_enabled(cur_video_file):
                 associatedFiles = processor.list_associated_files(cur_video_file_path, subtitles_only=True)
                 if not [associatedFile for associatedFile in associatedFiles if associatedFile[-3:] in subtitle_extensions]:
                     result.output += logHelper(u"No subtitles associated. Postponing the post-process of this file: %s" % cur_video_file, logger.DEBUG)
@@ -625,3 +626,24 @@ def process_failed(dirName, nzbName, result):
         else:
             result.output += logHelper(u"Failed Download Processing failed: (%s, %s): %s" %
                                        (nzbName, dirName, process_fail_message), logger.WARNING)
+
+def subtitles_enabled(video):
+    """
+    Parse video filename to a show to check if it has subtitle enabled
+
+    :param video: video filename to be parsed
+    """
+
+    try:
+        parse_result = NameParser().parse(video, cache_result=True)
+    except (InvalidNameException, InvalidShowException):
+        logger.log(u'Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {}'.format(video), logger.WARNING)
+        return False
+
+    if parse_result.show.indexerid:
+        main_db_con = db.DBConnection()
+        sql_results = main_db_con.select("SELECT subtitles FROM tv_shows WHERE indexer_id = ? LIMIT 1", [parse_result.show.indexerid])
+        return bool(sql_results[0]["subtitles"]) if sql_results else False
+    else:
+        logger.log(u'Empty indexer ID for: {}'.format(video), logger.WARNING)
+        return False
