@@ -1283,7 +1283,6 @@ class CMD_PostProcess(ApiCall):
             "is_priority": {"desc": "Replace the file even if it exists in a higher quality"},
             "failed": {"desc": "Mark download as failed"},
             "type": {"desc": "The type of post-process being requested"},
-            "ignore_subs": {"desc": "Ignore check for associated subtitles if 'postpone if no subs' enabled"},
         }
     }
 
@@ -1296,7 +1295,6 @@ class CMD_PostProcess(ApiCall):
         self.process_method, args = self.check_params(args, kwargs, "process_method", False, False, "string",
                                                       ["copy", "symlink", "hardlink", "move"])
         self.is_priority, args = self.check_params(args, kwargs, "is_priority", False, False, "bool", [])
-        self.ignore_subs, args = self.check_params(args, kwargs, "ignore_subs", False, False, "bool", [])
         self.failed, args = self.check_params(args, kwargs, "failed", False, False, "bool", [])
         self.type, args = self.check_params(args, kwargs, "type", "auto", None, "string", ["auto", "manual"])
         # super, missing, help
@@ -1314,7 +1312,7 @@ class CMD_PostProcess(ApiCall):
             self.type = 'manual'
 
         data = processTV.processDir(self.path, process_method=self.process_method, force=self.force_replace,
-                                    is_priority=self.is_priority, failed=self.failed, proc_type=self.type, ignore_subs=self.ignore_subs)
+                                    is_priority=self.is_priority, failed=self.failed, proc_type=self.type)
 
         if not self.return_data:
             data = ""
