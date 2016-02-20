@@ -377,7 +377,10 @@ class SubtitlesFinder(object):
                         subtitle_language = filename.rsplit('.', 2)[1]
                         if len(subtitle_language) == 2 and subtitle_language in language_converters['opensubtitles'].codes:
                             subtitle_language = Language.fromcode(subtitle_language, 'alpha2').opensubtitles
-                        subtitle_language = language_exceptions.get(subtitle_language.lower(), subtitle_language) if subtitle_language.lower() in language_exceptions else 'unknown'
+                        elif subtitle_language.lower() in language_exceptions:
+                            subtitle_language = language_exceptions.get(subtitle_language.lower(), subtitle_language)
+                        elif subtitle_language.lower() not in language_converters['opensubtitles'].codes:
+                            subtitle_language = 'unknown'
                         if subtitle_language not in sickbeard.SUBTITLES_LANGUAGES:
                             try:
                                 os.remove(os.path.join(root, filename))
