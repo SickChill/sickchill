@@ -127,6 +127,16 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                                     </label>
                                 </div>
                                 <div class="field-pair">
+                                    <label class="clearfix" for="subtitles_keep_only_wanted">
+                                        <span class="component-title">Delete unwanted subtitles</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" name="subtitles_keep_only_wanted" id="subtitles_keep_only_wanted" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_KEEP_ONLY_WANTED)]}/>
+                                            <p>Enable to delete unwanted subtitle languages bundled with release</p>
+                                            <p>Avoid post-process releases with unwanted language subtitles when feature 'postpone if no subs' is enabled</p>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="field-pair">
                                     <label class="clearfix" for="embedded_subtitles_all">
                                         <span class="component-title">Embedded Subtitles</span>
                                         <span class="component-desc">
@@ -173,7 +183,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                 <div id="subtitles-plugin" class="component-group">
 
                     <div class="component-group-desc">
-                        <h3>Subtitle Plugins</h3>
+                        <h3>Subtitle Providers</h3>
                         <p>Check off and drag the plugins into the order you want them to be used.</p>
                         <p class="note">At least one plugin is required.</p>
                         <p class="note"><span style="font-size: 16px;">*</span> Web-scraping plugin</p>
@@ -199,7 +209,7 @@ $('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' }
                 </div><!-- /component-group2 //-->
                 <div id="plugin-settings" class="component-group">
                     <div class="component-group-desc">
-                        <h3>Subtitle Settings</h3>
+                        <h3>Provider Settings</h3>
                         <p>Set user and password for each provider</p>
                     </div><!-- /component-group-desc //-->
 
