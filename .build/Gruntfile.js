@@ -19,8 +19,10 @@ module.exports = function(grunt) {
         },
         bower_concat: { // jshint ignore:line
             all: {
-                dest: './dist/bower.js',
-                cssDest: './dist/bower.css',
+                dest: {
+                    js: './dist/bower.js',
+                    css: './dist/bower.css'
+                },
                 exclude: [
                 ],
                 dependencies: {
