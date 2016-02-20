@@ -238,7 +238,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
 def refresh_subtitles(episode_info, existing_subtitles):
     video = get_video(episode_info['location'])
     if not video:
-        logger.log(u'Exception caught in subliminal.scan_video, subtitles couldn\'t be refreshed', logger.DEBUG)
+        logger.log(u"Exception caught in subliminal.scan_video, subtitles couldn't be refreshed", logger.DEBUG)
         return existing_subtitles, None
     current_subtitles = get_subtitles(video)
     if existing_subtitles == current_subtitles:
@@ -343,7 +343,7 @@ class SubtitlesFinder(object):
             return
 
         # Dict of language exceptions to use with subliminal
-        language_exceptions = {'pt-br':'pob'}
+        language_exceptions = {'pt-br': 'pob'}
 
         run_post_process = False
         # Check if PP folder is set
@@ -369,23 +369,24 @@ class SubtitlesFinder(object):
                             os.rename(filename, new_filename)
                             filename = new_filename
                     except Exception as error:
-                        logger.log(u'Couldn\'t remove non release groups from video file. Error: {}'.format
+                        logger.log(u"Couldn't remove non release groups from video file. Error: {}".format
                                    (ex(error)), logger.DEBUG)
 
                     # Delete unwanted subtitles before downloading new ones
                     if sickbeard.SUBTITLES_MULTI and sickbeard.SUBTITLES_KEEP_ONLY_WANTED and filename.rpartition('.')[2] in subtitle_extensions:
-                        subtitle_language = filename.rsplit('.', 2)[1]
+                        subtitle_language = filename.rsplit('.', 2)[1].lower()
                         if len(subtitle_language) == 2 and subtitle_language in language_converters['opensubtitles'].codes:
                             subtitle_language = Language.fromcode(subtitle_language, 'alpha2').opensubtitles
-                        subtitle_language = language_exceptions.get(subtitle_language, subtitle_language) if subtitle_language.lower() in language_exceptions else subtitle_language
-                        if subtitle_language not in language_converters['opensubtitles'].codes:
-                            subtitle_language = "unknown"
+                        elif subtitle_language in language_exceptions:
+                            subtitle_language = language_exceptions.get(subtitle_language, subtitle_language)
+                        elif subtitle_language not in language_converters['opensubtitles'].codes:
+                            subtitle_language = 'unknown'
                         if subtitle_language not in sickbeard.SUBTITLES_LANGUAGES:
                             try:
                                 os.remove(os.path.join(root, filename))
-                                logger.log(u"Deleted \'{}\' because we don\'t want subtitle language \'{}\'. We only want \'{}\' language(s)".format(filename, subtitle_language, ', '.join(sickbeard.SUBTITLES_LANGUAGES)), logger.DEBUG)
+                                logger.log(u"Deleted '{}' because we don't want subtitle language '{}'. We only want '{}' language(s)".format(filename, subtitle_language, ', '.join(sickbeard.SUBTITLES_LANGUAGES)), logger.DEBUG)
                             except Exception as error:
-                                logger.log(u'Couldn\'t delete subtitle: {}. Error: {}'.format(filename, ex(error)), logger.DEBUG)
+                                logger.log(u"Couldn't delete subtitle: {}. Error: {}".format(filename, ex(error)), logger.DEBUG)
 
                     if isMediaFile(filename) and processTV.subtitles_enabled(filename):
                         try:
