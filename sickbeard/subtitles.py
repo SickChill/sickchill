@@ -342,6 +342,9 @@ class SubtitlesFinder(object):
         if not languages:
             return
 
+        # Dict of language exceptions to use with subliminal
+        language_exceptions = {'pt-br':'pob'}
+
         run_post_process = False
         # Check if PP folder is set
         if sickbeard.TV_DOWNLOAD_DIR and os.path.isdir(sickbeard.TV_DOWNLOAD_DIR):
@@ -370,16 +373,17 @@ class SubtitlesFinder(object):
                                    (ex(error)), logger.DEBUG)
 
                     # Delete unwanted subtitles before downloading new ones
-                    if sickbeard.SUBTITLES_KEEP_ONLY_WANTED and filename.rpartition('.')[2] in subtitle_extensions:
+                    if sickbeard.SUBTITLES_MULTI and sickbeard.SUBTITLES_KEEP_ONLY_WANTED and filename.rpartition('.')[2] in subtitle_extensions:
                         subtitle_language = filename.rsplit('.', 2)[1]
                         if len(subtitle_language) == 2 and subtitle_language in language_converters['opensubtitles'].codes:
                             subtitle_language = Language.fromcode(subtitle_language, 'alpha2').opensubtitles
-                        elif subtitle_language.lower() == 'pt-br':
-                            subtitle_language = 'pob'
+                        subtitle_language = language_exceptions.get(subtitle_language, subtitle_language) if subtitle_language.lower() in language_exceptions else subtitle_language
+                        if subtitle_language not in language_converters['opensubtitles'].codes:
+                            subtitle_language = "unknown"
                         if subtitle_language not in sickbeard.SUBTITLES_LANGUAGES:
-                            logger.log(u'Deleting \'{}\' because we don\'t want that subtitle language'.format(filename), logger.DEBUG)
                             try:
                                 os.remove(os.path.join(root, filename))
+                                logger.log(u"Deleted \'{}\' because we don\'t want subtitle language \'{}\'. We only want \'{}\' language(s)".format(filename, subtitle_language, ', '.join(sickbeard.SUBTITLES_LANGUAGES)), logger.DEBUG)
                             except Exception as error:
                                 logger.log(u'Couldn\'t delete subtitle: {}. Error: {}'.format(filename, ex(error)), logger.DEBUG)
 
