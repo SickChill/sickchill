@@ -374,12 +374,12 @@ class SubtitlesFinder(object):
 
                     # Delete unwanted subtitles before downloading new ones
                     if sickbeard.SUBTITLES_MULTI and sickbeard.SUBTITLES_KEEP_ONLY_WANTED and filename.rpartition('.')[2] in subtitle_extensions:
-                        subtitle_language = filename.rsplit('.', 2)[1]
+                        subtitle_language = filename.rsplit('.', 2)[1].lower()
                         if len(subtitle_language) == 2 and subtitle_language in language_converters['opensubtitles'].codes:
                             subtitle_language = Language.fromcode(subtitle_language, 'alpha2').opensubtitles
-                        elif subtitle_language.lower() in language_exceptions:
-                            subtitle_language = language_exceptions.get(subtitle_language.lower(), subtitle_language)
-                        elif subtitle_language.lower() not in language_converters['opensubtitles'].codes:
+                        elif subtitle_language in language_exceptions:
+                            subtitle_language = language_exceptions.get(subtitle_language, subtitle_language)
+                        elif subtitle_language not in language_converters['opensubtitles'].codes:
                             subtitle_language = 'unknown'
                         if subtitle_language not in sickbeard.SUBTITLES_LANGUAGES:
                             try:
