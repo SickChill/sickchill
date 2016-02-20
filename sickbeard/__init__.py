@@ -351,7 +351,6 @@ PLEX_SERVER_TOKEN = None
 PLEX_CLIENT_HOST = None
 PLEX_SERVER_USERNAME = None
 PLEX_SERVER_PASSWORD = None
-PLEX_SERVER_NO_AUTH = False
 
 USE_PLEX_CLIENT = False
 PLEX_CLIENT_USERNAME = None
@@ -601,7 +600,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_KODI, KODI_ALWAYS_ON, KODI_NOTIFY_ONSNATCH, KODI_NOTIFY_ONDOWNLOAD, KODI_NOTIFY_ONSUBTITLEDOWNLOAD, KODI_UPDATE_FULL, KODI_UPDATE_ONLYFIRST, \
             KODI_UPDATE_LIBRARY, KODI_HOST, KODI_USERNAME, KODI_PASSWORD, BACKLOG_FREQUENCY, \
             USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, TRAKT_SYNC_WATCHLIST, TRAKT_REMOVE_SHOW_FROM_SICKRAGE, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, TRAKT_USE_RECOMMENDED, TRAKT_SYNC, TRAKT_SYNC_REMOVE, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_TIMEOUT, TRAKT_BLACKLIST_NAME, \
-            USE_PLEX_SERVER, PLEX_SERVER_NO_AUTH, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
+            USE_PLEX_SERVER, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
             PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, \
             USE_EMBY, EMBY_HOST, EMBY_APIKEY, \
             showUpdateScheduler, __INITIALIZED__, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, \
@@ -1024,7 +1023,6 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         PLEX_CLIENT_USERNAME = check_setting_str(CFG, 'Plex', 'plex_client_username', '', censor_log=True)
         PLEX_CLIENT_PASSWORD = check_setting_str(CFG, 'Plex', 'plex_client_password', '', censor_log=True)
         PLEX_SERVER_HTTPS = bool(check_setting_int(CFG, 'Plex', 'plex_server_https', 0))
-        PLEX_SERVER_NO_AUTH = bool(check_setting_int(CFG, 'Plex', 'plex_server_no_auth', 0))
 
         USE_EMBY = bool(check_setting_int(CFG, 'Emby', 'use_emby', 0))
         EMBY_HOST = check_setting_str(CFG, 'Emby', 'emby_host', '')
@@ -1936,7 +1934,6 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
     new_config['Plex']['plex_client_host'] = PLEX_CLIENT_HOST
     new_config['Plex']['plex_server_username'] = PLEX_SERVER_USERNAME
     new_config['Plex']['plex_server_password'] = helpers.encrypt(PLEX_SERVER_PASSWORD, ENCRYPTION_VERSION)
-    new_config['Plex']['plex_server_no_auth'] = int(PLEX_SERVER_NO_AUTH)
 
     new_config['Plex']['use_plex_client'] = int(USE_PLEX_CLIENT)
     new_config['Plex']['plex_client_username'] = PLEX_CLIENT_USERNAME
