@@ -41,8 +41,8 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         TorrentProvider.__init__(self, name)
 
         self.cache = TorrentRssCache(self, min_time=15)
-        self.urls = {'base_url': re.sub(r'/$', '', url)}
-        self.url = self.urls['base_url']
+        self.url = url.rstrip('/')
+
         self.ratio = None
         self.supports_backlog = False
 
@@ -206,6 +206,6 @@ class TorrentRssCache(tvcache.TVCache):
         logger.log(u"Cache update URL: %s" % self.provider.url, logger.DEBUG)
 
         if self.provider.cookies:
-            self.provider.headers.update({'Cookie': self.provider.cookies})
+            add_dict_to_cookiejar(self.provider.session.cookies, dict(x.rsplit('=', 1) for x in self.provider.cookies.split(';')))
 
         return self.getRSSFeed(self.provider.url)

@@ -21,7 +21,7 @@
 import os
 import posixpath  # Must use posixpath
 import time
-from urllib import urlencode
+from requests.compat import urlencode
 
 import sickbeard
 from sickbeard import logger, tvcache
@@ -271,10 +271,10 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                     search_params.pop('ep', '')
 
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')), logger.DEBUG)
+                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")), logger.DEBUG)
 
                     if 'tvdbid' not in search_params:
                         search_params['q'] = search_string

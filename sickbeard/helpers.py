@@ -19,6 +19,7 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint:disable=too-many-lines
 
+import warnings
 import os
 import io
 import ctypes
@@ -1333,18 +1334,10 @@ def touchFile(fname, atime=None):
     :return: True on success, False on failure
     """
 
-    if atime is not None:
-        try:
-            with file(fname, 'a'):
-                os.utime(fname, (atime, atime))
-                return True
-        except Exception as e:
-            if e.errno == errno.ENOSYS:
-                logger.log(u"File air date stamping not available on your OS. Please disable setting", logger.DEBUG)
-            elif e.errno == errno.EACCES:
-                logger.log(u"File air date stamping failed(Permission denied). Check permissions for file: %s" % fname, logger.ERROR)
-            else:
-                logger.log(u"File air date stamping failed. The error is: %r" % ex(e), logger.ERROR)
+    if atime and fname:
+        with file(fname, 'a'):
+            os.utime(fname, (atime, atime))
+            return True
 
     return False
 
@@ -1413,11 +1406,27 @@ def _setUpSession(session, headers):
 
 
 def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too-many-arguments, too-many-return-statements, too-many-branches
-           timeout=30, session=None, json=False, need_bytes=False):
+           timeout=30, session=None, json=False, need_bytes=False, **kwargs):
     """
     Returns a byte-string retrieved from the url provider.
     """
 
+    # TODO: make raw response the default once the the current args are fully deprecated
+    default = None
+    if json:
+        message = u'getURL argument json will be deprecated in the near future use returns=\'json\' instead.'
+        default = u'json'
+    elif need_bytes:
+        message = u'getURL argument need_bytes will be deprecated in the near future use returns=\'content\' instead.'
+        default = u'content'
+    elif u'returns' not in kwargs:
+        default = u'text'
+        message = u'getURL default return type may change in the near future use returns=\'text\' instead.'
+    if default is not None:
+        warnings.warn(message, PendingDeprecationWarning, stacklevel=2)
+
+    response_type = kwargs.pop(u'returns', default)
+    hooks = kwargs.pop(u'hooks', None)
     session = _setUpSession(session, headers)
 
     if params and isinstance(params, (list, dict)):
@@ -1436,9 +1445,9 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
                         post_data[param] = post_data[param].encode('utf-8')
 
             session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
-            resp = session.post(url, data=post_data, timeout=timeout, allow_redirects=True, verify=session.verify)
+            resp = session.post(url, data=post_data, timeout=timeout, allow_redirects=True, verify=session.verify, hooks=hooks)
         else:
-            resp = session.get(url, timeout=timeout, allow_redirects=True, verify=session.verify)
+            resp = session.get(url, timeout=timeout, allow_redirects=True, verify=session.verify, hooks=hooks)
 
         if not resp.ok:
             logger.log(u"Requested getURL %s returned status code is %s: %s"
@@ -1469,7 +1478,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
             logger.log(traceback.format_exc(), logger.DEBUG)
         return None
 
-    return (resp.text, resp.content)[need_bytes] if not json else resp.json()
+    return resp if response_type == u'response' or response_type is None else resp.json() if response_type == u'json' else getattr(resp, response_type, resp)
 
 
 def download_file(url, filename, session=None, headers=None):  # pylint:disable=too-many-return-statements
@@ -1736,7 +1745,7 @@ def getTVDBFromID(indexer_id, indexer):  # pylint:disable=too-many-return-statem
     tvdb_id = ''
     if indexer == 'IMDB':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=%s" % indexer_id
-        data = getURL(url, session=session, need_bytes=True)
+        data = getURL(url, session=session, returns='content')
         if data is None:
             return tvdb_id
         try:
@@ -1750,7 +1759,7 @@ def getTVDBFromID(indexer_id, indexer):  # pylint:disable=too-many-return-statem
         return tvdb_id
     elif indexer == 'ZAP2IT':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it=%s" % indexer_id
-        data = getURL(url, session=session, need_bytes=True)
+        data = getURL(url, session=session, returns='content')
         if data is None:
             return tvdb_id
         try:
@@ -1764,7 +1773,7 @@ def getTVDBFromID(indexer_id, indexer):  # pylint:disable=too-many-return-statem
         return tvdb_id
     elif indexer == 'TVMAZE':
         url = "http://api.tvmaze.com/shows/%s" % indexer_id
-        data = getURL(url, session=session, json=True)
+        data = getURL(url, session=session, returns='json')
         if data is None:
             return tvdb_id
         tvdb_id = data['externals']['thetvdb']

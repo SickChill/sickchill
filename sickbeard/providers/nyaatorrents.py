@@ -19,7 +19,7 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from urllib import urlencode
+from requests.compat import urlencode
 
 from sickbeard import logger, tvcache
 
@@ -55,10 +55,10 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
                 params = {
@@ -68,7 +68,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                     "order": 1
                 }
                 if mode != 'RSS':
-                    params["term"] = search_string.encode('utf-8')
+                    params["term"] = search_string
 
                 search_url = self.url + '?' + urlencode(params)
                 logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
@@ -89,7 +89,8 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
-                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format
+                                       (title, seeders, leechers), logger.DEBUG)
                         continue
 
                     if self.confirmed and not verified and mode != 'RSS':

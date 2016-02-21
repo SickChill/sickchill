@@ -18,7 +18,7 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-from urllib import urlencode
+from requests.compat import urlencode
 
 from sickbeard import classes, logger, tvcache
 
@@ -188,7 +188,7 @@ class HDBitsCache(tvcache.TVCache):
         results = []
 
         try:
-            parsedJSON = self.provider.getURL(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), json=True)
+            parsedJSON = self.provider.getURL(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), returns='json')
 
             if self.provider._checkAuthFromData(parsedJSON):
                 results = parsedJSON['data']

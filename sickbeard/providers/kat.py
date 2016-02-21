@@ -17,14 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import posixpath  # Must use posixpath
-import traceback
-from urllib import urlencode
-from bs4 import BeautifulSoup
+from __future__ import unicode_literals
+
+import validators
+from requests.compat import urljoin
+from sickbeard.bs4_parser import BS4Parser
 
 import sickbeard
 from sickbeard import logger, tvcache
-from sickbeard.common import USER_AGENT
 
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -43,110 +43,96 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         self.minseed = None
         self.minleech = None
 
-        self.urls = {
-            'base_url': 'https://kat.cr/',
-            'search': 'https://kat.cr/%s/',
-        }
+        self.url = "https://kat.cr"
+        self.urls = {"search": urljoin(self.url, "%s/")}
 
-        self.url = self.urls['base_url']
         self.custom_url = None
 
-        self.headers.update({'User-Agent': USER_AGENT})
-
-        self.search_params = {
-            'q': '',
-            'field': 'seeders',
-            'sorder': 'desc',
-            'rss': 1,
-            'category': 'tv'
-        }
-
-        self.cache = tvcache.TVCache(self, search_params={'RSS': ['tv', 'anime']})
+        self.cache = tvcache.TVCache(self, search_params={"RSS": ["tv", "anime"]})
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
 
-        # select the correct category
         anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False
-        self.search_params['category'] = ('tv', 'anime')[anime]
+        search_params = {
+            "q": "",
+            "field": "seeders",
+            "sorder": "desc",
+            "rss": 1,
+            "category": ("tv", "anime")[anime]
+        }
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
 
-                self.search_params['q'] = search_string.encode('utf-8') if mode != 'RSS' else ''
-                self.search_params['field'] = 'seeders' if mode != 'RSS' else 'time_add'
+                search_params["q"] = search_string if mode != "RSS" else ""
+                search_params["field"] = "seeders" if mode != "RSS" else "time_add"
 
-                if mode != 'RSS':
-                    logger.log(u"Search string: {search}".format(search=search_string.decode('utf-8')),
+                if mode != "RSS":
+                    logger.log("Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
-                url_fmt_string = 'usearch' if mode != 'RSS' else search_string
-                try:
-                    search_url = self.urls['search'] % url_fmt_string + '?' + urlencode(self.search_params)
-                    if self.custom_url:
-                        search_url = posixpath.join(self.custom_url, search_url.split(self.url)[1].lstrip('/'))  # Must use posixpath
+                search_url = self.urls["search"] % ("usearch" if mode != "RSS" else search_string)
+                if self.custom_url:
+                    if not validators.url(self.custom_url):
+                        logger.log("Invalid custom url: {}".format(self.custom_url), logger.WARNING)
+                        return results
+                    search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
-                    logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-                    data = self.get_url(search_url)
-                    if not data:
-                        logger.log(u'URL did not return data, maybe try a custom url, or a different one', logger.DEBUG)
-                        continue
+                data = self.get_url(search_url, params=search_params, returns="text")
+                if not data:
+                    logger.log("URL did not return data, maybe try a custom url, or a different one", logger.DEBUG)
+                    continue
 
-                    if not data.startswith('<?xml'):
-                        logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
-                        continue
+                if not data.startswith("<?xml"):
+                    logger.log("Expected xml but got something else, is your mirror failing?", logger.INFO)
+                    continue
 
-                    data = BeautifulSoup(data, 'html5lib')
-
-                    entries = data.findAll('item')
-                    for item in entries:
+                with BS4Parser(data, "html5lib") as html:
+                    for item in html.find_all("item"):
                         try:
-                            title = item.title.text
-                            assert isinstance(title, unicode)
+                            title = item.title.get_text(strip=True)
                             # Use the torcache link kat provides,
                             # unless it is not torcache or we are not using blackhole
                             # because we want to use magnets if connecting direct to client
                             # so that proxies work.
-                            download_url = item.enclosure['url']
-                            if sickbeard.TORRENT_METHOD != "blackhole" or 'torcache' not in download_url:
-                                download_url = item.find('torrent:magneturi').next.replace('CDATA', '').strip('[]') + self._custom_trackers
+                            download_url = item.enclosure["url"]
+                            if sickbeard.TORRENT_METHOD != "blackhole" or "torcache" not in download_url:
+                                download_url = item.find("torrent:magneturi").next.replace("CDATA", "").strip("[!]") + self._custom_trackers
 
                             if not (title and download_url):
                                 continue
 
-                            seeders = try_int(item.find('torrent:seeds').text)
-                            leechers = try_int(item.find('torrent:peers').text)
-                            verified = bool(try_int(item.find('torrent:verified').text))
-                            torrent_size = item.find('torrent:contentlength').text
-                            size = convert_size(torrent_size) or -1
+                            seeders = try_int(item.find("torrent:seeds").get_text(strip=True))
+                            leechers = try_int(item.find("torrent:peers").get_text(strip=True))
 
-                            info_hash = item.find('torrent:infohash').text
-                            # link = item['link']
+                            # Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != "RSS":
+                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format
+                                               (title, seeders, leechers), logger.DEBUG)
+                                continue
+
+                            verified = bool(try_int(item.find("torrent:verified").get_text(strip=True)))
+                            if self.confirmed and not verified:
+                                if mode != "RSS":
+                                    logger.log("Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
+                                continue
+
+                            torrent_size = item.find("torrent:contentlength").get_text(strip=True)
+                            size = convert_size(torrent_size) or -1
+                            info_hash = item.find("torrent:infohash").get_text(strip=True)
+
+                            item = title, download_url, size, seeders, leechers, info_hash
+                            if mode != "RSS":
+                                logger.log("Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+
+                            items.append(item)
 
                         except (AttributeError, TypeError, KeyError, ValueError):
                             continue
-
-                        # Filter unseeded torrent
-                        if seeders < self.minseed or leechers < self.minleech:
-                            if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                            continue
-
-                        if self.confirmed and not verified:
-                            if mode != 'RSS':
-                                logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
-                            continue
-
-                        item = title, download_url, size, seeders, leechers, info_hash
-                        if mode != 'RSS':
-                            logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
-
-                        items.append(item)
-
-                except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda tup: tup[3], reverse=True)

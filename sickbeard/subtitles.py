@@ -148,12 +148,12 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
     
     # Perfect match = hash score - hearing impaired score - resolution score (subtitle for 720p its the same for 1080p)
     # Perfect match = 215 -1 -1 = 213
-    # No-perfect match = hash score - hearing impaired score - resolution score - release_group score
-    # No-perfect match = 215 -1 -1 -9 = 204
+    # No-perfect match = series + year + season + episode
+    # No-perfect match = 108 + 54 + 18 + 18 = 198
     # From latest subliminal code:
     # episode_scores = {'hash': 215, 'series': 108, 'year': 54, 'season': 18, 'episode': 18, 'release_group': 9,
     #                   'format': 4, 'audio_codec': 2, 'resolution': 1, 'hearing_impaired': 1, 'video_codec': 1}
-    user_score = 213 if sickbeard.SUBTITLES_PERFECT_MATCH else 204
+    user_score = 213 if sickbeard.SUBTITLES_PERFECT_MATCH else 198
 
     video = get_video(video_path, subtitles_path=subtitles_path)
     if not video:
@@ -387,7 +387,7 @@ class SubtitlesFinder(object):
 
                             logger.log(u'Found subtitle(s) canditate(s) for {}'.format(video_filename), logger.INFO)
                             hearing_impaired = sickbeard.SUBTITLES_HEARING_IMPAIRED
-                            user_score = 213 if sickbeard.SUBTITLES_PERFECT_MATCH else 204
+                            user_score = 213 if sickbeard.SUBTITLES_PERFECT_MATCH else 198
                             found_subtitles = pool.download_best_subtitles(subtitles_list, video, languages=languages,
                                                                            hearing_impaired=hearing_impaired,
                                                                            min_score=user_score,

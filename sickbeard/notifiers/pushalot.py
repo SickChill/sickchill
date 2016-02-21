@@ -21,7 +21,7 @@
 
 import socket
 from httplib import HTTPSConnection, HTTPException
-from urllib import urlencode
+from requests.compat import urlencode
 from ssl import SSLError
 
 import sickbeard

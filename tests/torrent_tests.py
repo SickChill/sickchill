@@ -81,7 +81,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         url = 'http://kickass.to/'
         search_url = 'http://kickass.to/usearch/American%20Dad%21%20S08%20-S08E%20category%3Atv/?field=seeders&sorder=desc'
 
-        html = getURL(search_url, session=requests.Session())
+        html = getURL(search_url, session=requests.Session(), returns='text')
         if not html:
             return
 

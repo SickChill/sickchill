@@ -242,7 +242,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             # Add the extensions that the user doesn't allow to the 'extensions_to_delete' list
             if sickbeard.MOVE_ASSOCIATED_FILES:
                 allowed_extensions = sickbeard.ALLOWED_EXTENSIONS.split(",")
-                if not associated_file_path[-3:] in allowed_extensions:
+                if not associated_file_path.rpartition('.')[2] in allowed_extensions:
                     if ek(os.path.isfile, associated_file_path):
                         extensions_to_delete.append(associated_file_path)
 
@@ -1168,11 +1168,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
 
-        # set file modify stamp to show airdate
-        if sickbeard.AIRDATE_EPISODES:
-            for cur_ep in [ep_obj] + ep_obj.relatedEps:
-                with cur_ep.lock:
-                    cur_ep.airdateModifyStamp()
+        cur_ep.airdateModifyStamp()
 
         # generate nfo/tbn
         try:
