@@ -4164,7 +4164,7 @@ class ConfigPostProcessing(Config):
                            postpone_if_sync_files=None, postpone_if_no_subs=None,
                            allowed_extensions=None, tv_download_dir=None,
                            create_missing_show_dirs=None, add_shows_wo_dir=None,
-                           extra_scripts=None, nfo_rename=None,
+                           subtitles_pre_scripts=None, extra_scripts=None, nfo_rename=None,
                            naming_pattern=None, naming_multi_ep=None,
                            naming_custom_abd=None, naming_anime=None,
                            naming_abd_pattern=None, naming_strip_year=None,
