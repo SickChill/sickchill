@@ -595,7 +595,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             main_db_con.mass_action(sql_l)
 
         # Done updating save last update date
-        self.last_update_indexer = datetime.datetime.now().toordinal()
+        self.last_update_indexer = datetime.date.today().toordinal()
 
         self.saveToDB()
 
