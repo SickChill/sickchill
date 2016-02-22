@@ -957,6 +957,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         logger.log(str(self.indexerid) + u": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
 
     def nextEpisode(self):
+        logger.log(str(self.indexerid) + ": Finding the episode which airs next", logger.DEBUG)
+
         curDate = datetime.date.today().toordinal()
         if not self.nextaired or self.nextaired and curDate > self.nextaired:
             main_db_con = db.DBConnection()
@@ -964,7 +966,15 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status IN (?,?) ORDER BY airdate ASC LIMIT 1",
                 [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED])
 
-            self.nextaired = sql_results[0]['airdate'] if sql_results else u''
+            if sql_results is None or len(sql_results) == 0:
+                logger.log(u"{id}: No episode found... need to implement a show status".format
+                           (id=self.indexerid), logger.DEBUG)
+                self.nextaired = u''
+            else:
+                logger.log(u"{id}: Found episode {ep}".format
+                           (id=self.indexerid, ep=episode_num(sql_results[0]["season"], sql_results[0]["episode"])),
+                           logger.DEBUG)
+                self.nextaired = sql_results[0]['airdate']
 
         return self.nextaired
 

@@ -44,21 +44,20 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
 
     def run(self, force=False):  # pylint: disable=unused-argument, too-many-locals, too-many-branches, too-many-statements
 
-        if self.amActive:
-            return
-
         self.amActive = True
 
+        bad_indexer = [INDEXER_TVRAGE]
         update_datetime = datetime.datetime.now()
-        # update_date = update_datetime.date()
+        update_date = update_datetime.date()
 
+        # update_timestamp = calendar.timegm(update_datetime.timetuple())
         update_timestamp = time.mktime(update_datetime.timetuple())
         cache_db_con = db.DBConnection('cache.db')
         result = cache_db_con.select("SELECT `time` FROM lastUpdate WHERE provider = 'theTVDB'")
         if result:
-            last_update = long(result[0]['time'])
+            last_update = int(result[0]['time'])
         else:
-            last_update = update_timestamp - 691200
+            last_update = update_timestamp - 86400
             cache_db_con.action("INSERT INTO lastUpdate (provider,`time`) VALUES (?, ?)", ['theTVDB', last_update])
 
         # refresh network timezones
@@ -77,6 +76,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
         else:
             update_file = 'updates_day.xml'
 
+        # url = 'http://thetvdb.com/api/Updates.php?type=series&time=%s' % last_update
         url = 'http://thetvdb.com/api/%s/updates/%s' % (sickbeard.indexerApi(INDEXER_TVDB).api_params['apikey'], update_file)
         data = helpers.getURL(url, session=self.session, returns='text')
         if not data:
@@ -90,36 +90,45 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
             for show in tree.findall("Series"):
                 updated_shows.append(int(show.find('id').text))
         except SyntaxError:
-            update_timestamp = last_update
+            pass
+
+        logger.log(u"Doing full update on all shows")
 
         pi_list = []
         for cur_show in sickbeard.showList:
-            if int(cur_show.indexer) in [INDEXER_TVRAGE]:
+
+            if cur_show.indexer in bad_indexer:
                 logger.log(u"Indexer is no longer available for show [ %s ] " % cur_show.name, logger.WARNING)
-                continue
+            else:
+                indexer_name = sickbeard.indexerApi(cur_show.indexer).name
 
             try:
-                cur_show.nextEpisode()
-                if sickbeard.indexerApi(cur_show.indexer).name == 'theTVDB':
+                if indexer_name == 'theTVDB':
                     if cur_show.indexerid in updated_shows:
-                        if (update_datetime - datetime.datetime.fromordinal(cur_show.last_update_indexer)).seconds >= 43200:
+                        pi_list.append(sickbeard.showQueueScheduler.action.updateShow(cur_show, True))
+                    # else:
+                    #     pi_list.append(sickbeard.showQueueScheduler.action.refreshShow(cur_show, True))
+                else:
+                    cur_show.nextEpisode()
+
+                    if cur_show.should_update(update_date=update_date):
+                        try:
                             pi_list.append(sickbeard.showQueueScheduler.action.updateShow(cur_show, True))
-                # else:
-                #     if cur_show.should_update(update_date=update_date):
-                #         try:
-                #             pi_list.append(sickbeard.showQueueScheduler.action.updateShow(cur_show, True))
-                #         except CantUpdateShowException as e:
-                #             logger.log(u"Unable to update show: {0}".format(str(e)), logger.DEBUG)
-                #     else:
-                #         logger.log(
-                #             u"Not updating episodes for show " + cur_show.name + " because it's last/next episode is not within the grace period.",
-                #             logger.DEBUG)
+                        except CantUpdateShowException as e:
+                            logger.log(u"Unable to update show: {0}".format(str(e)), logger.DEBUG)
+                    else:
+                        logger.log(
+                            u"Not updating episodes for show " + cur_show.name + " because it's last/next episode is not within the grace period.",
+                            logger.DEBUG)
+                        # pi_list.append(sickbeard.showQueueScheduler.action.refreshShow(cur_show, True))
             except (CantUpdateShowException, CantRefreshShowException) as e:
                 logger.log(u"Automatic update failed: " + ex(e), logger.ERROR)
 
         ui.ProgressIndicators.setIndicator('dailyUpdate', ui.QueueProgressIndicator("Daily Update", pi_list))
 
         cache_db_con.action("UPDATE lastUpdate SET `time` = ? WHERE provider=?", [update_timestamp, 'theTVDB'])
+
+        logger.log(u"Completed full update on all shows")
 
         self.amActive = False
 

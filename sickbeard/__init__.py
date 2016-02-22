@@ -1426,17 +1426,17 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                                                     silent=False)
 
         showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(),
-                                                 cycleTime=datetime.timedelta(seconds=5),
+                                                 cycleTime=datetime.timedelta(seconds=3),
                                                  threadName="SHOWQUEUE")
 
         showUpdateScheduler = scheduler.Scheduler(showUpdater.ShowUpdater(),
-                                                  cycleTime=datetime.timedelta(hours=24),
+                                                  cycleTime=datetime.timedelta(hours=1),
                                                   threadName="SHOWUPDATER",
                                                   start_time=datetime.time(hour=SHOWUPDATE_HOUR, minute=random.randint(0, 59)))
 
         # searchers
         searchQueueScheduler = scheduler.Scheduler(search_queue.SearchQueue(),
-                                                   cycleTime=datetime.timedelta(seconds=5),
+                                                   cycleTime=datetime.timedelta(seconds=3),
                                                    threadName="SEARCHQUEUE")
 
         # TODO: update_interval should take last daily/backlog times into account!
