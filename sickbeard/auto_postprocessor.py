@@ -38,6 +38,13 @@ class PostProcessor(object):
         :param force: Forces postprocessing run
         :return: Returns when done without a return state/code
         """
+        
+        # If post-processor is already running, dont allow it to run again
+        if self.amActive:
+            if force:
+                logger.log(u"Post-processing is already running. Wait existing thread to finish before manually run", logger.WARNING)
+            return
+
         self.amActive = True
 
         if not ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
