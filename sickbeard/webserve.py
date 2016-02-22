@@ -4205,6 +4205,8 @@ class ConfigPostProcessing(Config):
         # If 'postpone if no subs' is enabled, we must have SRT in allowed extensions list
         if sickbeard.POSTPONE_IF_NO_SUBS:
             allowed_extensions += ',srt'
+            # Auto PP must be disabled because FINDSUBTITLE thread that calls manual PP (like nzbtomedia)
+            sickbeard.PROCESS_AUTOMATICALLY = 0
         sickbeard.ALLOWED_EXTENSIONS = ','.join({x.strip() for x in allowed_extensions.split(',') if x.strip()})
         sickbeard.NAMING_CUSTOM_ABD = config.checkbox_to_value(naming_custom_abd)
         sickbeard.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)
