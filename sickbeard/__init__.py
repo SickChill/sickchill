@@ -1467,16 +1467,19 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                                                     run_delay=update_interval)
 
         # processors
+        update_interval = datetime.timedelta(minutes=AUTOPOSTPROCESSER_FREQUENCY)
         autoPostProcesserScheduler = scheduler.Scheduler(auto_postprocessor.PostProcessor(),
-                                                         cycleTime=datetime.timedelta(
-                                                             minutes=AUTOPOSTPROCESSER_FREQUENCY),
+                                                         cycleTime=update_interval,
                                                          threadName="POSTPROCESSER",
-                                                         silent=not PROCESS_AUTOMATICALLY)
+                                                         silent=not PROCESS_AUTOMATICALLY,
+                                                         run_delay=update_interval)
 
+        update_interval = datetime.timedelta(hours=1)
         traktCheckerScheduler = scheduler.Scheduler(traktChecker.TraktChecker(),
-                                                    cycleTime=datetime.timedelta(hours=1),
+                                                    cycleTime=update_interval,
                                                     threadName="TRAKTCHECKER",
-                                                    silent=not USE_TRAKT)
+                                                    silent=not USE_TRAKT,
+                                                    run_delay=update_interval)
 
         update_interval = datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY)
         subtitlesFinderScheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
