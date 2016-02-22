@@ -355,7 +355,7 @@ def copyFile(srcFile, destFile):
     except (SpecialFileError, Error) as error:
         logger.log(error, logger.WARNING)
     except Exception as error:
-        logger.log(error, logger.ERROR)
+        logger.log(u'{}'.format(error), logger.ERROR)
     else:
         try:
             ek(shutil.copymode, srcFile, destFile)
@@ -1347,10 +1347,9 @@ def touchFile(fname, atime=None):
     :return: True on success, False on failure
     """
 
-    if atime and fname:
-        with file(fname, 'a'):
-            os.utime(fname, (atime, atime))
-            return True
+    if atime and fname and ek(os.path.isfile, fname):
+        ek(os.utime, fname, (atime, atime))
+        return True
 
     return False
 
