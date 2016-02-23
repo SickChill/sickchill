@@ -130,6 +130,7 @@ class Notifier(object):
             return False
 
         if not self.get_token(username, password, plex_server_token):
+            logger.log(u'PLEX: Error getting auth token for Plex Media Server, check your settings', logger.WARNING)
             return False
 
         file_location = '' if not ep_obj else ep_obj.location
@@ -220,7 +221,7 @@ class Notifier(object):
             return True
 
         if not (username and password):
-            return sickbeard.PLEX_SERVER_NO_AUTH
+            return True
 
         logger.log(u'PLEX: fetching plex.tv credentials for user: ' + username, logger.DEBUG)
 

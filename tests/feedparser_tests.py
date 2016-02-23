@@ -22,7 +22,7 @@ class FeedParserTests(unittest.TestCase):
         """
         Test womble
         """
-        result = womble.cache.getRSSFeed('http://newshost.co.za/rss/?sec=tv-sd&fr=false')
+        result = womble.cache.getRSSFeed(womble.urls['rss'], params={'sec': 'tv-sd', 'fr': 'false'})
         self.assertTrue('entries' in result)
         self.assertTrue('feed' in result)
         for item in result['entries'] or []:

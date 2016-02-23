@@ -46,7 +46,7 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_tvrage_show_statues()
         self.fix_episode_statuses()
         self.fix_invalid_airdates()
-        self.fix_subtitles_codes()
+        # self.fix_subtitles_codes()
         self.fix_show_nfo_lang()
         self.convert_tvrage_to_tvdb()
         self.convert_archived_to_compound()

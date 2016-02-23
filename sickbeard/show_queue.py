@@ -517,7 +517,7 @@ class QueueItemRefresh(ShowQueueItem):
         ShowQueueItem.__init__(self, ShowQueueActions.REFRESH, show)
 
         # do refreshes first because they're quick
-        self.priority = generic_queue.QueuePriorities.NORMAL
+        self.priority = generic_queue.QueuePriorities.HIGH
 
         # force refresh certain items
         self.force = force
@@ -597,6 +597,7 @@ class QueueItemUpdate(ShowQueueItem):
     def __init__(self, show=None):
         ShowQueueItem.__init__(self, ShowQueueActions.UPDATE, show)
         self.force = False
+        self.priority = generic_queue.QueuePriorities.HIGH
 
     def run(self):
 
@@ -686,6 +687,7 @@ class QueueItemForceUpdate(QueueItemUpdate):
     def __init__(self, show=None):
         ShowQueueItem.__init__(self, ShowQueueActions.FORCEUPDATE, show)
         self.force = True
+        self.priority = generic_queue.QueuePriorities.HIGH
 
 
 class QueueItemRemove(ShowQueueItem):

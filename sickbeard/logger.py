@@ -36,6 +36,7 @@ import platform
 import locale
 import traceback
 
+from urllib import quote
 from github import Github, InputFileContent  # pylint: disable=import-error
 
 import sickbeard
@@ -85,10 +86,22 @@ class CensoredFormatter(logging.Formatter, object):
         if not isinstance(msg, unicode):
             msg = msg.decode(self.encoding, 'replace')  # Convert to unicode
 
-        for _, value in censored_items.iteritems():
-            if not isinstance(value, unicode):
-                value = value.decode(self.encoding, 'replace')  # Convert to unicode
-            msg = msg.replace(value, len(value) * '*')
+        # set of censored items
+        censored = {item for _, item in censored_items.iteritems() if item}
+        # set of censored items and urlencoded counterparts
+        censored = censored | {quote(item) for item in censored}
+        # convert set items to unicode and typecast to list
+        censored = list({
+            item.decode(self.encoding, 'replace')
+            if not isinstance(item, unicode) else item
+            for item in censored
+        })
+        # sort the list in order of descending length so that entire item is censored
+        # e.g. password and password_1 both get censored instead of getting ********_1
+        censored.sort(key=len, reverse=True)
+
+        for item in censored:
+            msg = msg.replace(item, len(item) * '*')
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
         msg = re.sub(r'([&?]r|[&?]apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)', r'\1=**********\2', msg, re.I)
@@ -290,7 +303,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                         if LOGGING_LEVELS[level] == ERROR:
                             paste_data = ''.join(log_data[i:i + 50])
                             if paste_data:
-                                gist = git.get_user().create_gist(True, {'sickrage.log': InputFileContent(paste_data)})
+                                gist = git.get_user().create_gist(False, {'sickrage.log': InputFileContent(paste_data)})
                             break
                     else:
                         gist = 'No ERROR found'
