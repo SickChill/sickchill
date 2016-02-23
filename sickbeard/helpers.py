@@ -353,7 +353,7 @@ def copyFile(srcFile, destFile):
     try:
         ek(shutil.copyfile, srcFile, destFile)
     except (SpecialFileError, Error) as error:
-        logger.log(error, logger.WARNING)
+        logger.log(u'{}'.format(error), logger.WARNING)
     except Exception as error:
         logger.log(u'{}'.format(error), logger.ERROR)
     else:
