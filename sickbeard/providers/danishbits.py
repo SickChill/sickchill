@@ -126,7 +126,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    torrent_table = html.find('table', class_='torrent_table')
+                    torrent_table = html.find('table', id='torrent_table')
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
                     # Continue only if at least one Release is found
