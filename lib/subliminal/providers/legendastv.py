@@ -15,8 +15,8 @@ from zipfile import ZipFile, is_zipfile
 from . import ParserBeautifulSoup, Provider
 from ..cache import region, EPISODE_EXPIRATION_TIME, SHOW_EXPIRATION_TIME
 from ..exceptions import AuthenticationError, ConfigurationError
-from ..subtitle import Subtitle, fix_line_ending, guess_matches, sanitize
-from ..video import Episode, Movie, SUBTITLE_EXTENSIONS
+from ..subtitle import SUBTITLE_EXTENSIONS, Subtitle, fix_line_ending, guess_matches, sanitize
+from ..video import Episode, Movie
 
 TIMEOUT = 10
 
@@ -170,10 +170,12 @@ class LegendasTvProvider(Provider):
         :rtype: list of dict
 
         """
-        keyword = sanitize(title)
-        logger.info('Searching candidates using the keyword %s', keyword)
-        r = self.session.get('%s/legenda/sugestao/%s' % (self.server_url, keyword), timeout=TIMEOUT)
-        r.raise_for_status()
+        results = dict()
+        for keyword in {sanitize(title), title.lower().replace(':', '')}:
+            logger.info('Searching candidates using the keyword %s', keyword)
+            r = self.session.get('%s/legenda/sugestao/%s' % (self.server_url, keyword), timeout=TIMEOUT)
+            r.raise_for_status()
+            results.update({item['_id']: item for item in json.loads(r.text)})
 
         # get the shows/movies out of the suggestions.
         # json sample:
@@ -224,8 +226,6 @@ class LegendasTvProvider(Provider):
         #  imdb_id: Sometimes it appears as a number and sometimes as a string prefixed with tt
         #  temporada: Sometimes is ``null`` and season information should be extracted from dsc_nome_br
 
-        results = json.loads(r.text)
-
         # type, title, series, season, year: should follow guessit properties names
         mapping = dict(
             id='id_filme',
@@ -252,7 +252,7 @@ class LegendasTvProvider(Provider):
         imdb_re = re.compile('t{0,2}(\d+)')
 
         candidates = []
-        for result in results:
+        for result in results.values():
             entry = result['_source']
             item = {k: entry.get(v) for k, v in mapping.items()}
             item['type'] = type_map.get(item.get('type'), 'movie')

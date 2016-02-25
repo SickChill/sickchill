@@ -6,7 +6,8 @@ import requests
 
 from .. import __short_version__
 from ..cache import REFINER_EXPIRATION_TIME, region
-from ..video import Episode, Movie, sanitize
+from ..video import Episode, Movie
+from ..utils import sanitize
 
 logger = logging.getLogger(__name__)
 
@@ -88,8 +89,29 @@ def search(title, type, year):
     return all_results
 
 
-def refine(video):
+def refine(video, **kwargs):
+    """Refine a video by searching `OMDb API <http://omdbapi.com/>`_.
+
+    Several :class:`~subliminal.video.Episode` attributes can be found:
+
+      * :attr:`~subliminal.video.Episode.series`
+      * :attr:`~subliminal.video.Episode.year`
+      * :attr:`~subliminal.video.Episode.series_imdb_id`
+
+    Similarly, for a :class:`~subliminal.video.Movie`:
+
+      * :attr:`~subliminal.video.Movie.title`
+      * :attr:`~subliminal.video.Movie.year`
+      * :attr:`~subliminal.video.Video.imdb_id`
+
+    :param video: the video to refine.
+
+    """
     if isinstance(video, Episode):
+        # exit if the information is complete
+        if video.series_imdb_id:
+            return
+
         # search the series
         results = search(video.series, 'series', video.year)
         if not results:
@@ -126,6 +148,10 @@ def refine(video):
         video.series_imdb_id = result['imdbID']
 
     elif isinstance(video, Movie):
+        # exit if the information is complete
+        if video.imdb_id:
+            return
+
         # search the movie
         results = search(video.title, 'movie', video.year)
         if not results:

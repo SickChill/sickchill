@@ -13,7 +13,8 @@ from . import Provider, TimeoutSafeTransport
 from .. import __short_version__
 from ..exceptions import AuthenticationError, ConfigurationError, DownloadLimitExceeded, ProviderError
 from ..subtitle import Subtitle, fix_line_ending, guess_matches
-from ..video import Episode, Movie, sanitize
+from ..utils import sanitize
+from ..video import Episode, Movie
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ class OpenSubtitlesSubtitle(Subtitle):
     series_re = re.compile('^"(?P<series_name>.*)" (?P<series_title>.*)$')
 
     def __init__(self, language, hearing_impaired, page_link, subtitle_id, matched_by, movie_kind, hash, movie_name,
-                 movie_release_name, movie_year, movie_imdb_id, series_season, series_episode, encoding):
+                 movie_release_name, movie_year, movie_imdb_id, series_season, series_episode, filename, encoding):
         super(OpenSubtitlesSubtitle, self).__init__(language, hearing_impaired, page_link, encoding)
         self.subtitle_id = subtitle_id
         self.matched_by = matched_by
@@ -35,6 +36,7 @@ class OpenSubtitlesSubtitle(Subtitle):
         self.movie_imdb_id = movie_imdb_id
         self.series_season = series_season
         self.series_episode = series_episode
+        self.filename = filename
 
     @property
     def id(self):
@@ -53,6 +55,9 @@ class OpenSubtitlesSubtitle(Subtitle):
 
         # episode
         if isinstance(video, Episode) and self.movie_kind == 'episode':
+            # tag match, assume series, year, season and episode matches
+            if self.matched_by == 'tag':
+                matches |= {'series', 'year', 'season', 'episode'}
             # series
             if video.series and sanitize(self.series_name) == sanitize(video.series):
                 matches.add('series')
@@ -70,6 +75,7 @@ class OpenSubtitlesSubtitle(Subtitle):
                 matches.add('title')
             # guess
             matches |= guess_matches(video, guessit(self.movie_release_name, {'type': 'episode'}))
+            matches |= guess_matches(video, guessit(self.filename, {'type': 'episode'}))
             # hash
             if 'opensubtitles' in video.hashes and self.hash == video.hashes['opensubtitles']:
                 if 'series' in matches and 'season' in matches and 'episode' in matches:
@@ -78,6 +84,9 @@ class OpenSubtitlesSubtitle(Subtitle):
                     logger.debug('Match on hash discarded')
         # movie
         elif isinstance(video, Movie) and self.movie_kind == 'movie':
+            # tag match, assume title and year matches
+            if self.matched_by == 'tag':
+                matches |= {'title', 'year'}
             # title
             if video.title and sanitize(self.movie_name) == sanitize(video.title):
                 matches.add('title')
@@ -86,6 +95,7 @@ class OpenSubtitlesSubtitle(Subtitle):
                 matches.add('year')
             # guess
             matches |= guess_matches(video, guessit(self.movie_release_name, {'type': 'movie'}))
+            matches |= guess_matches(video, guessit(self.filename, {'type': 'movie'}))
             # hash
             if 'opensubtitles' in video.hashes and self.hash == video.hashes['opensubtitles']:
                 if 'title' in matches:
@@ -179,12 +189,13 @@ class OpenSubtitlesProvider(Provider):
             movie_imdb_id = 'tt' + subtitle_item['IDMovieImdb']
             series_season = int(subtitle_item['SeriesSeason']) if subtitle_item['SeriesSeason'] else None
             series_episode = int(subtitle_item['SeriesEpisode']) if subtitle_item['SeriesEpisode'] else None
+            filename = subtitle_item['SubFileName']
             encoding = subtitle_item.get('SubEncoding') or None
 
             subtitle = OpenSubtitlesSubtitle(language, hearing_impaired, page_link, subtitle_id, matched_by, movie_kind,
                                              hash, movie_name, movie_release_name, movie_year, movie_imdb_id,
-                                             series_season, series_episode, encoding)
-            logger.debug('Found subtitle %r', subtitle)
+                                             series_season, series_episode, filename, encoding)
+            logger.debug('Found subtitle %r by %s', subtitle, matched_by)
             subtitles.append(subtitle)
 
         return subtitles
