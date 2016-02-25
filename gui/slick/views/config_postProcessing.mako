@@ -321,7 +321,7 @@
                                         </tr>
                                         <tr>
                                           <td>&nbsp;</td>
-                                          <td>%0XMS</td>
+                                          <td>%0XS</td>
                                           <td>02</td>
                                         </tr>
                                         <tr class="even">
@@ -341,7 +341,7 @@
                                         </tr>
                                         <tr>
                                           <td>&nbsp;</td>
-                                          <td>%0XME</td>
+                                          <td>%0XE</td>
                                           <td>03</td>
                                         </tr>
                                         <tr class="even">
@@ -919,12 +919,12 @@
                                             </tr>
                                             <tr class="even">
                                               <td class="align-right"><b>XEM Season Number:</b></td>
-                                              <td>%XMS</td>
+                                              <td>%XS</td>
                                               <td>2</td>
                                             </tr>
                                             <tr>
                                               <td>&nbsp;</td>
-                                              <td>%0XMS</td>
+                                              <td>%0XS</td>
                                               <td>02</td>
                                             </tr>
                                             <tr class="even">
@@ -944,7 +944,7 @@
                                             </tr>
                                             <tr>
                                               <td>&nbsp;</td>
-                                              <td>%0XME</td>
+                                              <td>%0XE</td>
                                               <td>03</td>
                                             </tr>
                                             <tr class="even">
