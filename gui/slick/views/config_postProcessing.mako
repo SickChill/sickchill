@@ -316,7 +316,7 @@
                                         </tr>
                                         <tr class="even">
                                           <td class="align-right"><b>XEM Season Number:</b></td>
-                                          <td>%XMS</td>
+                                          <td>%XS</td>
                                           <td>2</td>
                                         </tr>
                                         <tr>
@@ -336,7 +336,7 @@
                                         </tr>
                                         <tr class="even">
                                           <td class="align-right"><b>XEM Episode Number:</b></td>
-                                          <td>%XME</td>
+                                          <td>%XE</td>
                                           <td>3</td>
                                         </tr>
                                         <tr>
@@ -939,7 +939,7 @@
                                             </tr>
                                             <tr class="even">
                                               <td class="align-right"><b>XEM Episode Number:</b></td>
-                                              <td>%XME</td>
+                                              <td>%XE</td>
                                               <td>3</td>
                                             </tr>
                                             <tr>
