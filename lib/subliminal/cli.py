@@ -18,9 +18,8 @@ from dogpile.cache.backends.file import AbstractFileLock
 from dogpile.core import ReadWriteMutex
 from six.moves import configparser
 
-from subliminal import (AsyncProviderPool, Episode, Movie, Video, __version__, check_video, provider_manager, region,
-                        save_subtitles, scan_video, scan_videos)
-from subliminal.score import compute_score, get_scores
+from subliminal import (AsyncProviderPool, Episode, Movie, Video, __version__, check_video, compute_score, get_scores,
+                        provider_manager, region, save_subtitles, scan_video, scan_videos)
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +45,7 @@ class MutexLock(AbstractFileLock):
 
 
 class Config(object):
-    """A :class:`~configparser.SafeConfigParser` wrapper to store configuration.
+    """A :class:`~configparser.ConfigParser` wrapper to store configuration.
 
     Interaction with the configuration is done with the properties.
 
@@ -229,6 +228,7 @@ def subliminal(ctx, addic7ed, legendastv, opensubtitles, subscenter, cache_dir, 
     # configure logging
     if debug:
         handler = logging.StreamHandler()
+        # TODO: change format to something nicer (use colorlogs + funcName)
         handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
         logging.getLogger('subliminal').addHandler(handler)
         logging.getLogger('subliminal').setLevel(logging.DEBUG)
@@ -378,6 +378,7 @@ def download(obj, provider, language, age, directory, encoding, single, force, h
                                                       hearing_impaired=hearing_impaired, only_one=single)
                 downloaded_subtitles[v] = subtitles
 
+    # TODO: warn about discarded providers
     # save subtitles
     total_subtitles = 0
     for v, subtitles in downloaded_subtitles.items():
