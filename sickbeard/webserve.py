@@ -88,8 +88,12 @@ from tornado.routes import route
 from tornado.web import RequestHandler, HTTPError, authenticated
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
-from tornado.concurrent import run_on_executor
+
 from concurrent.futures import ThreadPoolExecutor
+from tornado.process import cpu_count
+
+from tornado.concurrent import run_on_executor
+
 from mako.runtime import UNDEFINED
 
 mako_lookup = None
@@ -255,7 +259,7 @@ class WebHandler(BaseHandler):
         super(WebHandler, self).__init__(*args, **kwargs)
         self.io_loop = IOLoop.current()
 
-    executor = ThreadPoolExecutor(50)
+    executor = ThreadPoolExecutor(cpu_count())
 
     @authenticated
     @coroutine
