@@ -120,7 +120,7 @@ class NorbitsProvider(TorrentProvider):
         if episode:
             ep_num = episode_num(episode.scene_season, episode.scene_episode)
             show_name = sanitizeSceneName(show.name)
-            search = '%s.%s' % (show_name, ep_num)
+            search = '{}.{}'.format(show_name, ep_num)
             post_data['search'] = search
 
         if season:
