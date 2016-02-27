@@ -19,7 +19,6 @@ import re
 import datetime
 import traceback
 
-from . import generic
 from sickbeard import logger, tvcache, helpers
 from sickbeard.bs4_parser import BS4Parser
 from lib.unidecode import unidecode
