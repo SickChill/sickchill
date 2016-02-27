@@ -367,7 +367,7 @@ class SickRage(object):
         if sickbeard.USE_FAILED_DOWNLOADS:
             failed_history.trimHistory()
 
-        # # Check for metadata indexer updates for shows (Disabled until we use api)
+        # Check for metadata indexer updates for shows (sets the next aired ep!)
         # sickbeard.showUpdateScheduler.forceRun()
 
         # Launch browser

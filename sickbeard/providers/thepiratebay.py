@@ -128,6 +128,9 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                             title = result.find(class_="detName").get_text(strip=True)
                             download_url = result.find(title="Download this torrent using magnet")["href"] + self._custom_trackers
+                            if "magnet:?" not in download_url:
+                                logger.log("Invalid ThePirateBay proxy please try another one", logger.DEBUG)
+                                continue
                             if not all([title, download_url]):
                                 continue
 
