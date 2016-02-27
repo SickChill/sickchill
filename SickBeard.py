@@ -71,7 +71,7 @@ if sys.version_info < (2, 7):
 # https://mail.python.org/pipermail/python-dev/2014-September/136300.html
 if sys.version_info >= (2, 7, 9):
     import ssl
-    ssl._create_default_https_context = ssl._create_unverified_context  # pylint: disable=protected-access
+    ssl._create_default_https_context = lambda: ssl._create_unverified_context(ssl.PROTOCOL_TLSv1)  # pylint: disable=protected-access
 
 import shutil_custom  # pylint: disable=import-error
 shutil.copyfile = shutil_custom.copyfile_custom
