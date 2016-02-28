@@ -110,6 +110,16 @@ media_extensions = [
 subtitle_extensions = ['ass', 'idx', 'srt', 'ssa', 'sub']
 timeFormat = '%A %I:%M %p'
 
+def rreplace(s, old, new, occurence = 1):
+    if occurence == 0:
+        return s
+
+    left, found, right = s.rpartition(old)
+
+    if found == "":
+        return right
+    else:
+        return rreplace(left, old, new, occurence - 1) + new + right
 
 def http_code_description(http_code):
     """

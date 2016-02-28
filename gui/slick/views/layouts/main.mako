@@ -259,7 +259,7 @@
             </span>
         </div>
         % endif
-        % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and srLogin:
+        % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and sickbeard.BRANCH != 'origin/wdtv-dots-in-metadata' and not sickbeard.DEVELOPER and srLogin:
         <div class="alert alert-danger upgrade-notification hidden-print" role="alert">
             <span>You're using the ${sickbeard.BRANCH} branch. Please use 'master' unless specifically asked</span>
         </div>

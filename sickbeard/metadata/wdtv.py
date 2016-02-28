@@ -27,7 +27,7 @@ import sickbeard
 from sickbeard.metadata import generic
 
 from sickbeard import logger, helpers
-from sickrage.helper.common import dateFormat, replace_extension
+from sickrage.helper.common import dateFormat, replace_extension, rreplace
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, ShowNotFoundException
 
@@ -43,10 +43,10 @@ class WDTVMetadata(generic.GenericMetadata):
 
     The following file structure is used:
 
-    show_root/folder.jpg                    (poster)
-    show_root/Season ##/folder.jpg          (season thumb)
+    show_root/.folder.jpg                    (poster)
+    show_root/Season ##/.folder.jpg          (season thumb)
     show_root/Season ##/filename.ext        (*)
-    show_root/Season ##/filename.metathumb  (episode thumb)
+    show_root/Season ##/.filename.jpg       (episode thumb)
     show_root/Season ##/filename.xml        (episode metadata)
     """
 
@@ -78,16 +78,16 @@ class WDTVMetadata(generic.GenericMetadata):
 
         self._ep_nfo_extension = 'xml'
 
-        self.poster_name = "folder.jpg"
+        self.poster_name = ".folder.jpg"
 
         # web-ui metadata template
         self.eg_show_metadata = "<i>not supported</i>"
         self.eg_episode_metadata = "Season##\\<i>filename</i>.xml"
         self.eg_fanart = "<i>not supported</i>"
-        self.eg_poster = "folder.jpg"
+        self.eg_poster = ".folder.jpg"
         self.eg_banner = "<i>not supported</i>"
-        self.eg_episode_thumbnails = "Season##\\<i>filename</i>.metathumb"
-        self.eg_season_posters = "Season##\\folder.jpg"
+        self.eg_episode_thumbnails = "Season##\\.<i>filename</i>.jpg"
+        self.eg_season_posters = "Season##\\.folder.jpg"
         self.eg_season_banners = "<i>not supported</i>"
         self.eg_season_all_poster = "<i>not supported</i>"
         self.eg_season_all_banner = "<i>not supported</i>"
@@ -130,12 +130,14 @@ class WDTVMetadata(generic.GenericMetadata):
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
         if ek(os.path.isfile, ep_obj.location):
-            tbn_filename = replace_extension(ep_obj.location, 'metathumb')
+            tbn_filename = replace_extension(ep_obj.location, 'jpg')
         else:
+            logger.log(u"GETP: Retuning none on " + ep_obj.location, logger.INFO)
             return None
 
+        tbn_filename = rreplace(tbn_filename, "/", "/.", 1)
+        logger.log(u"GETP: Retuning " + tbn_filename + "  on " + ep_obj.location, logger.INFO)
         return tbn_filename
-
     @staticmethod
     def get_season_poster_path(show_obj, season):
         """
