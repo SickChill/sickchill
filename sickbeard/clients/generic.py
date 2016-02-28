@@ -6,7 +6,7 @@ from hashlib import sha1
 from base64 import b16encode, b32decode
 
 import sickbeard
-from sickbeard import logger
+from sickbeard import logger, helpers
 from bencode import bencode, bdecode
 import requests
 import cookielib
@@ -27,7 +27,7 @@ class GenericClient(object):
         self.response = None
         self.auth = None
         self.last_time = time.time()
-        self.session = requests.Session()
+        self.session = helpers.make_session()
         self.session.auth = (self.username, self.password)
         self.session.cookies = cookielib.CookieJar()
 

@@ -295,9 +295,7 @@ def _anidb_exceptions_fetcher():
         setLastRefresh('anidb')
     return anidb_exception_dict
 
-
-xem_session = requests.Session()
-
+xem_session = helpers.make_session()
 
 def _xem_exceptions_fetcher():
     if shouldRefresh('xem'):

@@ -2,7 +2,6 @@
 import re
 import os
 import posixpath
-import requests
 from bs4 import BeautifulSoup
 from datetime import date
 
@@ -25,7 +24,7 @@ class imdbPopular(object):
             'year': '%s,%s' % (date.today().year - 1, date.today().year + 1)
         }
 
-        self.session = requests.Session()
+        self.session = helpers.make_session()
 
     def fetch_popular_shows(self):
         """Get popular show information from IMDB"""
