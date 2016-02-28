@@ -18,7 +18,6 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
 
-import webbrowser
 import datetime
 import socket
 import os
@@ -2165,6 +2164,13 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
 
 
 def launchBrowser(protocol='http', startPort=None, web_root='/'):
+
+    try:
+        import webbrowser
+    except ImportError:
+        logger.log(u"Unable to load the webbrowser module, cannot launch the browser.", logger.WARNING)
+        return
+
     if not startPort:
         startPort = WEB_PORT
 
