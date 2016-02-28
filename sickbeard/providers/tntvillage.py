@@ -123,12 +123,12 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         return True
 
     def login(self):
-        if any(dict_from_cookiejar(self.session.cookies).values()):
+        if len(dict_from_cookiejar(self.session.cookies)) == 3:
             return True
 
         login_params = {'UserName': self.username,
                         'PassWord': self.password,
-                        'CookieDate': 0,
+                        'CookieDate': 1,
                         'submit': 'Connettiti al Forum'}
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
