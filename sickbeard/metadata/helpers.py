@@ -20,9 +20,8 @@
 
 from sickbeard import helpers
 from sickbeard import logger
-import requests
 
-meta_session = requests.Session()
+meta_session = helpers.make_session()
 
 
 def getShowImage(url, imgNum=None):

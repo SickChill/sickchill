@@ -27,7 +27,6 @@ import stat
 import traceback
 import time
 import datetime
-import requests
 import shutil
 import shutil_custom
 
@@ -58,7 +57,7 @@ class CheckVersion(object):
             elif self.install_type == 'source':
                 self.updater = SourceUpdateManager()
 
-        self.session = requests.Session()
+        self.session = helpers.make_session()
 
     def run(self, force=False):
 
@@ -701,7 +700,7 @@ class SourceUpdateManager(UpdateManager):
         self._newest_commit_hash = None
         self._num_commits_behind = 0
 
-        self.session = requests.Session()
+        self.session = helpers.make_session()
 
     @staticmethod
     def _find_installed_branch():

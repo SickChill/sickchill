@@ -19,7 +19,6 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import requests
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
@@ -27,7 +26,7 @@ except ImportError:
 
 import sickbeard
 from sickbeard import logger, common
-from sickbeard.helpers import getURL
+from sickbeard.helpers import getURL, make_session
 
 from sickrage.helper.exceptions import ex
 
@@ -40,7 +39,7 @@ class Notifier(object):
             'X-Plex-Client-Identifier': sickbeard.common.USER_AGENT,
             'X-Plex-Version': '2016.02.10'
         }
-        self.session = requests.Session()
+        self.session = make_session()
 
     @staticmethod
     def _notify_pht(message, title='SickRage', host=None, username=None, password=None, force=False):  # pylint: disable=too-many-arguments
