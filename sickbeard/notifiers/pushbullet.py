@@ -19,11 +19,10 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import json
-import requests
 import traceback
 
 import sickbeard
-from sickbeard import logger
+from sickbeard import logger, helpers
 from sickbeard.common import notifyStrings
 from sickbeard.common import NOTIFY_SNATCH
 from sickbeard.common import NOTIFY_DOWNLOAD
@@ -35,7 +34,7 @@ from sickbeard.common import NOTIFY_SUBTITLE_DOWNLOAD
 
 
 class Notifier(object):
-    session = requests.Session()
+    session = helpers.make_session()
     TEST_EVENT = 'Test'
 
     def __init__(self):

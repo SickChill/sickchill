@@ -58,6 +58,8 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
 from cachecontrol import CacheControl
+# from httpcache import CachingHTTPAdapter
+
 from itertools import izip, cycle
 
 import shutil
@@ -1374,6 +1376,14 @@ def _getTempDir():
     return ek(os.path.join, tempfile.gettempdir(), "sickrage-%s" % uid)
 
 
+def make_session():
+    session = requests.Session()
+    # session.mount('http://', CachingHTTPAdapter())
+    # session.mount('http://', CachingHTTPAdapter())
+    session = CacheControl(sess=session, cache_etags=True)
+    return session
+
+
 def _setUpSession(session, headers):
     """
     Returns a session initialized with default cache and parameter settings
@@ -1382,9 +1392,6 @@ def _setUpSession(session, headers):
     :param headers: Headers to pass to session
     :return: session object
     """
-
-    # request session
-    session = CacheControl(sess=session, cache_etags=True)
 
     # request session clear residual referer
     # pylint: disable=superfluous-parens
@@ -1753,7 +1760,7 @@ def getDiskSpaceUsage(diskPath=None):
 
 def getTVDBFromID(indexer_id, indexer):  # pylint:disable=too-many-return-statements
 
-    session = requests.Session()
+    session = make_session()
     tvdb_id = ''
     if indexer == 'IMDB':
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=%s" % indexer_id
