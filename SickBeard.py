@@ -76,6 +76,16 @@ if sys.version_info >= (2, 7, 9):
 import shutil_custom  # pylint: disable=import-error
 shutil.copyfile = shutil_custom.copyfile_custom
 
+# Fix mimetypes on misconfigured systems
+import mimetypes
+mimetypes.add_type("text/css", ".css")
+mimetypes.add_type("application/sfont", ".otf")
+mimetypes.add_type("application/sfont", ".ttf")
+mimetypes.add_type("application/javascript", ".js")
+mimetypes.add_type("application/font-woff", ".woff")
+# Not sure about this one, but we also have halflings in .woff so I think it wont matter
+# mimetypes.add_type("application/font-woff2", ".woff2")
+
 # Do this before importing sickbeard, to prevent locked files and incorrect import
 OLD_TORNADO = os.path.abspath(os.path.join(os.path.dirname(__file__), 'tornado'))
 if os.path.isdir(OLD_TORNADO):
