@@ -18,12 +18,9 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import time
-from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -47,7 +44,7 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.freeleech = None
 
         # URLs
-        self.url = 'https://tvchaosuk.com/'
+        self.url = 'https://www.tvchaosuk.com/'
         self.urls = {
             'login': self.url + 'takelogin.php',
             'index': self.url + 'index.php',
@@ -66,9 +63,7 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         raise AuthException('Your authentication credentials for ' + self.name + ' are missing, check your config.')
 
     def login(self):
-        # cloudflare leaves __cfduid cookie even if cookie is expired,
-        # there are 4 cookies when cookie is valid
-        if len(dict_from_cookiejar(self.session.cookies)) == 4:
+        if len(self.session.cookies) >= 4:
             return True
 
         login_params = {
@@ -79,21 +74,10 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             'returnto': '/browse.php'
         }
 
-        # Must be done twice, or it isnt really logged in
-        # first time gets __cfduid, if we already have __cfduid this might get the cookie
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
-
-        # if the first post only got the __cfduid then sleep 5 seconds for cloudflare anti-bot
-        # and then get the actual cookie
-        if len(dict_from_cookiejar(self.session.cookies)) < 4:
-            time.sleep(5)
-            response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
-            if not response:
-                logger.log(u"Unable to connect to provider", logger.WARNING)
-                return False
 
         if re.search('Error: Username or password incorrect!', response):
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
