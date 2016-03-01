@@ -1,4 +1,5 @@
 # coding=utf-8
+''' A HDBits (https://hdbits.net) provider'''
 #
 # URL: https://sickrage.github.io
 #
@@ -17,10 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import datetime
-from requests.compat import urlencode
+from requests.compat import urlencode, urljoin
 
-from sickbeard import classes, logger, tvcache
+from sickbeard import logger, tvcache
 
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -31,103 +31,138 @@ except ImportError:
     import simplejson as json
 
 
-class HDBitsProvider(TorrentProvider):
+class HDBitsProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
+    ''' Main provider object'''
 
     def __init__(self):
+	'''Initialize the class'''
 
+	# Provider Init
 	TorrentProvider.__init__(self, 'HDBits')
 
-        self.username = None
-        self.passkey = None
-        self.ratio = None
+	# Credentials
+	self.username = None
+	self.passkey = None
 
-        self.cache = HDBitsCache(self, min_time=15)  # only poll HDBits every 15 minutes max
+	# Torrent Stats
+	self.ratio = None
+	self.minseed = None
+	self.minleech = None
 
-        self.urls = {'base_url': 'https://hdbits.org',
-                     'search': 'https://hdbits.org/api/torrents',
-                     'rss': 'https://hdbits.org/api/torrents',
-                     'download': 'https://hdbits.org/download.php?'}
+	# URLs
+	self.url = 'https://hdbits.org'
+	self.urls = {'search': urljoin(self.url, '/api/torrents'),
+		     'rss': urljoin(self.url, '/api/torrents'),
+		     'download': urljoin(self.url, '/download.php?')}
 
-        self.url = self.urls['base_url']
+	# Proper Strings
+	self.proper_strings = ['PROPER', 'REPACK']
 
+	# Cache
+	self.cache = tvcache.TVCache(self, min_time=15)  # only poll HDBits every 15 minutes max
+
+	# Logger to satisfy pylint
+	self.logger = logger.Logger()
     def _check_auth(self):
 
-        if not self.username or not self.passkey:
-	    raise AuthException('Your authentication credentials for ' + self.name + ' are missing, check your config.')
+	if not self.username or not self.passkey:
+	    raise AuthException((u'Your authentication credentials for {} are missing, '
+				 'check your config.').format(self.name))
 
-        return True
+	return True
 
-    def _checkAuthFromData(self, parsedJSON):
+    def _checkAuthFromData(self, parsed_json): # pylint: disable=invalid-name
+	'''Check from the parsed resposne that we are autenticated'''
 
-        if 'status' in parsedJSON and 'message' in parsedJSON:
-            if parsedJSON.get('status') == 5:
-		logger.log(u'Invalid username or password. Check your settings', logger.WARNING)
+	if 'status' in parsed_json and 'message' in parsed_json:
+	    if parsed_json.get('status') == 5:
+		self.logger.log(u'Invalid username or password. Check your settings',
+				logger.WARNING)
 
-        return True
+	return True
 
-    def _get_season_search_strings(self, ep_obj):
-        season_search_string = [self._make_post_data_JSON(show=ep_obj.show, season=ep_obj)]
-        return season_search_string
+    def search(self, search_params, age=0, ep_obj=None): # pylint: disable=too-many-locals
+	''' Do the actual searching and JSON parsing'''
 
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-        episode_search_string = [self._make_post_data_JSON(show=ep_obj.show, episode=ep_obj)]
-        return episode_search_string
+	print('sp:', dir(search_params))
+	print('eo:', dir(ep_obj))
+	results = []
+	for mode in search_params:
+	    items = []
+	    self.logger.log(u'Search Mode: {}'.format(mode), logger.DEBUG)
 
-    def _get_title_and_url(self, item):
-        title = item.get('name', '').replace(' ', '.')
-        url = self.urls['download'] + urlencode({'id': item['id'], 'passkey': self.passkey})
+	    for search_string in search_params[mode]:
+		if mode != 'RSS':
+		    self.logger.log('Search String: {}'.format(search_string.decode('utf-8')),
+				    logger.DEBUG)
 
-        return title, url
+		post_data = {
+		    'username': self.username,
+		    'passkey': self.passkey,
+		    'category': [2], # TV Category
+		    'search': search_string,
+		}
 
-    def search(self, search_params, age=0, ep_obj=None):
+		if mode != 'RSS':
+		    post_data['tvdb'] = {'id': ep_obj.show['indexerid']}
 
-        # FIXME
-        results = []
+		self._check_auth()
+		parsed_json = self.get_url(self.urls['search'],
+					   post_data=json.dumps(post_data),
+					   json=True)
 
-	logger.log(u'Search string: %s' % search_params, logger.DEBUG)
+		if not parsed_json:
+		    self.logger.log(u'Provider did not return expected result (not JSON)',
+				    logger.DEBUG)
+		    return []
 
-        self._check_auth()
+		if self._checkAuthFromData(parsed_json):
+		    if parsed_json and 'data' in parsed_json:
+			json_items = parsed_json['data']
+		    else:
+			self.logger.log((u'Resulting JSON from provider is not correct, '
+					 'not parsing it'), logger.ERROR)
+			json_items = []
 
-        parsedJSON = self.get_url(self.urls['search'], post_data=search_params, json=True)
-        if not parsedJSON:
-            return []
+		    for item in json_items:
+			seeders = item['seeders']
+			leechers = item['leechers']
+			title = item['name']
+			info_hash = item['hash']
+			size = item['size']
+			download_url = ('{}{}'.format(self.urls['download'],
+						      urlencode({'id': item['id'],
+								 'passkey': self.passkey})))
+			if seeders < self.minseed or leechers < self.minleech:
+			    self.logger.log((u'Discarding torrent because it does not meet '
+					     'the minimum seeders or leechers: '
+					     '{} (S:{} L:{})'.format(title,
+								     seeders,
+								     leechers), logger.DEBUG))
+			    continue
+			else:
+			    item = title, download_url, size, seeders, leechers, info_hash
+			    if mode != "RSS":
+				self.logger.log((u'Found result: {} with {} seeders and {}'
+						 'leechers').format(title,
+								    seeders,
+								    leechers), logger.DEBUG)
 
-        if self._checkAuthFromData(parsedJSON):
-            if parsedJSON and 'data' in parsedJSON:
-                items = parsedJSON['data']
-            else:
-		logger.log(u'Resulting JSON from provider is not correct, not parsing it', logger.ERROR)
-                items = []
+			self.logger.log(u'item: {}'.format(item), logger.DEBUG)
+			items.append(item)
 
-            for item in items:
-                results.append(item)
-        # FIXME SORTING
-        return results
+	    # For each search mode sort all the items by seeders if available
+	    items.sort(key=lambda tup: tup[3], reverse=True)
+	    results += items
 
-    def find_propers(self, search_date=None):
-        results = []
+	return results
 
-        search_terms = [' proper ', ' repack ']
 
-        for term in search_terms:
-            for item in self.search(self._make_post_data_JSON(search_term=term)):
-                if item['utadded']:
-                    try:
-                        result_date = datetime.datetime.fromtimestamp(int(item['utadded']))
-                    except Exception:
-                        result_date = None
+    def bla_make_post_data_JSON(self, show=None, episode=None, season=None, search_term=None): # pylint: disable=invalid-name
+	''' This should be removed'''
 
-                    if result_date:
-                        if not search_date or result_date > search_date:
-                            title, url = self._get_title_and_url(item)
-                            results.append(classes.Proper(title, url, result_date, self.show))
-
-        return results
-
-    def _make_post_data_JSON(self, show=None, episode=None, season=None, search_term=None):
-
-        post_data = {
-            'username': self.username,
+	post_data = {
+	    'username': self.username,
             'passkey': self.passkey,
             'category': [2],
             # TV Category
@@ -181,20 +216,4 @@ class HDBitsProvider(TorrentProvider):
     def seed_ratio(self):
         return self.ratio
 
-
-class HDBitsCache(tvcache.TVCache):
-    def _getRSSData(self):
-        self.search_params = None  # HDBits cache does not use search_params so set it to None
-        results = []
-
-        try:
-            parsedJSON = self.provider.getURL(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), returns='json')
-
-            if self.provider._checkAuthFromData(parsedJSON):
-                results = parsedJSON['data']
-        except Exception:
-            pass
-
-        return {'entries': results}
-
-provider = HDBitsProvider()
+provider = HDBitsProvider() # pylint: disable=invalid-name
