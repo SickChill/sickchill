@@ -1,5 +1,5 @@
 # coding=utf-8
-''' A HDBits (https://hdbits.net) provider'''
+''' A HDBits (https://hdbits.org) provider'''
 #
 # URL: https://sickrage.github.io
 #
