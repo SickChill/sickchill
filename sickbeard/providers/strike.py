@@ -20,7 +20,7 @@
 
 from sickbeard import logger, tvcache
 
-from sickrage.helper.common import convert_size
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -32,12 +32,11 @@ class StrikeProvider(TorrentProvider):
 
         self.public = True
         self.url = 'https://getstrike.net/'
-        self.ratio = 0
         params = {'RSS': ['x264']}  # Use this hack for RSS search since most results will use this codec
         self.cache = tvcache.TVCache(self, min_time=10, search_params=params)
         self.minseed, self.minleech = 2 * [None]
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
         for mode in search_strings:  # Mode = RSS, Season, Episode
             items = []
@@ -77,17 +76,15 @@ class StrikeProvider(TorrentProvider):
                     if mode != 'RSS':
                         logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
-                    item = title, download_url, size, seeders, leechers
+                    item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                     items.append(item)
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
 
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = StrikeProvider()

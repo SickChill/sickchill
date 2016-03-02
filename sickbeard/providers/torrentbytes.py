@@ -43,7 +43,6 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.password = None
 
         # Torrent Stats
-        self.ratio = None
         self.minseed = None
         self.minleech = None
         self.freeleech = False
@@ -105,13 +104,13 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
-                    # Continue only if one Release is found
-                    if html.find('h2', text='Nothing found!'):
-                        logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
-                        continue
-
                     torrent_table = html.find("table", border="1")
                     torrent_rows = torrent_table.find_all("tr") if torrent_table else []
+
+                    # Continue only if at least one Release is found
+                    if len(torrent_rows) < 2:
+                        logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                        continue
 
                     # "Type", "Name", Files", "Comm.", "Added", "TTL", "Size", "Snatched", "Seeders", "Leechers"
                     labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all("td")]
@@ -145,7 +144,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             # Need size for failed downloads handling
                             torrent_size = cells[labels.index("Size")].get_text(strip=True)
                             size = convert_size(torrent_size) or -1
-                            item = title, download_url, size, seeders, leechers
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
 
                             if mode != "RSS":
                                 logger.log("Found result: {} with {} seeders and {} leechers".format
@@ -156,12 +155,10 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = TorrentBytesProvider()

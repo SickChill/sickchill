@@ -43,7 +43,6 @@ class BTNProvider(TorrentProvider):
         self.supports_absolute_numbering = True
 
         self.api_key = None
-        self.ratio = None
 
         self.cache = BTNCache(self, min_time=15)  # Only poll BTN every 15 minutes max
 
@@ -70,7 +69,7 @@ class BTNProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, age=0, ep_obj=None):  # pylint:disable=too-many-locals
 
         self._check_auth()
 
@@ -118,7 +117,7 @@ class BTNProvider(TorrentProvider):
                     if 'torrents' in parsedJSON:
                         found_torrents.update(parsedJSON['torrents'])
 
-            for torrentid, torrent_info in found_torrents.iteritems():
+            for _, torrent_info in found_torrents.iteritems():
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
@@ -128,13 +127,13 @@ class BTNProvider(TorrentProvider):
         # FIXME SORT RESULTS
         return results
 
-    def _api_call(self, apikey, params={}, results_per_page=1000, offset=0):
+    def _api_call(self, apikey, params=None, results_per_page=1000, offset=0):
 
         server = jsonrpclib.Server(self.urls['base_url'])
         parsedJSON = {}
 
         try:
-            parsedJSON = server.getTorrents(apikey, params, int(results_per_page), int(offset))
+            parsedJSON = server.getTorrents(apikey, params or {}, int(results_per_page), int(offset))
             time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         except jsonrpclib.jsonrpc.ProtocolError, error:
@@ -280,9 +279,6 @@ class BTNProvider(TorrentProvider):
                             results.append(classes.Proper(title, url, result_date, self.show))
 
         return results
-
-    def seed_ratio(self):
-        return self.ratio
 
 
 class BTNCache(tvcache.TVCache):

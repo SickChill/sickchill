@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+
 import socket
 
 import sickbeard
@@ -85,9 +87,10 @@ class Notifier(object):
         response = self._send(options['host'], options['port'], notice.encode(), options['debug'])
         return True if isinstance(response, gntp.GNTPOK) else False
 
-    def _send(self, host, port, data, debug=False):
+    @staticmethod
+    def _send(host, port, data, debug=False):
         if debug:
-            print '<Sending>\n', data, '\n</Sending>'
+            print('<Sending>\n', data, '\n</Sending>')
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((host, port))
@@ -96,7 +99,7 @@ class Notifier(object):
         s.close()
 
         if debug:
-            print '<Received>\n', response, '\n</Received>'
+            print('<Received>\n', response, '\n</Received>')
 
         return response
 

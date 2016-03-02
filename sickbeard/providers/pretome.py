@@ -26,7 +26,7 @@ from requests.utils import dict_from_cookiejar
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 
-from sickrage.helper.common import convert_size
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -39,7 +39,6 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         self.username = None
         self.password = None
         self.pin = None
-        self.ratio = None
         self.minseed = None
         self.minleech = None
 
@@ -154,7 +153,7 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            item = title, download_url, size, seeders, leechers
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
@@ -164,13 +163,11 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
 
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = PretomeProvider()

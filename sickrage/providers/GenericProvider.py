@@ -25,12 +25,12 @@ from datetime import datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
-from requests import Session
+
 from sickbeard import logger
 from sickbeard.classes import Proper, SearchResult
 from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, UA_POOL
 from sickbeard.db import DBConnection
-from sickbeard.helpers import download_file, getURL, remove_file_failed
+from sickbeard.helpers import download_file, getURL, remove_file_failed, make_session
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickbeard.tvcache import TVCache
@@ -64,7 +64,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         self.public = False
         self.search_fallback = False
         self.search_mode = None
-        self.session = Session()
+        self.session = make_session()
         self.show = None
         self.supports_absolute_numbering = False
         self.supports_backlog = True

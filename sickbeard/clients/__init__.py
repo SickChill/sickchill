@@ -19,7 +19,7 @@
 
 from __future__ import unicode_literals
 
-__all__ = [
+_clients = [
     'utorrent',
     'transmission',
     'deluge',
@@ -47,7 +47,7 @@ def getClientModule(name):
     prefix = "sickbeard.clients."
 
     return __import__('{prefix}{name}_client'.format
-                      (prefix=prefix, name=name), fromlist=__all__)
+                      (prefix=prefix, name=name), fromlist=_clients)
 
 
 def getClientIstance(name):

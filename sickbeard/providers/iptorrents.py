@@ -25,7 +25,7 @@ from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 
 from sickrage.helper.exceptions import AuthException, ex
-from sickrage.helper.common import convert_size
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -37,7 +37,6 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         self.username = None
         self.password = None
-        self.ratio = None
         self.freeleech = False
         self.minseed = None
         self.minleech = None
@@ -150,7 +149,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            item = title, download_url, size, seeders, leechers
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
@@ -160,13 +159,11 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     logger.log(u"Failed parsing provider. Error: %r" % ex(e), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
 
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = IPTorrentsProvider()

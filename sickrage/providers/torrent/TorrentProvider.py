@@ -35,7 +35,7 @@ from sickrage.show.Show import Show
 class TorrentProvider(GenericProvider):
     def __init__(self, name):
         GenericProvider.__init__(self, name)
-
+        self.ratio = None
         self.provider_type = GenericProvider.TORRENT
 
     def find_propers(self, search_date=None):
@@ -143,3 +143,6 @@ class TorrentProvider(GenericProvider):
 
         logger.log(u'Result is not a valid torrent file', logger.DEBUG)
         return False
+
+    def seed_ratio(self):
+        return self.ratio

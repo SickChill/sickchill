@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from requests.compat import urlencode
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
@@ -40,7 +39,6 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.password = None
 
         # Torrent Stats
-        self.ratio = None
         self.minseed = 0
         self.minleech = 0
         self.freeleech = True
@@ -117,10 +115,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 search_params['search'] = search_string
 
-                search_url = "%s?%s" % (self.urls['search'], urlencode(search_params))
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-
-                data = self.get_url(search_url)
+                data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
@@ -167,7 +162,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             torrent_size = cells[labels.index('Størrelse')].contents[0]
                             size = convert_size(torrent_size, units=units) or -1
 
-                            item = title, download_url, size, seeders, leechers
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != 'RSS':
                                 logger.log(u"Found result: {} with {} seeders and {} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
@@ -177,12 +172,10 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = DanishbitsProvider()

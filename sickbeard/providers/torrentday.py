@@ -19,11 +19,12 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+from requests.compat import urljoin
 from requests.utils import add_dict_to_cookiejar, dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 
-from sickrage.helper.common import convert_size
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -41,7 +42,6 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self._hash = None
 
         # Torrent Stats
-        self.ratio = None
         self.minseed = None
         self.minleech = None
         self.freeleech = False
@@ -49,10 +49,9 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         # URLs
         self.url = 'https://classic.torrentday.com'
         self.urls = {
-            'base_url': self.url,
-            'login': self.url + '/torrents/',
-            'search': self.url + '/V3/API/API.php',
-            'download': self.url + '/download.php/%s/%s'
+            'login': urljoin(self.url, '/torrents/'),
+            'search': urljoin(self.url, '/V3/API/API.php'),
+            'download': urljoin(self.url, '/download.php/')
         }
 
         self.cookies = None
@@ -136,7 +135,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 for torrent in torrents:
 
                     title = re.sub(r"\[.*\=.*\].*\[/.*\]", "", torrent['name']) if torrent['name'] else None
-                    download_url = self.urls['download'] % (torrent['id'], torrent['fname']) if torrent['id'] and torrent['fname'] else None
+                    download_url = urljoin(self.urls['download'], '{}/{}'.format(torrent['id'], torrent['fname'])) if torrent['id'] and torrent['fname'] else None
 
                     if not all([title, download_url]):
                         continue
@@ -153,7 +152,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     torrent_size = torrent['size']
                     size = convert_size(torrent_size) or -1
 
-                    item = title, download_url, size, seeders, leechers
+                    item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
 
                     if mode != 'RSS':
                         logger.log(u"Found result: {} with {} seeders and {} leechers".format
@@ -162,12 +161,10 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     items.append(item)
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = TorrentDayProvider()

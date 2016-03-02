@@ -18,10 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+from requests.compat import urljoin
 import os
-import posixpath  # Must use posixpath
+import re
 import time
-from requests.compat import urlencode
+import validators
 
 import sickbeard
 from sickbeard import logger, tvcache
@@ -61,6 +63,12 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         self.catIDs = catIDs if catIDs else '5030,5040'
 
         self.default = False
+
+        self.caps = False
+        self.cap_tv_search = None
+        # self.cap_search = None
+        # self.cap_movie_search = None
+        # self.cap_audio_search = None
 
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll newznab providers every 30 minutes max
 
@@ -120,45 +128,64 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
             return self.get_id() + '.png'
         return 'newznab.png'
 
-    def get_newznab_categories(self):
+    def set_caps(self, data):
+        if not data:
+            return
+
+        def _parse_cap(tag):
+            elm = data.find(tag)
+            return elm.get('supportedparams', 'True') if elm and elm.get('available') else ''
+
+        self.cap_tv_search = _parse_cap('tv-search')
+        # self.cap_search = _parse_cap('search')
+        # self.cap_movie_search = _parse_cap('movie-search')
+        # self.cap_audio_search = _parse_cap('audio-search')
+
+        # self.caps = any([self.cap_tv_search, self.cap_search, self.cap_movie_search, self.cap_audio_search])
+        self.caps = any([self.cap_tv_search])
+
+    def get_newznab_categories(self, just_caps=False):
         """
         Uses the newznab provider url and apikey to get the capabilities.
         Makes use of the default newznab caps param. e.a. http://yournewznab/api?t=caps&apikey=skdfiw7823sdkdsfjsfk
-        Returns a tuple with (succes or not, array with dicts [{"id": "5070", "name": "Anime"},
-        {"id": "5080", "name": "Documentary"}, {"id": "5020", "name": "Foreign"}...etc}], error message)
+        Returns a tuple with (succes or not, array with dicts [{'id': '5070', 'name': 'Anime'},
+        {'id': '5080', 'name': 'Documentary'}, {'id': '5020', 'name': 'Foreign'}...etc}], error message)
         """
         return_categories = []
 
         if not self._check_auth():
-            return False, return_categories, "Provider requires auth and your key is not set"
+            return False, return_categories, 'Provider requires auth and your key is not set'
 
-        params = {"t": "caps"}
+        url_params = {'t': 'caps'}
         if self.needs_auth and self.key:
-            params['apikey'] = self.key
+            url_params['apikey'] = self.key
 
-        url = posixpath.join(self.url, 'api?') + urlencode(params)
-        data = self.get_url(url)
+        data = self.get_url(urljoin(self.url, 'api'), params=url_params, returns='text')
         if not data:
-            error_string = u"Error getting xml for [%s]" % url
+            error_string = 'Error getting caps xml for [{}]'.format(self.name)
             logger.log(error_string, logger.WARNING)
             return False, return_categories, error_string
 
         with BS4Parser(data, 'html5lib') as html:
-            if not (self._checkAuthFromData(html) and html.caps and html.caps.categories):
-                error_string = u"Error parsing xml for [%s]" % self.name
+            if not html.find('categories'):
+                error_string = 'Error parsing caps xml for [{}]'.format(self.name)
                 logger.log(error_string, logger.DEBUG)
                 return False, return_categories, error_string
 
-            for category in html.caps.categories.find_all('category'):
-                if category.attrs and 'TV' in category.attrs.get('name', '') and category.attrs.get('id', ''):
-                    return_categories.append({'id': category.attrs['id'], 'name': category.attrs['name']})
+            self.set_caps(html.find('searching'))
+            if just_caps:
+                return
+
+            for category in html.find_all('category'):
+                if 'TV' in category.get('name', '') and category.get('id', ''):
+                    return_categories.append({'id': category['id'], 'name': category['name']})
                     for subcat in category.find_all('subcat'):
-                        if subcat.attrs and subcat.attrs.get('name', '') and subcat.attrs.get('id', ''):
-                            return_categories.append({'id': subcat.attrs['id'], 'name': subcat.attrs['name']})
+                        if subcat.get('name', '') and subcat.get('id', ''):
+                            return_categories.append({'id': subcat['id'], 'name': subcat['name']})
 
-            return True, return_categories, ""
+            return True, return_categories, ''
 
-        error_string = u"Error getting xml for [%s]" % url
+        error_string = 'Error getting xml for [{}]'.format(self.name)
         logger.log(error_string, logger.WARNING)
         return False, return_categories, error_string
 
@@ -177,7 +204,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         Returns: True/False
         """
         if self.needs_auth and not self.key:
-            logger.log(u"Invalid api key. Check your settings", logger.WARNING)
+            logger.log('Invalid api key. Check your settings', logger.WARNING)
             return False
 
         return True
@@ -223,7 +250,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 category_ids = values[3]
                 enabled = values[4]
         except ValueError:
-            logger.log(u'Skipping Newznab provider string: \'%s\', incorrect format' % config, logger.ERROR)
+            logger.log('Skipping Newznab provider string: \'{}\', incorrect format'.format(config), logger.ERROR)
             return None
 
         new_provider = NewznabProvider(
@@ -243,13 +270,20 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         if not self._check_auth():
             return results
 
+        # gingadaddy has no caps.
+        if not self.caps and 'gingadaddy' not in self.url:
+            self.get_newznab_categories(just_caps=True)
+
+        if not self.caps and 'gingadaddy' not in self.url:
+            return results
+
         for mode in search_strings:
             torznab = False
             search_params = {
-                "t": "tvsearch",
-                "limit": 100,
-                "offset": 0,
-                "cat": self.catIDs.strip(', ') or '5030,5040',
+                't': 'tvsearch' if 'tvdbid' in str(self.cap_tv_search) else 'search',
+                'limit': 100,
+                'offset': 0,
+                'cat': self.catIDs.strip(', ') or '5030,5040',
                 'maxage': sickbeard.USENET_RETENTION
             }
 
@@ -257,53 +291,33 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 search_params['apikey'] = self.key
 
             if mode != 'RSS':
-                search_params['tvdbid'] = ep_obj.show.indexerid
+                if search_params['t'] == 'tvsearch':
+                    search_params['tvdbid'] = ep_obj.show.indexerid
 
-                if ep_obj.show.air_by_date or ep_obj.show.sports:
-                    date_str = str(ep_obj.airdate)
-                    search_params['season'] = date_str.partition('-')[0]
-                    search_params['ep'] = date_str.partition('-')[2].replace('-', '/')
-                else:
-                    search_params['season'] = ep_obj.scene_season
-                    search_params['ep'] = ep_obj.scene_episode
+                    if ep_obj.show.air_by_date or ep_obj.show.sports:
+                        date_str = str(ep_obj.airdate)
+                        search_params['season'] = date_str.partition('-')[0]
+                        search_params['ep'] = date_str.partition('-')[2].replace('-', '/')
+                    else:
+                        search_params['season'] = ep_obj.scene_season
+                        search_params['ep'] = ep_obj.scene_episode
 
                 if mode == 'Season':
                     search_params.pop('ep', '')
 
             items = []
-            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log('Search Mode: {}'.format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")), logger.DEBUG)
+                    logger.log('Search string: {}'.format(search_string.decode('utf-8')), logger.DEBUG)
 
-                    if 'tvdbid' not in search_params:
+                    if search_params['t'] != 'tvsearch':
                         search_params['q'] = search_string
 
-                search_url = posixpath.join(self.url, 'api?') + urlencode(search_params)
-                logger.log(u"Search URL: {url}".format(url=search_url), logger.DEBUG)
-
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-                data = self.get_url(search_url)
+                data = self.get_url(urljoin(self.url, 'api'), params=search_params, returns='text')
                 if not data:
                     break
-
-                if 'tvdbid' in search_params:
-                    with BS4Parser(data, 'html5lib') as html:
-                        if not self._checkAuthFromData(html):
-                            break
-
-                        if not html.find_all('item'):
-                            search_params.pop('ep', '')
-                            search_params.pop('season', '')
-                            search_params.pop('tvdbid', '')
-                            search_params['q'] = search_string
-                            search_url = posixpath.join(self.url, 'api?') + urlencode(search_params)
-                            logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-
-                            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-                            data = self.get_url(search_url)
-                            if not data:
-                                break
 
                 with BS4Parser(data, 'html5lib') as html:
                     if not self._checkAuthFromData(html):
@@ -317,16 +331,30 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                     for item in html.find_all('item'):
                         try:
                             title = item.title.get_text(strip=True)
-                            download_url = item.link.get_text(strip=True) or item.enclosure['url']
+                            download_url = None
+                            if item.link:
+                                if validators.url(item.link.get_text(strip=True)):
+                                    download_url = item.link.get_text(strip=True)
+                                elif validators.url(item.link.next.strip()):
+                                    download_url = item.link.next.strip()
+
+                            if not download_url and item.enclosure:
+                                if validators.url(item.enclosure.get('url', '').strip()):
+                                    download_url = item.enclosure.get('url', '').strip()
+
                             if not (title and download_url):
                                 continue
 
                             seeders = leechers = None
-                            item_size = item.size.get_text(strip=True) if item.size else -1
-                            for attr in item.find_all('newznab:attr') + item.find_all('torznab:attr'):
-                                item_size = attr['value'] if attr['name'] == 'size' else item_size
-                                seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
-                                leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers
+                            if 'gingadaddy' in self.url:
+                                size_regex = re.search(r'\d*.?\d* [KMGT]B', str(item.description))
+                                item_size = size_regex.group() if size_regex else -1
+                            else:
+                                item_size = item.size.get_text(strip=True) if item.size else -1
+                                for attr in item.find_all('newznab:attr') + item.find_all('torznab:attr'):
+                                    item_size = attr['value'] if attr['name'] == 'size' else item_size
+                                    seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
+                                    leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers
 
                             if not item_size or (torznab and (seeders is None or leechers is None)):
                                 continue

@@ -20,7 +20,7 @@
 import re
 import traceback
 from requests.utils import dict_from_cookiejar
-from requests.compat import urlencode
+from requests.compat import urljoin
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -42,7 +42,6 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
         self.password = None
 
         # Torrent Stats
-        self.ratio = None
         self.minseed = None
         self.minleech = None
         self.freeleech = None
@@ -50,9 +49,8 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
         # URLs
         self.url = 'https://transmithe.net/'
         self.urls = {
-            'login': 'https://transmithe.net/login.php',
-            'search': 'https://transmithe.net/torrents.php',
-            'base_url': self.url,
+            'login': urljoin(self.url, '/login.php'),
+            'search': urljoin(self.url, '/torrents.php'),
         }
 
         # Proper Strings
@@ -112,10 +110,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                 if not search_string:
                     del search_params['searchtext']
 
-                search_url = self.urls['search'] + "?" + urlencode(search_params)
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-
-                data = self.get_url(self.urls['search'], params=search_params)
+                data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
@@ -143,7 +138,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                             if not download_item:
                                 continue
 
-                            download_url = self.urls['base_url'] + download_item['href']
+                            download_url = urljoin(self.urls, download_item['href'])
 
                             temp_anchor = torrent_row.find('a', {"data-src": True})
                             title = temp_anchor['data-src'].rsplit('.', 1)[0]
@@ -170,7 +165,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                             torrent_size = cells[5].text.strip()
                             size = convert_size(torrent_size) or -1
 
-                            item = title, download_url, size, seeders, leechers
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != 'RSS':
                                 logger.log(u"Found result: {} with {} seeders and {} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
@@ -180,12 +175,10 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = TransmitTheNetProvider()
