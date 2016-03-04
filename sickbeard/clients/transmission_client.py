@@ -70,7 +70,7 @@ class TransmissionAPI(GenericClient):
             'filename': result.url,
             'paused': 1 if sickbeard.TORRENT_PAUSED else 0
         }
-        if os.path.isabs(sickbeard.TORRENT_PATH) and os.path.isdir(sickbeard.TORRENT_PATH):
+        if os.path.isabs(sickbeard.TORRENT_PATH):
             arguments['download-dir'] = sickbeard.TORRENT_PATH
 
         post_data = json.dumps({'arguments': arguments,
@@ -87,7 +87,7 @@ class TransmissionAPI(GenericClient):
             'paused': 1 if sickbeard.TORRENT_PAUSED else 0
         }
 
-        if os.path.isabs(sickbeard.TORRENT_PATH) and os.path.isdir(sickbeard.TORRENT_PATH):
+        if os.path.isabs(sickbeard.TORRENT_PATH):
             arguments['download-dir'] = sickbeard.TORRENT_PATH
 
         post_data = json.dumps({'arguments': arguments,
