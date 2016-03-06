@@ -150,7 +150,7 @@ def OneRunPP():
         @wraps(func)
         def func_wrapper(*args, **kargs):
             if isRunning[0]:
-                return logHelper(u'Post processor is already running', logger.ERROR)
+                return logHelper(u'Post processor is already running', logger.WARNING)
 
             isRunning[0] = True
             ret = func(*args, **kargs)
