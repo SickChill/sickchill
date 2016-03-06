@@ -119,8 +119,9 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         return True
 
     def login(self):
-        # if len(self.session.cookies) == 3:
-        #     return True
+        if len(self.session.cookies) >= 3:
+            if self.session.cookies.get('pass_hash', '') not in ('0', 0) and self.session.cookies.get('member_id') not in ('0', 0):
+                return True
 
         login_params = {'UserName': self.username,
                         'PassWord': self.password,
