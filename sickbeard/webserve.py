@@ -2347,7 +2347,8 @@ class HomeAddShows(Home):
             for searchTerm in searchTerms:
                 try:
                     indexerResults = t[searchTerm]
-                except Exception:
+                except StandardError:
+                    logger.log(traceback.format_exc(), logger.ERROR)
                     continue
 
                 # add search results
