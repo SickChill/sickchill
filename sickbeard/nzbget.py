@@ -116,7 +116,7 @@ def sendNZB(nzb, proper=False):
             else:
                 if nzb.resultType == "nzb":
                     genProvider = GenericProvider("")
-                    data = genProvider.get_url(nzb.url)
+                    data = genProvider.get_url(nzb.url, returns='content')
                     if data is None:
                         return False
                     nzbcontent64 = standard_b64encode(data)
