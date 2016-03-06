@@ -351,9 +351,9 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         if response.request.method == 'POST':
             logger.log(u'With post data: {}'.format(response.request.body), logger.DEBUG)
 
-    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False, **kwargs):  # pylint: disable=too-many-arguments,
+    def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):  # pylint: disable=too-many-arguments,
         kwargs['hooks'] = {'response': self.get_url_hook}
-        return getURL(url, post_data, params, self.headers, timeout, self.session, json, need_bytes, **kwargs)
+        return getURL(url, post_data, params, self.headers, timeout, self.session, **kwargs)
 
     def image_name(self):
         return self.get_id() + '.png'

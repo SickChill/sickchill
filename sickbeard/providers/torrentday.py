@@ -76,7 +76,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 'submit.y': 0
             }
 
-            response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+            response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
             if not response:
                 logger.log(u"Unable to connect to provider", logger.WARNING)
                 return False
@@ -89,7 +89,6 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 if dict_from_cookiejar(self.session.cookies)['uid'] and dict_from_cookiejar(self.session.cookies)['pass']:
                     self._uid = dict_from_cookiejar(self.session.cookies)['uid']
                     self._hash = dict_from_cookiejar(self.session.cookies)['pass']
-
                     self.cookies = {'uid': self._uid,
                                     'pass': self._hash}
                     return True
@@ -121,7 +120,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 if self.freeleech:
                     post_data.update({'free': 'on'})
 
-                parsedJSON = self.get_url(self.urls['search'], post_data=post_data, json=True)
+                parsedJSON = self.get_url(self.urls['search'], post_data=post_data, returns='json')
                 if not parsedJSON:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue

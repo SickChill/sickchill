@@ -67,7 +67,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             'login': 'Login',
         }
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             self.session.cookies.clear()

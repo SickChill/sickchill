@@ -66,8 +66,8 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         'password': self.password,
                         'login': 'submit'}
 
-        self.get_url(self.urls['login'], timeout=30)
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        self.get_url(self.urls['login'], returns='text')
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -103,9 +103,8 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
                 search_url = self.urls['search'] % (self.categories, freeleech, search_string)
                 search_url += ';o=seeders' if mode != 'RSS' else ''
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                data = self.get_url(search_url)
+                data = self.get_url(search_url, returns='text')
                 if not data:
                     continue
 

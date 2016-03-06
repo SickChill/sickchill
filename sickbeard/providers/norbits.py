@@ -93,7 +93,7 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                 self._check_auth()
                 parsed_json = self.get_url(self.urls['search'],
                                            post_data=json.dumps(post_data),
-                                           json=True)
+                                           returns='json')
 
                 if not parsed_json:
                     return results

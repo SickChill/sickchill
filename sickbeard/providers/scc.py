@@ -21,6 +21,7 @@
 import re
 import time
 from urllib import quote
+from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 import sickbeard
@@ -71,7 +72,7 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
             'submit': 'come on in'
         }
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -105,8 +106,7 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                 search_url = self.urls['search'] % (quote(search_string), self.categories[mode])
 
                 try:
-                    logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-                    data = self.get_url(search_url)
+                    data = self.get_url(search_url, returns='text')
                     time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 except Exception as e:
                     logger.log(u"Unable to fetch data. Error: %s" % repr(e), logger.WARNING)
@@ -131,7 +131,7 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
                             title = link.string
                             if re.search(r'\.\.\.', title):
-                                data = self.get_url(self.url + "/" + link['href'])
+                                data = self.get_url(urljoin(self.url, link['href']), returns='text')
                                 if data:
                                     with BS4Parser(data) as details_html:
                                         title = re.search('(?<=").+(?<!")', details_html.title.string).group(0)

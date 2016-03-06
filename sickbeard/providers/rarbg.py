@@ -64,7 +64,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             "app_id": "sickrage2"
         }
 
-        response = self.get_url(self.urls["api"], params=login_params, timeout=30, returns="json")
+        response = self.get_url(self.urls["api"], params=login_params, returns="json")
         if not response:
             logger.log("Unable to connect to provider", logger.WARNING)
             return False

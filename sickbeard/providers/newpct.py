@@ -85,7 +85,7 @@ class newpctProvider(TorrentProvider):
 
                 search_params['q'] = search_string
 
-                data = self.get_url(self.urls['search'], params=search_params, timeout=30, returns='text')
+                data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
                     continue
 
@@ -129,17 +129,20 @@ class newpctProvider(TorrentProvider):
 
         return results
 
-    def get_url(self, url, post_data=None, params=None, timeout=30, json=False, need_bytes=False, **kwargs):  # pylint: disable=too-many-arguments
+    def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):  # pylint: disable=too-many-arguments
         """
-        need_bytes=True when trying access to torrent info (For calling torrent client). Previously we must parse
+        returns='content' when trying access to torrent info (For calling torrent client). Previously we must parse
         the URL to get torrent file
         """
-        if need_bytes:
-            data = super(newpctProvider, self).get_url(url, post_data=post_data, params=params, timeout=timeout, json=json, kwargs=kwargs)
+        trickery = kwargs.pop('returns', '')
+        if trickery == 'content':
+            kwargs['returns'] = 'text'
+            data = super(newpctProvider, self).get_url(url, post_data=post_data, params=params, timeout=timeout, kwargs=kwargs)
             url = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
 
-        return super(newpctProvider, self).get_url(url, post_data=post_data, params=params, timeout=timeout,
-                                                   json=json, need_bytes=need_bytes, kwargs=kwargs)
+        kwargs['returns'] = trickery
+        return super(newpctProvider, self).get_url(url, post_data=post_data, params=params,
+                                                   timeout=timeout, kwargs=kwargs)
 
     def download_result(self, result):
         """
@@ -154,7 +157,7 @@ class newpctProvider(TorrentProvider):
 
         for url in urls:
             # Search results don't return torrent files directly, it returns show sheets so we must parse showSheet to access torrent.
-            data = self.get_url(url)
+            data = self.get_url(url, returns='text')
             url_torrent = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
 
             if url_torrent.startswith('http'):

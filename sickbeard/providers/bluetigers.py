@@ -63,10 +63,10 @@ class BlueTigersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             'take_login': '1'
         }
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
 
         if not response:
-            check_login = self.get_url(self.urls['base_url'], timeout=30)
+            check_login = self.get_url(self.urls['base_url'], returns='text')
             if re.search('account-logout.php', check_login):
                 return True
             else:
@@ -95,7 +95,7 @@ class BlueTigersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 self.search_params['search'] = search_string
 
-                data = self.get_url(self.urls['search'], params=self.search_params)
+                data = self.get_url(self.urls['search'], params=self.search_params, returns='text')
                 if not data:
                     continue
 

@@ -76,7 +76,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
             'login': 'Login'
         }
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
