@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import re
 import json
 from base64 import b64encode
@@ -65,9 +66,12 @@ class TransmissionAPI(GenericClient):
 
     def _add_torrent_uri(self, result):
 
-        arguments = {'filename': result.url,
-                     'paused': 1 if sickbeard.TORRENT_PAUSED else 0,
-                     'download-dir': sickbeard.TORRENT_PATH}
+        arguments = {
+            'filename': result.url,
+            'paused': 1 if sickbeard.TORRENT_PAUSED else 0
+        }
+        if os.path.isabs(sickbeard.TORRENT_PATH):
+            arguments['download-dir'] = sickbeard.TORRENT_PATH
 
         post_data = json.dumps({'arguments': arguments,
                                 'method': 'torrent-add'})
@@ -78,9 +82,13 @@ class TransmissionAPI(GenericClient):
 
     def _add_torrent_file(self, result):
 
-        arguments = {'metainfo': b64encode(result.content),
-                     'paused': 1 if sickbeard.TORRENT_PAUSED else 0,
-                     'download-dir': sickbeard.TORRENT_PATH}
+        arguments = {
+            'metainfo': b64encode(result.content),
+            'paused': 1 if sickbeard.TORRENT_PAUSED else 0
+        }
+
+        if os.path.isabs(sickbeard.TORRENT_PATH):
+            arguments['download-dir'] = sickbeard.TORRENT_PATH
 
         post_data = json.dumps({'arguments': arguments,
                                 'method': 'torrent-add'})

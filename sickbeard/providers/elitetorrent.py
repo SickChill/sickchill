@@ -19,7 +19,6 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from six.moves import urllib
 import traceback
 
 from sickbeard import logger, tvcache
@@ -47,6 +46,10 @@ class elitetorrentProvider(TorrentProvider):
 
         self.url = self.urls['base_url']
 
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+        results = []
+        lang_info = '' if not ep_obj or not ep_obj.show else ep_obj.show.lang
+
         """
         Search query:
         http://www.elitetorrent.net/torrents.php?cat=4&modo=listado&orden=fecha&pag=1&buscar=fringe
@@ -58,7 +61,7 @@ class elitetorrentProvider(TorrentProvider):
         pag = 1 => page number
         """
 
-        self.search_params = {
+        search_params = {
             'cat': 4,
             'modo': 'listado',
             'orden': 'fecha',
@@ -66,10 +69,6 @@ class elitetorrentProvider(TorrentProvider):
             'buscar': ''
 
         }
-
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
-        results = []
-        lang_info = '' if not ep_obj or not ep_obj.show else ep_obj.show.lang
 
         for mode in search_strings:
             items = []
@@ -86,24 +85,18 @@ class elitetorrentProvider(TorrentProvider):
                                logger.DEBUG)
 
                 search_string = re.sub(r'S0*(\d*)E(\d*)', r'\1x\2', search_string)
-                self.search_params['buscar'] = search_string.strip() if mode != 'RSS' else ''
+                search_params['buscar'] = search_string.strip() if mode != 'RSS' else ''
 
-                search_url = self.urls['search'] + '?' + urllib.parse.urlencode(self.search_params)
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-
-                data = self.get_url(search_url, timeout=30)
+                data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
                     continue
 
                 try:
                     with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', class_='fichas-listado')
-                        torrent_rows = []
+                        torrent_rows = torrent_table.find_ll('tr') if torrent_table else []
 
-                        if torrent_table is not None:
-                            torrent_rows = torrent_table.findAll('tr')
-
-                        if not torrent_rows:
+                        if len(torrent_rows) < 2:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
@@ -130,7 +123,7 @@ class elitetorrentProvider(TorrentProvider):
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            item = title, download_url, size, seeders, leechers
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != 'RSS':
                                 logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
@@ -140,7 +133,7 @@ class elitetorrentProvider(TorrentProvider):
                     logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.WARNING)
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
 
             results += items
 

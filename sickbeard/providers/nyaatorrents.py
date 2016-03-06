@@ -24,7 +24,7 @@ import re
 
 from sickbeard import logger, tvcache
 
-from sickrage.helper.common import convert_size
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -37,7 +37,6 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
         self.public = True
         self.supports_absolute_numbering = True
         self.anime_only = True
-        self.ratio = None
 
         self.url = 'http://www.nyaa.se'
 
@@ -59,8 +58,8 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
             logger.log(u'Search Mode: {}'.format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u'Search string: {}'.format(search_string.decode('utf-8')),
-                               logger.DEBUG)
+                    logger.log(u'Search string: {}'.format
+                               (search_string.decode('utf-8')), logger.DEBUG)
 
                 search_params = {
                     'page': 'rss',
@@ -83,7 +82,15 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                         if not all([title, download_url]):
                             continue
 
-                        seeders, leechers, torrent_size, verified = self.regex.find(curItem['summary'])
+                        item_info = self.regex.search(curItem['summary'])
+                        if not item_info:
+                            logger.log('There was a problem parsing an item summary, skipping: {}'.format
+                                       (title), logger.DEBUG)
+                            continue
+
+                        seeders, leechers, torrent_size, verified = item_info.groups()
+                        seeders = try_int(seeders)
+                        leechers = try_int(leechers)
 
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
@@ -93,26 +100,25 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                             continue
 
                         if self.confirmed and not verified and mode != 'RSS':
-                            logger.log('Found result {} but that doesn\'t seem like a verified result so I\'m ignoring it'.format(title), logger.DEBUG)
+                            logger.log('Found result {} but that doesn\'t seem like a verified result so I\'m ignoring it'.format
+                                       (title), logger.DEBUG)
                             continue
 
                         size = convert_size(torrent_size) or -1
-                        item = title, download_url, size, seeders, leechers
+                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
                         if mode != 'RSS':
                             logger.log('Found result: {} with {} seeders and {} leechers'.format
                                        (title, seeders, leechers), logger.DEBUG)
 
-                        items.append(item)
+                        items.append(result)
                     except StandardError:
                         continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = NyaaProvider()

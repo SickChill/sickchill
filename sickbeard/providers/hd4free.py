@@ -18,11 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from requests.compat import urlencode
-
+from requests.compat import urljoin
 from sickbeard import logger, tvcache
 
-from sickrage.helper.common import convert_size
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -33,14 +32,13 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         TorrentProvider.__init__(self, "HD4Free")
 
         self.url = 'https://hd4free.xyz'
-        self.urls = {'search': self.url + '/searchapi.php'}
+        self.urls = {'search': urljoin(self.url, '/searchapi.php')}
 
         self.freeleech = None
         self.username = None
         self.api_key = None
         self.minseed = None
         self.minleech = None
-        self.ratio = 0
 
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll HD4Free every 10 minutes max
 
@@ -77,10 +75,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                 else:
                     search_params.pop('search', '')
 
-                search_url = self.urls['search'] + "?" + urlencode(search_params)
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-
-                jdata = self.get_url(search_url, json=True)
+                jdata = self.get_url(self.urls['search'], params=search_params, returns='json')
                 if not jdata:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
@@ -109,7 +104,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
                         torrent_size = str(jdata[i]["size"]) + ' MB'
                         size = convert_size(torrent_size) or -1
-                        item = title, download_url, size, seeders, leechers
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
 
                         if mode != 'RSS':
                             logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
@@ -119,13 +114,11 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                         continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
 
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = HD4FreeProvider()

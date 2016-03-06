@@ -37,7 +37,7 @@ from hachoir_core.log import log  # pylint: disable=import-error
 from fake_useragent import settings as UA_SETTINGS, UserAgent
 from sickbeard.numdict import NumDict
 from sickrage.helper.encoding import ek
-from sickrage.helper.common import try_int
+from sickrage.helper.common import try_int  # pylint: disable=unused-import
 from sickrage.tagger.episode import EpisodeTags
 from sickrage.recompiled import tags
 
@@ -287,7 +287,7 @@ class Quality(object):
         return Quality.UNKNOWN
 
     @staticmethod
-    def scene_quality(name, anime=False):  # pylint: disable=too-many-branches
+    def scene_quality(name, anime=False):  # pylint: disable=too-many-branches, too-many-statements
         """
         Return The quality from the scene episode File
 
@@ -562,12 +562,19 @@ class Quality(object):
     SNATCHED_BEST = None
     ARCHIVED = None
 
-Quality.DOWNLOADED = [Quality.compositeStatus(DOWNLOADED, x) for x in Quality.qualityStrings]
-Quality.SNATCHED = [Quality.compositeStatus(SNATCHED, x) for x in Quality.qualityStrings]
-Quality.SNATCHED_PROPER = [Quality.compositeStatus(SNATCHED_PROPER, x) for x in Quality.qualityStrings]
-Quality.FAILED = [Quality.compositeStatus(FAILED, x) for x in Quality.qualityStrings]
-Quality.SNATCHED_BEST = [Quality.compositeStatus(SNATCHED_BEST, x) for x in Quality.qualityStrings]
-Quality.ARCHIVED = [Quality.compositeStatus(ARCHIVED, x) for x in Quality.qualityStrings]
+Quality.DOWNLOADED = [Quality.compositeStatus(DOWNLOADED, x) for x in Quality.qualityStrings if x is not None]
+Quality.SNATCHED = [Quality.compositeStatus(SNATCHED, x) for x in Quality.qualityStrings if x is not None]
+Quality.SNATCHED_BEST = [Quality.compositeStatus(SNATCHED_BEST, x) for x in Quality.qualityStrings if x is not None]
+Quality.SNATCHED_PROPER = [Quality.compositeStatus(SNATCHED_PROPER, x) for x in Quality.qualityStrings if x is not None]
+Quality.FAILED = [Quality.compositeStatus(FAILED, x) for x in Quality.qualityStrings if x is not None]
+Quality.ARCHIVED = [Quality.compositeStatus(ARCHIVED, x) for x in Quality.qualityStrings if x is not None]
+
+Quality.DOWNLOADED.sort()
+Quality.SNATCHED.sort()
+Quality.SNATCHED_BEST.sort()
+Quality.SNATCHED_PROPER.sort()
+Quality.FAILED.sort()
+Quality.ARCHIVED.sort()
 
 HD720p = Quality.combineQualities([Quality.HDTV, Quality.HDWEBDL, Quality.HDBLURAY], [])
 HD1080p = Quality.combineQualities([Quality.FULLHDTV, Quality.FULLHDWEBDL, Quality.FULLHDBLURAY], [])

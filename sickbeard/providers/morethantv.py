@@ -20,7 +20,7 @@
 
 import re
 
-from requests.compat import urlencode
+from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
@@ -45,7 +45,6 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self._hash = None
 
         # Torrent Stats
-        self.ratio = None
         self.minseed = None
         self.minleech = None
         self.freeleech = None
@@ -53,8 +52,8 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         # URLs
         self.url = 'https://www.morethan.tv/'
         self.urls = {
-            'login': self.url + 'login.php',
-            'search': self.url + 'torrents.php',
+            'login': urljoin(self.url, 'login.php'),
+            'search': urljoin(self.url, 'torrents.php'),
         }
 
         # Proper Strings
@@ -130,10 +129,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 search_params['searchstr'] = search_string
 
-                search_url = "%s?%s" % (self.urls['search'], urlencode(search_params))
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-
-                data = self.get_url(search_url)
+                data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
@@ -157,7 +153,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 continue
 
                             title = result.find('a', title='View torrent').get_text(strip=True)
-                            download_url = self.url + result.find('span', title='Download').parent['href']
+                            download_url = urljoin(self.url, result.find('span', title='Download').parent['href'])
                             if not all([title, download_url]):
                                 continue
 
@@ -176,7 +172,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             torrent_size = cells[labels.index('Size')].get_text(strip=True)
                             size = convert_size(torrent_size, units=units) or -1
 
-                            item = title, download_url, size, seeders, leechers
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != 'RSS':
                                 logger.log(u"Found result: {} with {} seeders and {} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
@@ -186,12 +182,10 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = MoreThanTVProvider()

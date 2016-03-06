@@ -42,7 +42,6 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.public = True
 
         # Torrent Stats
-        self.ratio = None
         self.minseed = None
         self.minleech = None
         self.confirmed = True
@@ -155,7 +154,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             torrent_size = re.sub(r"Size ([\d.]+).+([KMGT]iB)", r"\1 \2", torrent_size)
                             size = convert_size(torrent_size, units=units) or -1
 
-                            item = title, download_url, size, seeders, leechers
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != "RSS":
                                 logger.log("Found result: {} with {} seeders and {} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
@@ -165,12 +164,10 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = ThePirateBayProvider()

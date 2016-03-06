@@ -18,7 +18,7 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-from requests.compat import urlencode
+from requests.compat import urlencode, urljoin
 
 from sickbeard import classes, logger, tvcache
 
@@ -39,16 +39,15 @@ class HDBitsProvider(TorrentProvider):
 
         self.username = None
         self.passkey = None
-        self.ratio = None
 
         self.cache = HDBitsCache(self, min_time=15)  # only poll HDBits every 15 minutes max
 
-        self.urls = {'base_url': 'https://hdbits.org',
-                     'search': 'https://hdbits.org/api/torrents',
-                     'rss': 'https://hdbits.org/api/torrents',
-                     'download': 'https://hdbits.org/download.php?'}
-
-        self.url = self.urls['base_url']
+        self.url = 'https://hdbits.org'
+        self.urls = {
+            'search': urljoin(self.url, '/api/torrents'),
+            'rss': urljoin(self.url, '/api/torrents'),
+            'download': urljoin(self.url, '/download.php')
+        }
 
     def _check_auth(self):
 
@@ -75,7 +74,7 @@ class HDBitsProvider(TorrentProvider):
 
     def _get_title_and_url(self, item):
         title = item.get('name', '').replace(' ', '.')
-        url = self.urls['download'] + urlencode({'id': item['id'], 'passkey': self.passkey})
+        url = self.urls['download'] + '?' + urlencode({'id': item['id'], 'passkey': self.passkey})
 
         return title, url
 
@@ -88,7 +87,7 @@ class HDBitsProvider(TorrentProvider):
 
         self._check_auth()
 
-        parsedJSON = self.get_url(self.urls['search'], post_data=search_params, json=True)
+        parsedJSON = self.get_url(self.urls['search'], post_data=search_params, returns='json')
         if not parsedJSON:
             return []
 
@@ -177,9 +176,6 @@ class HDBitsProvider(TorrentProvider):
             post_data['search'] = search_term
 
         return json.dumps(post_data)
-
-    def seed_ratio(self):
-        return self.ratio
 
 
 class HDBitsCache(tvcache.TVCache):

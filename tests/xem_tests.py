@@ -21,7 +21,7 @@
 Test XEM
 """
 
-# pylint: disable=line-too-long
+from __future__ import print_function, unicode_literals
 
 import os.path
 import re
@@ -70,7 +70,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
                 cur_show = TVShow(int(sql_show["indexer"]), int(sql_show["indexer_id"]))
                 sickbeard.showList.append(cur_show)
             except Exception as error:  # pylint: disable=broad-except
-                print "There was an error creating the show %s" % error
+                print("There was an error creating the show {}".format(error))
 
     @staticmethod
     def test_formatting():
@@ -82,23 +82,24 @@ class XEMBasicTests(test.SickbeardTestDBCase):
 
         # m = re.match('(?P<ep_ab_num>(?>\d{1,3})(?![ip])).+', name)
 
-        # pylint: disable=anomalous-backslash-in-string
-        escaped_name = re.sub('\\\\[\\s.-]', '\W+', re.escape(release))
-        # pylint: disable=anomalous-backslash-in-string
-        cur_regex = '^' + escaped_name + '\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))'
-        # print(u"Checking if show " + name + " matches " + curRegex)
+        escaped_name = re.sub('\\\\[\\s.-]', r'\W+', re.escape(release))
+        cur_regex = '^' + escaped_name + r'\W+(?:(?:S\d[\dE._ -])|' + \
+            r'(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|' + \
+            r'Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))'
+
+        # print("Checking if show " + name + " matches " + curRegex)
 
         match = re.search(cur_regex, name, re.I)
         if match:
-            # print(u"Matched " + curRegex + " to " + name)
+            # print("Matched " + curRegex + " to " + name)
             pass
 
 
 if __name__ == "__main__":
-    print "=================="
-    print "STARTING - XEM Scene Numbering TESTS"
-    print "=================="
-    print "######################################################################"
+    print("==================")
+    print("STARTING - XEM Scene Numbering TESTS")
+    print("==================")
+    print("######################################################################")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(XEMBasicTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

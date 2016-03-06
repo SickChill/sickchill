@@ -39,7 +39,6 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         TorrentProvider.__init__(self, "Rarbg")
 
         self.public = True
-        self.ratio = None
         self.minseed = None
         self.ranked = None
         self.sorting = None
@@ -127,8 +126,12 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                     continue
 
                 error = data.get("error")
+                error_code = data.get("error_code")
+                # Don't log when {"error":"No results found","error_code":20}
+                # List of errors: https://github.com/rarbg/torrentapi/issues/1#issuecomment-114763312
                 if error:
-                    logger.log(error)
+                    if try_int(error_code) != 20:
+                        logger.log(error)
                     continue
 
                 torrent_results = data.get("torrent_results")
@@ -155,22 +158,20 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                         torrent_size = item.pop("size", -1)
                         size = convert_size(torrent_size) or -1
 
-                        item = title, download_url, size, seeders, leechers
                         if mode != "RSS":
                             logger.log("Found result: {} with {} seeders and {} leechers".format
                                        (title, seeders, leechers), logger.DEBUG)
 
-                        items.append(item)
+                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
+                        items.append(result)
                     except StandardError:
                         continue
 
             # For each search mode sort all the items by seeders
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = RarbgProvider()

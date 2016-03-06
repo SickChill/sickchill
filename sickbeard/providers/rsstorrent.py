@@ -45,7 +45,6 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.cache = TorrentRssCache(self, min_time=15)
         self.url = url.rstrip('/')
 
-        self.ratio = None
         self.supports_backlog = False
 
         self.search_mode = search_mode
@@ -198,9 +197,6 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         logger.log('Saved custom_torrent html dump {} '.format(dumpName), logger.INFO)
         return True
-
-    def seed_ratio(self):
-        return self.ratio
 
 
 class TorrentRssCache(tvcache.TVCache):

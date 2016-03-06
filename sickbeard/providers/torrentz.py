@@ -19,14 +19,13 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from six.moves import urllib
 import traceback
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import USER_AGENT
 
-from sickrage.helper.common import convert_size
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -42,7 +41,6 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         self.confirmed = True
 
         # Torrent Stats
-        self.ratio = None
         self.minseed = None
         self.minleech = None
 
@@ -74,14 +72,10 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
             for search_string in search_strings[mode]:
                 search_url = self.urls['verified'] if self.confirmed else self.urls['feed']
                 if mode != 'RSS':
-                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
-                    search_url += '?q=' + urllib.parse.quote_plus(search_string)
-
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-
-                data = self.get_url(search_url)
+                data = self.get_url(search_url, params={'q': search_string}, returns='text')
                 if not data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
@@ -93,7 +87,7 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                 try:
                     with BS4Parser(data, 'html5lib') as parser:
                         for item in parser.findAll('item'):
-                            if item.category and 'tv' not in item.category.text:
+                            if item.category and 'tv' not in item.category.get_text(strip=True):
                                 continue
 
                             title = item.title.text.rsplit(' ', 1)[0].replace(' ', '.')
@@ -113,17 +107,16 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            items.append((title, download_url, size, seeders, leechers))
+                            result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': t_hash}
+                            items.append(result)
                 except StandardError:
                     logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
             results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = TorrentzProvider()

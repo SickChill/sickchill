@@ -33,7 +33,6 @@ class BTDiggProvider(TorrentProvider):
         TorrentProvider.__init__(self, "BTDigg")
 
         self.public = True
-        self.ratio = 0
         self.url = "https://btdigg.org"
         self.urls = {"api": "https://api.btdigg.org/api/private-341ada3245790954/s02"}
 
@@ -89,7 +88,7 @@ class BTDiggProvider(TorrentProvider):
                         torrent_size = torrent.pop("size")
                         size = convert_size(torrent_size) or -1
 
-                        item = title, download_url, size, seeders, leechers
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                         if mode != "RSS":
                             logger.log("Found result: %s " % title, logger.DEBUG)
 
@@ -102,7 +101,5 @@ class BTDiggProvider(TorrentProvider):
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = BTDiggProvider()
