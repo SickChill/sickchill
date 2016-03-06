@@ -19,66 +19,20 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import re
 import sys
 import urllib
-
-from dateutil import parser
 
 import sickbeard
 from sickbeard.common import USER_AGENT, Quality
 
-from sickrage.helper.common import dateFormat, dateTimeFormat
+from sickrage.helper.common import dateTimeFormat
 
 
 class SickBeardURLopener(urllib.FancyURLopener, object):
     version = USER_AGENT
 
 
-class AuthURLOpener(SickBeardURLopener):
-    """
-    URLOpener class that supports http auth without needing interactive password entry.
-    If the provided username/password don't work it simply fails.
-
-    user: username to use for HTTP auth
-    pw: password to use for HTTP auth
-    """
-
-    def __init__(self, user, pw):
-        self.username = user
-        self.password = pw
-
-        # remember if we've tried the username/password before
-        self.numTries = 0
-
-        # call the base class
-        urllib.FancyURLopener.__init__(self)
-
-    def prompt_user_passwd(self, host, realm):
-        """
-        Override this function and instead of prompting just give the
-        username/password that were provided when the class was instantiated.
-
-        :param host:
-        :param realm:
-        """
-
-        # if this is the first try then provide a username/password
-        if self.numTries == 0:
-            self.numTries = 1
-            return self.username, self.password
-
-        # if we've tried before then return blank which cancels the request
-        else:
-            return u'', u''
-
-    # this is pretty much just a hack for convenience
-    def openit(self, url):
-        self.numTries = 0
-        return SickBeardURLopener.open(self, url)
-
-
-class SearchResult(object):
+class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-instance-attributes
     """
     Represents a search result from an indexer.
     """
@@ -146,7 +100,7 @@ class SearchResult(object):
         return u'{}.{}'.format(self.episodes[0].prettyName(), self.resultType)
 
 
-class NZBSearchResult(SearchResult):
+class NZBSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
     """
     Regular NZB result with an URL to the NZB
     """
@@ -155,7 +109,7 @@ class NZBSearchResult(SearchResult):
         self.resultType = u'nzb'
 
 
-class NZBDataSearchResult(SearchResult):
+class NZBDataSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
     """
     NZB result where the actual NZB XML data is stored in the extraInfo
     """
@@ -164,7 +118,7 @@ class NZBDataSearchResult(SearchResult):
         self.resultType = u'nzbdata'
 
 
-class TorrentSearchResult(SearchResult):
+class TorrentSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
     """
     Torrent result with an URL to the torrent
     """
@@ -173,7 +127,7 @@ class TorrentSearchResult(SearchResult):
         self.resultType = u'torrent'
 
 
-class AllShowsListUI(object):
+class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
     """
     This class is for indexer api.
 
@@ -207,10 +161,7 @@ class AllShowsListUI(object):
                     for name in series_names:
                         if search_term.lower() in name.lower():
                             if 'firstaired' not in curShow:
-                                curShow['firstaired'] = str(datetime.date.fromordinal(1))
-                                curShow['firstaired'] = re.sub("([-]0{2})+", "", curShow['firstaired'])
-                                fix_date = parser.parse(curShow['firstaired'], fuzzy=True).date()
-                                curShow['firstaired'] = fix_date.strftime(dateFormat)
+                                curShow['firstaired'] = 'Unknown'
 
                             if curShow not in search_results:
                                 search_results += [curShow]
@@ -218,7 +169,7 @@ class AllShowsListUI(object):
         return search_results
 
 
-class ShowListUI(object):
+class ShowListUI(object):  # pylint: disable=too-few-public-methods
     """
     This class is for tvdb-api.
 
@@ -231,7 +182,8 @@ class ShowListUI(object):
         self.config = config
         self.log = log
 
-    def selectSeries(self, allSeries):
+    @staticmethod
+    def selectSeries(allSeries):
         try:
             # try to pick a show that's in my show list
             show_id_list = [int(x.indexerid) for x in sickbeard.showList]
@@ -245,7 +197,7 @@ class ShowListUI(object):
         return allSeries[0]
 
 
-class Proper(object):
+class Proper(object):  # pylint: disable=too-few-public-methods, too-many-instance-attributes
     def __init__(self, name, url, date, show):
         self.name = name
         self.url = url
@@ -319,7 +271,7 @@ class WarningViewer(object):
         return WarningViewer.errors
 
 
-class UIError(object):
+class UIError(object):  # pylint: disable=too-few-public-methods
     """
     Represents an error to be displayed in the web UI.
     """
