@@ -31,11 +31,7 @@ from sickrage.helper.common import try_int
 time_regex = re.compile(r'(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b', re.I)
 
 network_dict = None
-
-try:
-    sb_timezone = tz.tzwinlocal() if tz.tzwinlocal else tz.tzlocal()
-except UnicodeError:
-    sb_timezone = tz.tzlocal()
+sb_timezone = tz.tzwinlocal() if tz.tzwinlocal else tz.tzlocal()
 
 
 # update the network timezone table
