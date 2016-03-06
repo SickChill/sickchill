@@ -19,7 +19,6 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint:disable=too-many-lines
 
-import warnings
 import os
 import io
 import ctypes
@@ -1425,26 +1424,11 @@ def _setUpSession(session, headers):
 
 
 def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too-many-arguments, too-many-return-statements, too-many-branches
-           timeout=30, session=None, json=False, need_bytes=False, **kwargs):
+           timeout=30, session=None, **kwargs):
     """
     Returns a byte-string retrieved from the url provider.
     """
-
-    # TODO: make raw response the default once the the current args are fully deprecated
-    default = None
-    if json:
-        message = u'getURL argument json will be deprecated in the near future use returns=\'json\' instead.'
-        default = u'json'
-    elif need_bytes:
-        message = u'getURL argument need_bytes will be deprecated in the near future use returns=\'content\' instead.'
-        default = u'content'
-    elif u'returns' not in kwargs:
-        default = u'text'
-        message = u'getURL default return type may change in the near future use returns=\'text\' instead.'
-    if default is not None:
-        warnings.warn(message, PendingDeprecationWarning, stacklevel=2)
-
-    response_type = kwargs.pop(u'returns', default)
+    response_type = kwargs.pop(u'returns', 'text')
     hooks = kwargs.pop(u'hooks', None)
     session = _setUpSession(session, headers)
 

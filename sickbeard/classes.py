@@ -126,24 +126,24 @@ class SearchResult(object):
         if self.provider is None:
             return u'Invalid provider, unable to print self'
 
-        my_string = u'{provider} @ {url}\n'.format(provider=self.provider.name, url=self.url)
+        my_string = u'{} @ {}\n'.format(self.provider.name, self.url)
         my_string += u'Extra Info:\n'
         for extra in self.extraInfo:
-            my_string += u' {info}\n'.format(info=extra)
+            my_string += u' {}\n'.format(extra)
 
         my_string += u'Episodes:\n'
         for ep in self.episodes:
-            my_string += u' {episode}\n'.format(episode=ep)
+            my_string += u' {}\n'.format(ep)
 
-        my_string += u'Quality: {quality}\n'.format(quality=Quality.qualityStrings[self.quality])
-        my_string += u'Name: {name}\n'.format(name=self.name)
-        my_string += u'Size: {size}\n'.format(size=self.size)
-        my_string += u'Release Group: {group}\n'.format(group=self.release_group)
+        my_string += u'Quality: {}\n'.format(Quality.qualityStrings[self.quality])
+        my_string += u'Name: {}\n'.format(self.name)
+        my_string += u'Size: {}\n'.format(self.size)
+        my_string += u'Release Group: {}\n'.format(self.release_group)
 
         return my_string
 
     def fileName(self):
-        return u'{name}.{type}'.format(name=self.episodes[0].prettyName(), type=self.resultType)
+        return u'{}.{}'.format(self.episodes[0].prettyName(), self.resultType)
 
 
 class NZBSearchResult(SearchResult):

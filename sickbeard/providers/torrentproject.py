@@ -118,7 +118,7 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
                         trackers_url = urljoin(trackers_url, t_hash)
                         trackers_url = urljoin(trackers_url, "/trackers_json")
-                        jdata = self.get_url(trackers_url, json=True)
+                        jdata = self.get_url(trackers_url, returns='json')
 
                         assert jdata != "maintenance"
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])

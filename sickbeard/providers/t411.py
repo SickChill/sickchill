@@ -67,7 +67,7 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
         login_params = {'username': self.username,
                         'password': self.password}
 
-        response = self.get_url(self.urls['login_page'], post_data=login_params, timeout=30, json=True)
+        response = self.get_url(self.urls['login_page'], post_data=login_params, returns='json')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -98,8 +98,7 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
                 search_urlS = ([self.urls['search'] % (search_string, u) for u in self.subcategories], [self.urls['rss']])[mode == 'RSS']
                 for search_url in search_urlS:
-                    logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-                    data = self.get_url(search_url, json=True)
+                    data = self.get_url(search_url, returns='json')
                     if not data:
                         continue
 

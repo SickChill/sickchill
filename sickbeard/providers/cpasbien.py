@@ -55,8 +55,7 @@ class CpasbienProvider(TorrentProvider):
                 else:
                     search_url = self.url + '/view_cat.php?categorie=series&trie=date-d'
 
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-                data = self.get_url(search_url)
+                data = self.get_url(search_url, returns='text')
                 if not data:
                     continue
 

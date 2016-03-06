@@ -68,7 +68,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
             'password': self.password,
         }
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30, returns='text')
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log('Unable to connect to provider', logger.WARNING)
             return False

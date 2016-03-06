@@ -47,8 +47,7 @@ class StrikeProvider(TorrentProvider):
                     logger.log(u"Search string: " + search_string.strip(), logger.DEBUG)
 
                 search_url = self.url + "api/v2/torrents/search/?category=TV&phrase=" + search_string
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-                jdata = self.get_url(search_url, json=True)
+                jdata = self.get_url(search_url, returns='json')
                 if not jdata:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     return []

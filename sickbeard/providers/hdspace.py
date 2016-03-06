@@ -74,7 +74,7 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         login_params = {'uid': self.username,
                         'pwd': self.password}
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -99,12 +99,11 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                 else:
                     search_url = self.urls['search'] % ''
 
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
                 if mode != 'RSS':
                     logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
-                data = self.get_url(search_url)
+                data = self.get_url(search_url, returns='text')
                 if not data or 'please try later' in data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
