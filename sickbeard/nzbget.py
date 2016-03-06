@@ -47,7 +47,7 @@ def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-sta
     if nzb.show.is_anime:
         category = sickbeard.NZBGET_CATEGORY_ANIME
 
-    url = 'http{}://{}s:{}s@{}s/xmlrpc'.format(
+    url = 'http{}://{}:{}@{}/xmlrpc'.format(
         's' if sickbeard.NZBGET_USE_HTTPS else '',
         sickbeard.NZBGET_USERNAME,
         sickbeard.NZBGET_PASSWORD,
