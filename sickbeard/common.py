@@ -590,10 +590,10 @@ ANY = Quality.combineQualities([SD, HD, UHD], [])
 BEST = Quality.combineQualities([Quality.SDTV, Quality.HDTV, Quality.HDWEBDL], [Quality.HDTV])
 
 qualityPresets = (
+    ANY,
     SD,
     HD, HD720p, HD1080p,
     UHD, UHD_4K, UHD_8K,
-    ANY,
 )
 
 qualityPresetStrings = NumDict({
