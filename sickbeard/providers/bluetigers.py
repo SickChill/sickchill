@@ -48,7 +48,7 @@ class BlueTigersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         }
 
         self.search_params = {
-            "c16": 1, "c10": 1, "c130": 1, "c131": 1, "c17": 1, "c18": 1, "c19": 1
+            "c16": 1, "c10": 1, "c130": 1, "c131": 1, "c17": 1, "c18": 1, "c19": 1, "c9": 1
         }
 
         self.url = self.urls['base_url']
