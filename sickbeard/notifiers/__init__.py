@@ -89,9 +89,11 @@ def notify_snatch(ep_name):
 
 def notify_git_update(new_version=""):
     for n in notifiers:
-        n.notify_git_update(new_version)
+        if sickbeard.NOTIFY_UPDATE:
+            n.notify_git_update(new_version)
 
 
 def notify_login(ipaddress):
     for n in notifiers:
-        n.notify_login(ipaddress)
+        if sickbeard.NOTIFY_LOGIN:
+            n.notify_login(ipaddress)
