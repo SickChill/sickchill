@@ -1849,7 +1849,7 @@ var SICKRAGE = {
                 $('.show-grid').isotope({
                     filter: function () {
                       var name = $(this).attr('data-name').toLowerCase();
-                      return name.indexOf($('#filterShowName').val()) > -1;
+                      return name.indexOf($('#filterShowName').val().toLowerCase()) > -1;
                     }
                 });
             }, 500));
