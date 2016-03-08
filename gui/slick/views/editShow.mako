@@ -224,7 +224,7 @@
                                         </select>
                                         <div><input id="removeSceneName" value="Remove" class="btn float-left" type="button" style="margin-top: 10px;"/></div>
                                     </div>
-                                    <div class="clear-left"><p>This will affect episode search on NZB and torrent providers. This list overrides the original name; it doesn't append to it.</p></div>
+                                    <div class="clear-left"><p>This will affect episode search on NZB and torrent providers. This list appends to the original show name.</p></div>
                                 </span>
                             </label>
                         </div>
