@@ -19,7 +19,7 @@ before_install:
   - cd .build && npm install --quiet && bower install && cd ..
 
 install:
-    - pip install coveralls nose rednose
+    - pip install coveralls nose rednose mock
 
 script:
   - cd .build && grunt travis && cd ..

@@ -27,6 +27,8 @@ import os
 import sys
 import unittest
 
+from mock import patch, MagicMock
+
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
@@ -337,6 +339,53 @@ class GenericProviderTests(unittest.TestCase):
         Test _verify_download
         """
         self.assertTrue(GenericProvider('Test Provider')._verify_download())
+
+
+    @patch('sickrage.providers.GenericProvider.download_file')
+    @patch('sickrage.providers.GenericProvider.remove_file_failed')
+    def test_download_file(self, remove_file_mock, df_mock):
+        """
+        Test download_result
+        """
+        domain = 'domain'
+        filename = 'TestFilename.nzb'
+        urls = [
+            'http://{0}/{1}.torrentNO_DOWNLOAD_NAME'.format(domain, filename),
+            'http://{0}/{1}.torrent'.format(domain, filename),
+        ]
+
+        # Test the login() check
+        gp1 = GenericProvider('Test Provider 1')
+        login_mock = MagicMock()
+        login_mock.return_value = False
+        with patch.object(gp1, 'login', login_mock):
+            self.assertFalse(gp1.download_result('result 1'))
+            self.assertTrue(login_mock.called)
+
+        # Test the _make_url call
+        gp2 = GenericProvider('Test Provider 2')
+        make_url_mock = MagicMock()
+        make_url_mock.return_value = (urls, filename)
+        df_mock.return_value = True
+        with patch.object(gp2, '_make_url', make_url_mock):
+            resp = gp2.download_result('result 2')
+            self.assertTrue(resp)
+            self.assertTrue('Referer' in gp2.headers)
+            self.assertTrue(domain in gp2.headers['Referer'])
+            self.assertTrue(df_mock.called)
+
+        # Test the remove_file_failed path
+        gp3 = GenericProvider('Test Provider 3')
+        make_url_mock = MagicMock()
+        make_url_mock.return_value = (urls, filename)
+        verify_download_mock = MagicMock()
+        verify_download_mock.return_value = False
+        df_mock.return_value = True
+        with patch.object(gp3, '_make_url', make_url_mock):
+            with patch.object(gp3, '_verify_download', verify_download_mock):
+                resp = gp3.download_result('result 3')
+                self.assertFalse(resp)
+                self.assertTrue(remove_file_mock.called)
 
 
 if __name__ == '__main__':
