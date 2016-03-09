@@ -4902,7 +4902,7 @@ class ConfigNotifications(Config):
                           pushbullet_device_list=None,
                           use_email=None, email_notify_onsnatch=None, email_notify_ondownload=None,
                           email_notify_onsubtitledownload=None, email_host=None, email_port=25, email_from=None,
-                          email_tls=None, email_user=None, email_password=None, email_list=None, email_show_list=None,
+                          email_tls=None, email_user=None, email_password=None, email_list=None, email_subject=None, email_show_list=None,
                           email_show=None):
 
         results = []
@@ -5041,6 +5041,7 @@ class ConfigNotifications(Config):
         sickbeard.EMAIL_USER = email_user
         sickbeard.EMAIL_PASSWORD = email_password
         sickbeard.EMAIL_LIST = email_list
+        sickbeard.EMAIL_SUBJECT = email_subject
 
         sickbeard.USE_PYTIVO = config.checkbox_to_value(use_pytivo)
         sickbeard.PYTIVO_NOTIFY_ONSNATCH = config.checkbox_to_value(pytivo_notify_onsnatch)
