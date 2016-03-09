@@ -2348,7 +2348,7 @@ class HomeAddShows(Home):
                 try:
                     indexerResults = t[searchTerm]
                 except StandardError:
-                    logger.log(traceback.format_exc(), logger.ERROR)
+                    # logger.log(traceback.format_exc(), logger.ERROR)
                     continue
 
                 # add search results
