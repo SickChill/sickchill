@@ -100,13 +100,12 @@ class Notifier(object):
             'https://pushalot.com/api/sendmessage',
             post_data=post_data, session=self.session,
             returns='json'
-        )
+        ) or {}
 
         '''
         {'Status': 200, 'Description': 'The request has been completed successfully.', 'Success': True}
         '''
 
-        jdata = jdata or {}
         success = jdata.pop('Success', False)
         if success:
             logger.log('Pushalot notifications sent.', logger.DEBUG)
