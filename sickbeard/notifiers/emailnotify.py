@@ -45,7 +45,11 @@ class Notifier(object):
 
     def test_notify(self, host, port, smtp_from, use_tls, user, pwd, to):  # pylint: disable=too-many-arguments
         msg = MIMEText('This is a test message from SickRage.  If you\'re reading this, the test succeeded.')
-        msg['Subject'] = 'SickRage: Test Message'
+        if sickbeard.EMAIL_SUBJECT != '' and sickbeard.EMAIL_SUBJECT != None:
+            msg['Subject'] = '[TEST] ' + sickbeard.EMAIL_SUBJECT
+        else:
+            msg['Subject'] = 'SickRage: Test Message '
+
         msg['From'] = smtp_from
         msg['To'] = to
         msg['Date'] = formatdate(localtime=True)
@@ -84,7 +88,10 @@ class Notifier(object):
                     except Exception:
                         msg = MIMEText("Episode Snatched")
 
-                msg['Subject'] = 'Snatched: ' + ep_name
+                if sickbeard.EMAIL_SUBJECT != '' and sickbeard.EMAIL_SUBJECT != None:
+                    msg['Subject'] = '[SN] ' + sickbeard.EMAIL_SUBJECT
+                else:
+                    msg['Subject'] = 'Snatched: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
                 msg['To'] = ','.join(to)
                 msg['Date'] = formatdate(localtime=True)
@@ -127,7 +134,10 @@ class Notifier(object):
                     except Exception:
                         msg = MIMEText('Episode Downloaded')
 
-                msg['Subject'] = 'Downloaded: ' + ep_name
+                if sickbeard.EMAIL_SUBJECT != '' and sickbeard.EMAIL_SUBJECT != None:
+                    msg['Subject'] = '[DL] ' + sickbeard.EMAIL_SUBJECT
+                else:
+                    msg['Subject'] = 'Downloaded: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
                 msg['To'] = ','.join(to)
                 msg['Date'] = formatdate(localtime=True)
@@ -170,7 +180,10 @@ class Notifier(object):
                     except Exception:
                         msg = MIMEText("Episode Subtitle Downloaded")
 
-                msg['Subject'] = lang + ' Subtitle Downloaded: ' + ep_name
+                if sickbeard.EMAIL_SUBJECT != '' and sickbeard.EMAIL_SUBJECT != None:
+                    msg['Subject'] = '[ST] ' + sickbeard.EMAIL_SUBJECT
+                else:
+                    msg['Subject'] = lang + ' Subtitle Downloaded: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
                 msg['To'] = ','.join(to)
                 if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,

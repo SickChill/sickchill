@@ -1843,6 +1843,17 @@
                                 </label>
                             </div>
                             <div class="field-pair">
+                                <label for="email_subject">
+                                    <span class="component-title">Email Subject</span>
+                                    <input type="text" name="email_subject" id="email_subject" value="${sickbeard.EMAIL_SUBJECT}" class="form-control input-sm input350" autocapitalize="off" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Use a custom subject for some privacy protection?<br>
+                                                                 (Leave blank for the default SickRage subject)</span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
                                 <label for="email_show">
                                     <span class="component-title">Show notification list</span>
                                     <select name="email_show" id="email_show" class="form-control input-sm">
