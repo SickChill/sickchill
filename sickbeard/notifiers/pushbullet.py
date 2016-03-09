@@ -61,12 +61,10 @@ class Notifier(object):
             self._sendPushbullet(pushbullet_api=None, event=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD] + " : " + ep_name + " : " + lang, message=ep_name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_PUSHBULLET:
-            self._sendPushbullet(pushbullet_api=None, event=notifyStrings[NOTIFY_GIT_UPDATE], message=notifyStrings[NOTIFY_GIT_UPDATE_TEXT] + new_version)
+        self._sendPushbullet(pushbullet_api=None, event=notifyStrings[NOTIFY_GIT_UPDATE], message=notifyStrings[NOTIFY_GIT_UPDATE_TEXT] + new_version)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_PUSHBULLET:
-            self._sendPushbullet(pushbullet_api=None, event=notifyStrings[NOTIFY_LOGIN], message=notifyStrings[NOTIFY_LOGIN_TEXT].format(ipaddress))
+        self._sendPushbullet(pushbullet_api=None, event=notifyStrings[NOTIFY_LOGIN], message=notifyStrings[NOTIFY_LOGIN_TEXT].format(ipaddress))
 
     def _sendPushbullet(self, pushbullet_api=None, pushbullet_device=None, event=None, message=None):
 
