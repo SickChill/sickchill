@@ -34,7 +34,7 @@ network_dict = None
 
 try:
     sb_timezone = tz.tzwinlocal() if tz.tzwinlocal else tz.tzlocal()
-except UnicodeError:
+except Exception:
     sb_timezone = tz.tzlocal()
 
 missing_network_timezones = set()

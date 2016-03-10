@@ -17,6 +17,10 @@ except ImportError:
 
 from six import advance_iterator, integer_types
 from six.moves import _thread
+import heapq
+
+# For warning about deprecation of until and count
+from warnings import warn
 
 __all__ = ["rrule", "rruleset", "rrulestr",
            "YEARLY", "MONTHLY", "WEEKLY", "DAILY",
@@ -61,6 +65,7 @@ class weekday(object):
     def __init__(self, weekday, n=None):
         if n == 0:
             raise ValueError("Can't create weekday with n == 0")
+
         self.weekday = weekday
         self.n = n
 
@@ -88,17 +93,29 @@ class weekday(object):
 MO, TU, WE, TH, FR, SA, SU = weekdays = tuple([weekday(x) for x in range(7)])
 
 
+def _invalidates_cache(f):
+    """
+    Decorator for rruleset methods which may invalidate the
+    cached length.
+    """
+    def inner_func(self, *args, **kwargs):
+        rv = f(self, *args, **kwargs)
+        self._invalidate_cache()
+        return rv
+
+    return inner_func
+
+
 class rrulebase(object):
     def __init__(self, cache=False):
         if cache:
             self._cache = []
             self._cache_lock = _thread.allocate_lock()
-            self._cache_gen = self._iter()
-            self._cache_complete = False
+            self._invalidate_cache()
         else:
             self._cache = None
             self._cache_complete = False
-        self._len = None
+            self._len = None
 
     def __iter__(self):
         if self._cache_complete:
@@ -107,6 +124,17 @@ class rrulebase(object):
             return self._iter()
         else:
             return self._iter_cached()
+
+    def _invalidate_cache(self):
+        if self._cache is not None:
+            self._cache = []
+            self._cache_complete = False
+            self._cache_gen = self._iter()
+
+            if self._cache_lock.locked():
+                self._cache_lock.release()
+
+        self._len = None
 
     def _iter_cached(self):
         i = 0
@@ -405,6 +433,11 @@ class rrule(rrulebase):
             until = datetime.datetime.fromordinal(until.toordinal())
         self._until = until
 
+        if count and until:
+            warn("Using both 'count' and 'until' is inconsistent with RFC 2445"
+                 " and has been deprecated in dateutil. Future versions will "
+                 "raise an error.", DeprecationWarning)
+
         if wkst is None:
             self._wkst = calendar.firstweekday()
         elif isinstance(wkst, integer_types):
@@ -647,6 +680,9 @@ class rrule(rrulebase):
 
         if self._count:
             parts.append('COUNT=' + str(self._count))
+
+        if self._until:
+            parts.append(self._until.strftime('UNTIL=%Y%m%dT%H%M%S'))
 
         if self._original_rule.get('byweekday') is not None:
             # The str() method on weekday objects doesn't generate
@@ -1236,7 +1272,11 @@ class rruleset(rrulebase):
             try:
                 self.dt = advance_iterator(self.gen)
             except StopIteration:
-                self.genlist.remove(self)
+                if self.genlist[0] is self:
+                    heapq.heappop(self.genlist)
+                else:
+                    self.genlist.remove(self)
+                    heapq.heapify(self.genlist)
 
         next = __next__
 
@@ -1259,16 +1299,19 @@ class rruleset(rrulebase):
         self._exrule = []
         self._exdate = []
 
+    @_invalidates_cache
     def rrule(self, rrule):
         """ Include the given :py:class:`rrule` instance in the recurrence set
             generation. """
         self._rrule.append(rrule)
 
+    @_invalidates_cache
     def rdate(self, rdate):
         """ Include the given :py:class:`datetime` instance in the recurrence
             set generation. """
         self._rdate.append(rdate)
 
+    @_invalidates_cache
     def exrule(self, exrule):
         """ Include the given rrule instance in the recurrence set exclusion
             list. Dates which are part of the given recurrence rules will not
@@ -1276,6 +1319,7 @@ class rruleset(rrulebase):
         """
         self._exrule.append(exrule)
 
+    @_invalidates_cache
     def exdate(self, exdate):
         """ Include the given datetime instance in the recurrence set
             exclusion list. Dates included that way will not be generated,
@@ -1288,27 +1332,30 @@ class rruleset(rrulebase):
         self._genitem(rlist, iter(self._rdate))
         for gen in [iter(x) for x in self._rrule]:
             self._genitem(rlist, gen)
-        rlist.sort()
         exlist = []
         self._exdate.sort()
         self._genitem(exlist, iter(self._exdate))
         for gen in [iter(x) for x in self._exrule]:
             self._genitem(exlist, gen)
-        exlist.sort()
         lastdt = None
         total = 0
+        heapq.heapify(rlist)
+        heapq.heapify(exlist)
         while rlist:
             ritem = rlist[0]
             if not lastdt or lastdt != ritem.dt:
                 while exlist and exlist[0] < ritem:
-                    advance_iterator(exlist[0])
-                    exlist.sort()
+                    exitem = exlist[0]
+                    advance_iterator(exitem)
+                    if exlist and exlist[0] is exitem:
+                        heapq.heapreplace(exlist, exitem)
                 if not exlist or ritem != exlist[0]:
                     total += 1
                     yield ritem.dt
                 lastdt = ritem.dt
             advance_iterator(ritem)
-            rlist.sort()
+            if rlist and rlist[0] is ritem:
+                heapq.heapreplace(rlist, ritem)
         self._len = total
 
 
@@ -1371,7 +1418,7 @@ class _rrulestr(object):
                 splt = wday.split('(')
                 w = splt[0]
                 n = int(splt[1][:-1])
-            else:
+            elif len(wday):
                 # If it's of the form +1MO
                 for i in range(len(wday)):
                     if wday[i] not in '+-0123456789':
@@ -1380,6 +1427,9 @@ class _rrulestr(object):
                 w = wday[i:]
                 if n:
                     n = int(n)
+            else:
+                raise ValueError("Invalid (empty) BYDAY specification.")
+
             l.append(weekdays[self._weekday_map[w]](n))
         rrkwargs["byweekday"] = l
 
