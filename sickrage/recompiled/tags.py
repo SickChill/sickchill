@@ -8,7 +8,7 @@ resolution = re.compile(r'(?P<vres>4320|2160|1080|720|480|360)(?P<scan>[pi])', r
 # Sources
 tv = re.compile(r'([sph]d).?tv|tv(rip|mux)', re.IGNORECASE)
 dvd = re.compile(r'(?P<hd>hd)?dvd(?P<rip>rip|mux)?', re.IGNORECASE)
-web = re.compile(r'(web.?(?P<dl>dl)|web(?P<rip>rip|mux|hd))', re.IGNORECASE)
+web = re.compile(r'(web(?P<type>rip|mux|hd|.?dl|\b))', re.IGNORECASE)
 bluray = re.compile(r'(blue?-?ray|b[rd](?:rip|mux))', re.IGNORECASE)
 sat = re.compile(r'(dsr|satrip)', re.IGNORECASE)
 itunes = re.compile(r'(itunes)', re.IGNORECASE)

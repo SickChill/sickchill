@@ -4,7 +4,7 @@
 # Derek Battams <derek@battams.ca>
 # Pedro Jose Pereira Vieito (@pvieito) <pvieito@gmail.com>
 #
-# URL: https://github.com/echel0n/SickRage
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #

@@ -117,9 +117,12 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'web'
-        match = self._get_match_obj(attr)
-        return '' if not match else match.group('dl') or match.group('rip')
+        if 'dlmux' in self.name.lower():
+            return 'dlmux'
+        else:
+            attr = 'web'
+            match = self._get_match_obj(attr)
+            return '' if not match else match.group('type')
 
     @property
     def sat(self):
