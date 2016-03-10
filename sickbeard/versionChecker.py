@@ -641,7 +641,7 @@ class GitUpdateManager(UpdateManager):
                 # Notify update successful
                 if sickbeard.NOTIFY_ON_UPDATE:
                     try:
-                        notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH if sickbeard.CUR_COMMIT_HASH else "")
+                        notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH or "")
                     except Exception:
                         logger.log(u"Unable to send update notification. Continuing the update process", logger.DEBUG)
                 return True
@@ -892,7 +892,7 @@ class SourceUpdateManager(UpdateManager):
 
         # Notify update successful
         try:
-            notifiers.notify_git_update(sickbeard.NEWEST_VERSION_STRING)
+            notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH or "")
         except Exception:
             logger.log(u"Unable to send update notification. Continuing the update process", logger.DEBUG)
         return True
