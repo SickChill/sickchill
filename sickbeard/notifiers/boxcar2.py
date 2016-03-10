@@ -50,7 +50,9 @@ class Notifier(object):
             'user_credentials': accesstoken,
             'notification[title]': 'SickRage : {}: {}'.format(title, msg),
             'notification[long_message]': msg,
-            'notification[sound]': 'notifier-2'
+            'notification[sound]': 'notifier-2',
+            'notification[source_name]': 'SickRage',
+            'notifications[icon_url]': 'http://sickrage.github.io/images/ico/favicon-64.png'
         }
 
         response = sickbeard.helpers.getURL(self.url, post_data=post_data, session=self.session, timeout=60, returns='json')
