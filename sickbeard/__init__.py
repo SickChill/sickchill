@@ -138,6 +138,8 @@ GIT_PATH = None
 DEVELOPER = False
 
 NEWS_URL = 'http://sickrage.github.io/sickrage-news/news.md'
+LOGO_URL = 'http://sickrage.github.io/images/ico/favicon-64.png'
+
 NEWS_LAST_READ = None
 NEWS_LATEST = None
 NEWS_UNREAD = 0
