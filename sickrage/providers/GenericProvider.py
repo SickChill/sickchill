@@ -142,23 +142,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             elif search_mode == 'eponly':
                 search_strings = self._get_episode_search_strings(episode)
 
-            first = search_strings and isinstance(search_strings[0], dict) and 'rid' in search_strings[0]
-            if first:
-                logger.log(u'First search_string has rid', logger.DEBUG)
-
             for search_string in search_strings:
                 items_list += self.search(search_string, ep_obj=episode)
-
-                if first:
-                    first = False
-
-                    if items_list:
-                        logger.log(u'First search_string had rid, and returned results, skipping query by string',
-                                   logger.DEBUG)
-                        break
-
-                    logger.log(u'First search_string had rid, but returned no results, searching with string query',
-                               logger.DEBUG)
 
         if len(results) == len(episodes):
             return results
