@@ -43,8 +43,8 @@ class Notifier(object):
 
     def get_devices(self, pushbullet_api):
         logger.log('Testing Pushbullet authentication and retrieving the device list.', logger.DEBUG)
-        headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(pushbullet_api)}
-        return helpers.getURL(urljoin(self.url, 'devices'), session=self.session, headers=headers, returns='json') or {}
+        headers = {'Access-Token': pushbullet_api}
+        return helpers.getURL(urljoin(self.url, 'devices'), session=self.session, headers=headers, returns='text') or {}
 
     def notify_snatch(self, ep_name):
         if sickbeard.PUSHBULLET_NOTIFY_ONSNATCH:
@@ -112,9 +112,9 @@ class Notifier(object):
         if link:
             post_data['url'] = link
 
-        headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(pushbullet_api)}
+        headers = {'Access-Token': pushbullet_api}
 
-        response = helpers.getURL(urljoin(self.url, 'pushes'), session=self.session, post_data=post_data, headers=headers, response='json') or {}
+        response = helpers.getURL(urljoin(self.url, 'pushes'), session=self.session, post_data=post_data, headers=headers, returns='json') or {}
         if not response:
             return False
 

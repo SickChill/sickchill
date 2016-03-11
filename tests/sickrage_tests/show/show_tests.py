@@ -51,6 +51,8 @@ class ShowTests(unittest.TestCase):
         """
         sickbeard.QUALITY_DEFAULT = Quality.FULLHDTV
 
+        sickbeard.showList = []
+
         show123 = TestTVShow(0, 123)
         show456 = TestTVShow(0, 456)
         show789 = TestTVShow(0, 789)
@@ -94,6 +96,8 @@ class ShowTests(unittest.TestCase):
         Test validate indexer id
         """
         sickbeard.QUALITY_DEFAULT = Quality.FULLHDTV
+
+        sickbeard.showList = []
 
         show123 = TestTVShow(0, 123)
         show456 = TestTVShow(0, 456)
