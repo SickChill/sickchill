@@ -1949,9 +1949,9 @@ var SICKRAGE = {
                     7: { filter: 'parsed' }
                 },
                 widgetOptions: {
-                    filter_columnFilters: true, // jshint ignore:line
-                    filter_hideFilters: true, // jshint ignore:line
-                    filter_saveFilters: true, // jshint ignore:line
+                    'filter_columnFilters': true,
+                    'filter_hideFilters': true,
+                    // 'filter_saveFilters': true,
                     filter_functions: { // jshint ignore:line
                         5: function(e, n, f) {
                             var test = false;
