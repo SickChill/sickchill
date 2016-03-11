@@ -45,6 +45,7 @@ subliminal.region.configure('dogpile.cache.memory')
 
 PROVIDER_URLS = {
     'addic7ed': 'http://www.addic7ed.com',
+    'itasa': 'http://www.italiansubs.net/',
     'legendastv': 'http://www.legendas.tv',
     'napiprojekt': 'http://www.napiprojekt.pl',
     'opensubtitles': 'http://www.opensubtitles.org',
@@ -163,6 +164,8 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
     providers = enabled_service_list()
     provider_configs = {'addic7ed': {'username': sickbeard.ADDIC7ED_USER,
                                      'password': sickbeard.ADDIC7ED_PASS},
+                        'itasa': {'username': sickbeard.ITASA_USER,
+                                     'password': sickbeard.ITASA_PASS},
                         'legendastv': {'username': sickbeard.LEGENDASTV_USER,
                                        'password': sickbeard.LEGENDASTV_PASS},
                         'opensubtitles': {'username': sickbeard.OPENSUBTITLES_USER,
@@ -330,6 +333,8 @@ class SubtitlesFinder(object):
         providers = enabled_service_list()
         provider_configs = {'addic7ed': {'username': sickbeard.ADDIC7ED_USER,
                                          'password': sickbeard.ADDIC7ED_PASS},
+                            'itasa': {'username': sickbeard.ITASA_USER,
+                                         'password': sickbeard.ITASA_PASS},
                             'legendastv': {'username': sickbeard.LEGENDASTV_USER,
                                            'password': sickbeard.LEGENDASTV_PASS},
                             'opensubtitles': {'username': sickbeard.OPENSUBTITLES_USER,
