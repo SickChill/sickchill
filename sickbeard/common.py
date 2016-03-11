@@ -32,7 +32,7 @@ import uuid
 
 from hachoir_parser import createParser  # pylint: disable=import-error
 from hachoir_metadata import extractMetadata  # pylint: disable=import-error
-from hachoir_core.log import log  # pylint: disable=import-error
+from hachoir_core.log import log as hachoir_log # pylint: disable=import-error
 
 from fake_useragent import settings as UA_SETTINGS, UserAgent
 from sickbeard.numdict import NumDict
@@ -399,7 +399,7 @@ class Quality(object):
         :return: Quality prefix
         """
 
-        log.use_print = False
+        hachoir_log.use_print = False
 
         try:
             parser = createParser(filename)
