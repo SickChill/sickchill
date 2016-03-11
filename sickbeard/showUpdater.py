@@ -88,7 +88,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
                     else:
                         pi_list.append(sickbeard.showQueueScheduler.action.refreshShow(cur_show, False))
             except (CantUpdateShowException, CantRefreshShowException) as error:
-                logger.log('Automatic update failed: {}'.format(ex(error)), logger.ERROR)
+                logger.log('Automatic update failed: {}'.format(ex(error)), logger.DEBUG)
 
         ui.ProgressIndicators.setIndicator('dailyUpdate', ui.QueueProgressIndicator('Daily Update', pi_list))
 
