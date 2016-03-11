@@ -196,16 +196,12 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         :param kwargs: to pass to logger
         """
         cur_thread = threading.currentThread().getName()
-        cur_hash = '[{}] '.format(sickbeard.CUR_COMMIT_HASH[:7]) if all([
-            sickbeard.CUR_COMMIT_HASH,
-            len(sickbeard.CUR_COMMIT_HASH) > 6,
-        ]) else ''
+        cur_hash = '[{}] '.format(
+            sickbeard.CUR_COMMIT_HASH[:7]
+        ) if sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6 else ''
 
         message = '{thread} :: {hash}{message}'.format(
-            thread = cur_thread,
-            hash = cur_hash,
-            message = msg
-        )
+            thread=cur_thread, hash=cur_hash, message=msg)
 
         # Change the SSL error to a warning with a link to information about how to fix it.
         # Check for u'error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:590)'
@@ -271,7 +267,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
 
         git = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD, user_agent='SickRage')
 
-        try:  # pylint: disable=too-many-nested-blocks
+        try:
             # read log file
             log_data = None
 

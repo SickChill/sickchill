@@ -59,7 +59,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         login_params = {'username': self.username,
                         'password': self.password}
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -85,9 +85,8 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                                logger.DEBUG)
 
                 search_url = self.urls['search'] % (quote(search_string), self.categories)
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
 
-                data = self.get_url(search_url)
+                data = self.get_url(search_url, returns='text')
                 if not data:
                     continue
 

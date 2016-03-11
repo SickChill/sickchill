@@ -31,7 +31,13 @@ from sickrage.helper.common import try_int
 time_regex = re.compile(r'(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b', re.I)
 
 network_dict = None
-sb_timezone = tz.tzwinlocal() if tz.tzwinlocal else tz.tzlocal()
+
+try:
+    sb_timezone = tz.tzwinlocal() if tz.tzwinlocal else tz.tzlocal()
+except Exception:
+    sb_timezone = tz.tzlocal()
+
+missing_network_timezones = set()
 
 
 # update the network timezone table
@@ -111,8 +117,10 @@ def get_network_timezone(network, _network_dict):
     # Get the name of the networks timezone from _network_dict
     network_tz_name = _network_dict[network] if network in _network_dict else None
 
-    if network_tz_name is None:
-        logger.log(u'Network was not found in the network time zones: %s' % network)
+    if network_tz_name is None and network not in missing_network_timezones:
+        missing_network_timezones.add(network)
+        if network is not None:
+            logger.log(u'Missing time zone for network: %s' % network, logger.ERROR)
 
     return tz.gettz(network_tz_name) if network_tz_name else sb_timezone
 

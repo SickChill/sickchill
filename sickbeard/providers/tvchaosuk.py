@@ -67,7 +67,7 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             'returnto': '/browse.php'
         }
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log('Unable to connect to provider', logger.WARNING)
             return False
@@ -108,7 +108,7 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                     logger.log('Search string: {}'.format(search_string), logger.DEBUG)
 
                 search_params['keywords'] = search_string
-                data = self.get_url(self.urls['search'], post_data=search_params)
+                data = self.get_url(self.urls['search'], post_data=search_params, returns='text')
                 if not data:
                     logger.log('No data returned from provider', logger.DEBUG)
                     continue

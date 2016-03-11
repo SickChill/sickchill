@@ -364,7 +364,10 @@ class TraktChecker(object):
                             logger.log(u"Could not connect to Trakt service. Aborting removing show %s from SickRage. Error: %s" % (show.name, repr(e)), logger.WARNING)
                             return
 
-                        if 'aired' in progress and 'completed' in progress and progress['aired'] == progress['completed']:
+                        if not progress:
+                            return
+
+                        if progress.get('aired', True) == progress.get('completed', False):
                             sickbeard.showQueueScheduler.action.removeShow(show, full=True)
                             logger.log(u"Show: %s has been removed from SickRage" % show.name, logger.DEBUG)
 

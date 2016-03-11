@@ -2,7 +2,6 @@
     import datetime
     import re
     import sickbeard
-    from sickbeard import network_timezones
     from sickrage.helper.common import pretty_file_size
     from sickrage.show.Show import Show
     from time import time
@@ -303,7 +302,7 @@
                     % endif
                     Load time: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
                     Branch: <span class="footerhighlight">${sickbeard.BRANCH}</span> |
-                    Now: <span class="footerhighlight">${datetime.datetime.now(network_timezones.sb_timezone).strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET)}</span>
+                    Now: <span class="footerhighlight">${datetime.datetime.now().strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET)}</span>
                 </div>
             </div>
         </footer>

@@ -26,8 +26,7 @@ import base64
 import time
 
 import sickbeard
-from sickbeard import logger
-from sickbeard import common
+from sickbeard import logger, common
 from sickrage.helper.exceptions import ex
 from sickrage.helper.encoding import ss
 
@@ -43,7 +42,6 @@ except ImportError:
 
 
 class Notifier(object):
-    sr_logo_url = 'https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
 
     def _get_kodi_version(self, host, username, password, dest_app="KODI"):
         """Returns KODI JSON-RPC API version (odd # = dev, even # = stable)
@@ -143,7 +141,7 @@ class Notifier(object):
                 else:
                     logger.log(u"Detected %s version >= 12, using %s JSON API" % (dest_app, dest_app), logger.DEBUG)
                     command = '{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{"title":"%s","message":"%s", "image": "%s"},"id":1}' % (
-                        title.encode("utf-8"), message.encode("utf-8"), self.sr_logo_url)
+                        title.encode("utf-8"), message.encode("utf-8"), sickbeard.LOGO_URL)
                     notifyResult = self._send_to_kodi_json(command, curHost, username, password, dest_app)
                     if notifyResult and notifyResult.get('result'):  # pylint: disable=no-member
                         result += curHost + ':' + notifyResult["result"].decode(sickbeard.SYS_ENCODING)

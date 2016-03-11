@@ -69,7 +69,7 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         'pwd': self.password,
                         'submit': 'Confirm'}
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -100,9 +100,7 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 if self.freeleech:
                     search_url = search_url.replace('active=1', 'active=5')
 
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-
-                data = self.get_url(search_url)
+                data = self.get_url(search_url, returns='text')
                 if not data or 'please try later' in data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue

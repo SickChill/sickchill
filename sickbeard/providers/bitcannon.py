@@ -47,7 +47,7 @@ class BitCannonProvider(TorrentProvider):
 
         url = "http://localhost:3000/"
         if self.custom_url:
-            if not validators.url(self.custom_url):
+            if not validators.url(self.custom_url, require_tld=False):
                 logger.log("Invalid custom url set, please check your settings", logger.WARNING)
                 return results
             url = self.custom_url
@@ -69,7 +69,7 @@ class BitCannonProvider(TorrentProvider):
                     logger.log("Search string: {}".format(search_string), logger.DEBUG)
 
                 search_url = urljoin(url, "api/search")
-                parsed_json = self.get_url(search_url, params=search_params, json=True, returns="text")
+                parsed_json = self.get_url(search_url, params=search_params, returns="json")
                 if not parsed_json:
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue

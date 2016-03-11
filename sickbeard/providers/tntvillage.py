@@ -128,7 +128,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         'CookieDate': 1,
                         'submit': 'Connettiti al Forum'}
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -308,8 +308,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         logger.log(u"Search string: {}".format
                                    (search_string.decode("utf-8")), logger.DEBUG)
 
-                    logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-                    data = self.get_url(search_url)
+                    data = self.get_url(search_url, returns='text')
                     if not data:
                         logger.log(u"No data returned from provider", logger.DEBUG)
                         continue

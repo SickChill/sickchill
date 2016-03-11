@@ -132,7 +132,9 @@ class TVCache(object):
             logger.log(u"Error while searching " + self.provider.name + ", skipping: " + repr(e), logger.DEBUG)
 
     def getRSSFeed(self, url, params=None):
-        return getFeed(url, params=params, request_hook=self.provider.get_url)
+        if self.provider.login():
+            return getFeed(url, params=params, request_hook=self.provider.get_url)
+        return {'entries': []}
 
     @staticmethod
     def _translateTitle(title):

@@ -74,7 +74,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                             'password': self.password,
                             'login': 'submit'}
 
-            response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+            response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
             if not response:
                 logger.log(u"Unable to connect to provider", logger.WARNING)
                 return False
@@ -119,8 +119,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                                logger.DEBUG)
 
                 search_url = self.urls['search'] % (freeleech, search_string)
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
-                init_html = self.get_url(search_url)
+                init_html = self.get_url(search_url, returns='text')
                 max_page_number = 0
 
                 if not init_html:
@@ -164,7 +163,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                         time.sleep(1)
                         page_search_url = search_url + '&page=' + str(i)
                         # '.log(u"Search string: " + page_search_url, logger.DEBUG)
-                        page_html = self.get_url(page_search_url)
+                        page_html = self.get_url(page_search_url, returns='text')
 
                         if not page_html:
                             continue

@@ -79,8 +79,8 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             'login': 'Login'
         }
 
-        self.get_url(self.urls['base_url'], timeout=30)
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        self.get_url(self.urls['base_url'], returns='text')
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -109,7 +109,7 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 self.search_params['searchstr'] = search_string
 
-                data = self.get_url(self.urls['search'], params=self.search_params)
+                data = self.get_url(self.urls['search'], params=self.search_params, returns='text')
                 if not data:
                     logger.log(u'URL did not return data', logger.DEBUG)
                     continue

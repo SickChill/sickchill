@@ -72,7 +72,7 @@ class BitSoupProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
             'ssl': 'yes'
         }
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -98,7 +98,7 @@ class BitSoupProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
                 self.search_params['search'] = search_string
 
-                data = self.get_url(self.urls['search'], params=self.search_params)
+                data = self.get_url(self.urls['search'], params=self.search_params, returns='text')
                 if not data:
                     continue
 
