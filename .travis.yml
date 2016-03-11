@@ -32,8 +32,6 @@ cache:
     - .build/bower_components
     - .build/node_modules
 
-after_success: coveralls
-
 after_failure:
   - cat ./Logs/sickrage.log
 
