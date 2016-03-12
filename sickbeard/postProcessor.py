@@ -841,29 +841,40 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         :param ep_obj: The object to use when calling the extra script
         """
+
+        filepath = self.file_path
+        ep_location = ep_obj.location
+        for item in (ep_location, filepath):
+            if isinstance(item, unicode):
+                item = item.encode(sickbeard.SYS_ENCODING)
+
         for curScriptName in sickbeard.EXTRA_SCRIPTS:
+            if isinstance(curScriptName, unicode):
+                curScriptName = curScriptName.encode(sickbeard.SYS_ENCODING)
 
             # generate a safe command line string to execute the script and provide all the parameters
-            script_cmd = [piece for piece in re.split("( |\\\".*?\\\"|'.*?')", curScriptName) if piece.strip()]
+            script_cmd = [piece for piece in re.split(r'(\'.*?\'|".*?"| )', curScriptName) if piece.strip()]
             script_cmd[0] = ek(os.path.abspath, script_cmd[0])
-            self._log(u"Absolute path to script: " + script_cmd[0], logger.DEBUG)
+            self._log(u"Absolute path to script: {}".format(script_cmd[0]), logger.DEBUG)
 
-            script_cmd = script_cmd + [ep_obj.location, self.file_path, str(ep_obj.show.indexerid), str(ep_obj.season),
-                                       str(ep_obj.episode), str(ep_obj.airdate)]
+            script_cmd += [
+                ep_location, filepath, str(ep_obj.show.indexerid),
+                str(ep_obj.season), str(ep_obj.episode), str(ep_obj.airdate)
+            ]
 
             # use subprocess to run the command and capture output
-            self._log(u"Executing command " + str(script_cmd))
+            self._log(u"Executing command: {}".format(script_cmd))
             try:
-                p = subprocess.Popen(script_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                     stderr=subprocess.STDOUT, cwd=sickbeard.PROG_DIR)
-                out, _ = p.communicate()  # @UnusedVariable
-                self._log(u"Script result: " + str(out), logger.DEBUG)
+                p = subprocess.Popen(
+                    script_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT, cwd=sickbeard.PROG_DIR
+                )
+                out, _ = p.communicate()
 
-            except OSError as e:
-                self._log(u"Unable to run extra_script: " + ex(e))
+                self._log(u"Script result: {}".format(out), logger.DEBUG)
 
             except Exception as e:
-                self._log(u"Unable to run extra_script: " + ex(e))
+                self._log(u"Unable to run extra_script: {}".format(ex(e)))
 
     def _is_priority(self, ep_obj, new_ep_quality):  # pylint: disable=too-many-return-statements
         """
