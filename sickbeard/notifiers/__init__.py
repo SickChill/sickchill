@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+import sickbeard
+
 from sickbeard.notifiers import kodi, plex, emby, nmj, nmjv2, synoindex, \
     synologynotifier, pytivo, growl, prowl, libnotify, pushover, boxcar2, \
     nma, pushalot, pushbullet, freemobile, telegram, tweet, trakt, emailnotify
@@ -89,11 +91,11 @@ def notify_snatch(ep_name):
 
 def notify_git_update(new_version=""):
     for n in notifiers:
-        if sickbeard.NOTIFY_UPDATE:
+        if sickbeard.NOTIFY_ON_UPDATE:
             n.notify_git_update(new_version)
 
 
 def notify_login(ipaddress):
     for n in notifiers:
-        if sickbeard.NOTIFY_LOGIN:
+        if sickbeard.NOTIFY_ON_LOGIN:
             n.notify_login(ipaddress)

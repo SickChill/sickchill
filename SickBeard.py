@@ -67,7 +67,6 @@ if sys.version_info < (2, 7):
     print('Sorry, requires Python 2.7.x')
     sys.exit(1)
 
-# pylint: disable=wrong-import-position
 # https://mail.python.org/pipermail/python-dev/2014-September/136300.html
 if sys.version_info >= (2, 7, 9):
     import ssl
@@ -145,7 +144,7 @@ class SickRage(object):
             if os.path.isdir(cache_folder):
                 shutil.rmtree(cache_folder)
         except Exception:  # pylint: disable=broad-except
-            logger.log('Unable to remove the cache/mako directory!', logger.WARNING)  # pylint: disable=no-member
+            logger.log('Unable to remove the cache/mako directory!', logger.WARNING)
 
     @staticmethod
     def help_message():
@@ -392,7 +391,7 @@ class SickRage(object):
         """
         Fork off as a daemon
         """
-        # pylint: disable=no-member,protected-access
+        # pylint: disable=protected-access
         # An object is accessed for a non-existent member.
         # Access to a protected member of a client class
         # Make a non-session-leader child process
@@ -470,7 +469,7 @@ class SickRage(object):
         """
         Populates the showList with shows from the database
         """
-        logger.log('Loading initial show list', logger.DEBUG)  # pylint: disable=no-member
+        logger.log('Loading initial show list', logger.DEBUG)
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select('SELECT indexer, indexer_id, location FROM tv_shows;')
@@ -482,9 +481,9 @@ class SickRage(object):
                 cur_show.nextEpisode()
                 sickbeard.showList.append(cur_show)
             except Exception as error:  # pylint: disable=broad-except
-                logger.log('There was an error creating the show in {location}: Error {error_num}: {error_message}'.format  # pylint: disable=no-member
-                           (location=sql_show[b'location'], error_num=error.errorno, error_message=error.strerror), logger.ERROR)
-                logger.log(traceback.format_exc(), logger.DEBUG)  # pylint: disable=no-member
+                logger.log('There was an error creating the show in {}: Error {}'.format
+                           (sql_show[b'location'], error), logger.ERROR)
+                logger.log(traceback.format_exc(), logger.DEBUG)
 
     @staticmethod
     def restore_db(src_dir, dst_dir):
@@ -521,7 +520,7 @@ class SickRage(object):
 
             # shutdown web server
             if self.web_server:
-                logger.log('Shutting down Tornado')  # pylint: disable=no-member
+                logger.log('Shutting down Tornado')
                 self.web_server.shutDown()
 
                 try:
@@ -543,20 +542,20 @@ class SickRage(object):
                 if install_type in ('git', 'source'):
                     popen_list = [sys.executable, sickbeard.MY_FULLNAME]
                 elif install_type == 'win':
-                    logger.log('You are using a binary Windows build of SickRage. '  # pylint: disable=no-member
+                    logger.log('You are using a binary Windows build of SickRage. '
                                'Please switch to using git.', logger.ERROR)
 
                 if popen_list and not sickbeard.NO_RESTART:
                     popen_list += sickbeard.MY_ARGS
                     if '--nolaunch' not in popen_list:
                         popen_list += ['--nolaunch']
-                    logger.log('Restarting SickRage with {options}'.format(options=popen_list))  # pylint: disable=no-member
+                    logger.log('Restarting SickRage with {options}'.format(options=popen_list))
                     # shutdown the logger to make sure it's released the logfile BEFORE it restarts SR.
-                    logger.shutdown()  # pylint: disable=no-member
+                    logger.shutdown()
                     subprocess.Popen(popen_list, cwd=os.getcwd())
 
         # Make sure the logger has stopped, just in case
-        logger.shutdown()  # pylint: disable=no-member
+        logger.shutdown()
         os._exit(0)  # pylint: disable=protected-access
 
 
