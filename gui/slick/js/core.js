@@ -3201,7 +3201,12 @@ var SICKRAGE = {
                     return false;
                 }
 
-                window.location.href = srRoot + '/addShows/addExistingShows?promptForSettings=' + ($('#promptForSettings').prop('checked') ? 'on' : 'off') + '&shows_to_add=' + dirArr.join('&shows_to_add=');
+                var url = srRoot + '/addShows/addExistingShows?promptForSettings=' + ($('#promptForSettings').prop('checked') ? 'on' : 'off') + '&shows_to_add=' + dirArr.join('&shows_to_add=');
+                if(url.length < 2083) {
+                    window.location.href = url;
+                } else {
+                    alert("You've selected too many shows, please uncheck some and try again.");
+                }
             });
 
             function loadContent() {
