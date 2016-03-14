@@ -36,7 +36,7 @@ class CpasbienProvider(TorrentProvider):
         self.public = True
         self.minseed = None
         self.minleech = None
-        self.url = "http://www.cpasbien.io"
+        self.url = "http://www.cpasbien.cm"
 
         self.proper_strings = ['PROPER', 'REPACK']
         self.cache = tvcache.TVCache(self)
