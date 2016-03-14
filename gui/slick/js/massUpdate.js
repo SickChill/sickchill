@@ -8,7 +8,12 @@ $(document).ready(function(){
 
         if(editArr.length === 0) { return; }
 
-        window.location.href = 'massEdit?toEdit='+editArr.join('|');
+        var url = srRoot + '/manage/massEdit?toEdit='+editArr.join('|');
+        if(url.length < 2083) {
+            window.location.href = url;
+        } else {
+            alert("You've selected too many shows, please uncheck some and try again.");
+        }
     });
 
     $('.submitMassUpdate').on('click', function(){
@@ -63,24 +68,16 @@ $(document).ready(function(){
                     if(updateArr.length + refreshArr.length + renameArr.length + subtitleArr.length + deleteArr.length + removeArr.length + metadataArr.length === 0) {
                         return false;
                     }
-                    var url = 'massUpdate?toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|');
-                    if(url.length < 2083) {
-                        window.location.href = url;
-                    } else {
-                        alert("You've selected too many shows, please uncheck some and try again.");
-                    }
+                    $.post(srRoot + '/manage/massUpdate', 'toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|'));
+                    location.reload();
                 }
             });
         }
         if(updateArr.length + refreshArr.length + renameArr.length + subtitleArr.length + deleteArr.length + removeArr.length + metadataArr.length === 0) {
             return false;
         }
-        var url = 'massUpdate?toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|');
-        if(url.length < 2083) {
-            window.location.href = url;
-        } else {
-            alert("You've selected too many shows, please uncheck some and try again.");
-        }
+        $.post(srRoot + '/manage/massUpdate', 'toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|'));
+        location.reload();
     });
 
     ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck'].forEach(function(name) {
