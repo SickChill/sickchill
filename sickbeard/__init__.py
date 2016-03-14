@@ -539,14 +539,10 @@ SUBTITLES_EXTRA_SCRIPTS = []
 SUBTITLES_DOWNLOAD_IN_PP = False
 SUBTITLES_KEEP_ONLY_WANTED = False
 
-ADDIC7ED_USER = None
-ADDIC7ED_PASS = None
-
-OPENSUBTITLES_USER = None
-OPENSUBTITLES_PASS = None
-
-LEGENDASTV_USER = None
-LEGENDASTV_PASS = None
+ADDIC7ED_USER = ADDIC7ED_PASS = None
+OPENSUBTITLES_USER = OPENSUBTITLES_PASS = None
+LEGENDASTV_USER = LEGENDASTV_PASS = None
+ITASA_USER = ITASA_PASS = None
 
 USE_FAILED_DOWNLOADS = False
 DELETE_FAILED = False
@@ -1193,7 +1189,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         ADDIC7ED_USER = check_setting_str(CFG, 'Subtitles', 'addic7ed_username', '', censor_log=True)
         ADDIC7ED_PASS = check_setting_str(CFG, 'Subtitles', 'addic7ed_password', '', censor_log=True)
-        
+
         ITASA_USER = check_setting_str(CFG, 'Subtitles', 'itasa_username', '', censor_log=True)
         ITASA_PASS = check_setting_str(CFG, 'Subtitles', 'itasa_password', '', censor_log=True)
 
