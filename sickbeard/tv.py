@@ -749,7 +749,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
     def loadFromDB(self):  # pylint: disable=too-many-branches, too-many-statements
 
-        logger.log(str(self.indexerid) + u": Loading show info from database", logger.DEBUG)
+        # logger.log(str(self.indexerid) + u": Loading show info from database", logger.DEBUG)
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT * FROM tv_shows WHERE indexer_id = ?", [self.indexerid])
@@ -793,7 +793,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             self.paused = int(sql_results[0]["paused"] or 0)
 
             try:
-                self.location = sql_results[0]["location"]
+                self._location = sql_results[0]["location"]
             except Exception:
                 dirty_setter("_location")(self, sql_results[0]["location"])
 
