@@ -7,14 +7,13 @@ from base64 import b16encode, b32decode
 
 import sickbeard
 from sickbeard import logger, helpers
-from bencode import bencode, bdecode
+from bencode import Bencoder, BencodeEncodeError, BencodeDecodeError
 import requests
 import cookielib
-from bencode.BTL import BTFailure
 from sickrage.helper.common import http_code_description
 
 
-class GenericClient(object):
+class GenericClient(object):  # pylint: disable=too-many-instance-attributes
     def __init__(self, name, host=None, username=None, password=None):
 
         self.name = name
@@ -31,7 +30,7 @@ class GenericClient(object):
         self.session.auth = (self.username, self.password)
         self.session.cookies = cookielib.CookieJar()
 
-    def _request(self, method='get', params=None, data=None, files=None, cookies=None):
+    def _request(self, method='get', params=None, data=None, files=None, cookies=None):  # pylint: disable=too-many-arguments, too-many-return-statements
 
         if time.time() > self.last_time + 1800 or not self.auth:
             self.last_time = time.time()
@@ -43,8 +42,8 @@ class GenericClient(object):
 
         if not self.auth:
             logger.log(self.name + u': Authentication Failed', logger.WARNING)
-
             return False
+
         try:
             self.response = self.session.__getattribute__(method)(self.url, params=params, data=data, files=files, cookies=cookies,
                                                                   timeout=120, verify=False)
@@ -153,18 +152,27 @@ class GenericClient(object):
                 logger.log(u'Torrent without content', logger.ERROR)
                 raise Exception('Torrent without content')
 
+            bencoder = Bencoder()
             try:
-                torrent_bdecode = bdecode(result.content)
-            except BTFailure:
+                torrent_bdecode = bencoder.decode(result.content)
+            except (BencodeDecodeError, Exception) as error:
                 logger.log(u'Unable to bdecode torrent', logger.ERROR)
-                logger.log(u'Torrent bencoded data: %r' % result.content, logger.DEBUG)
+                logger.log(u'Error is: {0!r}'.format(error), logger.DEBUG)
+                logger.log(u'Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
                 raise
             try:
                 info = torrent_bdecode["info"]
             except Exception:
                 logger.log(u'Unable to find info field in torrent', logger.ERROR)
                 raise
-            result.hash = sha1(bencode(info)).hexdigest()
+
+            try:
+                result.hash = sha1(bencoder.encode(info)).hexdigest()
+            except (BencodeEncodeError, Exception) as error:
+                logger.log(u'Unable to bencode torrent info', logger.ERROR)
+                logger.log(u'Error is: {0!r}'.format(error), logger.DEBUG)
+                logger.log(u'Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
+                raise
 
         return result
 
