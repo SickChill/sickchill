@@ -3221,7 +3221,7 @@ var SICKRAGE = {
                 });
 
                 $('#tableDiv').html('<img id="searchingAnim" src="' + srRoot + '/images/loading32.gif" height="32" width="32" /> loading folders...');
-                $.get(srRoot + '/addShows/massAddTable/', url, function(data) {
+                $.post(srRoot + '/addShows/massAddTable/', url, function(data) {
                     $('#tableDiv').html(data);
                     $("#addRootDirTable").tablesorter({
                         //sortList: [[1,0]],
