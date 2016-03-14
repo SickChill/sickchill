@@ -137,12 +137,13 @@ class newpctProvider(TorrentProvider):
         trickery = kwargs.pop('returns', '')
         if trickery == 'content':
             kwargs['returns'] = 'text'
-            data = super(newpctProvider, self).get_url(url, post_data=post_data, params=params, timeout=timeout, kwargs=kwargs)
+            data = super(newpctProvider, self).get_url(url, post_data=post_data, params=params, timeout=timeout, **kwargs)
             url = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
+            url = urljoin(self.url, url.rsplit('=', 1)[-1])
 
         kwargs['returns'] = trickery
         return super(newpctProvider, self).get_url(url, post_data=post_data, params=params,
-                                                   timeout=timeout, kwargs=kwargs)
+                                                   timeout=timeout, **kwargs)
 
     def download_result(self, result):
         """
