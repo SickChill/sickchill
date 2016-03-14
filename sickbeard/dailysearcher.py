@@ -56,7 +56,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
         else:
             curDate = (datetime.date.today() + datetime.timedelta(days=2)).toordinal()
 
-        curTime = datetime.datetime.now(network_timezones.sb_timezone)
+        curTime = datetime.datetime.now()
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND (airdate <= ? and airdate > 1)",
