@@ -843,10 +843,12 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         """
 
         filepath = self.file_path
+        if isinstance(filepath, unicode):
+            filepath = filepath.encode(sickbeard.SYS_ENCODING)
+
         ep_location = ep_obj.location
-        for item in (ep_location, filepath):
-            if isinstance(item, unicode):
-                item = item.encode(sickbeard.SYS_ENCODING)
+        if isinstance(ep_location, unicode):
+            ep_location = ep_location.encode(sickbeard.SYS_ENCODING)
 
         for curScriptName in sickbeard.EXTRA_SCRIPTS:
             if isinstance(curScriptName, unicode):
@@ -858,7 +860,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             self._log(u"Absolute path to script: {}".format(script_cmd[0]), logger.DEBUG)
 
             script_cmd += [
-                ep_location, filepath, str(ep_obj.show.indexerid),
+                str(ep_location), str(filepath), str(ep_obj.show.indexerid),
                 str(ep_obj.season), str(ep_obj.episode), str(ep_obj.airdate)
             ]
 
