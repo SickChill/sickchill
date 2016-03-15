@@ -2159,7 +2159,8 @@ var SICKRAGE = {
 
                 if (epArr.length === 0) { return false; }
 
-                window.location.href = srRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
+                $.post(srRoot + '/home/setStatus', 'show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val());
+                location.reload();
             });
 
             $('.seasonCheck').on('click', function(){
@@ -2601,7 +2602,8 @@ var SICKRAGE = {
 
                 if (removeArr.length === 0) { return false; }
 
-                window.location.href = srRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|');
+                $.post(srRoot + '/manage/failedDownloads', 'toRemove='+removeArr.join('|'));
+                location.reload();
             });
 
             if($('.removeCheck').length){
@@ -3201,7 +3203,12 @@ var SICKRAGE = {
                     return false;
                 }
 
-                window.location.href = srRoot + '/addShows/addExistingShows?promptForSettings=' + ($('#promptForSettings').prop('checked') ? 'on' : 'off') + '&shows_to_add=' + dirArr.join('&shows_to_add=');
+                var url = srRoot + '/addShows/addExistingShows?promptForSettings=' + ($('#promptForSettings').prop('checked') ? 'on' : 'off') + '&shows_to_add=' + dirArr.join('&shows_to_add=');
+                if(url.length < 2083) {
+                    window.location.href = url;
+                } else {
+                    alert("You've selected too many shows, please uncheck some and try again.");
+                }
             });
 
             function loadContent() {
@@ -3216,7 +3223,7 @@ var SICKRAGE = {
                 });
 
                 $('#tableDiv').html('<img id="searchingAnim" src="' + srRoot + '/images/loading32.gif" height="32" width="32" /> loading folders...');
-                $.get(srRoot + '/addShows/massAddTable/', url, function(data) {
+                $.post(srRoot + '/addShows/massAddTable/', url, function(data) {
                     $('#tableDiv').html(data);
                     $("#addRootDirTable").tablesorter({
                         //sortList: [[1,0]],

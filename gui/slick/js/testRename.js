@@ -35,7 +35,12 @@ $(document).ready(function(){
 
         if (epArr.length === 0) { return false; }
 
-        window.location.href = srRoot+'/home/doRename?show='+$('#showID').attr('value')+'&eps='+epArr.join('|');
+        var url = srRoot+'/home/doRename?show='+$('#showID').attr('value')+'&eps='+epArr.join('|');
+        if(url.length < 2083) {
+            window.location.href = url;
+        } else {
+            alert("You've selected too many shows, please uncheck some and try again.");
+        }
     });
 
 });
