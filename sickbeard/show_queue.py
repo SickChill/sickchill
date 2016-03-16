@@ -39,6 +39,7 @@ from libtrakt import TraktAPI
 from sickrage.helper.encoding import ek
 from sickbeard.helpers import makeDir, chmodAsParent
 from sickrage.helper.common import sanitize_filename
+from sickrage.show.Show import Show
 
 
 class ShowQueue(generic_queue.GenericQueue):
@@ -373,7 +374,16 @@ class QueueItemAdd(ShowQueueItem):
             return
 
         try:
-            newShow = TVShow(self.indexer, self.indexer_id, self.lang)
+            try:
+                newShow = TVShow(self.indexer, self.indexer_id, self.lang)
+            except MultipleShowObjectsException as error:
+                # If we have the show in our list, but the location is wrong, lets fix it and refresh!
+                existing_show = Show.find(sickbeard.showList, self.indexer_id)
+                if existing_show and not ek(os.path.isdir, existing_show._location):  # pylint: disable=protected-access
+                    newShow = existing_show
+                else:
+                    raise error
+
             newShow.loadFromIndexer()
 
             self.show = newShow
@@ -423,6 +433,7 @@ class QueueItemAdd(ShowQueueItem):
         except MultipleShowObjectsException:
             logger.log(u"The show in " + self.showDir + " is already in your show list, skipping", logger.WARNING)
             ui.notifications.error('Show skipped', "The show in " + self.showDir + " is already in your show list")
+
             self._finishEarly()
             return
 
@@ -449,7 +460,8 @@ class QueueItemAdd(ShowQueueItem):
             raise
 
         # add it to the show list
-        sickbeard.showList.append(self.show)
+        if not Show.find(sickbeard.showList, self.indexer_id):
+            sickbeard.showList.append(self.show)
 
         try:
             self.show.loadEpisodesFromIndexer()

@@ -24,7 +24,7 @@ import io
 import os
 import re
 from requests.utils import add_dict_to_cookiejar
-from bencode import bdecode
+from bencode import Bencoder, BencodeDecodeError
 
 import sickbeard
 from sickbeard import helpers, logger, tvcache
@@ -172,10 +172,10 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             else:
                 torrent_file = self.get_url(url, returns='content')
                 try:
-                    bdecode(torrent_file)
-                except Exception as error:
+                    Bencoder().decode(torrent_file)
+                except (BencodeDecodeError, Exception) as error:
                     self.dumpHTML(torrent_file)
-                    return False, 'Torrent link is not a valid torrent file: {}'.format(ex(error))
+                    return False, 'Torrent link is not a valid torrent file: {0!r}'.format(error)
 
             return True, 'RSS feed Parsed correctly'
 

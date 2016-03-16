@@ -20,7 +20,7 @@
 import threading
 import sickbeard
 from sickbeard import db
-from sickbeard import logger
+# from sickbeard import logger
 
 nameCache = {}
 nameCacheLock = threading.Lock()
@@ -96,4 +96,4 @@ def buildNameCache(show=None):
                     continue
 
                 nameCache[name] = int(show.indexerid)
-        logger.log(u"Internal name cache for " + show.name + " set to: [ " + u', '.join([key for key, value in nameCache.iteritems() if value == show.indexerid]) + " ]", logger.DEBUG)
+        # logger.log(u"Internal name cache for " + show.name + " set to: [ " + u', '.join([key for key, value in nameCache.iteritems() if value == show.indexerid]) + " ]", logger.DEBUG)
