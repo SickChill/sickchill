@@ -20,7 +20,8 @@
 
 import re
 import datetime
-from dateutil import tz
+from tzlocal import get_localzone
+import pytz
 
 from sickbeard import db, helpers, logger
 from sickrage.helper.common import try_int
@@ -30,10 +31,7 @@ time_regex = re.compile(r'(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meri
 
 network_dict = {}
 
-try:
-    sb_timezone = tz.tzwinlocal() if tz.tzwinlocal else tz.tzlocal()
-except Exception:
-    sb_timezone = tz.tzlocal()
+sb_timezone = get_localzone()
 
 missing_network_timezones = set()
 
@@ -117,7 +115,7 @@ def get_network_timezone(network):
         logger.log(u'Missing time zone for network: {0}'.format(network), logger.ERROR)
 
     try:
-        network_tz = (tz.gettz(network_tz_name) or sb_timezone) if network_tz_name else sb_timezone
+        network_tz = (pytz.timezone(network_tz_name) or sb_timezone) if network_tz_name else sb_timezone
     except Exception:
         return sb_timezone
     return network_tz
