@@ -22,15 +22,13 @@ import re
 import datetime
 from dateutil import tz
 
-from sickbeard import db
-from sickbeard import helpers
-from sickbeard import logger
+from sickbeard import db, helpers, logger
 from sickrage.helper.common import try_int
 
 # regex to parse time (12/24 hour format)
 time_regex = re.compile(r'(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b', re.I)
 
-network_dict = None
+network_dict = {}
 
 try:
     sb_timezone = tz.tzwinlocal() if tz.tzwinlocal else tz.tzlocal()
@@ -40,26 +38,29 @@ except Exception:
 missing_network_timezones = set()
 
 
-# update the network timezone table
 def update_network_dict():
     """Update timezone information from SR repositories"""
 
     url = 'http://sickrage.github.io/sb_network_timezones/network_timezones.txt'
-    url_data = helpers.getURL(url, session=helpers.make_session(), returns='text')
-    if not url_data:
-        logger.log(u'Updating network timezones failed, this can happen from time to time. URL: %s' % url, logger.WARNING)
+    data = helpers.getURL(url, session=helpers.make_session(), returns='text')
+    if not data:
+        logger.log(u'Updating network timezones failed, this can happen from time to time. URL: {}'.format(url), logger.WARNING)
         load_network_dict()
         return
 
     d = {}
     try:
-        for line in url_data.splitlines():
+        for line in data.splitlines():
             (key, val) = line.strip().rsplit(u':', 1)
-            if key is None or val is None:
-                continue
-            d[key] = val
+            if key and val:
+                d[key] = val
     except (IOError, OSError):
         pass
+
+    if not d:
+        logger.log(u'Parsing network timezones failed, not going to touch the db', logger.WARNING)
+        load_network_dict()
+        return
 
     cache_db_con = db.DBConnection('cache.db')
 
@@ -85,7 +86,6 @@ def update_network_dict():
         load_network_dict()
 
 
-# load network timezones from db into dict
 def load_network_dict():
     """
     Load network timezones from db into dict network_dict (global dict)
@@ -96,36 +96,34 @@ def load_network_dict():
         if not cur_network_list:
             update_network_dict()
             cur_network_list = cache_db_con.select('SELECT * FROM network_timezones;')
-        d = dict(cur_network_list)
+
+        network_dict.clear()
+        network_dict.update(dict(cur_network_list))
     except Exception:
-        d = {}
-    # pylint: disable=global-statement
-    global network_dict
-    network_dict = d
+        pass
 
 
-# get timezone of a network or return default timezone
-def get_network_timezone(network, _network_dict):
+def get_network_timezone(network):
     """
-    Get a timezone of a network from a given network dict
+    Get the timezone of a network, or return sb_timezone
 
-    :param network: network to look up (needle)
-    :param _network_dict: dict to look up in (haystack)
-    :return:
+    :param network: network to look up
+    :return: network timezone if found, or sb_timezone
     """
 
-    # Get the name of the networks timezone from _network_dict
-    network_tz_name = _network_dict[network] if network in _network_dict else None
+    network_tz_name = network_dict.get(network, None)
+    if not (network_tz_name or network in missing_network_timezones):
+        if network:
+            missing_network_timezones.add(network)
+            logger.log(u'Missing time zone for network: {}'.format(network), logger.ERROR)
 
-    if network_tz_name is None and network not in missing_network_timezones:
-        missing_network_timezones.add(network)
-        if network is not None:
-            logger.log(u'Missing time zone for network: %s' % network, logger.ERROR)
+    try:
+        network_tz = (tz.gettz(network_tz_name) or sb_timezone) if network_tz_name else sb_timezone
+    except Exception:
+        return sb_timezone
+    return network_tz
 
-    return tz.gettz(network_tz_name) if network_tz_name else sb_timezone
 
-
-# parse date and time string into local time
 def parse_date_time(d, t, network):
     """
     Parse date and time string into local time
@@ -140,7 +138,7 @@ def parse_date_time(d, t, network):
         load_network_dict()
 
     parsed_time = time_regex.search(t)
-    network_tz = get_network_timezone(network, network_dict)
+    network_tz = get_network_timezone(network)
 
     hr = 0
     m = 0

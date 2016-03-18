@@ -174,7 +174,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
             self.set_caps(html.find('searching'))
             if just_caps:
-                return
+                return True, return_categories, 'Just checking caps!'
 
             for category in html.find_all('category'):
                 if 'TV' in category.get('name', '') and category.get('id', ''):
