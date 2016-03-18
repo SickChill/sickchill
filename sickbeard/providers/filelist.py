@@ -172,4 +172,4 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         return results
 
 
-provider = AlphaRatioProvider()
+provider = FileListProvider()
