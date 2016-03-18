@@ -16,15 +16,15 @@
 
 <div id="config-content">
 <table class="infoTable" cellspacing="1" border="0" cellpadding="0" width="100%">
-    % if sr_version:
     <tr><td class="infoTableHeader" style="vertical-align: top;"><i class="icon16-config-sickrage"></i> SickRage Info:</td>
         <td class="infoTableCell">
         Branch: <a href="${anon_url('https://github.com/SickRage/SickRage/tree/%s' % sickbeard.BRANCH)}">${sickbeard.BRANCH}</a><br>
         Commit: <a href="${anon_url('https://github.com/SickRage/SickRage/commit/%s' % sickbeard.CUR_COMMIT_HASH)}">${sickbeard.CUR_COMMIT_HASH}</a><br>
+        % if sr_version:
         Version: <a href="${anon_url('https://github.com/SickRage/SickRage/releases/tag/%s' % sr_version)}">${sr_version}</a>
+        % endif
         </td>
     </tr>
-    % endif
     <tr><td class="infoTableHeader"><i class="icon16-config-python"></i> Python Version:</td><td class="infoTableCell">${sys.version[:120]}</td></tr>
     <tr><td class="infoTableHeader"><i class="icon16-config-ssl"></i> SSL Version:</td><td class="infoTableCell">${ssl_version}</td></tr>
     <tr><td class="infoTableHeader"><i class="icon16-config-os"></i> OS:</td><td class="infoTableCell">${platform.platform()}</td></tr>
