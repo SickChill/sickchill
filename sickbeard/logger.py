@@ -196,9 +196,12 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         :param kwargs: to pass to logger
         """
         cur_thread = threading.currentThread().getName()
-        cur_hash = '[{0}] '.format(
-            sickbeard.CUR_COMMIT_HASH[:7]
-        ) if sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6 else ''
+
+        cur_hash = ''
+        if level == 'ERROR' and sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6:
+            cur_hash = '[{0}] '.format(
+                sickbeard.CUR_COMMIT_HASH[:7]
+            )
 
         message = '{thread} :: {hash}{message}'.format(
             thread=cur_thread, hash=cur_hash, message=msg)
