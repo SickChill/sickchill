@@ -120,8 +120,7 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
-                    torrent_table = html.find("div", id="visitedlinks")
-                    torrent_rows = torrent_table.find_all("div", class="torrentrow") if torrent_table else []
+                    torrent_rows = html.find_all("div", class_="torrentrow")
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 1:
@@ -132,7 +131,7 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                     # Skip column headers
                     for result in torrent_rows:
-                        cells = result.find_all("div", class="torrenttable")
+                        cells = result.find_all("div", class_="torrenttable")
                         if len(cells) < len(labels):
                             continue
 
@@ -154,7 +153,7 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                                 continue
 
                             torrent_size = cells[labels.index("Size")].find("span").get_text(strip=True)
-                            size = convert_size(torrent_size, units=units) or -1
+                            size = convert_size(torrent_size, units=units, sep='') or -1
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != "RSS":
