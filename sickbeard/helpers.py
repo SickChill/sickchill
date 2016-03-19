@@ -22,7 +22,6 @@
 import os
 import io
 import ctypes
-import random
 import re
 import socket
 import stat
@@ -31,7 +30,6 @@ import time
 import traceback
 import urllib
 import urllib2
-import hashlib
 import httplib
 import urlparse
 import uuid
@@ -46,6 +44,8 @@ import sickbeard
 import adba
 import requests
 import certifi
+import hashlib
+import random
 from contextlib import closing
 from socket import timeout as SocketTimeout
 
@@ -1525,25 +1525,10 @@ def get_size(start_path='.'):
 
 def generateApiKey():
     """ Return a new randomized API_KEY"""
-
-    try:
-        from hashlib import md5
-    except ImportError:
-        from md5 import md5
-
-    # Create some values to seed md5
-    t = str(time.time())
-    r = str(random.random())
-
-    # Create the md5 instance and give it the current time
-    m = md5(t)
-
-    # Update the md5 instance with the random variable
-    m.update(r)
-
-    # Return a hex digest of the md5, eg 49f68a5c8493ec2c0bf489821c21fc3b
-    logger.log(u"New API generated")
-    return m.hexdigest()
+    logger.log(u"Generating New API key")
+    secure_hash = hashlib.sha512(str(time.time()))
+    secure_hash.update(str(random.SystemRandom().getrandbits(4096)))
+    return secure_hash.hexdigest()[:32]
 
 
 def remove_article(text=''):
