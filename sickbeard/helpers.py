@@ -935,31 +935,6 @@ def restoreVersionedFile(backup_file, version):
     return True
 
 
-# generates a md5 hash of a file
-def md5_for_file(filename, block_size=2 ** 16):
-    """
-    Generate an md5 hash for a file
-    :param filename: File to generate md5 hash for
-    :param block_size: Block size to use (defaults to 2^16)
-    :return MD5 hexdigest on success, or None on failure
-    """
-
-    # assert isinstance(filename, unicode)
-
-    try:
-        with io.open(filename, 'rb') as f:
-            md5 = hashlib.md5()
-            while True:
-                data = f.read(block_size)
-                if not data:
-                    break
-                md5.update(data)
-            f.close()
-            return md5.hexdigest()
-    except Exception:
-        return None
-
-
 def get_lan_ip():
     """Returns IP of system"""
 

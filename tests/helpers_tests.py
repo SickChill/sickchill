@@ -53,7 +53,6 @@ Public Methods:
     create_https_certificates
     backupVersionedFile
     restoreVersionedFile
-    md5_for_file
     get_lan_ip
     check_url
     anon_url
@@ -411,13 +410,6 @@ class HelpersFileTests(unittest.TestCase):
     def test_get_size(self):
         """
         Test get_size
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_md5_for_file(self):
-        """
-        Test md5_for_file
         """
         pass
 
