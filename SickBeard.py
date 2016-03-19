@@ -481,7 +481,7 @@ class SickRage(object):
                 cur_show.nextEpisode()
                 sickbeard.showList.append(cur_show)
             except Exception as error:  # pylint: disable=broad-except
-                logger.log('There was an error creating the show in {}: Error {}'.format
+                logger.log('There was an error creating the show in {0}: Error {1}'.format
                            (sql_show[b'location'], error), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
 

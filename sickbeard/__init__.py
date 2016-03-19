@@ -703,14 +703,14 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             if GIT_USERNAME and GIT_PASSWORD:
                 gh = Github(login_or_token=GIT_USERNAME, password=GIT_PASSWORD, user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
         except Exception as error:
-            logger.log(u'Unable to setup GitHub properly with your github login. Please check your credentials. Error: {}'.format(error), logger.WARNING)
+            logger.log(u'Unable to setup GitHub properly with your github login. Please check your credentials. Error: {0}'.format(error), logger.WARNING)
             gh = None
 
         if not gh:
             try:
                 gh = Github(user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
             except Exception as error:
-                logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: {}'.format(error), logger.WARNING)
+                logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: {0}'.format(error), logger.WARNING)
                 gh = None
 
         # git reset on update

@@ -64,12 +64,12 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
         for mode in search_strings:  # Mode = RSS, Season, Episode
             items = []
-            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
+                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
                 search_params['s'] = search_string
@@ -131,7 +131,7 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
                     item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': t_hash}
 
                     if mode != 'RSS':
-                        logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                        logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format
                                    (title, seeders, leechers), logger.DEBUG)
 
                     items.append(item)

@@ -1202,7 +1202,7 @@ class WaitIteratorTest(AsyncTestCase):
                 self.assertTrue(dg.current_future == f2 and dr == 42,
                                 "WaitIterator dict status incorrect")
             else:
-                self.fail("got bad WaitIterator index {}".format(
+                self.fail("got bad WaitIterator index {0}".format(
                     dg.current_index))
 
             i += 1

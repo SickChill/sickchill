@@ -519,7 +519,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             to_return = (show, season, [], quality, version)
 
             qual_str = common.Quality.qualityStrings[quality] if quality is not None else quality
-            self._log("Found result in history for {} - Season: {} - Quality: {} - Version: {}".format
+            self._log("Found result in history for {0} - Season: {1} - Quality: {2} - Version: {3}".format
                       (show.name if show else "UNDEFINED", season, qual_str, version), logger.DEBUG)
 
             return to_return
@@ -579,7 +579,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         try:
             parse_result = NameParser(True, tryIndexers=True).parse(name)
         except (InvalidNameException, InvalidShowException) as error:
-            logger.log(u"{}".format(error), logger.DEBUG)
+            logger.log(u"{0}".format(error), logger.DEBUG)
             return to_return
 
         # show object
@@ -664,7 +664,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             try:
                 cur_show, cur_season, cur_episodes, cur_quality, cur_version = cur_attempt()
             except (InvalidNameException, InvalidShowException) as error:
-                logger.log(u"{}".format(error), logger.DEBUG)
+                logger.log(u"{0}".format(error), logger.DEBUG)
                 continue
 
             if not cur_show:
@@ -857,7 +857,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             # generate a safe command line string to execute the script and provide all the parameters
             script_cmd = [piece for piece in re.split(r'(\'.*?\'|".*?"| )', curScriptName) if piece.strip()]
             script_cmd[0] = ek(os.path.abspath, script_cmd[0])
-            self._log(u"Absolute path to script: {}".format(script_cmd[0]), logger.DEBUG)
+            self._log(u"Absolute path to script: {0}".format(script_cmd[0]), logger.DEBUG)
 
             script_cmd += [
                 str(ep_location), str(filepath), str(ep_obj.show.indexerid),
@@ -865,7 +865,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             ]
 
             # use subprocess to run the command and capture output
-            self._log(u"Executing command: {}".format(script_cmd))
+            self._log(u"Executing command: {0}".format(script_cmd))
             try:
                 p = subprocess.Popen(
                     script_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -873,10 +873,10 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 )
                 out, _ = p.communicate()
 
-                self._log(u"Script result: {}".format(out), logger.DEBUG)
+                self._log(u"Script result: {0}".format(out), logger.DEBUG)
 
             except Exception as e:
-                self._log(u"Unable to run extra_script: {}".format(ex(e)))
+                self._log(u"Unable to run extra_script: {0}".format(ex(e)))
 
     def _is_priority(self, ep_obj, new_ep_quality):  # pylint: disable=too-many-return-statements
         """

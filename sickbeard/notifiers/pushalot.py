@@ -58,7 +58,7 @@ class Notifier(object):
             self._sendPushalot(
                 pushalot_authorizationtoken=None,
                 event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
-                message='{}:{}'.format(ep_name, lang)
+                message='{0}:{1}'.format(ep_name, lang)
             )
 
     def notify_git_update(self, new_version='??'):
@@ -86,9 +86,9 @@ class Notifier(object):
 
         pushalot_authorizationtoken = pushalot_authorizationtoken or sickbeard.PUSHALOT_AUTHORIZATIONTOKEN
 
-        logger.log('Pushalot event: {}'.format(event), logger.DEBUG)
-        logger.log('Pushalot message: {}'.format(message), logger.DEBUG)
-        logger.log('Pushalot api: {}'.format(pushalot_authorizationtoken), logger.DEBUG)
+        logger.log('Pushalot event: {0}'.format(event), logger.DEBUG)
+        logger.log('Pushalot message: {0}'.format(message), logger.DEBUG)
+        logger.log('Pushalot api: {0}'.format(pushalot_authorizationtoken), logger.DEBUG)
 
         post_data = {
             'AuthorizationToken': pushalot_authorizationtoken,
@@ -110,7 +110,7 @@ class Notifier(object):
         if success:
             logger.log('Pushalot notifications sent.', logger.DEBUG)
         else:
-            logger.log('Pushalot notification failed: {} {}'.format(
+            logger.log('Pushalot notification failed: {0} {1}'.format(
                 jdata.get('Status', ''),
                 jdata.get('Description', 'Unknown')
             ), logger.ERROR)

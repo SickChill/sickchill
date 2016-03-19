@@ -158,7 +158,7 @@ def split_result(obj):
     try:
         parsed_obj = NameParser(False, showObj=obj.show).parse(obj.name)
     except (InvalidNameException, InvalidShowException) as error:
-        logger.log(u"{}".format(error), logger.DEBUG)
+        logger.log(u"{0}".format(error), logger.DEBUG)
         return []
 
     # bust it up
@@ -179,7 +179,7 @@ def split_result(obj):
         try:
             parsed_obj = NameParser(False, showObj=obj.show).parse(new_nzb)
         except (InvalidNameException, InvalidShowException) as error:
-            logger.log(u"{}".format(error), logger.DEBUG)
+            logger.log(u"{0}".format(error), logger.DEBUG)
             return []
 
         # make sure the result is sane

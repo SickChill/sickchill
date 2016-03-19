@@ -117,7 +117,7 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
 
             # Sorting: 1: Name, 3: Comments, 5: Size, 6: Completed, 7: Seeders, 8: Leechers (4: Time ?)
             search_params['sort'] = (7, 4)[mode == 'RSS']
@@ -125,7 +125,7 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {}".format
+                    logger.log(u"Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_params['search'] = search_string
@@ -177,7 +177,7 @@ class XthorProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != 'RSS':
-                                logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                                logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
