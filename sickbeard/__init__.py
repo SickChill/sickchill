@@ -699,14 +699,14 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             if GIT_USERNAME and GIT_PASSWORD:
                 gh = Github(login_or_token=GIT_USERNAME, password=GIT_PASSWORD, user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
         except Exception as error:
-            logger.log(u'Unable to setup GitHub properly with your github login. Please check your credentials. Error: {}'.format(error), logger.WARNING)
+            logger.log(u'Unable to setup GitHub properly with your github login. Please check your credentials. Error: {0}'.format(error), logger.WARNING)
             gh = None
 
         if not gh:
             try:
                 gh = Github(user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
             except Exception as error:
-                logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: {}'.format(error), logger.WARNING)
+                logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: {0}'.format(error), logger.WARNING)
                 gh = None
 
         # git reset on update
@@ -762,7 +762,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                         shutil.move(srcDir, dstDir)
                         logger.log(u"Restore: restoring cache successful", logger.INFO)
                     except Exception as e:
-                        logger.log(u"Restore: restoring cache failed: {0}".format(str(e)), logger.ERROR)
+                        logger.log(u"Restore: restoring cache failed: {0}".format(e), logger.ERROR)
 
                 restoreCache(ek(os.path.join, restoreDir, 'cache'), CACHE_DIR)
         except Exception as e:

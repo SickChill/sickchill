@@ -1434,7 +1434,7 @@ class Home(WebRoot):
                     except Exception as e:
                         anidb_failed = True
                         ui.notifications.error('Unable to retreive Fansub Groups from AniDB.')
-                        logger.log(u'Unable to retreive Fansub Groups from AniDB. Error is {0}'.format(str(e)), logger.DEBUG)
+                        logger.log(u'Unable to retreive Fansub Groups from AniDB. Error is {0}'.format(e), logger.DEBUG)
 
             with showObj.lock:
                 show = showObj
@@ -1566,7 +1566,7 @@ class Home(WebRoot):
                 sickbeard.showQueueScheduler.action.updateShow(showObj, True)
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
             except CantUpdateShowException as e:
-                errors.append("Unable to update show: {0}".format(str(e)))
+                errors.append("Unable to update show: {0}".format(e))
 
         if do_update_exceptions:
             try:
@@ -3508,7 +3508,7 @@ class Manage(Home, WebRoot):
                     sickbeard.showQueueScheduler.action.updateShow(showObj, True)
                     updates.append(showObj.name)
                 except CantUpdateShowException as e:
-                    errors.append("Unable to update show: {0}".format(str(e)))
+                    errors.append("Unable to update show: {0}".format(e))
 
             # don't bother refreshing shows that were updated anyway
             if curShowID in toRefresh and curShowID not in toUpdate:

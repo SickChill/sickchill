@@ -624,23 +624,23 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     def makeEpFromFile(self, filepath):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
 
         if not ek(os.path.isfile, filepath):
-            logger.log(u"{}: That isn't even a real file dude... {}".format
+            logger.log(u"{0}: That isn't even a real file dude... {1}".format
                        (self.indexerid, filepath))
             return None
 
-        logger.log(u"{}: Creating episode object from {}".format
+        logger.log(u"{0}: Creating episode object from {1}".format
                    (self.indexerid, filepath), logger.DEBUG)
 
         try:
             parse_result = NameParser(showObj=self, tryIndexers=True, parse_method=('normal', 'anime')[self.is_anime]).parse(filepath)
         except (InvalidNameException, InvalidShowException) as error:
-            logger.log(u"{}: {}".format(self.indexerid, error), logger.DEBUG)
+            logger.log(u"{0}: {1}".format(self.indexerid, error), logger.DEBUG)
             return None
 
         episodes = [ep for ep in parse_result.episode_numbers if ep is not None]
         if not episodes:
-            logger.log(u"{}: parse_result: {}".format(self.indexerid, parse_result))
-            logger.log(u"{}: No episode number found in {}, ignoring it".format
+            logger.log(u"{0}: parse_result: {1}".format(self.indexerid, parse_result))
+            logger.log(u"{0}: No episode number found in {1}, ignoring it".format
                        (self.indexerid, filepath), logger.WARNING)
             return None
 
@@ -650,7 +650,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         sql_l = []
         for current_ep in episodes:
-            logger.log(u"{}: {} parsed to {} {}".format
+            logger.log(u"{0}: {1} parsed to {2} {3}".format
                        (self.indexerid, filepath, self.name, episode_num(season, current_ep)), logger.DEBUG)
 
             checkQualityAgain = False
@@ -663,7 +663,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     if not curEp:
                         raise EpisodeNotFoundException
                 except EpisodeNotFoundException:
-                    logger.log(u"{}: Unable to figure out what this file is, skipping {}".format
+                    logger.log(u"{0}: Unable to figure out what this file is, skipping {1}".format
                                (self.indexerid, filepath), logger.ERROR)
                     continue
 
@@ -671,7 +671,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 # if there is a new file associated with this ep then re-check the quality
                 if not curEp.location or ek(os.path.normpath, curEp.location) != ek(os.path.normpath, filepath):
                     logger.log(
-                        u"{}: The old episode had a different file associated with it, re-checking the quality using the new filename {}".format
+                        u"{0}: The old episode had a different file associated with it, re-checking the quality using the new filename {1}".format
                         (self.indexerid, filepath), logger.DEBUG)
                     checkQualityAgain = True
 
@@ -697,7 +697,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             # if they replace a file on me I'll make some attempt at re-checking the quality unless I know it's the same file
             if checkQualityAgain and not same_file:
                 newQuality = Quality.nameQuality(filepath, self.is_anime)
-                logger.log(u"{}: Since this file has been renamed, I checked {} and found quality {}".format
+                logger.log(u"{0}: Since this file has been renamed, I checked {1} and found quality {2}".format
                            (self.indexerid, filepath, Quality.qualityStrings[newQuality]), logger.DEBUG)
                 if newQuality != Quality.UNKNOWN:
                     with curEp.lock:
@@ -714,13 +714,13 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
                 # if it was snatched and now exists then set the status correctly
                 if oldStatus == SNATCHED and oldQuality <= newQuality:
-                    logger.log(u"{}: This ep used to be snatched with quality {} but a file exists with quality {} so I'm setting the status to DOWNLOADED".format
+                    logger.log(u"{0}: This ep used to be snatched with quality {1} but a file exists with quality {2} so I'm setting the status to DOWNLOADED".format
                                (self.indexerid, Quality.qualityStrings[oldQuality], Quality.qualityStrings[newQuality]), logger.DEBUG)
                     newStatus = DOWNLOADED
 
                 # if it was snatched proper and we found a higher quality one then allow the status change
                 elif oldStatus == SNATCHED_PROPER and oldQuality < newQuality:
-                    logger.log(u"{}: This ep used to be snatched proper with quality {} but a file exists with quality {} so I'm setting the status to DOWNLOADED".format
+                    logger.log(u"{0}: This ep used to be snatched proper with quality {1} but a file exists with quality {2} so I'm setting the status to DOWNLOADED".format
                                (self.indexerid, Quality.qualityStrings[oldQuality], Quality.qualityStrings[newQuality]), logger.DEBUG)
                     newStatus = DOWNLOADED
 
@@ -729,7 +729,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
                 if newStatus is not None:
                     with curEp.lock:
-                        logger.log(u"{}: We have an associated file, so setting the status from {} to DOWNLOADED/{}".format
+                        logger.log(u"{0}: We have an associated file, so setting the status from {1} to DOWNLOADED/{2}".format
                                    (self.indexerid, curEp.status, Quality.statusFromName(filepath, anime=self.is_anime)), logger.DEBUG)
                         curEp.status = Quality.compositeStatus(newStatus, newQuality)
 
@@ -2081,7 +2081,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             try:
                 parse_result = NameParser(name, showObj=show, naming_pattern=True).parse(name)
             except (InvalidNameException, InvalidShowException) as e:
-                logger.log(u"Unable to get parse release_group: {}".format(e), logger.DEBUG)
+                logger.log(u"Unable to get parse release_group: {0}".format(e), logger.DEBUG)
                 return ''
 
             if not parse_result.release_group:
@@ -2530,20 +2530,20 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 import time
 
                 airdatetime = airdatetime.timetuple()
-                logger.log(u"{}: About to modify date of '{}' to show air date {}".format
+                logger.log(u"{0}: About to modify date of '{1}' to show air date {2}".format
                            (self.show.indexerid, self.location, time.strftime("%b %d,%Y (%H:%M)", airdatetime)), logger.DEBUG)
                 try:
                     if helpers.touchFile(self.location, time.mktime(airdatetime)):
-                        logger.log(u"{}: Changed modify date of '{}' to show air date {}".format
+                        logger.log(u"{0}: Changed modify date of '{1}' to show air date {2}".format
                                    (self.show.indexerid, ek(os.path.basename, self.location), time.strftime("%b %d,%Y (%H:%M)", airdatetime)))
                     else:
-                        logger.log(u"{}: Unable to modify date of '{}' to show air date {}".format
+                        logger.log(u"{0}: Unable to modify date of '{1}' to show air date {2}".format
                                    (self.show.indexerid, ek(os.path.basename, self.location), time.strftime("%b %d,%Y (%H:%M)", airdatetime)), logger.WARNING)
                 except Exception:
-                    logger.log(u"{}: Failed to modify date of '{}' to show air date {}".format
+                    logger.log(u"{0}: Failed to modify date of '{1}' to show air date {2}".format
                                (self.show.indexerid, ek(os.path.basename, self.location), time.strftime("%b %d,%Y (%H:%M)", airdatetime)), logger.WARNING)
         except Exception:
-            logger.log(u"{}: Failed to modify date of '{}'".format
+            logger.log(u"{0}: Failed to modify date of '{1}'".format
                        (self.show.indexerid, ek(os.path.basename, self.location)), logger.WARNING)
 
     def __getstate__(self):

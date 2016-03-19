@@ -47,7 +47,7 @@ def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-sta
     if nzb.show.is_anime:
         category = sickbeard.NZBGET_CATEGORY_ANIME
 
-    url = 'http{}://{}:{}@{}/xmlrpc'.format(
+    url = 'http{0}://{1}:{2}@{3}/xmlrpc'.format(
         's' if sickbeard.NZBGET_USE_HTTPS else '',
         sickbeard.NZBGET_USERNAME,
         sickbeard.NZBGET_PASSWORD,
@@ -55,7 +55,7 @@ def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-sta
 
     nzbGetRPC = xmlrpclib.ServerProxy(url)
     try:
-        if nzbGetRPC.writelog('INFO', 'SickRage connected to drop off {} any moment now.'.format(nzb.name + '.nzb')):
+        if nzbGetRPC.writelog('INFO', 'SickRage connected to drop off {0} any moment now.'.format(nzb.name + '.nzb')):
             logger.log('Successful connected to NZBget', logger.DEBUG)
         else:
             logger.log('Successful connected to NZBget, but unable to send a message', logger.WARNING)
@@ -149,8 +149,8 @@ def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-sta
             logger.log('NZB sent to NZBget successfully', logger.DEBUG)
             return True
         else:
-            logger.log('NZBget could not add {} to the queue'.format(nzb.name + '.nzb'), logger.WARNING)
+            logger.log('NZBget could not add {0} to the queue'.format(nzb.name + '.nzb'), logger.WARNING)
             return False
     except Exception:
-        logger.log('Connect Error to NZBget: could not add {} to the queue'.format(nzb.name + '.nzb'), logger.WARNING)
+        logger.log('Connect Error to NZBget: could not add {0} to the queue'.format(nzb.name + '.nzb'), logger.WARNING)
         return False

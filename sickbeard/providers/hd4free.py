@@ -62,7 +62,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if self.freeleech:
                     search_params['fl'] = 'true'
@@ -103,7 +103,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                         leechers = jdata[i]["leechers"]
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 

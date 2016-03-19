@@ -76,7 +76,7 @@ class DBConnection(object):
                 self._set_row_factory()
 
         except OperationalError:
-            logger.log(u'Please check your database owner/permissions: {}'.format(dbFilename(self.filename, self.suffix)), logger.WARNING)
+            logger.log(u'Please check your database owner/permissions: {0}'.format(dbFilename(self.filename, self.suffix)), logger.WARNING)
         except Exception as e:
             logger.log(u"DB error: " + ex(e), logger.ERROR)
             raise

@@ -2798,7 +2798,7 @@ class CMD_ShowUpdate(ApiCall):
             sickbeard.showQueueScheduler.action.updateShow(show_obj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as e:
-            logger.log(u"API::Unable to update show: {0}".format(str(e)), logger.DEBUG)
+            logger.log(u"API::Unable to update show: {0}".format(e), logger.DEBUG)
             return _responds(RESULT_FAILURE, msg="Unable to update " + str(show_obj.name))
 
 
