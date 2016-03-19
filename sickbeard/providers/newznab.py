@@ -82,8 +82,8 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
     @staticmethod
     def get_providers_list(data):
-        default_list = [x for x in [NewznabProvider._make_provider(x) for x in NewznabProvider._get_default_providers().split('!!!')] if x]
-        providers_list = [x for x in [NewznabProvider._make_provider(x) for x in data.split('!!!')] if x]
+        default_list = [x for x in (NewznabProvider._make_provider(x) for x in NewznabProvider._get_default_providers().split('!!!')) if x]
+        providers_list = [x for x in (NewznabProvider._make_provider(x) for x in data.split('!!!')) if x]
         seen_values = set()
         providers_set = []
 
