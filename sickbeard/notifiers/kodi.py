@@ -121,17 +121,17 @@ class Notifier(object):
 
         # suppress notifications if the notifier is disabled but the notify options are checked
         if not sickbeard.USE_KODI and not force:
-            logger.log(u"Notification for %s not enabled, skipping this notification" % dest_app, logger.DEBUG)
+            logger.log(u"Notification for {0!s} not enabled, skipping this notification".format(dest_app), logger.DEBUG)
             return False
 
         result = ''
         for curHost in [x.strip() for x in host.split(",") if x.strip()]:
-            logger.log(u"Sending %s notification to '%s' - %s" % (dest_app, curHost, message), logger.DEBUG)
+            logger.log(u"Sending {0!s} notification to '{1!s}' - {2!s}".format(dest_app, curHost, message), logger.DEBUG)
 
             kodiapi = self._get_kodi_version(curHost, username, password, dest_app)
             if kodiapi:
                 if kodiapi <= 4:
-                    logger.log(u"Detected %s version <= 11, using %s HTTP API" % (dest_app, dest_app), logger.DEBUG)
+                    logger.log(u"Detected {0!s} version <= 11, using {1!s} HTTP API".format(dest_app, dest_app), logger.DEBUG)
                     command = {'command': 'ExecBuiltIn',
                                'parameter': 'Notification(' + title.encode("utf-8") + ',' + message.encode(
                                    "utf-8") + ')'}
@@ -139,15 +139,15 @@ class Notifier(object):
                     if notifyResult:
                         result += curHost + ':' + str(notifyResult)
                 else:
-                    logger.log(u"Detected %s version >= 12, using %s JSON API" % (dest_app, dest_app), logger.DEBUG)
-                    command = '{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{"title":"%s","message":"%s", "image": "%s"},"id":1}' % (
+                    logger.log(u"Detected {0!s} version >= 12, using {1!s} JSON API".format(dest_app, dest_app), logger.DEBUG)
+                    command = '{{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{{"title":"{0!s}","message":"{1!s}", "image": "{2!s}"}},"id":1}}'.format(
                         title.encode("utf-8"), message.encode("utf-8"), sickbeard.LOGO_URL)
                     notifyResult = self._send_to_kodi_json(command, curHost, username, password, dest_app)
                     if notifyResult and notifyResult.get('result'):  # pylint: disable=no-member
                         result += curHost + ':' + notifyResult["result"].decode(sickbeard.SYS_ENCODING)
             else:
                 if sickbeard.KODI_ALWAYS_ON or force:
-                    logger.log(u"Failed to detect %s version for '%s', check configuration and try again." % (dest_app, curHost), logger.WARNING)
+                    logger.log(u"Failed to detect {0!s} version for '{1!s}', check configuration and try again.".format(dest_app, curHost), logger.WARNING)
                 result += curHost + ':False'
 
         return result
@@ -166,7 +166,7 @@ class Notifier(object):
 
         """
 
-        logger.log(u"Sending request to update library for KODI host: '%s'" % host, logger.DEBUG)
+        logger.log(u"Sending request to update library for KODI host: '{0!s}'".format(host), logger.DEBUG)
 
         kodiapi = self._get_kodi_version(host, sickbeard.KODI_USERNAME, sickbeard.KODI_PASSWORD)
         if kodiapi:
@@ -215,7 +215,7 @@ class Notifier(object):
             password = sickbeard.KODI_PASSWORD
 
         if not host:
-            logger.log(u'No %s host passed, aborting update' % dest_app, logger.WARNING)
+            logger.log(u'No {0!s} host passed, aborting update'.format(dest_app), logger.WARNING)
             return False
 
         for key in command:
@@ -223,35 +223,35 @@ class Notifier(object):
                 command[key] = command[key].encode('utf-8')
 
         enc_command = urllib.urlencode(command)
-        logger.log(u"%s encoded API command: %r" % (dest_app, enc_command), logger.DEBUG)
+        logger.log(u"{0!s} encoded API command: {1!r}".format(dest_app, enc_command), logger.DEBUG)
 
         # url = 'http://%s/xbmcCmds/xbmcHttp/?%s' % (host, enc_command)  # maybe need for old plex?
-        url = 'http://%s/kodiCmds/kodiHttp/?%s' % (host, enc_command)
+        url = 'http://{0!s}/kodiCmds/kodiHttp/?{1!s}'.format(host, enc_command)
         try:
             req = urllib2.Request(url)
             # if we have a password, use authentication
             if password:
-                base64string = base64.encodestring('%s:%s' % (username, password))[:-1]
-                authheader = "Basic %s" % base64string
+                base64string = base64.encodestring('{0!s}:{1!s}'.format(username, password))[:-1]
+                authheader = "Basic {0!s}".format(base64string)
                 req.add_header("Authorization", authheader)
-                logger.log(u"Contacting %s (with auth header) via url: %s" % (dest_app, ss(url)), logger.DEBUG)
+                logger.log(u"Contacting {0!s} (with auth header) via url: {1!s}".format(dest_app, ss(url)), logger.DEBUG)
             else:
-                logger.log(u"Contacting %s via url: %s" % (dest_app, ss(url)), logger.DEBUG)
+                logger.log(u"Contacting {0!s} via url: {1!s}".format(dest_app, ss(url)), logger.DEBUG)
 
             try:
                 response = urllib2.urlopen(req)
             except (httplib.BadStatusLine, urllib2.URLError) as e:
-                logger.log(u"Couldn't contact %s HTTP at %r : %r" % (dest_app, url, ex(e)), logger.DEBUG)
+                logger.log(u"Couldn't contact {0!s} HTTP at {1!r} : {2!r}".format(dest_app, url, ex(e)), logger.DEBUG)
                 return False
 
             result = response.read().decode(sickbeard.SYS_ENCODING)
             response.close()
 
-            logger.log(u"%s HTTP response: %s" % (dest_app, result.replace('\n', '')), logger.DEBUG)
+            logger.log(u"{0!s} HTTP response: {1!s}".format(dest_app, result.replace('\n', '')), logger.DEBUG)
             return result
 
         except Exception as e:
-            logger.log(u"Couldn't contact %s HTTP at %r : %r" % (dest_app, url, ex(e)), logger.DEBUG)
+            logger.log(u"Couldn't contact {0!s} HTTP at {1!r} : {2!r}".format(dest_app, url, ex(e)), logger.DEBUG)
             return False
 
     def _update_library(self, host=None, showName=None):  # pylint: disable=too-many-locals, too-many-return-statements
@@ -287,7 +287,7 @@ class Notifier(object):
             xmlCommand = {
                 'command': 'SetResponseFormat(webheader;false;webfooter;false;header;<xml>;footer;</xml>;opentag;<tag>;closetag;</tag>;closefinaltag;false)'}
             # sql used to grab path(s)
-            sqlCommand = {'command': 'QueryVideoDatabase(%s)' % pathSql}
+            sqlCommand = {'command': 'QueryVideoDatabase({0!s})'.format(pathSql)}
             # set output back to default
             resetCommand = {'command': 'SetResponseFormat()'}
 
@@ -320,7 +320,7 @@ class Notifier(object):
                 # we do not need it double-encoded, gawd this is dumb
                 unEncPath = urllib.unquote(path.text).decode(sickbeard.SYS_ENCODING)
                 logger.log(u"KODI Updating " + showName + " on " + host + " at " + unEncPath, logger.DEBUG)
-                updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video, %s)' % unEncPath}
+                updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video, {0!s})'.format(unEncPath)}
                 request = self._send_to_kodi(updateCommand, host)
                 if not request:
                     logger.log(u"Update of show directory failed on " + showName + " on " + host + " at " + unEncPath, logger.WARNING)
@@ -366,37 +366,37 @@ class Notifier(object):
             password = sickbeard.KODI_PASSWORD
 
         if not host:
-            logger.log(u'No %s host passed, aborting update' % dest_app, logger.WARNING)
+            logger.log(u'No {0!s} host passed, aborting update'.format(dest_app), logger.WARNING)
             return False
 
         command = command.encode('utf-8')
-        logger.log(u"%s JSON command: %s" % (dest_app, command), logger.DEBUG)
+        logger.log(u"{0!s} JSON command: {1!s}".format(dest_app, command), logger.DEBUG)
 
-        url = 'http://%s/jsonrpc' % host
+        url = 'http://{0!s}/jsonrpc'.format(host)
         try:
             req = urllib2.Request(url, command)
             req.add_header("Content-type", "application/json")
             # if we have a password, use authentication
             if password:
-                base64string = base64.encodestring('%s:%s' % (username, password))[:-1]
-                authheader = "Basic %s" % base64string
+                base64string = base64.encodestring('{0!s}:{1!s}'.format(username, password))[:-1]
+                authheader = "Basic {0!s}".format(base64string)
                 req.add_header("Authorization", authheader)
-                logger.log(u"Contacting %s (with auth header) via url: %s" % (dest_app, ss(url)), logger.DEBUG)
+                logger.log(u"Contacting {0!s} (with auth header) via url: {1!s}".format(dest_app, ss(url)), logger.DEBUG)
             else:
-                logger.log(u"Contacting %s via url: %s" % (dest_app, ss(url)), logger.DEBUG)
+                logger.log(u"Contacting {0!s} via url: {1!s}".format(dest_app, ss(url)), logger.DEBUG)
 
             try:
                 response = urllib2.urlopen(req)
             except (httplib.BadStatusLine, urllib2.URLError) as e:
                 if sickbeard.KODI_ALWAYS_ON:
-                    logger.log(u"Error while trying to retrieve %s API version for %s: %r" % (dest_app, host, ex(e)), logger.WARNING)
+                    logger.log(u"Error while trying to retrieve {0!s} API version for {1!s}: {2!r}".format(dest_app, host, ex(e)), logger.WARNING)
                 return False
 
             # parse the json result
             try:
                 result = json.load(response)
                 response.close()
-                logger.log(u"%s JSON response: %s" % (dest_app, result), logger.DEBUG)
+                logger.log(u"{0!s} JSON response: {1!s}".format(dest_app, result), logger.DEBUG)
                 return result  # need to return response for parsing
             except ValueError as e:
                 logger.log(u"Unable to decode JSON: " + str(response.read()), logger.WARNING)
@@ -404,7 +404,7 @@ class Notifier(object):
 
         except IOError as e:
             if sickbeard.KODI_ALWAYS_ON:
-                logger.log(u"Warning: Couldn't contact %s JSON API at %s: %r" % (dest_app, ss(url), ex(e)), logger.WARNING)
+                logger.log(u"Warning: Couldn't contact {0!s} JSON API at {1!s}: {2!r}".format(dest_app, ss(url), ex(e)), logger.WARNING)
             return False
 
     def _update_library_json(self, host=None, showName=None):  # pylint: disable=too-many-return-statements, too-many-branches
@@ -474,7 +474,7 @@ class Notifier(object):
 
             # lookup tv-show path if we don't already know it
             if not path:
-                pathCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":{"tvshowid":%d, "properties": ["file"]},"id":1}' % tvshowid
+                pathCommand = '{{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":{{"tvshowid":{0:d}, "properties": ["file"]}},"id":1}}'.format(tvshowid)
                 pathResponse = self._send_to_kodi_json(pathCommand, host)
 
                 path = pathResponse["result"]["tvshowdetails"]["file"]
@@ -486,7 +486,7 @@ class Notifier(object):
                 return False
 
             logger.log(u"KODI Updating " + showName + " on " + host + " at " + path, logger.DEBUG)
-            updateCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.Scan","params":{"directory":%s},"id":1}' % (json.dumps(path))
+            updateCommand = '{{"jsonrpc":"2.0","method":"VideoLibrary.Scan","params":{{"directory":{0!s}}},"id":1}}'.format((json.dumps(path)))
             request = self._send_to_kodi_json(updateCommand, host)
             if not request:
                 logger.log(u"Update of show directory failed on " + showName + " on " + host + " at " + path, logger.WARNING)

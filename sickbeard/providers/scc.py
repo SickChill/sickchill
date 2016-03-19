@@ -86,7 +86,7 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
     @staticmethod
     def _isSection(section, text):
-        title = r'<title>.+? \| %s</title>' % section
+        title = r'<title>.+? \| {0!s}</title>'.format(section)
         return re.search(title, text, re.IGNORECASE)
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals,too-many-branches, too-many-statements
@@ -109,7 +109,7 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                     data = self.get_url(search_url, returns='text')
                     time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 except Exception as e:
-                    logger.log(u"Unable to fetch data. Error: %s" % repr(e), logger.WARNING)
+                    logger.log(u"Unable to fetch data. Error: {0!s}".format(repr(e)), logger.WARNING)
 
                 if not data:
                     continue
@@ -155,7 +155,7 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                         if mode != 'RSS':
-                            logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                            logger.log(u"Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 

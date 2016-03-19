@@ -129,12 +129,12 @@ class BlueTigersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                                 item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                                 if mode != 'RSS':
-                                    logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                    logger.log(u"Found result: {0!s} ".format(title), logger.DEBUG)
 
                                 items.append(item)
 
                 except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: {0!s}".format(traceback.format_exc()), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

@@ -114,7 +114,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                             torrent_id = link['href'].replace('details.php?id=', '').split("&")[0]
 
                             title = link.get_text(strip=True)
-                            download_url = self.urls['download'] % (torrent_id, "%s.torrent" % title.replace(" ", "."))
+                            download_url = self.urls['download'] % (torrent_id, "{0!s}.torrent".format(title.replace(" ", ".")))
 
                             seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
@@ -137,7 +137,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                         if mode != 'RSS':
-                            logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                            logger.log(u"Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 

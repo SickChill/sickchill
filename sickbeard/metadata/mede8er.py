@@ -250,8 +250,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode %dx%d on %s... has it been removed? Should I delete from db?" %
-                           (curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
+                logger.log(u"Unable to find episode {0:d}x{1:d} on {2!s}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
                 return None
 
             if curEpToWrite == ep_obj:
