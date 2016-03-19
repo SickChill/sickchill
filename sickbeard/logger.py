@@ -198,7 +198,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         cur_thread = threading.currentThread().getName()
 
         cur_hash = ''
-        if level == 'ERROR' and sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6:
+        if level == ERROR and sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6:
             cur_hash = '[{0}] '.format(
                 sickbeard.CUR_COMMIT_HASH[:7]
             )
