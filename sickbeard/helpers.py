@@ -624,7 +624,7 @@ def chmodAsParent(childPath):
     childPath_owner = childPathStat.st_uid  # pylint: disable=no-member
     user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
-    if user_id != 0 and user_id != childPath_owner:
+    if user_id not in (childPath_owner, 0):
         logger.log(u"Not running as root or owner of " + childPath + ", not trying to set permissions", logger.DEBUG)
         return
 

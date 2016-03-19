@@ -793,7 +793,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         except Exception:
             WEB_PORT = 8081
 
-        if WEB_PORT < 21 or WEB_PORT > 65535:
+        if 21 > WEB_PORT > 65535:
             WEB_PORT = 8081
 
         WEB_HOST = check_setting_str(CFG, 'General', 'web_host', '0.0.0.0')
