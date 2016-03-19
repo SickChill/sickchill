@@ -46,11 +46,11 @@ class BiosParameterBlock(FieldSet):
 
     def validate(self):
         if self["bytes_per_sector"].value not in (256, 512, 1024, 2048, 4096):
-            return "Invalid sector size (%u bytes)" % \
-                self["bytes_per_sector"].value
+            return "Invalid sector size ({0:d} bytes)".format( \
+                self["bytes_per_sector"].value)
         if self["sectors_per_cluster"].value not in (1, 2, 4, 8, 16, 32, 64, 128):
-            return "Invalid cluster size (%u sectors)" % \
-                self["sectors_per_cluster"].value
+            return "Invalid cluster size ({0:d} sectors)".format( \
+                self["sectors_per_cluster"].value)
         return ""
 
 class MasterBootRecord(FieldSet):
@@ -79,7 +79,7 @@ class MasterBootRecord(FieldSet):
 
     def createDescription(self):
         size = self["nb_sectors"].value * self["bios/bytes_per_sector"].value
-        return "NTFS Master Boot Record (%s)" % humanFilesize(size)
+        return "NTFS Master Boot Record ({0!s})".format(humanFilesize(size))
 
 class MFT_Flags(FieldSet):
     static_size = 16
@@ -122,7 +122,7 @@ class Attribute(FieldSet):
             yield PaddingBytes(self, "end_padding", size)
 
     def createDescription(self):
-        return "Attribute %s" % self["type"].display
+        return "Attribute {0!s}".format(self["type"].display)
     FILENAME_NAMESPACE = {
         0: "POSIX",
         1: "Win32",
@@ -240,11 +240,11 @@ class File(FieldSet):
     def createDescription(self):
         text = "File"
         if "filename/filename" in self:
-            text += ' "%s"' % self["filename/filename"].value
+            text += ' "{0!s}"'.format(self["filename/filename"].value)
         if "filename/real_size" in self:
-            text += ' (%s)' % self["filename/real_size"].display
+            text += ' ({0!s})'.format(self["filename/real_size"].display)
         if "standard_info/file_attr" in self:
-            text += ', %s' % self["standard_info/file_attr"].display
+            text += ', {0!s}'.format(self["standard_info/file_attr"].display)
         return text
 
 class NTFS(Parser):

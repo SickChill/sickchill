@@ -30,7 +30,7 @@ class ItemContent(FieldSet):
     def __init__(self, parent, name, item):
         FieldSet.__init__(self, parent, name, item.description)
         self.related_item = item
-        self._name = "content_%s" % item.name
+        self._name = "content_{0!s}".format(item.name)
 
     def createFields(self):
         item = self.related_item
@@ -94,7 +94,7 @@ class Item(FieldSet):
         yield UInt32(self, "count", "Count")
 
     def createDescription(self):
-        return "Item: %s (%s)" % (self["tag"].display, self["type"].display)
+        return "Item: {0!s} ({1!s})".format(self["tag"].display, self["type"].display)
 
 class ItemHeader(Item):
     tag_name = {
@@ -237,7 +237,7 @@ class RpmFile(Parser):
         if self["signature"].value != '\xED\xAB\xEE\xDB':
             return "Invalid signature"
         if self["major_ver"].value != 3:
-            return "Unknown major version (%u)" % self["major_ver"].value
+            return "Unknown major version ({0:d})".format(self["major_ver"].value)
         if self["type"].value not in self.TYPE_NAME:
             return "Invalid RPM type"
         return True

@@ -187,7 +187,7 @@ def state_str(state):
     if state is None:
         return "None"
     else:
-        return '<%s at 0x%x>' % (state.class_.__name__, id(state.obj()))
+        return '<{0!s} at 0x{1:x}>'.format(state.class_.__name__, id(state.obj()))
 
 def state_class_str(state):
     """Return a string describing an instance's class via its InstanceState."""
@@ -195,7 +195,7 @@ def state_class_str(state):
     if state is None:
         return "None"
     else:
-        return '<%s>' % (state.class_.__name__, )
+        return '<{0!s}>'.format(state.class_.__name__ )
 
 
 def attribute_str(instance, attribute):
@@ -338,8 +338,7 @@ def _entity_descriptor(entity, key):
         return getattr(entity, key)
     except AttributeError:
         raise sa_exc.InvalidRequestError(
-                    "Entity '%s' has no property '%s'" %
-                    (description, key)
+                    "Entity '{0!s}' has no property '{1!s}'".format(description, key)
                 )
 
 _state_mapper = util.dottedgetter('manager.mapper')
@@ -379,7 +378,7 @@ def class_mapper(class_, configure=True):
     if mapper is None:
         if not isinstance(class_, type):
             raise sa_exc.ArgumentError(
-                    "Class object expected, got '%r'." % (class_, ))
+                    "Class object expected, got '{0!r}'.".format(class_ ))
         raise exc.UnmappedClassError(class_)
     else:
         return mapper

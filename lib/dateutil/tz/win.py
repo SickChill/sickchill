@@ -219,7 +219,7 @@ class tzwin(tzwinbase):
          self._dstminute) = tup[12:17]
 
     def __repr__(self):
-        return "tzwin(%s)" % repr(self._name)
+        return "tzwin({0!s})".format(repr(self._name))
 
     def __reduce__(self):
         return (self.__class__, (self._name,))
@@ -273,7 +273,7 @@ class tzwinlocal(tzwinbase):
 
     def __str__(self):
         # str will return the standard name, not the daylight name.
-        return "tzwinlocal(%s)" % repr(self._stdname)
+        return "tzwinlocal({0!s})".format(repr(self._stdname))
 
     def __reduce__(self):
         return (self.__class__, ())

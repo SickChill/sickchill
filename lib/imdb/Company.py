@@ -165,7 +165,7 @@ class Company(_Container):
 
     def __repr__(self):
         """String representation of a Company object."""
-        r = '<Company id:%s[%s] name:_%s_>' % (self.companyID,
+        r = '<Company id:{0!s}[{1!s}] name:_{2!s}_>'.format(self.companyID,
                                         self.accessSystem,
                                         self.get('long imdb name'))
         if isinstance(r, unicode): r = r.encode('utf_8', 'replace')
@@ -182,14 +182,13 @@ class Company(_Container):
     def summary(self):
         """Return a string with a pretty-printed summary for the company."""
         if not self: return u''
-        s = u'Company\n=======\nName: %s\n' % \
-                                self.get('name', u'')
+        s = u'Company\n=======\nName: {0!s}\n'.format( \
+                                self.get('name', u''))
         for k in ('distributor', 'production company', 'miscellaneous company',
                 'special effects company'):
             d = self.get(k, [])[:5]
             if not d: continue
-            s += u'Last movies from this company (%s): %s.\n' % \
-                    (k, u'; '.join([x.get('long imdb title', u'') for x in d]))
+            s += u'Last movies from this company ({0!s}): {1!s}.\n'.format(k, u'; '.join([x.get('long imdb title', u'') for x in d]))
         return s
 
 

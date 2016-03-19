@@ -111,14 +111,14 @@ def dump(node):
     """
     def _format(node):
         if isinstance(node, AST):
-            return '%s(%s)' % (node.__class__.__name__,
-                               ', '.join('%s=%s' % (a, _format(b))
+            return '{0!s}({1!s})'.format(node.__class__.__name__,
+                               ', '.join('{0!s}={1!s}'.format(a, _format(b))
                                          for a, b in iter_fields(node)))
         elif isinstance(node, list):
-            return '[%s]' % ', '.join(_format(x) for x in node)
+            return '[{0!s}]'.format(', '.join(_format(x) for x in node))
         return repr(node)
     if not isinstance(node, AST):
-        raise TypeError('expected AST, got %r' % node.__class__.__name__)
+        raise TypeError('expected AST, got {0!r}'.format(node.__class__.__name__))
     return _format(node)
 
 
@@ -213,7 +213,7 @@ def get_compile_mode(node):
     node (`Expression`, `Module` etc.) a `TypeError` is thrown.
     """
     if not isinstance(node, mod):
-        raise TypeError('expected mod node, got %r' % node.__class__.__name__)
+        raise TypeError('expected mod node, got {0!r}'.format(node.__class__.__name__))
     return {
         Expression: 'eval',
         Interactive: 'single'
@@ -227,7 +227,7 @@ def get_docstring(node):
     will be raised.
     """
     if not isinstance(node, (FunctionDef, ClassDef, Module)):
-        raise TypeError("%r can't have docstrings" % node.__class__.__name__)
+        raise TypeError("{0!r} can't have docstrings".format(node.__class__.__name__))
     if node.body and isinstance(node.body[0], Str):
         return node.body[0].s
 
@@ -437,7 +437,7 @@ class SourceGenerator(NodeVisitor):
 
     def visit_ImportFrom(self, node):
         self.newline()
-        self.write('from %s%s import ' % ('.' * node.level, node.module))
+        self.write('from {0!s}{1!s} import '.format('.' * node.level, node.module))
         for idx, item in enumerate(node.names):
             if idx:
                 self.write(', ')
@@ -457,7 +457,7 @@ class SourceGenerator(NodeVisitor):
         self.newline(n=2)
         self.decorators(node)
         self.newline()
-        self.write('def %s(' % node.name)
+        self.write('def {0!s}('.format(node.name))
         self.signature(node.args)
         self.write('):')
         self.body(node.body)
@@ -475,7 +475,7 @@ class SourceGenerator(NodeVisitor):
         self.newline(n=3)
         self.decorators(node)
         self.newline()
-        self.write('class %s' % node.name)
+        self.write('class {0!s}'.format(node.name))
         for base in node.bases:
             paren_or_comma()
             self.visit(base)
@@ -716,7 +716,7 @@ class SourceGenerator(NodeVisitor):
     def visit_BinOp(self, node):
         self.write('(')
         self.visit(node.left)
-        self.write(' %s ' % BINOP_SYMBOLS[type(node.op)])
+        self.write(' {0!s} '.format(BINOP_SYMBOLS[type(node.op)]))
         self.visit(node.right)
         self.write(')')
 
@@ -724,7 +724,7 @@ class SourceGenerator(NodeVisitor):
         self.write('(')
         for idx, value in enumerate(node.values):
             if idx:
-                self.write(' %s ' % BOOLOP_SYMBOLS[type(node.op)])
+                self.write(' {0!s} '.format(BOOLOP_SYMBOLS[type(node.op)]))
             self.visit(value)
         self.write(')')
 
@@ -732,7 +732,7 @@ class SourceGenerator(NodeVisitor):
         self.write('(')
         self.visit(node.left)
         for op, right in zip(node.ops, node.comparators):
-            self.write(' %s ' % CMPOP_SYMBOLS[type(op)])
+            self.write(' {0!s} '.format(CMPOP_SYMBOLS[type(op)]))
             self.visit(right)
         self.write(')')
 

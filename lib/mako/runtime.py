@@ -44,8 +44,8 @@ class Context(object):
         illegal_names = t.reserved_names.intersection(self._data)
         if illegal_names:
             raise exceptions.NameConflictError(
-                "Reserved words passed to render(): %s" %
-                ", ".join(illegal_names))
+                "Reserved words passed to render(): {0!s}".format(
+                ", ".join(illegal_names)))
 
     @property
     def lookup(self):
@@ -536,8 +536,7 @@ class Namespace(object):
             val = getattr(self.inherits, key)
         else:
             raise AttributeError(
-                "Namespace '%s' has no member '%s'" %
-                (self.name, key))
+                "Namespace '{0!s}' has no member '{1!s}'".format(self.name, key))
         setattr(self, key, val)
         return val
 
@@ -621,8 +620,7 @@ class TemplateNamespace(Namespace):
 
         else:
             raise AttributeError(
-                "Namespace '%s' has no member '%s'" %
-                (self.name, key))
+                "Namespace '{0!s}' has no member '{1!s}'".format(self.name, key))
         setattr(self, key, val)
         return val
 
@@ -672,8 +670,7 @@ class ModuleNamespace(Namespace):
             val = getattr(self.inherits, key)
         else:
             raise AttributeError(
-                "Namespace '%s' has no member '%s'" %
-                (self.name, key))
+                "Namespace '{0!s}' has no member '{1!s}'".format(self.name, key))
         setattr(self, key, val)
         return val
 
@@ -765,7 +762,7 @@ def _inherit_from(context, uri, calling_uri):
     while ih.inherits is not None:
         ih = ih.inherits
     lclcontext = context._locals({'next': ih})
-    ih.inherits = TemplateNamespace("self:%s" % template.uri,
+    ih.inherits = TemplateNamespace("self:{0!s}".format(template.uri),
                                     lclcontext,
                                     template=template,
                                     populate_self=False)
@@ -786,8 +783,8 @@ def _lookup_template(context, uri, relativeto):
     lookup = context._with_template.lookup
     if lookup is None:
         raise exceptions.TemplateLookupException(
-            "Template '%s' has no TemplateLookup associated" %
-            context._with_template.uri)
+            "Template '{0!s}' has no TemplateLookup associated".format(
+            context._with_template.uri))
     uri = lookup.adjust_uri(uri, relativeto)
     try:
         return lookup.get_template(uri)
@@ -797,7 +794,7 @@ def _lookup_template(context, uri, relativeto):
 
 def _populate_self_namespace(context, template, self_ns=None):
     if self_ns is None:
-        self_ns = TemplateNamespace('self:%s' % template.uri,
+        self_ns = TemplateNamespace('self:{0!s}'.format(template.uri),
                                     context, template=template,
                                     populate_self=False)
     context._data['self'] = context._data['local'] = self_ns

@@ -177,9 +177,9 @@ def _new_annotation_type(cls, base_cls):
             break
 
     annotated_classes[cls] = anno_cls = type(
-                            "Annotated%s" % cls.__name__,
+                            "Annotated{0!s}".format(cls.__name__),
                             (base_cls, cls), {})
-    globals()["Annotated%s" % cls.__name__] = anno_cls
+    globals()["Annotated{0!s}".format(cls.__name__)] = anno_cls
     return anno_cls
 
 def _prepare_annotations(target_hierarchy, base_cls):

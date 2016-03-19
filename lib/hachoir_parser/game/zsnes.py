@@ -223,7 +223,7 @@ class ZSNESFile(Parser):
         if temp[0:26] != "ZSNES Save State File V143":
             return "Wrong header"
         if ord(temp[27:28]) != 143: # extra...
-            return "Wrong save version %d <> 143" % temp[27:1]
+            return "Wrong save version {0:d} <> 143".format(temp[27:1])
         return True
 
     def seek(self, offset):

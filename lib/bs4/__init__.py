@@ -140,7 +140,7 @@ class BeautifulSoup(Tag):
         if len(kwargs) > 0:
             arg = kwargs.keys().pop()
             raise TypeError(
-                "__init__() got an unexpected keyword argument '%s'" % arg)
+                "__init__() got an unexpected keyword argument '{0!s}'".format(arg))
 
         if builder is None:
             original_features = features
@@ -195,7 +195,7 @@ class BeautifulSoup(Tag):
                 if isinstance(markup, unicode):
                     markup = markup.encode("utf8")
                 warnings.warn(
-                    '"%s" looks like a filename, not markup. You should probably open this file and pass the filehandle into Beautiful Soup.' % markup)
+                    '"{0!s}" looks like a filename, not markup. You should probably open this file and pass the filehandle into Beautiful Soup.'.format(markup))
             if markup[:5] == "http:" or markup[:6] == "https:":
                 # TODO: This is ugly but I couldn't get it to work in
                 # Python 3 otherwise.
@@ -204,7 +204,7 @@ class BeautifulSoup(Tag):
                     if isinstance(markup, unicode):
                         markup = markup.encode("utf8")
                     warnings.warn(
-                        '"%s" looks like a URL. Beautiful Soup is not an HTTP client. You should probably use an HTTP client to get the document behind the URL, and feed that document to Beautiful Soup.' % markup)
+                        '"{0!s}" looks like a URL. Beautiful Soup is not an HTTP client. You should probably use an HTTP client to get the document behind the URL, and feed that document to Beautiful Soup.'.format(markup))
 
         for (self.markup, self.original_encoding, self.declared_html_encoding,
          self.contains_replacement_characters) in (
@@ -428,8 +428,8 @@ class BeautifulSoup(Tag):
             # Print the XML declaration
             encoding_part = ''
             if eventual_encoding != None:
-                encoding_part = ' encoding="%s"' % eventual_encoding
-            prefix = u'<?xml version="1.0"%s?>\n' % encoding_part
+                encoding_part = ' encoding="{0!s}"'.format(eventual_encoding)
+            prefix = u'<?xml version="1.0"{0!s}?>\n'.format(encoding_part)
         else:
             prefix = u''
         if not pretty_print:

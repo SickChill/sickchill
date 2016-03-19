@@ -83,8 +83,8 @@ class PythonFragment(PythonCode):
         m = re.match(r'^(\w+)(?:\s+(.*?))?:\s*(#|$)', code.strip(), re.S)
         if not m:
             raise exceptions.CompileException(
-                "Fragment '%s' is not a partial control statement" %
-                code, **exception_kwargs)
+                "Fragment '{0!s}' is not a partial control statement".format(
+                code), **exception_kwargs)
         if m.group(3):
             code = code[:m.start(3)]
         (keyword, expr) = m.group(1, 2)
@@ -100,8 +100,8 @@ class PythonFragment(PythonCode):
             code = code + "pass"
         else:
             raise exceptions.CompileException(
-                "Unsupported control keyword: '%s'" %
-                keyword, **exception_kwargs)
+                "Unsupported control keyword: '{0!s}'".format(
+                keyword), **exception_kwargs)
         super(PythonFragment, self).__init__(code, **exception_kwargs)
 
 
@@ -117,12 +117,12 @@ class FunctionDecl(object):
         f.visit(expr)
         if not hasattr(self, 'funcname'):
             raise exceptions.CompileException(
-                "Code '%s' is not a function declaration" % code,
+                "Code '{0!s}' is not a function declaration".format(code),
                 **exception_kwargs)
         if not allow_kwargs and self.kwargs:
             raise exceptions.CompileException(
-                "'**%s' keyword argument not allowed here" %
-                self.kwargnames[-1], **exception_kwargs)
+                "'**{0!s}' keyword argument not allowed here".format(
+                self.kwargnames[-1]), **exception_kwargs)
 
     def get_argument_expressions(self, as_call=False):
         """Return the argument declarations of this FunctionDecl as a printable
@@ -149,7 +149,7 @@ class FunctionDecl(object):
             # Keyword-only arguments must always be used by name, so even if
             # this is a call, print out `foo=foo`
             if as_call:
-                namedecls.append("%s=%s" % (name, name))
+                namedecls.append("{0!s}={1!s}".format(name, name))
             elif kwdefaults:
                 default = kwdefaults.pop(0)
                 if default is None:
@@ -157,7 +157,7 @@ class FunctionDecl(object):
                     # `def foo(*, a=1, b, c=3)`
                     namedecls.append(name)
                 else:
-                    namedecls.append("%s=%s" % (
+                    namedecls.append("{0!s}={1!s}".format(
                         name, pyparser.ExpressionGenerator(default).value()))
             else:
                 namedecls.append(name)
@@ -171,7 +171,7 @@ class FunctionDecl(object):
                 namedecls.append(name)
             else:
                 default = defaults.pop(0)
-                namedecls.append("%s=%s" % (
+                namedecls.append("{0!s}={1!s}".format(
                     name, pyparser.ExpressionGenerator(default).value()))
 
         namedecls.reverse()
@@ -187,5 +187,5 @@ class FunctionArgs(FunctionDecl):
     """the argument portion of a function declaration"""
 
     def __init__(self, code, **kwargs):
-        super(FunctionArgs, self).__init__("def ANON(%s):pass" % code,
+        super(FunctionArgs, self).__init__("def ANON({0!s}):pass".format(code),
                                            **kwargs)

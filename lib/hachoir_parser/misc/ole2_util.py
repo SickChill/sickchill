@@ -24,7 +24,7 @@ class OLE2FragmentParser(HachoirParser,RootSeekableFieldSet):
     def validate(self):
         if self.ENDIAN_CHECK:
             if self["endian"].value not in ["\xFF\xFE", "\xFE\xFF"]:
-                return "Unknown endian value %s"%self["endian"].value.encode('hex')
+                return "Unknown endian value {0!s}".format(self["endian"].value.encode('hex'))
         return True
 
 class RawParser(OLE2FragmentParser):

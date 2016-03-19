@@ -28,7 +28,7 @@ class Urllib2TestCase(unittest.TestCase):
         opener = build_opener()
         res = opener.open(Constants.TEST_URI)
         self.assert_(res)
-        print("res = %s" % res.read())
+        print("res = {0!s}".format(res.read()))
 
     def test03_open_fails_unknown_loc(self):
         opener = build_opener()

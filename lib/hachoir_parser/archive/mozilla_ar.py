@@ -20,7 +20,7 @@ class IndexEntry(FieldSet):
         yield CString(self, "name", "Filename (byte array)")
 
     def createDescription(self):
-        return 'File %s, Size %s, Mode %s'%(
+        return 'File {0!s}, Size {1!s}, Mode {2!s}'.format(
             self["name"].display, self["length"].display, self["flags"].display)
 
 class MozillaArchive(HachoirParser, RootSeekableFieldSet):

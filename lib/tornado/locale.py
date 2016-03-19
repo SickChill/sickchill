@@ -345,13 +345,13 @@ class Locale(object):
 
         tfhour_clock = self.code not in ("en", "en_US", "zh_CN")
         if tfhour_clock:
-            str_time = "%d:%02d" % (local_date.hour, local_date.minute)
+            str_time = "{0:d}:{1:02d}".format(local_date.hour, local_date.minute)
         elif self.code == "zh_CN":
-            str_time = "%s%d:%02d" % (
+            str_time = "{0!s}{1:d}:{2:02d}".format(
                 (u('\u4e0a\u5348'), u('\u4e0b\u5348'))[local_date.hour >= 12],
                 local_date.hour % 12 or 12, local_date.minute)
         else:
-            str_time = "%d:%02d %s" % (
+            str_time = "{0:d}:{1:02d} {2!s}".format(
                 local_date.hour % 12 or 12, local_date.minute,
                 ("am", "pm")[local_date.hour >= 12])
 
@@ -476,8 +476,8 @@ class GettextLocale(Locale):
         """
         if plural_message is not None:
             assert count is not None
-            msgs_with_ctxt = ("%s%s%s" % (context, CONTEXT_SEPARATOR, message),
-                          "%s%s%s" % (context, CONTEXT_SEPARATOR, plural_message),
+            msgs_with_ctxt = ("{0!s}{1!s}{2!s}".format(context, CONTEXT_SEPARATOR, message),
+                          "{0!s}{1!s}{2!s}".format(context, CONTEXT_SEPARATOR, plural_message),
                           count)
             result = self.ngettext(*msgs_with_ctxt)
             if CONTEXT_SEPARATOR in result:
@@ -485,7 +485,7 @@ class GettextLocale(Locale):
                 result = self.ngettext(message, plural_message, count)
             return result
         else:
-            msg_with_ctxt = "%s%s%s" % (context, CONTEXT_SEPARATOR, message)
+            msg_with_ctxt = "{0!s}{1!s}{2!s}".format(context, CONTEXT_SEPARATOR, message)
             result = self.gettext(msg_with_ctxt)
             if CONTEXT_SEPARATOR in result:
                 # Translation not found

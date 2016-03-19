@@ -67,7 +67,7 @@ class _StrictFeedParser(object):
             givenprefix = None
         prefix = self._matchnamespaces.get(lowernamespace, givenprefix)
         if givenprefix and (prefix == None or (prefix == '' and lowernamespace == '')) and givenprefix not in self.namespacesInUse:
-            raise UndeclaredNamespace("'%s' is not associated with a namespace" % givenprefix)
+            raise UndeclaredNamespace("'{0!s}' is not associated with a namespace".format(givenprefix))
         localname = str(localname).lower()
 
         # qname implementation is horribly broken in Python 2.1 (it

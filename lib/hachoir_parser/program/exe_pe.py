@@ -54,8 +54,8 @@ class SectionHeader(FieldSet):
         rva = self["rva"].value
         size = self["mem_size"].value
         info = [
-            "rva=0x%08x..0x%08x" % (rva, rva+size),
-            "size=%s" % self["mem_size"].display,
+            "rva=0x{0:08x}..0x{1:08x}".format(rva, rva+size),
+            "size={0!s}".format(self["mem_size"].display),
         ]
         if self["is_executable"].value:
             info.append("exec")
@@ -63,13 +63,13 @@ class SectionHeader(FieldSet):
             info.append("read")
         if self["is_writable"].value:
             info.append("write")
-        return 'Section "%s": %s' % (self["name"].value, ", ".join(info))
+        return 'Section "{0!s}": {1!s}'.format(self["name"].value, ", ".join(info))
 
     def createSectionName(self):
         try:
             name = str(self["name"].value.strip("."))
             if name:
-                return "section_%s" % name
+                return "section_{0!s}".format(name)
         except HACHOIR_ERRORS, err:
             self.warning(unicode(err))
         return "section[]"
@@ -81,7 +81,7 @@ class DataDirectory(FieldSet):
 
     def createDescription(self):
         if self["size"].value:
-            return "Directory at %s (%s)" % (
+            return "Directory at {0!s} ({1!s})".format(
                 self["rva"].display, self["size"].display)
         else:
             return "(empty directory)"
@@ -211,11 +211,11 @@ class PE_OptHeader(FieldSet):
             try:
                 name = self.DIRECTORY_NAME[index]
             except KeyError:
-                name = "data_dir[%u]" % index
+                name = "data_dir[{0:d}]".format(index)
             yield DataDirectory(self, name)
 
     def createDescription(self):
-        return "PE optional header: %s, entry point %s" % (
+        return "PE optional header: {0!s}, entry point {1!s}".format(
             self["subsystem"].display,
             self["entry_point"].display)
 

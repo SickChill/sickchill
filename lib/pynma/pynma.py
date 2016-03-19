@@ -17,7 +17,7 @@ __version__ = "1.0"
 API_SERVER = 'www.notifymyandroid.com'
 ADD_PATH   = '/publicapi/notify'
 
-USER_AGENT="PyNMA/v%s"%__version__
+USER_AGENT="PyNMA/v{0!s}".format(__version__)
 
 def uniq_preserve(seq): # Dave Kirby
     # Order preserving

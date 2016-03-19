@@ -92,7 +92,7 @@ class HTMLTreeBuilderSmokeTest(object):
 
     def _document_with_doctype(self, doctype_fragment):
         """Generate and parse a document with the given doctype."""
-        doctype = '<!DOCTYPE %s>' % doctype_fragment
+        doctype = '<!DOCTYPE {0!s}>'.format(doctype_fragment)
         markup = doctype + '\n<p>foo</p>'
         soup = self.soup(markup)
         return doctype, soup

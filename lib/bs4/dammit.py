@@ -67,7 +67,7 @@ class EntitySubstitution(object):
                 lookup[character] = name
             # But we do want to turn &quot; into the quotation mark.
             reverse_lookup[name] = character
-        re_definition = "[%s]" % "".join(characters_for_re)
+        re_definition = "[{0!s}]".format("".join(characters_for_re))
         return lookup, reverse_lookup, re.compile(re_definition)
     (CHARACTER_TO_HTML_ENTITY, HTML_ENTITY_TO_CHARACTER,
      CHARACTER_TO_HTML_ENTITY_RE) = _populate_class_variables()
@@ -89,14 +89,14 @@ class EntitySubstitution(object):
     @classmethod
     def _substitute_html_entity(cls, matchobj):
         entity = cls.CHARACTER_TO_HTML_ENTITY.get(matchobj.group(0))
-        return "&%s;" % entity
+        return "&{0!s};".format(entity)
 
     @classmethod
     def _substitute_xml_entity(cls, matchobj):
         """Used with a regular expression to substitute the
         appropriate XML entity for an XML special character."""
         entity = cls.CHARACTER_TO_XML_ENTITY[matchobj.group(0)]
-        return "&%s;" % entity
+        return "&{0!s};".format(entity)
 
     @classmethod
     def quoted_attribute_value(self, value):

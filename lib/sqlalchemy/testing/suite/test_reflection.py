@@ -60,7 +60,7 @@ class ComponentReflectionTest(fixtures.TablesTest):
                 Column('test1', sa.CHAR(5), nullable=False),
                 Column('test2', sa.Float(5), nullable=False),
                 Column('parent_user_id', sa.Integer,
-                            sa.ForeignKey('%susers.user_id' % schema_prefix)),
+                            sa.ForeignKey('{0!s}users.user_id'.format(schema_prefix))),
                 schema=schema,
                 test_needs_fk=True,
             )
@@ -76,8 +76,8 @@ class ComponentReflectionTest(fixtures.TablesTest):
         Table("dingalings", metadata,
                   Column('dingaling_id', sa.Integer, primary_key=True),
                   Column('address_id', sa.Integer,
-                    sa.ForeignKey('%semail_addresses.address_id' %
-                                    schema_prefix)),
+                    sa.ForeignKey('{0!s}email_addresses.address_id'.format(
+                                    schema_prefix))),
                   Column('data', sa.String(30)),
                   schema=schema,
                   test_needs_fk=True,
@@ -107,9 +107,9 @@ class ComponentReflectionTest(fixtures.TablesTest):
         for table_name in ('users', 'email_addresses'):
             fullname = table_name
             if schema:
-                fullname = "%s.%s" % (schema, table_name)
+                fullname = "{0!s}.{1!s}".format(schema, table_name)
             view_name = fullname + '_v'
-            query = "CREATE VIEW %s AS SELECT * FROM %s" % (
+            query = "CREATE VIEW {0!s} AS SELECT * FROM {1!s}".format(
                                 view_name, fullname)
 
             event.listen(
@@ -120,7 +120,7 @@ class ComponentReflectionTest(fixtures.TablesTest):
             event.listen(
                 metadata,
                 "before_drop",
-                DDL("DROP VIEW %s" % view_name)
+                DDL("DROP VIEW {0!s}".format(view_name))
             )
 
     @testing.requires.schema_reflection
@@ -233,7 +233,7 @@ class ComponentReflectionTest(fixtures.TablesTest):
                     sql_types.Time,
                     sql_types.String,
                     sql_types._Binary,
-                    ])) > 0, '%s(%s), %s(%s)' % (col.name,
+                    ])) > 0, '{0!s}({1!s}), {2!s}({3!s})'.format(col.name,
                             col.type, cols[i]['name'], ctype))
 
                 if not col.primary_key:
@@ -247,7 +247,7 @@ class ComponentReflectionTest(fixtures.TablesTest):
     def _type_round_trip(self, *types):
         t = Table('t', self.metadata,
                     *[
-                        Column('t%d' % i, type_)
+                        Column('t{0:d}'.format(i), type_)
                         for i, type_ in enumerate(types)
                     ]
                 )

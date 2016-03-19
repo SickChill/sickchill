@@ -4,7 +4,7 @@ class Language:
     def __init__(self, code):
         code = str(code)
         if code not in ISO639_2:
-            raise ValueError("Invalid language code: %r" % code)
+            raise ValueError("Invalid language code: {0!r}".format(code))
         self.code = code
 
     def __cmp__(self, other):
@@ -19,5 +19,5 @@ class Language:
        return self.__unicode__()
 
     def __repr__(self):
-        return "<Language '%s', code=%r>" % (unicode(self), self.code)
+        return "<Language '{0!s}', code={1!r}>".format(unicode(self), self.code)
 

@@ -187,7 +187,7 @@ class CachedResponse(StringIO.StringIO):
         self.msg     = "OK"
         headerbuf = file(hpath, "rb").read()
         if set_cache_header:
-            headerbuf += "x-local-cache: %s\r\n" % (bpath)
+            headerbuf += "x-local-cache: {0!s}\r\n".format((bpath))
         self.headers = httplib.HTTPMessage(StringIO.StringIO(headerbuf))
 
     def info(self):

@@ -26,10 +26,10 @@ _notimplemented_ops = set(getattr(operators, op)
 
 class EvaluatorCompiler(object):
     def process(self, clause):
-        meth = getattr(self, "visit_%s" % clause.__visit_name__, None)
+        meth = getattr(self, "visit_{0!s}".format(clause.__visit_name__), None)
         if not meth:
             raise UnevaluatableError(
-                "Cannot evaluate %s" % type(clause).__name__)
+                "Cannot evaluate {0!s}".format(type(clause).__name__))
         return meth(clause)
 
     def visit_grouping(self, clause):
@@ -77,8 +77,8 @@ class EvaluatorCompiler(object):
                 return True
         else:
             raise UnevaluatableError(
-                "Cannot evaluate clauselist with operator %s" %
-                clause.operator)
+                "Cannot evaluate clauselist with operator {0!s}".format(
+                clause.operator))
 
         return evaluate
 
@@ -101,8 +101,7 @@ class EvaluatorCompiler(object):
                 return operator(eval_left(obj), eval_right(obj))
         else:
             raise UnevaluatableError(
-                    "Cannot evaluate %s with operator %s" %
-                    (type(clause).__name__, clause.operator))
+                    "Cannot evaluate {0!s} with operator {1!s}".format(type(clause).__name__, clause.operator))
         return evaluate
 
     def visit_unary(self, clause):
@@ -115,8 +114,7 @@ class EvaluatorCompiler(object):
                 return not value
             return evaluate
         raise UnevaluatableError(
-                    "Cannot evaluate %s with operator %s" %
-                    (type(clause).__name__, clause.operator))
+                    "Cannot evaluate {0!s} with operator {1!s}".format(type(clause).__name__, clause.operator))
 
     def visit_bindparam(self, clause):
         val = clause.value

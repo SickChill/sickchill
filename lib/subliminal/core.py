@@ -380,7 +380,7 @@ def scan_video(path, subtitles=True, subtitles_dir=None, movie_refiners=('metada
 
     # check video extension
     if not path.endswith(VIDEO_EXTENSIONS):
-        raise ValueError('%s is not a valid video extension' % os.path.splitext(path)[1])
+        raise ValueError('{0!s} is not a valid video extension'.format(os.path.splitext(path)[1]))
 
     dirpath, filename = os.path.split(path)
     logger.info('Scanning video %r in %r', filename, dirpath)

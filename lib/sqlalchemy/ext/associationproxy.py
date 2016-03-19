@@ -146,7 +146,7 @@ class AssociationProxy(interfaces._InspectionAttr):
         self.proxy_bulk_set = proxy_bulk_set
 
         self.owning_class = None
-        self.key = '_%s_%s_%s' % (
+        self.key = '_{0!s}_{1!s}_{2!s}'.format(
             type(self).__name__, target_collection, id(self))
         self.collection_class = None
 
@@ -693,7 +693,7 @@ class _AssociationList(_AssociationCollection):
         return repr(list(self))
 
     def __hash__(self):
-        raise TypeError("%s objects are unhashable" % type(self).__name__)
+        raise TypeError("{0!s} objects are unhashable".format(type(self).__name__))
 
     for func_name, func in list(locals().items()):
         if (util.callable(func) and func.__name__ == func_name and
@@ -818,8 +818,8 @@ class _AssociationDict(_AssociationCollection):
 
     def update(self, *a, **kw):
         if len(a) > 1:
-            raise TypeError('update expected at most 1 arguments, got %i' %
-                            len(a))
+            raise TypeError('update expected at most 1 arguments, got {0:d}'.format(
+                            len(a)))
         elif len(a) == 1:
             seq_or_map = a[0]
             # discern dict from sequence - took the advice from
@@ -844,7 +844,7 @@ class _AssociationDict(_AssociationCollection):
         return dict(self.items())
 
     def __hash__(self):
-        raise TypeError("%s objects are unhashable" % type(self).__name__)
+        raise TypeError("{0!s} objects are unhashable".format(type(self).__name__))
 
     for func_name, func in list(locals().items()):
         if (util.callable(func) and func.__name__ == func_name and
@@ -1044,7 +1044,7 @@ class _AssociationSet(_AssociationCollection):
         return repr(set(self))
 
     def __hash__(self):
-        raise TypeError("%s objects are unhashable" % type(self).__name__)
+        raise TypeError("{0!s} objects are unhashable".format(type(self).__name__))
 
     for func_name, func in list(locals().items()):
         if (util.callable(func) and func.__name__ == func_name and

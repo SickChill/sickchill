@@ -192,7 +192,7 @@ class TornadoReactor(PosixReactorBase):
     # IReactorThreads
     def callFromThread(self, f, *args, **kw):
         """See `twisted.internet.interfaces.IReactorThreads.callFromThread`"""
-        assert callable(f), "%s is not callable" % f
+        assert callable(f), "{0!s} is not callable".format(f)
         with NullContext():
             # This NullContext is mainly for an edge case when running
             # TwistedIOLoop on top of a TornadoReactor.
@@ -436,7 +436,7 @@ class TwistedIOLoop(tornado.ioloop.IOLoop):
 
     def add_handler(self, fd, handler, events):
         if fd in self.fds:
-            raise ValueError('fd %s added twice' % fd)
+            raise ValueError('fd {0!s} added twice'.format(fd))
         fd, fileobj = self.split_fd(fd)
         self.fds[fd] = _FD(fd, fileobj, wrap(handler))
         if events & tornado.ioloop.IOLoop.READ:
@@ -562,8 +562,7 @@ class TwistedResolver(Resolver):
             else:
                 resolved_family = socket.AF_UNSPEC
         if family != socket.AF_UNSPEC and family != resolved_family:
-            raise Exception('Requested socket family %d but got %d' %
-                            (family, resolved_family))
+            raise Exception('Requested socket family {0:d} but got {1:d}'.format(family, resolved_family))
         result = [
             (resolved_family, (resolved, port)),
         ]

@@ -709,7 +709,7 @@ class NavigableString(unicode, PageElement):
             return self
         else:
             raise AttributeError(
-                "'%s' object has no attribute '%s'" % (
+                "'{0!s}' object has no attribute '{1!s}'".format(
                     self.__class__.__name__, attr))
 
     def output_ready(self, formatter="minimal"):
@@ -764,11 +764,11 @@ class Doctype(PreformattedString):
     def for_name_and_ids(cls, name, pub_id, system_id):
         value = name or ''
         if pub_id is not None:
-            value += ' PUBLIC "%s"' % pub_id
+            value += ' PUBLIC "{0!s}"'.format(pub_id)
             if system_id is not None:
-                value += ' "%s"' % system_id
+                value += ' "{0!s}"'.format(system_id)
         elif system_id is not None:
-            value += ' SYSTEM "%s"' % system_id
+            value += ' SYSTEM "{0!s}"'.format(system_id)
 
         return Doctype(value)
 
@@ -993,14 +993,14 @@ class Tag(PageElement):
             # BS3: soup.aTag -> "soup.find("a")
             tag_name = tag[:-3]
             warnings.warn(
-                '.%sTag is deprecated, use .find("%s") instead.' % (
+                '.{0!s}Tag is deprecated, use .find("{1!s}") instead.'.format(
                     tag_name, tag_name))
             return self.find(tag_name)
         # We special case contents to avoid recursion.
         elif not tag.startswith("__") and not tag=="contents":
             return self.find(tag)
         raise AttributeError(
-            "'%s' object has no attribute '%s'" % (self.__class__, tag))
+            "'{0!s}' object has no attribute '{1!s}'".format(self.__class__, tag))
 
     def __eq__(self, other):
         """Returns true iff this tag has the same name, the same attributes,
@@ -1110,7 +1110,7 @@ class Tag(PageElement):
         if self.is_empty_element:
             close = '/'
         else:
-            closeTag = '</%s%s>' % (prefix, self.name)
+            closeTag = '</{0!s}{1!s}>'.format(prefix, self.name)
 
         pretty_print = self._should_pretty_print(indent_level)
         space = ''
@@ -1137,7 +1137,7 @@ class Tag(PageElement):
                 # Even if this particular tag is not pretty-printed,
                 # we should indent up to the start of the tag.
                 s.append(indent_space)
-            s.append('<%s%s%s%s>' % (
+            s.append('<{0!s}{1!s}{2!s}{3!s}>'.format(
                     prefix, self.name, attribute_string, close))
             if pretty_print:
                 s.append("\n")
@@ -1296,7 +1296,7 @@ class Tag(PageElement):
             for partial_selector in selector.split(','):
                 partial_selector = partial_selector.strip()
                 if partial_selector == '':
-                    raise ValueError('Invalid group selection syntax: %s' % selector)
+                    raise ValueError('Invalid group selection syntax: {0!s}'.format(selector))
                 candidates = self.select(partial_selector, limit=limit)
                 for candidate in candidates:
                     if candidate not in context:
@@ -1311,10 +1311,10 @@ class Tag(PageElement):
 
         if tokens[-1] in self._selector_combinators:
             raise ValueError(
-                'Final combinator "%s" is missing an argument.' % tokens[-1])
+                'Final combinator "{0!s}" is missing an argument.'.format(tokens[-1]))
 
         if self._select_debug:
-            print 'Running CSS selector "%s"' % selector
+            print 'Running CSS selector "{0!s}"'.format(selector)
 
         for index, token in enumerate(tokens):
             new_context = []
@@ -1327,7 +1327,7 @@ class Tag(PageElement):
                 continue
 
             if self._select_debug:
-                print ' Considering token "%s"' % token
+                print ' Considering token "{0!s}"'.format(token)
             recursive_candidate_generator = None
             tag_name = None
 
@@ -1423,7 +1423,7 @@ class Tag(PageElement):
                 tag_name = token
             else:
                 raise ValueError(
-                    'Unsupported or invalid CSS selector: "%s"' % token)
+                    'Unsupported or invalid CSS selector: "{0!s}"'.format(token))
             if recursive_candidate_generator:
                 # This happens when the selector looks like  "> foo".
                 #
@@ -1437,11 +1437,11 @@ class Tag(PageElement):
                 next_token = tokens[index+1]
                 def recursive_select(tag):
                     if self._select_debug:
-                        print '    Calling select("%s") recursively on %s %s' % (next_token, tag.name, tag.attrs)
+                        print '    Calling select("{0!s}") recursively on {1!s} {2!s}'.format(next_token, tag.name, tag.attrs)
                         print '-' * 40
                     for i in tag.select(next_token, recursive_candidate_generator):
                         if self._select_debug:
-                            print '(Recursive select picked up candidate %s %s)' % (i.name, i.attrs)
+                            print '(Recursive select picked up candidate {0!s} {1!s})'.format(i.name, i.attrs)
                         yield i
                     if self._select_debug:
                         print '-' * 40
@@ -1455,7 +1455,7 @@ class Tag(PageElement):
                         check = "[any]"
                     else:
                         check = tag_name
-                    print '   Default candidate generator, tag name="%s"' % check
+                    print '   Default candidate generator, tag name="{0!s}"'.format(check)
                 if self._select_debug:
                     # This is redundant with later code, but it stops
                     # a bunch of bogus tags from cluttering up the
@@ -1476,7 +1476,7 @@ class Tag(PageElement):
             count = 0
             for tag in current_context:
                 if self._select_debug:
-                    print "    Running candidate generator on %s %s" % (
+                    print "    Running candidate generator on {0!s} {1!s}".format(
                         tag.name, repr(tag.attrs))
                 for candidate in _use_candidate_generator(tag):
                     if not isinstance(candidate, Tag):
@@ -1492,7 +1492,7 @@ class Tag(PageElement):
                             break
                     if checker is None or result:
                         if self._select_debug:
-                            print "     SUCCESS %s %s" % (candidate.name, repr(candidate.attrs))
+                            print "     SUCCESS {0!s} {1!s}".format(candidate.name, repr(candidate.attrs))
                         if id(candidate) not in new_context_ids:
                             # If a tag matches a selector more than once,
                             # don't include it in the context more than once.
@@ -1501,7 +1501,7 @@ class Tag(PageElement):
                             if limit and len(new_context) >= limit:
                                 break
                     elif self._select_debug:
-                        print "     FAILURE %s %s" % (candidate.name, repr(candidate.attrs))
+                        print "     FAILURE {0!s} {1!s}".format(candidate.name, repr(candidate.attrs))
 
 
             current_context = new_context
@@ -1509,7 +1509,7 @@ class Tag(PageElement):
         if self._select_debug:
             print "Final verdict:"
             for i in current_context:
-                print " %s %s" % (i.name, i.attrs)
+                print " {0!s} {1!s}".format(i.name, i.attrs)
         return current_context
 
     # Old names for backwards compatibility
@@ -1523,8 +1523,8 @@ class Tag(PageElement):
         """This was kind of misleading because has_key() (attributes)
         was different from __in__ (contents). has_key() is gone in
         Python 3, anyway."""
-        warnings.warn('has_key is deprecated. Use has_attr("%s") instead.' % (
-                key))
+        warnings.warn('has_key is deprecated. Use has_attr("{0!s}") instead.'.format((
+                key)))
         return self.has_attr(key)
 
 # Next, a couple classes to represent queries and their results.
@@ -1593,7 +1593,7 @@ class SoupStrainer(object):
         if self.text:
             return self.text
         else:
-            return "%s|%s" % (self.name, self.attrs)
+            return "{0!s}|{1!s}".format(self.name, self.attrs)
 
     def search_tag(self, markup_name=None, markup_attrs={}):
         found = None
@@ -1659,7 +1659,7 @@ class SoupStrainer(object):
                 found = markup
         else:
             raise Exception(
-                "I don't know how to match against a %s" % markup.__class__)
+                "I don't know how to match against a {0!s}".format(markup.__class__))
         return found
 
     def _matches(self, markup, match_against):

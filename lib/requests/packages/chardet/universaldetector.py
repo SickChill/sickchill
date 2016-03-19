@@ -165,6 +165,5 @@ class UniversalDetector:
             for prober in self._mCharSetProbers[0].mProbers:
                 if not prober:
                     continue
-                sys.stderr.write('%s confidence = %s\n' %
-                                 (prober.get_charset_name(),
+                sys.stderr.write('{0!s} confidence = {1!s}\n'.format(prober.get_charset_name(),
                                   prober.get_confidence()))

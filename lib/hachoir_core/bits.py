@@ -257,8 +257,8 @@ def _createStructFormat():
     for struct_format in "BHILQ":
         try:
             size = calcsize(struct_format)
-            format[BIG_ENDIAN][size] = '>%s' % struct_format
-            format[LITTLE_ENDIAN][size] = '<%s' % struct_format
+            format[BIG_ENDIAN][size] = '>{0!s}'.format(struct_format)
+            format[LITTLE_ENDIAN][size] = '<{0!s}'.format(struct_format)
         except struct_error:
             pass
     return format

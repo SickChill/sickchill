@@ -240,22 +240,22 @@ class Queue(object):
             self._getters.popleft()
 
     def __repr__(self):
-        return '<%s at %s %s>' % (
+        return '<{0!s} at {1!s} {2!s}>'.format(
             type(self).__name__, hex(id(self)), self._format())
 
     def __str__(self):
-        return '<%s %s>' % (type(self).__name__, self._format())
+        return '<{0!s} {1!s}>'.format(type(self).__name__, self._format())
 
     def _format(self):
-        result = 'maxsize=%r' % (self.maxsize, )
+        result = 'maxsize={0!r}'.format(self.maxsize )
         if getattr(self, '_queue', None):
-            result += ' queue=%r' % self._queue
+            result += ' queue={0!r}'.format(self._queue)
         if self._getters:
-            result += ' getters[%s]' % len(self._getters)
+            result += ' getters[{0!s}]'.format(len(self._getters))
         if self._putters:
-            result += ' putters[%s]' % len(self._putters)
+            result += ' putters[{0!s}]'.format(len(self._putters))
         if self._unfinished_tasks:
-            result += ' tasks=%s' % self._unfinished_tasks
+            result += ' tasks={0!s}'.format(self._unfinished_tasks)
         return result
 
 

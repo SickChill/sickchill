@@ -37,7 +37,7 @@ class CacheController(object):
         """Normalize the URL to create a safe key for the cache"""
         (scheme, authority, path, query, fragment) = parse_uri(uri)
         if not scheme or not authority:
-            raise Exception("Only absolute URIs are allowed. uri = %s" % uri)
+            raise Exception("Only absolute URIs are allowed. uri = {0!s}".format(uri))
 
         scheme = scheme.lower()
         authority = authority.lower()

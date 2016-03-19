@@ -94,7 +94,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
                     logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to SKIPPED because is a special season")
                     ep.status = common.SKIPPED
                 else:
-                    logger.log(u"New episode %s airs today, setting to default episode status for this show: %s" % (ep.prettyName(), common.statusStrings[ep.show.default_ep_status]))
+                    logger.log(u"New episode {0!s} airs today, setting to default episode status for this show: {1!s}".format(ep.prettyName(), common.statusStrings[ep.show.default_ep_status]))
                     ep.status = ep.show.default_ep_status
 
                 sql_l.append(ep.get_sql())

@@ -84,7 +84,7 @@ class ItaSAProvider(Provider):
 
     def initialize(self):
         self.session = Session()
-        self.session.headers = {'User-Agent': 'Subliminal/%s' % __version__}
+        self.session.headers = {'User-Agent': 'Subliminal/{0!s}'.format(__version__)}
 
         # login
         if self.username is not None and self.password is not None:
@@ -218,7 +218,7 @@ class ItaSAProvider(Provider):
         # attempt with country
         if not show_id and country_code:
             logger.debug('Getting show id with country')
-            show_id = show_ids.get('%s %s' % (series_sanitized, country_code.lower()))
+            show_id = show_ids.get('{0!s} {1!s}'.format(series_sanitized, country_code.lower()))
 
         # attempt clean
         if not show_id:
@@ -274,7 +274,7 @@ class ItaSAProvider(Provider):
         params = {
             'apikey': self.apikey,
             'show_id': show_id,
-            'q': '%dx%02d' % (season, episode),
+            'q': '{0:d}x{1:02d}'.format(season, episode),
             'version': sub_format
             }
         logger.debug(params)
@@ -288,7 +288,7 @@ class ItaSAProvider(Provider):
 
         # Looking for subtitlles in first page
         for subtitle in root.findall('data/subtitles/subtitle'):
-            if '%dx%02d' % (season, episode) in subtitle.find('name').text.lower():
+            if '{0:d}x{1:02d}'.format(season, episode) in subtitle.find('name').text.lower():
 
                 logger.debug('Found subtitle id %d - %s - %s',
                              int(subtitle.find('id').text),
@@ -317,7 +317,7 @@ class ItaSAProvider(Provider):
 
             # Looking for show in following pages
             for subtitle in root.findall('data/subtitles/subtitle'):
-                if '%dx%02d' % (season, episode) in subtitle.find('name').text.lower():
+                if '{0:d}x{1:02d}'.format(season, episode) in subtitle.find('name').text.lower():
 
                     logger.debug('Found subtitle id %d - %s - %s',
                                  int(subtitle.find('id').text),
@@ -346,7 +346,7 @@ class ItaSAProvider(Provider):
                 if 'limite di download' in content:
                     raise TooManyRequests()
                 else:
-                    raise ConfigurationError('Not a zip file: %r' % content)
+                    raise ConfigurationError('Not a zip file: {0!r}'.format(content))
 
             with ZipFile(io.BytesIO(content)) as zf:
                 if len(zf.namelist()) > 1:

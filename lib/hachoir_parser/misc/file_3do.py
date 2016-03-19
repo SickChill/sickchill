@@ -58,7 +58,7 @@ class Face(FieldSet):
             yield UInt32(self, "material_index", "material index")
 
     def createDescription(self):
-        return "Face: id=%s" % self["id"].value
+        return "Face: id={0!s}".format(self["id"].value)
 
 class Mesh(FieldSet):
     def __init__(self, *args):
@@ -99,7 +99,7 @@ class Mesh(FieldSet):
         yield Vertex(self, "unknown[]")
 
     def createDescription(self):
-        return 'Mesh "%s" (id %s)' % (self["name"].value, self["id"].value)
+        return 'Mesh "{0!s}" (id {1!s})'.format(self["name"].value, self["id"].value)
 
 class Geoset(FieldSet):
     def createFields(self):
@@ -108,7 +108,7 @@ class Geoset(FieldSet):
             yield Mesh(self, "mesh[]")
 
     def createDescription(self):
-        return "Set of %s meshes" % self["count"].value
+        return "Set of {0!s} meshes".format(self["count"].value)
 
 class Node(FieldSet):
     def __init__(self, *args):
@@ -149,7 +149,7 @@ class Node(FieldSet):
             yield UInt32(self, "next_sibling_id")
 
     def createDescription(self):
-        return 'Node "%s"' % self["name"].value
+        return 'Node "{0!s}"'.format(self["name"].value)
 
 class Nodes(FieldSet):
     def createFields(self):
@@ -158,7 +158,7 @@ class Nodes(FieldSet):
             yield Node(self, "node[]")
 
     def createDescription(self):
-        return 'Nodes (%s)' % self["count"].value
+        return 'Nodes ({0!s})'.format(self["count"].value)
 
 class Materials(FieldSet):
     def __init__(self, *args):
@@ -172,7 +172,7 @@ class Materials(FieldSet):
             yield String(self, "filename[]", 32, "Material file name", strip="\0")
 
     def createDescription(self):
-        return 'Material file names (%s)' % self["count"].value
+        return 'Material file names ({0!s})'.format(self["count"].value)
 
 class File3do(Parser):
     PARSER_TAGS = {

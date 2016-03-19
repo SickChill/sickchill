@@ -54,7 +54,7 @@ class TiffFile(RootSeekableFieldSet, Parser):
     def validate(self):
         endian = self.stream.readBytes(0, 2)
         if endian not in ("MM", "II"):
-            return "Invalid endian (%r)" % endian
+            return "Invalid endian ({0!r})".format(endian)
         if self["version"].value != 42:
             return "Unknown TIFF version"
         return True

@@ -229,8 +229,7 @@ class CountStatements(AssertRule):
 
     def consume_final(self):
         assert self.count == self._statement_count, \
-            'desired statement count %d does not match %d' \
-            % (self.count, self._statement_count)
+            'desired statement count {0:d} does not match {1:d}'.format(self.count, self._statement_count)
         return True
 
 

@@ -5,7 +5,7 @@ def fault_tolerant(func, *args):
         try:
             func(*args, **kw)
         except HACHOIR_ERRORS, err:
-            warning("Error when calling function %s(): %s" % (
+            warning("Error when calling function {0!s}(): {1!s}".format(
                 func.__name__, err))
     return safe_func
 
@@ -15,7 +15,7 @@ def getFieldAttribute(fieldset, key, attrname):
         if field.hasValue():
             return getattr(field, attrname)
     except HACHOIR_ERRORS, err:
-        warning("Unable to get %s of field %s/%s: %s" % (
+        warning("Unable to get {0!s} of field {1!s}/{2!s}: {3!s}".format(
             attrname, fieldset.path, key, err))
     return None
 

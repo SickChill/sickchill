@@ -166,7 +166,7 @@ class DeflateBlock(FieldSet):
             yield Bits(self, "huff_num_code_length_codes", 4, "Number of Code Length Codes, minus 4")
             code_length_code_lengths = [0]*19 # confusing variable name...
             for i in self.CODE_LENGTH_ORDER[:self["huff_num_code_length_codes"].value+4]:
-                field = Bits(self, "huff_code_length_code[%i]" % i, 3, "Code lengths for the code length alphabet")
+                field = Bits(self, "huff_code_length_code[{0:d}]".format(i), 3, "Code lengths for the code length alphabet")
                 yield field
                 code_length_code_lengths[i] = field.value
             code_length_tree = build_tree(code_length_code_lengths)
@@ -176,11 +176,11 @@ class DeflateBlock(FieldSet):
                 (self["huff_num_length_codes"].value + 257, "length", length_code_lengths),
                 (self["huff_num_distance_codes"].value + 1, "distance", distance_code_lengths)):
                 while len(lengths) < numcodes:
-                    field = HuffmanCode(self, "huff_%s_code[]" % name, code_length_tree)
+                    field = HuffmanCode(self, "huff_{0!s}_code[]".format(name), code_length_tree)
                     value = field.realvalue
                     if value < 16:
                         prev_value = value
-                        field._description = "Literal Code Length %i (Huffman Code %i)" % (value, field.value)
+                        field._description = "Literal Code Length {0:d} (Huffman Code {1:d})".format(value, field.value)
                         yield field
                         lengths.append(value)
                     else:
@@ -191,11 +191,11 @@ class DeflateBlock(FieldSet):
                             repvalue = prev_value
                         else:
                             repvalue = 0
-                        field._description = "Repeat Code %i, Repeating value (%i) %i to %i times (Huffman Code %i)" % (value, repvalue, info[0], info[1], field.value)
+                        field._description = "Repeat Code {0:d}, Repeating value ({1:d}) {2:d} to {3:d} times (Huffman Code {4:d})".format(value, repvalue, info[0], info[1], field.value)
                         yield field
-                        extrafield = Bits(self, "huff_%s_code_extra[%s" % (name, field.name.split('[')[1]), info[2])
+                        extrafield = Bits(self, "huff_{0!s}_code_extra[{1!s}".format(name, field.name.split('[')[1]), info[2])
                         num_repeats = extrafield.value+info[0]
-                        extrafield._description = "Repeat Extra Bits (%i), total repeats %i"%(extrafield.value, num_repeats)
+                        extrafield._description = "Repeat Extra Bits ({0:d}), total repeats {1:d}".format(extrafield.value, num_repeats)
                         yield extrafield
                         lengths += [repvalue]*num_repeats
             length_tree = build_tree(length_code_lengths)
@@ -206,39 +206,39 @@ class DeflateBlock(FieldSet):
             field = HuffmanCode(self, "length_code[]", length_tree)
             value = field.realvalue
             if value < 256:
-                field._description = "Literal Code %r (Huffman Code %i)" % (chr(value), field.value)
+                field._description = "Literal Code {0!r} (Huffman Code {1:d})".format(chr(value), field.value)
                 yield field
                 self.uncomp_data += chr(value)
             if value == 256:
-                field._description = "Block Terminator Code (256) (Huffman Code %i)" % field.value
+                field._description = "Block Terminator Code (256) (Huffman Code {0:d})".format(field.value)
                 yield field
                 break
             elif value > 256:
                 info = self.LENGTH_SYMBOLS[value]
                 if info[2] == 0:
-                    field._description = "Length Code %i, Value %i (Huffman Code %i)" % (value, info[0], field.value)
+                    field._description = "Length Code {0:d}, Value {1:d} (Huffman Code {2:d})".format(value, info[0], field.value)
                     length = info[0]
                     yield field
                 else:
-                    field._description = "Length Code %i, Values %i to %i (Huffman Code %i)" % (value, info[0], info[1], field.value)
+                    field._description = "Length Code {0:d}, Values {1:d} to {2:d} (Huffman Code {3:d})".format(value, info[0], info[1], field.value)
                     yield field
-                    extrafield = Bits(self, "length_extra[%s" % field.name.split('[')[1], info[2])
+                    extrafield = Bits(self, "length_extra[{0!s}".format(field.name.split('[')[1]), info[2])
                     length = extrafield.value + info[0]
-                    extrafield._description = "Length Extra Bits (%i), total length %i"%(extrafield.value, length)
+                    extrafield._description = "Length Extra Bits ({0:d}), total length {1:d}".format(extrafield.value, length)
                     yield extrafield
                 field = HuffmanCode(self, "distance_code[]", distance_tree)
                 value = field.realvalue
                 info = self.DISTANCE_SYMBOLS[value]
                 if info[2] == 0:
-                    field._description = "Distance Code %i, Value %i (Huffman Code %i)" % (value, info[0], field.value)
+                    field._description = "Distance Code {0:d}, Value {1:d} (Huffman Code {2:d})".format(value, info[0], field.value)
                     distance = info[0]
                     yield field
                 else:
-                    field._description = "Distance Code %i, Values %i to %i (Huffman Code %i)" % (value, info[0], info[1], field.value)
+                    field._description = "Distance Code {0:d}, Values {1:d} to {2:d} (Huffman Code {3:d})".format(value, info[0], info[1], field.value)
                     yield field
-                    extrafield = Bits(self, "distance_extra[%s" % field.name.split('[')[1], info[2])
+                    extrafield = Bits(self, "distance_extra[{0!s}".format(field.name.split('[')[1]), info[2])
                     distance = extrafield.value + info[0]
-                    extrafield._description = "Distance Extra Bits (%i), total length %i"%(extrafield.value, distance)
+                    extrafield._description = "Distance Extra Bits ({0:d}), total length {1:d}".format(extrafield.value, distance)
                     yield extrafield
                 self.uncomp_data = extend_data(self.uncomp_data, length, distance)
 

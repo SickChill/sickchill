@@ -42,7 +42,7 @@ def build_date(date):
     day = date.get('day')
     year = date.get('year')
     if day and year:
-        return "%s %s" % (day, year)
+        return "{0!s} {1!s}".format(day, year)
     if day:
         return day
     if year:
@@ -261,8 +261,7 @@ class DOMHTMLBioParser(DOMParserBase):
                                 'bio': ".//text()",
                                 'by': ".//a[@name='ba']//text()"
                                 },
-                            postprocess=lambda x: "%s::%s" % \
-                                ((x.get('bio') or u'').split('- IMDb Mini Biography By:')[0].strip(),
+                            postprocess=lambda x: "{0!s}::{1!s}".format((x.get('bio') or u'').split('- IMDb Mini Biography By:')[0].strip(),
                                 (x.get('by') or u'').strip() or u'Anonymous'))),
             Extractor(label='spouse',
                         path="//div[h5='Spouse']/table/tr",
@@ -272,8 +271,7 @@ class DOMHTMLBioParser(DOMParserBase):
                                 'name': "./td[1]//text()",
                                 'info': "./td[2]//text()"
                                 },
-                            postprocess=lambda x: ("%s::%s" % \
-                                (x.get('name').strip(),
+                            postprocess=lambda x: ("{0!s}::{1!s}".format(x.get('name').strip(),
                                 (x.get('info') or u'').strip())).strip(':'))),
             Extractor(label='trade mark',
                         path="//div[h5='Trade Mark']/p",
@@ -301,8 +299,7 @@ class DOMHTMLBioParser(DOMParserBase):
                                 'title': "./td[1]//text()",
                                 'info': "./td[2]/text()",
                                 },
-                            postprocess=lambda x: "%s::%s" % \
-                                    (x.get('title').strip(),
+                            postprocess=lambda x: "{0!s}::{1!s}".format(x.get('title').strip(),
                                         x.get('info').strip()))),
             Extractor(label='where now',
                         path="//div[h5='Where Are They Now']/p",

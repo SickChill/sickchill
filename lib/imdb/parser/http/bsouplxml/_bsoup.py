@@ -424,7 +424,7 @@ class NavigableString(unicode, PageElement):
         if attr == 'string':
             return self
         else:
-            raise AttributeError, "'%s' object has no attribute '%s'" % (self.__class__.__name__, attr)
+            raise AttributeError, "'{0!s}' object has no attribute '{1!s}'".format(self.__class__.__name__, attr)
 
     def __unicode__(self):
         return str(self).decode(DEFAULT_OUTPUT_ENCODING)
@@ -438,22 +438,22 @@ class NavigableString(unicode, PageElement):
 class CData(NavigableString):
 
     def __str__(self, encoding=DEFAULT_OUTPUT_ENCODING):
-        return "<![CDATA[%s]]>" % NavigableString.__str__(self, encoding)
+        return "<![CDATA[{0!s}]]>".format(NavigableString.__str__(self, encoding))
 
 class ProcessingInstruction(NavigableString):
     def __str__(self, encoding=DEFAULT_OUTPUT_ENCODING):
         output = self
         if "%SOUP-ENCODING%" in output:
             output = self.substituteEncoding(output, encoding)
-        return "<?%s?>" % self.toEncoding(output, encoding)
+        return "<?{0!s}?>".format(self.toEncoding(output, encoding))
 
 class Comment(NavigableString):
     def __str__(self, encoding=DEFAULT_OUTPUT_ENCODING):
-        return "<!--%s-->" % NavigableString.__str__(self, encoding)
+        return "<!--{0!s}-->".format(NavigableString.__str__(self, encoding))
 
 class Declaration(NavigableString):
     def __str__(self, encoding=DEFAULT_OUTPUT_ENCODING):
-        return "<!%s>" % NavigableString.__str__(self, encoding)
+        return "<!{0!s}>".format(NavigableString.__str__(self, encoding))
 
 class Tag(PageElement):
 
@@ -486,7 +486,7 @@ class Tag(PageElement):
             if self.convertXMLEntities:
                 return self.XML_ENTITIES_TO_SPECIAL_CHARS[x]
             else:
-                return u'&%s;' % x
+                return u'&{0!s};'.format(x)
         elif len(x) > 0 and x[0] == '#':
             # Handle numeric entities
             if len(x) > 1 and x[1] == 'x':
@@ -495,9 +495,9 @@ class Tag(PageElement):
                 return unichr(int(x[1:]))
 
         elif self.escapeUnrecognizedEntities:
-            return u'&amp;%s;' % x
+            return u'&amp;{0!s};'.format(x)
         else:
-            return u'&%s;' % x
+            return u'&{0!s};'.format(x)
 
     def __init__(self, parser, name, attrs=None, parent=None,
                  previous=None):
@@ -592,7 +592,7 @@ class Tag(PageElement):
             return self.find(tag[:-3])
         elif tag.find('__') != 0:
             return self.find(tag)
-        raise AttributeError, "'%s' object has no attribute '%s'" % (self.__class__, tag)
+        raise AttributeError, "'{0!s}' object has no attribute '{1!s}'".format(self.__class__, tag)
 
     def __eq__(self, other):
         """Returns true iff this tag has the same name, the same attributes,
@@ -682,7 +682,7 @@ class Tag(PageElement):
         if self.isSelfClosing:
             close = ' /'
         else:
-            closeTag = '</%s>' % encodedName
+            closeTag = '</{0!s}>'.format(encodedName)
 
         indentTag, indentContents = 0, 0
         if prettyPrint:
@@ -699,7 +699,7 @@ class Tag(PageElement):
                 attributeString = ' ' + ' '.join(attrs)
             if prettyPrint:
                 s.append(space)
-            s.append('<%s%s%s>' % (encodedName, attributeString, close))
+            s.append('<{0!s}{1!s}{2!s}>'.format(encodedName, attributeString, close))
             if prettyPrint:
                 s.append("\n")
             s.append(contents)
@@ -842,7 +842,7 @@ class SoupStrainer:
         if self.text:
             return self.text
         else:
-            return "%s|%s" % (self.name, self.attrs)
+            return "{0!s}|{1!s}".format(self.name, self.attrs)
 
     def searchTag(self, markupName=None, markupAttrs={}):
         found = None
@@ -903,8 +903,7 @@ class SoupStrainer:
             if self._matches(markup, self.text):
                 found = markup
         else:
-            raise Exception, "I don't know how to match against a %s" \
-                  % markup.__class__
+            raise Exception, "I don't know how to match against a {0!s}".format(markup.__class__)
         return found
 
     def _matches(self, markup, matchAgainst):
@@ -1285,8 +1284,8 @@ class BeautifulStoneSoup(Tag, SGMLParser):
         if self.quoteStack:
             #This is not a real tag.
             #print "<%s> is not real!" % name
-            attrs = ''.join(map(lambda(x, y): ' %s="%s"' % (x, y), attrs))
-            self.handle_data('<%s%s>' % (name, attrs))
+            attrs = ''.join(map(lambda(x, y): ' {0!s}="{1!s}"'.format(x, y), attrs))
+            self.handle_data('<{0!s}{1!s}>'.format(name, attrs))
             return
         self.endData()
 
@@ -1315,7 +1314,7 @@ class BeautifulStoneSoup(Tag, SGMLParser):
         if self.quoteStack and self.quoteStack[-1] != name:
             #This is not a real end tag.
             #print "</%s> is not real!" % name
-            self.handle_data('</%s>' % name)
+            self.handle_data('</{0!s}>'.format(name))
             return
         self.endData()
         self._popToTag(name)
@@ -1350,7 +1349,7 @@ class BeautifulStoneSoup(Tag, SGMLParser):
         if self.convertEntities:
             data = unichr(int(ref))
         else:
-            data = '&#%s;' % ref
+            data = '&#{0!s};'.format(ref)
         self.handle_data(data)
 
     def handle_entityref(self, ref):
@@ -1385,7 +1384,7 @@ class BeautifulStoneSoup(Tag, SGMLParser):
                 #
                 # The more common case is a misplaced ampersand, so I
                 # escape the ampersand and omit the trailing semicolon.
-                data = "&amp;%s" % ref
+                data = "&amp;{0!s}".format(ref)
         if not data:
             # This case is different from the one above, because we
             # haven't already gone through a supposedly comprehensive
@@ -1393,7 +1392,7 @@ class BeautifulStoneSoup(Tag, SGMLParser):
             # have gone through any mapping at all. So the chances are
             # very high that this is a real entity, and not a
             # misplaced ampersand.
-            data = "&%s;" % ref
+            data = "&{0!s};".format(ref)
         self.handle_data(data)
 
     def handle_decl(self, data):
@@ -1759,9 +1758,9 @@ class UnicodeDammit:
         sub = self.MS_CHARS.get(orig)
         if type(sub) == types.TupleType:
             if self.smartQuotesTo == 'xml':
-                sub = '&#x%s;' % sub[1]
+                sub = '&#x{0!s};'.format(sub[1])
             else:
-                sub = '&%s;' % sub[0]
+                sub = '&{0!s};'.format(sub[0])
         return sub
 
     def _convertFrom(self, proposed):

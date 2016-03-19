@@ -209,7 +209,7 @@ class ID3v1(FieldSet):
 
     def createDescription(self):
         version = self.getVersion()
-        return "ID3 %s: author=%s, song=%s" % (
+        return "ID3 {0!s}: author={1!s}, song={2!s}".format(
             version, self["author"].value, self["song"].value)
 
 def getCharset(field):
@@ -217,7 +217,7 @@ def getCharset(field):
         key = field.value
         return ID3_StringCharset.charset_name[key]
     except KeyError:
-        raise ParserError("ID3v2: Invalid charset (%s)." % key)
+        raise ParserError("ID3v2: Invalid charset ({0!s}).".format(key))
 
 class ID3_String(FieldSet):
     STRIP = " \0"
@@ -441,7 +441,7 @@ class ID3_Chunk(FieldSet):
 
     def createDescription(self):
         if self["size"].value != 0:
-            return "ID3 Chunk: %s" % self["tag"].display
+            return "ID3 Chunk: {0!s}".format(self["tag"].display)
         else:
             return "ID3 Chunk: (terminator)"
 
@@ -466,8 +466,7 @@ class ID3v2(FieldSet):
             self._size = (self["size"].value + 10) * 8
 
     def createDescription(self):
-        return "ID3 v2.%s.%s" % \
-            (self["ver_major"].value, self["ver_minor"].value)
+        return "ID3 v2.{0!s}.{1!s}".format(self["ver_major"].value, self["ver_minor"].value)
 
     def createFields(self):
         # Signature + version
@@ -481,8 +480,7 @@ class ID3v2(FieldSet):
         if self["ver_major"].value not in self.VALID_MAJOR_VERSIONS \
         or self["ver_minor"].value != 0:
             raise MatchError(
-                "Unknown ID3 metadata version (2.%u.%u)"
-                % (self["ver_major"].value, self["ver_minor"].value))
+                "Unknown ID3 metadata version (2.{0:d}.{1:d})".format(self["ver_major"].value, self["ver_minor"].value))
 
         # Flags
         yield Bit(self, "unsync", "Unsynchronisation is used?")

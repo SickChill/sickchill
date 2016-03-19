@@ -42,7 +42,7 @@ class RootEntry(OLE2FragmentParser):
             return
         if property["size"].value >= ole2["header/threshold"].value:
             return
-        name = "%s[]" % name_prefix
+        name = "{0!s}[]".format(name_prefix)
         first = None
         previous = None
         size = 0
@@ -66,8 +66,8 @@ class RootEntry(OLE2FragmentParser):
             if first is None:
                 break
             self.seekSBlock(first)
-            desc = "Small blocks %s..%s (%s)" % (first, previous, previous-first+1)
-            desc += " of %s bytes" % (ole2.ss_size//8)
+            desc = "Small blocks {0!s}..{1!s} ({2!s})".format(first, previous, previous-first+1)
+            desc += " of {0!s} bytes".format((ole2.ss_size//8))
             field = CustomFragment(self, name, size, parser, desc, fragment_group)
             yield field
             if not fragment_group:
@@ -385,8 +385,8 @@ class PowerPointDocument(OLE2FragmentParser):
                     yield RawBytes(self, "data", obj_len)
         def createDescription(self):
             if self["version"].value==0xF:
-                return "PowerPoint Object Container; instance %s, type %s"%(self["instance"].value,self["type"].display)
-            return "PowerPoint Object; version %s, instance %s, type %s"%(self["version"].value,self["instance"].value,self["type"].display)
+                return "PowerPoint Object Container; instance {0!s}, type {1!s}".format(self["instance"].value, self["type"].display)
+            return "PowerPoint Object; version {0!s}, instance {1!s}, type {2!s}".format(self["version"].value, self["instance"].value, self["type"].display)
     ENDIAN_CHECK=False
     OS_CHECK=False
     def createFields(self):
@@ -728,7 +728,7 @@ class ExcelWorkbook(OLE2FragmentParser):
             if self["length"].value:
                 yield RawBytes(self, "data", self["length"].value)
         def createDescription(self):
-            return "Excel BIFF; type %s"%self["type"].display
+            return "Excel BIFF; type {0!s}".format(self["type"].display)
     def createFields(self):
         pos=0
         while pos//8 < self.datasize:
@@ -748,7 +748,7 @@ class ThumbsCatalog(OLE2FragmentParser):
             if self.current_size // 8 != self['size'].value:
                 yield RawBytes(self, "padding", self['size'].value - self.current_size // 8)
         def createDescription(self):
-            return "Thumbnail entry for %s"%self["name"].display
+            return "Thumbnail entry for {0!s}".format(self["name"].display)
 
     def createFields(self):
         yield UInt16(self, "unknown[]")

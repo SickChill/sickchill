@@ -54,7 +54,7 @@ class ZipMetadata(MultipleMetadata):
         max_nb = maxNbFile(self)
         for index, field in enumerate(zip.array("file")):
             if max_nb is not None and max_nb <= index:
-                self.warning("ZIP archive contains many files, but only first %s files are processed" % max_nb)
+                self.warning("ZIP archive contains many files, but only first {0!s} files are processed".format(max_nb))
                 break
             self.processFile(field)
 
@@ -73,14 +73,14 @@ class ZipMetadata(MultipleMetadata):
             if field["compressed_size"].value:
                 meta.compr_size = field["compressed_size"].value
         computeCompressionRate(meta)
-        self.addGroup(field.name, meta, "File \"%s\"" % meta.get('filename'))
+        self.addGroup(field.name, meta, "File \"{0!s}\"".format(meta.get('filename')))
 
 class TarMetadata(MultipleMetadata):
     def extract(self, tar):
         max_nb = maxNbFile(self)
         for index, field in enumerate(tar.array("file")):
             if max_nb is not None and max_nb <= index:
-                self.warning("TAR archive contains many files, but only first %s files are processed" % max_nb)
+                self.warning("TAR archive contains many files, but only first {0!s} files are processed".format(max_nb))
                 break
             meta = Metadata(self)
             self.extractFile(field, meta)
@@ -101,8 +101,7 @@ class TarMetadata(MultipleMetadata):
         except ValueError:
             pass
         meta.file_type = field["type"].display
-        meta.author = "%s (uid=%s), group %s (gid=%s)" %\
-            (field["uname"].value, field.getOctal("uid"),
+        meta.author = "{0!s} (uid={1!s}), group {2!s} (gid={3!s})".format(field["uname"].value, field.getOctal("uid"),
              field["gname"].value, field.getOctal("gid"))
 
 
@@ -110,13 +109,13 @@ class CabMetadata(MultipleMetadata):
     def extract(self, cab):
         if "folder[0]" in cab:
             self.useFolder(cab["folder[0]"])
-        self.format_version = "Microsoft Cabinet version %s.%s" % (cab["major_version"].display, cab["minor_version"].display)
-        self.comment = "%s folders, %s files" % (
+        self.format_version = "Microsoft Cabinet version {0!s}.{1!s}".format(cab["major_version"].display, cab["minor_version"].display)
+        self.comment = "{0!s} folders, {1!s} files".format(
             cab["nb_folder"].value, cab["nb_files"].value)
         max_nb = maxNbFile(self)
         for index, field in enumerate(cab.array("file")):
             if max_nb is not None and max_nb <= index:
-                self.warning("CAB archive contains many files, but only first %s files are processed" % max_nb)
+                self.warning("CAB archive contains many files, but only first {0!s} files are processed".format(max_nb))
                 break
             self.useFile(field)
 
@@ -124,7 +123,7 @@ class CabMetadata(MultipleMetadata):
     def useFolder(self, folder):
         compr = folder["compr_method"].display
         if folder["compr_method"].value != 0:
-            compr += " (level %u)" % folder["compr_level"].value
+            compr += " (level {0:d})".format(folder["compr_level"].value)
         self.compression = compr
 
     @fault_tolerant
@@ -144,18 +143,18 @@ class CabMetadata(MultipleMetadata):
 
 class MarMetadata(MultipleMetadata):
     def extract(self, mar):
-        self.comment = "Contains %s files" % mar["nb_file"].value
-        self.format_version = "Microsoft Archive version %s" % mar["version"].value
+        self.comment = "Contains {0!s} files".format(mar["nb_file"].value)
+        self.format_version = "Microsoft Archive version {0!s}".format(mar["version"].value)
         max_nb = maxNbFile(self)
         for index, field in enumerate(mar.array("file")):
             if max_nb is not None and max_nb <= index:
-                self.warning("MAR archive contains many files, but only first %s files are processed" % max_nb)
+                self.warning("MAR archive contains many files, but only first {0!s} files are processed".format(max_nb))
                 break
             meta = Metadata(self)
             meta.filename = field["filename"].value
             meta.compression = "None"
             meta.file_size = field["filesize"].value
-            self.addGroup(field.name, meta, "File \"%s\"" % meta.getText('filename'))
+            self.addGroup(field.name, meta, "File \"{0!s}\"".format(meta.getText('filename')))
 
 registerExtractor(CabFile, CabMetadata)
 registerExtractor(GzipParser, GzipMetadata)

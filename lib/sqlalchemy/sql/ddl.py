@@ -373,8 +373,8 @@ class DDL(DDLElement):
 
         if not isinstance(statement, util.string_types):
             raise exc.ArgumentError(
-                "Expected a string or unicode SQL statement, got '%r'" %
-                statement)
+                "Expected a string or unicode SQL statement, got '{0!r}'".format(
+                statement))
 
         self.statement = statement
         self.context = context or {}
@@ -384,10 +384,10 @@ class DDL(DDLElement):
         self._bind = bind
 
     def __repr__(self):
-        return '<%s@%s; %s>' % (
+        return '<{0!s}@{1!s}; {2!s}>'.format(
             type(self).__name__, id(self),
             ', '.join([repr(self.statement)] +
-                      ['%s=%r' % (key, getattr(self, key))
+                      ['{0!s}={1!r}'.format(key, getattr(self, key))
                        for key in ('on', 'context')
                        if getattr(self, key)]))
 

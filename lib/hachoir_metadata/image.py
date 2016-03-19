@@ -38,7 +38,7 @@ class BmpMetadata(RootMetadata):
                 self.nb_colors = hdr["used_colors"].value
             self.bits_per_pixel = bpp
         self.compression = hdr["compression"].display
-        self.format_version = u"Microsoft Bitmap version %s" % hdr.getFormatVersion()
+        self.format_version = u"Microsoft Bitmap version {0!s}".format(hdr.getFormatVersion())
 
         self.width_dpi = hdr["horizontal_dpi"].value
         self.height_dpi = hdr["vertical_dpi"].value
@@ -98,15 +98,15 @@ class IcoMetadata(MultipleMetadata):
                 % (1+index, image.get("width", "?"), image.get("height", "?")))
 
             # Read compression from data (if available)
-            key = "icon_data[%u]/header/codec" % index
+            key = "icon_data[{0:d}]/header/codec".format(index)
             if key in icon:
                 image.compression = icon[key].display
-            key = "icon_data[%u]/pixels" % index
+            key = "icon_data[{0:d}]/pixels".format(index)
             if key in icon:
                 computeComprRate(image, icon[key].size)
 
             # Store new image
-            self.addGroup("image[%u]" % index, image)
+            self.addGroup("image[{0:d}]".format(index), image)
 
 class PcxMetadata(RootMetadata):
     @fault_tolerant
@@ -119,7 +119,7 @@ class PcxMetadata(RootMetadata):
         if 1 <= pcx["bpp"].value <= 8:
             self.nb_colors = 2 ** pcx["bpp"].value
         self.compression = _("Run-length encoding (RLE)")
-        self.format_version = "PCX: %s" % pcx["version"].display
+        self.format_version = "PCX: {0!s}".format(pcx["version"].display)
         if "image_data" in pcx:
             computeComprRate(self, pcx["image_data"].size)
 
@@ -178,7 +178,7 @@ class PngMetadata(RootMetadata):
                 setattr(self, key, text)
             except KeyError:
                 if keyword.lower() != "comment":
-                    self.comment = "%s=%s" % (keyword, text)
+                    self.comment = "{0!s}={1!s}".format(keyword, text)
                 else:
                     self.comment = text
         compr_size = sum( data.size for data in png.array("data") )
@@ -227,7 +227,7 @@ class GifMetadata(RootMetadata):
         if self.has("bits_per_pixel"):
             self.nb_colors = (1 << self.get('bits_per_pixel'))
         self.compression = _("LZW")
-        self.format_version =  "GIF version %s" % gif["version"].value
+        self.format_version =  "GIF version {0!s}".format(gif["version"].value)
         for comments in gif.array("comments"):
             for comment in gif.array(comments.name + "/comment"):
                 self.comment = comment.value

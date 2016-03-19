@@ -46,7 +46,7 @@ COMPRESSION_METHOD = {
 }
 
 def ZipRevision(field):
-    return "%u.%u" % divmod(field.value, 10)
+    return "{0:d}.{1:d}".format(*divmod(field.value, 10))
 
 class ZipVersion(FieldSet):
     static_size = 16
@@ -191,7 +191,7 @@ class ZipCentralDirectory(FieldSet):
                          "Comment", charset=charset)
 
     def createDescription(self):
-        return "Central directory: %s" % self["filename"].display
+        return "Central directory: {0!s}".format(self["filename"].display)
 
 class Zip64EndCentralDirectory(FieldSet):
     HEADER = 0x06064b50
@@ -257,8 +257,8 @@ class FileEntry(FieldSet):
         size = self.stream.searchBytesLength(ZipDataDescriptor.HEADER_STRING, False,
                                             self.absolute_address+self.current_size)
         if size <= 0:
-            raise ParserError("Couldn't resync to %s" %
-                              ZipDataDescriptor.HEADER_STRING)
+            raise ParserError("Couldn't resync to {0!s}".format(
+                              ZipDataDescriptor.HEADER_STRING))
         yield self.data(size)
         yield textHandler(UInt32(self, "header[]", "Header"), hexadecimal)
         data_desc = ZipDataDescriptor(self, "data_desc", "Data descriptor")
@@ -268,8 +268,7 @@ class FileEntry(FieldSet):
         # than aborting
         if self["crc32"].value == 0 and \
             data_desc["file_compressed_size"].value != size:
-            raise ParserError("Bad resync: position=>%i but data_desc=>%i" %
-                              (size, data_desc["file_compressed_size"].value))
+            raise ParserError("Bad resync: position=>{0:d} but data_desc=>{1:d}".format(size, data_desc["file_compressed_size"].value))
 
     def createFields(self):
         for field in ZipStartCommonFields(self):
@@ -295,12 +294,11 @@ class FileEntry(FieldSet):
             yield ZipDataDescriptor(self, "data_desc", "Data descriptor")
 
     def createDescription(self):
-        return "File entry: %s (%s)" % \
-            (self["filename"].value, self["compressed_size"].display)
+        return "File entry: {0!s} ({1!s})".format(self["filename"].value, self["compressed_size"].display)
 
     def validate(self):
         if self["compression"].value not in COMPRESSION_METHOD:
-            return "Unknown compression method (%u)" % self["compression"].value
+            return "Unknown compression method ({0:d})".format(self["compression"].value)
         return ""
 
 class ZipSignature(FieldSet):
@@ -380,7 +378,7 @@ class ZipFile(Parser):
             return "Unable to get file #0"
         err = file0.validate()
         if err:
-            return "File #0: %s" % err
+            return "File #0: {0!s}".format(err)
         return True
 
     def createFields(self):
@@ -408,7 +406,7 @@ class ZipFile(Parser):
             elif header == Zip64EndCentralDirectoryLocator.HEADER:
                 yield Zip64EndCentralDirectoryLocator(self, "end_locator", "ZIP64 Enf of central directory locator")
             else:
-                raise ParserError("Error, unknown ZIP header (0x%08X)." % header)
+                raise ParserError("Error, unknown ZIP header (0x{0:08X}).".format(header))
 
     def createMimeType(self):
         if self["file[0]/filename"].value == "mimetype":

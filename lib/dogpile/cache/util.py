@@ -42,8 +42,7 @@ class PluginLoader(object):
                 return impl.load()
             else:
                 raise Exception(
-                    "Can't load plugin %s %s" %
-                    (self.group, name))
+                    "Can't load plugin {0!s} {1!s}".format(self.group, name))
 
     def register(self, name, modulepath, objname):
         def load():
@@ -66,9 +65,9 @@ def function_key_generator(namespace, fn, to_str=compat.string_type):
     """
 
     if namespace is None:
-        namespace = '%s:%s' % (fn.__module__, fn.__name__)
+        namespace = '{0!s}:{1!s}'.format(fn.__module__, fn.__name__)
     else:
-        namespace = '%s:%s|%s' % (fn.__module__, fn.__name__, namespace)
+        namespace = '{0!s}:{1!s}|{2!s}'.format(fn.__module__, fn.__name__, namespace)
 
     args = inspect.getargspec(fn)
     has_self = args[0] and args[0][0] in ('self', 'cls')
@@ -88,9 +87,9 @@ def function_key_generator(namespace, fn, to_str=compat.string_type):
 def function_multi_key_generator(namespace, fn, to_str=compat.string_type):
 
     if namespace is None:
-        namespace = '%s:%s' % (fn.__module__, fn.__name__)
+        namespace = '{0!s}:{1!s}'.format(fn.__module__, fn.__name__)
     else:
-        namespace = '%s:%s|%s' % (fn.__module__, fn.__name__, namespace)
+        namespace = '{0!s}:{1!s}|{2!s}'.format(fn.__module__, fn.__name__, namespace)
 
     args = inspect.getargspec(fn)
     has_self = args[0] and args[0][0] in ('self', 'cls')
@@ -186,7 +185,7 @@ class KeyReentrantMutex(object):
         current_thread = compat.threading.current_thread().ident
         keys = self.keys.get(current_thread)
         assert keys is not None, "this thread didn't do the acquire"
-        assert self.key in keys, "No acquire held for key '%s'" % self.key
+        assert self.key in keys, "No acquire held for key '{0!s}'".format(self.key)
         keys.remove(self.key)
         if not keys:
             # when list of keys empty, remove

@@ -247,8 +247,8 @@ class OpenIdMixin(object):
     def _on_authentication_verified(self, future, response):
         if response.error or b"is_valid:true" not in response.body:
             future.set_exception(AuthError(
-                "Invalid OpenID response: %s" % (response.error or
-                                                 response.body)))
+                "Invalid OpenID response: {0!s}".format((response.error or
+                                                 response.body))))
             return
 
         # Make sure we got back at least an email from attribute exchange
@@ -438,7 +438,7 @@ class OAuthMixin(object):
     def _on_request_token(self, authorize_url, callback_uri, callback,
                           response):
         if response.error:
-            raise Exception("Could not get request token: %s" % response.error)
+            raise Exception("Could not get request token: {0!s}".format(response.error))
         request_token = _oauth_parse_response(response.body)
         data = (base64.b64encode(escape.utf8(request_token["key"])) + b"|" +
                 base64.b64encode(escape.utf8(request_token["secret"])))
@@ -749,7 +749,7 @@ class TwitterMixin(OAuthMixin):
     def _on_twitter_request(self, future, response):
         if response.error:
             future.set_exception(AuthError(
-                "Error response %s fetching %s" % (response.error,
+                "Error response {0!s} fetching {1!s}".format(response.error,
                                                    response.request.url)))
             return
         future.set_result(escape.json_decode(response.body))
@@ -839,7 +839,7 @@ class GoogleOAuth2Mixin(OAuth2Mixin):
     def _on_access_token(self, future, response):
         """Callback function for the exchange to the access token."""
         if response.error:
-            future.set_exception(AuthError('Google auth error: %s' % str(response)))
+            future.set_exception(AuthError('Google auth error: {0!s}'.format(str(response))))
             return
 
         args = escape.json_decode(response.body)
@@ -911,7 +911,7 @@ class FacebookGraphMixin(OAuth2Mixin):
     def _on_access_token(self, redirect_uri, client_id, client_secret,
                          future, fields, response):
         if response.error:
-            future.set_exception(AuthError('Facebook auth error: %s' % str(response)))
+            future.set_exception(AuthError('Facebook auth error: {0!s}'.format(str(response))))
             return
 
         args = escape.parse_qs_bytes(escape.native_str(response.body))
@@ -1004,8 +1004,7 @@ class FacebookGraphMixin(OAuth2Mixin):
 
     def _on_facebook_request(self, future, response):
         if response.error:
-            future.set_exception(AuthError("Error response %s fetching %s" %
-                                           (response.error, response.request.url)))
+            future.set_exception(AuthError("Error response {0!s} fetching {1!s}".format(response.error, response.request.url)))
             return
 
         future.set_result(escape.json_decode(response.body))
@@ -1031,7 +1030,7 @@ def _oauth_signature(consumer_token, method, url, parameters={}, token=None):
     base_elems = []
     base_elems.append(method.upper())
     base_elems.append(normalized_url)
-    base_elems.append("&".join("%s=%s" % (k, _oauth_escape(str(v)))
+    base_elems.append("&".join("{0!s}={1!s}".format(k, _oauth_escape(str(v)))
                                for k, v in sorted(parameters.items())))
     base_string = "&".join(_oauth_escape(e) for e in base_elems)
 
@@ -1055,7 +1054,7 @@ def _oauth10a_signature(consumer_token, method, url, parameters={}, token=None):
     base_elems = []
     base_elems.append(method.upper())
     base_elems.append(normalized_url)
-    base_elems.append("&".join("%s=%s" % (k, _oauth_escape(str(v)))
+    base_elems.append("&".join("{0!s}={1!s}".format(k, _oauth_escape(str(v)))
                                for k, v in sorted(parameters.items())))
 
     base_string = "&".join(_oauth_escape(e) for e in base_elems)

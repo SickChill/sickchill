@@ -45,5 +45,5 @@ def rebuildmo():
 
 if __name__ == '__main__':
     languages = rebuildmo()
-    print 'Created locale for: %s.' % ' '.join(languages)
+    print 'Created locale for: {0!s}.'.format(' '.join(languages))
 

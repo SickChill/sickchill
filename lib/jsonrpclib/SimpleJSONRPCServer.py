@@ -26,13 +26,13 @@ def get_version(request):
 def validate_request(request):
     if type(request) is not types.DictType:
         fault = Fault(
-            -32600, 'Request must be {}, not %s.' % type(request)
+            -32600, 'Request must be {{}}, not {0!s}.'.format(type(request))
         )
         return fault
     rpcid = request.get('id', None)
     version = get_version(request)
     if not version:
-        fault = Fault(-32600, 'Request %s invalid.' % request, rpcid=rpcid)
+        fault = Fault(-32600, 'Request {0!s} invalid.'.format(request), rpcid=rpcid)
         return fault        
     request.setdefault('params', [])
     method = request.get('method', None)
@@ -58,7 +58,7 @@ class SimpleJSONRPCDispatcher(SimpleXMLRPCServer.SimpleXMLRPCDispatcher):
         try:
             request = jsonrpclib.loads(data)
         except Exception, e:
-            fault = Fault(-32700, 'Request %s invalid. (%s)' % (data, e))
+            fault = Fault(-32700, 'Request {0!s} invalid. ({1!s})'.format(data, e))
             response = fault.response()
             return response
         if not request:
@@ -76,7 +76,7 @@ class SimpleJSONRPCDispatcher(SimpleXMLRPCServer.SimpleXMLRPCDispatcher):
                 if resp_entry is not None:
                     responses.append(resp_entry)
             if len(responses) > 0:
-                response = '[%s]' % ','.join(responses)
+                response = '[{0!s}]'.format(','.join(responses))
             else:
                 response = ''
         else:    
@@ -97,7 +97,7 @@ class SimpleJSONRPCDispatcher(SimpleXMLRPCServer.SimpleXMLRPCDispatcher):
             response = self._dispatch(method, params)
         except:
             exc_type, exc_value, exc_tb = sys.exc_info()
-            fault = Fault(-32603, '%s:%s' % (exc_type, exc_value))
+            fault = Fault(-32603, '{0!s}:{1!s}'.format(exc_type, exc_value))
             return fault.response()
         if 'id' not in request.keys() or request['id'] == None:
             # It's a notification
@@ -110,7 +110,7 @@ class SimpleJSONRPCDispatcher(SimpleXMLRPCServer.SimpleXMLRPCDispatcher):
             return response
         except:
             exc_type, exc_value, exc_tb = sys.exc_info()
-            fault = Fault(-32603, '%s:%s' % (exc_type, exc_value))
+            fault = Fault(-32603, '{0!s}:{1!s}'.format(exc_type, exc_value))
             return fault.response()
 
     def _dispatch(self, method, params):
@@ -141,12 +141,12 @@ class SimpleJSONRPCDispatcher(SimpleXMLRPCServer.SimpleXMLRPCDispatcher):
                 return Fault(-32602, 'Invalid parameters.')
             except:
                 err_lines = traceback.format_exc().splitlines()
-                trace_string = '%s | %s' % (err_lines[-3], err_lines[-1])
-                fault = jsonrpclib.Fault(-32603, 'Server error: %s' % 
-                                         trace_string)
+                trace_string = '{0!s} | {1!s}'.format(err_lines[-3], err_lines[-1])
+                fault = jsonrpclib.Fault(-32603, 'Server error: {0!s}'.format( 
+                                         trace_string))
                 return fault
         else:
-            return Fault(-32601, 'Method %s not supported.' % method)
+            return Fault(-32601, 'Method {0!s} not supported.'.format(method))
 
 class SimpleJSONRPCRequestHandler(
         SimpleXMLRPCServer.SimpleXMLRPCRequestHandler):
@@ -169,8 +169,8 @@ class SimpleJSONRPCRequestHandler(
         except Exception, e:
             self.send_response(500)
             err_lines = traceback.format_exc().splitlines()
-            trace_string = '%s | %s' % (err_lines[-3], err_lines[-1])
-            fault = jsonrpclib.Fault(-32603, 'Server error: %s' % trace_string)
+            trace_string = '{0!s} | {1!s}'.format(err_lines[-3], err_lines[-1])
+            fault = jsonrpclib.Fault(-32603, 'Server error: {0!s}'.format(trace_string))
             response = fault.response()
         if response == None:
             response = ''
@@ -222,7 +222,7 @@ class CGIJSONRPCRequestHandler(SimpleJSONRPCDispatcher):
     def handle_jsonrpc(self, request_text):
         response = self._marshaled_dispatch(request_text)
         print 'Content-Type: application/json-rpc'
-        print 'Content-Length: %d' % len(response)
+        print 'Content-Length: {0:d}'.format(len(response))
         print
         sys.stdout.write(response)
 

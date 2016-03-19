@@ -153,7 +153,7 @@ class _ms_numeric_pyodbc(object):
     # as of 2.1.8 this logic is integrated.
 
     def _small_dec_to_string(self, value):
-        return "%s0.%s%s" % (
+        return "{0!s}0.{1!s}{2!s}".format(
                     (value < 0 and '-' or ''),
                     '0' * (abs(value.adjusted()) - 1),
                     "".join([str(nint) for nint in value.as_tuple()[1]]))
@@ -161,20 +161,20 @@ class _ms_numeric_pyodbc(object):
     def _large_dec_to_string(self, value):
         _int = value.as_tuple()[1]
         if 'E' in str(value):
-            result = "%s%s%s" % (
+            result = "{0!s}{1!s}{2!s}".format(
                     (value < 0 and '-' or ''),
                     "".join([str(s) for s in _int]),
                     "0" * (value.adjusted() - (len(_int) - 1)))
         else:
             if (len(_int) - 1) > value.adjusted():
-                result = "%s%s.%s" % (
+                result = "{0!s}{1!s}.{2!s}".format(
                 (value < 0 and '-' or ''),
                 "".join(
                     [str(s) for s in _int][0:value.adjusted() + 1]),
                 "".join(
                     [str(s) for s in _int][value.adjusted() + 1:]))
             else:
-                result = "%s%s" % (
+                result = "{0!s}{1!s}".format(
                 (value < 0 and '-' or ''),
                 "".join(
                     [str(s) for s in _int][0:value.adjusted() + 1]))

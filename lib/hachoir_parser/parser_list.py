@@ -25,14 +25,13 @@ class ParserList(object):
             return isinstance(value, (str, unicode)) and bool(value) or "Invalid description"
         elif name == "category":
             if value not in self.VALID_CATEGORY:
-                return "Invalid category: %r" % value
+                return "Invalid category: {0!r}".format(value)
         elif name == "id":
             if type(value) is not str or not self.ID_REGEX.match(value):
-                return "Invalid identifier: %r" % value
+                return "Invalid identifier: {0!r}".format(value)
             parser = self.bytag[name].get(value)
             if parser:
-                return "Duplicate parser id: %s already used by %s" % \
-                    (value, parser[0].__name__)
+                return "Duplicate parser id: {0!s} already used by {1!s}".format(value, parser[0].__name__)
         # TODO: lists should be forbidden
         if isinstance(value, list):
             value = tuple(value)
@@ -55,7 +54,7 @@ class ParserList(object):
             return "MIME type is not a tuple"
         for mime in mimes:
             if not isinstance(mime, unicode):
-                return "MIME type %r is not an unicode string" % mime
+                return "MIME type {0!r} is not an unicode string".format(mime)
 
         return ""
 
@@ -63,7 +62,7 @@ class ParserList(object):
         tags = parser.getParserTags()
         err = self.validParser(parser, tags)
         if err:
-            error("Skip parser %s: %s" % (parser.__name__, err))
+            error("Skip parser {0!s}: {1!s}".format(parser.__name__, err))
             return
 
         _tags = []
@@ -72,7 +71,7 @@ class ParserList(object):
             if isinstance(tag, tuple):
                 _tags.append(tag)
             elif tag is not True:
-                error("[%s] %s" % (parser.__name__, tag))
+                error("[{0!s}] {1!s}".format(parser.__name__, tag))
                 return
 
         self.parser_list.append(parser)
@@ -116,19 +115,19 @@ class ParserList(object):
             # Print list
             text = ", ".join( str(item) for item in extensions )
             if format == "file-ext":
-                print >>out, "File extensions: %s." % text
+                print >>out, "File extensions: {0!s}.".format(text)
                 print >>out
-                print >>out, "Total: %s file extensions." % len(extensions)
+                print >>out, "Total: {0!s} file extensions.".format(len(extensions))
             else:
-                print >>out, "MIME types: %s." % text
+                print >>out, "MIME types: {0!s}.".format(text)
                 print >>out
-                print >>out, "Total: %s MIME types." % len(extensions)
+                print >>out, "Total: {0!s} MIME types.".format(len(extensions))
             return
 
         if format == "trac":
             print >>out, "== List of parsers =="
             print >>out
-            print >>out, "Total: %s parsers" % len(self.parser_list)
+            print >>out, "Total: {0!s} parsers".format(len(self.parser_list))
             print >>out
         elif format == "one_line":
             if title:
@@ -143,35 +142,35 @@ class ParserList(object):
             if format == "one_line":
                 parser_list = [ parser.PARSER_TAGS["id"] for parser in bycategory[category] ]
                 parser_list.sort()
-                print >>out, "- %s: %s" % (category.title(), ", ".join(parser_list))
+                print >>out, "- {0!s}: {1!s}".format(category.title(), ", ".join(parser_list))
             else:
                 if format == "rest":
                     print >>out, category.replace("_", " ").title()
                     print >>out, "-" * len(category)
                     print >>out
                 elif format == "trac":
-                    print >>out, "=== %s ===" % category.replace("_", " ").title()
+                    print >>out, "=== {0!s} ===".format(category.replace("_", " ").title())
                     print >>out
                 else:
-                    print >>out, "[%s]" % category
+                    print >>out, "[{0!s}]".format(category)
                 parser_list = sorted(bycategory[category],
                     key=lambda parser: parser.PARSER_TAGS["id"])
                 if format == "rest":
                     for parser in parser_list:
                         tags = parser.getParserTags()
-                        print >>out, "* %s: %s" % (tags["id"], tags["description"])
+                        print >>out, "* {0!s}: {1!s}".format(tags["id"], tags["description"])
                 elif format == "trac":
                     for parser in parser_list:
                         tags = parser.getParserTags()
                         desc = tags["description"]
                         desc = re.sub(r"([A-Z][a-z]+[A-Z][^ ]+)", r"!\1", desc)
-                        print >>out, " * %s: %s" % (tags["id"], desc)
+                        print >>out, " * {0!s}: {1!s}".format(tags["id"], desc)
                 else:
                     for parser in parser_list:
                         parser.print_(out, verbose)
                 print >>out
         if format != "trac":
-            print >>out, "Total: %s parsers" % len(self.parser_list)
+            print >>out, "Total: {0!s} parsers".format(len(self.parser_list))
 
 
 class HachoirParserList(ParserList):

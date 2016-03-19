@@ -174,7 +174,7 @@ def parse_uri(uri):
 def urlnorm(uri):
     (scheme, authority, path, query, fragment) = parse_uri(uri)
     if not scheme or not authority:
-        raise RelativeURIError("Only absolute URIs are allowed. uri = %s" % uri)
+        raise RelativeURIError("Only absolute URIs are allowed. uri = {0!s}".format(uri))
     authority = authority.lower()
     scheme = scheme.lower()
     if not path: 
@@ -382,7 +382,7 @@ def _updateCache(request_headers, response_headers, content, cache, cachekey):
             if vary:
                 vary_headers = vary.lower().replace(' ', '').split(',')
                 for header in vary_headers:
-                    key = '-varied-%s' % header
+                    key = '-varied-{0!s}'.format(header)
                     try:
                         info[key] = request_headers[header]
                     except KeyError:
@@ -392,7 +392,7 @@ def _updateCache(request_headers, response_headers, content, cache, cachekey):
             if status == 304:
                 status = 200
 
-            status_header = 'status: %d\r\n' % response_headers.status
+            status_header = 'status: {0:d}\r\n'.format(response_headers.status)
 
             header_str = info.as_string()
 
@@ -402,11 +402,11 @@ def _updateCache(request_headers, response_headers, content, cache, cachekey):
             cache.set(cachekey, text)
 
 def _cnonce():
-    dig = _md5("%s:%s" % (time.ctime(), ["0123456789"[random.randrange(0, 9)] for i in range(20)])).hexdigest()
+    dig = _md5("{0!s}:{1!s}".format(time.ctime(), ["0123456789"[random.randrange(0, 9)] for i in range(20)])).hexdigest()
     return dig[:16]
 
 def _wsse_username_token(cnonce, iso_now, password):
-    return base64.b64encode(_sha("%s%s%s" % (cnonce, iso_now, password)).digest()).strip()
+    return base64.b64encode(_sha("{0!s}{1!s}{2!s}".format(cnonce, iso_now, password)).digest()).strip()
 
 
 # For credentials we need two things, first 
@@ -458,7 +458,7 @@ class BasicAuthentication(Authentication):
     def request(self, method, request_uri, headers, content):
         """Modify the request headers to add the appropriate
         Authorization header."""
-        headers['authorization'] = 'Basic ' + base64.b64encode("%s:%s" % self.credentials).strip()
+        headers['authorization'] = 'Basic ' + base64.b64encode("{0!s}:{1!s}".format(*self.credentials)).strip()
 
 
 class DigestAuthentication(Authentication):
@@ -471,25 +471,25 @@ class DigestAuthentication(Authentication):
         qop = self.challenge.get('qop', 'auth')
         self.challenge['qop'] = ('auth' in [x.strip() for x in qop.split()]) and 'auth' or None
         if self.challenge['qop'] is None:
-            raise UnimplementedDigestAuthOptionError( _("Unsupported value for qop: %s." % qop))
+            raise UnimplementedDigestAuthOptionError( _("Unsupported value for qop: {0!s}.".format(qop)))
         self.challenge['algorithm'] = self.challenge.get('algorithm', 'MD5').upper()
         if self.challenge['algorithm'] != 'MD5':
-            raise UnimplementedDigestAuthOptionError( _("Unsupported value for algorithm: %s." % self.challenge['algorithm']))
+            raise UnimplementedDigestAuthOptionError( _("Unsupported value for algorithm: {0!s}.".format(self.challenge['algorithm'])))
         self.A1 = "".join([self.credentials[0], ":", self.challenge['realm'], ":", self.credentials[1]])   
         self.challenge['nc'] = 1
 
     def request(self, method, request_uri, headers, content, cnonce = None):
         """Modify the request headers"""
         H = lambda x: _md5(x).hexdigest()
-        KD = lambda s, d: H("%s:%s" % (s, d))
+        KD = lambda s, d: H("{0!s}:{1!s}".format(s, d))
         A2 = "".join([method, ":", request_uri])
         self.challenge['cnonce'] = cnonce or _cnonce() 
-        request_digest  = '"%s"' % KD(H(self.A1), "%s:%s:%s:%s:%s" % (self.challenge['nonce'], 
-                    '%08x' % self.challenge['nc'], 
+        request_digest  = '"{0!s}"'.format(KD(H(self.A1), "{0!s}:{1!s}:{2!s}:{3!s}:{4!s}".format(self.challenge['nonce'], 
+                    '{0:08x}'.format(self.challenge['nc']), 
                     self.challenge['cnonce'], 
                     self.challenge['qop'], H(A2)
-                    )) 
-        headers['Authorization'] = 'Digest username="%s", realm="%s", nonce="%s", uri="%s", algorithm=%s, response=%s, qop=%s, nc=%08x, cnonce="%s"' % (
+                    ))) 
+        headers['Authorization'] = 'Digest username="{0!s}", realm="{1!s}", nonce="{2!s}", uri="{3!s}", algorithm={4!s}, response={5!s}, qop={6!s}, nc={7:08x}, cnonce="{8!s}"'.format(
                 self.credentials[0], 
                 self.challenge['realm'],
                 self.challenge['nonce'],
@@ -498,7 +498,7 @@ class DigestAuthentication(Authentication):
                 request_digest,
                 self.challenge['qop'],
                 self.challenge['nc'],
-                self.challenge['cnonce'],
+                self.challenge['cnonce']
                 )
         self.challenge['nc'] += 1
 
@@ -535,10 +535,10 @@ class HmacDigestAuthentication(Authentication):
             raise UnimplementedHmacDigestAuthOptionError( _("The challenge doesn't contain a server nonce, or this one is empty."))
         self.challenge['algorithm'] = self.challenge.get('algorithm', 'HMAC-SHA-1')
         if self.challenge['algorithm'] not in ['HMAC-SHA-1', 'HMAC-MD5']:
-            raise UnimplementedHmacDigestAuthOptionError( _("Unsupported value for algorithm: %s." % self.challenge['algorithm']))
+            raise UnimplementedHmacDigestAuthOptionError( _("Unsupported value for algorithm: {0!s}.".format(self.challenge['algorithm'])))
         self.challenge['pw-algorithm'] = self.challenge.get('pw-algorithm', 'SHA-1')
         if self.challenge['pw-algorithm'] not in ['SHA-1', 'MD5']:
-            raise UnimplementedHmacDigestAuthOptionError( _("Unsupported value for pw-algorithm: %s." % self.challenge['pw-algorithm']))
+            raise UnimplementedHmacDigestAuthOptionError( _("Unsupported value for pw-algorithm: {0!s}.".format(self.challenge['pw-algorithm'])))
         if self.challenge['algorithm'] == 'HMAC-MD5':
             self.hashmod = _md5
         else:
@@ -556,13 +556,13 @@ class HmacDigestAuthentication(Authentication):
     def request(self, method, request_uri, headers, content):
         """Modify the request headers"""
         keys = _get_end2end_headers(headers)
-        keylist = "".join(["%s " % k for k in keys])
+        keylist = "".join(["{0!s} ".format(k) for k in keys])
         headers_val = "".join([headers[k] for k in keys])
         created = time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
         cnonce = _cnonce()
-        request_digest = "%s:%s:%s:%s:%s" % (method, request_uri, cnonce, self.challenge['snonce'], headers_val)
+        request_digest = "{0!s}:{1!s}:{2!s}:{3!s}:{4!s}".format(method, request_uri, cnonce, self.challenge['snonce'], headers_val)
         request_digest  = hmac.new(self.key, request_digest, self.hashmod).hexdigest().lower()
-        headers['Authorization'] = 'HMACDigest username="%s", realm="%s", snonce="%s", cnonce="%s", uri="%s", created="%s", response="%s", headers="%s"' % (
+        headers['Authorization'] = 'HMACDigest username="{0!s}", realm="{1!s}", snonce="{2!s}", cnonce="{3!s}", uri="{4!s}", created="{5!s}", response="{6!s}", headers="{7!s}"'.format(
                 self.credentials[0], 
                 self.challenge['realm'],
                 self.challenge['snonce'],
@@ -570,7 +570,7 @@ class HmacDigestAuthentication(Authentication):
                 request_uri, 
                 created,
                 request_digest,
-                keylist,
+                keylist
                 )
 
     def response(self, response, content):
@@ -598,7 +598,7 @@ class WsseAuthentication(Authentication):
         iso_now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         cnonce = _cnonce()
         password_digest = _wsse_username_token(cnonce, iso_now, self.credentials[1])
-        headers['X-WSSE'] = 'UsernameToken Username="%s", PasswordDigest="%s", Nonce="%s", Created="%s"' % (
+        headers['X-WSSE'] = 'UsernameToken Username="{0!s}", PasswordDigest="{1!s}", Nonce="{2!s}", Created="{3!s}"'.format(
                 self.credentials[0],
                 password_digest,
                 cnonce,
@@ -741,7 +741,7 @@ class HTTPConnectionWithTimeout(httplib.HTTPConnection):
                     self.sock.settimeout(self.timeout)
                     # End of difference from httplib.
                 if self.debuglevel > 0:
-                    print "connect: (%s, %s)" % (self.host, self.port)
+                    print "connect: ({0!s}, {1!s})".format(self.host, self.port)
 
                 self.sock.connect(sa)
             except socket.error, msg:
@@ -872,7 +872,7 @@ the same interface as FileCache."""
                 raise
             except socket.gaierror:
                 conn.close()
-                raise ServerNotFoundError("Unable to find the server at %s" % conn.host)
+                raise ServerNotFoundError("Unable to find the server at {0!s}".format(conn.host))
             except ssl_SSLError:
                 conn.close()
                 raise
@@ -1023,7 +1023,7 @@ a string that contains the response entity body.
                 headers = self._normalize_headers(headers)
 
             if not headers.has_key('user-agent'):
-                headers['user-agent'] = "Python-httplib2/%s" % __version__
+                headers['user-agent'] = "Python-httplib2/{0!s}".format(__version__)
 
             uri = iri2uri(uri)
 
@@ -1088,7 +1088,7 @@ a string that contains the response entity body.
                 vary = info['vary']
                 vary_headers = vary.lower().replace(' ', '').split(',')
                 for header in vary_headers:
-                    key = '-varied-%s' % header
+                    key = '-varied-{0!s}'.format(header)
                     value = info[key]
                     if headers.get(header, '') != value:
                             cached_value = None

@@ -44,7 +44,7 @@ class ImagePixels(FieldSet):
 
     def createFields(self):
         for y in xrange(self._height-1, -1, -1):
-            yield ImageLine(self, "line[%u]" % y, self._width, self._pixel)
+            yield ImageLine(self, "line[{0:d}]".format(y), self._width, self._pixel)
         size = (self.size - self.current_size) // 8
         if size:
             yield NullBytes(self, "padding", size)
@@ -151,7 +151,7 @@ class BmpFile(Parser):
         if self.stream.readBytes(0, 2) != 'BM':
             return "Wrong file signature"
         if self["header/header_size"].value not in (12, 40, 108):
-            return "Unknown header size (%s)" % self["header_size"].value
+            return "Unknown header size ({0!s})".format(self["header_size"].value)
         if self["header/nb_plan"].value != 1:
             return "Invalid number of planes"
         return True
@@ -188,7 +188,7 @@ class BmpFile(Parser):
         yield parseImageData(self, "pixels", size, header)
 
     def createDescription(self):
-        return u"Microsoft Bitmap version %s" % self["header"].getFormatVersion()
+        return u"Microsoft Bitmap version {0!s}".format(self["header"].getFormatVersion())
 
     def createContentSize(self):
         return self["file_size"].value * 8

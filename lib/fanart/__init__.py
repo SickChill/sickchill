@@ -9,9 +9,9 @@ __classifiers__ = [
     'Topic :: Internet :: WWW/HTTP',
     'Topic :: Software Development :: Libraries',
 ]
-__copyright__ = "2012, %s " % __author__
+__copyright__ = "2012, {0!s} ".format(__author__)
 __license__ = """
-   Copyright %s.
+   Copyright {0!s}.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -24,18 +24,18 @@ __license__ = """
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-""" % __copyright__
+""".format(__copyright__)
 
 __docformat__ = 'restructuredtext en'
 
 __doc__ = """
 :abstract: Python interface to fanart.tv API
-:version: %s
-:author: %s
+:version: {0!s}
+:author: {1!s}
 :contact: http://z4r.github.com/
 :date: 2012-04-04
-:copyright: %s
-""" % (__version__, __author__, __license__)
+:copyright: {2!s}
+""".format(__version__, __author__, __license__)
 
 
 def values(obj):

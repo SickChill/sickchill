@@ -172,10 +172,10 @@ def instance_logger(instance, echoflag=None):
     """create a logger for an instance that implements :class:`.Identified`."""
 
     if instance.logging_name:
-        name = "%s.%s.%s" % (instance.__class__.__module__,
+        name = "{0!s}.{1!s}.{2!s}".format(instance.__class__.__module__,
                       instance.__class__.__name__, instance.logging_name)
     else:
-        name = "%s.%s" % (instance.__class__.__module__,
+        name = "{0!s}.{1!s}".format(instance.__class__.__module__,
                   instance.__class__.__name__)
 
     instance._echo = echoflag

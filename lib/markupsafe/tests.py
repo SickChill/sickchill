@@ -77,7 +77,7 @@ class MarkupTestCase(unittest.TestCase):
              '&lt;bar/&gt;'),
             (Markup('{0[1][bar]}').format([0, {'bar': Markup('<bar/>')}]),
              '<bar/>')):
-            assert actual == expected, "%r should be %r!" % (actual, expected)
+            assert actual == expected, "{0!r} should be {1!r}!".format(actual, expected)
 
     # This is new in 2.7
     if sys.version_info >= (2, 7):

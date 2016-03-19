@@ -47,7 +47,7 @@ class MSExecutionContext_zxjdbc(MSExecutionContext):
         if self._enable_identity_insert:
             table = self.dialect.identifier_preparer.format_table(
                                         self.compiled.statement.table)
-            self.cursor.execute("SET IDENTITY_INSERT %s OFF" % table)
+            self.cursor.execute("SET IDENTITY_INSERT {0!s} OFF".format(table))
 
 
 class MSDialect_zxjdbc(ZxJDBCConnector, MSDialect):

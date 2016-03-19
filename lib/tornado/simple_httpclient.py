@@ -203,8 +203,8 @@ class _HTTPConnection(httputil.HTTPMessageDelegate):
         with stack_context.ExceptionStackContext(self._handle_exception):
             self.parsed = urlparse.urlsplit(_unicode(self.request.url))
             if self.parsed.scheme not in ("http", "https"):
-                raise ValueError("Unsupported url scheme: %s" %
-                                 self.request.url)
+                raise ValueError("Unsupported url scheme: {0!s}".format(
+                                 self.request.url))
             # urlsplit results have hostname and port results, but they
             # didn't support ipv6 literals until python 2.7.
             netloc = self.parsed.netloc
@@ -310,12 +310,12 @@ class _HTTPConnection(httputil.HTTPMessageDelegate):
                 stack_context.wrap(self._on_timeout))
         if (self.request.method not in self._SUPPORTED_METHODS and
                 not self.request.allow_nonstandard_methods):
-            raise KeyError("unknown method %s" % self.request.method)
+            raise KeyError("unknown method {0!s}".format(self.request.method))
         for key in ('network_interface',
                     'proxy_host', 'proxy_port',
                     'proxy_username', 'proxy_password'):
             if getattr(self.request, key, None):
-                raise NotImplementedError('%s not supported' % key)
+                raise NotImplementedError('{0!s} not supported'.format(key))
         if "Connection" not in self.request.headers:
             self.request.headers["Connection"] = "close"
         if "Host" not in self.request.headers:
@@ -465,9 +465,9 @@ class _HTTPConnection(httputil.HTTPMessageDelegate):
 
         if self.request.header_callback is not None:
             # Reassemble the start line.
-            self.request.header_callback('%s %s %s\r\n' % first_line)
+            self.request.header_callback('{0!s} {1!s} {2!s}\r\n'.format(*first_line))
             for k, v in self.headers.get_all():
-                self.request.header_callback("%s: %s\r\n" % (k, v))
+                self.request.header_callback("{0!s}: {1!s}\r\n".format(k, v))
             self.request.header_callback('\r\n')
 
     def finish(self):

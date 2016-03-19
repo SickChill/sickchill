@@ -148,8 +148,7 @@ def engine(func):
         def final_callback(future):
             if future.result() is not None:
                 raise ReturnValueIgnoredError(
-                    "@gen.engine functions cannot return values: %r" %
-                    (future.result(),))
+                    "@gen.engine functions cannot return values: {0!r}".format(future.result()))
         # The engine interface doesn't give us any way to return
         # errors but to raise them into the stack context.
         # Save the stack context here to use when the Future has resolved.
@@ -824,13 +823,13 @@ class Runner(object):
             self.pending_callbacks = set()
             self.results = {}
         if key in self.pending_callbacks:
-            raise KeyReuseError("key %r is already pending" % (key,))
+            raise KeyReuseError("key {0!r} is already pending".format(key))
         self.pending_callbacks.add(key)
 
     def is_ready(self, key):
         """Returns true if a result is available for ``key``."""
         if self.pending_callbacks is None or key not in self.pending_callbacks:
-            raise UnknownKeyError("key %r is not pending" % (key,))
+            raise UnknownKeyError("key {0!r} is not pending".format(key))
         return key in self.results
 
     def set_result(self, key, result):
@@ -892,8 +891,8 @@ class Runner(object):
                         # had an exception then some callbacks may have been
                         # orphaned, so skip the check in that case.
                         raise LeakedCallbackError(
-                            "finished without waiting for callbacks %r" %
-                            self.pending_callbacks)
+                            "finished without waiting for callbacks {0!r}".format(
+                            self.pending_callbacks))
                     self.result_future.set_result(getattr(e, 'value', None))
                     self.result_future = None
                     self._deactivate_stack_context()
@@ -1023,7 +1022,7 @@ def convert_yielded(yielded):
     elif is_future(yielded):
         return yielded
     else:
-        raise BadYieldError("yielded unknown object %r" % (yielded,))
+        raise BadYieldError("yielded unknown object {0!r}".format(yielded))
 
 if singledispatch is not None:
     convert_yielded = singledispatch(convert_yielded)

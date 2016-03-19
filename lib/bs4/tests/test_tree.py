@@ -1681,7 +1681,7 @@ class TestSoupSelector(TreeTest):
         el_ids.sort()
         expected_ids.sort()
         self.assertEqual(expected_ids, el_ids,
-            "Selector %s, expected [%s], got [%s]" % (
+            "Selector {0!s}, expected [{1!s}], got [{2!s}]".format(
                 selector, ', '.join(expected_ids), ', '.join(el_ids)
             )
         )

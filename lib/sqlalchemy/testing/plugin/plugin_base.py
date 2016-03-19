@@ -135,7 +135,7 @@ def _log(opt_str, value, parser):
 def _list_dbs(*args):
     print("Available --db options (use --dburi to override)")
     for macro in sorted(file_config.options('db')):
-        print("%20s\t%s" % (macro, file_config.get('db', macro)))
+        print("{0:20!s}\t{1!s}".format(macro, file_config.get('db', macro)))
     sys.exit(0)
 
 
@@ -188,8 +188,7 @@ def _engine_uri(options, file_config):
             for db in re.split(r'[,\s]+', db_token):
                 if db not in file_config.options('db'):
                     raise RuntimeError(
-                        "Unknown URI specifier '%s'.  Specify --dbs for known uris."
-                                % db)
+                        "Unknown URI specifier '{0!s}'.  Specify --dbs for known uris.".format(db))
                 else:
                     db_urls.append(file_config.get('db', db))
 
@@ -319,12 +318,12 @@ def want_class(cls):
 def generate_sub_tests(cls, module):
     if getattr(cls, '__backend__', False):
         for cfg in config.Config.all_configs():
-            name = "%s_%s_%s" % (cls.__name__, cfg.db.name, cfg.db.driver)
+            name = "{0!s}_{1!s}_{2!s}".format(cls.__name__, cfg.db.name, cfg.db.driver)
             subcls = type(
                         name,
                         (cls, ),
                         {
-                            "__only_on__": ("%s+%s" % (cfg.db.name, cfg.db.driver)),
+                            "__only_on__": ("{0!s}+{1!s}".format(cfg.db.name, cfg.db.driver)),
                             "__backend__": False}
                         )
             setattr(module, name, subcls)
@@ -357,11 +356,11 @@ def before_test(test, test_module_name, test_class, test_name):
     # "test.aaa_profiling.test_compiler.CompileTest.test_update_whereclause"
     name = test_class.__name__
 
-    suffix = "_%s_%s" % (config.db.name, config.db.driver)
+    suffix = "_{0!s}_{1!s}".format(config.db.name, config.db.driver)
     if name.endswith(suffix):
         name = name[0:-(len(suffix))]
 
-    id_ = "%s.%s.%s" % (test_module_name, name, test_name)
+    id_ = "{0!s}.{1!s}.{2!s}".format(test_module_name, name, test_name)
 
     warnings.resetwarnings()
     profiling._current_test = id_
@@ -414,7 +413,7 @@ def _do_skips(cls):
     if getattr(cls, '__skip_if__', False):
         for c in getattr(cls, '__skip_if__'):
             if c():
-                raise SkipTest("'%s' skipped by %s" % (
+                raise SkipTest("'{0!s}' skipped by {1!s}".format(
                     cls.__name__, c.__name__)
                 )
 
@@ -428,9 +427,9 @@ def _do_skips(cls):
 
     if not all_configs:
         raise SkipTest(
-            "'%s' unsupported on DB implementation %s%s" % (
+            "'{0!s}' unsupported on DB implementation {1!s}{2!s}".format(
                 cls.__name__,
-                ", ".join("'%s' = %s" % (
+                ", ".join("'{0!s}' = {1!s}".format(
                                 config_obj.db.name,
                                 config_obj.db.dialect.server_version_info)
                     for config_obj in config.Config.all_configs()

@@ -95,7 +95,7 @@ class MySQLDialect_oursql(MySQLDialect):
         else:
             charset = self._connection_charset
             arg = connection.connection._escape_string(xid.encode(charset)).decode(charset)
-        arg = "'%s'" % arg
+        arg = "'{0!s}'".format(arg)
         connection.execution_options(_oursql_plain_query=True).execute(query % arg)
 
     # Because mysql is bad, these methods have to be

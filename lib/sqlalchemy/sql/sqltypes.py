@@ -157,7 +157,7 @@ class String(Concatenable, TypeEngine):
     def literal_processor(self, dialect):
         def process(value):
             value = value.replace("'", "''")
-            return "'%s'" % value
+            return "'{0!s}'".format(value)
         return process
 
     def bind_processor(self, dialect):
@@ -790,7 +790,7 @@ class _Binary(TypeEngine):
     def literal_processor(self, dialect):
         def process(value):
             value = value.decode(dialect.encoding).replace("'", "''")
-            return "'%s'" % value
+            return "'{0!s}'".format(value)
         return process
 
     @property

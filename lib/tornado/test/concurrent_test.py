@@ -188,7 +188,7 @@ class CapServer(TCPServer):
             self.stream.write(b"error\talready capitalized\n")
         else:
             # data already has \n
-            self.stream.write(utf8("ok\t%s" % data.upper()))
+            self.stream.write(utf8("ok\t{0!s}".format(data.upper())))
         self.stream.close()
 
 

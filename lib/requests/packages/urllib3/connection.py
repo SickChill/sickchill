@@ -136,12 +136,11 @@ class HTTPConnection(_HTTPConnection, object):
 
         except SocketTimeout as e:
             raise ConnectTimeoutError(
-                self, "Connection to %s timed out. (connect timeout=%s)" %
-                (self.host, self.timeout))
+                self, "Connection to {0!s} timed out. (connect timeout={1!s})".format(self.host, self.timeout))
 
         except SocketError as e:
             raise NewConnectionError(
-                self, "Failed to establish a new connection: %s" % e)
+                self, "Failed to establish a new connection: {0!s}".format(e))
 
         return conn
 

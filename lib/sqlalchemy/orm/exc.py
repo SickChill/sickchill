@@ -160,4 +160,4 @@ def _default_unmapped(base, cls):
     name = _safe_cls_name(cls)
 
     if not mappers:
-        return "Class '%s' is not mapped" % name
+        return "Class '{0!s}' is not mapped".format(name)

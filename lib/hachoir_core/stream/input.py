@@ -336,7 +336,7 @@ class InputPipe(object):
             buf = self.buffers[self.first]
             if buf[2] != self.last:
                 break
-            info("Discarding buffer %u." % self.first)
+            info("Discarding buffer {0:d}.".format(self.first))
             self.buffers[self.last][1] = buf[1]
             self.buffers[buf[1]][2] = self.last
             self.buffers[self.first] = None
@@ -383,7 +383,7 @@ class InputIOStream(InputStream):
                 else:
                     charset = getTerminalCharset()
                     errmsg = unicode(str(err), charset)
-                    source = args.get("source", "<inputio:%r>" % input)
+                    source = args.get("source", "<inputio:{0!r}>".format(input))
                     raise InputStreamError(_("Unable to get size of %s: %s") % (source, errmsg))
         self._input = input
         InputStream.__init__(self, size=size, **args)
@@ -446,7 +446,7 @@ class InputSubStream(InputStream):
         self.stream = stream
         self._offset = offset
         if source is None:
-            source = "<substream input=%s offset=%s size=%s>" % (stream.source, offset, size)
+            source = "<substream input={0!s} offset={1!s} size={2!s}>".format(stream.source, offset, size)
         InputStream.__init__(self, source=source, size=size, **args)
         self.stream.askSize(self)
 
@@ -470,7 +470,7 @@ class FragmentedStream(InputStream):
         data = field.getData()
         self.fragments = [ (0, data.absolute_address, data.size) ]
         self.next = field.next
-        args.setdefault("source", "%s%s" % (self.stream.source, field.path))
+        args.setdefault("source", "{0!s}{1!s}".format(self.stream.source, field.path))
         InputStream.__init__(self, **args)
         if not self.next:
             self._current_size = data.size

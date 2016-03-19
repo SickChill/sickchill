@@ -110,7 +110,7 @@ class Point(FieldSet):
         yield Int16(self, "x")
         yield Int16(self, "y")
     def createDescription(self):
-        return "Point (%s, %s)" % (self["x"].value, self["y"].value)
+        return "Point ({0!s}, {1!s})".format(self["x"].value, self["y"].value)
 
 def parsePolygon(parser):
     yield UInt16(parser, "count")
@@ -225,7 +225,7 @@ class Point16(FieldSet):
         yield Int16(self, "x")
         yield Int16(self, "y")
     def createDescription(self):
-        return "Point16: (%i,%i)" % (self["x"].value, self["y"].value)
+        return "Point16: ({0:d},{1:d})".format(self["x"].value, self["y"].value)
 
 def parsePoint16array(parser):
     yield RECT32(parser, "bounds")
@@ -406,7 +406,7 @@ class Function(FieldSet):
         try:
             return META_DESC[self["function"].value]
         except KeyError:
-            return "Function %s" % self["function"].display
+            return "Function {0!s}".format(self["function"].display)
 
 class RECT16(StaticFieldSet):
     format = (
@@ -416,7 +416,7 @@ class RECT16(StaticFieldSet):
         (Int16, "bottom"),
     )
     def createDescription(self):
-        return "%s: %ux%u at (%u,%u)" % (
+        return "{0!s}: {1:d}x{2:d} at ({3:d},{4:d})".format(
             self.__class__.__name__,
             self["right"].value-self["left"].value,
             self["bottom"].value-self["top"].value,
@@ -538,17 +538,17 @@ class WMF_File(Parser):
         # Check first functions
         for index in xrange(5):
             try:
-                func = self["func[%u]" % index]
+                func = self["func[{0:d}]".format(index)]
             except MissingField:
                 if self.done:
                     return True
-                return "Unable to get function #%u" % index
+                return "Unable to get function #{0:d}".format(index)
             except ParserError:
-                return "Unable to create function #%u" % index
+                return "Unable to create function #{0:d}".format(index)
 
             # Check first frame values
             if not func.isValid():
-                return "Function #%u is invalid" % index
+                return "Function #{0:d} is invalid".format(index)
         return True
 
     def createFields(self):

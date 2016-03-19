@@ -150,9 +150,9 @@ class VersionInfoNode(FieldSet):
 
 
     def createDescription(self):
-        text = "Version info node: %s" % self["name"].value
+        text = "Version info node: {0!s}".format(self["name"].value)
         if self["type"].value == self.TYPE_STRING and "value" in self:
-            text += "=%s" % self["value"].value
+            text += "={0!s}".format(self["value"].value)
         return text
 
 def parseVersionInfo(parent):
@@ -215,7 +215,7 @@ class Entry(FieldSet):
         yield NullBytes(self, "reserved", 4)
 
     def createDescription(self):
-        return "Entry #%u: offset=%s size=%s" % (
+        return "Entry #{0:d}: offset={1!s} size={2!s}".format(
             self.inode["offset"].value, self["rva"].display, self["size"].display)
 
 class NameOffset(FieldSet):
@@ -238,9 +238,9 @@ class IndexOffset(FieldSet):
 
     def createDescription(self):
         if self["is_subdir"].value:
-            return "Sub-directory: %s at %s" % (self["type"].display, self["offset"].value)
+            return "Sub-directory: {0!s} at {1!s}".format(self["type"].display, self["offset"].value)
         else:
-            return "Index: ID %s at %s" % (self["type"].display, self["offset"].value)
+            return "Index: ID {0!s} at {1!s}".format(self["type"].display, self["offset"].value)
 
 class ResourceContent(FieldSet):
     def __init__(self, parent, name, entry, size=None):
@@ -266,7 +266,7 @@ class ResourceContent(FieldSet):
             yield RawBytes(self, "content", self.size//8)
 
     def createDescription(self):
-        return "Resource #%u content: type=%s" % (
+        return "Resource #{0:d} content: type={1!s}".format(
             self.getResID(), self.getResType())
 
 class Header(FieldSet):
@@ -283,13 +283,13 @@ class Header(FieldSet):
         text = "Resource header"
         info = []
         if self["nb_name"].value:
-            info.append("%u name" % self["nb_name"].value)
+            info.append("{0:d} name".format(self["nb_name"].value))
         if self["nb_index"].value:
-            info.append("%u index" % self["nb_index"].value)
+            info.append("{0:d} index".format(self["nb_index"].value))
         if self["creation_date"].value:
             info.append(self["creation_date"].display)
         if info:
-            return "%s: %s" % (text, ", ".join(info))
+            return "{0!s}: {1!s}".format(text, ", ".join(info))
         else:
             return text
 
@@ -311,11 +311,9 @@ class Directory(FieldSet):
         yield Header(self, "header")
 
         if MAX_NAME_PER_HEADER < self["header/nb_name"].value:
-            raise ParserError("EXE resource: invalid number of name (%s)"
-                % self["header/nb_name"].value)
+            raise ParserError("EXE resource: invalid number of name ({0!s})".format(self["header/nb_name"].value))
         if MAX_INDEX_PER_HEADER < self["header/nb_index"].value:
-            raise ParserError("EXE resource: invalid number of index (%s)"
-                % self["header/nb_index"].value)
+            raise ParserError("EXE resource: invalid number of index ({0!s})".format(self["header/nb_index"].value))
 
         hdr = self["header"]
         for index in xrange(hdr["nb_name"].value):
@@ -356,18 +354,18 @@ class PE_Resource(SeekableFieldSet):
         while subdirs:
             depth += 1
             if MAX_DEPTH < depth:
-                self.error("EXE resource: depth too high (%s), stop parsing directories" % depth)
+                self.error("EXE resource: depth too high ({0!s}), stop parsing directories".format(depth))
                 break
             newsubdirs = []
             for index, subdir in enumerate(subdirs):
-                name = "directory[%u][%u][]" % (depth, index)
+                name = "directory[{0:d}][{1:d}][]".format(depth, index)
                 try:
                     for field in self.parseSub(subdir, name, depth):
                         if field.__class__ == Directory:
                             newsubdirs.append(field)
                         yield field
                 except HACHOIR_ERRORS, err:
-                    self.error("Unable to create directory %s: %s" % (name, err))
+                    self.error("Unable to create directory {0!s}: {1!s}".format(name, err))
             subdirs = newsubdirs
             alldirs.extend(subdirs)
 
@@ -399,7 +397,7 @@ class PE_Resource(SeekableFieldSet):
                     yield padding
                 yield ResourceContent(self, "content[]", entry)
             except HACHOIR_ERRORS, err:
-                self.warning("Error when parsing entry %s: %s" % (entry.path, err))
+                self.warning("Error when parsing entry {0!s}: {1!s}".format(entry.path, err))
 
         size = (self.size - self.current_size) // 8
         if size:
@@ -438,7 +436,7 @@ class NE_VersionInfoNode(FieldSet):
 
 
     def createDescription(self):
-        text = "Version info node: %s" % self["name"].value
+        text = "Version info node: {0!s}".format(self["name"].value)
 #        if self["type"].value == self.TYPE_STRING and "value" in self:
 #            text += "=%s" % self["value"].value
         return text

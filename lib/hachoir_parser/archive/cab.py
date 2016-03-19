@@ -45,9 +45,9 @@ class Folder(FieldSet):
             yield RawBytes(self, "reserved_folder", self["../reserved_folder_size"].value, "Per-folder reserved area")
 
     def createDescription(self):
-        text= "Folder: compression %s" % self["compr_method"].display
+        text= "Folder: compression {0!s}".format(self["compr_method"].display)
         if self["compr_method"].value in [2, 3]: # Quantum or LZX use compression level
-            text += " (level %u: window size %u)" % (self["compr_level"].value, 2**self["compr_level"].value)
+            text += " (level {0:d}: window size {1:d})".format(self["compr_level"].value, 2**self["compr_level"].value)
         return text
 
 class CabFileAttributes(FieldSet):
@@ -67,7 +67,7 @@ class File(FieldSet):
         yield UInt32(self, "folder_offset", "File offset in uncompressed folder")
         yield Enum(UInt16(self, "folder_index", "Containing folder ID (index)"), {
             0xFFFD:"Folder continued from previous cabinet (real folder ID = 0)",
-            0xFFFE:"Folder continued to next cabinet (real folder ID = %i)" % (self["../nb_folder"].value - 1),
+            0xFFFE:"Folder continued to next cabinet (real folder ID = {0:d})".format((self["../nb_folder"].value - 1)),
             0xFFFF:"Folder spanning previous, current and next cabinets (real folder ID = 0)"})
         yield DateTimeMSDOS32(self, "timestamp")
         yield CabFileAttributes(self, "attributes")
@@ -77,7 +77,7 @@ class File(FieldSet):
             yield CString(self, "filename", charset="ASCII")
 
     def createDescription(self):
-        return "File %s (%s)" % (
+        return "File {0!s} ({1!s})".format(
             self["filename"].display, self["filesize"].display)
 
 class Flags(FieldSet):
@@ -210,9 +210,9 @@ class CabFile(Parser):
         if self.stream.readBytes(0, 4) != self.MAGIC:
             return "Invalid magic"
         if self["major_version"].value != 1 or self["minor_version"].value != 3:
-            return "Unknown version (%i.%i)" % (self["major_version"].value, self["minor_version"].value)
+            return "Unknown version ({0:d}.{1:d})".format(self["major_version"].value, self["minor_version"].value)
         if not (1 <= self["nb_folder"].value <= MAX_NB_FOLDER):
-            return "Invalid number of folder (%s)" % self["nb_folder"].value
+            return "Invalid number of folder ({0!s})".format(self["nb_folder"].value)
         return True
 
     def createFields(self):
@@ -269,7 +269,7 @@ class CabFile(Parser):
                 size = (self.size // 8) - folder["offset"].value
             else:
                 size = (folders[i+1][1]["offset"].value) - folder["offset"].value
-            yield FolderData(self, "folder_data[%i]" % index, folder, files, size=size*8)
+            yield FolderData(self, "folder_data[{0:d}]".format(index), folder, files, size=size*8)
 
         end = self.seekBit(self.size, "endraw")
         if end:

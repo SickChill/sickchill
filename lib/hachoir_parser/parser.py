@@ -39,7 +39,7 @@ class HachoirParser(object):
                     break
                 res = makeUnicode(res)
             else:
-                res = _("stream is smaller than %s.%s bytes" % divmod(nbits, 8))
+                res = _("stream is smaller than {0!s}.{1!s} bytes".format(*divmod(nbits, 8)))
             raise ValidateError(res or _("no reason given"))
         self._autofix = True
 
@@ -77,8 +77,7 @@ class HachoirParser(object):
                 if isinstance(self._description, str):
                     self._description = makeUnicode(self._description)
             except HACHOIR_ERRORS, err:
-                error("Error getting description of %s: %s" \
-                    % (self.path, unicode(err)))
+                error("Error getting description of {0!s}: {1!s}".format(self.path, unicode(err)))
                 self._description = self.PARSER_TAGS["description"]
         return self._description
     description = property(_getDescription,
@@ -89,7 +88,7 @@ class HachoirParser(object):
             try:
                 self._mime_type = self.createMimeType()
             except HACHOIR_ERRORS, err:
-                self.error("Error when creating MIME type: %s" % unicode(err))
+                self.error("Error when creating MIME type: {0!s}".format(unicode(err)))
             if not self._mime_type \
             and self.createMimeType != Parser.createMimeType:
                 self._mime_type = Parser.createMimeType(self)
@@ -105,7 +104,7 @@ class HachoirParser(object):
             try:
                 self._content_size = self.createContentSize()
             except HACHOIR_ERRORS, err:
-                error("Unable to compute %s content size: %s" % (self.__class__.__name__, err))
+                error("Unable to compute {0!s} content size: {1!s}".format(self.__class__.__name__, err))
                 self._content_size = None
         return self._content_size
     content_size = property(_getContentSize)
@@ -136,14 +135,14 @@ class HachoirParser(object):
     @classmethod
     def print_(cls, out, verbose):
         tags = cls.getParserTags()
-        print >>out, "- %s: %s" % (tags["id"], tags["description"])
+        print >>out, "- {0!s}: {1!s}".format(tags["id"], tags["description"])
         if verbose:
             if "mime" in tags:
-                print >>out, "  MIME type: %s" % (", ".join(tags["mime"]))
+                print >>out, "  MIME type: {0!s}".format((", ".join(tags["mime"])))
             if "file_ext" in tags:
                 file_ext = ", ".join(
-                    ".%s" % file_ext for file_ext in tags["file_ext"])
-                print >>out, "  File extension: %s" % file_ext
+                    ".{0!s}".format(file_ext) for file_ext in tags["file_ext"])
+                print >>out, "  File extension: {0!s}".format(file_ext)
 
     autofix = property(lambda self: self._autofix and config.autofix)
 

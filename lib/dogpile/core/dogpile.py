@@ -128,7 +128,7 @@ class Lock(object):
             self.mutex.acquire()
 
         try:
-            log.debug("value creation lock %r acquired" % self.mutex)
+            log.debug("value creation lock {0!r} acquired".format(self.mutex))
 
             # see if someone created the value already
             try:

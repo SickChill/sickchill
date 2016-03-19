@@ -81,11 +81,11 @@ class EnglishTest(unittest.TestCase):
 
         date = now - datetime.timedelta(days=300)
         self.assertEqual(locale.format_date(date, full_format=False, shorter=True),
-                         '%s %d' % (locale._months[date.month - 1], date.day))
+                         '{0!s} {1:d}'.format(locale._months[date.month - 1], date.day))
 
         date = now - datetime.timedelta(days=500)
         self.assertEqual(locale.format_date(date, full_format=False, shorter=True),
-                         '%s %d, %d' % (locale._months[date.month - 1], date.day, date.year))
+                         '{0!s} {1:d}, {2:d}'.format(locale._months[date.month - 1], date.day, date.year))
 
     def test_friendly_number(self):
         locale = tornado.locale.get('en_US')

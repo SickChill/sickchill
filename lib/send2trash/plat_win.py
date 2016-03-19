@@ -54,6 +54,6 @@ def send2trash(path):
     fileop.lpszProgressTitle = None
     result = SHFileOperationW(byref(fileop))
     if result:
-        msg = "Couldn't perform operation. Error code: %d" % result
+        msg = "Couldn't perform operation. Error code: {0:d}".format(result)
         raise OSError(msg)
 

@@ -94,7 +94,7 @@ def py_scanstring(s, end, encoding=None, strict=True, _b=BACKSLASH, _m=STRINGCHU
             break
         elif terminator != '\\':
             if strict:
-                msg = "Invalid control character %r at" % (terminator,)
+                msg = "Invalid control character {0!r} at".format(terminator)
                 #msg = "Invalid control character {0!r} at".format(terminator)
                 raise ValueError(errmsg(msg, s, end))
             else:

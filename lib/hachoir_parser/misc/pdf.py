@@ -59,7 +59,7 @@ class PDFNumber(Field):
 
         # Get value
         val = parent.stream.readBytes(self.absolute_address, size)
-        self.info("Number: size=%u value='%s'" % (size, val))
+        self.info("Number: size={0:d} value='{1!s}'".format(size, val))
         if val.find('.') != -1:
             self.createValue = lambda: float(val)
         else:
@@ -108,8 +108,8 @@ class PDFName(Field):
     def __init__(self, parent, name, desc=None):
         Field.__init__(self, parent, name, description=desc)
         if parent.stream.readBytes(self.absolute_address, 1) != '/':
-            raise ParserError("Unknown PDFName '%s'" %
-                              parent.stream.readBytes(self.absolute_address, 10))
+            raise ParserError("Unknown PDFName '{0!s}'".format(
+                              parent.stream.readBytes(self.absolute_address, 10)))
         size = getElementEnd(parent, offset=1)
         #other_size = getElementEnd(parent, '[')-1
         #if size == None or (other_size != None and other_size < size):
@@ -164,8 +164,7 @@ class LineEnd(FieldSet):
             elif char == '\x0D':
                 yield UInt8(self, "cr", "Line feed")
             else:
-                self.info("Line ends at %u/%u, len %u" %
-                          (addr, self.stream._size, self.current_size))
+                self.info("Line ends at {0:d}/{1:d}, len {2:d}".format(addr, self.stream._size, self.current_size))
                 break
 
 class PDFDictionaryPair(FieldSet):
@@ -230,11 +229,10 @@ def parsePDFType(s):
             yield Catalog(s, "catalog[]")
         elif name[0] in ('.','-','+', '0', '1', '2', '3', \
                          '4', '5', '6', '7', '8', '9'):
-            s.info("Not a catalog: %u spaces and end='%s'" % (name.count(' '), char))
+            s.info("Not a catalog: {0:d} spaces and end='{1!s}'".format(name.count(' '), char))
             yield PDFNumber(s, "integer[]")
         else:
-            s.info("Trying to parse '%s': %u bytes" % \
-                   (s.stream.readBytes(s.absolute_address+s.current_size, 4), size))
+            s.info("Trying to parse '{0!s}': {1:d} bytes".format(s.stream.readBytes(s.absolute_address+s.current_size, 4), size))
             yield String(s, "unknown[]", size)
 
 class Header(FieldSet):
@@ -248,15 +246,15 @@ class Header(FieldSet):
         else:
             self.warning("Can't determine version!")
     def createDescription(self):
-        return "PDF version %s" % self["version"].display
+        return "PDF version {0!s}".format(self["version"].display)
 
 class Body(FieldSet):
     def __init__(self, parent, name, desc=None):
         FieldSet.__init__(self, parent, name, desc)
         pos = self.stream.searchBytesLength(CrossReferenceTable.MAGIC, False)
         if pos == None:
-            raise ParserError("Can't find xref starting at %u" %
-                              (self.absolute_address//8))
+            raise ParserError("Can't find xref starting at {0:d}".format(
+                              (self.absolute_address//8)))
         self._size = 8*pos-self.absolute_address
 
     def createFields(self):
@@ -302,34 +300,33 @@ class Entry(FieldSet):
         yield LineEnd(self, "line_end")
     def createDescription(self):
         if self["type"].value == 'n':
-            return "In-use entry at offset %u" % int(self["byte_offset"].value)
+            return "In-use entry at offset {0:d}".format(int(self["byte_offset"].value))
         elif self["type"].value == 'f':
-            return "Free entry before in-use object %u" % \
-                   int(self["next_free_object_number"].value)
+            return "Free entry before in-use object {0:d}".format( \
+                   int(self["next_free_object_number"].value))
         else:
-            return "unknown %s" % self["unknown_string"].value
+            return "unknown {0!s}".format(self["unknown_string"].value)
 
 class SubSection(FieldSet):
     def __init__(self, parent, name, desc=None):
         FieldSet.__init__(self, parent, name, desc)
-        self.info("Got entry count: '%s'" % self["entry_count"].value)
+        self.info("Got entry count: '{0!s}'".format(self["entry_count"].value))
         self._size = self.current_size + 8*20*int(self["entry_count"].value) \
                      + self["line_end"].size
 
     def createFields(self):
         yield PDFNumber(self, "start_number",
                         "Object number of first entry in subsection")
-        self.info("start_number = %i" % self["start_number"].value)
+        self.info("start_number = {0:d}".format(self["start_number"].value))
 
         yield PDFNumber(self, "entry_count", "Number of entries in subsection")
-        self.info("entry_count = %i" % self["entry_count"].value)
+        self.info("entry_count = {0:d}".format(self["entry_count"].value))
         yield LineEnd(self, "line_end")
         yield GenericVector(self, "entries", int(self["entry_count"].value),
                             Entry)
         #yield LineEnd(self, "line_end[]")
     def createDescription(self):
-        return "Subsection with %s elements, starting at %s" % \
-               (self["entry_count"].value, self["start_number"])
+        return "Subsection with {0!s} elements, starting at {1!s}".format(self["entry_count"].value, self["start_number"])
 
 class CrossReferenceTable(FieldSet):
     MAGIC = "xref"
@@ -387,7 +384,7 @@ class Trailer(FieldSet):
             t = PDFName(self, "type[]")
             yield t
             name = t.value
-            self.info("Parsing PDFName '%s'" % name)
+            self.info("Parsing PDFName '{0!s}'".format(name))
             if name == "Size":
                 yield PDFNumber(self, "size", "Entries in the file cross-reference section")
             elif name == "Prev":
@@ -401,7 +398,7 @@ class Trailer(FieldSet):
             elif name == "Encrypt":
                 yield PDFDictionary(self, "decrypt")
             else:
-                raise ParserError("Don't know trailer type '%s'" % name)
+                raise ParserError("Don't know trailer type '{0!s}'".format(name))
             addr = self.absolute_address + self.current_size
         yield String(self, "end_attribute_marker", 2)
         yield LineEnd(self, "line_end[]")

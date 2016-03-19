@@ -21,7 +21,7 @@ class FakeArray:
         else:
             self.fieldset = fieldset
             self.name = name
-        self._format = "%s[%%u]" % self.name
+        self._format = "{0!s}[%u]".format(self.name)
         self._cache = {}
         self._known_size = False
         self._max_index = -1
