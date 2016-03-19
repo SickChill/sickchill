@@ -54,7 +54,7 @@ def logFailed(release):
     failed_db_con = db.DBConnection('failed.db')
     sql_results = failed_db_con.select("SELECT * FROM history WHERE release=?", [release])
 
-    if len(sql_results) == 0:
+    if not sql_results:
         logger.log(
             u"Release not found in snatch history.", logger.WARNING)
     elif len(sql_results) > 1:

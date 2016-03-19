@@ -592,9 +592,8 @@ def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_
             config[cfg_name] = {}
             config[cfg_name][item_name] = helpers.encrypt(my_val, encryption_version)
 
-    if censor_log or (cfg_name, item_name) in logger.censored_items.iteritems():
-        if not item_name.endswith('custom_url'):
-            logger.censored_items[cfg_name, item_name] = my_val
+    if (censor_log or (cfg_name, item_name) in logger.censored_items.iteritems()) and not item_name.endswith('custom_url'):
+        logger.censored_items[cfg_name, item_name] = my_val
 
     if not silent:
         logger.log(item_name + " -> " + my_val, logger.DEBUG)
@@ -725,10 +724,12 @@ class ConfigMigrator(object):
         use_ep_name = bool(check_setting_int(self.config_obj, 'General', 'naming_ep_name', 1))
 
         # make the presets into templates
-        naming_ep_type = ("%Sx%0E",
-                          "s%0Se%0E",
-                          "S%0SE%0E",
-                          "%0Sx%0E")
+        _naming_ep_type = (
+            "%Sx%0E",
+            "s%0Se%0E",
+            "S%0SE%0E",
+            "%0Sx%0E"
+        )
 
         # set up our data to use
         if use_periods:
@@ -745,7 +746,7 @@ class ConfigMigrator(object):
         if abd and abd_string:
             ep_string = abd_string
         else:
-            ep_string = naming_ep_type[ep_type]
+            ep_string = _naming_ep_type[ep_type]
 
         finalName = ""
 
@@ -770,7 +771,8 @@ class ConfigMigrator(object):
         return finalName
 
     # Migration v2: Dummy migration to sync backup number with config version number
-    def _migrate_v2(self):
+    @staticmethod
+    def _migrate_v2():
         return
 
     # Migration v2: Rename omgwtfnzb variables
@@ -906,7 +908,8 @@ class ConfigMigrator(object):
         sickbeard.METADATA_KODI_12PLUS = check_setting_str(self.config_obj, 'General', 'metadata_xbmc_12plus', '0|0|0|0|0|0|0|0|0|0')
 
     # Migration v6: Use version 2 for password encryption
-    def _migrate_v7(self):
+    @staticmethod
+    def _migrate_v7():
         sickbeard.ENCRYPTION_VERSION = 2
 
     def _migrate_v8(self):

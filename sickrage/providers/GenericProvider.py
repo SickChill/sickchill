@@ -101,7 +101,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                 logger.log(u'Could not download {0!s}'.format(url), logger.WARNING)
                 remove_file_failed(filename)
 
-        if len(urls):
+        if urls:
             logger.log(u'Failed to download any results', logger.WARNING)
 
         return False
@@ -269,7 +269,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                     break
 
             if not episode_wanted:
-                logger.log(u'Ignoring result {0!s}.'.format((title)), logger.DEBUG)
+                logger.log(u'Ignoring result {0!s}.'.format(title), logger.DEBUG)
                 continue
 
             logger.log(u'Found result {0!s} at {1!s}'.format(title, url), logger.DEBUG)
@@ -293,8 +293,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                 logger.log(u'Single episode result.', logger.DEBUG)
             elif len(episode_object) > 1:
                 episode_number = MULTI_EP_RESULT
-                logger.log(u'Separating multi-episode result to check for later - result contains episodes: {0!s}'.format(str(
-                    parse_result.episode_numbers)), logger.DEBUG)
+                logger.log(u'Separating multi-episode result to check for later - result contains episodes: {0!s}'.format(
+                    parse_result.episode_numbers), logger.DEBUG)
             elif len(episode_object) == 0:
                 episode_number = SEASON_RESULT
                 logger.log(u'Separating full season result to check for later', logger.DEBUG)
@@ -304,7 +304,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             else:
                 results[episode_number].append(result)
 
-        if len(cl) > 0:
+        if cl:
             # pylint: disable=protected-access
             # Access to a protected member of a client class
             db = self.cache._getDB()

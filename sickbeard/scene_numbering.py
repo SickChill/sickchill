@@ -531,7 +531,7 @@ def xem_refresh(indexer_id, indexer, force=False):
                          entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']]
                     ])
 
-            if len(cl) > 0:
+            if cl:
                 main_db_con = db.DBConnection()
                 main_db_con.mass_action(cl)
 
@@ -649,6 +649,6 @@ def fix_xem_numbering(indexer_id, indexer):  # pylint:disable=too-many-locals, t
             ])
             update_scene_absolute_number = False
 
-    if len(cl) > 0:
+    if cl:
         main_db_con = db.DBConnection()
         main_db_con.mass_action(cl)

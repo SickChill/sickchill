@@ -188,7 +188,7 @@ def split_result(obj):
             logger.log(u"Found " + new_nzb + " inside " + obj.name + " but it doesn't seem to belong to the same season, ignoring it",
                        logger.WARNING)
             continue
-        elif len(parsed_obj.episode_numbers) == 0:
+        elif not parsed_obj.episode_numbers:
             # pylint: disable=no-member
             logger.log(u"Found " + new_nzb + " inside " + obj.name + " but it doesn't seem to be a valid episode NZB, ignoring it",
                        logger.WARNING)

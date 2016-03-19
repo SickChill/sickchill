@@ -156,6 +156,7 @@ class NameParser(object):
             if 'air_date' in named_groups:
                 air_date = match.group('air_date')
                 try:
+                    assert re.sub(r'[^\d]*', '', air_date) != '112263'
                     result.air_date = dateutil.parser.parse(air_date, fuzzy_with_tokens=True)[0].date()
                     result.score += 1
                 except Exception:
@@ -358,9 +359,8 @@ class NameParser(object):
 
     @staticmethod
     def _unicodify(obj, encoding="utf-8"):
-        if isinstance(obj, basestring):
-            if not isinstance(obj, unicode):
-                obj = unicode(obj, encoding, 'replace')
+        if isinstance(obj, bytes):
+            obj = unicode(obj, encoding, 'replace')
         return obj
 
     @staticmethod

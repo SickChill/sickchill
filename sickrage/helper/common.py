@@ -118,7 +118,7 @@ def http_code_description(http_code):
     :return: The description of the provided ``http_code``
     """
 
-    description = http_status_code.get(try_int(http_code), None)
+    description = http_status_code.get(try_int(http_code))
 
     if isinstance(description, list):
         return '({0!s})'.format(', '.join(description))

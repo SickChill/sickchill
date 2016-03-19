@@ -588,7 +588,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
                 scannedEps[season][episode] = True
 
-        if len(sql_l) > 0:
+        if sql_l:
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
 
@@ -734,7 +734,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             with curEp.lock:
                 sql_l.append(curEp.get_sql())
 
-        if len(sql_l) > 0:
+        if sql_l:
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
 
@@ -754,7 +754,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         if len(sql_results) > 1:
             raise MultipleShowsInDatabaseException()
-        elif len(sql_results) == 0:
+        elif not sql_results:
             logger.log(str(self.indexerid) + ": Unable to find the show in the database")
             return
         else:
@@ -815,7 +815,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
 
-        if len(sql_results) == 0:
+        if not sql_results:
             logger.log(str(self.indexerid) + ": Unable to find IMDb show info in the database")
             return
         else:
@@ -1496,7 +1496,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         if len(sql_results) > 1:
             raise MultipleEpisodesInDatabaseException("Your DB has two records for the same show somehow.")
-        elif len(sql_results) == 0:
+        elif not sql_results:
             logger.log(u"{id}: Episode {ep} not found in the database".format
                        (id=self.show.indexerid, ep=episode_num(self.season, self.episode)),
                        logger.DEBUG)
@@ -2018,7 +2018,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         self.relatedEps = sorted(self.relatedEps, key=lambda x: x.episode)
 
-        if len(self.relatedEps) == 0:
+        if not self.relatedEps:
             goodName = self.name
         else:
             goodName = ''
@@ -2496,7 +2496,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             for relEp in [self] + self.relatedEps:
                 sql_l.append(relEp.get_sql())
 
-        if len(sql_l) > 0:
+        if sql_l:
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
 

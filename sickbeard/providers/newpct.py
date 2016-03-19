@@ -174,7 +174,7 @@ class newpctProvider(TorrentProvider):
                     logger.log('Could not download {0}'.format(url), logger.WARNING)
                     helpers.remove_file_failed(filename)
 
-        if len(urls):
+        if urls:
             logger.log('Failed to download any results', logger.WARNING)
 
         return False

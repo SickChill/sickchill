@@ -460,7 +460,7 @@ class SubtitlesFinder(object):
         if not sickbeard.USE_SUBTITLES:
             return
 
-        if len(sickbeard.subtitles.enabled_service_list()) < 1:
+        if not sickbeard.subtitles.enabled_service_list():
             logger.log(u'Not enough services selected. At least 1 service is required to '
                        'search subtitles in the background', logger.WARNING)
             return

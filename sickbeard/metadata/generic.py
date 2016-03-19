@@ -578,7 +578,7 @@ class GenericMetadata(object):
 
             cur_season_art = season_dict[cur_season]
 
-            if len(cur_season_art) == 0:
+            if not cur_season_art:
                 continue
 
             # Just grab whatever's there for now
@@ -625,7 +625,7 @@ class GenericMetadata(object):
 
             cur_season_art = season_dict[cur_season]
 
-            if len(cur_season_art) == 0:
+            if not cur_season_art:
                 continue
 
             # Just grab whatever's there for now

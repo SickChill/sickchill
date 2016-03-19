@@ -66,7 +66,7 @@ class DelugeAPI(GenericClient):
                 return None
 
             hosts = self.response.json()['result']
-            if len(hosts) == 0:
+            if not hosts:
                 logger.log(self.name + u': WebUI does not contain daemons', logger.ERROR)
                 return None
 

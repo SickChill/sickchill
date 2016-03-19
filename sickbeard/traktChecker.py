@@ -162,7 +162,7 @@ class TraktChecker(object):
             else:
                 data['shows'][0]['ids']['tvrage'] = show_obj.indexerid
 
-        if len(data):
+        if data:
             logger.log(u"Adding {0!s} to trakt.tv library".format(show_obj.name), logger.DEBUG)
 
             try:
@@ -202,7 +202,7 @@ class TraktChecker(object):
                                        logger.DEBUG)
                             trakt_data.append((cur_episode["showid"], cur_episode["indexer"], cur_episode["show_name"], cur_episode["startyear"], cur_episode["season"], cur_episode["episode"]))
 
-                if len(trakt_data):
+                if trakt_data:
                     try:
                         data = self.trakt_bulk_data_generate(trakt_data)
                         self.trakt_api.traktRequest("sync/collection/remove", data, method='POST')
@@ -233,7 +233,7 @@ class TraktChecker(object):
                                    logger.DEBUG)
                         trakt_data.append((cur_episode["showid"], cur_episode["indexer"], cur_episode["show_name"], cur_episode["startyear"], cur_episode["season"], cur_episode["episode"]))
 
-                if len(trakt_data):
+                if trakt_data:
                     try:
                         data = self.trakt_bulk_data_generate(trakt_data)
                         self.trakt_api.traktRequest("sync/collection", data, method='POST')
@@ -280,7 +280,7 @@ class TraktChecker(object):
                                        logger.DEBUG)
                             trakt_data.append((cur_episode["showid"], cur_episode["indexer"], cur_episode["show_name"], cur_episode["startyear"], cur_episode["season"], cur_episode["episode"]))
 
-                if len(trakt_data):
+                if trakt_data:
                     try:
                         data = self.trakt_bulk_data_generate(trakt_data)
                         self.trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
@@ -312,7 +312,7 @@ class TraktChecker(object):
                         trakt_data.append((cur_episode["showid"], cur_episode["indexer"], cur_episode["show_name"], cur_episode["startyear"], cur_episode["season"],
                                            cur_episode["episode"]))
 
-                if len(trakt_data):
+                if trakt_data:
                     try:
                         data = self.trakt_bulk_data_generate(trakt_data)
                         self.trakt_api.traktRequest("sync/watchlist", data, method='POST')
@@ -341,7 +341,7 @@ class TraktChecker(object):
                             show_el['ids']['tvrage'] = show.indexerid
                         trakt_data.append(show_el)
 
-                if len(trakt_data):
+                if trakt_data:
                     try:
                         data = {'shows': trakt_data}
                         self.trakt_api.traktRequest("sync/watchlist", data, method='POST')
@@ -527,10 +527,10 @@ class TraktChecker(object):
                 tvdb = False
                 tvrage = False
 
-                if not watchlist_el['show']['ids']["tvdb"] is None:
+                if watchlist_el['show']['ids']["tvdb"] is not None:
                     tvdb = True
 
-                if not watchlist_el['show']['ids']["tvrage"] is None:
+                if watchlist_el['show']['ids']["tvrage"] is not None:
                     tvrage = True
 
                 title = watchlist_el['show']['title']
@@ -562,10 +562,10 @@ class TraktChecker(object):
                 tvdb = False
                 tvrage = False
 
-                if not watchlist_el['show']['ids']["tvdb"] is None:
+                if watchlist_el['show']['ids']["tvdb"] is not None:
                     tvdb = True
 
-                if not watchlist_el['show']['ids']["tvrage"] is None:
+                if watchlist_el['show']['ids']["tvrage"] is not None:
                     tvrage = True
 
                 title = watchlist_el['show']['title']
@@ -616,10 +616,10 @@ class TraktChecker(object):
                 tvdb = False
                 tvrage = False
 
-                if not watchlist_el['show']['ids']["tvdb"] is None:
+                if watchlist_el['show']['ids']["tvdb"] is not None:
                     tvdb = True
 
-                if not watchlist_el['show']['ids']["tvrage"] is None:
+                if watchlist_el['show']['ids']["tvrage"] is not None:
                     tvrage = True
 
                 title = watchlist_el['show']['title']
