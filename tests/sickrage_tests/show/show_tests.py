@@ -122,7 +122,7 @@ class ShowTests(unittest.TestCase):
 
         self.assertEqual(
             len(indexer_id_list), len(results_list),
-            'Number of parameters (%d) and results (%d) does not match' % (len(indexer_id_list), len(results_list))
+            'Number of parameters ({0:d}) and results ({1:d}) does not match'.format(len(indexer_id_list), len(results_list))
         )
 
         for (index, indexer_id) in enumerate(indexer_id_list):
@@ -145,7 +145,7 @@ class TestTVShow(TVShow):
 
 
 if __name__ == '__main__':
-    print('=====> Testing %s' % __file__)
+    print('=====> Testing {0!s}'.format(__file__))
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(ShowTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

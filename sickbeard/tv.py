@@ -402,8 +402,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         # get file list
         mediaFiles = helpers.listMediaFiles(self._location)
-        logger.log(u"%s: Found files: %s" %
-                   (self.indexerid, mediaFiles), logger.DEBUG)
+        logger.log(u"{0!s}: Found files: {1!s}".format(self.indexerid, mediaFiles), logger.DEBUG)
 
         # create TVEpisodes from each media file (if possible)
         sql_l = []
@@ -444,7 +443,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     try:
                         curEpisode.refreshSubtitles()
                     except Exception:
-                        logger.log(u"%s: Could not refresh subtitles" % self.indexerid, logger.ERROR)
+                        logger.log(u"{0!s}: Could not refresh subtitles".format(self.indexerid), logger.ERROR)
                         logger.log(traceback.format_exc(), logger.DEBUG)
 
                 sql_l.append(curEpisode.get_sql())
@@ -463,7 +462,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             sql = "SELECT season, episode, showid, show_name FROM tv_episodes JOIN tv_shows WHERE showid = indexer_id and showid = ?"
             sql_results = main_db_con.select(sql, [self.indexerid])
         except Exception as error:
-            logger.log(u"Could not load episodes from the DB. Error: %s" % error, logger.ERROR)
+            logger.log(u"Could not load episodes from the DB. Error: {0!s}".format(error), logger.ERROR)
             return scannedEps
 
         lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
@@ -489,15 +488,14 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             curShowid = int(curResult['showid'])
             curShowName = str(curResult['show_name'])
 
-            logger.log(u"%s: Loading %s episodes from DB" % (curShowid, curShowName), logger.DEBUG)
+            logger.log(u"{0!s}: Loading {1!s} episodes from DB".format(curShowid, curShowName), logger.DEBUG)
             deleteEp = False
 
             if curSeason not in cachedSeasons:
                 try:
                     cachedSeasons[curSeason] = cachedShow[curSeason]
                 except sickbeard.indexer_seasonnotfound as error:
-                    logger.log(u"%s: %s (unaired/deleted) in the indexer %s for %s. Removing existing records from database" %
-                               (curShowid, error.message, sickbeard.indexerApi(self.indexer).name, curShowName), logger.DEBUG)
+                    logger.log(u"{0!s}: {1!s} (unaired/deleted) in the indexer {2!s} for {3!s}. Removing existing records from database".format(curShowid, error.message, sickbeard.indexerApi(self.indexer).name, curShowName), logger.DEBUG)
                     deleteEp = True
 
             if curSeason not in scannedEps:
@@ -857,7 +855,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             self.name = myEp['seriesname'].strip()
         except AttributeError:
             raise sickbeard.indexer_attributenotfound(
-                "Found %s, but attribute 'seriesname' was empty." % self.indexerid)
+                "Found {0!s}, but attribute 'seriesname' was empty.".format(self.indexerid))
 
         self.classification = getattr(myEp, 'classification', 'Scripted')
         self.genre = getattr(myEp, 'genre', '')
@@ -987,7 +985,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         # clear the cache
         image_cache_dir = ek(os.path.join, sickbeard.CACHE_DIR, 'images')
         for cache_file in ek(glob.glob, ek(os.path.join, image_cache_dir, str(self.indexerid) + '.*')):
-            logger.log(u'Attempt to %s cache file %s' % (action, cache_file))
+            logger.log(u'Attempt to {0!s} cache file {1!s}'.format(action, cache_file))
             try:
                 if sickbeard.TRASH_REMOVE_SHOW:
                     send2trash(cache_file)
@@ -995,35 +993,34 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     ek(os.remove, cache_file)
 
             except OSError as e:
-                logger.log(u'Unable to %s %s: %s / %s' % (action, cache_file, repr(e), str(e)), logger.WARNING)
+                logger.log(u'Unable to {0!s} {1!s}: {2!s} / {3!s}'.format(action, cache_file, repr(e), str(e)), logger.WARNING)
 
         # remove entire show folder
         if full:
             try:
-                logger.log(u'Attempt to %s show folder %s' % (action, self._location))
+                logger.log(u'Attempt to {0!s} show folder {1!s}'.format(action, self._location))
                 # check first the read-only attribute
                 file_attribute = ek(os.stat, self.location)[0]
                 if not file_attribute & stat.S_IWRITE:
                     # File is read-only, so make it writeable
-                    logger.log(u'Attempting to make writeable the read only folder %s' % self._location, logger.DEBUG)
+                    logger.log(u'Attempting to make writeable the read only folder {0!s}'.format(self._location), logger.DEBUG)
                     try:
                         ek(os.chmod, self.location, stat.S_IWRITE)
                     except Exception:
-                        logger.log(u'Unable to change permissions of %s' % self._location, logger.WARNING)
+                        logger.log(u'Unable to change permissions of {0!s}'.format(self._location), logger.WARNING)
 
                 if sickbeard.TRASH_REMOVE_SHOW:
                     send2trash(self.location)
                 else:
                     ek(shutil.rmtree, self.location)
 
-                logger.log(u'%s show folder %s' %
-                           (('Deleted', 'Trashed')[sickbeard.TRASH_REMOVE_SHOW],
+                logger.log(u'{0!s} show folder {1!s}'.format(('Deleted', 'Trashed')[sickbeard.TRASH_REMOVE_SHOW],
                             self._location))
 
             except ShowDirectoryNotFoundException:
-                logger.log(u"Show folder does not exist, no need to %s %s" % (action, self._location), logger.WARNING)
+                logger.log(u"Show folder does not exist, no need to {0!s} {1!s}".format(action, self._location), logger.WARNING)
             except OSError as e:
-                logger.log(u'Unable to %s %s: %s / %s' % (action, self._location, repr(e), str(e)), logger.WARNING)
+                logger.log(u'Unable to {0!s} {1!s}: {2!s} / {3!s}'.format(action, self._location, repr(e), str(e)), logger.WARNING)
 
         if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
             logger.log(u"Removing show: indexerid " + str(self.indexerid) + ", Title " + str(self.name) + " from Watchlist", logger.DEBUG)
@@ -1103,19 +1100,19 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             logger.log(str(self.indexerid) + ": Show dir doesn't exist, can't download subtitles", logger.DEBUG)
             return
 
-        logger.log(u"%s: Downloading subtitles" % self.indexerid, logger.DEBUG)
+        logger.log(u"{0!s}: Downloading subtitles".format(self.indexerid), logger.DEBUG)
 
         try:
             episodes = self.getAllEpisodes(has_location=True)
             if not episodes:
-                logger.log(u"%s: No episodes to download subtitles for %s" % (self.indexerid, self.name), logger.DEBUG)
+                logger.log(u"{0!s}: No episodes to download subtitles for {1!s}".format(self.indexerid, self.name), logger.DEBUG)
                 return
 
             for episode in episodes:
                 episode.download_subtitles(force=force)
 
         except Exception:
-            logger.log(u"%s: Error occurred when downloading subtitles for %s" % (self.indexerid, self.name), logger.DEBUG)
+            logger.log(u"{0!s}: Error occurred when downloading subtitles for {1!s}".format(self.indexerid, self.name), logger.DEBUG)
             logger.log(traceback.format_exc(), logger.ERROR)
 
     def saveToDB(self, forceSave=False):
@@ -1124,7 +1121,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             # logger.log(str(self.indexerid) + ": Not saving show to db - record is not dirty", logger.DEBUG)
             return
 
-        logger.log(u"%i: Saving to database: %s" % (self.indexerid, self.name), logger.DEBUG)
+        logger.log(u"{0:d}: Saving to database: {1!s}".format(self.indexerid, self.name), logger.DEBUG)
 
         controlValueDict = {"indexer_id": self.indexerid}
         newValueDict = {"indexer": self.indexer,
@@ -1195,8 +1192,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         # if the quality isn't one we want under any circumstances then just say no
         allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)
-        logger.log(u"Any,Best = [ %s ] [ %s ] Found = [ %s ]" %
-                   (self.qualitiesToString(allowed_qualities),
+        logger.log(u"Any,Best = [ {0!s} ] [ {1!s} ] Found = [ {2!s} ]".format(self.qualitiesToString(allowed_qualities),
                     self.qualitiesToString(preferred_qualities),
                     self.qualitiesToString([quality])), logger.DEBUG)
 
@@ -1298,7 +1294,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             else:
                 return Overview.GOOD
         else:
-            logger.log(u'Could not parse episode status into a valid overview status: %s' % epStatus, logger.ERROR)
+            logger.log(u'Could not parse episode status into a valid overview status: {0!s}'.format(epStatus), logger.ERROR)
 
     def __getstate__(self):
         d = dict(self.__dict__)
@@ -1684,7 +1680,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         # don't update show status if show dir is missing, unless it's missing on purpose
         if not ek(os.path.isdir, self.show._location) and not sickbeard.CREATE_MISSING_SHOW_DIRS and not sickbeard.ADD_SHOWS_WO_DIR:  # pylint: disable=protected-access
-            logger.log(u"The show dir %s is missing, not bothering to change the episode statuses since it'd probably be invalid" % self.show._location)  # pylint: disable=protected-access
+            logger.log(u"The show dir {0!s} is missing, not bothering to change the episode statuses since it'd probably be invalid".format(self.show._location))  # pylint: disable=protected-access
             return
 
         if self.location:
@@ -1694,14 +1690,14 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         if not ek(os.path.isfile, self.location):
             if self.airdate >= datetime.date.today() or self.airdate == datetime.date.fromordinal(1):
-                logger.log(u"%s: Episode airs in the future or has no airdate, marking it %s" % (self.show.indexerid, statusStrings[UNAIRED]), logger.DEBUG)
+                logger.log(u"{0!s}: Episode airs in the future or has no airdate, marking it {1!s}".format(self.show.indexerid, statusStrings[UNAIRED]), logger.DEBUG)
                 self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:
                 # Only do UNAIRED/UNKNOWN, it could already be snatched/ignored/skipped, or downloaded/archived to disconnected media
-                logger.log(u"Episode has already aired, marking it %s" % statusStrings[self.show.default_ep_status], logger.DEBUG)
+                logger.log(u"Episode has already aired, marking it {0!s}".format(statusStrings[self.show.default_ep_status]), logger.DEBUG)
                 self.status = self.show.default_ep_status if self.season > 0 else SKIPPED  # auto-skip specials
             else:
-                logger.log(u"Not touching status [ %s ] It could be skipped/ignored/snatched/archived" % statusStrings[self.status], logger.DEBUG)
+                logger.log(u"Not touching status [ {0!s} ] It could be skipped/ignored/snatched/archived".format(statusStrings[self.status]), logger.DEBUG)
 
         # if we have a media file then it's downloaded
         elif sickbeard.helpers.isMediaFile(self.location):
@@ -1804,16 +1800,16 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
     def __str__(self):
 
         toReturn = u""
-        toReturn += u"%r - S%02rE%02r - %r\n" % (self.show.name, self.season, self.episode, self.name)
-        toReturn += u"location: %r\n" % self.location
-        toReturn += u"description: %r\n" % self.description
-        toReturn += u"subtitles: %r\n" % u",".join(self.subtitles)
-        toReturn += u"subtitles_searchcount: %r\n" % self.subtitles_searchcount
-        toReturn += u"subtitles_lastsearch: %r\n" % self.subtitles_lastsearch
-        toReturn += u"airdate: %r (%r)\n" % (self.airdate.toordinal(), self.airdate)
-        toReturn += u"hasnfo: %r\n" % self.hasnfo
-        toReturn += u"hastbn: %r\n" % self.hastbn
-        toReturn += u"status: %r\n" % self.status
+        toReturn += u"{0!r} - S{1:2!r}E{2:2!r} - {3!r}\n".format(self.show.name, self.season, self.episode, self.name)
+        toReturn += u"location: {0!r}\n".format(self.location)
+        toReturn += u"description: {0!r}\n".format(self.description)
+        toReturn += u"subtitles: {0!r}\n".format(u",".join(self.subtitles))
+        toReturn += u"subtitles_searchcount: {0!r}\n".format(self.subtitles_searchcount)
+        toReturn += u"subtitles_lastsearch: {0!r}\n".format(self.subtitles_lastsearch)
+        toReturn += u"airdate: {0!r} ({1!r})\n".format(self.airdate.toordinal(), self.airdate)
+        toReturn += u"hasnfo: {0!r}\n".format(self.hasnfo)
+        toReturn += u"hastbn: {0!r}\n".format(self.hastbn)
+        toReturn += u"status: {0!r}\n".format(self.status)
         return toReturn
 
     def createMetaFiles(self):
@@ -1926,8 +1922,8 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                      self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode,
                      self.absolute_number, self.version, self.release_group]]
         except Exception as e:
-            logger.log(u"Error while updating database: %s" %
-                       (repr(e)), logger.ERROR)
+            logger.log(u"Error while updating database: {0!s}".format(
+                       (repr(e))), logger.ERROR)
 
     def saveToDB(self, forceSave=False):
         """
@@ -2141,15 +2137,15 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             '%SQ.N': dot(Quality.sceneQualityStrings[epQual] + encoder),
             '%SQ_N': us(Quality.sceneQualityStrings[epQual] + encoder),
             '%S': str(self.season),
-            '%0S': '%02d' % self.season,
+            '%0S': '{0:02d}'.format(self.season),
             '%E': str(self.episode),
-            '%0E': '%02d' % self.episode,
+            '%0E': '{0:02d}'.format(self.episode),
             '%XS': str(self.scene_season),
-            '%0XS': '%02d' % self.scene_season,
+            '%0XS': '{0:02d}'.format(self.scene_season),
             '%XE': str(self.scene_episode),
-            '%0XE': '%02d' % self.scene_episode,
-            '%AB': '%(#)03d' % {'#': self.absolute_number},
-            '%XAB': '%(#)03d' % {'#': self.scene_absolute_number},
+            '%0XE': '{0:02d}'.format(self.scene_episode),
+            '%AB': '{#:03d}'.format(**{'#': self.absolute_number}),
+            '%XAB': '{#:03d}'.format(**{'#': self.scene_absolute_number}),
             '%RN': release_name(self.release_name),
             '%RG': rel_grp[relgrp],
             '%CRG': rel_grp[relgrp].upper(),
@@ -2163,8 +2159,8 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             '%CY': str(datetime.date.today().year),
             '%CM': str(datetime.date.today().month),
             '%CD': str(datetime.date.today().day),
-            '%0M': '%02d' % self.airdate.month,
-            '%0D': '%02d' % self.airdate.day,
+            '%0M': '{0:02d}'.format(self.airdate.month),
+            '%0D': '{0:02d}'.format(self.airdate.day),
             '%RT': "PROPER" if self.is_proper else "",
         }
 
@@ -2318,16 +2314,16 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
                 if self.season != 0:  # dont set absolute numbers if we are on specials !
                     if anime_type == 1:  # this crazy person wants both ! (note: +=)
-                        ep_string += sep + "%(#)03d" % {
-                            "#": curAbsolute_number}
+                        ep_string += sep + "{#:03d}".format(**{
+                            "#": curAbsolute_number})
                     elif anime_type == 2:  # total anime freak only need the absolute number ! (note: =)
-                        ep_string = "%(#)03d" % {"#": curAbsolute_number}
+                        ep_string = "{#:03d}".format(**{"#": curAbsolute_number})
 
                     for relEp in self.relatedEps:
                         if relEp.absolute_number != 0:
-                            ep_string += '-' + "%(#)03d" % {"#": relEp.absolute_number}
+                            ep_string += '-' + "{#:03d}".format(**{"#": relEp.absolute_number})
                         else:
-                            ep_string += '-' + "%(#)03d" % {"#": relEp.episode}
+                            ep_string += '-' + "{#:03d}".format(**{"#": relEp.episode})
 
             regex_replacement = None
             if anime_type == 2:

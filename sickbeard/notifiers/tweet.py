@@ -80,7 +80,7 @@ class Notifier(object):
         resp, content = oauth_client.request(self.REQUEST_TOKEN_URL, 'GET')
 
         if resp['status'] != '200':
-            logger.log(u'Invalid response from Twitter requesting temp token: %s' % resp['status'], logger.ERROR)
+            logger.log(u'Invalid response from Twitter requesting temp token: {0!s}'.format(resp['status']), logger.ERROR)
         else:
             request_token = dict(parse_qsl(content))
 
@@ -106,7 +106,7 @@ class Notifier(object):
         logger.log(u'oauth_consumer: ' + str(oauth_consumer), logger.DEBUG)
         oauth_client = oauth.Client(oauth_consumer, token)
         logger.log(u'oauth_client: ' + str(oauth_client), logger.DEBUG)
-        resp, content = oauth_client.request(self.ACCESS_TOKEN_URL, method='POST', body='oauth_verifier=%s' % key)
+        resp, content = oauth_client.request(self.ACCESS_TOKEN_URL, method='POST', body='oauth_verifier={0!s}'.format(key))
         logger.log(u'resp, content: ' + str(resp) + ',' + str(content), logger.DEBUG)
 
         access_token = dict(parse_qsl(content))
@@ -117,8 +117,8 @@ class Notifier(object):
             logger.log(u'The request for a token with did not succeed: ' + str(resp['status']), logger.ERROR)
             return False
         else:
-            logger.log(u'Your Twitter Access Token key: %s' % access_token['oauth_token'], logger.DEBUG)
-            logger.log(u'Access Token secret: %s' % access_token['oauth_token_secret'], logger.DEBUG)
+            logger.log(u'Your Twitter Access Token key: {0!s}'.format(access_token['oauth_token']), logger.DEBUG)
+            logger.log(u'Access Token secret: {0!s}'.format(access_token['oauth_token_secret']), logger.DEBUG)
             sickbeard.TWITTER_USERNAME = access_token['oauth_token']
             sickbeard.TWITTER_PASSWORD = access_token['oauth_token_secret']
             return True
