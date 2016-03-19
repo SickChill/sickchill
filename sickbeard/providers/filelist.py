@@ -48,7 +48,7 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         # URLs
         self.url = "http://filelist.ro"
         self.urls = {
-            "login": urljoin(self.url, "login.php"),
+            "login": urljoin(self.url, "takelogin.php"),
             "search": urljoin(self.url, "browse.php"),
         }
 
@@ -64,9 +64,7 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
         login_params = {
             "username": self.username,
-            "password": self.password,
-            "login": "submit",
-            "remember_me": "on",
+            "password": self.password
         }
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
@@ -75,7 +73,8 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
             return False
 
         if re.search("Invalid Username/password", response) \
-                or re.search("<title>Login :: FileList.ro</title>", response):
+                or re.search("<title>Login :: FileList.ro</title>", response) \
+                  or re.search("Login esuat!", response):
             logger.log("Invalid username or password. Check your settings", logger.WARNING)
             return False
 
