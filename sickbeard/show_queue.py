@@ -167,7 +167,7 @@ class ShowQueue(generic_queue.GenericQueue):
             raise CantRemoveShowException(u'Failed removing show: Show does not have an indexer id')
 
         if self._isInQueue(show, (ShowQueueActions.REMOVE,)):
-            raise CantRemoveShowException(u'[{!s}]: Show is already queued to be removed'.format(show.indexerid))
+            raise CantRemoveShowException(u'[{0!s}]: Show is already queued to be removed'.format(show.indexerid))
 
         # remove other queued actions for this show.
         for item in self.queue:
@@ -320,7 +320,7 @@ class QueueItemAdd(ShowQueueItem):
 
             # this usually only happens if they have an NFO in their show dir which gave us a Indexer ID that has no proper english version of the show
             if getattr(s, 'seriesname', None) is None:
-                logger.log(u"Show in {} has no name on {}, probably searched with the wrong language.".format
+                logger.log(u"Show in {0} has no name on {1}, probably searched with the wrong language.".format
                            (self.showDir, sickbeard.indexerApi(self.indexer).name), logger.ERROR)
 
                 ui.notifications.error("Unable to add show",

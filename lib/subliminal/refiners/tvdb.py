@@ -130,7 +130,7 @@ class TVDBClient(object):
     def get_series(self, id):
         """Get series"""
         # perform the request
-        r = self.session.get(self.base_url + '/series/{}'.format(id))
+        r = self.session.get(self.base_url + '/series/{0}'.format(id))
         if r.status_code == 404:
             return None
         r.raise_for_status()
@@ -141,7 +141,7 @@ class TVDBClient(object):
     def get_series_actors(self, id):
         """Get series actors"""
         # perform the request
-        r = self.session.get(self.base_url + '/series/{}/actors'.format(id))
+        r = self.session.get(self.base_url + '/series/{0}/actors'.format(id))
         if r.status_code == 404:
             return None
         r.raise_for_status()
@@ -153,7 +153,7 @@ class TVDBClient(object):
         """Get series episodes"""
         # perform the request
         params = {'page': page}
-        r = self.session.get(self.base_url + '/series/{}/episodes'.format(id), params=params)
+        r = self.session.get(self.base_url + '/series/{0}/episodes'.format(id), params=params)
         if r.status_code == 404:
             return None
         r.raise_for_status()
@@ -167,7 +167,7 @@ class TVDBClient(object):
         # perform the request
         params = {'absoluteNumber': absolute_number, 'airedSeason': aired_season, 'airedEpisode': aired_episode,
                   'dvdSeason': dvd_season, 'dvdEpisode': dvd_episode, 'imdbId': imdb_id, 'page': page}
-        r = self.session.get(self.base_url + '/series/{}/episodes/query'.format(id), params=params)
+        r = self.session.get(self.base_url + '/series/{0}/episodes/query'.format(id), params=params)
         if r.status_code == 404:
             return None
         r.raise_for_status()
@@ -178,7 +178,7 @@ class TVDBClient(object):
     def get_episode(self, id):
         """Get episode"""
         # perform the request
-        r = self.session.get(self.base_url + '/episodes/{}'.format(id))
+        r = self.session.get(self.base_url + '/episodes/{0}'.format(id))
         if r.status_code == 404:
             return None
         r.raise_for_status()

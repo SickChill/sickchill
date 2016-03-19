@@ -173,7 +173,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             try:
                 parse_result = NameParser(parse_method=('normal', 'anime')[show.is_anime]).parse(title)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.log(u"{}".format(error), logger.DEBUG)
+                logger.log(u"{0}".format(error), logger.DEBUG)
                 continue
 
             show_object = parse_result.show
@@ -330,11 +330,11 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     @staticmethod
     def get_url_hook(response, **kwargs):
         _ = kwargs
-        logger.log(u'{} URL: {} [Status: {}]'.format
+        logger.log(u'{0} URL: {1} [Status: {2}]'.format
                    (response.request.method, response.request.url, response.status_code), logger.DEBUG)
 
         if response.request.method == 'POST':
-            logger.log(u'With post data: {}'.format(response.request.body), logger.DEBUG)
+            logger.log(u'With post data: {0}'.format(response.request.body), logger.DEBUG)
 
     def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):  # pylint: disable=too-many-arguments,
         kwargs['hooks'] = {'response': self.get_url_hook}

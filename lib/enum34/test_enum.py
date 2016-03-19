@@ -338,8 +338,8 @@ class TestEnum(unittest.TestCase):
             Season = self.Season
             self.assertEqual('{0}'.format(Season.SPRING),
                              '{0}'.format(str(Season.SPRING)))
-            self.assertEqual( '{0:}'.format(Season.SPRING),
-                              '{0:}'.format(str(Season.SPRING)))
+            self.assertEqual( '{0}'.format(Season.SPRING),
+                              '{0}'.format(str(Season.SPRING)))
             self.assertEqual('{0:20}'.format(Season.SPRING),
                              '{0:20}'.format(str(Season.SPRING)))
             self.assertEqual('{0:^20}'.format(Season.SPRING),
@@ -1171,7 +1171,7 @@ class TestEnum(unittest.TestCase):
                     return self._intname
                 def __repr__(self):
                     # repr() is updated to include the name and type info
-                    return "{}({!r}, {})".format(type(self).__name__,
+                    return "{0}({1!r}, {2})".format(type(self).__name__,
                                                  self.__name__,
                                                  int.__repr__(self))
                 def __str__(self):

@@ -373,7 +373,7 @@ class GitUpdateManager(UpdateManager):
         return self._newest_commit_hash
 
     def get_cur_version(self):
-        return self._run_git(self._git_path, 'describe --abbrev=0 {}'.format(self._cur_commit_hash))[0]
+        return self._run_git(self._git_path, 'describe --abbrev=0 {0}'.format(self._cur_commit_hash))[0]
 
     def get_newest_version(self):
         if self._newest_commit_hash:

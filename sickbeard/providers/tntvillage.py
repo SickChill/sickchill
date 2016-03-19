@@ -262,7 +262,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         try:
             parse_result = NameParser(tryIndexers=True).parse(name)
         except (InvalidNameException, InvalidShowException) as error:
-            logger.log(u"{}".format(error), logger.DEBUG)
+            logger.log(u"{0}".format(error), logger.DEBUG)
             return False
 
         main_db_con = db.DBConnection()
@@ -280,7 +280,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         for mode in search_params:
             items = []
-            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode == 'RSS':
@@ -305,7 +305,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         search_url = self.urls['search_page'].format(z, self.categories)
 
                     if mode != 'RSS':
-                        logger.log(u"Search string: {}".format
+                        logger.log(u"Search string: {0}".format
                                    (search_string.decode("utf-8")), logger.DEBUG)
 
                     data = self.get_url(search_url, returns='text')
@@ -379,7 +379,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
                                     if mode != 'RSS':
-                                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format
+                                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                    (title, seeders, leechers), logger.DEBUG)
                                     continue
 

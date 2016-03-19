@@ -155,12 +155,12 @@ class SubsCenterProvider(Provider):
         # set the correct parameters depending on the kind
         if series and season and episode:
             url_series = self._search_url_title(series, 'series')
-            url = self.server + 'cinemast/data/series/sb/{}/{}/{}/'.format(url_series, season, episode)
-            page_link = self.server + 'subtitle/series/{}/{}/{}/'.format(url_series, season, episode)
+            url = self.server + 'cinemast/data/series/sb/{0}/{1}/{2}/'.format(url_series, season, episode)
+            page_link = self.server + 'subtitle/series/{0}/{1}/{2}/'.format(url_series, season, episode)
         elif title:
             url_title = self._search_url_title(title, 'movie')
-            url = self.server + 'cinemast/data/movie/sb/{}/'.format(url_title)
-            page_link = self.server + 'subtitle/movie/{}/'.format(url_title)
+            url = self.server + 'cinemast/data/movie/sb/{0}/'.format(url_title)
+            page_link = self.server + 'subtitle/movie/{0}/'.format(url_title)
         else:
             raise ValueError('One or more parameters are missing')
 
@@ -214,7 +214,7 @@ class SubsCenterProvider(Provider):
 
     def download_subtitle(self, subtitle):
         # download
-        url = self.server + 'subtitle/download/{}/{}/'.format(subtitle.language.alpha2, subtitle.subtitle_id)
+        url = self.server + 'subtitle/download/{0}/{1}/'.format(subtitle.language.alpha2, subtitle.subtitle_id)
         params = {'v': subtitle.releases[0], 'key': subtitle.subtitle_key}
         r = self.session.get(url, params=params, headers={'Referer': subtitle.page_link}, timeout=10)
         r.raise_for_status()

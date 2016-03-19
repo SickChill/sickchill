@@ -73,7 +73,7 @@ def filterBadReleases(name, parse=True):
         if parse:
             NameParser().parse(name)
     except InvalidNameException as error:
-        logger.log(u"{}".format(error), logger.DEBUG)
+        logger.log(u"{0}".format(error), logger.DEBUG)
         return False
     except InvalidShowException:
         pass
