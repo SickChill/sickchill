@@ -325,7 +325,7 @@ class GenericMetadata(object):
                 if not self._has_season_poster(show_obj, season):
                     logger.log(u"Metadata provider " + self.name + " creating season posters for " + show_obj.name,
                                logger.DEBUG)
-                    result = result + [self.save_season_posters(show_obj, season)]
+                    result.extend([self.save_season_posters(show_obj, season)])
             return all(result)
         return False
 
@@ -335,7 +335,7 @@ class GenericMetadata(object):
             logger.log(u"Metadata provider " + self.name + " creating season banners for " + show_obj.name, logger.DEBUG)
             for season, _ in show_obj.episodes.iteritems():  # @UnusedVariable
                 if not self._has_season_banner(show_obj, season):
-                    result = result + [self.save_season_banners(show_obj, season)]
+                    result.extend([self.save_season_banners(show_obj, season)])
             return all(result)
         return False
 
@@ -597,7 +597,7 @@ class GenericMetadata(object):
                 logger.log(u"No season poster data available, skipping this season", logger.DEBUG)
                 continue
 
-            result = result + [self._write_image(seasonData, season_poster_file_path)]
+            result.extend([self._write_image(seasonData, season_poster_file_path)])
 
         if result:
             return all(result)
@@ -644,7 +644,7 @@ class GenericMetadata(object):
                 logger.log(u"No season banner data available, skipping this season", logger.DEBUG)
                 continue
 
-            result = result + [self._write_image(seasonData, season_banner_file_path)]
+            result.extend([self._write_image(seasonData, season_banner_file_path)])
 
         if result:
             return all(result)

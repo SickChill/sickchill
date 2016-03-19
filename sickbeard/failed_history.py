@@ -124,7 +124,7 @@ def revertEpisode(epObj):
     sql_results = failed_db_con.select("SELECT episode, old_status FROM history WHERE showid=? AND season=?",
                                        [epObj.show.indexerid, epObj.season])
 
-    history_eps = dict([(res["episode"], res) for res in sql_results])
+    history_eps = {res["episode"]: res for res in sql_results}
 
     try:
         logger.log(u"Reverting episode ({0!s}, {1!s}): {2!s}".format(epObj.season, epObj.episode, epObj.name))

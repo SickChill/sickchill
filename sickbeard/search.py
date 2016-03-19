@@ -583,7 +583,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
             allWanted = True
             anyWanted = False
             for curEpNum in allEps:
-                for season in set([x.season for x in episodes]):
+                for season in {x.season for x in episodes}:
                     if not show.wantEpisode(season, curEpNum, seasonQual, downCurQuality):
                         allWanted = False
                     else:
@@ -595,7 +595,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
                     u"Every ep in this season is needed, downloading the whole " + bestSeasonResult.provider.provider_type + " " + bestSeasonResult.name)
                 epObjs = []
                 for curEpNum in allEps:
-                    for season in set([x.season for x in episodes]):
+                    for season in {x.season for x in episodes}:
                         epObjs.append(show.getEpisode(season, curEpNum))
                 bestSeasonResult.episodes = epObjs
 
@@ -635,7 +635,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
                         u"Adding multi-ep result for full-season torrent. Set the episodes you don't want to 'don't download' in your torrent client if desired!")
                     epObjs = []
                     for curEpNum in allEps:
-                        for season in set([x.season for x in episodes]):
+                        for season in {x.season for x in episodes}:
                             epObjs.append(show.getEpisode(season, curEpNum))
                     bestSeasonResult.episodes = epObjs
 

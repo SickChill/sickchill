@@ -557,7 +557,7 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
         check_files = ek(os.listdir, check_empty_dir)
 
         if not check_files or (len(check_files) <= len(ignore_items) and all(
-                [check_file in ignore_items for check_file in check_files])):
+                check_file in ignore_items for check_file in check_files)):
             # directory is empty or contains only ignore_items
             try:
                 logger.log(u"Deleting empty folder: " + check_empty_dir)
