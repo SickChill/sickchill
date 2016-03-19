@@ -38,6 +38,7 @@ from sickrage.helper.common import episode_num, dateTimeFormat, subtitle_extensi
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
 
+provider_manager.register('itasa = subliminal.providers.itasa:ItaSAProvider')
 provider_manager.register('legendastv = subliminal.providers.legendastv:LegendasTvProvider')
 provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
 
@@ -165,7 +166,7 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
     provider_configs = {'addic7ed': {'username': sickbeard.ADDIC7ED_USER,
                                      'password': sickbeard.ADDIC7ED_PASS},
                         'itasa': {'username': sickbeard.ITASA_USER,
-                                     'password': sickbeard.ITASA_PASS},
+                                  'password': sickbeard.ITASA_PASS},
                         'legendastv': {'username': sickbeard.LEGENDASTV_USER,
                                        'password': sickbeard.LEGENDASTV_PASS},
                         'opensubtitles': {'username': sickbeard.OPENSUBTITLES_USER,
@@ -253,7 +254,7 @@ def refresh_subtitles(episode_info, existing_subtitles):
         return current_subtitles, True
 
 
-def get_video(video_path, subtitles_path=None):
+def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitles=None):
     if not subtitles_path:
         subtitles_path = get_subtitles_path(video_path)
 
@@ -267,12 +268,17 @@ def get_video(video_path, subtitles_path=None):
         subtitles_path = subtitles_path.encode(sickbeard.SYS_ENCODING)
 
     try:
-        if not sickbeard.EMBEDDED_SUBTITLES_ALL and video_path.endswith('.mkv'):
-            video = subliminal.scan_video(video_path, subtitles=True, embedded_subtitles=True,
-                                          subtitles_dir=subtitles_path)
-        else:
-            video = subliminal.scan_video(video_path, subtitles=True, embedded_subtitles=False,
-                                          subtitles_dir=subtitles_path)
+        video = subliminal.scan_video(video_path)
+
+        # external subtitles
+        if subtitles:
+            video.subtitle_languages |= \
+                set(subliminal.core.search_external_subtitles(video_path, directory=subtitles_path).values())
+
+        if embedded_subtitles is None:
+            embedded_subtitles = bool(not sickbeard.EMBEDDED_SUBTITLES_ALL and video_path.endswith('.mkv'))
+
+        subliminal.refine(video, embedded_subtitles=embedded_subtitles)
     except Exception as error:
         logger.log(u'Exception: {0}'.format(error), logger.DEBUG)
         return None
@@ -334,7 +340,7 @@ class SubtitlesFinder(object):
         provider_configs = {'addic7ed': {'username': sickbeard.ADDIC7ED_USER,
                                          'password': sickbeard.ADDIC7ED_PASS},
                             'itasa': {'username': sickbeard.ITASA_USER,
-                                         'password': sickbeard.ITASA_PASS},
+                                      'password': sickbeard.ITASA_PASS},
                             'legendastv': {'username': sickbeard.LEGENDASTV_USER,
                                            'password': sickbeard.LEGENDASTV_PASS},
                             'opensubtitles': {'username': sickbeard.OPENSUBTITLES_USER,
@@ -396,8 +402,7 @@ class SubtitlesFinder(object):
 
                     if isMediaFile(filename) and processTV.subtitles_enabled(filename):
                         try:
-                            video = subliminal.scan_video(os.path.join(root, filename),
-                                                          subtitles=False, embedded_subtitles=False)
+                            video = get_video(os.path.join(root, filename), subtitles=False, embedded_subtitles=False)
                             subtitles_list = pool.list_subtitles(video, languages)
 
                             for provider in providers:
