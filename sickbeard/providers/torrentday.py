@@ -20,7 +20,7 @@
 
 import re
 from requests.compat import urljoin
-from requests.utils import add_dict_to_cookiejar, dict_from_cookiejar
+from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 
@@ -38,8 +38,6 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         # Credentials
         self.username = None
         self.password = None
-        self._uid = None
-        self._hash = None
 
         # Torrent Stats
         self.minseed = None
@@ -54,7 +52,6 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             'download': urljoin(self.url, '/download.php/')
         }
 
-        self.cookies = None
         self.categories = {'Season': {'c14': 1}, 'Episode': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1},
                            'RSS': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c14': 1}}
 
@@ -65,38 +62,27 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        if self._uid and self._hash:
-            add_dict_to_cookiejar(self.session.cookies, self.cookies)
-        else:
+        login_params = {
+            'username': self.username,
+            'password': self.password,
+            'submit.x': 0,
+            'submit.y': 0
+        }
 
-            login_params = {
-                'username': self.username,
-                'password': self.password,
-                'submit.x': 0,
-                'submit.y': 0
-            }
-
-            response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
-            if not response:
-                logger.log(u"Unable to connect to provider", logger.WARNING)
-                return False
-
-            if re.search('You tried too often', response):
-                logger.log(u"Too many login access attempts", logger.WARNING)
-                return False
-
-            try:
-                if dict_from_cookiejar(self.session.cookies)['uid'] and dict_from_cookiejar(self.session.cookies)['pass']:
-                    self._uid = dict_from_cookiejar(self.session.cookies)['uid']
-                    self._hash = dict_from_cookiejar(self.session.cookies)['pass']
-                    self.cookies = {'uid': self._uid,
-                                    'pass': self._hash}
-                    return True
-            except Exception:
-                pass
-
-            logger.log(u"Unable to obtain cookie", logger.WARNING)
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
+        if not response:
+            logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
+
+        if re.search('Password not correct', response):
+            logger.log(u"Your login is incorrect", logger.WARNING)
+            return False
+
+        if re.search('You tried too often', response):
+            logger.log(u"Too many login access attempts", logger.WARNING)
+            return False
+
+        return True
 
     def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
