@@ -527,10 +527,10 @@ class TraktChecker(object):
                 tvdb = False
                 tvrage = False
 
-                if not watchlist_el['show']['ids']["tvdb"] is None:
+                if watchlist_el['show']['ids']["tvdb"] is not None:
                     tvdb = True
 
-                if not watchlist_el['show']['ids']["tvrage"] is None:
+                if watchlist_el['show']['ids']["tvrage"] is not None:
                     tvrage = True
 
                 title = watchlist_el['show']['title']
@@ -562,10 +562,10 @@ class TraktChecker(object):
                 tvdb = False
                 tvrage = False
 
-                if not watchlist_el['show']['ids']["tvdb"] is None:
+                if watchlist_el['show']['ids']["tvdb"] is not None:
                     tvdb = True
 
-                if not watchlist_el['show']['ids']["tvrage"] is None:
+                if watchlist_el['show']['ids']["tvrage"] is not None:
                     tvrage = True
 
                 title = watchlist_el['show']['title']
@@ -616,10 +616,10 @@ class TraktChecker(object):
                 tvdb = False
                 tvrage = False
 
-                if not watchlist_el['show']['ids']["tvdb"] is None:
+                if watchlist_el['show']['ids']["tvdb"] is not None:
                     tvdb = True
 
-                if not watchlist_el['show']['ids']["tvrage"] is None:
+                if watchlist_el['show']['ids']["tvrage"] is not None:
                     tvrage = True
 
                 title = watchlist_el['show']['title']
