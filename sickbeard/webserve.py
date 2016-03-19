@@ -1390,8 +1390,8 @@ class Home(WebRoot):
             out.append("S" + str(season) + ": " + ", ".join(names))
         return "<br>".join(out)
 
-    def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[],
-                 exceptions_list=[], flatten_folders=None, paused=None, directCall=False,
+    def editShow(self, show=None, location=None, anyQualities=None, bestQualities=None,
+                 exceptions_list=None, flatten_folders=None, paused=None, directCall=False,
                  air_by_date=None, sports=None, dvdorder=None, indexerLang=None,
                  subtitles=None, rls_ignore_words=None, rls_require_words=None,
                  anime=None, blacklist=None, whitelist=None, scene=None,
@@ -1419,7 +1419,7 @@ class Home(WebRoot):
         if try_int(quality_preset, None):
             bestQualities = []
 
-        if not location and not anyQualities and not bestQualities and not flatten_folders:
+        if not (location or anyQualities or bestQualities or flatten_folders):
             t = PageTemplate(rh=self, filename="editShow.mako")
 
             if showObj.is_anime:
@@ -1471,6 +1471,15 @@ class Home(WebRoot):
             do_update_scene_numbering = False
         else:
             do_update_scene_numbering = True
+
+        if anyQualities is None:
+            anyQualities = []
+
+        if bestQualities is None:
+            bestQualities = []
+
+        if exceptions_list is None:
+            exceptions_list = []
 
         if not isinstance(anyQualities, list):
             anyQualities = [anyQualities]
@@ -3335,7 +3344,7 @@ class Manage(Home, WebRoot):
 
     def massEditSubmit(self, paused=None, default_ep_status=None,
                        anime=None, sports=None, scene=None, flatten_folders=None, quality_preset=None,
-                       subtitles=None, air_by_date=None, anyQualities=[], bestQualities=[], toEdit=None, *args,
+                       subtitles=None, air_by_date=None, anyQualities=None, bestQualities=None, toEdit=None, *args,
                        **kwargs):
         dir_map = {}
         for cur_arg in kwargs:
